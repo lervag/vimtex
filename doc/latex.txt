@@ -187,6 +187,7 @@ descriptions also list the default values.
 
 Overview:~
 
+  |g:latex_enabled|
   |g:latex_build_dir|
   |g:latex_complete_close_braces|
   |g:latex_complete_enabled|
@@ -219,6 +220,10 @@ Overview:~
 
 ------------------------------------------------------------------------------
 Detailed descriptions and default values:~
+
+                                                             *g:latex_enabled*
+If this variable exists and is 0, then |vim-latex| is completely disabled.  By
+default, it is not defined.
 
                                                            *g:latex_build_dir*
 Set this variable in case a dedicated build dir is used with latexmk/latex

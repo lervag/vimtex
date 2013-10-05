@@ -4,6 +4,10 @@
 " Email:      karl.yngve@gmail.com
 "
 
+if exists('g:latex_enabled') && !g:latex_enabled
+  finish
+endif
+
 if exists('b:did_ftplugin')
   finish
 endif
