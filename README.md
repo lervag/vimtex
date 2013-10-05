@@ -2,9 +2,12 @@
 ## Introduction
 
 There exists several LaTeX plugins for vim, for instance:
-- LaTeX-Suite: vimscript#475
-- AutomaticTexPlugin: vimscript#2945
-- LaTeX-Box: vimscript#3109
+- [LaTeX-Suite](http://vim-latex.sourceforge.net):
+  [vimscript#475](http://www.vim.org/scripts/script.php?script_id=475)
+- [AutomaticTexPlugin](http://atp-vim.sourceforge.net):
+  [vimscript#2945](http://www.vim.org/scripts/script.php?script_id=2945)
+- [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box):
+  [vimscript#3109](http://www.vim.org/scripts/script.php?script_id=3109)
 
 I have been using both LaTeX-Suite and LaTeX-Box myself, but I found both of
 these to be relatively bulky and difficult to manage and extend.  LaTeX-Box
