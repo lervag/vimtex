@@ -3,10 +3,10 @@ function! latex#motion#init(initialized)
   if !g:latex_motion_enabled | return | endif
 
   if g:latex_default_mappings
-    nnoremap <silent><buffer> % :call latex#motion#find_matching_pair('n')<cr>
+    nnoremap <silent><buffer> % :call latex#motion#find_matching_pair()<cr>
     vnoremap <silent><buffer> %
-          \ :<c-u>call latex#motion#find_matching_pair('v')<cr>
-    onoremap <silent><buffer> % :call latex#motion#find_matching_pair('o')<cr>
+          \ :<c-u>call latex#motion#find_matching_pair(1)<cr>
+    onoremap <silent><buffer> % :normal v%<cr>
 
     nnoremap <silent><buffer> ]] :call latex#motion#next_sec(0,0,0)<cr>
     nnoremap <silent><buffer> ][ :call latex#motion#next_sec(1,0,0)<cr>
@@ -47,119 +47,72 @@ function! latex#motion#init(initialized)
             \ 3match none | unlet! g:loaded_matchparen | au! matchparen
 
       " Enable latex matchparen functionality
-      autocmd! CursorMoved  *.tex call latex#motion#find_matching_pair('h')
-      autocmd! CursorMovedI *.tex call latex#motion#find_matching_pair('i')
+      autocmd! CursorMoved  *.tex call s:highlight_matching_pair(1)
+      autocmd! CursorMovedI *.tex call s:highlight_matching_pair()
     augroup END
   endif
 endfunction
 
 " {{{1 latex#motion#find_matching_pair
-function! latex#motion#find_matching_pair(mode)
+function! latex#motion#find_matching_pair(...)
   "
   " Note: This code is ugly, but it seems to work.
   "
-  if a:mode =~ 'h\|i'
-    2match none
-  elseif a:mode == 'v'
+  if a:0 > 0
     normal! gv
   endif
 
   if latex#util#in_comment() | return | endif
 
-  let lnum = line('.')
-  let cnum = searchpos('\A', 'cbnW', lnum)[1]
+  " Save position
+  let nl = line('.')
+  let nc = col('.')
 
-  " Check if previous char is a backslash
-  if strpart(getline(lnum), cnum-2, 1) == '\'
-    let cnum = cnum-1
-  endif
-
-  " Make pattern to combine all open/close pats
+  " Combine all open/close pats
   let all_pats = join(g:latex_motion_open_pats+g:latex_motion_close_pats, '\|')
-  let all_pats = '\(' . all_pats . '\|\$\)'
+  let all_pats = '\C\(' . all_pats . '\|\$\)'
 
-  let delim = matchstr(getline(lnum), '\C^'. all_pats, cnum-1)
-  if empty(delim) || strlen(delim)+cnum-1 < col('.')
-    if a:mode =~ 'n\|v\|o'
-      " if not found, search forward
-      let cnum = match(getline(lnum), '\C'. all_pats, col('.') - 1) + 1
-      if cnum == 0 | return | endif
-      call cursor(lnum, cnum)
-      let delim = matchstr(getline(lnum), '\C^'. all_pats, cnum - 1)
-    elseif a:mode =~ 'i'
-      " if not found, move one char bacward and search
-      let cnum = searchpos('\A', 'bnW', lnum)[1]
-      " if the previous char is a backslash
-      if strpart(getline(lnum), cnum-2, 1) == '\'
-        let cnum = cnum-1
-      endif
-      let delim = matchstr(getline(lnum), '\C^'. all_pats, cnum - 1)
-      if empty(delim) || strlen(delim)+cnum< col('.')
-        return
-      endif
-    elseif a:mode =~ 'h'
+  " Find delimiter under cursor
+  let [lnum, cnum] = searchpos(all_pats, 'cbnW', nl-2)
+  let delim = matchstr(getline(lnum), '^'. all_pats, cnum-1)
+
+  " If delimiter not found, try to search forward instead
+  if empty(delim)
+    let [lnum, cnum] = searchpos(all_pats, 'cnW', nl+2)
+    let delim = matchstr(getline(lnum), '^'. all_pats, cnum-1)
+    if empty(delim)
       return
     endif
   endif
 
+  " Utility pattern to NOT match the current cursor position
+  let not_cursor = '\%(\%'. lnum . 'l\%' . cnum . 'c\)\@!'
+
+  " Finally, find the matching delimiter
   if delim =~ '^\$'
-    " match $-pairs
-    " check if next character is in inline math
+    let inline = b:notcomment . b:notbslash . '\$'
     let [lnum0, cnum0] = searchpos('.', 'nW')
     if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
-      let [lnum2, cnum2] = searchpos(b:notcomment . b:notbslash . '\$',
-            \ 'nW', line('w$')*(a:mode =~ 'h\|i'), 200)
+      let [lnum2, cnum2] = searchpos(inline, 'nW', 0, 200)
     else
-      let [lnum2, cnum2] = searchpos('\%(\%'. lnum . 'l\%'
-            \ . cnum . 'c\)\@!'. b:notcomment . b:notbslash . '\$',
-            \ 'bnW', line('w0')*(a:mode =~ 'h\|i'), 200)
+      let [lnum2, cnum2] = searchpos(not_cursor . inline, 'bnW', 0, 200)
     endif
 
-    if a:mode =~ 'h\|i'
-      execute '2match MatchParen /\%(\%' . lnum . 'l\%'
-            \ . cnum . 'c\$' . '\|\%' . lnum2 . 'l\%' . cnum2 . 'c\$\)/'
-    elseif a:mode =~ 'n\|v\|o'
-      call cursor(lnum2,cnum2)
-    endif
+    call cursor(lnum2,cnum2)
   else
-    " match other pairs
     for i in range(len(g:latex_motion_open_pats))
-      let open_pat = b:notbslash . g:latex_motion_open_pats[i]
-      let close_pat = b:notbslash . g:latex_motion_close_pats[i]
+      let open_pat  = '\C' . b:notbslash . g:latex_motion_open_pats[i]
+      let close_pat = '\C' . b:notbslash . g:latex_motion_close_pats[i]
 
       if delim =~# '^' . open_pat
-        " if on opening pattern, search for closing pattern
-        let [lnum2, cnum2] = searchpairpos('\C' . open_pat, '', '\C'
-              \ . close_pat, 'nW', 'latex#util#in_comment()',
-              \ line('w$')*(a:mode =~ 'h\|i'), 200)
-        if a:mode =~ 'h\|i'
-          execute '2match MatchParen /\%(\%' . lnum . 'l\%' . cnum
-                \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
-                \ . lnum2 . 'l\%' . cnum2 . 'c'
-                \ . g:latex_motion_close_pats[i] . '\)/'
-        elseif a:mode =~ 'n\|v\|o'
-          call cursor(lnum2,cnum2)
-          if strlen(close_pat)>1 && a:mode =~ 'o'
-            call cursor(lnum2, matchend(getline('.'), '\C'
-                  \ . close_pat, col('.')-1))
-          endif
-        endif
-        break
+        call searchpairpos(open_pat, '', close_pat,
+              \ 'W', 'latex#util#in_comment()', 0, 200)
+        call search(close_pat, 'ce')
+        return
       elseif delim =~# '^' . close_pat
-        " if on closing pattern, search for opening pattern
-        let [lnum2, cnum2] =  searchpairpos('\C' . open_pat, '',
-              \ '\C\%(\%'. lnum . 'l\%' . cnum . 'c\)\@!'
-              \ . close_pat, 'bnW', 'latex#util#in_comment()',
-              \ line('w0')*(a:mode =~ 'h\|i'), 200)
-        if a:mode =~ 'h\|i'
-          execute '2match MatchParen /\%(\%' . lnum2 . 'l\%' . cnum2
-                \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
-                \ . lnum . 'l\%' . cnum . 'c'
-                \ . g:latex_motion_close_pats[i] . '\)/'
-        elseif a:mode =~ 'n\|v\|o'
-          call cursor(lnum2,cnum2)
-        endif
-        break
+        call searchpairpos(open_pat, '', not_cursor . close_pat,
+              \ 'bW', 'latex#util#in_comment()', 0, 200)
+        return
       endif
     endfor
   endif
@@ -268,6 +221,78 @@ function! latex#motion#select_inline_math(seltype)
 
   if a:seltype == 'inner'
     normal! h
+  endif
+endfunction
+" }}}1
+
+" {{{1 s:highlight_matching_pair
+function! s:highlight_matching_pair(...)
+  if latex#util#in_comment() | return | endif
+  let hmode = a:0 > 0 ? 1 : 0
+
+  2match none
+
+  " Save position
+  let nl = line('.')
+  let nc = col('.')
+  let line = getline(nl)
+
+  " Combine all open/close pats
+  let all_pats = join(g:latex_motion_open_pats+g:latex_motion_close_pats, '\|')
+  let all_pats = '\C\(' . all_pats . '\|\$\)'
+
+  " Find delimiter under cursor
+  let cnum = searchpos(all_pats, 'cbnW', nl)[1]
+  let delim = matchstr(line, '^'. all_pats, cnum-1)
+
+  " Only highlight when cursor is on delimiters
+  if empty(delim) || strlen(delim)+cnum-hmode < nc
+    return
+  endif
+
+  if delim =~ '^\$'
+    "
+    " Match inline math
+    "
+    let [lnum0, cnum0] = searchpos('.', 'nW')
+    if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
+      let [lnum2, cnum2] = searchpos(b:notcomment . b:notbslash . '\$',
+            \ 'nW', line('w$'), 200)
+    else
+      let [lnum2, cnum2] = searchpos('\%(\%'. nl . 'l\%'
+            \ . cnum . 'c\)\@!'. b:notcomment . b:notbslash . '\$',
+            \ 'bnW', line('w0'), 200)
+    endif
+
+    execute '2match MatchParen /\%(\%' . nl . 'l\%'
+          \ . cnum . 'c\$' . '\|\%' . lnum2 . 'l\%' . cnum2 . 'c\$\)/'
+  else
+    "
+    " Match other delimitors
+    "
+    for i in range(len(g:latex_motion_open_pats))
+      let open_pat  = '\C' . b:notbslash . g:latex_motion_open_pats[i]
+      let close_pat = '\C' . b:notbslash . g:latex_motion_close_pats[i]
+
+      if delim =~# '^' . open_pat
+        let [lnum2, cnum2] = searchpairpos(open_pat, '', close_pat,
+              \ 'nW', 'latex#util#in_comment()', line('w$'), 200)
+        execute '2match MatchParen /\%(\%' . nl . 'l\%' . cnum
+              \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
+              \ . lnum2 . 'l\%' . cnum2 . 'c'
+              \ . g:latex_motion_close_pats[i] . '\)/'
+        return
+      elseif delim =~# '^' . close_pat
+        let [lnum2, cnum2] =  searchpairpos(open_pat, '',
+              \ '\C\%(\%'. nl . 'l\%' . cnum . 'c\)\@!' . close_pat,
+              \ 'bnW', 'latex#util#in_comment()', line('w0'), 200)
+        execute '2match MatchParen /\%(\%' . lnum2 . 'l\%' . cnum2
+              \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
+              \ . nl . 'l\%' . cnum . 'c'
+              \ . g:latex_motion_close_pats[i] . '\)/'
+        return
+      endif
+    endfor
   endif
 endfunction
 " }}}1
