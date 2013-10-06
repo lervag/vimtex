@@ -175,8 +175,9 @@ n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 
 n  zx               *@:call latex#fold#refresh()<cr>zx
-n  <F6>             *@:call latex#change#environment_toggle_star()<cr>
-n  <F5>             *@:call latex#change#environment_prompt()<cr>
+n  dse              *@:call latex#change#env('')<cr>
+n  cse              *@:call latex#change#env_prompt()<cr>
+n  tse              *@:call latex#change#env_toggle_star()<cr>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -567,9 +568,9 @@ Functions:
 MOTION                                                      *vim-latex-motion*
 
 |vim-latex| provides some functions that can be used to give improved motions
-and text objects.  |latex#motion#find_matching_pair| is also used to enable
-highlighting of matching parens or tags (such as begin/end structures).  The
-functionality is enabled by default, but may be disabled if desired.
+and text objects.  For instance, |vim-latex-motion| enables highlighting of
+matching parens or tags (such as begin/end structures).  The functionality is
+enabled by default, but may be disabled if desired.
 
 Associated settings:
     |g:latex_motion_enabled|
