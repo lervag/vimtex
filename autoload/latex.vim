@@ -64,18 +64,18 @@ function! latex#reinit()
   call latex#latexmk#stop_all()
 
   "
-  " Reset variables
+  " Reset global variables
   "
   let s:initialized = 0
   unlet g:latex#data
-  bufdo unlet b:notbslash
-  bufdo unlet b:notcomment
-  bufdo unlet b:latex
 
   "
-  " Reinitialize
+  " Reset and reinitialize buffers
   "
-  bufdo call latex#init()
+  bufdo   if getbufvar('%', '&filetype') == 'tex' |
+        \   unlet b:notbslash b:notcomment b:latex |
+        \   call latex#init() |
+        \ endif
 endfunction
 
 " {{{1 latex#view
