@@ -19,8 +19,8 @@ function! latex#fold#init(initialized)
     if !a:initialized
       augroup latex_fold
         autocmd!
-        autocmd InsertEnter *.tex setlocal foldmethod=manual
-        autocmd InsertLeave *.tex setlocal foldmethod=expr
+        autocmd InsertEnter *.tex call s:fdm_save()
+        autocmd InsertLeave *.tex call s:fdm_restore()
       augroup END
     endif
   endif
@@ -162,6 +162,18 @@ function! latex#fold#text()
   return printf('%-3s %-68S #%5d', level, title, nlines)
 endfunction
 " }}}1
+
+" {{{1 s:fdm_restore
+function! s:fdm_restore()
+  silent execute 'setlocal foldmethod=' . s:fdm
+endfunction
+
+" {{{1 s:fdm_save
+let s:fdm=''
+function! s:fdm_save()
+  let s:fdm = &foldmethod
+  setlocal foldmethod=manual
+endfunction
 
 " {{{1 s:find_fold_sections
 function! s:find_fold_sections()
