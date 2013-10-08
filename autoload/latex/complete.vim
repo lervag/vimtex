@@ -190,30 +190,30 @@ function! s:bibtex_find_bibs(...)
 
   "
   " Search for added bibliographies
+  " * Parse commands such as \bibliography{file1,file2.bib,...}
+  " * This also removes the .bib extensions
   "
-  let bibliography_cmds = [
-        \ '\\bibliography',
-        \ '\\addbibresource',
-        \ '\\addglobalbib',
-        \ '\\addsectionbib',
-        \ ]
-  for cmd in bibliography_cmds
-    let filter = 'v:val =~ ''\C' . cmd . '\s*{[^}]\+}'''
-    let map = 'matchstr(v:val, ''\C' . cmd . '\s*{\zs[^}]\+\ze}'')'
-    let bibdata_list += map(filter(copy(lines), filter), map)
+  let bibsearch  = '''\v\C\\'
+  let bibsearch .= '(bibliography|add(bibresource|globalbib|sectionbib))'
+  let bibsearch .= '\m\s*{\zs[^}]\+\ze}'''
+  for entry in map(filter(copy(lines),
+          \ 'v:val =~ ' . bibsearch),
+        \ 'matchstr(v:val, ' . bibsearch . ')')
+    let bibdata_list += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
   "
-  " Also search included files
+  " Recursively search included files
   "
-  for input in filter(lines, 'v:val =~ ''\C\\\%(input\|include\)\s*{[^}]\+}''')
-    let bibdata_list += s:bibtex_find_bibs(latex#util#kpsewhich(
-          \ matchstr(input, '\C\\\%(input\|include\)\s*{\zs[^}]\+\ze}')))
+  let incsearch  = '''\C\\'
+  let incsearch .= '\%(input\|include\)'
+  let incsearch .= '\s*{\zs[^}]\+\ze}'''
+  for entry in map(filter(lines,
+          \ 'v:val =~ ' . incsearch),
+        \ 'matchstr(v:val, ' . incsearch . ')')
+    let bibdata_list += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
   endfor
 
-  "
-  " Make all entries full paths
-  "
   return bibdata_list
 endfunction
 
