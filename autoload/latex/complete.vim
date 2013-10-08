@@ -83,10 +83,16 @@ endfunction
 function! latex#complete#bibtex(regexp)
   let res = []
 
+  let s:type_length = 4
   for m in s:bibtex_search(a:regexp)
     let type = m['type']   == '' ? '[-]' : '[' . m['type']   . '] '
     let auth = m['author'] == '' ? ''    :       m['author'][:20] . ' '
     let year = m['year']   == '' ? ''    : '(' . m['year']   . ')'
+
+    " Align the type entry and fix minor annoyance in author list
+    let type = printf('%-' . s:type_length . 's', type)
+    let auth = substitute(auth, '\~', ' ', 'g')
+
     let w = {
           \ 'word': m['key'],
           \ 'abbr': type . auth . year,
@@ -107,6 +113,7 @@ endfunction
 
 " {{{1 s:bibtex_search
 let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
+let s:type_length = 0
 function! s:bibtex_search(regexp)
   let res = []
 
@@ -140,6 +147,7 @@ function! s:bibtex_search(regexp)
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
+        let s:type_length = max([s:type_length, len(matches[2]) + 3])
         call add(res, {
               \ 'key':    matches[1],
               \ 'type':   matches[2],
