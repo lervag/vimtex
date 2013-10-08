@@ -7,6 +7,18 @@ function! latex#change#init(initialized)
   endif
 endfunction
 
+" {{{1 latex#change#delim
+function! latex#change#delim(open, close)
+  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim(1)
+
+  let line = getline(l1)
+  let line = strpart(line, 0, c1 - 1) . a:open  . strpart(line, c1 + len(d1))
+  call setline(l1, line)
+  let line = getline(l2)
+  let line = strpart(line, 0, c2 - 1) . a:close . strpart(line, c2 + len(d2))
+  call setline(l2, line)
+endfunction
+
 " {{{1 latex#change#env
 function! latex#change#env(new_env)
   let [env, l1, c1, l2, c2] = latex#util#get_env(1)
