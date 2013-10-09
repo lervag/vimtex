@@ -5,10 +5,8 @@ function! latex#change#init(initialized)
 
     nnoremap <silent><buffer> cse :call latex#change#env_prompt()<cr>
 
-    nnoremap <silent><buffer> tse :call latex#change#env_toggle_star()<cr>
-
-    nnoremap <silent><buffer> tsl :call latex#change#delim_toggle()<cr>
-    nnoremap <silent><buffer> tsr :call latex#change#delim_toggle()<cr>
+    nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
+    nnoremap <silent><buffer> tsd :call latex#change#toggle_delim()<cr>
   endif
 endfunction
 
@@ -21,40 +19,6 @@ function! latex#change#delim(open, close)
   call setline(l1, line)
   let line = getline(l2)
   let line = strpart(line, 0, c2 - 1) . a:close . strpart(line, c2 + len(d2))
-  call setline(l2, line)
-endfunction
-
-" {{{1 latex#change#delim_toggle
-function! latex#change#delim_toggle()
-  "
-  " Toggle \left and \right variants of delimiters
-  "
-  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
-
-  if d1 =~ 'left'
-    let newd1 = substitute(d1, '\\left', '', '')
-    let newd2 = substitute(d2, '\\right', '', '')
-  elseif d1 !~ '\cbigg\?'
-    let newd1 = '\left' . d1
-    let newd2 = '\right' . d2
-  else
-    return
-  endif
-
-  let line = getline(l1)
-  let line = strpart(line, 0, c1 - 1) . newd1 . strpart(line, c1 + len(d1) - 1)
-  call setline(l1, line)
-
-  if l1 == l2
-    let n = len(newd1) - len(d1)
-    let c2 += n
-    let pos = getpos('.')
-    let pos[2] += n
-    call setpos('.', pos)
-  endif
-
-  let line = getline(l2)
-  let line = strpart(line, 0, c2 - 1) . newd2 . strpart(line, c2 + len(d2) - 1)
   call setline(l2, line)
 endfunction
 
@@ -102,8 +66,42 @@ function! latex#change#env_prompt()
   endif
 endfunction
 
-" {{{1 latex#change#env_toggle_star
-function! latex#change#env_toggle_star()
+" {{{1 latex#change#toggle_delim
+function! latex#change#toggle_delim()
+  "
+  " Toggle \left and \right variants of delimiters
+  "
+  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
+
+  if d1 =~ 'left'
+    let newd1 = substitute(d1, '\\left', '', '')
+    let newd2 = substitute(d2, '\\right', '', '')
+  elseif d1 !~ '\cbigg\?'
+    let newd1 = '\left' . d1
+    let newd2 = '\right' . d2
+  else
+    return
+  endif
+
+  let line = getline(l1)
+  let line = strpart(line, 0, c1 - 1) . newd1 . strpart(line, c1 + len(d1) - 1)
+  call setline(l1, line)
+
+  if l1 == l2
+    let n = len(newd1) - len(d1)
+    let c2 += n
+    let pos = getpos('.')
+    let pos[2] += n
+    call setpos('.', pos)
+  endif
+
+  let line = getline(l2)
+  let line = strpart(line, 0, c2 - 1) . newd2 . strpart(line, c2 + len(d2) - 1)
+  call setline(l2, line)
+endfunction
+
+" {{{1 latex#change#toggle_env_star
+function! latex#change#toggle_env_star()
   let env = latex#util#get_env()
 
   if env == '\('
@@ -154,32 +152,6 @@ function! latex#change#wrap_selection_prompt(...)
   exe "setlocal indentexpr=" . ieOld
 endfunction
 " }}}1
-
-" Work in progress
-" {{{1 latex#change#surround
-function! latex#change#surround()
-  let pos = getpos('.')
-
-  let a = getchar()
-  if a =~ '^\d\+$'
-    let a = nr2char(a)
-  endif
-
-  if a == "e"
-    call latex#change#env_prompt()
-  elseif a == "
-    echo "Not implemented"
-   "let b = getchar()
-   "if b =~ '^\d\+$'
-   "  let b = nr2char(b)
-   "endif
-   "
-   "echo 'a=' . a . ' b=' . b
-  endif
-
-  call setpos('.', pos)
-endfunction
-"}}}1
 
 " {{{1 s:sidwrap
 let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')

@@ -142,27 +142,7 @@ function! latex#util#get_env(...)
 endfunction
 
 " {{{1 latex#util#get_delim
-let s:latex_delim_open = [
-        \ '(',
-        \ '\[',
-        \ '\\{',
-        \ '\\\[',
-        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ]
-let s:latex_delim_close = [
-        \ ')',
-        \ '\]',
-        \ '\\}',
-        \ '\\\]',
-        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ]
 function! latex#util#get_delim()
-  "
-  " Note: This functions has not been optimized
-  "
-
   " Save position in order to restore before finishing
   let pos_original = getpos('.')
 
@@ -170,7 +150,7 @@ function! latex#util#get_delim()
   let pos_save = getpos('.')
 
   " Check if the cursor is on top of a closing delimiter
-  let close_pats = '\(' . join(s:latex_delim_close, '\|') . '\)'
+  let close_pats = '\(' . join(s:delimiters_close, '\|') . '\)'
   let lnum = pos_save[1]
   let cnum = pos_save[2]
   let [lnum, cnum] = searchpos(close_pats, 'cbnW', lnum)
@@ -187,10 +167,10 @@ function! latex#util#get_delim()
   let l2=1000000
   let c1=1000000
   let c2=1000000
-  for i in range(len(s:latex_delim_open))
+  for i in range(len(s:delimiters_open))
     call setpos('.', pos_save)
-    let open  = s:latex_delim_open[i]
-    let close = s:latex_delim_close[i]
+    let open  = s:delimiters_open[i]
+    let close = s:delimiters_close[i]
     let flags = 'W'
 
     " Check if the cursor is on top of an opening delimiter.  If it is not,
@@ -220,6 +200,21 @@ function! latex#util#get_delim()
   call setpos('.', pos_original)
   return [d1,l1,c1,d2,l2,c2]
 endfunction
+
+let s:delimiters_open = [
+      \ '(',
+      \ '\[',
+      \ '\\{',
+      \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+      \ '\\\cbigg\?\((\|\[\|\\{\)',
+      \ ]
+let s:delimiters_close = [
+      \ ')',
+      \ '\]',
+      \ '\\}',
+      \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
+      \ '\\\cbigg\?\()\|\]\|\\}\)',
+      \ ]
 
 " {{{1 latex#util#has_syntax
 function! latex#util#has_syntax(name, ...)

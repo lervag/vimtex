@@ -21,15 +21,20 @@ function! latex#motion#init(initialized)
     onoremap <silent><buffer> [] :normal v[]<cr>
     onoremap <silent><buffer> [[ :normal v[[<cr>
 
-    vnoremap <silent><buffer> ie :latex#motion#select_current_env('inner')<cr>
-    vnoremap <silent><buffer> ae :latex#motion#select_current_env('outer')<cr>
+    vnoremap <silent><buffer> ie :call latex#motion#select_environment(1)<cr>
+    vnoremap <silent><buffer> ae :call latex#motion#select_environment()<cr>
     onoremap <silent><buffer> ie :normal vie<cr>
     onoremap <silent><buffer> ae :normal vae<cr>
 
-    vnoremap <silent><buffer> i$ :latex#motion#select_inline_math('inner')<cr>
-    vnoremap <silent><buffer> a$ :latex#motion#select_inline_math('outer')<cr>
+    vnoremap <silent><buffer> i$ :call latex#motion#select_inline_math(1)<cr>
+    vnoremap <silent><buffer> a$ :call latex#motion#select_inline_math()<cr>
     onoremap <silent><buffer> i$ :normal vi$<cr>
     onoremap <silent><buffer> a$ :normal va$<cr>
+
+    vnoremap <silent><buffer> id :<c-u>call latex#motion#select_delimiter(1)<cr>
+    vnoremap <silent><buffer> ad :<c-u>call latex#motion#select_delimiter()<cr>
+    onoremap <silent><buffer> id :normal vi(<cr>
+    onoremap <silent><buffer> ad :normal va(<cr>
   endif
 
   "
@@ -55,9 +60,6 @@ endfunction
 
 " {{{1 latex#motion#find_matching_pair
 function! latex#motion#find_matching_pair(...)
-  "
-  " Note: This code is ugly, but it seems to work.
-  "
   if a:0 > 0
     normal! gv
   endif
@@ -68,18 +70,14 @@ function! latex#motion#find_matching_pair(...)
   let nl = line('.')
   let nc = col('.')
 
-  " Combine all open/close pats
-  let all_pats = join(g:latex_motion_open_pats+g:latex_motion_close_pats, '\|')
-  let all_pats = '\C\(' . all_pats . '\|\$\)'
-
   " Find delimiter under cursor
-  let [lnum, cnum] = searchpos(all_pats, 'cbnW', nl-2)
-  let delim = matchstr(getline(lnum), '^'. all_pats, cnum-1)
+  let [lnum, cnum] = searchpos(s:delimiters, 'cbnW', nl-2)
+  let delim = matchstr(getline(lnum), '^' . s:delimiters, cnum-1)
 
   " If delimiter not found, try to search forward instead
   if empty(delim)
-    let [lnum, cnum] = searchpos(all_pats, 'cnW', nl+2)
-    let delim = matchstr(getline(lnum), '^'. all_pats, cnum-1)
+    let [lnum, cnum] = searchpos(s:delimiters, 'cnW', nl+2)
+    let delim = matchstr(getline(lnum), '^'. s:delimiters, cnum-1)
     if empty(delim)
       return
     endif
@@ -100,9 +98,9 @@ function! latex#motion#find_matching_pair(...)
 
     call cursor(lnum2,cnum2)
   else
-    for i in range(len(g:latex_motion_open_pats))
-      let open_pat  = '\C' . b:notbslash . g:latex_motion_open_pats[i]
-      let close_pat = '\C' . b:notbslash . g:latex_motion_close_pats[i]
+    for i in range(len(s:delimiters))
+      let open_pat  = '\C' . b:notbslash . s:delimiters_open[i]
+      let close_pat = '\C' . b:notbslash . s:delimiters_close[i]
 
       if delim =~# '^' . open_pat
         call searchpairpos(open_pat, '', close_pat,
@@ -135,25 +133,13 @@ function! latex#motion#next_sec(type, backwards, visual)
   endif
 
   " Define search pattern and do the search while preserving "/
-  let save_search = @/
   let flags = 'W'
   if a:backwards
     let flags = 'b' . flags
   endif
 
-  " Define section pattern
-  let sec_pat = join([
-          \ '(sub)*section',
-          \ 'chapter',
-          \ 'part',
-          \ 'appendix',
-          \ '(front|back|main)matter',
-          \ ], '|')
-  let sec_pat = b:notcomment . '\v\s*\\(' . sec_pat . ')>'
-
   " Perform the search
-  call search(sec_pat, flags)
-  let @/ = save_search
+  call search(s:section, flags)
 
   " For the [] and ][ commands we move down or up after the search
   if a:type == 1
@@ -165,11 +151,48 @@ function! latex#motion#next_sec(type, backwards, visual)
   endif
 endfunction
 
-" {{{1 latex#motion#select_current_env
-function! latex#motion#select_current_env(seltype)
+" {{{1 latex#motion#select_delimiter
+function! latex#motion#select_delimiter(...)
+  let inner = a:0 > 0
+
+  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
+
+  if inner
+    let c1 += len(d1)
+    if c1 != len(getline(l1))
+      let l1 += 1
+      let c1 = 1
+    endif
+  endif
+
+  if inner
+    let c2 -= 1
+    if c2 < 1
+      let l2 -= 1
+      let c2 = len(getline(l2))
+    endif
+  else
+    let c2 += len(d2) - 1
+  endif
+
+  if l1 < l2 || (l1 == l2 && c1 < c2)
+    call cursor(l1,c1)
+    if visualmode() ==# 'V'
+      normal! V
+    else
+      normal! v
+    endif
+    call cursor(l2,c2)
+  endif
+endfunction
+
+" {{{1 latex#motion#select_environment
+function! latex#motion#select_environment(...)
+  let inner = a:0 > 0
+
   let [env, lnum, cnum, lnum2, cnum2] = latex#util#get_env(1)
   call cursor(lnum, cnum)
-  if a:seltype == 'inner'
+  if inner
     if env =~ '^\'
       call search('\\.\_\s*\S', 'eW')
     else
@@ -182,7 +205,7 @@ function! latex#motion#select_current_env(seltype)
     normal! v
   endif
   call cursor(lnum2, cnum2)
-  if a:seltype == 'inner'
+  if inner
     call search('\S\_\s*', 'bW')
   else
     if env =~ '^\'
@@ -194,8 +217,8 @@ function! latex#motion#select_current_env(seltype)
 endfunction
 
 " {{{1 latex#motion#select_inline_math
-function! latex#motion#select_inline_math(seltype)
-  " seltype is either 'inner' or 'outer'
+function! latex#motion#select_inline_math(...)
+  let inner = a:0 > 0
 
   let dollar_pat = '\\\@<!\$'
 
@@ -207,7 +230,7 @@ function! latex#motion#select_inline_math(seltype)
     return
   endif
 
-  if a:seltype == 'inner'
+  if inner
     normal! l
   endif
 
@@ -219,10 +242,45 @@ function! latex#motion#select_inline_math(seltype)
 
   call s:search_and_skip_comments(dollar_pat, 'W')
 
-  if a:seltype == 'inner'
+  if inner
     normal! h
   endif
 endfunction
+" }}}1
+
+" {{{1 Common patterns
+
+" Patterns to match opening and closing delimiters/environments
+let s:delimiters_open = [
+        \ '{',
+        \ '(',
+        \ '\[',
+        \ '\\{',
+        \ '\\(',
+        \ '\\\[',
+        \ '\\\Cbegin\s*{.\{-}}',
+        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
+      \ ]
+let s:delimiters_close = [
+        \ '}',
+        \ ')',
+        \ '\]',
+        \ '\\}',
+        \ '\\)',
+        \ '\\\]',
+        \ '\\\Cend\s*{.\{-}}',
+        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\()\|\]\|\\}\)',
+      \ ]
+let s:delimiters = join(s:delimiters_open + s:delimiters_close, '\|')
+let s:delimiters = '\(' . s:delimiters . '\|\$\)'
+
+" Pattern to match section/chapter/...
+let s:section = b:notcomment . '\v\s*\\'
+let s:section.= '((sub)*section|chapter|part|appendix|(front|back|main)matter)'
+let s:section.= '>'
+
 " }}}1
 
 " {{{1 s:highlight_matching_pair
@@ -237,13 +295,9 @@ function! s:highlight_matching_pair(...)
   let nc = col('.')
   let line = getline(nl)
 
-  " Combine all open/close pats
-  let all_pats = join(g:latex_motion_open_pats+g:latex_motion_close_pats, '\|')
-  let all_pats = '\C\(' . all_pats . '\|\$\)'
-
   " Find delimiter under cursor
-  let cnum = searchpos(all_pats, 'cbnW', nl)[1]
-  let delim = matchstr(line, '^'. all_pats, cnum-1)
+  let cnum = searchpos(s:delimiters, 'cbnW', nl)[1]
+  let delim = matchstr(line, '^'. s:delimiters, cnum-1)
 
   " Only highlight when cursor is on delimiters
   if empty(delim) || strlen(delim)+cnum-hmode < nc
@@ -270,26 +324,26 @@ function! s:highlight_matching_pair(...)
     "
     " Match other delimitors
     "
-    for i in range(len(g:latex_motion_open_pats))
-      let open_pat  = '\C' . b:notbslash . g:latex_motion_open_pats[i]
-      let close_pat = '\C' . b:notbslash . g:latex_motion_close_pats[i]
+    for i in range(len(s:delimiters_open))
+      let open_pat  = '\C' . b:notbslash . s:delimiters_open[i]
+      let close_pat = '\C' . b:notbslash . s:delimiters_close[i]
 
       if delim =~# '^' . open_pat
         let [lnum2, cnum2] = searchpairpos(open_pat, '', close_pat,
               \ 'nW', 'latex#util#in_comment()', line('w$'), 200)
         execute '2match MatchParen /\%(\%' . nl . 'l\%' . cnum
-              \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
+              \ . 'c' . s:delimiters_open[i] . '\|\%'
               \ . lnum2 . 'l\%' . cnum2 . 'c'
-              \ . g:latex_motion_close_pats[i] . '\)/'
+              \ . s:delimiters_close[i] . '\)/'
         return
       elseif delim =~# '^' . close_pat
         let [lnum2, cnum2] =  searchpairpos(open_pat, '',
               \ '\C\%(\%'. nl . 'l\%' . cnum . 'c\)\@!' . close_pat,
               \ 'bnW', 'latex#util#in_comment()', line('w0'), 200)
         execute '2match MatchParen /\%(\%' . lnum2 . 'l\%' . cnum2
-              \ . 'c' . g:latex_motion_open_pats[i] . '\|\%'
+              \ . 'c' . s:delimiters_open[i] . '\|\%'
               \ . nl . 'l\%' . cnum . 'c'
-              \ . g:latex_motion_close_pats[i] . '\)/'
+              \ . s:delimiters_close[i] . '\)/'
         return
       endif
     endfor

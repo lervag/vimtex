@@ -33,9 +33,11 @@ CONTENTS                                                  *vim-latex-contents*
     6. Folding .............................. |vim-latex-folding|
     7. Latexmk .............................. |vim-latex-latexmk|
     8. Motion ............................... |vim-latex-motion|
-    9. Table of contents .................... |vim-latex-toc|
-   10. Function reference ................... |vim-latex-functions|
-   11. Limitations .......................... |vim-latex-limitations|
+    9. Change ............................... |vim-latex-change|
+   10. Table of contents .................... |vim-latex-toc|
+   11. Utility functions .................... |vim-latex-util|
+   12. Function reference ................... |vim-latex-functions|
+   13. Limitations .......................... |vim-latex-limitations|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -132,32 +134,37 @@ convenience to list all the defined mappings, and it is by default mapped to
 '<localleader>lh'.  The default mappings may be disabled with the option
 |g:latex_default_mappings|, if the user wishes to create his own mappings.
 
-n  %                *@:call latex#motion#find_matching_pair('n')<cr>
-v  %                *@:<C-U>call latex#motion#find_matching_pair('v')<cr>
-o  %                *@:call latex#motion#find_matching_pair('o')<cr>
+n  %                *@:call latex#motion#find_matching_pair()<CR>
+v  %                *@:<C-U>call latex#motion#find_matching_pair(1)<CR>
+o  %                *@:normal v%<CR>
 
-v  a$               *@:latex#motion#select_inline_math('outer')<cr>
-v  i$               *@:latex#motion#select_inline_math('inner')<cr>
-o  a$               *@:normal va$<cr>
-o  i$               *@:normal vi$<cr>
+v  a$               *@:call latex#motion#select_inline_math()<CR>
+v  i$               *@:call latex#motion#select_inline_math(1)<CR>
+o  a$               *@:normal va$<CR>
+o  i$               *@:normal vi$<CR>
 
-v  ae               *@:latex#motion#select_current_env('outer')<cr>
-v  ie               *@:latex#motion#select_current_env('inner')<cr>
-o  ae               *@:normal vae<cr>
-o  ie               *@:normal vie<cr>
+v  ae               *@:call latex#motion#select_environment()<CR>
+v  ie               *@:call latex#motion#select_environment(1)<CR>
+o  ae               *@:normal vae<CR>
+o  ie               *@:normal vie<CR>
 
-n  [[               *@:call latex#motion#next_sec(0,1,0)<cr>
-n  []               *@:call latex#motion#next_sec(1,1,0)<cr>
-n  ][               *@:call latex#motion#next_sec(1,0,0)<cr>
-n  ]]               *@:call latex#motion#next_sec(0,0,0)<cr>
-v  [[               *@:<C-U>call latex#motion#next_sec(0,1,1)<cr>
-v  []               *@:<C-U>call latex#motion#next_sec(1,1,1)<cr>
-v  ][               *@:<C-U>call latex#motion#next_sec(1,0,1)<cr>
-v  ]]               *@:<C-U>call latex#motion#next_sec(0,0,1)<cr>
-o  [[               *@:normal v[[<cr>
-o  []               *@:normal v[]<cr>
-o  ][               *@:normal v][<cr>
-o  ]]               *@:normal v]]<cr>
+v  ad               *@:<C-U>call latex#motion#select_delimiter()<CR>
+v  id               *@:<C-U>call latex#motion#select_delimiter(1)<CR>
+o  ad               *@:normal va(<CR>
+o  id               *@:normal vi(<CR>
+
+n  [[               *@:call latex#motion#next_sec(0,1,0)<CR>
+n  []               *@:call latex#motion#next_sec(1,1,0)<CR>
+n  ][               *@:call latex#motion#next_sec(1,0,0)<CR>
+n  ]]               *@:call latex#motion#next_sec(0,0,0)<CR>
+v  [[               *@:<C-U>call latex#motion#next_sec(0,1,1)<CR>
+v  []               *@:<C-U>call latex#motion#next_sec(1,1,1)<CR>
+v  ][               *@:<C-U>call latex#motion#next_sec(1,0,1)<CR>
+v  ]]               *@:<C-U>call latex#motion#next_sec(0,0,1)<CR>
+o  [[               *@:normal v[[<CR>
+o  []               *@:normal v[]<CR>
+o  ][               *@:normal v][<CR>
+o  ]]               *@:normal v]]<CR>
 
 n  <localleader>li  *@:call latex#info()<cr>
 n  <localleader>lh  *@:call latex#help()<cr>
@@ -174,10 +181,27 @@ n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 
+n  <localleader>li  *@:call latex#info()<CR>
+n  <localleader>lh  *@:call latex#help()<CR>
+n  <localleader>lv  *@:call latex#view()<CR>
+n  <localleader>lR  *@:call latex#reinit()<CR>
+n  <localleader>lt  *@:call latex#toc#open()<CR>
+n  <localleader>lT  *@:call latex#toc#toggle()<CR>
+n  <localleader>ll  *@:call latex#latexmk#compile()<CR>
+n  <localleader>lk  *@:call latex#latexmk#stop(1)<CR>
+n  <localleader>lK  *@:call latex#latexmk#stop_all()<CR>
+n  <localleader>le  *@:call latex#latexmk#errors()<CR>
+n  <localleader>lg  *@:call latex#latexmk#status()<CR>
+n  <localleader>lG  *@:call latex#latexmk#status(1)<CR>
+n  <localleader>lc  *@:call latex#latexmk#clean()<CR>
+n  <localleader>lC  *@:call latex#latexmk#clean(1)<CR>
+
 n  zx               *@:call latex#fold#refresh()<cr>zx
-n  dse              *@:call latex#change#env('')<cr>
-n  cse              *@:call latex#change#env_prompt()<cr>
+n  dse              *@:call latex#change#env('')<CR>
+n  cse              *@:call latex#change#env_prompt()<CR>
+n  tse              *@:call latex#change#env_toggle_star()<CR>
 n  tse              *@:call latex#change#env_toggle_star()<cr>
+n  tsd              *@:call latex#change#delim_toggle()<CR>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -206,10 +230,8 @@ Overview:~
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
   |g:latex_main_tex_candidates|
-  |g:latex_motion_close_pats|
   |g:latex_motion_enabled|
   |g:latex_motion_matchparen|
-  |g:latex_motion_open_pats|
   |g:latex_toc_enabled|
   |g:latex_toc_fold_levels|
   |g:latex_toc_fold|
@@ -345,20 +367,6 @@ main tex file in multi-file projects. >
       \]
 <
 
-                                                   *g:latex_motion_close_pats*
-Define a list of patterns that match closing braces and environments. >
-  let g:latex_motion_close_pats = [
-        \ '}',
-        \ ')',
-        \ '\]',
-        \ '\\}',
-        \ '\\)',
-        \ '\\\]',
-        \ '\\end\s*{.\{-}}',
-        \ '\\right\s*\%([^\\]\|\\.\|\\\a*\)',
-      \ ]
-<
-
                                                       *g:latex_motion_enabled*
 Whether to enable the motion interface.  If it is disabled, then neither the
 default mappings nor the autocommands that enable highlighting of matching
@@ -370,20 +378,6 @@ parens will be defined. >
 Enable highlighting of matching parens.  This gives better support for LaTeX,
 but disables the builtin |matchparen|. >
   let g:latex_motion_matchparen = 1
-<
-
-                                                    *g:latex_motion_open_pats*
-Define a list of patterns that match opening braces and environments. >
-  let g:latex_motion_open_pats = [
-        \ '{',
-        \ '(',
-        \ '\[',
-        \ '\\{',
-        \ '\\(',
-        \ '\\\[',
-        \ '\\begin\s*{.\{-}}',
-        \ '\\left\s*\%([^\\]\|\\.\|\\\a*\)',
-      \ ]
 <
 
                                                          *g:latex_toc_enabled*
@@ -585,6 +579,34 @@ Functions:
     |latex#motion#select_inline_math|
 
 ==============================================================================
+CHANGE                                                      *vim-latex-change*
+
+Utility functions are provided to manipulate the current environments or
+delimiters.
+
+Functions:
+    |latex#change#env|
+    |latex#change#env_prompt|
+    |latex#change#toggle_delim|
+    |latex#change#toggle_env_star|
+    |latex#change#wrap_selection|
+    |latex#change#wrap_selection_prompt|
+
+==============================================================================
+UTILITY FUNCTIONS                                             *vim-latex-util*
+
+Functions:
+    |latex#util#convert_back|
+    |latex#util#get_delim|
+    |latex#util#get_env|
+    |latex#util#has_syntax|
+    |latex#util#in_comment|
+    |latex#util#kpsewhich|
+    |latex#util#set_default|
+    |latex#util#tex2tree|
+    |latex#util#tree2tex|
+
+==============================================================================
 TABLE OF CONTENTS                                              *vim-latex-toc*
 
 |vim-latex| provides a table of contents (TOC) window that can be opened
@@ -613,6 +635,12 @@ descriptions follow.
 
 Overview:~
 
+  |latex#change#env|
+  |latex#change#env_prompt|
+  |latex#change#toggle_delim|
+  |latex#change#toggle_env_star|
+  |latex#change#wrap_selection|
+  |latex#change#wrap_selection_prompt|
   |latex#complete#omnifunc|
   |latex#complete#labels|
   |latex#complete#bibtex|
@@ -634,10 +662,31 @@ Overview:~
   |latex#reinit|
   |latex#toc#open|
   |latex#toc#toggle|
+  |latex#util#convert_back|
+  |latex#util#get_delim|
+  |latex#util#get_env|
+  |latex#util#has_syntax|
+  |latex#util#in_comment|
+  |latex#util#kpsewhich|
+  |latex#util#set_default|
+  |latex#util#tex2tree|
+  |latex#util#tree2tex|
   |latex#view|
 
 ------------------------------------------------------------------------------
 Detailed descriptions:~
+
+                                                             *latex#change#env*
+
+                                                      *latex#change#env_prompt*
+
+                                                    *latex#change#toggle_delim*
+
+                                                 *latex#change#toggle_env_star*
+
+                                                  *latex#change#wrap_selection*
+
+                                           *latex#change#wrap_selection_prompt*
 
                                                      *latex#complete#omnifunc*
 An 'omnifunc' for label and citation completion, see |vim-latex-completion|.
@@ -716,6 +765,24 @@ the TOC window.
                                                             *latex#toc#toggle*
 Toggle TOC window: If TOC window is open, then close it.  If it is closed,
 then open it (but do not move the cursor to the window).
+
+                                                      *latex#util#convert_back*
+
+                                                         *latex#util#get_delim*
+
+                                                           *latex#util#get_env*
+
+                                                        *latex#util#has_syntax*
+
+                                                        *latex#util#in_comment*
+
+                                                         *latex#util#kpsewhich*
+
+                                                       *latex#util#set_default*
+
+                                                          *latex#util#tex2tree*
+
+                                                          *latex#util#tree2tex*
 
                                                                   *latex#view*
 Open the output file (specified with |g:latex_latexmk_output|) with the

@@ -71,30 +71,6 @@ call latex#util#set_default('g:latex_errorformat_ignore_warnings',
 " {{{1 Motion
 call latex#util#set_default('g:latex_motion_enabled', 1)
 call latex#util#set_default('g:latex_motion_matchparen', 1)
-call latex#util#set_default('g:latex_motion_open_pats',
-      \ [
-        \ '{',
-        \ '(',
-        \ '\[',
-        \ '\\{',
-        \ '\\(',
-        \ '\\\[',
-        \ '\\begin\s*{.\{-}}',
-        \ '\\left\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ])
-call latex#util#set_default('g:latex_motion_close_pats',
-      \ [
-        \ '}',
-        \ ')',
-        \ '\]',
-        \ '\\}',
-        \ '\\)',
-        \ '\\\]',
-        \ '\\end\s*{.\{-}}',
-        \ '\\right\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ])
 
 " {{{1 Toc
 call latex#util#set_default('g:latex_toc_enabled', 1)
