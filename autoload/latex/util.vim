@@ -142,60 +142,83 @@ function! latex#util#get_env(...)
 endfunction
 
 " {{{1 latex#util#get_delim
-function! latex#util#get_delim(...)
-  let with_pos = a:0 > 0 ? a:1 : 0
+let s:latex_delim_open = [
+        \ '(',
+        \ '\[',
+        \ '\\{',
+        \ '\\\[',
+        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
+      \ ]
+let s:latex_delim_close = [
+        \ ')',
+        \ '\]',
+        \ '\\}',
+        \ '\\\]',
+        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\()\|\]\|\\}\)',
+      \ ]
+function! latex#util#get_delim()
+  "
+  " Note: This functions has not been optimized
+  "
 
-  let begin_pat = '\C\\begin\_\s*{[^}]*}\|\\\@<!\\\[\|\\\@<!\\('
-  let end_pat = '\C\\end\_\s*{[^}]*}\|\\\@<!\\\]\|\\\@<!\\)'
-  let saved_pos = getpos('.')
+  " Save position in order to restore before finishing
+  let pos_original = getpos('.')
 
-  " move to the left until on a backslash
-  let [bufnum, lnum, cnum, off] = getpos('.')
-  let line = getline(lnum)
-  while cnum > 1 && line[cnum - 1] != '\'
-    let cnum -= 1
-  endwhile
-  call cursor(lnum, cnum)
+  " Save position for more work later
+  let pos_save = getpos('.')
 
-  " match begin/end pairs but skip comments
-  let flags = 'bnW'
-  if strpart(getline('.'), col('.') - 1) =~ '^\%(' . begin_pat . '\)'
-    let flags .= 'c'
+  " Check if the cursor is on top of a closing delimiter
+  let close_pats = '\(' . join(s:latex_delim_close, '\|') . '\)'
+  let lnum = pos_save[1]
+  let cnum = pos_save[2]
+  let [lnum, cnum] = searchpos(close_pats, 'cbnW', lnum)
+  let delim = matchstr(getline(lnum), '^'. close_pats, cnum-1)
+  if pos_save[2] <= (cnum + len(delim) - 1)
+    let pos_save[1] = lnum
+    let pos_save[2] = cnum
+    call setpos('.', pos_save)
   endif
-  let [lnum1, cnum1] = searchpairpos(begin_pat, '', end_pat, flags,
-        \ 'latex#util#in_comment()')
 
-  let env = ''
+  let d1=''
+  let d2=''
+  let l1=1000000
+  let l2=1000000
+  let c1=1000000
+  let c2=1000000
+  for i in range(len(s:latex_delim_open))
+    call setpos('.', pos_save)
+    let open  = s:latex_delim_open[i]
+    let close = s:latex_delim_close[i]
+    let flags = 'W'
 
-  if lnum1
-    let line = strpart(getline(lnum1), cnum1 - 1)
-
-    if empty(env)
-      let env = matchstr(line, '^\C\\begin\_\s*{\zs[^}]*\ze}')
-    endif
-    if empty(env)
-      let env = matchstr(line, '^\\\[')
-    endif
-    if empty(env)
-      let env = matchstr(line, '^\\(')
-    endif
-  endif
-
-  if with_pos == 1
-    let flags = 'nW'
-    if !(lnum1 == lnum && cnum1 == cnum)
+    " Check if the cursor is on top of an opening delimiter.  If it is not,
+    " then we want to include matches at cursor position to match closing
+    " delimiters.
+    if searchpos(open, 'cn') != pos_save[1:2]
       let flags .= 'c'
     endif
 
-    let [lnum2, cnum2] = searchpairpos(begin_pat, '', end_pat, flags,
-          \ 'latex#util#in_comment()')
+    " Search for closing delimiter
+    let pos = searchpairpos(open, '', close, flags, 'latex#util#in_comment()')
 
-    call setpos('.', saved_pos)
-    return [env, lnum1, cnum1, lnum2, cnum2]
-  else
-    call setpos('.', saved_pos)
-    return env
-  endif
+    " Check if the current is pair is the closest pair
+    if pos[0] && pos[0]*1000 + pos[1] < l2*1000 + c2
+      let l2=pos[0]
+      let c2=pos[1]
+      let d2=matchstr(strpart(getline(l2), c2 - 1), close)
+
+      let pos = searchpairpos(open,'',close,'bW', 'latex#util#in_comment()')
+      let l1=pos[0]
+      let c1=pos[1]
+      let d1=matchstr(strpart(getline(l1), c1 - 1), open)
+    endif
+  endfor
+
+  " Restore cursor position and return delimiters and positions
+  call setpos('.', pos_original)
+  return [d1,l1,c1,d2,l2,c2]
 endfunction
 
 " {{{1 latex#util#has_syntax
