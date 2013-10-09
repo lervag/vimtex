@@ -81,6 +81,7 @@ call latex#util#set_default('g:latex_motion_open_pats',
         \ '\\\[',
         \ '\\begin\s*{.\{-}}',
         \ '\\left\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ])
 call latex#util#set_default('g:latex_motion_close_pats',
       \ [
@@ -92,6 +93,7 @@ call latex#util#set_default('g:latex_motion_close_pats',
         \ '\\\]',
         \ '\\end\s*{.\{-}}',
         \ '\\right\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ])
 
 " {{{1 Toc
