@@ -1,6 +1,6 @@
 " {{{1 latex#change#init
 function! latex#change#init(initialized)
-  if g:latex_default_mappings
+  if g:latex_mappings_enabled
     nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
 
     nnoremap <silent><buffer> cse :call latex#change#env_prompt()<cr>

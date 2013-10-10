@@ -7,7 +7,7 @@ set cpo&vim
 
 " {{{1 Options and common patterns
 setlocal autoindent
-setlocal indentexpr=s:indent()
+setlocal indentexpr=LatexIndent()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,0=item
 
@@ -38,8 +38,8 @@ let s:delimiters_close = '\(' . join([
       \ ], '\|') . '\)'
 " }}}1
 
-" {{{1 s:indent
-function! s:indent()
+" {{{1 LatexIndent
+function! LatexIndent()
   " Find a non-blank non-comment line above the current line
   let lnum = prevnonblank(v:lnum - 1)
   while lnum != 0 && getline(lnum) =~ '^\s*%'
@@ -130,7 +130,6 @@ function! s:indent_braces(cline, pline)
   let sum2  = s:match_brace(a:cline, s:delimiters_open)
   let sum2 -= s:match_brace(a:cline, s:delimiters_close)
 
-  echom max([0, sum1]) + min([0, sum2])
   return max([0, sum1]) + min([0, sum2])
 endfunction
 

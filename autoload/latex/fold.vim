@@ -6,7 +6,7 @@ function! latex#fold#init(initialized)
     setl foldtext=latex#fold#text()
     call latex#fold#refresh()
 
-    if g:latex_default_mappings
+    if g:latex_mappings_enabled
       nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>zx
     endif
 
@@ -69,9 +69,9 @@ function! latex#fold#level(lnum)
 
   " Fold environments
   if g:latex_fold_envs
-    if line =~# b:notcomment . b:notbslash . '\\begin\s*{.\{-}}'
+    if line =~# s:notcomment . s:notbslash . '\\begin\s*{.\{-}}'
       return "a1"
-    elseif line =~# b:notcomment . b:notbslash . '\\end\s*{.\{-}}'
+    elseif line =~# s:notcomment . s:notbslash . '\\end\s*{.\{-}}'
       return "s1"
     endif
   endif
@@ -162,6 +162,10 @@ function! latex#fold#text()
   return printf('%-3s %-68S #%5d', level, title, nlines)
 endfunction
 " }}}1
+
+" {{{1 s:notbslash and s:notcomment
+let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
 " {{{1 s:fdm_restore
 function! s:fdm_restore()

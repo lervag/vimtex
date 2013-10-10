@@ -12,7 +12,7 @@ function! latex#latexmk#init(initialized)
   "
   " Set default mappings
   "
-  if g:latex_default_mappings
+  if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#compile()<cr>
     nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean()<cr>
     nnoremap <silent><buffer> <localleader>lC :call latex#latexmk#clean(1)<cr>

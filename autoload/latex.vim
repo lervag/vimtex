@@ -48,7 +48,7 @@ endfunction
 
 " {{{1 latex#help
 function! latex#help()
-  if g:latex_default_mappings
+  if g:latex_mappings_enabled
     echo "Latex mappings"
     nmap <buffer>
     vmap <buffer>
@@ -72,10 +72,12 @@ function! latex#reinit()
   "
   " Reset and reinitialize buffers
   "
+  let n = bufnr('%')
   bufdo   if getbufvar('%', '&filetype') == 'tex' |
-        \   unlet b:notbslash b:notcomment b:latex |
-        \   call latex#init() |
+        \   unlet b:latex                         |
+        \   call latex#init()                     |
         \ endif
+  silent execute 'buffer ' . n
 endfunction
 
 " {{{1 latex#view
@@ -100,13 +102,6 @@ function! s:init_environment()
   "
   call latex#util#set_default('g:latex#data', [])
   call latex#util#set_default('b:latex', {})
-
-  "
-  " Initialize some common patterns
-  "
-  call latex#util#set_default('b:notbslash', '\%(\\\@<!\%(\\\\\)*\)\@<=')
-  call latex#util#set_default('b:notcomment',
-        \ '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!')
 
   "
   " Create new or link to old blob
@@ -135,13 +130,13 @@ function! s:init_environment()
     let b:latex.id = len(g:latex#data) - 1
   endif
 
-  if g:latex_default_mappings
+  if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>li :call latex#info()<cr>
     nnoremap <silent><buffer> <localleader>lh :call latex#help()<cr>
     nnoremap <silent><buffer> <localleader>lv :call latex#view()<cr>
     nnoremap <silent><buffer> <LocalLeader>lR :call latex#reinit()<cr>
 
-    inoremap <silent><buffer> <m-i>           \item 
+    inoremap <silent><buffer> <m-i> \item<space>
   endif
 endfunction
 

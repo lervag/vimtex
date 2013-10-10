@@ -2,7 +2,7 @@
 function! latex#motion#init(initialized)
   if !g:latex_motion_enabled | return | endif
 
-  if g:latex_default_mappings
+  if g:latex_mappings_enabled
     nnoremap <silent><buffer> % :call latex#motion#find_matching_pair()<cr>
     vnoremap <silent><buffer> %
           \ :<c-u>call latex#motion#find_matching_pair(1)<cr>
@@ -88,7 +88,7 @@ function! latex#motion#find_matching_pair(...)
 
   " Finally, find the matching delimiter
   if delim =~ '^\$'
-    let inline = b:notcomment . b:notbslash . '\$'
+    let inline = s:notcomment . s:notbslash . '\$'
     let [lnum0, cnum0] = searchpos('.', 'nW')
     if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
       let [lnum2, cnum2] = searchpos(inline, 'nW', 0, 200)
@@ -99,8 +99,8 @@ function! latex#motion#find_matching_pair(...)
     call cursor(lnum2,cnum2)
   else
     for i in range(len(s:delimiters))
-      let open_pat  = '\C' . b:notbslash . s:delimiters_open[i]
-      let close_pat = '\C' . b:notbslash . s:delimiters_close[i]
+      let open_pat  = '\C' . s:notbslash . s:delimiters_open[i]
+      let close_pat = '\C' . s:notbslash . s:delimiters_close[i]
 
       if delim =~# '^' . open_pat
         call searchpairpos(open_pat, '', close_pat,
@@ -250,6 +250,9 @@ endfunction
 
 " {{{1 Common patterns
 
+let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+
 " Patterns to match opening and closing delimiters/environments
 let s:delimiters_open = [
         \ '{',
@@ -277,7 +280,7 @@ let s:delimiters = join(s:delimiters_open + s:delimiters_close, '\|')
 let s:delimiters = '\(' . s:delimiters . '\|\$\)'
 
 " Pattern to match section/chapter/...
-let s:section = b:notcomment . '\v\s*\\'
+let s:section = s:notcomment . '\v\s*\\'
 let s:section.= '((sub)*section|chapter|part|appendix|(front|back|main)matter)'
 let s:section.= '>'
 
@@ -310,11 +313,11 @@ function! s:highlight_matching_pair(...)
     "
     let [lnum0, cnum0] = searchpos('.', 'nW')
     if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
-      let [lnum2, cnum2] = searchpos(b:notcomment . b:notbslash . '\$',
+      let [lnum2, cnum2] = searchpos(s:notcomment . s:notbslash . '\$',
             \ 'nW', line('w$'), 200)
     else
       let [lnum2, cnum2] = searchpos('\%(\%'. nl . 'l\%'
-            \ . cnum . 'c\)\@!'. b:notcomment . b:notbslash . '\$',
+            \ . cnum . 'c\)\@!'. s:notcomment . s:notbslash . '\$',
             \ 'bnW', line('w0'), 200)
     endif
 
@@ -325,8 +328,8 @@ function! s:highlight_matching_pair(...)
     " Match other delimitors
     "
     for i in range(len(s:delimiters_open))
-      let open_pat  = '\C' . b:notbslash . s:delimiters_open[i]
-      let close_pat = '\C' . b:notbslash . s:delimiters_close[i]
+      let open_pat  = '\C' . s:notbslash . s:delimiters_open[i]
+      let close_pat = '\C' . s:notbslash . s:delimiters_close[i]
 
       if delim =~# '^' . open_pat
         let [lnum2, cnum2] = searchpairpos(open_pat, '', close_pat,

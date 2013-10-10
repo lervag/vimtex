@@ -1,6 +1,6 @@
 " {{{1 latex#toc#init
 function! latex#toc#init(initialized)
-  if g:latex_default_mappings && g:latex_toc_enabled
+  if g:latex_mappings_enabled && g:latex_toc_enabled
     nnoremap <silent><buffer> <LocalLeader>lt :call latex#toc#open()<cr>
     nnoremap <silent><buffer> <LocalLeader>lT :call latex#toc#toggle()<cr>
   endif
