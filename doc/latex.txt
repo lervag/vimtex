@@ -132,7 +132,7 @@ The default mappings for |vim-latex| are given below.  See 'map-listing' for
 an explanation of the format.  The function |latex#help| is provided for
 convenience to list all the defined mappings, and it is by default mapped to
 '<localleader>lh'.  The default mappings may be disabled with the option
-|g:latex_default_mappings|, if the user wishes to create his own mappings.
+|g:latex_mappings_enabled|, if the user wishes to create his own mappings.
 
 n  %                *@:call latex#motion#find_matching_pair()<CR>
 v  %                *@:<C-U>call latex#motion#find_matching_pair(1)<CR>
@@ -217,7 +217,6 @@ Overview:~
   |g:latex_complete_close_braces|
   |g:latex_complete_enabled|
   |g:latex_complete_patterns|
-  |g:latex_default_mappings|
   |g:latex_errorformat_ignore_warnings|
   |g:latex_errorformat_show_warnings|
   |g:latex_fold_enabled|
@@ -225,11 +224,13 @@ Overview:~
   |g:latex_fold_parts|
   |g:latex_fold_preamble|
   |g:latex_fold_sections|
+  |g:latex_indent_enabled|
   |g:latex_latexmk_autojump|
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
   |g:latex_main_tex_candidates|
+  |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
   |g:latex_motion_matchparen|
   |g:latex_toc_enabled|
@@ -272,13 +273,6 @@ triggered. >
       \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\)\?ref\*\?\_\s*{[^{}]*',
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
-<
-
-                                                    *g:latex_default_mappings*
-Whether to load the default mappings.  If this is set to 0, then no mappings
-will be defined.  Since all of the functionality is available as functions,
-this allows the user to define his or her own mappings. >
-  let g:latex_default_mappings = 1
 <
 
                                          *g:latex_errorformat_ignore_warnings*
@@ -329,7 +323,10 @@ List of section constructs that should be folded. >
         \ "subsection",
         \ "subsubsection",
       \ ]
-<
+
+                                                      *g:latex_indent_enabled*
+Use |vim-latex| indentation function.  Not as customizable as the official
+indentation function, but imho it is better.
 
                                                     *g:latex_latexmk_autojump*
 Whether to automatically jump to the first error when the error window is
@@ -365,6 +362,13 @@ main tex file in multi-file projects. >
         \ 'report',
         \ 'thesis',
       \]
+<
+
+                                                    *g:latex_mappings_enabled*
+Whether to load the default mappings.  If this is set to 0, then no mappings
+will be defined.  Since all of the functionality is available as functions,
+this allows the user to define his or her own mappings. >
+  let g:latex_default_mappings = 1
 <
 
                                                       *g:latex_motion_enabled*
