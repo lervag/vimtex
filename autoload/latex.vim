@@ -140,6 +140,8 @@ function! s:init_environment()
     nnoremap <silent><buffer> <localleader>lh :call latex#help()<cr>
     nnoremap <silent><buffer> <localleader>lv :call latex#view()<cr>
     nnoremap <silent><buffer> <LocalLeader>lR :call latex#reinit()<cr>
+
+    inoremap <silent><buffer> <m-i>           \item 
   endif
 endfunction
 
