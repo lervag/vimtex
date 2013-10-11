@@ -8,31 +8,31 @@ function! latex#motion#init(initialized)
           \ :<c-u>call latex#motion#find_matching_pair(1)<cr>
     onoremap <silent><buffer> % :normal v%<cr>
 
-    nnoremap <silent><buffer> ]] :call latex#motion#next_sec(0,0,0)<cr>
-    nnoremap <silent><buffer> ][ :call latex#motion#next_sec(1,0,0)<cr>
-    nnoremap <silent><buffer> [] :call latex#motion#next_sec(1,1,0)<cr>
-    nnoremap <silent><buffer> [[ :call latex#motion#next_sec(0,1,0)<cr>
-    vnoremap <silent><buffer> ]] :<c-u>call latex#motion#next_sec(0,0,1)<cr>
-    vnoremap <silent><buffer> ][ :<c-u>call latex#motion#next_sec(1,0,1)<cr>
-    vnoremap <silent><buffer> [] :<c-u>call latex#motion#next_sec(1,1,1)<cr>
-    vnoremap <silent><buffer> [[ :<c-u>call latex#motion#next_sec(0,1,1)<cr>
+    nnoremap <silent><buffer> ]] :call latex#motion#next_section(0,0,0)<cr>
+    nnoremap <silent><buffer> ][ :call latex#motion#next_section(1,0,0)<cr>
+    nnoremap <silent><buffer> [] :call latex#motion#next_section(1,1,0)<cr>
+    nnoremap <silent><buffer> [[ :call latex#motion#next_section(0,1,0)<cr>
+    vnoremap <silent><buffer> ]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
+    vnoremap <silent><buffer> ][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
+    vnoremap <silent><buffer> [] :<c-u>call latex#motion#next_section(1,1,1)<cr>
+    vnoremap <silent><buffer> [[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
     onoremap <silent><buffer> ]] :normal v]]<cr>
     onoremap <silent><buffer> ][ :normal v][<cr>
     onoremap <silent><buffer> [] :normal v[]<cr>
     onoremap <silent><buffer> [[ :normal v[[<cr>
 
-    vnoremap <silent><buffer> ie :call latex#motion#select_environment(1)<cr>
-    vnoremap <silent><buffer> ae :call latex#motion#select_environment()<cr>
+    vnoremap <silent><buffer> ie :<c-u>call latex#motion#sel_environment(1)<cr>
+    vnoremap <silent><buffer> ae :<c-u>call latex#motion#sel_environment()<cr>
     onoremap <silent><buffer> ie :normal vie<cr>
     onoremap <silent><buffer> ae :normal vae<cr>
 
-    vnoremap <silent><buffer> i$ :call latex#motion#select_inline_math(1)<cr>
-    vnoremap <silent><buffer> a$ :call latex#motion#select_inline_math()<cr>
+    vnoremap <silent><buffer> i$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
+    vnoremap <silent><buffer> a$ :<c-u>call latex#motion#sel_inline_math()<cr>
     onoremap <silent><buffer> i$ :normal vi$<cr>
     onoremap <silent><buffer> a$ :normal va$<cr>
 
-    vnoremap <silent><buffer> id :<c-u>call latex#motion#select_delimiter(1)<cr>
-    vnoremap <silent><buffer> ad :<c-u>call latex#motion#select_delimiter()<cr>
+    vnoremap <silent><buffer> id :<c-u>call latex#motion#sel_delimiter(1)<cr>
+    vnoremap <silent><buffer> ad :<c-u>call latex#motion#sel_delimiter()<cr>
     onoremap <silent><buffer> id :normal vi(<cr>
     onoremap <silent><buffer> ad :normal va(<cr>
   endif
@@ -116,8 +116,8 @@ function! latex#motion#find_matching_pair(...)
   endif
 endfunction
 
-" {{{1 latex#motion#next_sec
-function! latex#motion#next_sec(type, backwards, visual)
+" {{{1 latex#motion#next_section
+function! latex#motion#next_section(type, backwards, visual)
   " Restore visual mode if desired
   if a:visual
     normal! gv
@@ -151,8 +151,8 @@ function! latex#motion#next_sec(type, backwards, visual)
   endif
 endfunction
 
-" {{{1 latex#motion#select_delimiter
-function! latex#motion#select_delimiter(...)
+" {{{1 latex#motion#sel_delimiter
+function! latex#motion#sel_delimiter(...)
   let inner = a:0 > 0
 
   let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
@@ -186,8 +186,8 @@ function! latex#motion#select_delimiter(...)
   endif
 endfunction
 
-" {{{1 latex#motion#select_environment
-function! latex#motion#select_environment(...)
+" {{{1 latex#motion#sel_environment
+function! latex#motion#sel_environment(...)
   let inner = a:0 > 0
 
   let [env, lnum, cnum, lnum2, cnum2] = latex#util#get_env(1)
@@ -216,8 +216,8 @@ function! latex#motion#select_environment(...)
   endif
 endfunction
 
-" {{{1 latex#motion#select_inline_math
-function! latex#motion#select_inline_math(...)
+" {{{1 latex#motion#sel_inline_math
+function! latex#motion#sel_inline_math(...)
   let inner = a:0 > 0
 
   let dollar_pat = '\\\@<!\$'
