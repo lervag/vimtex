@@ -21,11 +21,11 @@ endfunction
 " {{{1 latex#info
 function! latex#info()
   echo "b:latex"
-  echo printf('  %-14s %-s', 'id:', b:latex.id)
+  echo '  id: ' . b:latex.id
   if has_key(b:latex, 'fold_sections') && !empty(b:latex.fold_sections)
-    echo printf('  %-14s', 'fold sections:')
+    echo '  fold sections:'
     for entry in reverse(copy(b:latex.fold_sections))
-      echo printf('    %-s', entry[0])
+      echo '    ' . entry[0]
     endfor
   endif
   echo "\n"
