@@ -54,10 +54,11 @@ endfunction
 " {{{1 latex#help
 function! latex#help()
   if g:latex_mappings_enabled
-    echo "Latex mappings"
     nmap <buffer>
     vmap <buffer>
     omap <buffer>
+  else
+    echo "Mappings not enabled"
   endif
 endfunction
 
