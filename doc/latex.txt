@@ -134,37 +134,37 @@ convenience to list all the defined mappings, and it is by default mapped to
 '<localleader>lh'.  The default mappings may be disabled with the option
 |g:latex_mappings_enabled|, if the user wishes to create his own mappings.
 
-n  %                *@:call latex#motion#find_matching_pair()<CR>
-v  %                *@:<C-U>call latex#motion#find_matching_pair(1)<CR>
-o  %                *@:normal v%<CR>
+n  %                *@:call latex#motion#find_matching_pair()<cr>
+v  %                *@:<c-u>call latex#motion#find_matching_pair(1)<cr>
+o  %                *@:normal v%<cr>
 
-v  a$               *@:call latex#motion#select_inline_math()<CR>
-v  i$               *@:call latex#motion#select_inline_math(1)<CR>
-o  a$               *@:normal va$<CR>
-o  i$               *@:normal vi$<CR>
+v  a$               *@:<c-u>call latex#motion#select_inline_math()<cr>
+v  i$               *@:<c-u>call latex#motion#select_inline_math(1)<cr>
+o  a$               *@:normal va$<cr>
+o  i$               *@:normal vi$<cr>
 
-v  ae               *@:call latex#motion#select_environment()<CR>
-v  ie               *@:call latex#motion#select_environment(1)<CR>
-o  ae               *@:normal vae<CR>
-o  ie               *@:normal vie<CR>
+v  ae               *@:<c-u>call latex#motion#select_environment()<cr>
+v  ie               *@:<c-u>call latex#motion#select_environment(1)<cr>
+o  ae               *@:normal vae<cr>
+o  ie               *@:normal vie<cr>
 
-v  ad               *@:<C-U>call latex#motion#select_delimiter()<CR>
-v  id               *@:<C-U>call latex#motion#select_delimiter(1)<CR>
-o  ad               *@:normal va(<CR>
-o  id               *@:normal vi(<CR>
+v  ad               *@:<c-u>call latex#motion#select_delimiter()<cr>
+v  id               *@:<c-u>call latex#motion#select_delimiter(1)<cr>
+o  ad               *@:normal va(<cr>
+o  id               *@:normal vi(<cr>
 
-n  [[               *@:call latex#motion#next_sec(0,1,0)<CR>
-n  []               *@:call latex#motion#next_sec(1,1,0)<CR>
-n  ][               *@:call latex#motion#next_sec(1,0,0)<CR>
-n  ]]               *@:call latex#motion#next_sec(0,0,0)<CR>
-v  [[               *@:<C-U>call latex#motion#next_sec(0,1,1)<CR>
-v  []               *@:<C-U>call latex#motion#next_sec(1,1,1)<CR>
-v  ][               *@:<C-U>call latex#motion#next_sec(1,0,1)<CR>
-v  ]]               *@:<C-U>call latex#motion#next_sec(0,0,1)<CR>
-o  [[               *@:normal v[[<CR>
-o  []               *@:normal v[]<CR>
-o  ][               *@:normal v][<CR>
-o  ]]               *@:normal v]]<CR>
+n  [[               *@:call latex#motion#next_sec(0,1,0)<cr>
+n  []               *@:call latex#motion#next_sec(1,1,0)<cr>
+n  ][               *@:call latex#motion#next_sec(1,0,0)<cr>
+n  ]]               *@:call latex#motion#next_sec(0,0,0)<cr>
+v  [[               *@:<c-u>call latex#motion#next_sec(0,1,1)<cr>
+v  []               *@:<c-u>call latex#motion#next_sec(1,1,1)<cr>
+v  ][               *@:<c-u>call latex#motion#next_sec(1,0,1)<cr>
+v  ]]               *@:<c-u>call latex#motion#next_sec(0,0,1)<cr>
+o  [[               *@:normal v[[<cr>
+o  []               *@:normal v[]<cr>
+o  ][               *@:normal v][<cr>
+o  ]]               *@:normal v]]<cr>
 
 n  <localleader>li  *@:call latex#info()<cr>
 n  <localleader>lh  *@:call latex#help()<cr>
@@ -181,27 +181,11 @@ n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 
-n  <localleader>li  *@:call latex#info()<CR>
-n  <localleader>lh  *@:call latex#help()<CR>
-n  <localleader>lv  *@:call latex#view()<CR>
-n  <localleader>lR  *@:call latex#reinit()<CR>
-n  <localleader>lt  *@:call latex#toc#open()<CR>
-n  <localleader>lT  *@:call latex#toc#toggle()<CR>
-n  <localleader>ll  *@:call latex#latexmk#compile()<CR>
-n  <localleader>lk  *@:call latex#latexmk#stop(1)<CR>
-n  <localleader>lK  *@:call latex#latexmk#stop_all()<CR>
-n  <localleader>le  *@:call latex#latexmk#errors()<CR>
-n  <localleader>lg  *@:call latex#latexmk#status()<CR>
-n  <localleader>lG  *@:call latex#latexmk#status(1)<CR>
-n  <localleader>lc  *@:call latex#latexmk#clean()<CR>
-n  <localleader>lC  *@:call latex#latexmk#clean(1)<CR>
-
 n  zx               *@:call latex#fold#refresh()<cr>zx
-n  dse              *@:call latex#change#env('')<CR>
-n  cse              *@:call latex#change#env_prompt()<CR>
-n  tse              *@:call latex#change#env_toggle_star()<CR>
+n  dse              *@:call latex#change#env('')<cr>
+n  cse              *@:call latex#change#env_prompt()<cr>
 n  tse              *@:call latex#change#env_toggle_star()<cr>
-n  tsd              *@:call latex#change#delim_toggle()<CR>
+n  tsd              *@:call latex#change#delim_toggle()<cr>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
