@@ -31,13 +31,14 @@ CONTENTS                                                  *vim-latex-contents*
     4. Options .............................. |vim-latex-options|
     5. Omni completion ...................... |vim-latex-completion|
     6. Folding .............................. |vim-latex-folding|
-    7. Latexmk .............................. |vim-latex-latexmk|
-    8. Motion ............................... |vim-latex-motion|
-    9. Change ............................... |vim-latex-change|
-   10. Table of contents .................... |vim-latex-toc|
-   11. Utility functions .................... |vim-latex-util|
-   12. Function reference ................... |vim-latex-functions|
-   13. Limitations .......................... |vim-latex-limitations|
+    7. Indentation .......................... |vim-latex-indent|
+    8. Latexmk .............................. |vim-latex-latexmk|
+    9. Motion ............................... |vim-latex-motion|
+   10. Change ............................... |vim-latex-change|
+   11. Table of contents .................... |vim-latex-toc|
+   12. Utility functions .................... |vim-latex-util|
+   13. Function reference ................... |vim-latex-functions|
+   14. Limitations .......................... |vim-latex-limitations|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -238,18 +239,15 @@ Set this variable in case a dedicated build dir is used with latexmk/latex
 compilations. >
   let g:latex_build_dir = '.'
 <
-
                                                *g:latex_complete_close_braces*
 When a label or a cite has been completed, this option controls whether it
 will be followed by a closing brace. >
   let g:latex_complete_close_braces = 0
 <
-
                                                     *g:latex_complete_enabled*
 Use this option to prevent the plugin from setting the 'omnifunc': >
   let g:latex_complete_enabled = 1
 <
-
                                                    *g:latex_complete_patterns*
 Define patterns that control when the label and citation completion is
 triggered. >
@@ -258,7 +256,6 @@ triggered. >
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
 <
-
                                          *g:latex_errorformat_ignore_warnings*
 List of warning messages that should be ignored. >
   let g:latex_errorformat_ignore_warnings = [
@@ -267,22 +264,18 @@ List of warning messages that should be ignored. >
         \ 'specifier changed to',
       \ ]
 <
-
                                            *g:latex_errorformat_show_warnings*
 Show warnings in quickfix window. >
   let g:latex_errorformat_show_warnings = 1
 <
-
                                                         *g:latex_fold_enabled*
 Use this option to disable/enable folding. >
   let g:latex_fold_enabled = 1
 <
-
                                                            *g:latex_fold_envs*
 Decide whether environments should be folded or not. >
   let g:latex_fold_envs = 1
 <
-
                                                           *g:latex_fold_parts*
 List of parts that should be folded. >
   let g:latex_fold_parts = [
@@ -292,12 +285,10 @@ List of parts that should be folded. >
         \ "backmatter",
       \ ]
 <
-
                                                        *g:latex_fold_preamble*
 Decide whether preamble should be folded or not. >
   let g:latex_fold_preamble = 1
 <
-
                                                        *g:latex_fold_sections*
 List of section constructs that should be folded. >
   let g:latex_fold_sections = [
@@ -307,7 +298,7 @@ List of section constructs that should be folded. >
         \ "subsection",
         \ "subsubsection",
       \ ]
-
+<
                                                       *g:latex_indent_enabled*
 Use |vim-latex| indentation function.  Not as customizable as the official
 indentation function, but imho it is better.
@@ -317,7 +308,6 @@ Whether to automatically jump to the first error when the error window is
 opened with the default mapping or |latex#latexmk#errors|. >
   let g:latex_latexmk_autojump = '0'
 <
-
                                                      *g:latex_latexmk_enabled*
 Whether to enable the latexmk interface or not.  Note that even if it is not
 enabled, the autoload functions will be available.  However, the
@@ -325,17 +315,14 @@ necessary variables and autocommands will not be defined, and the mappings
 will not be created. >
   let g:latex_latexmk_enabled = 1
 <
-
                                                      *g:latex_latexmk_options*
 Set extra options for latexmk compilation. >
   let g:latex_latexmk_options = ''
 <
-
                                                       *g:latex_latexmk_output*
 Set desired output for latexmk compilation. >
   let g:latex_latexmk_output = 'pdf'
 <
-
                                                  *g:latex_main_tex_candidates*
 A list of common names for main tex-file candidates.  This is used to find the
 main tex file in multi-file projects. >
@@ -347,69 +334,57 @@ main tex file in multi-file projects. >
         \ 'thesis',
       \]
 <
-
                                                     *g:latex_mappings_enabled*
 Whether to load the default mappings.  If this is set to 0, then no mappings
 will be defined.  Since all of the functionality is available as functions,
 this allows the user to define his or her own mappings. >
   let g:latex_default_mappings = 1
 <
-
                                                       *g:latex_motion_enabled*
 Whether to enable the motion interface.  If it is disabled, then neither the
 default mappings nor the autocommands that enable highlighting of matching
 parens will be defined. >
   let g:latex_motion_enabled = 1
 <
-
                                                    *g:latex_motion_matchparen*
 Enable highlighting of matching parens.  This gives better support for LaTeX,
 but disables the builtin |matchparen|. >
   let g:latex_motion_matchparen = 1
 <
-
                                                          *g:latex_toc_enabled*
 Enable interface for TOC.  If it is disabled, then mappings for the TOC will
 not be created. >
   let g:latex_toc_enabled = 0
 <
-
                                                      *g:latex_toc_fold_levels*
 If TOC entries are folded, this option controls the number of fold levels that
 will be used. >
   let g:latex_toc_fold_levels = 0
 <
-
                                                             *g:latex_toc_fold*
 Turn on folding of TOC entries. >
   let g:latex_toc_fold = 0
 <
-
                                                        *g:latex_toc_hide_help*
 Allow the TOC help text to be hidden. >
   let g:latex_toc_hide_help = 0
 <
-
                                                           *g:latex_toc_resize*
 Automatically resize vim when the TOC window is opened. >
   let g:latex_toc_resize = 1
 <
-
                                                       *g:latex_toc_split_side*
 Define where the TOC window is opened. >
   let g:latex_toc_split_side = 'leftabove'
 <
-
                                                            *g:latex_toc_width*
 Set width of TOC window. >
   let g:latex_toc_width = 30
 <
-
                                                               *g:latex_viewer*
 Set default viewer application. >
   let g:latex_viewer = 'xdg-open'
 <
-
 ==============================================================================
 OMNI COMPLETION                                         *vim-latex-completion*
 
@@ -486,7 +461,7 @@ after '\cite{' to search for candidates.
 ==============================================================================
 FOLDING                                                    *vim-latex-folding*
 
-LatexBox can fold texts according to LaTeX structure (part, chapter, section
+|vim-latex| can fold texts according to LaTeX structure (part, chapter, section
 and subsection).  Folding is turned on by default, but it can be disabled if
 desired |g:latex_fold_enabled|.
 
@@ -509,6 +484,18 @@ Functions:
     |latex#fold#level|
     |latex#fold#text|
     |latex#fold#refresh|
+
+==============================================================================
+INDENTATION                                                 *vim-latex-indent*
+
+The official indentation function is pretty good and allows for some
+customization.  However, I am not quite satisfied, so I wrote my own
+indentation function that is not customizable at all (at least for now), but
+that I think is generally better.  It is enabled by default, but may be
+disabled if desired |g:latex_indent_enabled|.
+
+Associated settings:
+    |g:latex_indent_enabled|
 
 ==============================================================================
 LATEXMK                                                    *vim-latex-latexmk*
@@ -569,8 +556,10 @@ Functions:
 ==============================================================================
 CHANGE                                                      *vim-latex-change*
 
-Utility functions are provided to manipulate the current environments or
-delimiters.
+|vim-latex| has a nice functionality that enables quick toggling of stars in
+environments or toggling of `\left` and `\right` pairs of delimiters.
+Functions are also provided to change the current environment and to wrap the
+selected text.
 
 Functions:
     |latex#change#env|
@@ -583,6 +572,10 @@ Functions:
 ==============================================================================
 UTILITY FUNCTIONS                                             *vim-latex-util*
 
+Several utility functions are available.  Many of these are used as building
+blocks for other functionalities, but are also available for users to add
+additional functionality.
+
 Functions:
     |latex#util#convert_back|
     |latex#util#get_delim|
@@ -590,7 +583,6 @@ Functions:
     |latex#util#has_syntax|
     |latex#util#in_comment|
     |latex#util#kpsewhich|
-    |latex#util#set_default|
     |latex#util#tex2tree|
     |latex#util#tree2tex|
 
@@ -656,7 +648,6 @@ Overview:~
   |latex#util#has_syntax|
   |latex#util#in_comment|
   |latex#util#kpsewhich|
-  |latex#util#set_default|
   |latex#util#tex2tree|
   |latex#util#tree2tex|
   |latex#view|
@@ -765,8 +756,6 @@ then open it (but do not move the cursor to the window).
                                                         *latex#util#in_comment*
 
                                                          *latex#util#kpsewhich*
-
-                                                       *latex#util#set_default*
 
                                                           *latex#util#tex2tree*
 
