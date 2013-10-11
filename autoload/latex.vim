@@ -20,12 +20,17 @@ endfunction
 
 " {{{1 latex#info
 function! latex#info()
-  echo "Buffer data"
-  echo printf('           id: %-s', b:latex.id)
-  echo printf('fold sections: %-s', string(b:latex.fold_sections))
+  echo "b:latex"
+  echo printf('  %-14s %-s', 'id:', b:latex.id)
+  if has_key(b:latex, 'fold_sections') && !empty(b:latex.fold_sections)
+    echo printf('  %-14s', 'fold sections:')
+    for entry in reverse(copy(b:latex.fold_sections))
+      echo printf('    %-s', entry[0])
+    endfor
+  endif
   echo "\n"
 
-  echo "Latex blobs"
+  echo "g:latex#data"
   let n = -1
   for data in g:latex#data
     let n += 1
@@ -36,12 +41,12 @@ function! latex#info()
     let d.aux = d.aux()
     let d.out = d.out()
     let d.log = d.log()
-    echo printf('%6s: %-s', 'id', n)
+    echo printf('  %4s: %-s', 'id', n)
     for [key, val] in sort(items(d), "s:info_sort_func")
       if key =~ '\vaux|out|root|log|tex'
         let val = s:truncate(val)
       endif
-      echo printf('%6s: %-s', key, val)
+      echo printf('  %4s: %-s', key, val)
     endfor
   endfor
 endfunction
