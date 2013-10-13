@@ -169,13 +169,13 @@ let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
 " {{{1 s:fdm_restore
 function! s:fdm_restore()
-  silent execute 'setlocal foldmethod=' . s:fdm
+  let &l:foldmethod = s:fdm
 endfunction
 
 " {{{1 s:fdm_save
 let s:fdm=''
 function! s:fdm_save()
-  let s:fdm = &foldmethod
+  let s:fdm = &l:foldmethod
   setlocal foldmethod=manual
 endfunction
 
