@@ -289,11 +289,13 @@ function! s:labels_extract(file)
   let lines = map(lines, 'latex#util#convert_back(v:val)')
   for line in lines
     let tree = latex#util#tex2tree(line)
-    call add(matches, [
-          \ latex#util#tree2tex(tree[1][0]),
-          \ latex#util#tree2tex(tree[2][0][0]),
-          \ latex#util#tree2tex(tree[2][1][0]),
-          \ ])
+    if !empty(tree[2][0])
+      call add(matches, [
+            \ latex#util#tree2tex(tree[1][0]),
+            \ latex#util#tree2tex(tree[2][0][0]),
+            \ latex#util#tree2tex(tree[2][1][0]),
+            \ ])
+    endif
   endfor
   return matches
 endfunction
