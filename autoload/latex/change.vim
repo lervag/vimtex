@@ -15,10 +15,19 @@ function! latex#change#delim(open, close)
   let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
 
   let line = getline(l1)
-  let line = strpart(line, 0, c1 - 1) . a:open  . strpart(line, c1 + len(d1))
+  let line = strpart(line,0,c1 - 1) . a:open . strpart(line, c1 + len(d1) - 1)
   call setline(l1, line)
+
+  if l1 == l2
+    let n = len(a:open) - len(d1)
+    let c2 += n
+    let pos = getpos('.')
+    let pos[2] += n
+    call setpos('.', pos)
+  endif
+
   let line = getline(l2)
-  let line = strpart(line, 0, c2 - 1) . a:close . strpart(line, c2 + len(d2))
+  let line = strpart(line,0,c2 - 1) . a:close . strpart(line, c2 + len(d2) - 1)
   call setline(l2, line)
 endfunction
 
@@ -73,7 +82,9 @@ function! latex#change#toggle_delim()
   "
   let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
 
-  if d1 =~ 'left'
+  if d1 == ''
+    return 0
+  elseif d1 =~ 'left'
     let newd1 = substitute(d1, '\\left', '', '')
     let newd2 = substitute(d2, '\\right', '', '')
   elseif d1 !~ '\cbigg\?'
