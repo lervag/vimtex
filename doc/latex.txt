@@ -471,7 +471,7 @@ parsed once in order to define the highest fold level based on which parts
 section, etc.) are present.  If the document has been edited and a new fold
 level is required (or has become redundant), then |latex#fold#refresh| can be
 used to refresh the fold level settings.  This function is mapped by default
-to `zx`.
+to 'zx'.
 
 Associated settings:
     |g:latex_fold_enabled|
@@ -491,8 +491,8 @@ INDENTATION                                                 *vim-latex-indent*
 The official indentation function is pretty good and allows for some
 customization.  However, I am not quite satisfied, so I wrote my own
 indentation function that is not customizable at all (at least for now), but
-that I think is generally better.  It is enabled by default, but may be
-disabled if desired |g:latex_indent_enabled|.
+that I think is better.  It is enabled by default, but may be disabled if
+desired |g:latex_indent_enabled|.
 
 Associated settings:
     |g:latex_indent_enabled|
@@ -544,14 +544,13 @@ enabled by default, but may be disabled if desired.
 Associated settings:
     |g:latex_motion_enabled|
     |g:latex_motion_matchparen|
-    |g:latex_motion_open_pats|
-    |g:latex_motion_close_pats|
 
 Functions:
     |latex#motion#find_matching_pair|
-    |latex#motion#next_sec|
-    |latex#motion#select_current_env|
-    |latex#motion#select_inline_math|
+    |latex#motion#next_section|
+    |latex#motion#sel_delimiter|
+    |latex#motion#sel_environment|
+    |latex#motion#sel_inline_math|
 
 ==============================================================================
 CHANGE                                                      *vim-latex-change*
@@ -637,8 +636,9 @@ Overview:~
   |latex#latexmk#stop_all|
   |latex#motion#find_matching_pair|
   |latex#motion#next_sec|
-  |latex#motion#select_current_env|
-  |latex#motion#select_inline_math|
+  |latex#motion#sel_delimiter|
+  |latex#motion#sel_environment|
+  |latex#motion#sel_inline_math|
   |latex#reinit|
   |latex#toc#open|
   |latex#toc#toggle|
@@ -656,16 +656,22 @@ Overview:~
 Detailed descriptions:~
 
                                                              *latex#change#env*
+Change the current environment name to the one passed as an argument.
 
                                                       *latex#change#env_prompt*
+Change the current environment name to one typed at a prompt.
 
                                                     *latex#change#toggle_delim*
+Toggle delimiters between `(` `)` and `\left(` `\right)` (and similar).
 
                                                  *latex#change#toggle_env_star*
+Toggle star for the current environment.
 
                                                   *latex#change#wrap_selection*
+Wrap the current selection within a supplied command.
 
                                            *latex#change#wrap_selection_prompt*
+Wrap the current selection within a command given at a prompt.
 
                                                      *latex#complete#omnifunc*
 An 'omnifunc' for label and citation completion, see |vim-latex-completion|.
@@ -726,10 +732,14 @@ Finds a matching pair of parenthesis or begin-end-tags.  The functions is used
 A motion command function that moves to the next section.  Used to redefine
 the mappings for ']]', '[[', and similar.
 
-                                             *latex#motion#select_current_env*
+                                                  *latex#motion#sel_delimiter*
+A function that is used to create text objects for text contained within a set
+of delimiters.
+
+                                                *latex#motion#sel_environment*
 A function that is used to create text objects for environments.
 
-                                             *latex#motion#select_inline_math*
+                                                *latex#motion#sel_inline_math*
 A function that is used to create text objects for inline math structures.
 
                                                                 *latex#reinit*
@@ -745,22 +755,34 @@ the TOC window.
 Toggle TOC window: If TOC window is open, then close it.  If it is closed,
 then open it (but do not move the cursor to the window).
 
-                                                      *latex#util#convert_back*
+                                                     *latex#util#convert_back*
+Convert from stuff like `\IeC{\"u}` to corresponding unicode symbols.
 
-                                                         *latex#util#get_delim*
+                                                        *latex#util#get_delim*
+Get surrounding delimiters (with position).
 
-                                                           *latex#util#get_env*
+                                                          *latex#util#get_env*
+Get surrounding environment.  If optional argument supplied, the function also
+returns the position (line and column number) of the begin and end structure.
 
-                                                        *latex#util#has_syntax*
+                                                       *latex#util#has_syntax*
+Checks if the given position (or current position) is within the given syntax
+structure.
 
-                                                        *latex#util#in_comment*
+                                                       *latex#util#in_comment*
+Checks if the given position (or current position) is within a comment.
 
-                                                         *latex#util#kpsewhich*
+                                                        *latex#util#kpsewhich*
+Parse file with kpsewhich.
 
-                                                          *latex#util#tex2tree*
-
-                                                          *latex#util#tree2tex*
-
+                                                         *latex#util#tex2tree*
+Turn tex structure to a tree composed of lists.  E.g. >
+  { testing { tex2tree { } } } => [ "testing" , [ "tex2tree", []]]
+<
+                                                         *latex#util#tree2tex*
+Turns a tree composed of lists into tex structure.  E.g. >
+  [ "testing" , [ "tex2tree", []]] => { testing { tex2tree { } } }
+<
                                                                   *latex#view*
 Open the output file (specified with |g:latex_latexmk_output|) with the
 default viewer |g:latex_viewer|.
