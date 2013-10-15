@@ -11,6 +11,11 @@ function! latex#fold#init(initialized)
     endif
 
     "
+    " For some reason, foldmethod=expr makes undo slow (at least in some cases)
+    "
+    nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+
+    "
     " The foldexpr function returns "=" for most lines, which means it can
     " become slow for large files.  The following is a hack that is based on
     " this reply to a discussion on the Vim Developer list:
@@ -19,8 +24,8 @@ function! latex#fold#init(initialized)
     if !a:initialized
       augroup latex_fold
         autocmd!
-        autocmd InsertEnter *.tex call s:fdm_save()
-        autocmd InsertLeave *.tex call s:fdm_restore()
+        autocmd InsertEnter *.tex call FdmSave()
+        autocmd InsertLeave *.tex call FdmRestore()
       augroup END
     endif
   endif
@@ -163,21 +168,22 @@ function! latex#fold#text()
 endfunction
 " }}}1
 
-" {{{1 s:notbslash and s:notcomment
-let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
-
-" {{{1 s:fdm_restore
-function! s:fdm_restore()
+" {{{1 FdmRestore
+function! FdmRestore()
   let &l:foldmethod = s:fdm
 endfunction
 
-" {{{1 s:fdm_save
+" {{{1 FdmSave
 let s:fdm=''
-function! s:fdm_save()
+function! FdmSave()
   let s:fdm = &l:foldmethod
   setlocal foldmethod=manual
 endfunction
+" }}}1
+
+" {{{1 s:notbslash and s:notcomment
+let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
 " {{{1 s:find_fold_sections
 function! s:find_fold_sections()
