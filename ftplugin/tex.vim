@@ -19,7 +19,7 @@ call latex#util#set_default('g:latex_complete_enabled', 1)
 call latex#util#set_default('g:latex_complete_close_braces', 0)
 call latex#util#set_default('g:latex_complete_patterns',
       \ {
-      \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\)\?ref\*\?\_\s*{[^{}]*',
+      \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
 call latex#util#set_default('g:latex_errorformat_show_warnings', 1)
