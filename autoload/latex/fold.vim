@@ -89,27 +89,17 @@ endfunction
 function! latex#fold#text()
   " Initialize
   let line = getline(v:foldstart)
-  let nlines = v:foldend - v:foldstart + 1
-  let level = ''
+  let level = v:foldlevel > 1 ? repeat('-', v:foldlevel-2) . '*' : ''
   let title = 'Not defined'
+  let nt = 73
 
-  " Fold level
-  let level = strpart(repeat('-', v:foldlevel-1) . '*',0,3)
-  if v:foldlevel > 3
-    let level = strpart(level, 1) . v:foldlevel
-  endif
-  let level = printf('%-3s', level)
-
-  " Preamble
-  if line =~ '\s*\\documentclass'
-    let title = "Preamble"
-  endif
-
-  " Parts, sections and fakesections
+  " Preamble, parts, sections and fakesections
   let sections = '\(\(sub\)*section\|part\|chapter\)'
   let secpat1 = '^\s*\\' . sections . '\*\?\s*{'
   let secpat2 = '^\s*\\' . sections . '\*\?\s*\['
-  if line =~ '\\frontmatter'
+  if line =~ '\s*\\documentclass'
+    let title = "Preamble"
+  elseif line =~ '\\frontmatter'
     let title = "Frontmatter"
   elseif line =~ '\\mainmatter'
     let title = "Mainmatter"
@@ -135,6 +125,7 @@ function! latex#fold#text()
   if line =~ '\\begin'
     " Capture environment name
     let env = matchstr(line,'\\begin\*\?{\zs\w*\*\?\ze}')
+    let ne = 12
 
     " Set caption/label based on type of environment
     if env == 'frame'
@@ -150,21 +141,21 @@ function! latex#fold#text()
 
     " Add paranthesis to label
     if label != ''
-      let label = substitute(strpart(label,0,54), '\(.*\)', '(\1)','')
+      let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
     endif
 
     " Set size of label and caption part of string
-    let nl = len(label) > 56 ? 56 : len(label)
-    let nc = 56 - (nl + 1)
+    let nl = len(label) > nt - ne ? nt - ne : len(label)
+    let nc = nt - ne - nl - 1
     let caption = strpart(caption, 0, nc)
 
     " Create title based on env, caption and label
-    let title = printf('%-12s%-' . nc . 's %' . nl . 's',
+    let title = printf('%-' . ne . 's%-' . nc . 's %' . nl . 's',
           \ env, caption, label)
   endif
 
-  let title = strpart(title, 0, 68)
-  return printf('%-3s %-68S #%5d', level, title, nlines)
+  let title = strpart(title, 0, nt)
+  return printf('%-5s %-' . nt . 's', level, title)
 endfunction
 " }}}1
 
