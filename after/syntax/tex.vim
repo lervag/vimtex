@@ -8,13 +8,15 @@ syn region texRefZone matchgroup=texStatement
 " \crefrange, \cpagerefrange (these commands expect two arguments)
 syn match texStatement
       \ '\\c\(page\)\?refrange\>'
-      \ nextgroup=texRefRangeStart
-syn region texRefRangeStart matchgroup=texStatement
-      \ start='{' end='}'
-      \ contains=texRefZone
-      \ nextgroup=texRefRangeEnd
-syn region texRefRangeEnd matchgroup=texStatement
-      \ start='{' end='}'
-      \ contains=texRefZone
+      \ nextgroup=texRefRangeStart skipwhite skipnl
+syn region texRefRangeStart
+      \ start="{"rs=s+1  end="}"
+      \ matchgroup=Delimiter
+      \ contained contains=texRefZone
+      \ nextgroup=texRefRangeEnd skipwhite skipnl
+syn region texRefRangeEnd
+      \ start="{"rs=s+1 end="}"
+      \ matchgroup=Delimiter
+      \ contained contains=texRefZone
 hi link texRefRangeStart texRefZone
 hi link texRefRangeEnd   texRefZone
