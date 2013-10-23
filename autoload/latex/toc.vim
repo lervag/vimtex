@@ -25,10 +25,10 @@ function! latex#toc#open()
   if g:latex_toc_resize
     silent exe "set columns+=" . g:latex_toc_width
   endif
-  silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
 
   " Parse TOC data
   if auxfile == ""
+    silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
     call append('$', "TeX file not compiled")
   else
     let toc = s:read_toc(auxfile, texfile)
@@ -36,12 +36,14 @@ function! latex#toc#open()
     let b:toc = toc.data
     let b:toc_numbers = 1
     let b:calling_win = bufwinnr(calling_buf)
+    silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
 
-    " Add TOC entries and jump to the closest section
+    " Add TOC entries
     for entry in toc.data
       call append('$', entry['number'] . "\t" . entry['text'])
     endfor
 
+    " Jump to the closest section
     execute 'normal! ' . (closest_index + 1) . 'G'
   endif
 
@@ -164,7 +166,6 @@ endfunction
 "
 function! s:find_closest_section(toc, file)
   if !has_key(a:toc.fileindices, a:file)
-    echoerr 'File not included in main tex file!'
     return
   endif
 
@@ -175,11 +176,12 @@ function! s:find_closest_section(toc, file)
       let i = (imax + imin) / 2
       let tocindex = a:toc.fileindices[a:file][i]
       let entry = a:toc.data[tocindex]
-      let titlestr = entry['text']
+      let titlestr = substitute(entry['text'],
+            \ '\\\w*\>\s*\%({[^}]*}\)\?', '.*', 'g')
       let titlestr = escape(titlestr, '\')
       let titlestr = substitute(titlestr, ' ', '\\_\\s\\+', 'g')
       let [lnum, cnum]
-            \ = searchpos('\\'.entry['level'].'\_\s*{'.titlestr.'}', 'nW')
+            \ = searchpos('\\'.entry['level'].'\_\s*{'.titlestr.'}', 'cnW')
       if lnum
         let imax = i
       else
