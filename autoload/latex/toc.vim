@@ -29,6 +29,7 @@ function! latex#toc#open()
   " Parse TOC data
   if auxfile == ""
     silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
+    let closest_index = 0
     call append('$', "TeX file not compiled")
   else
     let toc = s:read_toc(auxfile, texfile)
@@ -42,9 +43,6 @@ function! latex#toc#open()
     for entry in toc.data
       call append('$', entry['number'] . "\t" . entry['text'])
     endfor
-
-    " Jump to the closest section
-    execute 'normal! ' . (closest_index + 1) . 'G'
   endif
 
   " Add help info
@@ -56,6 +54,9 @@ function! latex#toc#open()
     call append('$', "s:       hide numbering")
   endif
   0delete _
+
+  " Jump to the closest section
+  execute 'normal! ' . (closest_index + 1) . 'G'
 
   " Set filetype and lock buffer
   setlocal filetype=latextoc
