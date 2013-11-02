@@ -352,6 +352,37 @@ function! s:highlight_matching_pair(...)
     endfor
   endif
 endfunction
+
+" {{{1 s:search_and_skip_comments
+function! s:search_and_skip_comments(pat, ...)
+  " Usage: s:search_and_skip_comments(pat, [flags, stopline])
+  let flags             = a:0 >= 1 ? a:1 : ''
+  let stopline  = a:0 >= 2 ? a:2 : 0
+  let saved_pos = getpos('.')
+
+  " search once
+  let ret = search(a:pat, flags, stopline)
+
+  if ret
+    " do not match at current position if inside comment
+    let flags = substitute(flags, 'c', '', 'g')
+
+    " keep searching while in comment
+    while latex#util#in_comment()
+      let ret = search(a:pat, flags, stopline)
+      if !ret
+        break
+      endif
+    endwhile
+  endif
+
+  if !ret
+    " if no match found, restore position
+    call setpos('.', saved_pos)
+  endif
+
+  return ret
+endfunction
 " }}}1
 
 " vim:fdm=marker:ff=unix
