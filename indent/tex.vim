@@ -124,13 +124,8 @@ endfunction
 
 " {{{1 s:indent_braces
 function! s:indent_braces(cline, pline)
-  let sum1  = s:match_brace(a:pline, s:delimiters_open)
-  let sum1 -= s:match_brace(a:pline, s:delimiters_close)
-
-  let sum2  = s:match_brace(a:cline, s:delimiters_open)
-  let sum2 -= s:match_brace(a:cline, s:delimiters_close)
-
-  return max([0, sum1]) + min([0, sum2])
+  return     s:match_brace(a:pline, s:delimiters_open)
+         \ + s:match_brace(a:pline, s:delimiters_close)
 endfunction
 
 " {{{1 s:match_brace
