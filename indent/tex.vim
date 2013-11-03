@@ -9,7 +9,7 @@ set cpo&vim
 setlocal autoindent
 setlocal indentexpr=LatexIndent()
 setlocal indentkeys&
-setlocal indentkeys+=[,(,{,),},],\&,0=item
+setlocal indentkeys+=[,(,{,),},],\&,=\\item
 
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
