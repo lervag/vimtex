@@ -212,6 +212,6 @@ function! s:search_and_skip_comments(pat, ...)
 
   return ret
 endfunction
-" }}}1 Modeline
+" }}}1
 
 " vim:fdm=marker:ff=unix
