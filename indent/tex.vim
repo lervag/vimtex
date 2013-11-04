@@ -125,7 +125,7 @@ endfunction
 " {{{1 s:indent_braces
 function! s:indent_braces(cline, pline)
   return     s:match_brace(a:pline, s:delimiters_open)
-         \ + s:match_brace(a:pline, s:delimiters_close)
+         \ - s:match_brace(a:pline, s:delimiters_close)
 endfunction
 
 " {{{1 s:match_brace
