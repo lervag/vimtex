@@ -107,17 +107,16 @@ endfunction
 
 " {{{1 latex#latexmk#errors
 function! latex#latexmk#errors()
-  let log = g:latex#data[b:latex.id].log()
-
   cclose
 
+  let log = g:latex#data[b:latex.id].log()
   if g:latex_latexmk_autojump
     execute 'cfile ' . log
   else
     execute 'cgetfile ' . log
   endif
 
-  botright copen
+  botright cwindow
 endfunction
 
 " {{{1 latex#latexmk#status
