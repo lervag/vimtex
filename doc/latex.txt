@@ -214,6 +214,7 @@ Overview:~
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
+  |g:latex_latexmk_quickfix|
   |g:latex_main_tex_candidates|
   |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
@@ -322,6 +323,20 @@ Set extra options for latexmk compilation. >
                                                       *g:latex_latexmk_output*
 Set desired output for latexmk compilation. >
   let g:latex_latexmk_output = 'pdf'
+<
+                                                    *g:latex_latexmk_quickfix*
+Adjust the behavior of the quickfix window when there are compilation errors or
+warnings.  The recognized options are:
+
+  Value  Effect ~
+  0      The quickfix window is not opened automatically.
+  1      The quickfix window is opened automatically when there are errors, and
+         it becomes the active window.
+  2      The quickfix window is opened automatically when there are errors, but
+         it does not become the active window.
+
+The default value is: >
+  let g:latex_latexmk_quickfix = 2
 <
                                                  *g:latex_main_tex_candidates*
 A list of common names for main tex-file candidates.  This is used to find the

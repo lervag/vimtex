@@ -116,7 +116,13 @@ function! latex#latexmk#errors()
     execute 'cgetfile ' . log
   endif
 
-  botright cwindow
+  if g:latex_latexmk_quickfix
+    botright cwindow
+    if g:latex_latexmk_quickfix == 2
+      wincmd p
+    endif
+    redraw!
+  endif
 endfunction
 
 " {{{1 latex#latexmk#status
