@@ -165,7 +165,7 @@ function! s:bibtex_search(regexp)
 
   " Find data from 'thebibliography' environments
   let lines = readfile(g:latex#data[b:latex.id].tex)
-  if match(lines, '\C\\begin{thebibliography}')
+  if match(lines, '\C\\begin{thebibliography}') >= 0
     for line in filter(filter(lines, 'v:val =~ ''\C\\bibitem'''),
           \ 'v:val =~ a:regexp')
       let match = matchlist(line, '\\bibitem{\([^}]*\)')[1]
