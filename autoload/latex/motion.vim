@@ -262,7 +262,7 @@ let s:delimiters_open = [
         \ '\\(',
         \ '\\\[',
         \ '\\\Cbegin\s*{.\{-}}',
-        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\Cleft\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ]
 let s:delimiters_close = [
@@ -273,7 +273,7 @@ let s:delimiters_close = [
         \ '\\)',
         \ '\\\]',
         \ '\\\Cend\s*{.\{-}}',
-        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ]
 let s:delimiters = join(s:delimiters_open + s:delimiters_close, '\|')
