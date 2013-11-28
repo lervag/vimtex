@@ -17,15 +17,19 @@ function! latex#complete#omnifunc(findstart, base)
     " the given type.  Currently, it completes labels (e.g. \ref{...), bibtex
     " entries (e.g. \cite{...) and commands (e.g. \...).
     "
-    let line = getline('.')
     let pos  = col('.') - 1
+    let line = getline('.')[:pos-1]
     for [type, pattern] in items(g:latex_complete_patterns)
       if line =~ pattern . '$'
         let s:completion_type = type
-        while pos > 0 && line[pos - 1] !~ '{\|,'
-          let pos -= 1
+        while pos > 0
+          if line[pos - 1] =~ '{\|,' || line[pos-2:pos-1] == ', '
+            return pos
+          else
+            let pos -= 1
+          endif
         endwhile
-        return pos > 0 ? pos : -2
+        return -2
       endif
     endfor
   else
