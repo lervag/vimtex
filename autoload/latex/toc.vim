@@ -34,6 +34,7 @@ function! latex#toc#open()
   else
     let toc = s:read_toc(auxfile, texfile)
     let closest_index = s:find_closest_section(toc, calling_file)
+
     silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
     let b:toc = toc.data
     let b:toc_numbers = 1
