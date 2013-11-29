@@ -370,7 +370,7 @@ but disables the builtin |matchparen|. >
                                                          *g:latex_toc_enabled*
 Enable interface for TOC.  If it is disabled, then mappings for the TOC will
 not be created. >
-  let g:latex_toc_enabled = 0
+  let g:latex_toc_enabled = 1
 <
                                                      *g:latex_toc_fold_levels*
 If TOC entries are folded, this option controls the number of fold levels that
