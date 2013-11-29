@@ -133,7 +133,7 @@ The default mappings for |vim-latex| are given below.  See 'map-listing' for
 an explanation of the format.  The function |latex#help| is provided for
 convenience to list all the defined mappings, and it is by default mapped to
 '<localleader>lh'.  The default mappings may be disabled with the option
-|g:latex_mappings_enabled|, if the user wishes to create their own mappings.
+|g:latex_mappings_enabled|, if the user wishes to create his/her own mappings.
 
 n  %                *@:call latex#motion#find_matching_pair()<cr>
 v  %                *@:<c-u>call latex#motion#find_matching_pair(1)<cr>
@@ -353,7 +353,7 @@ main tex file in multi-file projects. >
                                                     *g:latex_mappings_enabled*
 Whether to load the default mappings.  If this is set to 0, then no mappings
 will be defined.  Since all of the functionality is available as functions,
-this allows the user to define their own mappings. >
+this allows the user to define his or her own mappings. >
   let g:latex_mappings_enabled= 1
 <
                                                       *g:latex_motion_enabled*
@@ -407,7 +407,7 @@ OMNI COMPLETION                                         *vim-latex-completion*
 |vim-latex| provides an 'omnifunc' for omni completion, see |compl-omni| and
 |latex#complete#omnifunc|.  The function is enabled by default, but may be
 disabled with |g:latex_complete_enabled|.  Omni completion is accessible with
-'<CTRL-X><CTRL-O>'.
+|i_CTRL-X_CTRL-O|.
 
 The omni function completes labels and citations.  The completion candidates
 are gathered with the functions |latex#complete#labels| and
