@@ -90,7 +90,7 @@ function! latex#latexmk#compile()
   let cmd .= ' -' . g:latex_latexmk_output
   let cmd .= ' -quiet '
   let cmd .= ' -pvc'
-  let cmd .= g:latex_latexmk_options
+  let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
   let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
   let cmd .= ' ' . data.base
