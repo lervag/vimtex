@@ -529,11 +529,15 @@ The default mappings are: >
   nnoremap <localleader>lc :call latex#latexmk#clean(0)<cr>
   nnoremap <localleader>lC :call latex#latexmk#clean(1)<cr>
 
-The background compilation is started with |latex#latexmk#compile|, and relies
+The background compilation is started with |latex#latexmk#compile|.  It relies
 on the preview continuous mode of `latexmk`.  Compilation errors are not
-parsed automatically, since there is no way of knowing when the document has
-been compiled.  To view errors, use |latex#latexmk#errors|.  To check if
-compilation is running in the background, use |latex#latexmk#status|.
+parsed automatically, since there is no way for vim to know when the document
+has been compiled.  However, `latexmk` does know, and so there is a way to
+get a more interactive coupling, see |vim-latex-latexmk-tricks|.
+
+To check for and view errors in the quickfix window, use
+|latex#latexmk#errors|.  To check if background compilation is running, use
+|latex#latexmk#status|.
 
 Associated settings:
     |g:latex_latexmk_enabled|
@@ -548,6 +552,31 @@ Functions:
     |latex#latexmk#status|
     |latex#latexmk#stop|
     |latex#latexmk#stop_all|
+
+------------------------------------------------------------------------------
+Latexmk tricks:~                                    *vim-latex-latexmk-tricks*
+
+`latexmk` allows to set options through a configuration file
+`$HOME/.latexmkrc`.  A particular set of options are very convenient for a good
+coupling between |vim-latex| and `latexmk`: `$..._cmd`, where `...` refers to
+either `compiling`, `success`, or `failure`.  These options can be used to
+specify commands that are run by `latexmk` before and after a compilation run.
+For instance, one may use these options: >
+
+$compiling_cmd = "xdotool search --name \"%D\" " .
+                 "set_window --name \"%D compiling...\"";
+$success_cmd = "xdotool search --name \"%D\" " .
+               "set_window --name \"%D OK\"; " .
+               "gvim --remote-expr 'latex#latexmk#errors()'";
+$failure_cmd = "xdotool search --name \"%D\" " .
+               "set_window --name \"%D FAILURE\"; " .
+               "gvim --remote-expr 'latex#latexmk#errors()'";
+<
+Here `xdotool` (http://www.semicomplete.com/projects/xdotool/) is used to
+change the title of the pdf viewer during and after compilation.  In addition,
+|latex#latexmk#errors()| is called through the vimserver after each run to
+either open the quickfix window when there are errors/warnings, or to close the
+quickfix window in case all errors/warnings are gone.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
