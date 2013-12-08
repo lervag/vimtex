@@ -166,6 +166,13 @@ function! s:init_errorformat()
 
   " Show warnings
   if g:latex_errorformat_show_warnings
+    " Parse biblatex warning
+    setlocal efm+=%+WPackage\ biblatex\ Warning:%m
+    setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
+    setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
+    setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
+    setlocal efm+=%-Z(biblatex)%m
+
     " Ignore some warnings
     for w in g:latex_errorformat_ignore_warnings
       let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
