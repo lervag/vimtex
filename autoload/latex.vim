@@ -206,16 +206,20 @@ endfunction
 
 " {{{1 s:get_main_tex
 function! s:get_main_tex()
-  if !search('\C\\begin\_\s*{document}', 'nw')
-    let tex_files  = glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
-    call filter(tex_files,
-          \ "count(g:latex_main_tex_candidates, fnamemodify(v:val,':t:r'))")
-    if !empty(tex_files)
-      return fnamemodify(tex_files[0], ':p')
-    endif
-  endif
+  let re_begin = '\C\\begin\_\s*{document}'
+  let re_input = '\v\\(input|include)\{' . expand('%:t:r') . '(\.tex)?'
 
-  return expand('%:p')
+  if search(re_begin, 'nw')
+    return expand('%:p')
+  else
+    for l:file in glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
+      let lines = readfile(l:file)
+      if len(filter(copy(lines), 'v:val =~ re_input')) > 0
+            \ && len(filter(lines, 'v:val =~ re_begin')) > 0
+        return fnamemodify(l:file, ':p')
+      endif
+    endfor
+  endif
 endfunction
 
 " {{{1 s:get_main_ext

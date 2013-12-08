@@ -53,14 +53,6 @@ call latex#util#set_default('g:latex_latexmk_options', '')
 call latex#util#set_default('g:latex_latexmk_output', 'pdf')
 call latex#util#set_default('g:latex_latexmk_autojump', '0')
 call latex#util#set_default('g:latex_latexmk_quickfix', '2')
-call latex#util#set_default('g:latex_main_tex_candidates',
-      \ [
-      \ 'main',
-      \ 'memo',
-      \ 'note',
-      \ 'report',
-      \ 'thesis',
-      \])
 call latex#util#set_default('g:latex_mappings_enabled', 1)
 call latex#util#set_default('g:latex_motion_enabled', 1)
 call latex#util#set_default('g:latex_motion_matchparen', 1)

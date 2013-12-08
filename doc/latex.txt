@@ -215,7 +215,6 @@ Overview:~
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
   |g:latex_latexmk_quickfix|
-  |g:latex_main_tex_candidates|
   |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
   |g:latex_motion_matchparen|
@@ -338,17 +337,6 @@ warnings.  The recognized options are:
 
 The default value is: >
   let g:latex_latexmk_quickfix = 2
-<
-                                                 *g:latex_main_tex_candidates*
-A list of common names for main tex-file candidates.  This is used to find the
-main tex file in multi-file projects. >
-  let g:latex_main_tex_candidates = [
-        \ 'main',
-        \ 'memo',
-        \ 'note',
-        \ 'report',
-        \ 'thesis',
-      \]
 <
                                                     *g:latex_mappings_enabled*
 Whether to load the default mappings.  If this is set to 0, then no mappings
