@@ -126,6 +126,23 @@ Functions:
         |latex#reinit|
         |latex#view|
 
+------------------------------------------------------------------------------
+Support for multi-file projects:~
+                                                        *vim-latex-multi-file*
+                                                                    *tex-root*
+
+|vim-latex| supports multi-file documents in the sense that the plugin
+automatically detects the root file of the project.  This detection is based
+on a recursive search for files that include the current tex file, but it is
+naive in the sense that it assumes unique file names.  It also assumes that
+the main `tex` file lives in the same folder or the parent folder of the
+current file.  The method is simple, but it should work in most cases.
+
+It is also possible to specify the main TeX file with a comment in one of the
+first five lines of the current file similar to this: >
+
+  %! TEX root = my-main.tex
+
 ==============================================================================
 DEFAULT MAPPINGS                                          *vim-latex-mappings*
 

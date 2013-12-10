@@ -112,7 +112,7 @@ function! s:init_environment()
   "
   " Create new or link to old blob
   "
-  let main = s:get_main_tex()
+  let main = s:get_main()
   let id   = s:get_id(main)
   if id >= 0
     let b:latex.id = id
@@ -204,22 +204,62 @@ function! s:get_id(main)
   return -1
 endfunction
 
-" {{{1 s:get_main_tex
-function! s:get_main_tex()
-  let re_begin = '\C\\begin\_\s*{document}'
-  let re_input = '\v\\(input|include)\{' . expand('%:t:r') . '(\.tex)?'
-
-  if search(re_begin, 'nw')
-    return expand('%:p')
-  else
-    for l:file in glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
-      let lines = readfile(l:file)
-      if len(filter(copy(lines), 'v:val =~ re_input')) > 0
-            \ && len(filter(lines, 'v:val =~ re_begin')) > 0
-        return fnamemodify(l:file, ':p')
+" {{{1 s:get_main
+function! s:get_main()
+  "
+  " Search for main file specifier at the beginning of file.  This is similar
+  " to the method used by several other plugins and editors, such as vim with
+  " LaTeX-Box, TextMate, TexWorks, and texmaker.
+  "
+  for line in getline(1, 5)
+    let candidate = matchstr(line,
+          \ '^\s*%\s*!\s*[tT][eE][xX]\s\+root\s*=\s*\zs.*\ze\s*$')
+    if len(candidate) > 0
+      let main = fnamemodify(candidate, ':p')
+      if filereadable(main)
+        return main
       endif
-    endfor
+    endif
+  endfor
+
+  "
+  " Search for main file recursively through \input and \include specifiers
+  "
+  let main = s:get_main_recurse(expand('%:p'))
+  if filereadable(main)
+    return main
   endif
+
+  "
+  " If not found, use current file
+  "
+  return expand('%:p')
+endfunction
+
+" {{{1 s:get_main_recurse
+function! s:get_main_recurse(file)
+  "
+  " Check if current file is a main file
+  "
+  if len(filter(readfile(a:file),
+        \ 'v:val =~ ''\C\\begin\_\s*{document}''')) > 0
+    return fnamemodify(a:file, ':p')
+  endif
+
+  "
+  " Search for files that include the current file
+  "
+  for l:file in glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
+    if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
+          \ . fnamemodify(a:file, ':t:r') . '(\.tex)?''')) > 0
+      return s:get_main_recurse(l:file)
+    endif
+  endfor
+
+  "
+  " If not found, return 0
+  "
+  return 0
 endfunction
 
 " {{{1 s:get_main_ext
