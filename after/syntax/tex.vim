@@ -1,7 +1,7 @@
 " Better support for cite commands
 " \cite, \citep, \citet, \citeauthor, ...
 syn match texRefZone
-      \ "\\cite\%([tp]\*\=\|author\)\="
+      \ "\\\(auto\|text\)cite\%([tp]\*\=\|author\)\="
       \ nextgroup=texRefOption,texCite
 
 " Add support for cleverref package
