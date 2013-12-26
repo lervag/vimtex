@@ -239,6 +239,13 @@ endfunction
 " {{{1 s:get_main_recurse
 function! s:get_main_recurse(file)
   "
+  " Check if file is readable
+  "
+  if !filereadable(a:file)
+    return 0
+  endif
+
+  "
   " Check if current file is a main file
   "
   if len(filter(readfile(a:file),
