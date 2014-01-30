@@ -12,6 +12,8 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
+set suffixesadd+=.tex,.sty
+
 " {{{1 Options
 
 call latex#util#set_default('g:latex_build_dir', '.')
