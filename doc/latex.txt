@@ -218,6 +218,7 @@ Overview:~
   |g:latex_build_dir|
   |g:latex_complete_close_braces|
   |g:latex_complete_enabled|
+  |g:latex_complete_recursive_bib|
   |g:latex_complete_patterns|
   |g:latex_errorformat_ignore_warnings|
   |g:latex_errorformat_show_warnings|
@@ -264,6 +265,12 @@ will be followed by a closing brace. >
                                                     *g:latex_complete_enabled*
 Use this option to prevent the plugin from setting the 'omnifunc': >
   let g:latex_complete_enabled = 1
+<
+                                              *g:latex_complete_recursive_bib*
+Use this option to prevent the plugin recursively searching for bibliography
+files, but instead to only load files referenced in the main tex file. This 
+can provide a significant speedup for large projects. >
+  let g:latex_complete_recursive_bib = 0
 <
                                                    *g:latex_complete_patterns*
 Define patterns that control when the label and citation completion is
@@ -424,6 +431,7 @@ Associated settings:
         |g:latex_complete_patterns.ref|
         |g:latex_complete_patterns.bib|
         |g:latex_complete_close_braces|
+        |g:latex_complete_recursive_bib|       
 
 Functions:
         |latex#complete#omnifunc|

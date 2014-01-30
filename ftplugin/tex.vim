@@ -17,6 +17,7 @@ let b:did_ftplugin = 1
 call latex#util#set_default('g:latex_build_dir', '.')
 call latex#util#set_default('g:latex_complete_enabled', 1)
 call latex#util#set_default('g:latex_complete_close_braces', 0)
+call latex#util#set_default('g:latex_complete_recursive_bib', 1)
 call latex#util#set_default('g:latex_complete_patterns',
       \ {
       \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',

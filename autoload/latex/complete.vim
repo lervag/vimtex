@@ -214,17 +214,20 @@ function! s:bibtex_find_bibs(...)
     let bibdata_list += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
-  "
-  " Recursively search included files
-  "
-  let incsearch  = '''\C\\'
-  let incsearch .= '\%(input\|include\)'
-  let incsearch .= '\s*{\zs[^}]\+\ze}'''
-  for entry in map(filter(lines,
+
+  if g:latex_complete_recursive_bib
+    "
+    " Recursively search included files
+    "
+    let incsearch  = '''\C\\'
+    let incsearch .= '\%(input\|include\)'
+    let incsearch .= '\s*{\zs[^}]\+\ze}'''
+    for entry in map(filter(lines,
           \ 'v:val =~ ' . incsearch),
-        \ 'matchstr(v:val, ' . incsearch . ')')
-    let bibdata_list += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
-  endfor
+          \ 'matchstr(v:val, ' . incsearch . ')')
+      let bibdata_list += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
+    endfor
+  endif
 
   return bibdata_list
 endfunction
