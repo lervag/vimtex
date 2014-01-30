@@ -258,6 +258,7 @@ function! s:get_main_recurse(file)
   "
   for l:file in glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
+          \ . '((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?''')) > 0
       return s:get_main_recurse(l:file)
     endif
