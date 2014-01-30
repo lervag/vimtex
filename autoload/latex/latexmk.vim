@@ -101,7 +101,7 @@ function! latex#latexmk#compile()
   " Start latexmk and save PID
   "
   call s:execute(cmd)
-  let g:latex#data[b:latex.id].pid = system('pgrep -nf latexmk')[:-2]
+  let g:latex#data[b:latex.id].pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
   echomsg 'latexmk started successfully'
 endfunction
 
