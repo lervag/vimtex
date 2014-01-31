@@ -267,9 +267,8 @@ Use this option to prevent the plugin from setting the 'omnifunc': >
   let g:latex_complete_enabled = 1
 <
                                               *g:latex_complete_recursive_bib*
-Use this option to prevent the plugin recursively searching for bibliography
-files, but instead to only load files referenced in the main tex file. This 
-can provide a significant speedup for large projects. >
+This option toggles recursive searching for bibliography files.  Note that this
+option may lead to a significant slowdown for large projects if enabled. >
   let g:latex_complete_recursive_bib = 0
 <
                                                    *g:latex_complete_patterns*
