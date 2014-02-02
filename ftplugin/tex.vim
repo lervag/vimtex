@@ -12,7 +12,7 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-set suffixesadd+=.tex,.sty
+set suffixesadd+=.tex
 
 " {{{1 Options
 
