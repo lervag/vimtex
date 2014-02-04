@@ -3,6 +3,11 @@ function! latex#latexmk#init(initialized)
   if !g:latex_latexmk_enabled | return | endif
 
   "
+  " Check if system is incompatible with latexmk
+  "
+  if s:system_incompatible() | return | endif
+
+  "
   " Initialize pid for current tex file
   "
   if !has_key(g:latex#data[b:latex.id], 'pid')
@@ -187,6 +192,14 @@ function! latex#latexmk#stop_all()
 endfunction
 " }}}1
 
+" {{{1 s:execute
+function! s:execute(cmd)
+  silent execute a:cmd
+  if !has('gui_running')
+    redraw!
+  endif
+endfunction
+
 " {{{1 s:stop_buffer
 function! s:stop_buffer()
   "
@@ -219,13 +232,27 @@ function! s:stop_buffer()
   endif
 endfunction
 
-" {{{1 s:execute
-function! s:execute(cmd)
-  silent execute a:cmd
-  if !has('gui_running')
-    redraw!
+" {{{1 s:system_incompatible()
+function! s:system_incompatible()
+  "
+  " Windows will not be supported
+  "
+  if has('win32')
+    return 1
   endif
+
+  "
+  " Check if latexmk or pgrep is missing
+  "
+  for cmd in [ 'latexmk', 'pgrep' ]
+    if !executable(cmd)
+      echom "Warning: Could not initialize latex#latexmk"
+      echom "         Missing executable: " . cmd
+      return 1
+    endif
+  endfor
 endfunction
+
 " }}}1
 
 " vim:fdm=marker:ff=unix

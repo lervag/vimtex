@@ -49,6 +49,18 @@ that is easy to customize and evolve.  Most of the functionality provided is
 turned on by default, but the user may turn off features that are not desired.
 The plugin will hereafter be referred to as |vim-latex|.
 
+                                                      *vim-latex-requirements*
+Some of the functionalities of |vim-latex| has certain requirements:
+
+  |vim-latex-latexmk|
+    Requires that the user has installed both `latexmk` and `pgrep`.  If these
+    are not available, then the functionalities provided by
+    |vim-latex-latexmk| will not be available.
+
+  |vim-latex-completion|
+    The function |latex#complete#bibtex| requires `bibtex` and `kpsewhich` to
+    parse bib files for bibliography completion.
+
 ==============================================================================
 MAIN INTERFACE                                                *vim-latex-main*
 

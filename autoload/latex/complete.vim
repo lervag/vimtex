@@ -1,11 +1,31 @@
 " {{{1 latex#complete#init
 function! latex#complete#init(initialized)
+  "
+  " Check if bibtex is available
+  "
+  if !executable('bibtex')
+    echom "Warning: bibtex completion not available"
+    echom "         Missing executable: bibtex"
+    let s:bibtex = 0
+  endif
+
+  "
+  " Check if kpsewhich is required and available
+  "
+  if g:latex_complete_recursive_bib && !executable('kpsewhich')
+    echom "Warning: bibtex completion not available"
+    echom "         Missing executable: kpsewhich"
+    echom "         You could try to turn off recursive bib functionality"
+    let s:bibtex = 0
+  endif
+
   if g:latex_complete_enabled
     setlocal omnifunc=latex#complete#omnifunc
   endif
 endfunction
 
 " {{{1 latex#complete#omnifunc
+let s:bibtex = 1
 let s:completion_type = ''
 function! latex#complete#omnifunc(findstart, base)
   if a:findstart
@@ -38,7 +58,7 @@ function! latex#complete#omnifunc(findstart, base)
     "
     if s:completion_type == 'ref'
       return latex#complete#labels(a:base)
-    elseif s:completion_type == 'bib'
+    elseif s:completion_type == 'bib' && s:bibtex
       return latex#complete#bibtex(a:base)
     endif
   endif
@@ -319,6 +339,7 @@ function! s:labels_extract_inputs(file)
   endfor
   return matches
 endfunction
+
 " }}}1
 
 " {{{1 s:next_chars_match
