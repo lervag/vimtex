@@ -88,7 +88,7 @@ endfunction
 
 " {{{1 latex#view
 function! latex#view()
-  let outfile = g:latex#data[b:latex.id].out()
+  let outfile = shellescape(g:latex#data[b:latex.id].out())
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
@@ -118,10 +118,10 @@ function! s:init_environment()
     let b:latex.id = id
   else
     let data = {}
-    let data.tex  = shellescape(main)
-    let data.root = shellescape(fnamemodify(data.tex, ':h'))
-    let data.base = shellescape(fnamemodify(data.tex, ':t'))
-    let data.name = shellescape(fnamemodify(data.tex, ':t:r'))
+    let data.tex  = main
+    let data.root = fnamemodify(data.tex, ':h')
+    let data.base = fnamemodify(data.tex, ':t')
+    let data.name = fnamemodify(data.tex, ':t:r')
     function data.aux() dict
       return s:get_main_ext(self, 'aux')
     endfunction
@@ -282,7 +282,7 @@ function! s:get_main_ext(texdata, ext)
   for f in map(candidates,
         \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
     if filereadable(f)
-      return shellescape(fnamemodify(f, ':p'))
+      return fnamemodify(f, ':p')
     endif
   endfor
 

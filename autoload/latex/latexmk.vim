@@ -57,13 +57,13 @@ function! latex#latexmk#clean(...)
   "
   " Run latexmk clean process
   "
-  let cmd = '!cd ' . data.root . ';'
+  let cmd = '!cd ' . shellescape(data.root) . ';'
   if full
     let cmd .= 'latexmk -C '
   else
     let cmd .= 'latexmk -c '
   endif
-  let cmd .= data.base . ' &>/dev/null'
+  let cmd .= shellescape(data.base) . ' &>/dev/null'
   let g:latex#data[b:latex.id].clean_cmd = cmd
 
   call s:execute(cmd)
@@ -85,7 +85,7 @@ function! latex#latexmk#compile()
   "
   " Set latexmk command with options
   "
-  let cmd  = '!cd ' . data.root . ' && '
+  let cmd  = '!cd ' . shellescape(data.root) . ' && '
   let cmd .= 'max_print_line=2000 latexmk'
   let cmd .= ' -' . g:latex_latexmk_output
   let cmd .= ' -quiet '
@@ -93,7 +93,7 @@ function! latex#latexmk#compile()
   let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
   let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
-  let cmd .= ' ' . data.base
+  let cmd .= ' ' . shellescape(data.base)
   let cmd .= ' &>/dev/null &'
   let g:latex#data[b:latex.id].cmd = cmd
 
