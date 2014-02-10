@@ -385,4 +385,4 @@ function! s:search_and_skip_comments(pat, ...)
 endfunction
 " }}}1
 
-" vim:fdm=marker:ff=unix
+" vim: fdm=marker

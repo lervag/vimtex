@@ -72,4 +72,4 @@ call latex#util#set_default('g:latex_viewer', 'xdg-open')
 
 call latex#init()
 
-" vim:fdm=marker:ff=unix
+" vim: fdm=marker

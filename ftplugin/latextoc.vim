@@ -155,4 +155,4 @@ function! s:toc_toggle_numbers()
 endfunction
 " }}}1
 
-" vim:fdm=marker:ff=unix
+" vim: fdm=marker

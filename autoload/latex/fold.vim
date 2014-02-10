@@ -301,4 +301,4 @@ function! s:parse_caption_frame(line)
 endfunction
 " }}}1
 
-" vim:fdm=marker:ff=unix
+" vim: fdm=marker

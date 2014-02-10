@@ -348,4 +348,4 @@ function! s:next_chars_match(regex)
 endfunction
 " }}}1
 
-" vim:fdm=marker:ff=unix
+" vim: fdm=marker
