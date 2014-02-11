@@ -99,7 +99,7 @@ function! latex#latexmk#compile()
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
   let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
   let cmd .= ' ' . shellescape(data.base)
-  let cmd .= ' &>/dev/null &'
+  let cmd .= ' &>' . tempname() . ' &'
   let g:latex#data[b:latex.id].cmd = cmd
 
   "
