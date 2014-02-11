@@ -52,6 +52,7 @@ call latex#util#set_default('g:latex_fold_sections',
       \ ])
 call latex#util#set_default('g:latex_indent_enabled', 1)
 call latex#util#set_default('g:latex_latexmk_enabled', 1)
+call latex#util#set_default('g:latex_latexmk_callback', 1)
 call latex#util#set_default('g:latex_latexmk_options', '')
 call latex#util#set_default('g:latex_latexmk_output', 'pdf')
 call latex#util#set_default('g:latex_latexmk_autojump', '0')
