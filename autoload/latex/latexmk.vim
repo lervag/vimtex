@@ -98,6 +98,7 @@ function! latex#latexmk#compile()
   let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
   let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
+  let cmd .= s:server_callback()
   let cmd .= ' ' . shellescape(data.base)
   let cmd .= ' &>' . tempname() . ' &'
   let g:latex#data[b:latex.id].cmd = cmd
@@ -197,6 +198,16 @@ function! s:execute(cmd)
   silent execute a:cmd
   if !has('gui_running')
     redraw!
+  endif
+endfunction
+
+" {{{1 s:server_callback
+function! s:server_callback()
+  if g:latex_latexmk_callback && has('clientserver')
+    let callback = 'vim --servername ' . v:servername
+          \ . ' --remote-expr ''latex\#latexmk\#errors()'''
+    return    ' -e ' . shellescape('$success_cmd .= "' . callback . '"')
+          \ . ' -e ' . shellescape('$failure_cmd .= "' . callback . '"')
   endif
 endfunction
 

@@ -241,6 +241,7 @@ Overview:~
   |g:latex_fold_sections|
   |g:latex_indent_enabled|
   |g:latex_latexmk_autojump|
+  |g:latex_latexmk_callback|
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
@@ -337,12 +338,18 @@ List of section constructs that should be folded. >
                                                       *g:latex_indent_enabled*
 Use |vim-latex| indentation function.  Not as customizable as the official
 indentation function, but imho it is better. >
-  let g:latex_indent_enabled = '1'
+  let g:latex_indent_enabled = 1
 <
                                                     *g:latex_latexmk_autojump*
 Whether to automatically jump to the first error when the error window is
 opened with the default mapping or |latex#latexmk#errors|. >
-  let g:latex_latexmk_autojump = '0'
+  let g:latex_latexmk_autojump = 0
+<
+                                                    *g:latex_latexmk_callback*
+If enabled, this option tells `latexmk` to run |latex#latexmk#errors| after
+compilation is finished.  Note that this feature only works if vim is compiled
+with the |+clientserver| option. >
+  let g:latex_latexmk_callback = 1
 <
                                                      *g:latex_latexmk_enabled*
 Whether to enable the `latexmk` interface or not.  Note that even if it is not
@@ -554,10 +561,10 @@ The default mappings are: >
   nnoremap <localleader>lC :call latex#latexmk#clean(1)<cr>
 
 The background compilation is started with |latex#latexmk#compile|.  It relies
-on the preview continuous mode of `latexmk`.  Compilation errors are not
-parsed automatically, since there is no way for vim to know when the document
-has been compiled.  However, `latexmk` does know, and so there is a way to
-get a more interactive coupling, see |vim-latex-latexmk-tricks|.
+on the preview continuous mode of `latexmk`.  If vim is compiled with the
+|+clientserver| option and if |g:latex_latexmk_callback| is enabled, then
+compilation errors are parsed automatically.  This is done by utilizing the
+tricks explained in |vim-latex-latexmk-tricks|.
 
 To check for and view errors in the quickfix window, use
 |latex#latexmk#errors|.  To check if background compilation is running, use
@@ -565,6 +572,7 @@ To check for and view errors in the quickfix window, use
 
 Associated settings:
     |g:latex_latexmk_enabled|
+    |g:latex_latexmk_callback|
     |g:latex_latexmk_autojump|
     |g:latex_latexmk_options|
     |g:latex_latexmk_output|
@@ -581,11 +589,11 @@ Functions:
 Latexmk tricks:~                                    *vim-latex-latexmk-tricks*
 
 `latexmk` allows to set options through a configuration file
-`$HOME/.latexmkrc`.  A particular set of options are very convenient for a good
-coupling between |vim-latex| and `latexmk`: `$..._cmd`, where `...` refers to
-either `compiling`, `success`, or `failure`.  These options can be used to
-specify commands that are run by `latexmk` before and after a compilation run.
-For instance, one may use these options: >
+`$HOME/.latexmkrc`.  A particular set of options are very convenient for
+a good coupling between |vim-latex| and `latexmk`: `$..._cmd`, where `...`
+refers to either `compiling`, `success`, or `failure`.  These options can be
+used to specify commands that are run by `latexmk` before and after
+a compilation run.  For instance, one may use these options: >
 
 $compiling_cmd = "xdotool search --name \"%D\" " .
                  "set_window --name \"%D compiling...\"";
@@ -598,9 +606,20 @@ $failure_cmd = "xdotool search --name \"%D\" " .
 <
 Here `xdotool` (http://www.semicomplete.com/projects/xdotool/) is used to
 change the title of the pdf viewer during and after compilation.  In addition,
-|latex#latexmk#errors()| is called through the vimserver after each run to
+|latex#latexmk#errors| is called through the |clientserver| after each run to
 either open the quickfix window when there are errors/warnings, or to close the
 quickfix window in case all errors/warnings are gone.
+
+The latter trick is utilized in |vim-latex| to automatically run the callback
+commands if vim has the option |+clientserver|, and if the option
+|g:latex_latexmk_callback| is enabled.  The command that is used by `latexmk`
+is then on the following form: >
+
+  gvim --servername v:servername --remote-expr 'latex#latexmk#errors()'
+
+This command is then appended to the existing `$success_cmd` and
+`$failure_cmd`.  Note that if the existing commands are not empty, then they
+must end with a semicolon in order to allow |vim-latex| to append safely.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
