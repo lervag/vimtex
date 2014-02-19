@@ -88,13 +88,15 @@ endfunction
 
 " {{{1 latex#view
 function! latex#view()
-  let outfile = shellescape(g:latex#data[b:latex.id].out())
+  let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
   endif
 
-  silent execute '!' . g:latex_viewer . ' ' . outfile . ' &>/dev/null &'
+  silent execute '!' . g:latex_viewer . ' '
+        \ . shellescape(outfile)
+        \ . ' &>/dev/null &'
   if !has("gui_running")
     redraw!
   endif
