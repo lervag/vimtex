@@ -37,18 +37,15 @@ call latex#util#set_default('g:latex_fold_preamble', 1)
 call latex#util#set_default('g:latex_fold_envs', 1)
 call latex#util#set_default('g:latex_fold_parts',
       \ [
-      \ "appendix",
-      \ "frontmatter",
-      \ "mainmatter",
-      \ "backmatter",
-      \ ])
-call latex#util#set_default('g:latex_fold_sections',
-      \ [
-      \ "part",
-      \ "chapter",
-      \ "section",
-      \ "subsection",
-      \ "subsubsection",
+      \   ["part",          0],
+      \   ["appendix",      0],
+      \   ["frontmatter",   0],
+      \   ["mainmatter",    0],
+      \   ["backmatter",    0],
+      \   ["chapter",       1],
+      \   ["section",       1],
+      \   ["subsection",    1],
+      \   ["subsubsection", 1],
       \ ])
 call latex#util#set_default('g:latex_indent_enabled', 1)
 call latex#util#set_default('g:latex_latexmk_enabled', 1)

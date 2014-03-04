@@ -34,7 +34,7 @@ endfunction
 " {{{1 latex#fold#refresh
 function! latex#fold#refresh()
   " Parse tex file to dynamically set the sectioning fold levels
-  let b:latex.fold_sections = s:find_fold_sections()
+  let b:latex.fold_parts = s:find_fold_parts()
 endfunction
 
 " {{{1 latex#fold#level
@@ -55,13 +55,8 @@ function! latex#fold#level(lnum)
     endif
   endif
 
-  " Fold parts (\frontmatter, \mainmatter, \backmatter, and \appendix)
-  if line =~# '^\s*\\\%(' . join(g:latex_fold_parts, '\|') . '\)'
-    return ">1"
-  endif
-
   " Fold chapters and sections
-  for [part, level] in b:latex.fold_sections
+  for [part, level] in b:latex.fold_parts
     if line =~# part
       return ">" . level
     endif
@@ -176,59 +171,39 @@ endfunction
 let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
 let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
-" {{{1 s:find_fold_sections
-function! s:find_fold_sections()
+" {{{1 s:find_fold_parts
+function! s:find_fold_parts()
   "
   " This function parses the tex file to find the sections that are to be
   " folded and their levels, and then predefines the patterns for optimized
   " folding.
   "
   " Initialize
-  let level = 1
+  let level = 0
   let foldsections = []
-
-  " If we use two or more of the *matter commands, we need one more foldlevel
-  let nparts = 0
-  for part in g:latex_fold_parts
-    let i = 1
-    while i < line("$")
-      if getline(i) =~ '^\s*\\' . part . '\>'
-        let nparts += 1
-        break
-      endif
-      let i += 1
-    endwhile
-    if nparts > 1
-      let level = 2
-      break
-    endif
-  endfor
 
   " Combine sections and levels, but ignore unused section commands:  If we
   " don't use the part command, then chapter should have the highest
   " level.  If we don't use the chapter command, then section should be the
   " highest level.  And so on.
-  let ignore = 1
-  for part in g:latex_fold_sections
+  for [part, inc] in g:latex_fold_parts
     " For each part, check if it is used in the file.  We start adding the
     " part patterns to the fold sections array whenever we find one.
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
-    if ignore
-      let i = 1
-      while i < line("$")
-        if getline(i) =~# partpattern
-          call insert(foldsections, [partpattern, level])
-          let level += 1
-          let ignore = 0
-          break
-        endif
-        let i += 1
-      endwhile
-    else
-      call insert(foldsections, [partpattern, level])
-      let level += 1
-    endif
+    let nline  = 1
+    while nline < line("$")
+      if getline(nline) =~# partpattern
+        let level = level == 0 ? 1 : level + inc
+        call insert(foldsections, [partpattern, level])
+        break
+      endif
+      let nline += 1
+    endwhile
   endfor
+
+  if len(filter(copy(foldsections), 'v:val[1] <= 1')) < 2
+    call filter(foldsections, 'v:val[1] > 1')
+  endif
 
   return foldsections
 endfunction

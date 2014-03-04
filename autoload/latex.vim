@@ -22,10 +22,10 @@ endfunction
 function! latex#info()
   echo "b:latex"
   echo '  id: ' . b:latex.id
-  if has_key(b:latex, 'fold_sections') && !empty(b:latex.fold_sections)
-    echo '  fold sections:'
-    for entry in reverse(copy(b:latex.fold_sections))
-      echo '    ' . entry[0]
+  if has_key(b:latex, 'fold_parts') && !empty(b:latex.fold_parts)
+    echo '  fold parts:'
+    for entry in reverse(copy(b:latex.fold_parts))
+      echo '    fold level ' . entry[1] . ': ' . entry[0]
     endfor
   endif
   echo "\n"
