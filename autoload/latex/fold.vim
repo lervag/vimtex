@@ -176,34 +176,46 @@ function! s:find_fold_parts()
   "
   " This function parses the tex file to find the sections that are to be
   " folded and their levels, and then predefines the patterns for optimized
-  " folding.
+  " folding.  For convenience, we ignore sectioning commands that are not
+  " present in the document.  We also ignore top level parts such as
+  " \frontmatter, \appendix, \part, and similar, unless there are at least two
+  " such commands in a document.
   "
+
   " Initialize
-  let level = 0
   let foldsections = []
 
-  " Combine sections and levels, but ignore unused section commands:  If we
-  " don't use the part command, then chapter should have the highest
-  " level.  If we don't use the chapter command, then section should be the
-  " highest level.  And so on.
-  for [part, inc] in g:latex_fold_parts
+  " Parse part commands (frontmatter, appendix, part, etc)
+  for part in g:latex_fold_parts
     " For each part, check if it is used in the file.  We start adding the
     " part patterns to the fold sections array whenever we find one.
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
     let nline  = 1
     while nline < line("$")
       if getline(nline) =~# partpattern
-        let level = level == 0 ? 1 : level + inc
-        call insert(foldsections, [partpattern, level])
+        call insert(foldsections, [partpattern, 1])
         break
       endif
       let nline += 1
     endwhile
   endfor
 
-  if len(filter(copy(foldsections), 'v:val[1] <= 1')) < 2
-    call filter(foldsections, 'v:val[1] > 1')
-  endif
+  " Parse section commands (chapter, [sub...]section)
+  let level = len(foldsections) > 0 ? 1 : 0
+  for part in g:latex_fold_sections
+    " For each part, check if it is used in the file.  We start adding the
+    " part patterns to the fold sections array whenever we find one.
+    let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
+    let nline  = 1
+    while nline < line("$")
+      if getline(nline) =~# partpattern
+        let level += 1
+        call insert(foldsections, [partpattern, level])
+        break
+      endif
+      let nline += 1
+    endwhile
+  endfor
 
   return foldsections
 endfunction
