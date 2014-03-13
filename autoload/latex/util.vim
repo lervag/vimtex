@@ -227,9 +227,7 @@ endfunction
 
 " {{{1 latex#util#in_comment
 function! latex#util#in_comment(...)
-  let line = a:0 >= 1 ? a:1 : line('.')
-  let col = a:0 >= 2 ? a:2 : col('.')
-  return synIDattr(synID(line, col, 0), "name") =~# '^texComment'
+  return synIDattr(synID(line('.'), col('.'), 0), "name") =~# '^texComment'
 endfunction
 
 " {{{1 latex#util#kpsewhich
