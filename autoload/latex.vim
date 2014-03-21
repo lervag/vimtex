@@ -258,7 +258,7 @@ function! s:get_main_recurse(file)
   "
   " Search for files that include the current file
   "
-  for l:file in glob('*.tex', 0, 1) + glob('../*.tex', 0, 1)
+  for l:file in split(glob('*.tex')) + split(glob('../*.tex'))
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
           \ . '((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?''')) > 0
