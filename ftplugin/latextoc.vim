@@ -99,16 +99,18 @@ endfunction
 
 " {{{1 s:toc_escape_title
 function! s:toc_escape_title(titlestr)
-  " Credit goes to Marcin Szamotulski for the following fix.  It allows to
-  " match through commands added by TeX.
-
-  let titlestr = substitute(a:titlestr, '\\\w*\>\s*\%({[^}]*}\)\?', '.*', 'g')
-  let titlestr = escape(titlestr, '\')
-  return substitute(titlestr, ' ', '\\_\\s\\+', 'g')
+  let titlestr = substitute(a:titlestr, '\\[a-zA-Z@]*\>\s*{\?', '.*', 'g')
+  let titlestr = substitute(titlestr, '}', '', 'g')
+  let titlestr = substitute(titlestr, '\%(\.\*\s*\)\{2,}', '.*', 'g')
+  return titlestr
 endfunction
 
 " {{{1 s:toc_find_match
-function! s:toc_find_match(strsearch,duplicates,files)
+function! s:toc_find_match(strsearch, duplicates, files)
+  if len(a:files) == 0
+    echoerr "Could not find: " . a:strsearch
+    return
+  endif
 
   call s:toc_open_buf(a:files[0])
   let dups = a:duplicates
@@ -127,20 +129,17 @@ function! s:toc_find_match(strsearch,duplicates,files)
     return
   endif
 
-  call s:toc_find_match(a:strsearch,dups,a:files[1:])
-
+  call s:toc_find_match(a:strsearch, dups, a:files[1:])
 endfunction
 
 " {{{1 s:toc_open_buf
 function! s:toc_open_buf(file)
-
   let bnr = bufnr(a:file)
   if bnr == -1
     execute 'badd ' . a:file
     let bnr = bufnr(a:file)
   endif
   execute 'buffer! ' . bnr
-
 endfunction
 
 " {{{1 s:toc_toggle_numbers
