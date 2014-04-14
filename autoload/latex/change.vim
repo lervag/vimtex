@@ -8,8 +8,8 @@ function! latex#change#init(initialized)
     nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
     nnoremap <silent><buffer> tsd :call latex#change#toggle_delim()<cr>
 
-    nnoremap <silent><buffer> <F7> :call latex#toggle_command()<cr>i
-    inoremap <silent><buffer> <F7> <c-r>=latex#toggle_command()<cr>
+    nnoremap <silent><buffer> <F7> :call latex#change#to_command()<cr>i
+    inoremap <silent><buffer> <F7> <c-r>=latex#change#to_command()<cr>
   endif
 endfunction
 
