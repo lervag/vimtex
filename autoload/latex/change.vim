@@ -7,6 +7,9 @@ function! latex#change#init(initialized)
 
     nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
     nnoremap <silent><buffer> tsd :call latex#change#toggle_delim()<cr>
+
+    nnoremap <silent><buffer> <F7> :call latex#toggle_command()<cr>i
+    inoremap <silent><buffer> <F7> <c-r>=latex#toggle_command()<cr>
   endif
 endfunction
 
@@ -73,6 +76,47 @@ function! latex#change#env_prompt()
   else
     call latex#change#env(new_env)
   endif
+endfunction
+
+" {{{1 latex#change#to_command
+function! latex#change#to_command()
+  " Get current line
+  let line = getline('.')
+
+  " Get cursor position
+  let pos = getpos('.')
+
+  " Return if there is no word at cursor
+  if mode() == 'n'
+    let column = pos[2] - 1
+  else
+    let column = pos[2] - 2
+  endif
+  if column <= 1 || line[column] =~ '\s'
+    return ''
+  endif
+
+  " Prepend a backslash to beginning of the current word
+  normal! B
+  let column = getpos('.')[2]
+  if line[column - 1] != '\'
+    let line = strpart(line, 0, column - 1) . '\' . strpart(line, column - 1)
+    call setline('.', line)
+  endif
+
+  " Append opening braces to the end of the current word
+  normal! E
+  let column = getpos('.')[2]
+  let pos[2] = column + 1
+  if line[column - 1] != '{'
+    let line = strpart(line, 0, column) . '{' . strpart(line, column)
+    call setline('.', line)
+    let pos[2] += 1
+  endif
+
+  " Restore cursor position
+  call setpos('.', pos)
+  return ''
 endfunction
 
 " {{{1 latex#change#toggle_delim

@@ -216,6 +216,8 @@ n  dse              *@:call latex#change#env('')<cr>
 n  cse              *@:call latex#change#env_prompt()<cr>
 n  tse              *@:call latex#change#toggle_env_star()<cr>
 n  tsd              *@:call latex#change#toggle_delim()<cr>
+n  <F7>             *@:call latex#change#to_command()<cr>i
+i  <F7>             *@:call latex#change#to_command()<cr>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -651,6 +653,7 @@ selected text.
 Functions:
     |latex#change#env|
     |latex#change#env_prompt|
+    |latex#change#to_command|
     |latex#change#toggle_delim|
     |latex#change#toggle_env_star|
     |latex#change#wrap_selection|
@@ -704,6 +707,7 @@ Overview:~
 
   |latex#change#env|
   |latex#change#env_prompt|
+  |latex#change#to_command|
   |latex#change#toggle_delim|
   |latex#change#toggle_env_star|
   |latex#change#wrap_selection|
@@ -748,6 +752,11 @@ Change the current environment name to the one passed as an argument.
 
                                                       *latex#change#env_prompt*
 Change the current environment name to one typed at a prompt.
+
+                                                      *latex#change#to_command*
+Turn word under cursor into command.  This essentially prepends a backslash
+and adds an opening brace.  The function may be used both in an insert mode
+mapping and in a normal mode mapping.
 
                                                     *latex#change#toggle_delim*
 Toggle delimiters between `(` `)` and `\left(` `\right)` (and similar).
