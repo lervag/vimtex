@@ -3,6 +3,7 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 let s:cpo_save = &cpo
+let s:tikz_indented = 0
 set cpo&vim
 
 " {{{1 Options and common patterns
@@ -35,6 +36,12 @@ let s:delimiters_close = '\(' . join([
         \ '\\\Cend\s*{.\{-}}',
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
+      \ ], '\|') . '\)'
+let s:tikz_commands = '\(' . join([
+        \ 'draw',
+        \ 'path',
+        \ 'node',
+        \ 'add\(legendentry\|plot\)',
       \ ], '\|') . '\)'
 " }}}1
 
@@ -116,6 +123,16 @@ function! LatexIndent()
   endif
   if cline =~ '^\s*\\\(bib\)\?item'
     let ind -= &sw
+  endif
+
+  " Indent tikz elements
+  if pline =~ s:tikz_commands
+    let ind += &sw
+    let s:tikz_indented += 1
+  endif
+  if s:tikz_indented > 0 && pline =~ ';\s*$'
+    let ind -= &sw
+    let s:tikz_indented -= 1
   endif
 
   return ind
