@@ -214,8 +214,8 @@ n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 n  zx               *@:call latex#fold#refresh()<cr>zx
 n  dse              *@:call latex#change#env('')<cr>
 n  cse              *@:call latex#change#env_prompt()<cr>
-n  tse              *@:call latex#change#env_toggle_star()<cr>
-n  tsd              *@:call latex#change#delim_toggle()<cr>
+n  tse              *@:call latex#change#toggle_env_star()<cr>
+n  tsd              *@:call latex#change#toggle_delim()<cr>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
