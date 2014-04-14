@@ -140,7 +140,7 @@ function! s:toc_open_buf(file)
     let bnr = bufnr(a:file)
   endif
   execute 'buffer! ' . bnr
-  normal gg
+  normal! gg
 endfunction
 
 " {{{1 s:toc_toggle_numbers
