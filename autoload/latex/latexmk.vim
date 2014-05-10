@@ -116,6 +116,11 @@ function! latex#latexmk#errors()
   cclose
 
   let log = g:latex#data[b:latex.id].log()
+  if empty(log)
+    echo "No log file found!"
+    return
+  endif
+
   if g:latex_latexmk_autojump
     execute 'cfile ' . log
   else
