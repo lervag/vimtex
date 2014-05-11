@@ -25,7 +25,7 @@ function! latex#latexmk#init(initialized)
     nnoremap <silent><buffer> <localleader>lG :call latex#latexmk#status(1)<cr>
     nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop(1)<cr>
     nnoremap <silent><buffer> <localleader>lK :call latex#latexmk#stop_all()<cr>
-    nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors()<cr>
+    nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
   endif
 
   "
@@ -112,7 +112,7 @@ function! latex#latexmk#compile()
 endfunction
 
 " {{{1 latex#latexmk#errors
-function! latex#latexmk#errors()
+function! latex#latexmk#errors(...)
   cclose
 
   let log = g:latex#data[b:latex.id].log()
@@ -127,7 +127,7 @@ function! latex#latexmk#errors()
     execute 'cgetfile ' . log
   endif
 
-  if g:latex_latexmk_quickfix
+  if g:latex_latexmk_quickfix || a:1
     botright cwindow
     if g:latex_latexmk_quickfix == 2
       wincmd p
