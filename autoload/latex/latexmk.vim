@@ -116,7 +116,7 @@ function! latex#latexmk#errors(...)
   cclose
 
   let log = g:latex#data[b:latex.id].log()
-  if empty(log)
+  if empty(log) && a:1
     echo "No log file found!"
     return
   endif
