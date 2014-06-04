@@ -37,8 +37,9 @@ let s:delimiters_close = '\(' . join([
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ], '\|') . '\)'
-let s:tikz_commands = '\(' . join([
+let s:tikz_commands = '\\\(' . join([
         \ 'draw',
+        \ 'fill',
         \ 'path',
         \ 'node',
         \ 'add\(legendentry\|plot\)',
