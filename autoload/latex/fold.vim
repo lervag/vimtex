@@ -70,9 +70,13 @@ function! latex#fold#level(lnum)
   " Fold environments
   if g:latex_fold_envs
     if line =~# s:notcomment . s:notbslash . '\\begin\s*{.\{-}}'
-      return "a1"
+      if line !~# '\\end'
+        return "a1"
+      endif
     elseif line =~# s:notcomment . s:notbslash . '\\end\s*{.\{-}}'
-      return "s1"
+      if line !~# '\\begin'
+        return "s1"
+      endif
     endif
   endif
 
