@@ -156,24 +156,28 @@ function! s:init_errorformat()
   "
 
   " Push file to file stack
-  setlocal efm+=%+P**%f
+  setlocal efm=%+P**%f
 
   " Match errors
-  setlocal efm=%E!\ LaTeX\ %trror:\ %m
+  setlocal efm+=%E!\ LaTeX\ %trror:\ %m
   setlocal efm+=%E%f:%l:\ %m
   setlocal efm+=%E!\ %m
 
-  " More info for undefined control sequences
-  setlocal efm+=%Z<argument>\ %m
+  " More info for some errors
+  setlocal efm+=%Cl.%l\ %m
 
   " Show warnings
   if g:latex_errorformat_show_warnings
-    " Parse biblatex warning
-    setlocal efm+=%+WPackage\ biblatex\ Warning:%m
+    " Parse biblatex warnings
+    setlocal efm+=%+WPackage\ biblatex\ Warning:\ %m
     setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
     setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
     setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
     setlocal efm+=%-Z(biblatex)%m
+
+    " Parse hyperref warnings
+    " setlocal efm+=%+WPackage\ hyperref\ Warning:\ %m
+    " setlocal efm+=%-C(hyperref)%.%#on\ input\ line\ %l.
 
     " Ignore some warnings
     for w in g:latex_errorformat_ignore_warnings
