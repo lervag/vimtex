@@ -163,22 +163,14 @@ function! s:init_errorformat()
   setlocal efm+=%E%f:%l:\ %m
   setlocal efm+=%E!\ %m
 
+  " More info for undefined control sequences
+  setlocal efm+=%Z<argument>\ %m
+
   " More info for some errors
   setlocal efm+=%Cl.%l\ %m
 
   " Show warnings
   if g:latex_errorformat_show_warnings
-    " Parse biblatex warnings
-    setlocal efm+=%+WPackage\ biblatex\ Warning:\ %m
-    setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
-    setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
-    setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
-    setlocal efm+=%-Z(biblatex)%m
-
-    " Parse hyperref warnings
-    " setlocal efm+=%+WPackage\ hyperref\ Warning:\ %m
-    " setlocal efm+=%-C(hyperref)%.%#on\ input\ line\ %l.
-
     " Ignore some warnings
     for w in g:latex_errorformat_ignore_warnings
       let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
@@ -188,6 +180,15 @@ function! s:init_errorformat()
     setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
     setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
     setlocal efm+=%+W%.%#%.%#Warning:\ %m
+
+    " Parse biblatex warnings
+    setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
+    setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
+    setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
+    setlocal efm+=%-Z(biblatex)%m
+
+    " Parse hyperref warnings
+    setlocal efm+=%-C(hyperref)%.%#on\ input\ line\ %l.
   endif
 
   " Ignore unmatched lines
