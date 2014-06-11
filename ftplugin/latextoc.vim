@@ -72,7 +72,7 @@ function! s:toc_activate(close)
 
   let files = [entry['file']]
   for line in filter(readfile(entry['file']), 'v:val =~ ''\\input{''')
-    call add(files, matchstr(line, '{\zs.*\ze\(\.tex\)\?}') . '.tex')
+    call add(files, matchstr(line, '{\zs.\{-}\ze\(\.tex\)\?}') . '.tex')
   endfor
 
   " Find section in buffer (or inputted files)
