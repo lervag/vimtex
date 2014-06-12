@@ -133,7 +133,7 @@ function! s:read_toc(auxfile, texfile, ...)
       call remove(tree, 1)
     endif
     if len(tree) > 1
-      if tree[0] =~ '^\\numberline'
+      if tree[0] =~ '^\\\(numberline\|tocsection\)'
         let secnum = latex#util#tree2tex(tree[1])
         let secnum = substitute(secnum, '\\\S\+\s', '', 'g')
         let secnum = substitute(secnum, '\\\S\+{\(.\{-}\)}', '\1', 'g')
