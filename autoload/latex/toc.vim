@@ -118,7 +118,8 @@ function! s:read_toc(auxfile, texfile, ...)
 
     " Parse level
     let level = tree[0][0]
-    " parse page
+
+    " Parse page
     if !empty(tree[2])
       let page = tree[2][0]
     else
@@ -145,6 +146,7 @@ function! s:read_toc(auxfile, texfile, ...)
     " Parse title
     let text = latex#util#tree2tex(tree)
     let text = substitute(text, '^{\+\|}\+$', '', 'g')
+    let text = substitute(text, '^\\nonumberline\s*', '', 'g')
 
     " Add TOC entry
     call add(fileindices[texfile], len(toc))
