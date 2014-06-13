@@ -170,9 +170,9 @@ function! s:init_errorformat()
   setlocal efm+=%Cl.%l\ %m
 
   " Show warnings
-  if g:latex_errorformat_show_warnings
+  if ! g:latex_quickfix_ignore_all_warnings
     " Ignore some warnings
-    for w in g:latex_errorformat_ignore_warnings
+    for w in g:latex_quickfix_ignored_warnings
       let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
       exe 'setlocal efm+=%-G%.%#'. warning .'%.%#'
     endfor

@@ -112,24 +112,26 @@ function! latex#latexmk#compile()
 endfunction
 
 " {{{1 latex#latexmk#errors
-function! latex#latexmk#errors(...)
+function! latex#latexmk#errors(force)
   cclose
 
   let log = g:latex#data[b:latex.id].log()
-  if empty(log) && a:1
-    echo "No log file found!"
+  if empty(log)
+    if a:force
+      echo "No log file found!"
+    endif
     return
   endif
 
-  if g:latex_latexmk_autojump
+  if g:latex_quickfix_autojump
     execute 'cfile ' . log
   else
     execute 'cgetfile ' . log
   endif
 
-  if g:latex_latexmk_quickfix || a:1
+  if g:latex_quickfix_mode || a:force
     botright cwindow
-    if g:latex_latexmk_quickfix == 2
+    if g:latex_quickfix_mode == 2
       wincmd p
     endif
     redraw!
@@ -210,7 +212,7 @@ endfunction
 function! s:server_callback()
   if g:latex_latexmk_callback && has('clientserver')
     let callback = 'vim --servername ' . v:servername
-          \ . ' --remote-expr ''latex\#latexmk\#errors()'''
+          \ . ' --remote-expr ''latex\#latexmk\#errors(0)'''
     return    ' -e ' . shellescape('$success_cmd .= "' . callback . '"')
           \ . ' -e ' . shellescape('$failure_cmd .= "' . callback . '"')
   endif

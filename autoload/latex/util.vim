@@ -78,6 +78,13 @@ let s:convert_back_list = map([
       \ ['\\\~n}'        , 'ñ'],
       \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
+" {{{1 latex#util#error_deprecated
+function! latex#util#error_deprecated(variable)
+  echoerr "Deprecation error: " . a:variable
+  echoerr "Please red docs for more info!"
+  echoerr ":h vim-latex-changelog"
+endfunction
+
 " {{{1 latex#util#get_env
 function! latex#util#get_env(...)
   " latex#util#get_env([with_pos])

@@ -39,6 +39,8 @@ CONTENTS                                                  *vim-latex-contents*
    12. Utility functions .................... |vim-latex-util|
    13. Function reference ................... |vim-latex-functions|
    14. Limitations .......................... |vim-latex-limitations|
+   15. Credits .............................. |vim-latex-credits|
+   16. Changelog ............................ |vim-latex-changelog|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -87,7 +89,7 @@ then performs a new initialization with |latex#init|.
 For each latex project that is opened, a |Dictionary| is created and added to
 the list |g:latex#data|.  The dictionary is initialized with information tied
 to the current project, mainly the different associated file names.  In
-addition, a dictonary is created for every buffer |b:latex|.  This contains
+addition, a dictionary is created for every buffer |b:latex|.  This contains
 data that is specific to the current buffer, most importantly it contains the
 ID of the main latex project.  This combination of local and global data
 enables |vim-latex| to work properly for multi-file latex projects.  It also
@@ -96,7 +98,7 @@ buffers.
 
                                                                 *g:latex#data*
 A |List| of |Dictionaries|, each containing data specific to a given latex
-project.  The ID of a latex project is the index of its dictonary in the list.
+project.  The ID of a latex project is the index of its dictionary in the list.
 An example of a dictionary is given here: >
 
   {
@@ -120,7 +122,7 @@ mapped to '<localleader>li'.
 
                                                                      *b:latex*
 For each buffer, |vim-latex| defines a |Dictionary| that contains buffer local
-information.  An example of such a dictonary is: >
+information.  An example of such a dictionary is: >
 
   {
     'id': 0,
@@ -205,7 +207,7 @@ n  <localleader>lT  *@:call latex#toc#toggle()<cr>
 n  <localleader>ll  *@:call latex#latexmk#compile()<cr>
 n  <localleader>lk  *@:call latex#latexmk#stop(1)<cr>
 n  <localleader>lK  *@:call latex#latexmk#stop_all()<cr>
-n  <localleader>le  *@:call latex#latexmk#errors()<cr>
+n  <localleader>le  *@:call latex#latexmk#errors(1)<cr>
 n  <localleader>lg  *@:call latex#latexmk#status()<cr>
 n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
@@ -234,23 +236,23 @@ Overview:~
   |g:latex_complete_enabled|
   |g:latex_complete_recursive_bib|
   |g:latex_complete_patterns|
-  |g:latex_errorformat_ignore_warnings|
-  |g:latex_errorformat_show_warnings|
   |g:latex_fold_enabled|
   |g:latex_fold_envs|
   |g:latex_fold_parts|
   |g:latex_fold_preamble|
   |g:latex_fold_sections|
   |g:latex_indent_enabled|
-  |g:latex_latexmk_autojump|
   |g:latex_latexmk_callback|
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_options|
   |g:latex_latexmk_output|
-  |g:latex_latexmk_quickfix|
   |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
   |g:latex_motion_matchparen|
+  |g:latex_quickfix_autojump|
+  |g:latex_quickfix_ignored_warnings|
+  |g:latex_quickfix_ignore_all_warnings|
+  |g:latex_quickfix_mode|
   |g:latex_toc_enabled|
   |g:latex_toc_fold_levels|
   |g:latex_toc_fold|
@@ -294,18 +296,6 @@ triggered. >
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
 <
-                                         *g:latex_errorformat_ignore_warnings*
-List of warning messages that should be ignored. >
-  let g:latex_errorformat_ignore_warnings = [
-        \ 'Underfull',
-        \ 'Overfull',
-        \ 'specifier changed to',
-      \ ]
-<
-                                           *g:latex_errorformat_show_warnings*
-Show warnings in quickfix window. >
-  let g:latex_errorformat_show_warnings = 1
-<
                                                         *g:latex_fold_enabled*
 Use this option to disable/enable folding. >
   let g:latex_fold_enabled = 1
@@ -342,11 +332,6 @@ Use |vim-latex| indentation function.  Not as customizable as the official
 indentation function, but imho it is better. >
   let g:latex_indent_enabled = 1
 <
-                                                    *g:latex_latexmk_autojump*
-Whether to automatically jump to the first error when the error window is
-opened with the default mapping or |latex#latexmk#errors|. >
-  let g:latex_latexmk_autojump = 0
-<
                                                     *g:latex_latexmk_callback*
 If enabled, this option tells `latexmk` to run |latex#latexmk#errors| after
 compilation is finished.  Note that this feature only works if vim is compiled
@@ -368,19 +353,38 @@ Set extra options for `latexmk` compilation. >
 Set desired output for `latexmk` compilation. >
   let g:latex_latexmk_output = 'pdf'
 <
-                                                    *g:latex_latexmk_quickfix*
-Adjust the behavior of the quickfix window when there are compilation errors or
-warnings.  The recognized options are:
+                                                   *g:latex_quickfix_autojump*
+Whether to automatically jump to the first error whenever the |quickfix| window
+is opened. >
+  let g:latex_latexmk_autojump = 0
+<
+                                        *g:latex_quickfix_ignore_all_warnings*
+If enabled, all LaTeX warnings are ignored and will not be listed in the
+quickfix window.  LaTeX errors will of course still be listed. >
+  let g:latex_quickfix_ignore_all_warnings = 0
+<
+                                           *g:latex_quickfix_ignored_warnings*
+List of warning messages that should be ignored. By default, no warnings are
+ignored. To ignore some common LaTeX warnings, try the following setting: >
+  let g:latex_quickfix_ignored_warnings = [
+        \ 'Underfull',
+        \ 'Overfull',
+        \ 'specifier changed to',
+      \ ]
+<
+                                                       *g:latex_quickfix_mode*
+This option controls the behaviour of the quickfix window in case errors
+and/or warnings are found.  The recognized options are:
 
   Value  Effect ~
-  0      The quickfix window is not opened automatically.
+  0      The quickfix window is never opened automatically.
   1      The quickfix window is opened automatically when there are errors, and
          it becomes the active window.
   2      The quickfix window is opened automatically when there are errors, but
          it does not become the active window.
 
 The default value is: >
-  let g:latex_latexmk_quickfix = 2
+  let g:latex_quickfix_mode = 2
 <
                                                     *g:latex_mappings_enabled*
 Whether to load the default mappings.  If this is set to 0, then no mappings
@@ -556,7 +560,7 @@ The default mappings are: >
   nnoremap <localleader>ll :call latex#latexmk#compile()<cr>
   nnoremap <localleader>lk :call latex#latexmk#stop(1)<cr>
   nnoremap <localleader>lK :call latex#latexmk#stop_all()<cr>
-  nnoremap <localleader>le :call latex#latexmk#errors()<cr>
+  nnoremap <localleader>le :call latex#latexmk#errors(1)<cr>
   nnoremap <localleader>lg :call latex#latexmk#status(0)<cr>
   nnoremap <localleader>lG :call latex#latexmk#status(1)<cr>
   nnoremap <localleader>lc :call latex#latexmk#clean(0)<cr>
@@ -601,10 +605,10 @@ $compiling_cmd = "xdotool search --name \"%D\" " .
                  "set_window --name \"%D compiling...\"";
 $success_cmd = "xdotool search --name \"%D\" " .
                "set_window --name \"%D OK\"; " .
-               "gvim --remote-expr 'latex#latexmk#errors()'";
+               "gvim --remote-expr 'latex#latexmk#errors(0)'";
 $failure_cmd = "xdotool search --name \"%D\" " .
                "set_window --name \"%D FAILURE\"; " .
-               "gvim --remote-expr 'latex#latexmk#errors()'";
+               "gvim --remote-expr 'latex#latexmk#errors(0)'";
 <
 Here `xdotool` (http://www.semicomplete.com/projects/xdotool/) is used to
 change the title of the pdf viewer during and after compilation.  In addition,
@@ -617,7 +621,7 @@ commands if vim has the option |+clientserver|, and if the option
 |g:latex_latexmk_callback| is enabled.  The command that is used by `latexmk`
 is then on the following form: >
 
-  gvim --servername v:servername --remote-expr 'latex#latexmk#errors()'
+  gvim --servername v:servername --remote-expr 'latex#latexmk#errors(0)'
 
 This command is then appended to the existing `$success_cmd` and
 `$failure_cmd`.  Note that if the existing commands are not empty, then they
@@ -807,9 +811,18 @@ output files.  This will only be run if `latexmk` is not already running.
 Starts `latexmk -pvc ...` for the given buffer, if it is not already running.
 
                                                         *latex#latexmk#errors*
-Displays the log file in the quickfix window.  The output may be controlled
-slightly with the options |g:latex_errorformat_show_warnings| and
-|g:latex_errorformat_ignore_warnings|.
+Parse the log file for errors and warnings.  If any errors or warnings are
+found, they are displayed in the quickfix window.  The exact behaviour is
+controlled through the different quickfix specific option:
+
+  |g:latex_quickfix_autojump|
+  |g:latex_quickfix_ignore_all_warnings|
+  |g:latex_quickfix_ignored_warnings|
+  |g:latex_quickfix_mode|
+
+Note: The function takes one argument, which if nonzero will force open the
+quickfix window if any errors are present.  This is used in the normal mode
+mapping.
 
                                                         *latex#latexmk#status*
 Show if `latexmk` has been started for the current buffer.  An optional
@@ -909,7 +922,23 @@ documentation.
 ==============================================================================
 CHANGELOG                                                *vim-latex-changelog*
 
-First public release: 2013/10/05~
+The following changelog only logs important changes, such as changes that
+break backwards compatibility.  See the git log for the detailed changelog.
+
+2014-06-13: Changed some option names~
+Some |vim-latex| option names were changed in an attempt to make the names
+more consistent.  These options are listed here for reference:
+  *g:latex_errorformat_ignore_warnings*
+  *g:latex_errorformat_show_warnings*
+  *g:latex_latexmk_autojump*
+  *g:latex_latexmk_quickfix*
+The new names are, respectively:
+  |g:latex_quickfix_ignored_warnings|
+  |g:latex_quickfix_ignore_all_warnings|
+  |g:latex_quickfix_autojump|
+  |g:latex_quickfix_mode|
+
+2013-10-05: First public release~
 
 ==============================================================================
  vim:tw=78:ts=8:ft=help:norl:
