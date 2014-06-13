@@ -80,9 +80,11 @@ let s:convert_back_list = map([
 
 " {{{1 latex#util#error_deprecated
 function! latex#util#error_deprecated(variable)
-  echoerr "Deprecation error: " . a:variable
-  echoerr "Please red docs for more info!"
-  echoerr ":h vim-latex-changelog"
+  if exists(a:variable)
+    echoerr "Deprecation error: " . a:variable
+    echoerr "Please red docs for more info!"
+    echoerr ":h vim-latex-changelog"
+  endif
 endfunction
 
 " {{{1 latex#util#get_env
