@@ -157,6 +157,7 @@ function! s:init_errorformat()
 
   " Push file to file stack
   setlocal efm=%+P**%f
+  setlocal efm+=%+P**\"%f\"
 
   " Match errors
   setlocal efm+=%E!\ LaTeX\ %trror:\ %m
@@ -289,7 +290,7 @@ function! s:get_main_ext(texdata, ext)
   for f in map(candidates,
         \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
     if filereadable(f)
-      return fnamemodify(f, ':p')
+      return fnameescape(fnamemodify(f, ':p'))
     endif
   endfor
 
