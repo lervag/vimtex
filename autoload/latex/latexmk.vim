@@ -129,7 +129,18 @@ function! latex#latexmk#errors(force)
     execute 'cgetfile ' . log
   endif
 
-  if g:latex_quickfix_mode || a:force
+  "
+  " There are two options that determine when to open the quickfix window.  If
+  " forced, the quickfix window is always opened when there are errors or
+  " warnings (forced typically imply that the functions is called from the
+  " normal mode mapping).  Else the behaviour is based on the settings.
+  "
+  let open_quickfix_window = a:force
+        \ || (g:latex_quickfix_mode > 0
+        \     && (g:latex_quickfix_open_on_warning
+        \         || s:log_contains_error(log)))
+
+  if open_quickfix_window
     botright cwindow
     if g:latex_quickfix_mode == 2
       wincmd p
@@ -206,6 +217,17 @@ function! s:execute(cmd)
   if !has('gui_running')
     redraw!
   endif
+endfunction
+
+
+" {{{1 s:log_contains_error
+function! s:log_contains_error(logfile)
+  let lines = readfile(a:logfile)
+  let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
+  let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
+  let lines = map(lines, 'fnameescape(fnamemodify(v:val, '':p''))')
+  let lines = filter(lines, 'filereadable(v:val)')
+  return len(lines) > 0
 endfunction
 
 " {{{1 s:server_callback

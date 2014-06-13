@@ -378,13 +378,18 @@ and/or warnings are found.  The recognized options are:
 
   Value  Effect ~
   0      The quickfix window is never opened automatically.
-  1      The quickfix window is opened automatically when there are errors, and
-         it becomes the active window.
-  2      The quickfix window is opened automatically when there are errors, but
-         it does not become the active window.
+  1      The quickfix window is opened automatically when there are errors,
+         and it becomes the active window.
+  2      The quickfix window is opened automatically when there are errors,
+         but it does not become the active window.
 
 The default value is: >
   let g:latex_quickfix_mode = 2
+<
+                                            *g:latex_quickfix_open_on_warning*
+If it is 0, then the quickfix window will only be opened on errors or when
+it is forced open. >
+  let g:latex_quickfix_open_on_warning = 1
 <
                                                     *g:latex_mappings_enabled*
 Whether to load the default mappings.  If this is set to 0, then no mappings
