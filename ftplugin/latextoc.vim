@@ -70,9 +70,14 @@ function! s:toc_activate(close)
 
   execute b:calling_win . 'wincmd w'
 
+  let root = fnamemodify(entry['file'], ':h') . '/'
   let files = [entry['file']]
   for line in filter(readfile(entry['file']), 'v:val =~ ''\\input{''')
-    call add(files, matchstr(line, '{\zs.\{-}\ze\(\.tex\)\?}') . '.tex')
+    let file = matchstr(line, '{\zs.\{-}\ze\(\.tex\)\?}') . '.tex'
+    if file[0] != '/'
+      let file = root . file
+    endif
+    call add(files, file)
   endfor
 
   " Find section in buffer (or inputted files)
