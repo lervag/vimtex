@@ -116,6 +116,7 @@ function! latex#complete#bibtex(regexp)
     " Align the type entry and fix minor annoyance in author list
     let type = printf('%-' . s:type_length . 's', type)
     let auth = substitute(auth, '\~', ' ', 'g')
+    let auth = substitute(auth, ',.*\ze', ' et al. ', '')
 
     let w = {
           \ 'word': m['key'],

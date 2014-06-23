@@ -40,6 +40,7 @@ let s:delimiters_close = '\(' . join([
 let s:tikz_commands = '\\\(' . join([
         \ 'draw',
         \ 'fill',
+        \ 'foreach',
         \ 'path',
         \ 'node',
         \ 'add\(legendentry\|plot\)',
