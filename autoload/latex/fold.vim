@@ -48,7 +48,7 @@ function! latex#fold#level(lnum)
 
   " Fold preamble
   if g:latex_fold_preamble
-    if line =~# '\s*\\documentclass'
+    if line =~# '^\s*\\documentclass'
       return ">1"
     elseif line =~# '^\s*\\begin\s*{\s*document\s*}'
       return "0"
