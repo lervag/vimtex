@@ -10,6 +10,39 @@ function! latex#change#init(initialized)
 
     nnoremap <silent><buffer> <F7> :call latex#change#to_command()<cr>i
     inoremap <silent><buffer> <F7> <c-r>=latex#change#to_command()<cr>
+
+    inoremap <silent><buffer> ]]   <c-r>=latex#change#close_environment()<cr>
+  endif
+endfunction
+
+" {{{1 latex#change#close_environment
+function! latex#change#close_environment()
+  " Close delimiters
+  let [lnum, cnum] = searchpairpos('\C\\left\>', '', '\C\\right\>', 'bnW',
+        \ 'latex#util#in_comment()')
+  if lnum > 0
+    let line = strpart(getline(lnum), cnum - 1)
+    let bracket = matchstr(line, '^\\left\zs\((\|\[\|\\{\||\|\.\)\ze')
+    for [open, close] in [
+          \ ['(', ')'],
+          \ ['\[', '\]'],
+          \ ['\\{', '\\}'],
+          \ ['|', '|'],
+          \ ['\.', '|'],
+          \ ]
+      let bracket = substitute(bracket, open, close, 'g')
+    endfor
+    return '\right' . bracket
+  endif
+
+  " Close environment
+  let env = latex#util#get_env()
+  if env == '\['
+    return '\]'
+  elseif env == '\('
+    return '\)'
+  elseif env != ''
+    return '\end{' . env . '}'
   endif
 endfunction
 

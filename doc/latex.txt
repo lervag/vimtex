@@ -220,6 +220,7 @@ n  tse              *@:call latex#change#toggle_env_star()<cr>
 n  tsd              *@:call latex#change#toggle_delim()<cr>
 n  <F7>             *@:call latex#change#to_command()<cr>i
 i  <F7>             *@:call latex#change#to_command()<cr>
+i  ]]               *@:call latex#change#close_environment()<cr>
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -656,10 +657,11 @@ CHANGE                                                      *vim-latex-change*
 
 |vim-latex| has a nice functionality that enables quick toggling of stars in
 environments or toggling of `\left` and `\right` pairs of delimiters.
-Functions are also provided to change the current environment and to wrap the
-selected text.
+Functions are also provided to change or close the current environment and to
+wrap the selected text.
 
 Functions:
+    |latex#change#close_environment|
     |latex#change#env|
     |latex#change#env_prompt|
     |latex#change#to_command|
@@ -714,6 +716,7 @@ descriptions follow.
 
 Overview:~
 
+  |latex#change#close_environment|
   |latex#change#env|
   |latex#change#env_prompt|
   |latex#change#to_command|
@@ -755,6 +758,11 @@ Overview:~
 
 ------------------------------------------------------------------------------
 Detailed descriptions:~
+
+                                               *latex#change#close_environment*
+Closes current delimiter or environment command.  The function is only useful
+when used as an insert mode command, since it returns the closing part of the
+delimiter or environment.
 
                                                              *latex#change#env*
 Change the current environment name to the one passed as an argument.
