@@ -44,46 +44,30 @@ nnoremap <buffer> <silent> <2-leftmouse> :call <SID>toc_activate(1)<cr>
 
 " {{{1 s:toc_activate
 function! s:toc_activate(close)
+  " Get TOC entry, do nothing if no entry found
+  "   entry = {
+  "     title  : ...,
+  "     number : ...,
+  "     file   : ...,
+  "     line   : ...,
+  "     }
   let n = getpos('.')[1] - 1
-
   if n >= len(b:toc)
     return
   endif
-
   let entry = b:toc[n]
 
-  let titlestr = s:toc_escape_title(entry['text'])
-
-  " Search for duplicates
-  let i=0
-  let entry_hash = entry['level'].titlestr
-  let duplicates = 0
-  while i<n
-    let i_hash = b:toc[i]['level'].s:toc_escape_title(b:toc[i]['text'])
-    if i_hash == entry_hash
-      let duplicates += 1
-    endif
-    let i += 1
-  endwhile
+  " Save TOC buffer info for later use
   let toc_bnr = bufnr('%')
   let toc_wnr = winnr()
 
+  " Return to calling window
   execute b:calling_win . 'wincmd w'
 
-  let root = fnamemodify(entry['file'], ':h') . '/'
-  let files = [entry['file']]
-  for line in filter(readfile(entry['file']), 'v:val =~ ''\\input{''')
-    let file = matchstr(line, '{\zs.\{-}\ze\(\.tex\)\?}') . '.tex'
-    if file[0] != '/'
-      let file = root . file
-    endif
-    call add(files, file)
-  endfor
+  " Open file and line for given TOC entry
+  call s:toc_open_entry(entry)
 
-  " Find section in buffer (or inputted files)
-  call s:toc_find_match('\\' . entry['level'] . '\_\s*{' . titlestr . '}',
-        \ duplicates, files)
-
+  " Keep or close TOC window (based on options)
   if a:close
     if g:latex_toc_resize
       silent exe "set columns-=" . g:latex_toc_width
@@ -102,50 +86,18 @@ function! s:toc_close()
   bwipeout
 endfunction
 
-" {{{1 s:toc_escape_title
-function! s:toc_escape_title(titlestr)
-  let titlestr = substitute(a:titlestr, '\\[a-zA-Z@]*\>\s*{\?', '.*', 'g')
-  let titlestr = substitute(titlestr, '}', '', 'g')
-  let titlestr = substitute(titlestr, '\%(\.\*\s*\)\{2,}', '.*', 'g')
-  return titlestr
-endfunction
-
-" {{{1 s:toc_find_match
-function! s:toc_find_match(strsearch, duplicates, files)
-  if len(a:files) == 0
-    echoerr "Could not find: " . a:strsearch
-    return
-  endif
-
-  call s:toc_open_buf(a:files[0])
-  let dups = a:duplicates
-
-  " Skip duplicates
-  while dups > 0
-    if search(a:strsearch, 'w')
-      let dups -= 1
-    else
-      break
-    endif
-  endwhile
-
-  if search(a:strsearch, 'w')
-    normal! zv
-    return
-  endif
-
-  call s:toc_find_match(a:strsearch, dups, a:files[1:])
-endfunction
-
-" {{{1 s:toc_open_buf
-function! s:toc_open_buf(file)
-  let bnr = bufnr(a:file)
+" {{{1 s:toc_open_entry
+function! s:toc_open_entry(entry)
+  " Open file buffer
+  let bnr = bufnr(a:entry.file)
   if bnr == -1
-    execute 'badd ' . a:file
-    let bnr = bufnr(a:file)
+    execute 'badd ' . a:entry.file
+    let bnr = bufnr(a:entry.file)
   endif
   execute 'buffer! ' . bnr
-  normal! gg
+
+  " Go to entry line
+  call setpos('.', [0, a:entry.line, 0, 0])
 endfunction
 
 " {{{1 s:toc_toggle_numbers
