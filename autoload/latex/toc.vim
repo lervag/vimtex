@@ -21,9 +21,7 @@ function! latex#toc#open()
   let calling_line = line('.')
 
   " Parse tex files for TOC data
-  let toc = s:parse_file(g:latex#data[b:latex.id].tex)
-  PP(toc)
-  return 0
+  let toc = s:parse_file(g:latex#data[b:latex.id].tex, 1)
 
   " Resize vim session if wanted, then create TOC window
   if g:latex_toc_resize
@@ -82,7 +80,7 @@ endfunction
 " }}}1
 
 " {{{1 s:parse_file
-function! s:parse_file(file)
+function! s:parse_file(file, ...)
   " Parses tex file for TOC entries
   "
   " The function returns a list of entries.  Each entry is a dictionary:
@@ -101,28 +99,26 @@ function! s:parse_file(file)
     return []
   endif
 
+  " Set limits for TOC numbering (only for the first call)
+  if a:0 > 0
+    let s:number = {}
+  endif
+
   let toc = []
 
   let lnum = 0
   for line in readfile(a:file)
     let lnum += 1
 
-    " 1. input or include
-    if s:test_input(line)
+    " 1. Parse inputs or includes
+    if line =~# s:re_input
       call extend(toc, s:parse_file(s:parse_line_input(line)))
-      "call add(toc, s:parse_line_input(line))
       continue
     endif
 
-    " 2. sections, subsections, paragraphs
-    if s:test_sec(line)
+    " 2. Parse chapters, sections, and subsections
+    if line =~# s:re_sec
       call add(toc, s:parse_line_sec(a:file, lnum, line))
-      continue
-    endif
-
-    " 3. misc (parts, preamble, etc.)
-    if s:test_misc(line)
-      call add(toc, s:parse_line_misc(a:file, lnum, line))
       continue
     endif
   endfor
@@ -131,29 +127,12 @@ function! s:parse_file(file)
 endfunction
 
 "}}}1
-
-" {{{1 s:test_input
-function! s:test_input(line)
-  return a:line =~# '\v^\s*\\%(input|include)\s*\{'
-endfunction
-
-" }}}1
-" {{{1 s:test_sec
-function! s:test_sec(line)
-  return a:line =~# '\v^\s*\\%(chapter|%(sub)*section|paragraph)\s*\{'
-endfunction
-
-" }}}1
-" {{{1 s:test_misc
-function! s:test_misc(line)
-  return a:line =~# '\v^\s*\\%(frontmatter|appendix|part|documentclass)'
-endfunction
-
-" }}}1
-
 " {{{1 s:parse_line_input
+let s:re_input = '\v^\s*\\%(input|include)\s*\{'
+let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+
 function! s:parse_line_input(line)
-  let l:file = matchstr(a:line, '\v%(input|include)\s*\{\zs[^\}]+\ze}')
+  let l:file = matchstr(a:line, s:re_input_file)
   if l:file !~# '.tex$'
     let l:file .= '.tex'
   endif
@@ -162,35 +141,36 @@ endfunction
 
 " }}}1
 " {{{1 s:parse_line_sec
+let s:re_sec = '\v^\s*\\%(chapter|%(sub)*section)\*?\s*\{'
+let s:re_sec_level = '\v^\s*\\\zs%(chapter|%(sub)*section)\*?'
+let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+
 function! s:parse_line_sec(file, lnum, line)
+  let title = matchstr(a:line, s:re_sec_title)
+  let level = matchstr(a:line, s:re_sec_level)
+
   return {
-        \ 'title'  : "sec",
-        \ 'number' : "todo",
+        \ 'title'  : title,
+        \ 'number' : s:get_number(level),
         \ 'file'   : a:file,
         \ 'line'   : a:lnum,
         \ }
 endfunction
 
-" }}}1
-" {{{1 s:parse_line_misc
-function! s:parse_line_misc(file, lnum, line)
-  return {
-        \ 'title'  : "misc",
-        \ 'number' : "todo",
-        \ 'file'   : a:file,
-        \ 'line'   : a:lnum,
-        \ }
+function! s:get_number(level)
+  if a:level =~# '\v%(part|chapter|(sub)*section)$'
+    if has_key(s:number, a:level)
+      let s:number.a:level += 1
+    else
+      let s:number.a:level = 1
+    endif
+  else
+    return ''
+  endif
+
+  return PP(s:number)
 endfunction
 
-" }}}1
-
-" {{{1 s:toc_escape_title
-function! s:toc_escape_title(titlestr)
-  let titlestr = substitute(a:titlestr, '\\[a-zA-Z@]*\>\s*{\?', '.*', 'g')
-  let titlestr = substitute(titlestr, '}', '', 'g')
-  let titlestr = substitute(titlestr, '\%(\.\*\s*\)\{2,}', '.*', 'g')
-  return titlestr
-endfunction
 " }}}1
 
 " vim: fdm=marker
