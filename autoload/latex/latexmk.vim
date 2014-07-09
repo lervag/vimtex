@@ -26,7 +26,10 @@ function! latex#latexmk#init(initialized)
     nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop(1)<cr>
     nnoremap <silent><buffer> <localleader>lK :call latex#latexmk#stop_all()<cr>
     nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
+    nnoremap <silent><buffer> <localleader>lv :Lview<cr>
   endif
+  
+  command! -nargs=* Lview call latex#view('<args>')
 
   "
   " Ensure that all latexmk processes are stopped when vim exits
