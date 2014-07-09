@@ -95,30 +95,23 @@ function! latex#latexmk#compile()
     return
   endif
 
-  "
-  " Set latexmk command with options
-  "
-  let cmd  = '!cd ' . shellescape(data.root) . ' && '
-  let cmd .= 'max_print_line=2000 latexmk'
-  let cmd .= ' -' . g:latex_latexmk_output
-  let cmd .= ' -quiet '
-  let cmd .= ' -pvc'
-  let cmd .= ' ' . g:latex_latexmk_options
-  let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
-  let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
-  let cmd .= s:server_callback()
-  let cmd .= ' ' . shellescape(data.base)
-  let cmd .= ' &>' . tempname() . ' &'
-  let g:latex#data[b:latex.id].cmd = cmd
+  call s:latexmk_set_cmd(data)
 
-  "
-  " Start latexmk and save PID
-  "
-  call s:execute(cmd)
-  let g:latex#data[b:latex.id].pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
+  " Start latexmk
+  " Define execute dictionary and latexmk command
+  let exe = {}
+  let exe.null = 0
+  let exe.cmd  = data.cmd
+  call latex#util#execute(exe)
+
+  " Save PID
+  call s:latexmk_set_pid(data)
+
+  " Finished
   echomsg 'latexmk started successfully'
 endfunction
 
+" }}}1
 " {{{1 latex#latexmk#errors
 function! latex#latexmk#errors(force)
   cclose
@@ -198,7 +191,7 @@ function! latex#latexmk#stop(...)
   let pid  = g:latex#data[b:latex.id].pid
   let base = g:latex#data[b:latex.id].base
   if pid
-    call s:execute('!kill ' . pid)
+    call s:latexmk_kill_pid(pid)
     let g:latex#data[b:latex.id].pid = 0
     if l:verbose
       echo "latexmk stopped for `" . base . "'"
@@ -208,25 +201,94 @@ function! latex#latexmk#stop(...)
   endif
 endfunction
 
+" }}}1
 " {{{1 latex#latexmk#stop_all
 function! latex#latexmk#stop_all()
   for data in g:latex#data
     if data.pid
-      call s:execute('!kill ' . data.pid)
+      call s:latexmk_kill_pid(data.pid)
       let data.pid = 0
     endif
   endfor
 endfunction
+
 " }}}1
 
-" {{{1 s:execute
-function! s:execute(cmd)
-  silent execute a:cmd
-  if !has('gui_running')
-    redraw!
+" Helper functions for latexmk command
+" {{{1 s:latexmk_set_cmd
+function! s:latexmk_set_cmd(data)
+  " Note: We don't send output to /dev/null, but rather to a temporary file,
+  "       which allows inspection of latexmk output
+  let tmp = tempname()
+
+  if has('win32')
+    let cmd  = 'cd /D ' . shellescape(a:data.root)
+    let cmd .= ' && set max_print_line=2000 & latexmk'
+  else
+    let cmd  = 'cd ' . shellescape(a:data.root)
+    let cmd .= ' && max_print_line=2000 latexmk'
+  endif
+
+  let cmd .= ' -' . g:latex_latexmk_output
+  let cmd .= ' -quiet '
+  let cmd .= ' -pvc'
+  let cmd .= ' ' . g:latex_latexmk_options
+  let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
+  let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
+
+  if g:latex_latexmk_callback && has('clientserver')
+    let callback = 'vim --servername ' . v:servername
+          \ . ' --remote-expr ''latex\#latexmk\#errors(0)'''
+    let cmd .= ' -e ' . shellescape('$success_cmd .= "' . callback . '"')
+          \ .  ' -e ' . shellescape('$failure_cmd .= "' . callback . '"')
+  endif
+
+  let cmd .= ' ' . shellescape(a:data.base)
+
+  if has('win32')
+    let cmd .= ' >'  . tmp
+    let cmd = 'cmd /s /c "' . cmd . '"'
+  else
+    let cmd .= ' &>' . tmp
+  endif
+
+  let a:data.cmd = cmd
+  let a:data.tmp = tmp
+endfunction
+
+" }}}1
+" {{{1 s:latexmk_set_pid
+function! s:latexmk_set_pid(data)
+  if has('win32')
+    let tmpfile = tempname()
+    silent execute '!cmd /c "wmic process where '
+          \ . '(CommandLine LIKE "latexmk\%' . a:data.base . '\%") '
+          \ . 'get ProcessId /value | find "ProcessId" '
+          \ . '>' . tmpfile . ' "'
+    let pids = readfile(tmpfile)
+    let a:data.pid = strpart(pids[0], 10)
+  else
+    let a:data.pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
   endif
 endfunction
 
+" }}}1
+" {{{1 s:latexmk_kill_pid
+function! s:latexmk_kill_pid(pid)
+  let exe = {}
+  let exe.bg = 0
+  let exe.null = 0
+
+  if has('win32')
+    let exe.cmd = 'taskkill /PID ' . a:pid . ' /T /F'
+  else
+    let exe.cmd = 'kill ' . a:pid
+  endif
+
+  call latex#util#execute(exe)
+endfunction
+
+" }}}1
 
 " {{{1 s:log_contains_error
 function! s:log_contains_error(logfile)
@@ -236,16 +298,6 @@ function! s:log_contains_error(logfile)
   let lines = map(lines, 'fnameescape(fnamemodify(v:val, '':p''))')
   let lines = filter(lines, 'filereadable(v:val)')
   return len(lines) > 0
-endfunction
-
-" {{{1 s:server_callback
-function! s:server_callback()
-  if g:latex_latexmk_callback && has('clientserver')
-    let callback = 'vim --servername ' . v:servername
-          \ . ' --remote-expr ''latex\#latexmk\#errors(0)'''
-    return    ' -e ' . shellescape('$success_cmd .= "' . callback . '"')
-          \ . ' -e ' . shellescape('$failure_cmd .= "' . callback . '"')
-  endif
 endfunction
 
 " {{{1 s:stop_buffer
@@ -282,18 +334,16 @@ endfunction
 
 " {{{1 s:system_incompatible()
 function! s:system_incompatible()
-  "
-  " Windows will not be supported
-  "
   if has('win32')
-    echom "Warning: Could not initialize latex#latexmk (windows not supported)"
-    return 1
+    let required = ['latexmk']
+  else
+    let required = ['latexmk', 'pgrep']
   endif
 
   "
-  " Check if latexmk or pgrep is missing
+  " Check for required executables
   "
-  for cmd in [ 'latexmk', 'pgrep' ]
+  for cmd in required
     if !executable(cmd)
       echom "Warning: Could not initialize latex#latexmk"
       echom "         Missing executable: " . cmd
