@@ -101,7 +101,7 @@ function! s:parse_file(file, ...)
 
   " Reset TOC numbering
   if a:0 > 0
-    call s:reset_number()
+    call s:number_reset(0)
   endif
 
   let toc = []
@@ -122,10 +122,9 @@ function! s:parse_file(file, ...)
       continue
     endif
 
-    " 3. Change numbering for appendix
+    " 3. Reset and change numbering for appendix
     if line =~# '\v^\s*\\appendix'
-      call s:reset_number()
-      let s:number.appendix = 1
+      call s:number_reset(1)
       continue
     endif
   endfor
@@ -134,10 +133,12 @@ function! s:parse_file(file, ...)
 endfunction
 
 "}}}1
-" {{{1 s:parse_line_input
+" {{{1 s:parse_line
+" Define regular expressions to match input and include lines
 let s:re_input = '\v^\s*\\%(input|include)\s*\{'
 let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
 
+" Parse input/include lines
 function! s:parse_line_input(line)
   let l:file = matchstr(a:line, s:re_input_file)
   if l:file !~# '.tex$'
@@ -146,15 +147,15 @@ function! s:parse_line_input(line)
   return fnamemodify(l:file, ':p')
 endfunction
 
-" }}}1
-" {{{1 s:parse_line_sec
-let s:re_sec = '\v^\s*\\%(chapter|%(sub)*section)\*?\s*\{'
-let s:re_sec_level = '\v^\s*\\\zs%(chapter|%(sub)*section)\*?'
+" Define regular expressions to match various sectioning commands
+let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
 
+" Parse sectioning lines
 function! s:parse_line_sec(file, lnum, line)
   let title = matchstr(a:line, s:re_sec_title)
-  let number = s:increment_number(matchstr(a:line, s:re_sec_level))
+  let number = s:number_increment(matchstr(a:line, s:re_sec_level))
 
   return {
         \ 'title'  : title,
@@ -165,19 +166,18 @@ function! s:parse_line_sec(file, lnum, line)
 endfunction
 
 " }}}1
-
-" {{{1 TOC numbering
+" {{{1 s:number_*
 let s:number = {}
-function! s:reset_number()
+function! s:number_reset(appendix)
   let s:number.part = 0
   let s:number.chapter = 0
   let s:number.section = 0
   let s:number.subsection = 0
   let s:number.subsubsection = 0
-  let s:number.appendix = 0
+  let s:number.appendix = a:appendix ? 1 : 0
 endfunction
 
-function! s:increment_number(level)
+function! s:number_increment(level)
   " Check if level should be incremented
   if a:level !~# '\v%(part|chapter|(sub)*section)$'
     return ''
@@ -206,19 +206,31 @@ function! s:increment_number(level)
     let s:number.subsubsection += 1
   endif
 
-  return s:print_number()
+  return s:number_print()
 endfunction
 
-function! s:print_number()
+function! s:number_print()
   let number = [
-        \ s:number.part
-        \ s:number.chapter
-        \ s:number.section
-        \ s:number.subsection
-        \ s:number.subsubsection
+        \ s:number.part,
+        \ s:number.chapter,
+        \ s:number.section,
+        \ s:number.subsection,
+        \ s:number.subsubsection,
         \ ]
 
-  return string
+  while number[0] == 0
+    call remove(number, 0)
+  endwhile
+
+  while number[-1] == 0
+    call remove(number, -1)
+  endwhile
+
+  if s:number.appendix
+    let number[0] = nr2char(number[0] + 64)
+  endif
+
+  return join(number, '.')
 endfunction
 
 " }}}1
