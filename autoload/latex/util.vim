@@ -87,6 +87,57 @@ function! latex#util#error_deprecated(variable)
   endif
 endfunction
 
+" {{{1 latex#util#execute
+function! latex#util#execute(exe)
+  " Execute the given command on the current system.  Wrapper function to make
+  " it easier to run on both windows and unix.
+  "
+  " The command is given in the argument exe, which should be a dictionary with
+  " the following entries:
+  "
+  "   exe.cmd     String          String that contains the command to run
+  "   exe.bg      0 or 1          Run in background or not
+  "   exe.null    0 or 1          Send output to /dev/null
+  "
+  " Only exe.cmd is required.
+  "
+
+  " Check and parse arguments
+  if !has_key(a:exe, 'cmd')
+    echoerr "Error in latex#util#execute!"
+    echoerr "Argument error, exe.cmd does not exist!"
+    return
+  endif
+  let bg   = has_key(a:exe, 'bg')   ? a:exe.bg   : 1
+  let null = has_key(a:exe, 'null') ? a:exe.null : 1
+
+  " Set up command string based on the given system
+  if has('win32')
+    if bg
+      let cmd = '!start /b ' . a:exe.cmd
+    else
+      let cmd = '!' . a:exe.cmd
+    endif
+    if null
+      let cmd .= ' >nul'
+    endif
+  else
+    let cmd = '!' . a:exe.cmd
+    if null
+      let cmd .= ' &>/dev/null'
+    endif
+    if bg
+      let cmd .= ' &'
+    endif
+  endif
+
+  silent execute cmd
+
+  if !has("gui_running")
+    redraw!
+  endif
+endfunction
+" }}}1
 " {{{1 latex#util#get_env
 function! latex#util#get_env(...)
   " latex#util#get_env([with_pos])

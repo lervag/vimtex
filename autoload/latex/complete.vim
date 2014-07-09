@@ -159,10 +159,10 @@ function! s:bibtex_search(regexp)
           \ ], tmp.aux)
 
     " Create temporary bbl file
-    silent execute '!bibtex -terse ' . tmp.aux . ' >/dev/null'
-    if !has('gui_running')
-      redraw!
-    endif
+    let exe = {}
+    let exe.cmd = 'bibtex -terse ' . tmp.aux
+    let exe.bg = 0
+    call latex#util#execute(exe)
 
     " Parse temporary bbl file
     let lines = split(substitute(join(readfile(tmp.bbl), "\n"),

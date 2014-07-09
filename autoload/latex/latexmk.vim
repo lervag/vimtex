@@ -62,16 +62,24 @@ function! latex#latexmk#clean(...)
   "
   " Run latexmk clean process
   "
-  let cmd = '!cd ' . shellescape(data.root) . ';'
+  if has('win32')
+    let cmd = 'cd /D ' . shellescape(data.root) . ' & '
+  else
+    let cmd = 'cd ' . shellescape(data.root) . ';'
+  endif
   if full
     let cmd .= 'latexmk -C '
   else
     let cmd .= 'latexmk -c '
   endif
-  let cmd .= shellescape(data.base) . ' &>/dev/null'
+  let cmd .= shellescape(data.base)
   let g:latex#data[b:latex.id].clean_cmd = cmd
+  let exe = {
+        \ 'cmd' : cmd,
+        \ 'bg'  : 0,
+        \ }
+  call latex#util#execute(exe)
 
-  call s:execute(cmd)
   if full
     echomsg "latexmk full clean finished"
   else
@@ -278,6 +286,7 @@ function! s:system_incompatible()
   " Windows will not be supported
   "
   if has('win32')
+    echom "Warning: Could not initialize latex#latexmk (windows not supported)"
     return 1
   endif
 

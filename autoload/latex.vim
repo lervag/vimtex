@@ -94,12 +94,9 @@ function! latex#view()
     return
   endif
 
-  silent execute '!' . g:latex_viewer . ' '
-        \ . shellescape(outfile)
-        \ . ' &>/dev/null &'
-  if !has("gui_running")
-    redraw!
-  endif
+  let exe = {}
+  let exe.cmd = g:latex_viewer . ' ' . shellescape(outfile)
+  call latex#util#execute(exe)
 endfunction
 " }}}1
 
