@@ -87,7 +87,8 @@ function! latex#reinit()
 endfunction
 
 " {{{1 latex#view
-function! latex#view()
+function! latex#view(...)
+  let lvargs = join(a:000, ' ')
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -95,7 +96,7 @@ function! latex#view()
   endif
 
   let exe = {}
-  let exe.cmd = g:latex_viewer . ' ' . shellescape(outfile)
+  let exe.cmd = g:latex_viewer . ' ' . lvargs . ' ' . shellescape(outfile)
   call latex#util#execute(exe)
 endfunction
 " }}}1
