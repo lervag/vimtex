@@ -24,8 +24,8 @@ setlocal cole=0
 setlocal cocu=nvic
 if g:latex_toc_fold
   setlocal foldmethod=expr
-  setlocal foldexpr=toc#fold(v:lnum)
-  setlocal foldtext=toc#fold_tex()
+  setlocal foldexpr=toc#fold_level(v:lnum)
+  setlocal foldtext=toc#fold_text()
 endif
 
 " Define mappings

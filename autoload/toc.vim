@@ -1,5 +1,5 @@
-" {{{1 latextoc#fold_level
-function! latextoc#fold_level(lnum)
+" {{{1 toc#fold_level
+function! toc#fold_level(lnum)
     let line  = getline(a:lnum)
     let match_s1 = line =~# '^\w\+\s'
     let match_s2 = line =~# '^\w\+\.\w\+\s'
@@ -30,8 +30,8 @@ function! latextoc#fold_level(lnum)
     return "="
 endfunction
 
-" {{{1 latextoc#fold_text
-function! latextoc#fold_text()
+" {{{1 toc#fold_text
+function! toc#fold_text()
     let parts = matchlist(getline(v:foldstart), '^\(.*\)\t\(.*\)$')
     return printf('%-8s%-72s', parts[1], parts[2])
 endfunction
