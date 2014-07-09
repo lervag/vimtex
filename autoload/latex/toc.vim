@@ -99,9 +99,9 @@ function! s:parse_file(file, ...)
     return []
   endif
 
-  " Set limits for TOC numbering (only for the first call)
+  " Reset TOC numbering
   if a:0 > 0
-    let s:number = {}
+    call s:reset_number()
   endif
 
   let toc = []
@@ -119,6 +119,13 @@ function! s:parse_file(file, ...)
     " 2. Parse chapters, sections, and subsections
     if line =~# s:re_sec
       call add(toc, s:parse_line_sec(a:file, lnum, line))
+      continue
+    endif
+
+    " 3. Change numbering for appendix
+    if line =~# '\v^\s*\\appendix'
+      call s:reset_number()
+      let s:number.appendix = 1
       continue
     endif
   endfor
@@ -147,28 +154,71 @@ let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
 
 function! s:parse_line_sec(file, lnum, line)
   let title = matchstr(a:line, s:re_sec_title)
-  let level = matchstr(a:line, s:re_sec_level)
+  let number = s:increment_number(matchstr(a:line, s:re_sec_level))
 
   return {
         \ 'title'  : title,
-        \ 'number' : s:get_number(level),
+        \ 'number' : number,
         \ 'file'   : a:file,
         \ 'line'   : a:lnum,
         \ }
 endfunction
 
-function! s:get_number(level)
-  if a:level =~# '\v%(part|chapter|(sub)*section)$'
-    if has_key(s:number, a:level)
-      let s:number.a:level += 1
-    else
-      let s:number.a:level = 1
-    endif
-  else
+" }}}1
+
+" {{{1 TOC numbering
+let s:number = {}
+function! s:reset_number()
+  let s:number.part = 0
+  let s:number.chapter = 0
+  let s:number.section = 0
+  let s:number.subsection = 0
+  let s:number.subsubsection = 0
+  let s:number.appendix = 0
+endfunction
+
+function! s:increment_number(level)
+  " Check if level should be incremented
+  if a:level !~# '\v%(part|chapter|(sub)*section)$'
     return ''
   endif
 
-  return PP(s:number)
+  " Increment numbers
+  if a:level == 'part'
+    let s:number.part += 1
+    let s:number.chapter = 0
+    let s:number.section = 0
+    let s:number.subsection = 0
+    let s:number.subsubsection = 0
+  elseif a:level == 'chapter'
+    let s:number.chapter += 1
+    let s:number.section = 0
+    let s:number.subsection = 0
+    let s:number.subsubsection = 0
+  elseif a:level == 'section'
+    let s:number.section += 1
+    let s:number.subsection = 0
+    let s:number.subsubsection = 0
+  elseif a:level == 'subsection'
+    let s:number.subsection += 1
+    let s:number.subsubsection = 0
+  elseif a:level == 'subsubsection'
+    let s:number.subsubsection += 1
+  endif
+
+  return s:print_number()
+endfunction
+
+function! s:print_number()
+  let number = [
+        \ s:number.part
+        \ s:number.chapter
+        \ s:number.section
+        \ s:number.subsection
+        \ s:number.subsubsection
+        \ ]
+
+  return string
 endfunction
 
 " }}}1
