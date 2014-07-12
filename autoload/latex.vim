@@ -87,15 +87,19 @@ function! latex#reinit()
 endfunction
 
 " {{{1 latex#view
-function! latex#view()
+function! latex#view(...)
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
   endif
 
+  " Join arguments to pass them on to the viewer
+  let args = join(a:000, ' ')
+
   let exe = {}
-  let exe.cmd = g:latex_viewer . ' ' . shellescape(outfile)
+  let exe.cmd = g:latex_viewer . ' ' . args . shellescape(outfile)
+
   call latex#util#execute(exe)
 endfunction
 " }}}1
