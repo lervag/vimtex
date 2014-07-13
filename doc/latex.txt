@@ -85,6 +85,8 @@ contents of |g:latex#data| and |b:latex|.  This is useful mainly for
 debugging.  Finally, |latex#reinit| clears the current data in |g:latex#data|
 and |b:latex|, stops running `latexmk` processes |latex#latexmk#stop_all|,  and
 then performs a new initialization with |latex#init|.
+There is also a command for each <localleader> mapping in case you disable
+these by 'let |g:latex_mappings_enabled| = 0'.
 
 For each latex project that is opened, a |Dictionary| is created and added to
 the list |g:latex#data|.  The dictionary is initialized with information tied
@@ -221,6 +223,21 @@ n  tsd              *@:call latex#change#toggle_delim()<cr>
 n  <F7>             *@:call latex#change#to_command()<cr>i
 i  <F7>             *@:call latex#change#to_command()<cr>
 i  ]]               *@:call latex#change#close_environment()<cr>
+
+==============================================================================
+DEFAULT COMMANDS                                          *vim-latex-commands*
+
+The default commands for |vim-latex| are given below. These are variants of the
+above default <localleader> mappings.
+
+Lcompile               call latex#latexmk#compile()
+Lclean                 call latex#latexmk#clean()
+Lclean!                call latex#latexmk#clean(1)
+Lstatus                call latex#latexmk#status()
+Lstatus!               call latex#latexmk#status(1)
+Lstop!                 call latex#latexmk#stop(1)
+Lstopall               call latex#latexmk#stop_all()
+Lerrors                call latex#latexmk#errors(1)
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -461,7 +478,7 @@ Associated settings:
         |g:latex_complete_patterns.ref|
         |g:latex_complete_patterns.bib|
         |g:latex_complete_close_braces|
-        |g:latex_complete_recursive_bib|       
+        |g:latex_complete_recursive_bib|
 
 Functions:
         |latex#complete#omnifunc|
