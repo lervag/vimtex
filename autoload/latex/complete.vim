@@ -159,9 +159,16 @@ function! s:bibtex_search(regexp)
           \ ], tmp.aux)
 
     " Create temporary bbl file
-    let exe = {}
-    let exe.cmd = 'bibtex -terse ' . tmp.aux
-    let exe.bg = 0
+    if has('win32')
+        let bibcmd = ' cd ' . g:latex#data[b:latex.id].root .
+              \ ' & bibtex -terse ' . tmp.aux
+    else
+        let bibcmd = 'bibtex -terse ' . tmp.aux
+    endif
+    let exe = {
+          \ 'cmd' : bibcmd,
+          \ 'bg'  : 0,
+          \ }
     call latex#util#execute(exe)
 
     " Parse temporary bbl file
