@@ -239,7 +239,7 @@ function! s:bibtex_find_bibs(...)
   for entry in map(filter(copy(lines),
           \ 'v:val =~ ' . bibsearch),
         \ 'matchstr(v:val, ' . bibsearch . ')')
-    let bibdata_list += map(split(entry, ','), 'fnamemodify(v:val, '':p:r'')')
+    let bibdata_list += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
   if g:latex_complete_recursive_bib
