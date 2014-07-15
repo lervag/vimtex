@@ -21,12 +21,6 @@ is to combine vim-latex with the strength of other plugins.  I personally
 recommend [UltiSnips](https://github.com/SirVer/ultisnips) for snippets and
 [neocomplete](https://github.com/Shougo/neocomplete.vim) for completion.
 
-Note, however, that I do not fully support windows at the current time.  That
-is, the latexmk functionality will most probably not work.  The reason for this
-is that I do not personally use windows, which makes it difficult to test.
-With some assistance I might consider adding support for windows at a later
-time.
-
 Read the documentation for a more thorough introduction.
 
 ## Installation

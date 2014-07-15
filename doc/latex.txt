@@ -38,9 +38,8 @@ CONTENTS                                                  *vim-latex-contents*
    11. Table of contents .................... |vim-latex-toc|
    12. Utility functions .................... |vim-latex-util|
    13. Function reference ................... |vim-latex-functions|
-   14. Limitations .......................... |vim-latex-limitations|
-   15. Credits .............................. |vim-latex-credits|
-   16. Changelog ............................ |vim-latex-changelog|
+   14. Credits .............................. |vim-latex-credits|
+   15. Changelog ............................ |vim-latex-changelog|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -910,12 +909,6 @@ Turns a tree composed of lists into tex structure.  E.g. >
                                                                   *latex#view*
 Open the output file (specified with |g:latex_latexmk_output|) with the
 default viewer |g:latex_viewer|.
-
-==============================================================================
-LIMITATIONS                                            *vim-latex-limitations*
-
-This plugin is written for Linux/Unix environments, and so it does NOT support
-Windows.  I do not plan to add support.
 
 ==============================================================================
 CREDITS                                                    *vim-latex-credits*
