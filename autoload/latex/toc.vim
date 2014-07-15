@@ -34,16 +34,15 @@ function! latex#toc#open()
   let b:toc_numbers = 1
   let b:calling_win = bufwinnr(calling_buf)
 
-  " Add TOC entries (keep track of closest index)
+  " Add TOC entries (and keep track of closest index)
   let index = 0
   let closest_index = 0
   for entry in toc
     call append('$', entry.number . "\t" . entry.title)
+
     let index += 1
-    if closest_index == 0
-      if calling_file == entry.file && calling_line > entry.line
-        let closest_index = index
-      endif
+    if entry.file == calling_file && entry.line <= calling_line
+      let closest_index = index
     endif
   endfor
 
