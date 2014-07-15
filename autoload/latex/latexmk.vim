@@ -28,10 +28,17 @@ function! latex#latexmk#init(initialized)
     nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
   endif
 
-  "
-  " Ensure that all latexmk processes are stopped when vim exits
-  " Note: Only need to define this once, globally.
-  "
+    " command! -buffer -nargs=* Lview call latex#view('<args>')
+
+    command! -buffer Lcompile call latex#latexmk#compile()
+    command! -buffer Lclean   call latex#latexmk#clean()
+    command! -buffer Lclean!  call latex#latexmk#clean(1)
+    command! -buffer Lstatus  call latex#latexmk#status()
+    command! -buffer Lstatus! call latex#latexmk#status(1)  "
+    command! -buffer Lstop!   call latex#latexmk#stop(1)    " Ensure that all latexmk processes are stopped when vim exits
+    command! -buffer Lstopall call latex#latexmk#stop_all() " Note: Only need to define this once, globally.
+    command! -buffer Lerrors  call latex#latexmk#errors(1)  "
+
   if !a:initialized
     augroup latex_latexmk
       autocmd!
