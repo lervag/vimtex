@@ -101,7 +101,7 @@ function! s:parse_file(file, ...)
 
   " Reset TOC numbering
   if a:0 > 0
-    call s:number_reset(0)
+    call s:number_reset()
   endif
 
   let toc = []
@@ -116,16 +116,34 @@ function! s:parse_file(file, ...)
       continue
     endif
 
-    " 2. Parse chapters, sections, and subsections
+    " 2. Parse preamble
+    if s:number.preamble
+      if line =~# '\v^\s*\\documentclass'
+        call add(toc, {
+              \ 'title'  : 'Preamble',
+              \ 'number' : '',
+              \ 'file'   : a:file,
+              \ 'line'   : lnum,
+              \ })
+        continue
+      endif
+
+      if line =~# '\v^\s*\\begin\{document\}'
+        let s:number.preamble = 0
+      endif
+
+      continue
+    endif
+
+    " 3. Parse chapters, sections, and subsections
     if line =~# s:re_sec
       call add(toc, s:parse_line_sec(a:file, lnum, line))
       continue
     endif
 
-    " 3. Reset and change numbering for appendix
+    " 4. Reset and change numbering for the appendix
     if line =~# '\v^\s*\\appendix'
-      call s:number_reset(1)
-      continue
+      call s:number_start_appendix()
     endif
   endfor
 
@@ -168,13 +186,23 @@ endfunction
 " }}}1
 " {{{1 s:number_*
 let s:number = {}
-function! s:number_reset(appendix)
+function! s:number_reset()
   let s:number.part = 0
   let s:number.chapter = 0
   let s:number.section = 0
   let s:number.subsection = 0
   let s:number.subsubsection = 0
-  let s:number.appendix = a:appendix ? 1 : 0
+  let s:number.appendix = 0
+  let s:number.preamble = 1
+endfunction
+
+function! s:number_start_appendix()
+  let s:number.part = 0
+  let s:number.chapter = 0
+  let s:number.section = 0
+  let s:number.subsection = 0
+  let s:number.subsubsection = 0
+  let s:number.appendix = 1
 endfunction
 
 function! s:number_increment(level)
