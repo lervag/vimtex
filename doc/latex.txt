@@ -28,18 +28,19 @@ CONTENTS                                                  *vim-latex-contents*
     1. Intro ................................ |vim-latex-intro|
     2. Main interface ....................... |vim-latex-main|
     3. Default mappings ..................... |vim-latex-mappings|
-    4. Options .............................. |vim-latex-options|
-    5. Omni completion ...................... |vim-latex-completion|
-    6. Folding .............................. |vim-latex-folding|
-    7. Indentation .......................... |vim-latex-indent|
-    8. Latexmk .............................. |vim-latex-latexmk|
-    9. Motion ............................... |vim-latex-motion|
-   10. Change ............................... |vim-latex-change|
-   11. Table of contents .................... |vim-latex-toc|
-   12. Utility functions .................... |vim-latex-util|
-   13. Function reference ................... |vim-latex-functions|
-   14. Credits .............................. |vim-latex-credits|
-   15. Changelog ............................ |vim-latex-changelog|
+    4. Commands ............................. |vim-latex-commands|
+    5. Options .............................. |vim-latex-options|
+    6. Omni completion ...................... |vim-latex-completion|
+    7. Folding .............................. |vim-latex-folding|
+    8. Indentation .......................... |vim-latex-indent|
+    9. Latexmk .............................. |vim-latex-latexmk|
+   10. Motion ............................... |vim-latex-motion|
+   11. Change ............................... |vim-latex-change|
+   12. Table of contents .................... |vim-latex-toc|
+   13. Utility functions .................... |vim-latex-util|
+   14. Function reference ................... |vim-latex-functions|
+   15. Credits .............................. |vim-latex-credits|
+   16. Changelog ............................ |vim-latex-changelog|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -220,6 +221,29 @@ n  tsd              *@:call latex#change#toggle_delim()<cr>
 n  <F7>             *@:call latex#change#to_command()<cr>i
 i  <F7>             *@:call latex#change#to_command()<cr>
 i  ]]               *@:call latex#change#close_environment()<cr>
+
+==============================================================================
+COMMANDS                                                  *vim-latex-commands*
+
+|vim-latex| is mainly based on a function API as described in the section
+|vim-latex-functions|.  However, commands are also defined for convenience.
+Below the commands are listed in alphabetical order.
+
+VimLatexClean                call latex#latexmk#clean()
+VimLatexClean!               call latex#latexmk#clean(1)
+VimLatexCompile              call latex#latexmk#compile()
+VimLatexErrors               call latex#latexmk#errors(1)
+VimLatexHelp                 call latex#help()
+VimLatexInfo                 call latex#info()
+VimLatexRefreshFoldLevels    call latex#fold#refresh()
+VimLatexReinitialize         call latex#reinit()
+VimLatexStatus               call latex#latexmk#status()
+VimLatexStatus!              call latex#latexmk#status(1)
+VimLatexStop                 call latex#latexmk#stop()
+VimLatexStopAll              call latex#latexmk#stop_all()
+VimLatexTocOpen              call latex#toc#open()
+VimLatexTocToggle            call latex#toc#toggle()
+VimLatexView                 call latex#view()
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
