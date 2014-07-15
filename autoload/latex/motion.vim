@@ -1,5 +1,4 @@
-" {{{1 latex#motion#init
-function! latex#motion#init(initialized)
+function! latex#motion#init(initialized) " {{{1
   if !g:latex_motion_enabled | return | endif
 
   if g:latex_mappings_enabled
@@ -58,8 +57,7 @@ function! latex#motion#init(initialized)
   endif
 endfunction
 
-" {{{1 latex#motion#find_matching_pair
-function! latex#motion#find_matching_pair(...)
+function! latex#motion#find_matching_pair(...) " {{{1
   if a:0 > 0
     normal! gv
   endif
@@ -116,8 +114,7 @@ function! latex#motion#find_matching_pair(...)
   endif
 endfunction
 
-" {{{1 latex#motion#next_section
-function! latex#motion#next_section(type, backwards, visual)
+function! latex#motion#next_section(type, backwards, visual) " {{{1
   " Restore visual mode if desired
   if a:visual
     normal! gv
@@ -151,8 +148,7 @@ function! latex#motion#next_section(type, backwards, visual)
   endif
 endfunction
 
-" {{{1 latex#motion#sel_delimiter
-function! latex#motion#sel_delimiter(...)
+function! latex#motion#sel_delimiter(...) " {{{1
   let inner = a:0 > 0
 
   let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
@@ -186,8 +182,7 @@ function! latex#motion#sel_delimiter(...)
   endif
 endfunction
 
-" {{{1 latex#motion#sel_environment
-function! latex#motion#sel_environment(...)
+function! latex#motion#sel_environment(...) " {{{1
   let inner = a:0 > 0
 
   let [env, lnum, cnum, lnum2, cnum2] = latex#util#get_env(1)
@@ -216,8 +211,7 @@ function! latex#motion#sel_environment(...)
   endif
 endfunction
 
-" {{{1 latex#motion#sel_inline_math
-function! latex#motion#sel_inline_math(...)
+function! latex#motion#sel_inline_math(...) " {{{1
   let inner = a:0 > 0
 
   let dollar_pat = '\\\@<!\$'
@@ -286,8 +280,7 @@ let s:section.= '>'
 
 " }}}1
 
-" {{{1 s:highlight_matching_pair
-function! s:highlight_matching_pair(...)
+function! s:highlight_matching_pair(...) " {{{1
   if latex#util#in_comment() | return | endif
   let hmode = a:0 > 0 ? 1 : 0
 
@@ -353,8 +346,7 @@ function! s:highlight_matching_pair(...)
   endif
 endfunction
 
-" {{{1 s:search_and_skip_comments
-function! s:search_and_skip_comments(pat, ...)
+function! s:search_and_skip_comments(pat, ...) " {{{1
   " Usage: s:search_and_skip_comments(pat, [flags, stopline])
   let flags             = a:0 >= 1 ? a:1 : ''
   let stopline  = a:0 >= 2 ? a:2 : 0

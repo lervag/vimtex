@@ -1,5 +1,6 @@
-" {{{1 latex#complete#init
-function! latex#complete#init(initialized)
+function! latex#complete#init(initialized) " {{{1
+  if !g:latex_complete_enabled | return | endif
+
   "
   " Check if bibtex is available
   "
@@ -19,15 +20,10 @@ function! latex#complete#init(initialized)
     let s:bibtex = 0
   endif
 
-  if g:latex_complete_enabled
-    setlocal omnifunc=latex#complete#omnifunc
-  endif
+  setlocal omnifunc=latex#complete#omnifunc
 endfunction
 
-" {{{1 latex#complete#omnifunc
-let s:bibtex = 1
-let s:completion_type = ''
-function! latex#complete#omnifunc(findstart, base)
+function! latex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
     "
     " First call:  Find start of text to be completed
@@ -64,8 +60,11 @@ function! latex#complete#omnifunc(findstart, base)
   endif
 endfunction
 
-" {{{1 latex#complete#labels
-function! latex#complete#labels(regex)
+" Define auxiliary variables for completion
+let s:bibtex = 1
+let s:completion_type = ''
+
+function! latex#complete#labels(regex) " {{{1
   let labels = s:labels_get(g:latex#data[b:latex.id].aux())
   let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
 
@@ -103,8 +102,7 @@ function! latex#complete#labels(regex)
   return suggestions
 endfunction
 
-" {{{1 latex#complete#bibtex
-function! latex#complete#bibtex(regexp)
+function! latex#complete#bibtex(regexp) " {{{1
   let res = []
 
   let s:type_length = 4
@@ -136,10 +134,7 @@ function! latex#complete#bibtex(regexp)
 endfunction
 " }}}1
 
-" {{{1 s:bibtex_search
-let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
-let s:type_length = 0
-function! s:bibtex_search(regexp)
+function! s:bibtex_search(regexp) " {{{1
   let res = []
 
   " Find data from external bib files
@@ -214,8 +209,11 @@ function! s:bibtex_search(regexp)
   return res
 endfunction
 
-" {{{1 s:bibtex_find_bibs
-function! s:bibtex_find_bibs(...)
+" Define some auxiliary variables
+let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
+let s:type_length = 0
+
+function! s:bibtex_find_bibs(...) " {{{1
   if a:0
     let file = a:1
   else
@@ -259,7 +257,8 @@ function! s:bibtex_find_bibs(...)
   return bibdata_list
 endfunction
 
-" {{{1 s:labels_cache
+" }}}1
+
 "
 " s:label_cache is a dictionary that maps filenames to tuples of the form
 "
@@ -269,11 +268,9 @@ endfunction
 " returned by extract_labels, and inputs is a list like returned by
 " s:extract_inputs.
 "
-
 let s:label_cache = {}
 
-" {{{1 s:labels_get
-function! s:labels_get(file)
+function! s:labels_get(file) " {{{1
   "
   " s:labels_get compares modification time of each entry in the label cache
   " and updates it if necessary.  During traversal of the label cache, all
@@ -307,8 +304,7 @@ function! s:labels_get(file)
   return labels
 endfunction
 
-" {{{1 s:labels_extract
-function! s:labels_extract(file)
+function! s:labels_extract(file) " {{{1
   "
   " Searches file for commands of the form
   "
@@ -334,8 +330,7 @@ function! s:labels_extract(file)
   return matches
 endfunction
 
-" {{{1 s:labels_extract_inputs
-function! s:labels_extract_inputs(file)
+function! s:labels_extract_inputs(file) " {{{1
   "
   " Searches file for \@input{file} entries and returns list of all files.
   "
@@ -348,8 +343,7 @@ endfunction
 
 " }}}1
 
-" {{{1 s:next_chars_match
-function! s:next_chars_match(regex)
+function! s:next_chars_match(regex) " {{{1
   return strpart(getline('.'), col('.') - 1) =~ a:regex
 endfunction
 " }}}1

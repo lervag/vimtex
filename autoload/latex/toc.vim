@@ -1,13 +1,18 @@
-" {{{1 latex#toc#init
-function! latex#toc#init(initialized)
-  if g:latex_mappings_enabled && g:latex_toc_enabled
-    nnoremap <silent><buffer> <LocalLeader>lt :call latex#toc#open()<cr>
-    nnoremap <silent><buffer> <LocalLeader>lT :call latex#toc#toggle()<cr>
+function! latex#toc#init(initialized) " {{{1
+  if !g:latex_toc_enabled | return | endif
+
+  " Define commands
+  command! -buffer VimLatexTocOpen   call latex#toc#open()
+  command! -buffer VimLatexTocToggle call latex#toc#toggle()
+
+  " Define mappings
+  if g:latex_mappings_enabled
+    nnoremap <buffer> <LocalLeader>lt :call latex#toc#open()<cr>
+    nnoremap <buffer> <LocalLeader>lT :call latex#toc#toggle()<cr>
   endif
 endfunction
 
-" {{{1 latex#toc#open
-function! latex#toc#open()
+function! latex#toc#open() " {{{1
   " Go to TOC if it already exists
   let winnr = bufwinnr(bufnr('LaTeX TOC'))
   if winnr >= 0
@@ -64,8 +69,7 @@ function! latex#toc#open()
   setlocal nomodifiable
 endfunction
 
-" {{{1 latex#toc#toggle
-function! latex#toc#toggle()
+function! latex#toc#toggle() " {{{1
   if bufwinnr(bufnr('LaTeX TOC')) >= 0
     if g:latex_toc_resize
       silent exe "set columns-=" . g:latex_toc_width
@@ -78,8 +82,19 @@ function! latex#toc#toggle()
 endfunction
 " }}}1
 
-" {{{1 s:parse_file
-function! s:parse_file(file, ...)
+" Define dictionary to keep track of TOC numbers
+let s:number = {}
+
+" Define regular expressions to match input and include lines
+let s:re_input = '\v^\s*\\%(input|include)\s*\{'
+let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+
+" Define regular expressions to match various sectioning commands
+let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
+let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+
+function! s:parse_file(file, ...) " {{{1
   " Parses tex file for TOC entries
   "
   " The function returns a list of entries.  Each entry is a dictionary:
@@ -149,14 +164,7 @@ function! s:parse_file(file, ...)
   return toc
 endfunction
 
-"}}}1
-" {{{1 s:parse_line
-" Define regular expressions to match input and include lines
-let s:re_input = '\v^\s*\\%(input|include)\s*\{'
-let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
-
-" Parse input/include lines
-function! s:parse_line_input(line)
+function! s:parse_line_input(line) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
   if l:file !~# '.tex$'
     let l:file .= '.tex'
@@ -164,13 +172,7 @@ function! s:parse_line_input(line)
   return fnamemodify(l:file, ':p')
 endfunction
 
-" Define regular expressions to match various sectioning commands
-let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
-let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
-let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
-
-" Parse sectioning lines
-function! s:parse_line_sec(file, lnum, line)
+function! s:parse_line_sec(file, lnum, line) " {{{1
   let title = matchstr(a:line, s:re_sec_title)
   let number = s:number_increment(matchstr(a:line, s:re_sec_level))
 
@@ -182,10 +184,7 @@ function! s:parse_line_sec(file, lnum, line)
         \ }
 endfunction
 
-" }}}1
-" {{{1 s:number_*
-let s:number = {}
-function! s:number_reset()
+function! s:number_reset() " {{{1
   let s:number.part = 0
   let s:number.chapter = 0
   let s:number.section = 0
@@ -195,7 +194,7 @@ function! s:number_reset()
   let s:number.preamble = 1
 endfunction
 
-function! s:number_start_appendix()
+function! s:number_start_appendix() " {{{1
   let s:number.part = 0
   let s:number.chapter = 0
   let s:number.section = 0
@@ -204,7 +203,7 @@ function! s:number_start_appendix()
   let s:number.appendix = 1
 endfunction
 
-function! s:number_increment(level)
+function! s:number_increment(level) " {{{1
   " Check if level should be incremented
   if a:level !~# '\v%(part|chapter|(sub)*section)$'
     return ''
@@ -236,7 +235,7 @@ function! s:number_increment(level)
   return s:number_print()
 endfunction
 
-function! s:number_print()
+function! s:number_print() " {{{1
   let number = [
         \ s:number.part,
         \ s:number.chapter,

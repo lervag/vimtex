@@ -1,6 +1,7 @@
-" {{{1 latex#init
+" vim-latex is not initialized until latex#init() has been run once
 let s:initialized = 0
-function! latex#init()
+
+function! latex#init() " {{{1
   call s:init_environment()
   call s:init_errorformat()
 
@@ -18,8 +19,7 @@ function! latex#init()
   let s:initialized = 1
 endfunction
 
-" {{{1 latex#info
-function! latex#info()
+function! latex#info() " {{{1
   echo "b:latex"
   echo '  id: ' . b:latex.id
   if has_key(b:latex, 'fold_parts') && !empty(b:latex.fold_parts)
@@ -51,8 +51,7 @@ function! latex#info()
   endfor
 endfunction
 
-" {{{1 latex#help
-function! latex#help()
+function! latex#help() " {{{1
   if g:latex_mappings_enabled
     nmap <buffer>
     vmap <buffer>
@@ -62,8 +61,7 @@ function! latex#help()
   endif
 endfunction
 
-" {{{1 latex#reinit
-function! latex#reinit()
+function! latex#reinit() " {{{1
   "
   " Stop latexmk processes (if running)
   "
@@ -86,8 +84,7 @@ function! latex#reinit()
   silent execute 'buffer ' . n
 endfunction
 
-" {{{1 latex#view
-function! latex#view(...)
+function! latex#view(...) " {{{1
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -104,8 +101,7 @@ function! latex#view(...)
 endfunction
 " }}}1
 
-" {{{1 s:init_environment
-function! s:init_environment()
+function! s:init_environment() " {{{1
   "
   " Initialize global and local data blobs
   "
@@ -139,6 +135,11 @@ function! s:init_environment()
     let b:latex.id = len(g:latex#data) - 1
   endif
 
+  command! -buffer VimLatexInfo         call latex#info()
+  command! -buffer VimLatexHelp         call latex#help()
+  command! -buffer VimLatexView         call latex#view()
+  command! -buffer VimLatexReinitialize call latex#reinit()
+
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>li :call latex#info()<cr>
     nnoremap <silent><buffer> <localleader>lh :call latex#help()<cr>
@@ -149,8 +150,7 @@ function! s:init_environment()
   endif
 endfunction
 
-" {{{1 s:init_errorformat
-function! s:init_errorformat()
+function! s:init_errorformat() " {{{1
   "
   " Note: The error formats assume we're using the -file-line-error with
   "       [pdf]latex. For more info, see |errorformat-LaTeX|.
@@ -198,8 +198,7 @@ function! s:init_errorformat()
 endfunction
 " }}}1
 
-" {{{1 s:get_id
-function! s:get_id(main)
+function! s:get_id(main) " {{{1
   if exists('g:latex#data') && !empty(g:latex#data)
     let id = 0
     while id < len(g:latex#data)
@@ -213,8 +212,7 @@ function! s:get_id(main)
   return -1
 endfunction
 
-" {{{1 s:get_main
-function! s:get_main()
+function! s:get_main() " {{{1
   "
   " Search for main file specifier at the beginning of file.  This is similar
   " to the method used by several other plugins and editors, such as vim with
@@ -245,8 +243,7 @@ function! s:get_main()
   return expand('%:p')
 endfunction
 
-" {{{1 s:get_main_recurse
-function! s:get_main_recurse(file)
+function! s:get_main_recurse(file) " {{{1
   "
   " Check if file is readable
   "
@@ -281,8 +278,7 @@ function! s:get_main_recurse(file)
   return 0
 endfunction
 
-" {{{1 s:get_main_ext
-function! s:get_main_ext(texdata, ext)
+function! s:get_main_ext(texdata, ext) " {{{1
   " Create set of candidates
   let candidates = [
         \ a:texdata.name,
@@ -301,8 +297,7 @@ function! s:get_main_ext(texdata, ext)
   return ''
 endfunction
 
-" {{{1 s:info_sort_func
-function! s:info_sort_func(a, b)
+function! s:info_sort_func(a, b) " {{{1
   if a:a[1][0] == "!"
     " Put cmd's way behind
     return 1
@@ -323,8 +318,7 @@ function! s:info_sort_func(a, b)
   endif
 endfunction
 
-" {{{1 s:truncate
-function! s:truncate(string)
+function! s:truncate(string) " {{{1
   if len(a:string) >= winwidth('.') - 9
     return a:string[0:10] . "..." . a:string[-winwidth('.')+23:]
   else

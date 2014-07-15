@@ -1,44 +1,46 @@
-" {{{1 latex#fold#init
-function! latex#fold#init(initialized)
-  if g:latex_fold_enabled
-    setl foldmethod=expr
-    setl foldexpr=latex#fold#level(v:lnum)
-    setl foldtext=latex#fold#text()
-    call latex#fold#refresh()
+function! latex#fold#init(initialized) " {{{1
+  if !g:latex_fold_enabled | return | endif
 
-    if g:latex_mappings_enabled
-      nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>zx
-    endif
+  " Set fold options
+  setl foldmethod=expr
+  setl foldexpr=latex#fold#level(v:lnum)
+  setl foldtext=latex#fold#text()
 
-    "
-    " For some reason, foldmethod=expr makes undo slow (at least in some cases)
-    "
-    nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+  " Refresh fold levels
+  call latex#fold#refresh()
 
-    "
-    " The foldexpr function returns "=" for most lines, which means it can
-    " become slow for large files.  The following is a hack that is based on
-    " this reply to a discussion on the Vim Developer list:
-    " http://permalink.gmane.org/gmane.editors.vim.devel/14100
-    "
-    if !a:initialized
-      augroup latex_fold
-        autocmd!
-        autocmd InsertEnter *.tex call FdmSave()
-        autocmd InsertLeave *.tex call FdmRestore()
-      augroup END
-    endif
+  " Define commands and maps
+  command! -buffer VimLatexRefreshFoldLevels call latex#fold#refresh()
+  if g:latex_mappings_enabled
+    nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>zx
+  endif
+
+  "
+  " For some reason, foldmethod=expr makes undo slow (at least in some cases)
+  "
+  nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+
+  "
+  " The foldexpr function returns "=" for most lines, which means it can
+  " become slow for large files.  The following is a hack that is based on
+  " this reply to a discussion on the Vim Developer list:
+  " http://permalink.gmane.org/gmane.editors.vim.devel/14100
+  "
+  if !a:initialized
+    augroup latex_fold
+      autocmd!
+      autocmd InsertEnter *.tex call FdmSave()
+      autocmd InsertLeave *.tex call FdmRestore()
+    augroup END
   endif
 endfunction
 
-" {{{1 latex#fold#refresh
-function! latex#fold#refresh()
+function! latex#fold#refresh() " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
   let b:latex.fold_parts = s:find_fold_parts()
 endfunction
 
-" {{{1 latex#fold#level
-function! latex#fold#level(lnum)
+function! latex#fold#level(lnum) " {{{1
   " Check for normal lines first (optimization)
   let line  = getline(a:lnum)
   if line !~ '\(% Fake\|\\\(document\|begin\|end\|'
@@ -84,8 +86,7 @@ function! latex#fold#level(lnum)
   return "="
 endfunction
 
-" {{{1 latex#fold#text
-function! latex#fold#text()
+function! latex#fold#text() " {{{1
   " Initialize
   let line = getline(v:foldstart)
   let level = v:foldlevel > 1 ? repeat('-', v:foldlevel-2) . '*' : ''
@@ -158,25 +159,23 @@ function! latex#fold#text()
 endfunction
 " }}}1
 
-" {{{1 FdmRestore
-function! FdmRestore()
+function! FdmRestore() " {{{1
   let &l:foldmethod = s:fdm
 endfunction
 
-" {{{1 FdmSave
-let s:fdm=''
-function! FdmSave()
+function! FdmSave() " {{{1
   let s:fdm = &l:foldmethod
   setlocal foldmethod=manual
 endfunction
+
+let s:fdm=''
 " }}}1
 
-" {{{1 s:notbslash and s:notcomment
+" Define common regexps
 let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
 let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
-" {{{1 s:find_fold_parts
-function! s:find_fold_parts()
+function! s:find_fold_parts() " {{{1
   "
   " This function parses the tex file to find the sections that are to be
   " folded and their levels, and then predefines the patterns for optimized
@@ -224,8 +223,7 @@ function! s:find_fold_parts()
   return foldsections
 endfunction
 
-" {{{1 s:parse_label
-function! s:parse_label()
+function! s:parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~ '^\s*\\label'
@@ -236,8 +234,7 @@ function! s:parse_label()
   return ""
 endfunction
 
-" {{{1 s:parse_caption
-function! s:parse_caption(line)
+function! s:parse_caption(line) " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~ '^\s*\\caption'
@@ -251,8 +248,7 @@ function! s:parse_caption(line)
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" {{{1 s:parse_caption_table
-function! s:parse_caption_table(line)
+function! s:parse_caption_table(line) " {{{1
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~ '^\s*\\caption'
@@ -266,8 +262,7 @@ function! s:parse_caption_table(line)
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" {{{1 s:parse_caption_frame
-function! s:parse_caption_frame(line)
+function! s:parse_caption_frame(line) " {{{1
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
   let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')

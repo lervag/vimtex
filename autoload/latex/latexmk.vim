@@ -1,9 +1,8 @@
-" {{{1 latex#latexmk#init
-function! latex#latexmk#init(initialized)
+function! latex#latexmk#init(initialized) " {{{1
   if !g:latex_latexmk_enabled | return | endif
 
   "
-  " Check if system is incompatible with latexmk
+  " Check system compatibility
   "
   if s:system_incompatible() | return | endif
 
@@ -15,15 +14,25 @@ function! latex#latexmk#init(initialized)
   endif
 
   "
+  " Define commands
+  "
+  com! -buffer VimLatexCompile call latex#latexmk#compile()
+  com! -buffer VimLatexStop    call latex#latexmk#stop()
+  com! -buffer VimLatexStopAll call latex#latexmk#stop_all()
+  com! -buffer VimLatexErrors  call latex#latexmk#errors(1)
+  com! -buffer -bang VimLatexClean  call latex#latexmk#clean(<q-bang> == "!")
+  com! -buffer -bang VimLatexStatus call latex#latexmk#status(<q-bang> == "!")
+
+  "
   " Set default mappings
   "
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#compile()<cr>
-    nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean()<cr>
+    nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean(0)<cr>
     nnoremap <silent><buffer> <localleader>lC :call latex#latexmk#clean(1)<cr>
-    nnoremap <silent><buffer> <localleader>lg :call latex#latexmk#status()<cr>
+    nnoremap <silent><buffer> <localleader>lg :call latex#latexmk#status(0)<cr>
     nnoremap <silent><buffer> <localleader>lG :call latex#latexmk#status(1)<cr>
-    nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop(1)<cr>
+    nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop()<cr>
     nnoremap <silent><buffer> <localleader>lK :call latex#latexmk#stop_all()<cr>
     nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
   endif
@@ -49,10 +58,8 @@ function! latex#latexmk#init(initialized)
   augroup END
 endfunction
 
-" {{{1 latex#latexmk#clean
-function! latex#latexmk#clean(...)
-  let full = a:0 > 0
-
+" }}}1
+function! latex#latexmk#clean(full) " {{{1
   let data = g:latex#data[b:latex.id]
   if data.pid
     echomsg "latexmk is already running"
@@ -67,7 +74,7 @@ function! latex#latexmk#clean(...)
   else
     let cmd = 'cd ' . shellescape(data.root) . ';'
   endif
-  if full
+  if a:full
     let cmd .= 'latexmk -C '
   else
     let cmd .= 'latexmk -c '
@@ -80,15 +87,15 @@ function! latex#latexmk#clean(...)
         \ }
   call latex#util#execute(exe)
 
-  if full
+  if a:full
     echomsg "latexmk full clean finished"
   else
     echomsg "latexmk clean finished"
   endif
 endfunction
 
-" {{{1 latex#latexmk#compile
-function! latex#latexmk#compile()
+" }}}1
+function! latex#latexmk#compile() " {{{1
   let data = g:latex#data[b:latex.id]
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"
@@ -112,8 +119,7 @@ function! latex#latexmk#compile()
 endfunction
 
 " }}}1
-" {{{1 latex#latexmk#errors
-function! latex#latexmk#errors(force)
+function! latex#latexmk#errors(force) " {{{1
   cclose
 
   let log = g:latex#data[b:latex.id].log()
@@ -150,11 +156,9 @@ function! latex#latexmk#errors(force)
   endif
 endfunction
 
-" {{{1 latex#latexmk#status
-function! latex#latexmk#status(...)
-  let detailed = a:0 > 0
-
-  if detailed
+" }}}1
+function! latex#latexmk#status(detailed) " {{{1
+  if a:detailed
     let running = 0
     for data in g:latex#data
       if data.pid
@@ -184,26 +188,21 @@ function! latex#latexmk#status(...)
   endif
 endfunction
 
-" {{{1 latex#latexmk#stop
-function! latex#latexmk#stop(...)
-  let l:verbose = a:0 > 0
-
+" }}}1
+function! latex#latexmk#stop() " {{{1
   let pid  = g:latex#data[b:latex.id].pid
   let base = g:latex#data[b:latex.id].base
   if pid
     call s:latexmk_kill_pid(pid)
     let g:latex#data[b:latex.id].pid = 0
-    if l:verbose
-      echo "latexmk stopped for `" . base . "'"
-    endif
-  elseif l:verbose
+    echo "latexmk stopped for `" . base . "'"
+  else
     echo "latexmk is not running for `" . base . "'"
   endif
 endfunction
 
 " }}}1
-" {{{1 latex#latexmk#stop_all
-function! latex#latexmk#stop_all()
+function! latex#latexmk#stop_all() " {{{1
   for data in g:latex#data
     if data.pid
       call s:latexmk_kill_pid(data.pid)
@@ -215,8 +214,7 @@ endfunction
 " }}}1
 
 " Helper functions for latexmk command
-" {{{1 s:latexmk_set_cmd
-function! s:latexmk_set_cmd(data)
+function! s:latexmk_set_cmd(data) " {{{1
   " Note: We don't send output to /dev/null, but rather to a temporary file,
   "       which allows inspection of latexmk output
   let tmp = tempname()
@@ -257,8 +255,7 @@ function! s:latexmk_set_cmd(data)
 endfunction
 
 " }}}1
-" {{{1 s:latexmk_set_pid
-function! s:latexmk_set_pid(data)
+function! s:latexmk_set_pid(data) " {{{1
   if has('win32')
     let tmpfile = tempname()
     silent execute '!cmd /c "wmic process where '
@@ -273,8 +270,7 @@ function! s:latexmk_set_pid(data)
 endfunction
 
 " }}}1
-" {{{1 s:latexmk_kill_pid
-function! s:latexmk_kill_pid(pid)
+function! s:latexmk_kill_pid(pid) " {{{1
   let exe = {}
   let exe.bg = 0
   let exe.null = 0
@@ -290,8 +286,7 @@ endfunction
 
 " }}}1
 
-" {{{1 s:log_contains_error
-function! s:log_contains_error(logfile)
+function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
   let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
@@ -300,8 +295,7 @@ function! s:log_contains_error(logfile)
   return len(lines) > 0
 endfunction
 
-" {{{1 s:stop_buffer
-function! s:stop_buffer()
+function! s:stop_buffer() " {{{1
   "
   " Only run if latex variables are set
   "
@@ -327,13 +321,12 @@ function! s:stop_buffer()
     " Only stop if current buffer is the last for current latex blob
     "
     if n == 1
-      call latex#latexmk#stop(0)
+      silent call latex#latexmk#stop()
     endif
   endif
 endfunction
 
-" {{{1 s:system_incompatible()
-function! s:system_incompatible()
+function! s:system_incompatible() " {{{1
   if has('win32')
     let required = ['latexmk']
   else

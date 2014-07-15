@@ -1,8 +1,7 @@
 "
 " Utility functions sorted by name
 "
-" {{{1 latex#util#convert_back
-function! latex#util#convert_back(line)
+function! latex#util#convert_back(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
   "
@@ -78,8 +77,7 @@ let s:convert_back_list = map([
       \ ['\\\~n}'        , 'ñ'],
       \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
-" {{{1 latex#util#error_deprecated
-function! latex#util#error_deprecated(variable)
+function! latex#util#error_deprecated(variable) " {{{1
   if exists(a:variable)
     echoerr "Deprecation error: " . a:variable
     echoerr "Please red docs for more info!"
@@ -87,8 +85,7 @@ function! latex#util#error_deprecated(variable)
   endif
 endfunction
 
-" {{{1 latex#util#execute
-function! latex#util#execute(exe)
+function! latex#util#execute(exe) " {{{1
   " Execute the given command on the current system.  Wrapper function to make
   " it easier to run on both windows and unix.
   "
@@ -138,8 +135,7 @@ function! latex#util#execute(exe)
   endif
 endfunction
 " }}}1
-" {{{1 latex#util#get_env
-function! latex#util#get_env(...)
+function! latex#util#get_env(...) " {{{1
   " latex#util#get_env([with_pos])
   " Returns:
   " - environment
@@ -201,8 +197,7 @@ function! latex#util#get_env(...)
   endif
 endfunction
 
-" {{{1 latex#util#get_delim
-function! latex#util#get_delim()
+function! latex#util#get_delim() " {{{1
   " Save position in order to restore before finishing
   let pos_original = getpos('.')
 
@@ -276,8 +271,7 @@ let s:delimiters_close = [
       \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ]
 
-" {{{1 latex#util#has_syntax
-function! latex#util#has_syntax(name, ...)
+function! latex#util#has_syntax(name, ...) " {{{1
   " Usage: latex#util#has_syntax(name, [line], [col])
   let line = a:0 >= 1 ? a:1 : line('.')
   let col  = a:0 >= 2 ? a:2 : col('.')
@@ -285,13 +279,11 @@ function! latex#util#has_syntax(name, ...)
         \ 'synIDattr(v:val, "name") == "' . a:name . '"'), 1)
 endfunction
 
-" {{{1 latex#util#in_comment
-function! latex#util#in_comment(...)
+function! latex#util#in_comment(...) " {{{1
   return synIDattr(synID(line('.'), col('.'), 0), "name") =~# '^texComment'
 endfunction
 
-" {{{1 latex#util#kpsewhich
-function! latex#util#kpsewhich(file, ...)
+function! latex#util#kpsewhich(file, ...) " {{{1
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
   let cmd .= ' "' . a:file . '"'
@@ -307,15 +299,13 @@ function! latex#util#kpsewhich(file, ...)
   return out
 endfunction
 
-" {{{1 latex#util#set_default
-function! latex#util#set_default(variable, default)
+function! latex#util#set_default(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = a:default
   endif
 endfunction
 
-" {{{1 latex#util#tex2tree
-function! latex#util#tex2tree(str)
+function! latex#util#tex2tree(str) " {{{1
   let tree = []
   let i1 = 0
   let i2 = -1
@@ -346,8 +336,7 @@ function! latex#util#tex2tree(str)
   return tree
 endfunction
 
-" {{{1 latex#util#tree2tex
-function! latex#util#tree2tex(tree)
+function! latex#util#tree2tex(tree) " {{{1
   if type(a:tree) == type('')
     return a:tree
   else

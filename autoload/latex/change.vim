@@ -1,5 +1,4 @@
-" {{{1 latex#change#init
-function! latex#change#init(initialized)
+function! latex#change#init(initialized) " {{{1
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
 
@@ -15,8 +14,7 @@ function! latex#change#init(initialized)
   endif
 endfunction
 
-" {{{1 latex#change#close_environment
-function! latex#change#close_environment()
+function! latex#change#close_environment() " {{{1
   " Close delimiters
   let [lnum, cnum] = searchpairpos('\C\\left\>', '', '\C\\right\>', 'bnW',
         \ 'latex#util#in_comment()')
@@ -46,8 +44,7 @@ function! latex#change#close_environment()
   endif
 endfunction
 
-" {{{1 latex#change#delim
-function! latex#change#delim(open, close)
+function! latex#change#delim(open, close) " {{{1
   let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
 
   let line = getline(l1)
@@ -67,8 +64,7 @@ function! latex#change#delim(open, close)
   call setline(l2, line)
 endfunction
 
-" {{{1 latex#change#env
-function! latex#change#env(new_env)
+function! latex#change#env(new_env) " {{{1
   let [env, l1, c1, l2, c2] = latex#util#get_env(1)
 
   if a:new_env == ''
@@ -100,8 +96,7 @@ function! latex#change#env(new_env)
   call setline(l2, line)
 endfunction
 
-" {{{1 latex#change#env_prompt
-function! latex#change#env_prompt()
+function! latex#change#env_prompt() " {{{1
   let new_env = input('Change ' . latex#util#get_env() . ' for: ', '',
         \ 'customlist,' . s:sidwrap('input_complete'))
   if empty(new_env)
@@ -111,8 +106,7 @@ function! latex#change#env_prompt()
   endif
 endfunction
 
-" {{{1 latex#change#to_command
-function! latex#change#to_command()
+function! latex#change#to_command() " {{{1
   " Get current line
   let line = getline('.')
 
@@ -152,8 +146,7 @@ function! latex#change#to_command()
   return ''
 endfunction
 
-" {{{1 latex#change#toggle_delim
-function! latex#change#toggle_delim()
+function! latex#change#toggle_delim() " {{{1
   "
   " Toggle \left and \right variants of delimiters
   "
@@ -188,8 +181,7 @@ function! latex#change#toggle_delim()
   call setline(l2, line)
 endfunction
 
-" {{{1 latex#change#toggle_env_star
-function! latex#change#toggle_env_star()
+function! latex#change#toggle_env_star() " {{{1
   let env = latex#util#get_env()
 
   if env == '\('
@@ -206,14 +198,12 @@ function! latex#change#toggle_env_star()
 endfunction
 
 
-" {{{1 latex#change#wrap_selection
-function! latex#change#wrap_selection(wrapper)
+function! latex#change#wrap_selection(wrapper) " {{{1
   keepjumps normal! `>a}
   execute 'keepjumps normal! `<i\' . a:wrapper . '{'
 endfunction
 
-" {{{1 latex#change#wrap_selection_prompt
-function! latex#change#wrap_selection_prompt(...)
+function! latex#change#wrap_selection_prompt(...) " {{{1
   let env = input('Environment: ', '',
         \ 'customlist,' . s:sidwrap('input_complete'))
   if empty(env)
@@ -241,14 +231,13 @@ function! latex#change#wrap_selection_prompt(...)
 endfunction
 " }}}1
 
-" {{{1 s:sidwrap
-let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
-function! s:sidwrap(func)
+function! s:sidwrap(func) " {{{1
   return s:SID . a:func
 endfunction
 
-" {{{1 s:input_complete
-function! s:input_complete(lead, cmdline, pos)
+let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
+
+function! s:input_complete(lead, cmdline, pos) " {{{1
   let suggestions = []
   for entry in g:latex_complete_environments
     let env = entry.word
@@ -259,8 +248,7 @@ function! s:input_complete(lead, cmdline, pos)
   return suggestions
 endfunction
 
-" {{{1 s:search_and_skip_comments
-function! s:search_and_skip_comments(pat, ...)
+function! s:search_and_skip_comments(pat, ...) " {{{1
   " Usage: s:search_and_skip_comments(pat, [flags, stopline])
   let flags             = a:0 >= 1 ? a:1 : ''
   let stopline  = a:0 >= 2 ? a:2 : 0
