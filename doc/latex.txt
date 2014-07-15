@@ -75,9 +75,13 @@ initialization script that sets default mappings, creates autocommands and
 performs other necessary initialization.  This initialization script is then
 called from |latex#init|.
 
-The main interface provides some basic functionality.  |latex#view|, by
-default mapped to '<localleader>lv', opens the current output file in
-a viewer.  |latex#help| lists all mappings that are defined specifically for
+The main interface provides some basic functionality.  |latex#view()| or
+|Lview|, by default mapped to '<localleader>lv', opens the current output file in
+a viewer. It accepts optional arguments. This is for example useful, when using
+SyncTex, to pass the current cursor position in the TeX file to the viewer 
+so that it opens at the corresponding page of the compiled document.
+
+|latex#help| lists all mappings that are defined specifically for
 the current buffer, by default mapped to '<localleader>lh'.  If the default
 mappings are used, |latex#help| will display them.  |latex#info| echoes the
 contents of |g:latex#data| and |b:latex|.  This is useful mainly for
