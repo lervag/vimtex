@@ -85,14 +85,13 @@ endfunction
 " Define dictionary to keep track of TOC numbers
 let s:number = {}
 
-" Define regular expressions to match input and include lines
+" Define regular expressions to match document parts
 let s:re_input = '\v^\s*\\%(input|include)\s*\{'
 let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
-
-" Define regular expressions to match various sectioning commands
 let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+let s:re_bib = '\v^\s*\\%((print)?bibliography|printbibheading)\s*\{'
 
 function! s:parse_file(file, ...) " {{{1
   " Parses tex file for TOC entries
@@ -155,7 +154,18 @@ function! s:parse_file(file, ...) " {{{1
       continue
     endif
 
-    " 4. Reset and change numbering for the appendix
+    " 4. Parse biblography
+    if line =~# s:re_bib
+      call add(toc, {
+            \ 'title'  : 'Bibliography',
+            \ 'number' : '',
+            \ 'file'   : a:file,
+            \ 'line'   : lnum,
+            \ })
+      continue
+    endif
+
+    " 5. Reset and change numbering for the appendix
     if line =~# '\v^\s*\\appendix'
       call s:number_start_appendix()
     endif
