@@ -2,6 +2,7 @@
 let s:initialized = 0
 
 function! latex#init() " {{{1
+  call s:init_options()
   call s:init_environment()
   call s:init_errorformat()
 
@@ -114,6 +115,11 @@ function! s:init_environment() " {{{1
   call latex#util#set_default('b:latex', {})
 
   "
+  " Set some file type specific vim options
+  set suffixesadd+=.tex
+  set commentstring=\%\ %s
+
+  "
   " Create new or link to old blob
   "
   let main = s:get_main()
@@ -200,6 +206,62 @@ function! s:init_errorformat() " {{{1
 
   " Ignore unmatched lines
   setlocal efm+=%-G%.%#
+endfunction
+" }}}1
+function! s:init_options() " {{{1
+  call latex#util#error_deprecated('g:latex_errorformat_ignore_warnings')
+  call latex#util#error_deprecated('g:latex_errorformat_show_warnings')
+  call latex#util#error_deprecated('g:latex_latexmk_autojump')
+  call latex#util#error_deprecated('g:latex_latexmk_quickfix')
+
+  call latex#util#set_default('g:latex_build_dir', '.')
+  call latex#util#set_default('g:latex_complete_enabled', 1)
+  call latex#util#set_default('g:latex_complete_close_braces', 0)
+  call latex#util#set_default('g:latex_complete_recursive_bib', 0)
+  call latex#util#set_default('g:latex_complete_patterns',
+        \ {
+        \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
+        \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
+        \ })
+  call latex#util#set_default('g:latex_fold_enabled', 1)
+  call latex#util#set_default('g:latex_fold_preamble', 1)
+  call latex#util#set_default('g:latex_fold_envs', 1)
+  call latex#util#set_default('g:latex_fold_parts',
+        \ [
+        \   "part",
+        \   "appendix",
+        \   "frontmatter",
+        \   "mainmatter",
+        \   "backmatter",
+        \ ])
+  call latex#util#set_default('g:latex_fold_sections',
+        \ [
+        \   "chapter",
+        \   "section",
+        \   "subsection",
+        \   "subsubsection",
+        \ ])
+  call latex#util#set_default('g:latex_indent_enabled', 1)
+  call latex#util#set_default('g:latex_latexmk_enabled', 1)
+  call latex#util#set_default('g:latex_latexmk_callback', 1)
+  call latex#util#set_default('g:latex_latexmk_options', '')
+  call latex#util#set_default('g:latex_latexmk_output', 'pdf')
+  call latex#util#set_default('g:latex_mappings_enabled', 1)
+  call latex#util#set_default('g:latex_motion_enabled', 1)
+  call latex#util#set_default('g:latex_motion_matchparen', 1)
+  call latex#util#set_default('g:latex_quickfix_autojump', '0')
+  call latex#util#set_default('g:latex_quickfix_ignore_all_warnings', 0)
+  call latex#util#set_default('g:latex_quickfix_ignored_warnings', [])
+  call latex#util#set_default('g:latex_quickfix_mode', '2')
+  call latex#util#set_default('g:latex_quickfix_open_on_warning', '1')
+  call latex#util#set_default('g:latex_toc_enabled', 1)
+  call latex#util#set_default('g:latex_toc_width', 30)
+  call latex#util#set_default('g:latex_toc_split_side', 'leftabove')
+  call latex#util#set_default('g:latex_toc_resize', 1)
+  call latex#util#set_default('g:latex_toc_hide_help', 0)
+  call latex#util#set_default('g:latex_toc_fold', 0)
+  call latex#util#set_default('g:latex_toc_fold_levels', 0)
+  call latex#util#set_default('g:latex_viewer', 'xdg-open')
 endfunction
 " }}}1
 
