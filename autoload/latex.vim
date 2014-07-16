@@ -20,6 +20,11 @@ function! latex#init() " {{{1
 endfunction
 
 function! latex#info() " {{{1
+  if !s:initialized
+    echoerr "Error: vim-latex has not been initialized!"
+    return
+  endif
+
   echo "b:latex"
   echo '  id: ' . b:latex.id
   if has_key(b:latex, 'fold_parts') && !empty(b:latex.fold_parts)
