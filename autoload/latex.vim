@@ -269,7 +269,7 @@ function! s:get_main_recurse(file) " {{{1
   "
   let l:path = expand('%:p:h')
   let l:dirs = l:path
-  while l:path != '/'
+  while l:path !~ '\v^([A-Z]:)?\/$' 
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
   endwhile
