@@ -265,11 +265,20 @@ function! s:get_main_recurse(file) " {{{1
   endif
 
   "
-  " Search for files that include the current file
+  " Gather candidate files
   "
-  let l:glob1 = expand('%:p:h')   . '/*.tex'
-  let l:glob2 = expand('%:p:h:h') . '/*.tex'
-  for l:file in split(glob(l:glob1)) + split(glob(l:glob2))
+  let l:path = expand('%:p:h')
+  let l:dirs = l:path
+  while l:path != '/'
+    let l:path = fnamemodify(l:path, ':h')
+    let l:dirs .= ',' . l:path
+  endwhile
+  let l:candidates = globpath(l:dirs, '*.tex', 0, 1)
+
+  "
+  " Search through candidates for \include{current file}
+  "
+  for l:file in l:candidates
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
           \ . '((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?''')) > 0
