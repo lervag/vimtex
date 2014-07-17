@@ -17,11 +17,16 @@ This test document is created to test advanced TOC functionality.
 
 \input{sec3}
 
+% Test matching of bibliography additions
 \bibliography{test}
+
+\printbibliography
 
 \printbibliography{Testing}
 
 \printbibliography[Some option]{Testing}
+
+\printbibheading
 
 \printbibheading{Testing}
 
@@ -29,5 +34,9 @@ This test document is created to test advanced TOC functionality.
 
 \begin{thebibliography}
 \end{thebibliography}
+
+\printindex
+
+\printindex[Some option]
 
 \end{document}

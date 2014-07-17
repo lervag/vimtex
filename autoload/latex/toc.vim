@@ -95,6 +95,7 @@ let s:re_bib = '\v^\s*\\%('
       \ .  'printbib%(liography|heading)\s*(\{|\[)?'
       \ . '|begin\s*\{\s*thebibliography\s*\}'
       \ . '|bibliography\s*\{)'
+let s:re_index = '\v^\s*\\printindex\[?'
 
 function! s:parse_file(file, ...) " {{{1
   " Parses tex file for TOC entries
@@ -168,7 +169,18 @@ function! s:parse_file(file, ...) " {{{1
       continue
     endif
 
-    " 5. Reset and change numbering for the appendix
+    " 5. Parse index
+    if line =~# s:re_index
+      call add(toc, {
+            \ 'title'  : 'Alphabetical index',
+            \ 'number' : '',
+            \ 'file'   : a:file,
+            \ 'line'   : lnum,
+            \ })
+      continue
+    endif
+
+    " 6. Reset and change numbering for the appendix
     if line =~# '\v^\s*\\appendix'
       call s:number_start_appendix()
     endif
