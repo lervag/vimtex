@@ -91,7 +91,10 @@ let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
 let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
-let s:re_bib = '\v^\s*\\%((print)?bibliography|printbibheading)\s*(\{|\[)'
+let s:re_bib = '\v^\s*\\%('
+      \ .  'printbib%(liography|heading)\s*(\{|\[)?'
+      \ . '|begin\s*\{\s*thebibliography\s*\}'
+      \ . '|bibliography\s*\{)'
 
 function! s:parse_file(file, ...) " {{{1
   " Parses tex file for TOC entries
