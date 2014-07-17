@@ -147,10 +147,17 @@ Support for multi-file projects:~
 
 |vim-latex| supports multi-file documents in the sense that the plugin
 automatically detects the root file of the project.  This detection is based
-on a recursive search for files that include the current tex file, but it is
-naive in the sense that it assumes unique file names.  It also assumes that
-the main `tex` file lives in the same folder or the parent folder of the
-current file.  The method is simple, but it should work in most cases.
+on a recursive search for files that include the current tex file, until
+a main file is recognized.  A file is assumed to be the main file if it has
+the `\begin{document}` line.  Files are assumed to live in the same folder or
+a parent folder of the current file.  This should work in most cases, but it
+may fail if for instance the project structure is something like this: >
+
+  path1/main.tex
+  path2/chapter.tex
+
+That is, the main file detection will not work for the file `chapter.tex`,
+because the main file does not live in the same folder or a parent folder.
 
 It is also possible to specify the main TeX file with a comment in one of the
 first five lines of the current file similar to this: >
