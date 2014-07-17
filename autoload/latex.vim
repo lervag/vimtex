@@ -329,11 +329,16 @@ function! s:get_main_recurse(file) " {{{1
   "
   " Gather candidate files
   "
+  let l:maxit = 100
   let l:path = expand('%:p:h')
   let l:dirs = l:path
   while l:path !~ '\v^([A-Z]:)?\/$' 
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
+    let l:maxit -= 1
+    if l:maxir == 0
+      break
+    endif
   endwhile
   let l:candidates = globpath(l:dirs, '*.tex', 0, 1)
 
