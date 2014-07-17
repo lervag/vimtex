@@ -1,42 +1,28 @@
-\documentclass{scrartcl}
-
-\setcounter{secnumdepth}{2}
+\documentclass{book}
 
 \begin{document}
-This test document is created to test advanced TOC functionality.
 
-\section{Test section 1}
+\frontmatter
+\input{preface}
 
-\subsection{Test sub section 1}
-
-\section{$\alpha$}
-
-\input{sec2.tex}
+\mainmatter
+\input{chapters}
 
 \appendix
+\input{appendix}
 
-\input{sec3}
-
-% Test matching of bibliography additions
+\backmatter
 \bibliography{test}
-
 \printbibliography
-
 \printbibliography{Testing}
-
 \printbibliography[Some option]{Testing}
-
 \printbibheading
-
 \printbibheading{Testing}
-
 \printbibheading[Some option]{Testing}
-
 \begin{thebibliography}
 \end{thebibliography}
 
 \printindex
-
 \printindex[Some option]
 
 \end{document}
