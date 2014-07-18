@@ -83,7 +83,18 @@ endfunction
 " }}}1
 
 " Define dictionary to keep track of TOC numbers
-let s:number = {}
+let s:number = {
+      \ 'part' : 0,
+      \ 'chapter' : 0,
+      \ 'section' : 0,
+      \ 'subsection' : 0,
+      \ 'subsubsection' : 0,
+      \ 'preamble' : 0,
+      \ 'frontmatter' : 0,
+      \ 'mainmatter' : 0,
+      \ 'appendix' : 0,
+      \ 'backmatter' : 0,
+      \ }
 
 " Define regular expressions to match document parts
 let s:re_input = '\v^\s*\\%(input|include)\s*\{'
@@ -91,11 +102,25 @@ let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
 let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)\*?'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
-let s:re_bib = '\v^\s*\\%('
-      \ .  'printbib%(liography|heading)\s*(\{|\[)?'
-      \ . '|begin\s*\{\s*thebibliography\s*\}'
-      \ . '|bibliography\s*\{)'
-let s:re_index = '\v^\s*\\printindex\[?'
+let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
+let s:re_structure_match = '\v((front|main|back)matter|appendix)'
+let s:re_other = {
+      \ 'toc' : {
+      \   'title' : 'Table of contents',
+      \   're'    : '\v^\s*\\tableofcontents',
+      \   },
+      \ 'index' : {
+      \   'title' : 'Alphabetical index',
+      \   're'    : '\v^\s*\\printindex\[?',
+      \   },
+      \ 'bib' : {
+      \   'title' : 'Bibliography',
+      \   're'    : '\v^\s*\\%('
+      \             .  'printbib%(liography|heading)\s*(\{|\[)?'
+      \             . '|begin\s*\{\s*thebibliography\s*\}'
+      \             . '|bibliography\s*\{)',
+      \   },
+      \ }
 
 function! s:parse_file(file, ...) " {{{1
   " Parses tex file for TOC entries
@@ -118,7 +143,7 @@ function! s:parse_file(file, ...) " {{{1
 
   " Reset TOC numbering
   if a:0 > 0
-    call s:number_reset()
+    call s:number_reset('preamble')
   endif
 
   let toc = []
@@ -152,38 +177,30 @@ function! s:parse_file(file, ...) " {{{1
       continue
     endif
 
-    " 3. Parse chapters, sections, and subsections
+    " 3. Parse document structure (front-/main-/backmatter, appendix)
+    if line =~# s:re_structure
+      call s:number_reset(matchstr(line, s:re_structure_match))
+      continue
+    endif
+
+    " 4. Parse \parts, \chapters, \sections, and \subsections
     if line =~# s:re_sec
       call add(toc, s:parse_line_sec(a:file, lnum, line))
       continue
     endif
 
-    " 4. Parse biblography
-    if line =~# s:re_bib
-      call add(toc, {
-            \ 'title'  : 'Bibliography',
-            \ 'number' : '',
-            \ 'file'   : a:file,
-            \ 'line'   : lnum,
-            \ })
-      continue
-    endif
-
-    " 5. Parse index
-    if line =~# s:re_index
-      call add(toc, {
-            \ 'title'  : 'Alphabetical index',
-            \ 'number' : '',
-            \ 'file'   : a:file,
-            \ 'line'   : lnum,
-            \ })
-      continue
-    endif
-
-    " 6. Reset and change numbering for the appendix
-    if line =~# '\v^\s*\\appendix'
-      call s:number_start_appendix()
-    endif
+    " 5. Parse other stuff
+    for other in values(s:re_other)
+      if line =~# other.re
+        call add(toc, {
+              \ 'title'  : other.title,
+              \ 'number' : '',
+              \ 'file'   : a:file,
+              \ 'line'   : lnum,
+              \ })
+        continue
+      endif
+    endfor
   endfor
 
   return toc
@@ -209,23 +226,11 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
         \ }
 endfunction
 
-function! s:number_reset() " {{{1
-  let s:number.part = 0
-  let s:number.chapter = 0
-  let s:number.section = 0
-  let s:number.subsection = 0
-  let s:number.subsubsection = 0
-  let s:number.appendix = 0
-  let s:number.preamble = 1
-endfunction
-
-function! s:number_start_appendix() " {{{1
-  let s:number.part = 0
-  let s:number.chapter = 0
-  let s:number.section = 0
-  let s:number.subsection = 0
-  let s:number.subsubsection = 0
-  let s:number.appendix = 1
+function! s:number_reset(part) " {{{1
+  for key in keys(s:number)
+    let s:number[key] = 0
+  endfor
+  let s:number[a:part] = 1
 endfunction
 
 function! s:number_increment(level) " {{{1
@@ -269,20 +274,41 @@ function! s:number_print() " {{{1
         \ s:number.subsubsection,
         \ ]
 
+  " Remove unused parts
   while number[0] == 0
     call remove(number, 0)
   endwhile
-
   while number[-1] == 0
     call remove(number, -1)
   endwhile
 
-  if s:number.appendix
+  " Change numbering in frontmatter, appendix, and backmatter
+  if s:number.frontmatter
+    call map(number, 's:roman_numeral(v:val)')
+  elseif s:number.appendix
     let number[0] = nr2char(number[0] + 64)
+  elseif s:number.backmatter
+    return ""
   endif
 
   return join(number, '.')
 endfunction
+
+" }}}1
+
+function! s:roman_numeral(number) " {{{1
+  let n = a:number
+  let result = ""
+  for [limit, glyph] in s:digits
+    while n >= limit
+      let result .= glyph
+      let n -= limit
+    endwhile
+  endfor
+  return result
+endfunction
+
+let s:digits = [[10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"]]
 
 " }}}1
 
