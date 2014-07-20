@@ -168,8 +168,8 @@ function! s:init_errorformat() " {{{1
   "
 
   " Push file to file stack
-  setlocal efm=%+P**%f
-  setlocal efm+=%+P**\"%f\"
+  setlocal efm=%-P**%f
+  setlocal efm+=%-P**\"%f\"
 
   " Match errors
   setlocal efm+=%E!\ LaTeX\ %trror:\ %m
