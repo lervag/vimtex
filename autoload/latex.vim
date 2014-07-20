@@ -260,7 +260,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_toc_resize', 1)
   call latex#util#set_default('g:latex_toc_hide_help', 0)
   call latex#util#set_default('g:latex_toc_fold', 0)
-  call latex#util#set_default('g:latex_toc_fold_levels', 0)
+  call latex#util#set_default('g:latex_toc_fold_levels', 10)
   call latex#util#set_default('g:latex_viewer', 'xdg-open')
 endfunction
 " }}}1

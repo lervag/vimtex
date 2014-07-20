@@ -2,21 +2,21 @@ function! toc#fold_level(lnum) " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)
   let nline = getline(a:lnum + 1)
-  let pn = matchstr(pline, '\d$')
-  let cn = matchstr(cline, '\d$')
-  let nn = matchstr(nline, '\d$')
+  let l:pn = matchstr(pline, '\d$')
+  let l:cn = matchstr(cline, '\d$')
+  let l:nn = matchstr(nline, '\d$')
 
   " Don't fold options
   if cline =~# '^\s*$'
     return 0
   endif
 
-  if nn > cn
-    return '>' . nn
+  if l:nn > l:cn && g:latex_toc_fold_levels >= l:nn
+    return '>' . l:nn
   endif
 
-  if cn < pn && cn >= nn
-    return cn
+  if l:cn < l:pn && l:cn >= l:nn && g:latex_toc_fold_levels >= l:cn
+    return l:cn
   endif
 
   return '='
