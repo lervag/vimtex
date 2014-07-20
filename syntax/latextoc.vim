@@ -1,15 +1,15 @@
 syntax match TocHelpText /^.*: .*/
-syntax match TocNum      /^\S\+\(\.\S\+\)\?\s*/           contained conceal
-syntax match TocSec      /^\t.\+/
-syntax match TocSec1     /^[^\.]\+\t.*/                   contains=secNum
-syntax match TocSec2     /^\([^\.]\+\.\)\{1}[^\.]\+\t.*/  contains=secNum
-syntax match TocSec3     /^\([^\.]\+\.\)\{2}[^\.]\+\t.*/  contains=secNum
-syntax match TocSec4     /^\([^\.]\+\.\)\{3}[^\.]\+\t.*/  contains=secNum
+syntax match TocNum      /^\(\S\+\(\.\S\+\)*\)\?\s*/ contained conceal
+syntax match TocSec0     /^.*0$/                contains=TocNum,@Tex
+syntax match TocSec1     /^.*1$/                contains=TocNum,@Tex
+syntax match TocSec2     /^.*2$/                contains=TocNum,@Tex
+syntax match TocSec3     /^.*3$/                contains=TocNum,@Tex
+syntax match TocSec4     /^.*4$/                contains=TocNum,@Tex
 
 highlight link TocHelpText helpVim
 highlight link TocNum      Number
-highlight link TocSec      Title
-highlight link TocSec1     TocSec
-highlight link TocSec2     Normal
+highlight link TocSec0     Title
+highlight link TocSec1     Normal
+highlight link TocSec2     helpVim
 highlight link TocSec3     NonText
 highlight link TocSec4     Comment

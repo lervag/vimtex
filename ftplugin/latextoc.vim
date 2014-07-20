@@ -12,6 +12,7 @@ let b:did_ftplugin = 1
 " Set local buffer settings
 setlocal buftype=nofile
 setlocal bufhidden=wipe
+setlocal listchars=
 setlocal nobuflisted
 setlocal noswapfile
 setlocal nowrap
