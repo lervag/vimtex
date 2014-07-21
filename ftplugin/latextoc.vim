@@ -92,7 +92,7 @@ function! s:toc_open_entry(entry)
   " Open file buffer
   let bnr = bufnr(a:entry.file)
   if bnr == -1
-    execute 'badd ' . a:entry.file
+    execute 'badd ' . fnameescape(a:entry.file)
     let bnr = bufnr(a:entry.file)
   endif
   execute 'buffer! ' . bnr
