@@ -363,7 +363,7 @@ function! s:get_main_ext(texdata, ext) " {{{1
   for f in map(candidates,
         \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
     if filereadable(f)
-      return fnameescape(fnamemodify(f, ':p'))
+      return fnamemodify(f, ':p')
     endif
   endfor
 

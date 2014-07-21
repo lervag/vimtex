@@ -131,9 +131,9 @@ function! latex#latexmk#errors(force) " {{{1
   endif
 
   if g:latex_quickfix_autojump
-    execute 'cfile ' . log
+    execute 'cfile ' . fnameescape(log)
   else
-    execute 'cgetfile ' . log
+    execute 'cgetfile ' . fnameescape(log)
   endif
 
   "

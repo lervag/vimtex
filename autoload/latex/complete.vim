@@ -65,7 +65,7 @@ let s:bibtex = 1
 let s:completion_type = ''
 
 function! latex#complete#labels(regex) " {{{1
-  let labels = s:labels_get(g:latex#data[b:latex.id].aux())
+  let labels = s:labels_get(fnameescape(g:latex#data[b:latex.id].aux()))
   let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
 
   " Try to match label and number
