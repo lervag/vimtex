@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 " Better support for cite commands
 " \cite, \citep, \citet, \citeauthor, ...
 syn match texRefZone

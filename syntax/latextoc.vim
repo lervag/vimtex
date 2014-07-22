@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 syntax match TocHelpText /^.*: .*/
 syntax match TocNum      /^\(\S\+\(\.\S\+\)*\)\?\s*/ contained conceal
 syntax match TocSec0     /^.*0$/                contains=TocNum,@Tex

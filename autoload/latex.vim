@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 " vim-latex is not initialized until latex#init() has been run once
 let s:initialized = 0
 

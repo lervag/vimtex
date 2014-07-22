@@ -1,3 +1,9 @@
+% LaTeX plugin for Vim
+%
+% Maintainer: Karl Yngve Lervåg
+% Email:      karl.yngve@gmail.com
+%
+
 ENTRY
   { address author booktitle chapter doi edition editor eid howpublished institution isbn issn journal key month note number organization pages publisher school series title type volume year }
   {}

@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! toc#fold_level(lnum) " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)

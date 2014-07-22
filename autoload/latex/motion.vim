@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! latex#motion#init(initialized) " {{{1
   if !g:latex_motion_enabled | return | endif
 

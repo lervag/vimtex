@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! latex#complete#init(initialized) " {{{1
   if !g:latex_complete_enabled | return | endif
 

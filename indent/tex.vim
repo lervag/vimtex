@@ -1,9 +1,14 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 if exists("b:did_indent")
   finish
 endif
 let b:did_indent = 1
 let s:cpo_save = &cpo
-let s:tikz_indented = 0
 set cpo&vim
 
 " {{{1 Options and common patterns
@@ -11,6 +16,8 @@ setlocal autoindent
 setlocal indentexpr=LatexIndent()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=\\item
+
+let s:tikz_indented = 0
 
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'

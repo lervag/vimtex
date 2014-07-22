@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! latex#toc#init(initialized) " {{{1
   if !g:latex_toc_enabled | return | endif
 

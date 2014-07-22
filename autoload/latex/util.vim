@@ -1,6 +1,11 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
 "
 " Utility functions sorted by name
 "
+
 function! latex#util#convert_back(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols

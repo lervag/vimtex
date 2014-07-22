@@ -1,3 +1,9 @@
+" LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! latex#change#init(initialized) " {{{1
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
