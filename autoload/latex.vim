@@ -228,6 +228,7 @@ function! s:init_options() " {{{1
         \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
         \ })
   call latex#util#set_default('g:latex_fold_enabled', 1)
+  call latex#util#set_default('g:latex_fold_automatic', 1)
   call latex#util#set_default('g:latex_fold_preamble', 1)
   call latex#util#set_default('g:latex_fold_envs', 1)
   call latex#util#set_default('g:latex_fold_parts',

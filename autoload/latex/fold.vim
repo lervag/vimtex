@@ -14,13 +14,12 @@ function! latex#fold#init(initialized) " {{{1
 
   " Initalize folds
   call latex#fold#refresh()
-  normal! zx
-
-  " Define commands and maps
-  command! -buffer VimLatexRefreshFolds call latex#fold#refresh()
 
   " Remap zx to refresh fold levels
   nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>
+
+  " Define commands and maps
+  command! -buffer VimLatexRefreshFolds call latex#fold#refresh()
 
   " Set options for automatic/manual mode
   if g:latex_fold_automatic
