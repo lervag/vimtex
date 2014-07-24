@@ -12,38 +12,49 @@ function! latex#fold#init(initialized) " {{{1
   setl foldexpr=latex#fold#level(v:lnum)
   setl foldtext=latex#fold#text()
 
-  " Refresh fold levels
+  " Initalize folds
   call latex#fold#refresh()
+  normal! zx
 
   " Define commands and maps
-  command! -buffer VimLatexRefreshFoldLevels call latex#fold#refresh()
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>zx
-  endif
+  command! -buffer VimLatexRefreshFolds call latex#fold#refresh()
 
-  "
-  " For some reason, foldmethod=expr makes undo slow (at least in some cases)
-  "
-  nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+  " Remap zx to refresh fold levels
+  nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>
 
-  "
-  " The foldexpr function returns "=" for most lines, which means it can
-  " become slow for large files.  The following is a hack that is based on
-  " this reply to a discussion on the Vim Developer list:
-  " http://permalink.gmane.org/gmane.editors.vim.devel/14100
-  "
-  if !a:initialized
-    augroup latex_fold
-      autocmd!
-      autocmd InsertEnter *.tex call FdmSave()
-      autocmd InsertLeave *.tex call FdmRestore()
-    augroup END
+  " Set options for automatic/manual mode
+  if g:latex_fold_automatic
+    " For some reason, foldmethod=expr makes undo slow (at least in some cases)
+    nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+
+    " The foldexpr function returns "=" for most lines, which means it can
+    " become slow for large files.  The following is a hack that is based on
+    " this reply to a discussion on the Vim Developer list:
+    " http://permalink.gmane.org/gmane.editors.vim.devel/14100
+    if !a:initialized
+      augroup latex_fold
+        autocmd!
+        autocmd InsertEnter *.tex call FdmSave()
+        autocmd InsertLeave *.tex call FdmRestore()
+      augroup END
+    endif
+  else
+    setl foldmethod=manual
   endif
 endfunction
 
 function! latex#fold#refresh() " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
   let b:latex.fold_parts = s:find_fold_parts()
+
+  " Refresh folds
+  if g:latex_fold_automatic
+    normal! zx
+  else
+    setl foldmethod=expr
+    normal! zx
+    setl foldmethod=manual
+  endif
 endfunction
 
 function! latex#fold#level(lnum) " {{{1

@@ -220,7 +220,7 @@ n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 
-n  zx               *@:call latex#fold#refresh()<cr>zx
+n  zx               *@:call latex#fold#refresh()<cr>
 n  dse              *@:call latex#change#env('')<cr>
 n  cse              *@:call latex#change#env_prompt()<cr>
 n  tse              *@:call latex#change#toggle_env_star()<cr>
@@ -242,7 +242,7 @@ VimLatexCompile              call latex#latexmk#compile()
 VimLatexErrors               call latex#latexmk#errors(1)
 VimLatexHelp                 call latex#help()
 VimLatexInfo                 call latex#info()
-VimLatexRefreshFoldLevels    call latex#fold#refresh()
+VimLatexRefreshFolds         call latex#fold#refresh()
 VimLatexReinitialize         call latex#reinit()
 VimLatexStatus               call latex#latexmk#status()
 VimLatexStatus!              call latex#latexmk#status(1)
@@ -268,6 +268,7 @@ Overview:~
   |g:latex_complete_recursive_bib|
   |g:latex_complete_patterns|
   |g:latex_fold_enabled|
+  |g:latex_fold_automatic|
   |g:latex_fold_envs|
   |g:latex_fold_parts|
   |g:latex_fold_preamble|
@@ -330,6 +331,13 @@ triggered. >
                                                         *g:latex_fold_enabled*
 Use this option to disable/enable folding. >
   let g:latex_fold_enabled = 1
+<
+                                                      *g:latex_fold_automatic*
+Set manual or automatic updating of fold levels.  For manual mode, one must
+use the |zx| mapping to update the foldlevels when desired.  For automatic
+mode, the fold levels will be updated automatically.  Beware that this may
+lead to some minor lags for large files. >
+  let g:latex_fold_automatic = 1
 <
                                                            *g:latex_fold_envs*
 Decide whether environments should be folded or not. >
@@ -564,6 +572,7 @@ to 'zx'.
 
 Associated settings:
     |g:latex_fold_enabled|
+    |g:latex_fold_automatic|
     |g:latex_fold_preamble|
     |g:latex_fold_parts|
     |g:latex_fold_sections|
@@ -835,7 +844,7 @@ Sets fold title text. 'foldtext'
 
                                                           *latex#fold#refresh*
 Refreshes fold levels based on which parts and sections used in the current
-file buffer.
+file buffer.  Also issues a |zx| call to update folds.
 
                                                                   *latex#help*
 Lists all mappings that are defined specifically for the current buffer.  If
