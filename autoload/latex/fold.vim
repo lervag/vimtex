@@ -13,13 +13,14 @@ function! latex#fold#init(initialized) " {{{1
   setl foldtext=latex#fold#text()
 
   " Initalize folds
-  call latex#fold#refresh()
+  call latex#fold#refresh('zx')
 
   " Remap zx to refresh fold levels
-  nnoremap <silent><buffer> zx :call latex#fold#refresh()<cr>
+  nnoremap <silent><buffer> zx :call latex#fold#refresh('zx')<cr>
+  nnoremap <silent><buffer> zX :call latex#fold#refresh('zX')<cr>
 
   " Define commands and maps
-  command! -buffer VimLatexRefreshFolds call latex#fold#refresh()
+  command! -buffer VimLatexRefreshFolds call latex#fold#refresh('zx')
 
   " Set options for automatic/manual mode
   if g:latex_fold_automatic
@@ -42,16 +43,16 @@ function! latex#fold#init(initialized) " {{{1
   endif
 endfunction
 
-function! latex#fold#refresh() " {{{1
+function! latex#fold#refresh(map) " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
   let b:latex.fold_parts = s:find_fold_parts()
 
   " Refresh folds
   if g:latex_fold_automatic
-    normal! zx
+    execute 'normal! ' . a:map
   else
     setl foldmethod=expr
-    normal! zx
+    execute 'normal! ' . a:map
     setl foldmethod=manual
   endif
 endfunction
