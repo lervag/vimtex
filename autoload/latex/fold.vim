@@ -220,8 +220,15 @@ function! s:find_fold_parts() " {{{1
     endwhile
   endfor
 
+  " Require minimum of two parts to fold
+  if len(foldsections) > 1
+    let level = 1
+  else
+    let level = 0
+    let foldsections = []
+  endif
+
   " Parse section commands (chapter, [sub...]section)
-  let level = len(foldsections) > 0 ? 1 : 0
   for part in g:latex_fold_sections
     " For each part, check if it is used in the file.  We start adding the
     " part patterns to the fold sections array whenever we find one.
