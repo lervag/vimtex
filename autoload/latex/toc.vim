@@ -31,12 +31,8 @@ function! latex#toc#open() " {{{1
   let calling_file = expand('%:p')
   let calling_line = line('.')
 
-  " Parse tex files for max level
-  let s:count_matters = 0
-  let s:max_level = s:set_max_level(g:latex#data[b:latex.id].tex)
-
-  " Parse tex files for TOC data
-  let toc = s:parse_file(g:latex#data[b:latex.id].tex, 1)
+  " Parse TOC data
+  let toc = s:parse_toc()
 
   " Resize vim session if wanted, then create TOC window
   if g:latex_toc_resize
@@ -94,9 +90,10 @@ function! latex#toc#toggle() " {{{1
     silent execute 'wincmd w'
   endif
 endfunction
+
 " }}}1
 
-" {{{1 TOC number variables
+" {{{1 TOC variables
 let s:max_level = 0
 let s:count_matters = 0
 
@@ -157,7 +154,43 @@ let s:re_other = {
 
 " }}}1
 
-function! s:parse_file(file, ...) " {{{1
+function! s:parse_toc() " {{{1
+  let file = g:latex#data[b:latex.id].tex
+
+  " Reset TOC numbering
+  call s:number_reset('preamble')
+
+  " Find max level and number of \*matter commands
+  let s:max_level = 0
+  let s:count_matters = 0
+  call s:parse_limits(file)
+
+  " Parse TOC data
+  return s:parse_file(file)
+endfunction
+
+" }}}1
+function! s:parse_limits(file) " {{{1
+  if !filereadable(a:file)
+    echoerr "Error in latex#toc s:get_depth:"
+    echoerr "File not readable: " . a:file
+    return ''
+  endif
+
+  for line in readfile(a:file)
+    if line =~# s:re_input
+      call s:parse_limits(s:parse_line_input(line))
+    elseif line =~# s:re_sec
+      let s:max_level = max([s:max_level,
+            \ s:sec_to_value[matchstr(line, s:re_sec_level)]])
+    elseif line =~# s:re_matters
+      let s:count_matters += 1
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:parse_file(file) " {{{1
   " Parses tex file for TOC entries
   "
   " The function returns a list of entries.  Each entry is a dictionary:
@@ -171,14 +204,9 @@ function! s:parse_file(file, ...) " {{{1
   "   }
 
   if !filereadable(a:file)
-    echoerr "Error in latex#toc s:parse_file:"
+    echoerr "Error in latex#toc s:parse_file"
     echoerr "File not readable: " . a:file
     return []
-  endif
-
-  " Reset TOC numbering
-  if a:0 > 0
-    call s:number_reset('preamble')
   endif
 
   let toc = []
@@ -344,30 +372,6 @@ function! s:number_print() " {{{1
   endif
 
   return join(number, '.')
-endfunction
-
-" }}}1
-
-function! s:set_max_level(file) " {{{1
-  if !filereadable(a:file)
-    echoerr "Error in latex#toc s:get_depth:"
-    echoerr "File not readable: " . a:file
-    return ''
-  endif
-
-  let n = 0
-
-  for line in readfile(a:file)
-    if line =~# s:re_input
-      let n = max([n, s:set_max_level(s:parse_line_input(line))])
-    elseif line =~# s:re_sec
-      let n = max([n, s:sec_to_value[matchstr(line, s:re_sec_level)]])
-    elseif line =~# s:re_matters
-      let s:count_matters += 1
-    endif
-  endfor
-
-  return n
 endfunction
 
 " }}}1
