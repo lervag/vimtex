@@ -242,7 +242,7 @@ function! s:parse_folded() " {{{1
 endfunction
 
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_parts, '|') . ')>'
-let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_secs,  '|') . ')>'
+let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_sections,  '|') . ')>'
 
 " }}}1
 function! s:parse_label() " {{{1
