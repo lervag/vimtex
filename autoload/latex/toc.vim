@@ -32,6 +32,7 @@ function! latex#toc#open() " {{{1
   let calling_line = line('.')
 
   " Parse tex files for max level
+  let s:count_matters = 0
   let s:max_level = s:set_max_level(g:latex#data[b:latex.id].tex)
 
   " Parse tex files for TOC data
@@ -97,6 +98,7 @@ endfunction
 
 " {{{1 TOC number variables
 let s:max_level = 0
+let s:count_matters = 0
 
 " Define dictionary to keep track of TOC numbers
 let s:number = {
@@ -132,6 +134,7 @@ let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
 let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
 let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
 let s:re_structure_match = '\v((front|main|back)matter|appendix)'
 let s:re_other = {
@@ -270,10 +273,6 @@ function! s:number_reset(part) " {{{1
     let s:number[key] = 0
   endfor
   let s:number[a:part] = 1
-
-  " Initialize for preamble
-  if a:part == 'preamble'
-  endif
 endfunction
 
 function! s:number_increment(level, starred) " {{{1
@@ -337,7 +336,8 @@ function! s:number_print() " {{{1
   endwhile
 
   " Change numbering in frontmatter, appendix, and backmatter
-  if s:number.frontmatter || s:number.backmatter
+  if s:count_matters > 1
+        \ && (s:number.frontmatter || s:number.backmatter)
     return ""
   elseif s:number.appendix
     let number[0] = nr2char(number[0] + 64)
@@ -362,6 +362,8 @@ function! s:set_max_level(file) " {{{1
       let n = max([n, s:set_max_level(s:parse_line_input(line))])
     elseif line =~# s:re_sec
       let n = max([n, s:sec_to_value[matchstr(line, s:re_sec_level)]])
+    elseif line =~# s:re_matters
+      let s:count_matters += 1
     endif
   endfor
 
