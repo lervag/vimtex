@@ -66,7 +66,7 @@ endfunction
 function! latex#help() " {{{1
   if g:latex_mappings_enabled
     nmap <buffer>
-    vmap <buffer>
+    xmap <buffer>
     omap <buffer>
   else
     echo "Mappings not enabled"

@@ -9,7 +9,7 @@ function! latex#motion#init(initialized) " {{{1
 
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> % :call latex#motion#find_matching_pair()<cr>
-    vnoremap <silent><buffer> %
+    xnoremap <silent><buffer> %
           \ :<c-u>call latex#motion#find_matching_pair(1)<cr>
     onoremap <silent><buffer> % :normal v%<cr>
 
@@ -17,27 +17,27 @@ function! latex#motion#init(initialized) " {{{1
     nnoremap <silent><buffer> ][ :call latex#motion#next_section(1,0,0)<cr>
     nnoremap <silent><buffer> [] :call latex#motion#next_section(1,1,0)<cr>
     nnoremap <silent><buffer> [[ :call latex#motion#next_section(0,1,0)<cr>
-    vnoremap <silent><buffer> ]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
-    vnoremap <silent><buffer> ][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
-    vnoremap <silent><buffer> [] :<c-u>call latex#motion#next_section(1,1,1)<cr>
-    vnoremap <silent><buffer> [[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
+    xnoremap <silent><buffer> ]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
+    xnoremap <silent><buffer> ][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
+    xnoremap <silent><buffer> [] :<c-u>call latex#motion#next_section(1,1,1)<cr>
+    xnoremap <silent><buffer> [[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
     onoremap <silent><buffer> ]] :normal v]]<cr>
     onoremap <silent><buffer> ][ :normal v][<cr>
     onoremap <silent><buffer> [] :normal v[]<cr>
     onoremap <silent><buffer> [[ :normal v[[<cr>
 
-    vnoremap <silent><buffer> ie :<c-u>call latex#motion#sel_environment(1)<cr>
-    vnoremap <silent><buffer> ae :<c-u>call latex#motion#sel_environment()<cr>
+    xnoremap <silent><buffer> ie :<c-u>call latex#motion#sel_environment(1)<cr>
+    xnoremap <silent><buffer> ae :<c-u>call latex#motion#sel_environment()<cr>
     onoremap <silent><buffer> ie :normal vie<cr>
     onoremap <silent><buffer> ae :normal vae<cr>
 
-    vnoremap <silent><buffer> i$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
-    vnoremap <silent><buffer> a$ :<c-u>call latex#motion#sel_inline_math()<cr>
+    xnoremap <silent><buffer> i$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
+    xnoremap <silent><buffer> a$ :<c-u>call latex#motion#sel_inline_math()<cr>
     onoremap <silent><buffer> i$ :normal vi$<cr>
     onoremap <silent><buffer> a$ :normal va$<cr>
 
-    vnoremap <silent><buffer> id :<c-u>call latex#motion#sel_delimiter(1)<cr>
-    vnoremap <silent><buffer> ad :<c-u>call latex#motion#sel_delimiter()<cr>
+    xnoremap <silent><buffer> id :<c-u>call latex#motion#sel_delimiter(1)<cr>
+    xnoremap <silent><buffer> ad :<c-u>call latex#motion#sel_delimiter()<cr>
     onoremap <silent><buffer> id :normal vi(<cr>
     onoremap <silent><buffer> ad :normal va(<cr>
   endif
