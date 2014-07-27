@@ -45,7 +45,7 @@ endfunction
 
 function! latex#fold#refresh(map) " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
-  let b:latex.fold_parts = s:find_fold_parts()
+  let b:latex.fold_parts = s:parse_folded()
 
   " Refresh folds
   if g:latex_fold_automatic
@@ -192,61 +192,59 @@ let s:fdm=''
 let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
 let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
-function! s:find_fold_parts() " {{{1
+function! s:parse_folded() " {{{1
   "
-  " This function parses the tex file to find the sections that are to be
-  " folded and their levels, and then predefines the patterns for optimized
-  " folding.  For convenience, we ignore sectioning commands that are not
-  " present in the document.  We also ignore top level parts such as
-  " \frontmatter, \appendix, \part, and similar, unless there are at least two
-  " such commands in a document.
+  " Parse current buffer to find which sections to fold and their levels.  The
+  " patterns are predefined to optimize the folding.
+  "
+  " We ignore top level parts such as \frontmatter, \appendix, \part, and
+  " similar, unless there are at least two such commands in a document.
   "
 
   " Initialize
-  let foldsections = []
+  let folded = []
+  let buffer = readfile(expand('%'))
 
   " Parse part commands (frontmatter, appendix, part, etc)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
   for part in g:latex_fold_parts
-    " For each part, check if it is used in the file.  We start adding the
-    " part patterns to the fold sections array whenever we find one.
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
-    let nline  = 1
-    while nline < line("$")
-      if getline(nline) =~# partpattern
-        call insert(foldsections, [partpattern, 1])
+    for line in lines
+      if line =~# partpattern
+        call insert(folded, [partpattern, 1])
         break
       endif
-      let nline += 1
-    endwhile
+    endfor
   endfor
 
-  " Require minimum of two parts to fold
-  if len(foldsections) > 1
+  " We want a minimum of two top level parts
+  if len(folded) >= 2
     let level = 1
   else
     let level = 0
-    let foldsections = []
+    let folded = []
   endif
 
   " Parse section commands (chapter, [sub...]section)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
   for part in g:latex_fold_sections
-    " For each part, check if it is used in the file.  We start adding the
-    " part patterns to the fold sections array whenever we find one.
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
-    let nline  = 1
-    while nline < line("$")
-      if getline(nline) =~# partpattern
+    for line in lines
+      if line =~# partpattern
         let level += 1
-        call insert(foldsections, [partpattern, level])
+        call insert(folded, [partpattern, level])
         break
       endif
-      let nline += 1
-    endwhile
+    endfor
   endfor
 
-  return foldsections
+  return folded
 endfunction
 
+let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_parts, '|') . ')>'
+let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_secs,  '|') . ')>'
+
+" }}}1
 function! s:parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
