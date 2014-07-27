@@ -159,17 +159,11 @@ function! s:bibtex_search(regexp) " {{{1
           \ '\bibdata{' . bibdata . '}',
           \ ], tmp.aux)
 
-    " Define the bibtex command that is used to create the bbl file.
-    " Note: Special care is needed on windows
-    let cmd = 'bibtex -terse ' . tmp.aux
-    if has('win32')
-      let cmd = 'cd ' . g:latex#data[b:latex.id].root . ' & ' . cmd
-    endif
-
     " Create the temporary bbl file
     let exe = {}
-    let exe.cmd = cmd
+    let exe.cmd = 'bibtex -terse ' . tmp.aux
     let exe.bg = 0
+    let exe.wd = g:latex#data[b:latex.id].root
     call latex#util#execute(exe)
 
     " Parse temporary bbl file

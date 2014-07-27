@@ -100,6 +100,7 @@ function! latex#util#execute(exe) " {{{1
   "   exe.cmd     String          String that contains the command to run
   "   exe.bg      0 or 1          Run in background or not
   "   exe.null    0 or 1          Send output to /dev/null
+  "   exe.wd      String          Run command in provided working directory
   "
   " Only exe.cmd is required.
   "
@@ -112,6 +113,12 @@ function! latex#util#execute(exe) " {{{1
   endif
   let bg   = has_key(a:exe, 'bg')   ? a:exe.bg   : 1
   let null = has_key(a:exe, 'null') ? a:exe.null : 1
+
+  " Change directory if wanted
+  if has_key(a:exe, 'wd')
+    let pwd = getcwd()
+    execute 'lcd ' . a:exe.wd
+  endif
 
   " Set up command string based on the given system
   if has('win32')
@@ -134,6 +141,11 @@ function! latex#util#execute(exe) " {{{1
   endif
 
   silent execute cmd
+
+  " Return to previous working directory
+  if has_key(a:exe, 'wd')
+    execute 'lcd ' . pwd
+  endif
 
   if !has("gui_running")
     redraw!
