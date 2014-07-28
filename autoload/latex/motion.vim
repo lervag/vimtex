@@ -197,7 +197,7 @@ function! latex#motion#sel_environment(...) " {{{1
     if env =~ '^\'
       call search('\\.\_\s*\S', 'eW')
     else
-      call search('}\(\_\s*\[\_[^]]*\]\)\?\_\s*\S', 'eW')
+      call search('}\(\_\s*\(\[\_[^]]*\]\|{\_\S\{-}}\)\)\?\_\s*\S', 'eW')
     endif
   endif
   if visualmode() ==# 'V'
