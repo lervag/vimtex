@@ -146,6 +146,11 @@ function! s:bibtex_search(regexp) " {{{1
   " Find data from external bib files
   let bibdata = join(s:bibtex_find_bibs(), ',')
   if bibdata != ''
+    " Create bibdata at tex root
+    let l:save_pwd = getcwd()
+    execute 'lcd ' . g:latex#data[b:latex.id].root
+
+    " Define temporary files
     let tmp = {
           \ 'aux' : 'tmpfile.aux',
           \ 'bbl' : 'tmpfile.bbl',
@@ -163,7 +168,6 @@ function! s:bibtex_search(regexp) " {{{1
     let exe = {}
     let exe.cmd = 'bibtex -terse ' . tmp.aux
     let exe.bg = 0
-    let exe.wd = g:latex#data[b:latex.id].root
     call latex#util#execute(exe)
 
     " Parse temporary bbl file
@@ -185,9 +189,13 @@ function! s:bibtex_search(regexp) " {{{1
       endif
     endfor
 
+    " Clean up
     call delete(tmp.aux)
     call delete(tmp.bbl)
     call delete(tmp.blg)
+
+    " Return to previous working directory
+    execute 'lcd ' . l:save_pwd
   endif
 
   " Find data from 'thebibliography' environments
@@ -221,7 +229,7 @@ function! s:bibtex_find_bibs(...) " {{{1
   endif
 
   if !filereadable(file)
-    return ''
+    return []
   endif
   let lines = readfile(file)
   let bibdata_list = []
