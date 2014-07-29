@@ -72,6 +72,10 @@ function! latex#latexmk#clean(full) " {{{1
     return
   endif
 
+  " Disable shellslash
+  let l:ssl = &l:ssl
+  setlocal nossl
+
   "
   " Run latexmk clean process
   "
@@ -92,6 +96,9 @@ function! latex#latexmk#clean(full) " {{{1
         \ 'bg'  : 0,
         \ }
   call latex#util#execute(exe)
+
+  " Restore shellslash
+  let &l:ssl = l:ssl
 
   if a:full
     echomsg "latexmk full clean finished"
@@ -225,6 +232,10 @@ function! s:latexmk_set_cmd(data) " {{{1
   "       which allows inspection of latexmk output
   let tmp = tempname()
 
+  " Disable shellslash
+  let l:ssl = &l:ssl
+  setlocal nossl
+
   if has('win32')
     let cmd  = 'cd /D ' . shellescape(a:data.root)
     let cmd .= ' && set max_print_line=2000 & latexmk'
@@ -248,6 +259,9 @@ function! s:latexmk_set_cmd(data) " {{{1
   endif
 
   let cmd .= ' ' . shellescape(a:data.base)
+
+  " Restore shellslash
+  let &l:ssl = l:ssl
 
   if has('win32')
     let cmd .= ' >'  . tmp
