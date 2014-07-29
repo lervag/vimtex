@@ -94,6 +94,7 @@ endfunction
 " }}}1
 
 " {{{1 TOC variables
+let s:root = ''
 let s:max_level = 0
 let s:count_matters = 0
 
@@ -157,6 +158,9 @@ let s:re_other = {
 function! s:parse_toc() " {{{1
   let file = g:latex#data[b:latex.id].tex
 
+  " Store project root for use in recursive file searches
+  let s:root = fnamemodify(file, ':p:h')
+
   " Reset TOC numbering
   call s:number_reset('preamble')
 
@@ -172,7 +176,7 @@ endfunction
 " }}}1
 function! s:parse_limits(file) " {{{1
   if !filereadable(a:file)
-    echoerr "Error in latex#toc s:get_depth:"
+    echoerr "Error in latex#toc s:parse_limits"
     echoerr "File not readable: " . a:file
     return ''
   endif
@@ -276,7 +280,9 @@ function! s:parse_line_input(line) " {{{1
   if l:file !~# '.tex$'
     let l:file .= '.tex'
   endif
-  return fnamemodify(l:file, ':p')
+
+  " Return full path
+  return s:root . '/' . l:file
 endfunction
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
