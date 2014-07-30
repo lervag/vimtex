@@ -140,16 +140,31 @@ function! latex#complete#bibtex(regexp) " {{{1
 endfunction
 " }}}1
 
-function! s:bibtex_search(regexp) " {{{1
+" {{{1 Bibtex completion
+
+" Define some regular expressions
+let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+let s:re_bibs  = '''' . s:nocomment
+let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
+let s:re_incsearch  = '''' . s:nocomment
+let s:re_incsearch .= '\\%(input|include)'
+let s:re_incsearch .= '\m\s*{\zs[^}]\+\ze}'''
+
+" Define some auxiliary variables
+let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
+let s:type_length = 0
+
+function! s:bibtex_search(regexp) " {{{2
   let res = []
 
-  " Find data from external bib files
-  let bibdata = join(s:bibtex_find_bibs(), ',')
-  if bibdata != ''
-    " Create bibdata at tex root
-    let l:save_pwd = getcwd()
-    execute 'lcd ' . g:latex#data[b:latex.id].root
+  " The bibtex completion seems to require that we are in the project root
+  let l:save_pwd = getcwd()
+  execute 'lcd ' . g:latex#data[b:latex.id].root
 
+  " Find data from external bib files
+  let bibfiles = join(s:bibtex_find_bibs(), ',')
+  if bibfiles != ''
     " Define temporary files
     let tmp = {
           \ 'aux' : 'tmpfile.aux',
@@ -161,7 +176,7 @@ function! s:bibtex_search(regexp) " {{{1
     call writefile([
           \ '\citation{*}',
           \ '\bibstyle{' . s:bstfile . '}',
-          \ '\bibdata{' . bibdata . '}',
+          \ '\bibdata{' . bibfiles . '}',
           \ ], tmp.aux)
 
     " Create the temporary bbl file
@@ -193,10 +208,10 @@ function! s:bibtex_search(regexp) " {{{1
     call delete(tmp.aux)
     call delete(tmp.bbl)
     call delete(tmp.blg)
-
-    " Return to previous working directory
-    execute 'lcd ' . l:save_pwd
   endif
+
+  " Return to previous working directory
+  execute 'lcd ' . l:save_pwd
 
   " Find data from 'thebibliography' environments
   let lines = readfile(g:latex#data[b:latex.id].tex)
@@ -217,11 +232,7 @@ function! s:bibtex_search(regexp) " {{{1
   return res
 endfunction
 
-" Define some auxiliary variables
-let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
-let s:type_length = 0
-
-function! s:bibtex_find_bibs(...) " {{{1
+function! s:bibtex_find_bibs(...) " {{{2
   if a:0
     let file = a:1
   else
@@ -232,41 +243,36 @@ function! s:bibtex_find_bibs(...) " {{{1
     return []
   endif
   let lines = readfile(file)
-  let bibdata_list = []
+  let bibfiles = []
 
   "
   " Search for added bibliographies
   " * Parse commands such as \bibliography{file1,file2.bib,...}
   " * This also removes the .bib extensions
   "
-  let bibsearch  = '''\v\C\\'
-  let bibsearch .= '(bibliography|add(bibresource|globalbib|sectionbib))'
-  let bibsearch .= '\m\s*{\zs[^}]\+\ze}'''
   for entry in map(filter(copy(lines),
-          \ 'v:val =~ ' . bibsearch),
-        \ 'matchstr(v:val, ' . bibsearch . ')')
-    let bibdata_list += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
+          \ 'v:val =~ ' . s:re_bibs),
+        \ 'matchstr(v:val, ' . s:re_bibs . ')')
+    let bibfiles += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
+  "
+  " Recursively search included files
+  "
   if g:latex_complete_recursive_bib
-    "
-    " Recursively search included files
-    "
-    let incsearch  = '''\C\\'
-    let incsearch .= '\%(input\|include\)'
-    let incsearch .= '\s*{\zs[^}]\+\ze}'''
     for entry in map(filter(lines,
-          \ 'v:val =~ ' . incsearch),
-          \ 'matchstr(v:val, ' . incsearch . ')')
-      let bibdata_list += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
+          \ 'v:val =~ ' . s:re_incsearch),
+          \ 'matchstr(v:val, ' . s:re_incsearch . ')')
+      let bibfiles += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
     endfor
   endif
 
-  return bibdata_list
+  return bibfiles
 endfunction
 
+" }}}2
 " }}}1
-
+" {{{1 Label completion
 "
 " s:label_cache is a dictionary that maps filenames to tuples of the form
 "
@@ -278,7 +284,7 @@ endfunction
 "
 let s:label_cache = {}
 
-function! s:labels_get(file) " {{{1
+function! s:labels_get(file) " {{{2
   "
   " s:labels_get compares modification time of each entry in the label cache
   " and updates it if necessary.  During traversal of the label cache, all
@@ -312,7 +318,7 @@ function! s:labels_get(file) " {{{1
   return labels
 endfunction
 
-function! s:labels_extract(file) " {{{1
+function! s:labels_extract(file) " {{{2
   "
   " Searches file for commands of the form
   "
@@ -338,7 +344,7 @@ function! s:labels_extract(file) " {{{1
   return matches
 endfunction
 
-function! s:labels_extract_inputs(file) " {{{1
+function! s:labels_extract_inputs(file) " {{{2
   let matches = []
   let root = fnamemodify(a:file, ':p:h') . '/'
   for line in filter(readfile(a:file), 'v:val =~ ''\\@input{''')
@@ -347,6 +353,7 @@ function! s:labels_extract_inputs(file) " {{{1
   return matches
 endfunction
 
+" }}}2
 " }}}1
 
 function! s:next_chars_match(regex) " {{{1
