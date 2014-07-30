@@ -159,10 +159,10 @@ function! s:init_environment() " {{{1
     let b:latex.id = len(g:latex#data) - 1
   endif
 
-  command! -buffer VimLatexInfo         call latex#info()
-  command! -buffer VimLatexHelp         call latex#help()
-  command! -buffer VimLatexView         call latex#view()
-  command! -buffer VimLatexReinitialize call latex#reinit()
+  command! -buffer          VimLatexInfo         call latex#info()
+  command! -buffer          VimLatexHelp         call latex#help()
+  command! -buffer -nargs=* VimLatexView         call latex#view('<args>')
+  command! -buffer          VimLatexReinitialize call latex#reinit()
 
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>li :call latex#info()<cr>
