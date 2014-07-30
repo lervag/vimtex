@@ -94,7 +94,6 @@ endfunction
 " }}}1
 
 " {{{1 TOC variables
-let s:root = ''
 let s:max_level = 0
 let s:count_matters = 0
 
@@ -158,9 +157,6 @@ let s:re_other = {
 function! s:parse_toc() " {{{1
   let file = g:latex#data[b:latex.id].tex
 
-  " Store project root for use in recursive file searches
-  let s:root = fnamemodify(file, ':p:h')
-
   " Reset TOC numbering
   call s:number_reset('preamble')
 
@@ -183,7 +179,7 @@ function! s:parse_limits(file) " {{{1
 
   for line in readfile(a:file)
     if line =~# s:re_input
-      call s:parse_limits(s:parse_line_input(line))
+      call s:parse_limits(s:parse_line_input(line, a:file))
     elseif line =~# s:re_sec
       let s:max_level = max([s:max_level,
             \ s:sec_to_value[matchstr(line, s:re_sec_level)]])
@@ -221,7 +217,7 @@ function! s:parse_file(file) " {{{1
 
     " 1. Parse inputs or includes
     if line =~# s:re_input
-      call extend(toc, s:parse_file(s:parse_line_input(line)))
+      call extend(toc, s:parse_file(s:parse_line_input(line, a:file)))
       continue
     endif
 
@@ -275,14 +271,18 @@ function! s:parse_file(file) " {{{1
   return toc
 endfunction
 
-function! s:parse_line_input(line) " {{{1
+function! s:parse_line_input(line, file) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
+
+  " Ensure that file is a valid path
   if l:file !~# '.tex$'
     let l:file .= '.tex'
   endif
+  if l:file !~# '^\/'
+    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
+  endif
 
-  " Return full path
-  return s:root . '/' . l:file
+  return l:file
 endfunction
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
