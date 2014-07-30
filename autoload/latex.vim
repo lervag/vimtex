@@ -104,7 +104,7 @@ function! latex#view(...) " {{{1
   endif
 
   " Join arguments to pass them on to the viewer
-  let args = join(a:000, ' ')
+  let args = join(a:000, ' ') . ' '
 
   " Disable shellslash
   let l:ssl = &l:ssl
