@@ -249,7 +249,6 @@ function! s:latexmk_set_cmd(data) " {{{1
   let cmd .= ' -pvc'
   let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
-  let cmd .= ' -e ' . shellescape('$latex =~ s/ / -file-line-error /')
 
   if g:latex_latexmk_callback && has('clientserver')
     let callback = 'vim --servername ' . v:servername
