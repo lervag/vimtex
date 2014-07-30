@@ -339,12 +339,10 @@ function! s:labels_extract(file) " {{{1
 endfunction
 
 function! s:labels_extract_inputs(file) " {{{1
-  "
-  " Searches file for \@input{file} entries and returns list of all files.
-  "
   let matches = []
+  let root = fnamemodify(a:file, ':p:h') . '/'
   for line in filter(readfile(a:file), 'v:val =~ ''\\@input{''')
-    call add(matches, matchstr(line, '{\zs.*\ze}'))
+    call add(matches, root . matchstr(line, '{\zs.*\ze}'))
   endfor
   return matches
 endfunction
