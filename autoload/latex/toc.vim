@@ -282,7 +282,7 @@ function! s:parse_line_input(line, file) " {{{1
   endif
 
   " Only return full path names
-  if l:file !~# '\v^(\/|[A-Z]:/)'
+  if l:file !~# '\v^(\/|[A-Z]:)'
     let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
   endif
 
