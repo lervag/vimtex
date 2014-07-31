@@ -203,7 +203,9 @@ function! s:parse_file(file) " {{{1
   "     level  : 2,
   "   }
 
-  if !filereadable(a:file)
+  if a:file == ''
+    return []
+  elseif !filereadable(a:file)
     echoerr "Error in latex#toc s:parse_file"
     echoerr "File not readable: " . a:file
     return []
@@ -274,15 +276,22 @@ endfunction
 function! s:parse_line_input(line, file) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
 
-  " Ensure that file is a valid path
+  " Ensure file has extension
   if l:file !~# '.tex$'
     let l:file .= '.tex'
   endif
-  if l:file !~# '^\/'
+
+  " Only return full path names
+  if l:file !~# '\v^(\/|[A-Z]:/)'
     let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
   endif
 
-  return l:file
+  " Only return filename if it is readable
+  if filereadable(l:file)
+    return l:file
+  else
+    return ''
+  endif
 endfunction
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
