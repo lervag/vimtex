@@ -26,6 +26,7 @@ function! latex#latexmk#init(initialized) " {{{1
   com! -buffer VimLatexStop    call latex#latexmk#stop()
   com! -buffer VimLatexStopAll call latex#latexmk#stop_all()
   com! -buffer VimLatexErrors  call latex#latexmk#errors(1)
+  com! -buffer VimLatexOutput  call latex#latexmk#output()
   com! -buffer -bang VimLatexClean  call latex#latexmk#clean(<q-bang> == "!")
   com! -buffer -bang VimLatexStatus call latex#latexmk#status(<q-bang> == "!")
 
@@ -41,6 +42,7 @@ function! latex#latexmk#init(initialized) " {{{1
     nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop()<cr>
     nnoremap <silent><buffer> <localleader>lK :call latex#latexmk#stop_all()<cr>
     nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
+    nnoremap <silent><buffer> <localleader>lo :call latex#latexmk#output()<cr>
   endif
 
   "
@@ -160,6 +162,36 @@ function! latex#latexmk#errors(force) " {{{1
     endif
     redraw!
   endif
+endfunction
+
+" }}}1
+function! latex#latexmk#output() " {{{1
+  let tmp = g:latex#data[b:latex.id].tmp
+  if empty(tmp) | return | endif
+
+  " Create latexmk output window
+  if bufnr(tmp) >= 0
+    silent exe 'bwipeout' . bufnr(tmp)
+  endif
+  silent exe 'split ' . tmp
+
+  " Better automatic update
+  augroup tmp_update
+    autocmd!
+    autocmd BufEnter        * silent! checktime
+    autocmd CursorHold      * silent! checktime
+    autocmd CursorHoldI     * silent! checktime
+    autocmd CursorMoved     * silent! checktime
+    autocmd CursorMovedI    * silent! checktime
+  augroup END
+  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! tmp_update'
+
+  " Set some mappings
+  nnoremap <buffer> <silent> q :bwipeout<cr>
+
+  " Set some buffer options
+  setlocal autoread
+  setlocal nomodifiable
 endfunction
 
 " }}}1

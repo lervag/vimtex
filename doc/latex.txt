@@ -215,6 +215,7 @@ n  <localleader>ll  *@:call latex#latexmk#compile()<cr>
 n  <localleader>lk  *@:call latex#latexmk#stop(1)<cr>
 n  <localleader>lK  *@:call latex#latexmk#stop_all()<cr>
 n  <localleader>le  *@:call latex#latexmk#errors(1)<cr>
+n  <localleader>lo  *@:call latex#latexmk#output()<cr>
 n  <localleader>lg  *@:call latex#latexmk#status()<cr>
 n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
@@ -242,6 +243,7 @@ VimLatexCompile              call latex#latexmk#compile()
 VimLatexErrors               call latex#latexmk#errors(1)
 VimLatexHelp                 call latex#help()
 VimLatexInfo                 call latex#info()
+VimLatexOutput               call latex#latexmk#output()
 VimLatexRefreshFolds         call latex#fold#refresh()
 VimLatexReinitialize         call latex#reinit()
 VimLatexStatus               call latex#latexmk#status()
@@ -606,6 +608,7 @@ The default mappings are: >
   nnoremap <localleader>lk :call latex#latexmk#stop(1)<cr>
   nnoremap <localleader>lK :call latex#latexmk#stop_all()<cr>
   nnoremap <localleader>le :call latex#latexmk#errors(1)<cr>
+  nnoremap <localleader>lo :call latex#latexmk#output()<cr>
   nnoremap <localleader>lg :call latex#latexmk#status(0)<cr>
   nnoremap <localleader>lG :call latex#latexmk#status(1)<cr>
   nnoremap <localleader>lc :call latex#latexmk#clean(0)<cr>
@@ -632,6 +635,7 @@ Functions:
     |latex#latexmk#clean|
     |latex#latexmk#compile|
     |latex#latexmk#errors|
+    |latex#latexmk#output|
     |latex#latexmk#status|
     |latex#latexmk#stop|
     |latex#latexmk#stop_all|
@@ -774,6 +778,7 @@ Overview:~
   |latex#latexmk#clean|
   |latex#latexmk#compile|
   |latex#latexmk#errors|
+  |latex#latexmk#output|
   |latex#latexmk#status|
   |latex#latexmk#stop|
   |latex#latexmk#stop_all|
@@ -875,6 +880,10 @@ controlled through the different quickfix specific option:
 Note: The function takes one argument, which if nonzero will force open the
 quickfix window if any errors are present.  This is used in the normal mode
 mapping.
+
+                                                        *latex#latexmk#output*
+Opens a new buffer that show the output from the `latexmk` command.  To close
+the buffer, one may simply type `q`.
 
                                                         *latex#latexmk#status*
 Show if `latexmk` has been started for the current buffer.  An optional
