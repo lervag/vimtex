@@ -266,7 +266,7 @@ function! s:latexmk_set_pid(data) " {{{1
     silent execute '!cmd /c "wmic process where '
           \ . '(CommandLine LIKE "latexmk\%' . a:data.base . '\%") '
           \ . 'get ProcessId /value'
-          \ . '| \%WINDIR\%\system32\find "ProcessId" '
+          \ . '| \%systemroot\%\system32\find "ProcessId" '
           \ . '>' . tmpfile . ' "'
     let pids = readfile(tmpfile)
     let a:data.pid = strpart(pids[0], 10)
