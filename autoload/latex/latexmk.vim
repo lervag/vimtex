@@ -272,10 +272,17 @@ function! s:latexmk_set_cmd(data) " {{{1
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
 
   if g:latex_latexmk_callback && has('clientserver')
-    let callback = 'vim --servername ' . v:servername
-          \ . ' --remote-expr ''latex\#latexmk\#errors(0)'''
-    let cmd .= ' -e ' . shellescape('$success_cmd .= "' . callback . '"')
-          \ .  ' -e ' . shellescape('$failure_cmd .= "' . callback . '"')
+    if has('win32')
+      let callback = 'vim --servername ""' . v:servername . '""'
+            \ . ' --remote-expr ""latex\#latexmk\#errors(0)""'
+      let cmd .= ' -e "$success_cmd .= ""' . callback . '"""'
+            \ .  ' -e "$failure_cmd .= ""' . callback . '"""'
+    else
+      let callback = 'vim --servername ' . v:servername
+            \ . ' --remote-expr \"latex\#latexmk\#errors(0)\"'
+      let cmd .= ' -e ''$success_cmd .= "' . callback . '"'''
+            \ .  ' -e ''$failure_cmd .= "' . callback . '"'''
+    endif
   endif
 
   let cmd .= ' ' . shellescape(a:data.base)
