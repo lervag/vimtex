@@ -106,15 +106,8 @@ function! latex#view(...) " {{{1
   " Join arguments to pass them on to the viewer
   let args = join(a:000, ' ') . ' '
 
-  " Disable shellslash
-  let l:ssl = &l:ssl
-  setlocal nossl
-
   let exe = {}
   let exe.cmd = g:latex_viewer . ' ' . args . shellescape(outfile)
-
-  " Restore shellslash
-  let &l:ssl = l:ssl
 
   call latex#util#execute(exe)
 endfunction
