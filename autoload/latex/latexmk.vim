@@ -52,7 +52,7 @@ function! latex#latexmk#init(initialized) " {{{1
   if !a:initialized
     augroup latex_latexmk
       autocmd!
-      autocmd VimLeave *.tex call latex#latexmk#stop_all()
+      autocmd VimLeave * call latex#latexmk#stop_all()
     augroup END
   endif
 
