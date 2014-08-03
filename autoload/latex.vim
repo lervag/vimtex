@@ -122,8 +122,8 @@ function! s:init_environment() " {{{1
 
   "
   " Set some file type specific vim options
-  set suffixesadd+=.tex
-  set commentstring=\%\ %s
+  setlocal suffixesadd+=.tex
+  setlocal commentstring=\%\ %s
 
   "
   " Create new or link to old blob
