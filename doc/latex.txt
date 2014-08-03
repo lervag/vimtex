@@ -34,6 +34,8 @@ CONTENTS                                                  *vim-latex-contents*
     7. Folding .............................. |vim-latex-folding|
     8. Indentation .......................... |vim-latex-indent|
     9. Latexmk .............................. |vim-latex-latexmk|
+       Latexmk tricks ....................... |vim-latex-latexmk-tricks|
+       Latexmk synctex ...................... |vim-latex-latexmk-synctex|
    10. Motion ............................... |vim-latex-motion|
    11. Change ............................... |vim-latex-change|
    12. Table of contents .................... |vim-latex-toc|
@@ -675,6 +677,26 @@ is then on the following form: >
 This command is then appended to the existing `$success_cmd` and
 `$failure_cmd`.  Note that if the existing commands are not empty, then they
 must end with a semicolon in order to allow |vim-latex| to append safely.
+
+------------------------------------------------------------------------------
+Latexmk synctex:~                                  *vim-latex-latexmk-synctex*
+                                                           *vim-latex-synctex*
+
+|vim-latex| does not include automatic support for synctex.  However, the view
+command does accept arguments, which makes it easy to add a forward search
+mapping, such as this for the popular viewer Okular: >
+
+  let g:latex_viewer = 'okular'
+  function! SyncTexForward()
+    call latex#view('--unique '
+      \ . g:latex#data[b:latex.id].out()
+      \ . '\#src:' . line(".") . expand('%:p'))
+  endfunction
+  nmap <leader>ls :call SyncTexForward()<cr>
+
+Backward search is generally set up inside the specific viewers, and how to do
+this depends on the viewer.  Please read the specific manuals or search the
+web to find out how to do it.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
