@@ -266,7 +266,7 @@ function! s:latexmk_set_cmd(data) " {{{1
   endif
 
   let cmd .= ' -' . g:latex_latexmk_output
-  let cmd .= ' -quiet '
+  let cmd .= ' -verbose '
   let cmd .= ' -pvc'
   let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
