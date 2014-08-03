@@ -80,7 +80,7 @@ function! latex#latexmk#clean(full) " {{{1
   if has('win32')
     let cmd = 'cd /D ' . shellescape(data.root) . ' & '
   else
-    let cmd = 'cd ' . shellescape(data.root) . ';'
+    let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
   if a:full
     let cmd .= 'latexmk -C '
@@ -88,7 +88,7 @@ function! latex#latexmk#clean(full) " {{{1
     let cmd .= 'latexmk -c '
   endif
   let cmd .= shellescape(data.base)
-  let g:latex#data[b:latex.id].clean_cmd = cmd
+  let g:latex#data[b:latex.id].cmds.clean = cmd
   let exe = {
         \ 'cmd' : cmd,
         \ 'bg'  : 0,
@@ -116,7 +116,7 @@ function! latex#latexmk#compile() " {{{1
   " Define execute dictionary and latexmk command
   let exe = {}
   let exe.null = 0
-  let exe.cmd  = data.cmd
+  let exe.cmd  = data.cmds.compile
   call latex#util#execute(exe)
 
   " Save PID
@@ -292,7 +292,7 @@ function! s:latexmk_set_cmd(data) " {{{1
     let cmd .= ' &>' . tmp
   endif
 
-  let a:data.cmd = cmd
+  let a:data.cmds.compile = cmd
   let a:data.tmp = tmp
 endfunction
 

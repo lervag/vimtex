@@ -32,34 +32,43 @@ function! latex#info() " {{{1
     return
   endif
 
-  echo "b:latex"
-  echo '  id: ' . b:latex.id
+  " Print buffer data
+  echo printf('%-19s%-s', 'b:latex.id', b:latex.id)
   if has_key(b:latex, 'fold_parts') && !empty(b:latex.fold_parts)
-    echo '  fold parts:'
+    echo 'b:latex.fold_parts'
     for entry in reverse(copy(b:latex.fold_parts))
-      echo '    fold level ' . entry[1] . ': ' . entry[0]
+      echo printf('  %s  %s', entry[1], entry[0])
     endfor
   endif
-  echo "\n"
 
-  echo "g:latex#data"
-  let n = -1
-  for data in g:latex#data
-    let n += 1
-    if n > 0
-      echo "\n"
+  " Print global data
+  let n = 0
+  for d in g:latex#data
+    echo "\n"
+    echo "g:latex#data[" . n . "]"
+    if d.pid
+      echo printf('  %-6s%-s', 'pid', d.pid)
     endif
-    let d = copy(data)
-    let d.aux = d.aux()
-    let d.out = d.out()
-    let d.log = d.log()
-    echo printf('  %4s: %-s', 'id', n)
-    for [key, val] in sort(items(d), "s:info_sort_func")
-      if key =~ '\vaux|out|root|log|tex'
-        let val = s:truncate(val)
+    echo printf('  %-6s%-s', 'name', s:truncate(d.name))
+    echo printf('  %-6s%-s', 'base', s:truncate(d.base))
+    echo printf('  %-6s%-s', 'root', s:truncate(d.root))
+    echo printf('  %-6s%-s', 'tex',  s:truncate(d.tex))
+
+    for f in ['aux', 'out', 'log']
+      silent execute 'let l:tmp = d.' . f . '()'
+      if l:tmp != ''
+        echo printf('  %-6s%-s', f, s:truncate(l:tmp))
       endif
-      echo printf('  %4s: %-s', key, val)
     endfor
+
+    let cmds = items(d.cmds)
+    if len(cmds) > 0
+      for [key, val] in cmds
+        echo printf('  command: %-9s', key)
+        echo printf('    %-s', val)
+      endfor
+    endif
+    let n += 1
   endfor
 endfunction
 
@@ -110,6 +119,8 @@ function! latex#view(...) " {{{1
   let exe.cmd = g:latex_viewer . ' ' . args . shellescape(outfile)
 
   call latex#util#execute(exe)
+
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 " }}}1
 
@@ -126,7 +137,7 @@ function! s:init_environment() " {{{1
   setlocal commentstring=\%\ %s
 
   "
-  " Create new or link to old blob
+  " Create new or link to existing blob
   "
   let main = s:get_main()
   let id   = s:get_id(main)
@@ -134,6 +145,7 @@ function! s:init_environment() " {{{1
     let b:latex.id = id
   else
     let data = {}
+    let data.cmds = {}
     let data.tex  = main
     let data.root = fnamemodify(data.tex, ':h')
     let data.base = fnamemodify(data.tex, ':t')
@@ -376,27 +388,6 @@ function! s:get_main_ext(texdata, ext) " {{{1
 
   " Return empty string if no entry is found
   return ''
-endfunction
-
-function! s:info_sort_func(a, b) " {{{1
-  if a:a[1][0] == "!"
-    " Put cmd's way behind
-    return 1
-  elseif a:b[1][0] == "!"
-    " Put cmd's way behind
-    return -1
-  elseif a:a[1][0] == "/" && a:b[1][0] != "/"
-    " Put full paths behind
-    return 1
-  elseif a:a[1][0] != "/" && a:b[1][0] == "/"
-    " Put full paths behind
-    return -1
-  elseif a:a[1][0] == "/" && a:b[1][0] == "/"
-    " Put full paths behind
-    return -1
-  else
-    return a:a[1] > a:b[1] ? 1 : -1
-  endif
 endfunction
 
 function! s:truncate(string) " {{{1
