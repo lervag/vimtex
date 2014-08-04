@@ -99,6 +99,9 @@ function! s:toc_open_entry(entry)
 
   " Go to entry line
   call setpos('.', [0, a:entry.line, 0, 0])
+
+  " Ensure folds are opened
+  normal! zv
 endfunction
 
 " {{{1 s:toc_toggle_numbers
