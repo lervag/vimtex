@@ -293,6 +293,7 @@ Overview:~
   |g:latex_toc_fold_levels|
   |g:latex_toc_fold|
   |g:latex_toc_hide_help|
+  |g:latex_toc_hide_preamble|
   |g:latex_toc_resize|
   |g:latex_toc_secnumdepth|
   |g:latex_toc_split_side|
@@ -469,6 +470,10 @@ Turn on folding of TOC entries. >
                                                        *g:latex_toc_hide_help*
 Allow the TOC help text to be hidden. >
   let g:latex_toc_hide_help = 0
+<
+                                                   *g:latex_toc_hide_preamble*
+If enabled, the start of the preamble is not shown in the TOC.
+  let g:latex_toc_hide_preamble = 0
 <
                                                           *g:latex_toc_resize*
 Automatically resize vim when the TOC window is opened. >
@@ -772,6 +777,7 @@ Associated settings:
     |g:latex_toc_fold_levels|
     |g:latex_toc_fold|
     |g:latex_toc_hide_help|
+    |g:latex_toc_hide_preamble|
     |g:latex_toc_resize|
     |g:latex_toc_secnumdepth|
     |g:latex_toc_split_side|
