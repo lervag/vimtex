@@ -203,7 +203,11 @@ function! s:parse_folded() " {{{1
 
   " Initialize
   let folded = []
-  let buffer = readfile(expand('%'))
+  try
+    let buffer = readfile(expand('%'))
+  catch
+    return []
+  endtry
 
   " Parse part commands (frontmatter, appendix, part, etc)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
