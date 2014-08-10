@@ -26,12 +26,10 @@ function! latex#toc#open() " {{{1
     return
   endif
 
-  " Store current buffer number and position
+  " Store tex buffer number and position and parse TOC data
   let calling_buf = bufnr('%')
   let calling_file = expand('%:p')
   let calling_line = line('.')
-
-  " Parse TOC data
   let toc = s:parse_toc()
 
   " Resize vim session if wanted, then create TOC window
@@ -43,40 +41,13 @@ function! latex#toc#open() " {{{1
   " Set buffer local variables
   let b:toc = toc
   let b:toc_numbers = 1
-  let b:calling_win = bufwinnr(calling_buf)
+  let b:toc_max_level = s:max_level
+  let b:toc_topmatters = s:count_matters
+  let b:toc_secnumdepth = g:latex_toc_secnumdepth
+  let b:calling_file = calling_file
+  let b:calling_line = calling_line
 
-  " Add TOC entries (and keep track of closest index)
-  let index = 0
-  let closest_index = 0
-  for entry in toc
-    call append('$',
-          \ printf('%-10s%-140s%s',
-          \   entry.number,
-          \   entry.title,
-          \   s:max_level - entry.level))
-
-    let index += 1
-    if entry.file == calling_file && entry.line <= calling_line
-      let closest_index = index
-    endif
-  endfor
-
-  " Add help info (if desired)
-  if !g:latex_toc_hide_help
-    call append('$', "")
-    call append('$', "<Esc>/q: close")
-    call append('$', "<Space>: jump")
-    call append('$', "<Enter>: jump and close")
-    call append('$', "s:       hide numbering")
-  endif
-
-  " Delete empty first line and jump to the closest section
-  0delete _
-  call setpos('.', [0, closest_index, 0, 0])
-
-  " Set filetype and lock buffer
   setlocal filetype=latextoc
-  setlocal nomodifiable
 endfunction
 
 function! latex#toc#toggle() " {{{1
@@ -297,8 +268,13 @@ endfunction
 function! s:parse_line_sec(file, lnum, line) " {{{1
   let title = matchstr(a:line, s:re_sec_title)
   let level = matchstr(a:line, s:re_sec_level)
-  let starred = a:line =~# s:re_sec_starred ? 1 : 0
-  let number = s:number_increment(level, starred)
+
+  " Check if section is starred
+  if a:line =~# s:re_sec_starred
+    let number = ''
+  else
+    let number = s:number_increment(level)
+  endif
 
   return {
         \ 'title'  : title,
@@ -318,15 +294,7 @@ function! s:number_reset(part) " {{{1
   let s:number[a:part] = 1
 endfunction
 
-function! s:number_increment(level, starred) " {{{1
-  " Store current level
-  let s:number.current_level = s:sec_to_value[a:level]
-
-  " Check if level should be incremented
-  if a:starred
-    return ''
-  endif
-
+function! s:number_increment(level) " {{{1
   " Increment numbers
   if a:level == 'part'
     let s:number.part += 1
@@ -357,36 +325,10 @@ function! s:number_increment(level, starred) " {{{1
     let s:number.subsubsubsection += 1
   endif
 
-  return s:number_print()
-endfunction
+  " Store current level
+  let s:number.current_level = s:sec_to_value[a:level]
 
-function! s:number_print() " {{{1
-  let number = [
-        \ s:number.part,
-        \ s:number.chapter,
-        \ s:number.section,
-        \ s:number.subsection,
-        \ s:number.subsubsection,
-        \ s:number.subsubsubsection,
-        \ ]
-
-  " Remove unused parts
-  while number[0] == 0
-    call remove(number, 0)
-  endwhile
-  while number[-1] == 0
-    call remove(number, -1)
-  endwhile
-
-  " Change numbering in frontmatter, appendix, and backmatter
-  if s:count_matters > 1
-        \ && (s:number.frontmatter || s:number.backmatter)
-    return ""
-  elseif s:number.appendix
-    let number[0] = nr2char(number[0] + 64)
-  endif
-
-  return join(number, '.')
+  return copy(s:number)
 endfunction
 
 " }}}1

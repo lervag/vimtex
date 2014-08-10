@@ -25,9 +25,12 @@ setlocal cole=0
 setlocal cocu=nvic
 if g:latex_toc_fold
   setlocal foldmethod=expr
-  setlocal foldexpr=toc#fold_level(v:lnum)
-  setlocal foldtext=toc#fold_text()
+  setlocal foldexpr=latextoc#fold_level(v:lnum)
+  setlocal foldtext=latextoc#fold_text()
 endif
+
+" Refresh/Initialize TOC content
+call latextoc#refresh()
 
 " Define mappings
 nnoremap <buffer> <silent> G G4k
@@ -36,6 +39,8 @@ nnoremap <buffer> <silent> <Esc>OB j
 nnoremap <buffer> <silent> <Esc>OC l
 nnoremap <buffer> <silent> <Esc>OD h
 nnoremap <buffer> <silent> s             :call <SID>toc_toggle_numbers()<cr>
+nnoremap <buffer> <silent> -             :call <SID>toc_dec_secnumdepth()<cr>
+nnoremap <buffer> <silent> +             :call <SID>toc_inc_secnumdepth()<cr>
 nnoremap <buffer> <silent> q             :call <SID>toc_close()<cr>
 nnoremap <buffer> <silent> <Esc>         :call <SID>toc_close()<cr>
 nnoremap <buffer> <silent> <Space>       :call <SID>toc_activate(0)<cr>
@@ -43,8 +48,7 @@ nnoremap <buffer> <silent> <leftrelease> :call <SID>toc_activate(0)<cr>
 nnoremap <buffer> <silent> <CR>          :call <SID>toc_activate(1)<cr>
 nnoremap <buffer> <silent> <2-leftmouse> :call <SID>toc_activate(1)<cr>
 
-" {{{1 s:toc_activate
-function! s:toc_activate(close)
+function! s:toc_activate(close) "{{{1
   " Get TOC entry, do nothing if no entry found
   "   entry = {
   "     title  : ...,
@@ -79,16 +83,14 @@ function! s:toc_activate(close)
   endif
 endfunction
 
-" {{{1 s:toc_close
-function! s:toc_close()
+function! s:toc_close() "{{{1
   if g:latex_toc_resize
     silent exe "set columns-=" . g:latex_toc_width
   endif
   bwipeout
 endfunction
 
-" {{{1 s:toc_open_entry
-function! s:toc_open_entry(entry)
+function! s:toc_open_entry(entry) "{{{1
   " Open file buffer
   let bnr = bufnr(a:entry.file)
   if bnr == -1
@@ -104,16 +106,28 @@ function! s:toc_open_entry(entry)
   normal! zv
 endfunction
 
-" {{{1 s:toc_toggle_numbers
-function! s:toc_toggle_numbers()
+function! s:toc_toggle_numbers() "{{{1
   if b:toc_numbers
-    setlocal conceallevel=3
     let b:toc_numbers = 0
   else
-    setlocal conceallevel=0
     let b:toc_numbers = 1
   endif
+
+  call latextoc#refresh()
 endfunction
+
+function! s:toc_inc_secnumdepth() "{{{1
+  let b:toc_secnumdepth += 1
+  let g:latex_toc_secnumdepth = b:toc_secnumdepth
+  call latextoc#refresh()
+endfunction
+
+function! s:toc_dec_secnumdepth() "{{{1
+  let b:toc_secnumdepth -= 1
+  let g:latex_toc_secnumdepth = b:toc_secnumdepth
+  call latextoc#refresh()
+endfunction
+
 " }}}1
 
 " vim: fdm=marker
