@@ -44,6 +44,7 @@ function! latex#toc#open() " {{{1
   let b:toc_max_level = s:max_level
   let b:toc_topmatters = s:count_matters
   let b:toc_secnumdepth = g:latex_toc_secnumdepth
+  let b:calling_winnr = bufwinnr(calling_buf)
   let b:calling_file = calling_file
   let b:calling_line = calling_line
 

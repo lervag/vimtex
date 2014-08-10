@@ -773,6 +773,7 @@ Associated settings:
     |g:latex_toc_fold|
     |g:latex_toc_hide_help|
     |g:latex_toc_resize|
+    |g:latex_toc_secnumdepth|
     |g:latex_toc_split_side|
     |g:latex_toc_width|
 

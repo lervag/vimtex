@@ -67,7 +67,7 @@ function! s:toc_activate(close) "{{{1
   let toc_wnr = winnr()
 
   " Return to calling window
-  execute b:calling_win . 'wincmd w'
+  execute b:calling_winnr . 'wincmd w'
 
   " Open file and line for given TOC entry
   call s:toc_open_entry(entry)
