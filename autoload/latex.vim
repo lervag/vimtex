@@ -46,7 +46,7 @@ function! latex#info() " {{{1
   for d in g:latex#data
     echo "\n"
     echo "g:latex#data[" . n . "]"
-    if d.pid
+    if has_key(d, 'pid') && d.pid
       echo printf('  %-6s%-s', 'pid', d.pid)
     endif
     echo printf('  %-6s%-s', 'name', s:truncate(d.name))
