@@ -282,11 +282,13 @@ endfunction
 
 " }}}1
 
-function! s:number_reset(part) " {{{1
+function! s:number_reset(...) " {{{1
   for key in keys(s:number)
     let s:number[key] = 0
   endfor
-  let s:number[a:part] = 1
+  if a:0 > 0
+    let s:number[a:1] = 1
+  endif
 endfunction
 
 function! s:number_increment(level) " {{{1
