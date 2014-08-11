@@ -78,6 +78,7 @@ let s:number = {
       \ 'subsubsection' : 0,
       \ 'subsubsubsection' : 0,
       \ 'current_level' : 0,
+      \ 'preamble' : 0,
       \ 'frontmatter' : 0,
       \ 'mainmatter' : 0,
       \ 'appendix' : 0,
@@ -129,7 +130,7 @@ function! s:parse_toc() " {{{1
   let file = g:latex#data[b:latex.id].tex
 
   " Reset TOC numbering
-  call s:number_reset()
+  call s:number_reset('preamble')
 
   " Find max level and number of \*matter commands
   let s:max_level = 0
@@ -194,9 +195,9 @@ function! s:parse_file(file) " {{{1
       continue
     endif
 
-    " 2. Parse preamble (if wanted)
-    if !g:latex_toc_hide_preamble
-      if line =~# '\v^\s*\\documentclass'
+    " 2. Parse preamble
+    if s:number.preamble
+      if !g:latex_toc_hide_preamble && line =~# '\v^\s*\\documentclass'
         call add(toc, {
               \ 'title'  : 'Preamble',
               \ 'number' : '',
@@ -206,6 +207,12 @@ function! s:parse_file(file) " {{{1
               \ })
         continue
       endif
+
+      if line =~# '\v^\s*\\begin\{document\}'
+        let s:number.preamble = 0
+      endif
+
+      continue
     endif
 
     " 3. Parse document structure (front-/main-/backmatter, appendix)
@@ -281,13 +288,11 @@ endfunction
 
 " }}}1
 
-function! s:number_reset(...) " {{{1
+function! s:number_reset(part) " {{{1
   for key in keys(s:number)
     let s:number[key] = 0
   endfor
-  if a:0 > 0
-    let s:number[a:1] = 1
-  endif
+  let s:number[a:part] = 1
 endfunction
 
 function! s:number_increment(level) " {{{1
