@@ -72,13 +72,15 @@ endfunction
 " }}}1
 
 function! s:print_entry(entry) " {{{1
+  let level = b:toc_max_level - a:entry.level
+
+  " Create entry string
   let entry = ''
   if b:toc_numbers
-    let entry .= printf(s:num_format, s:print_number(a:entry.number))
+    let entry .= printf(s:num_format, level >= b:toc_secnumdepth + 2
+          \ ? '' : s:print_number(a:entry.number))
   endif
-
-  let entry .= printf('%-140s%s', a:entry.title,
-        \ b:toc_max_level - a:entry.level)
+  let entry .= printf('%-140s%s', a:entry.title, level)
 
   call append('$', entry)
 endfunction
@@ -94,17 +96,14 @@ function! s:print_number(number) " {{{1
         \ a:number.subsubsection,
         \ a:number.subsubsubsection,
         \ ]
-  let number = number[0:b:toc_secnumdepth+2]
 
   " Remove unused parts
-  while len(number) > 0 && number[0] == 0
+  while number[0] == 0
     call remove(number, 0)
   endwhile
-  while len(number) > 0 && number[-1] == 0
+  while number[-1] == 0
     call remove(number, -1)
   endwhile
-
-  if len(number) <= 0 | return '' | endif
 
   " Change numbering in frontmatter, appendix, and backmatter
   if b:toc_topmatters > 1

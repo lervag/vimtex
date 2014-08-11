@@ -117,13 +117,13 @@ function! s:toc_toggle_numbers() "{{{1
 endfunction
 
 function! s:toc_inc_secnumdepth() "{{{1
-  let b:toc_secnumdepth += 1
+  let b:toc_secnumdepth = min([b:toc_secnumdepth + 1, 5])
   let g:latex_toc_secnumdepth = b:toc_secnumdepth
   call latextoc#refresh()
 endfunction
 
 function! s:toc_dec_secnumdepth() "{{{1
-  let b:toc_secnumdepth -= 1
+  let b:toc_secnumdepth = max([b:toc_secnumdepth - 1, -2])
   let g:latex_toc_secnumdepth = b:toc_secnumdepth
   call latextoc#refresh()
 endfunction
