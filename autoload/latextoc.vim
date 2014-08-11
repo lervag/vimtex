@@ -33,27 +33,57 @@ function! latextoc#fold_text() " {{{1
 endfunction
 " }}}1
 
+function! latextoc#init() " {{{1
+  if !exists('b:toc') | return | endif
+
+  " Fill TOC entries
+  call s:add_start()
+  call s:add_entries()
+  call s:add_help()
+  call s:add_end()
+
+  " Jump to closest index
+  call setpos('.', b:toc_pos_closest)
+endfunction
+" }}}1
 function! latextoc#refresh() " {{{1
   if !exists('b:toc') | return | endif
-  set modifiable
 
-  " Clean the buffer
+  " Fill TOC entries
+  call s:add_start()
+  call s:add_entries()
+  call s:add_help()
+  call s:add_end()
+
+  " Restore old position
+  call setpos('.', b:toc_pos_saved)
+endfunction
+" }}}1
+
+function! s:add_start() " {{{1
+  let b:toc_pos_saved = getpos('.')
+  setlocal modifiable
   %delete
+endfunction
 
-  " Add TOC entries (and keep track of closest index)
-  let index = 0
+" }}}1
+function! s:add_entries() " {{{1
   let closest_index = 0
   let s:num_format = '%-' . 2*(b:toc_secnumdepth+2) . 's'
-  for entry in b:toc
-    call s:print_entry(entry)
 
+  let index = 0
+  for entry in b:toc
     let index += 1
+    call s:print_entry(entry)
     if entry.file == b:calling_file && entry.line <= b:calling_line
       let closest_index = index
     endif
   endfor
 
-  " Add help info (if desired)
+  let b:toc_pos_closest = [0, closest_index, 0, 0]
+endfunction
+" }}}1
+function! s:add_help() " {{{1
   if !g:latex_toc_hide_help
     call append('$', "")
     call append('$', "<Esc>/q: close")
@@ -63,12 +93,13 @@ function! latextoc#refresh() " {{{1
     call append('$', "+:       increase secnumpdeth")
     call append('$', "s:       hide numbering")
   endif
-
-  " Delete empty first line and jump to the closest section
-  0delete _
-  set nomodifiable
-  call setpos('.', [0, closest_index, 0, 0])
 endfunction
+" }}}1
+function! s:add_end() " {{{1
+  0delete _
+  setlocal nomodifiable
+endfunction
+
 " }}}1
 
 function! s:print_entry(entry) " {{{1

@@ -30,7 +30,7 @@ if g:latex_toc_fold
 endif
 
 " Refresh/Initialize TOC content
-call latextoc#refresh()
+call latextoc#init()
 
 " Define mappings
 nnoremap <buffer> <silent> G G4k
