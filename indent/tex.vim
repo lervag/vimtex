@@ -9,7 +9,7 @@ if exists("b:did_indent")
 endif
 if !g:latex_indent_enabled
   finish
-endf
+endif
 let b:did_indent = 1
 let s:cpo_save = &cpo
 set cpo&vim
