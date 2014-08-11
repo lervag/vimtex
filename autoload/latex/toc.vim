@@ -206,7 +206,6 @@ function! s:parse_file(file) " {{{1
               \ })
         continue
       endif
-      continue
     endif
 
     " 3. Parse document structure (front-/main-/backmatter, appendix)
