@@ -69,7 +69,7 @@ endfunction
 " }}}1
 function! latex#latexmk#clean(full) " {{{1
   let data = g:latex#data[b:latex.id]
-  if data.pid
+  if s:latexmk_check_pid(data.pid)
     echomsg "latexmk is already running"
     return
   endif
@@ -105,7 +105,8 @@ endfunction
 " }}}1
 function! latex#latexmk#compile() " {{{1
   let data = g:latex#data[b:latex.id]
-  if data.pid
+
+  if s:latexmk_check_pid(data.pid)
     echomsg "latexmk is already running for `" . data.base . "'"
     return
   endif
@@ -199,7 +200,7 @@ function! latex#latexmk#status(detailed) " {{{1
   if a:detailed
     let running = 0
     for data in g:latex#data
-      if data.pid
+      if s:latexmk_check_pid(data.pid)
         if !running
           echo "latexmk is running"
           let running = 1
@@ -218,7 +219,7 @@ function! latex#latexmk#status(detailed) " {{{1
       echo "latexmk is not running"
     endif
   else
-    if g:latex#data[b:latex.id].pid
+    if s:latexmk_check_pid(g:latex#data[b:latex.id].pid)
       echo "latexmk is running"
     else
       echo "latexmk is not running"
@@ -230,7 +231,7 @@ endfunction
 function! latex#latexmk#stop() " {{{1
   let pid  = g:latex#data[b:latex.id].pid
   let base = g:latex#data[b:latex.id].base
-  if pid
+  if s:latexmk_check_pid(pid)
     call s:latexmk_kill_pid(pid)
     let g:latex#data[b:latex.id].pid = 0
     echo "latexmk stopped for `" . base . "'"
@@ -242,7 +243,7 @@ endfunction
 " }}}1
 function! latex#latexmk#stop_all() " {{{1
   for data in g:latex#data
-    if data.pid
+    if s:latexmk_check_pid(data.pid)
       call s:latexmk_kill_pid(data.pid)
       let data.pid = 0
     endif
@@ -312,6 +313,17 @@ function! s:latexmk_set_pid(data) " {{{1
   endif
 endfunction
 
+function! s:latexmk_check_pid(pid) " {{{1
+  if has('win32')
+    " don't have Windows ==> no change
+    return a:pid
+  else
+    " ps considers a 0 PID out of range and prints and error message
+    " side effect: will no longer see laxtexmk commands run externally
+    return a:pid && system('ps -p ' . a:pid . ' -o cmd= | grep "^perl.*latexmk"')
+  endif
+endfunction
+
 " }}}1
 function! s:latexmk_kill_pid(pid) " {{{1
   let exe = {}
@@ -349,7 +361,7 @@ function! s:stop_buffer() " {{{1
   "
   " Only stop if latexmk is running
   "
-  if pid
+  if s:latexmk_check_pid(pid)
     "
     " Count the number of buffers that point to current latex blob
     "
