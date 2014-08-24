@@ -280,7 +280,8 @@ Overview:~
   |g:latex_indent_enabled|
   |g:latex_latexmk_callback|
   |g:latex_latexmk_enabled|
-  |g:latex_latexmk_options|
+  |g:latex_latexmk_continuous|
+  |g:latex_latexmk_background|
   |g:latex_latexmk_output|
   |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
@@ -390,9 +391,17 @@ necessary variables and autocommands will not be defined, and the mappings
 will not be created. >
   let g:latex_latexmk_enabled = 1
 <
-                                                     *g:latex_latexmk_options*
-Set extra options for `latexmk` compilation. >
-  let g:latex_latexmk_options = ''
+                                                  *g:latex_latexmk_background*
+If continuous mode is disabled, then this option may be used to set
+whether single compilations should be run in the foreground or the
+background. >
+  let g:latex_latexmk_background = 0
+<
+                                                  *g:latex_latexmk_continuous*
+If enabled, `latexmk` will run in continuous mode.  This means that the
+document is compiled every time a document file has been changed.  Set to 0 to
+disable.  Note that the callback functions only work if continuous mode is enabled. >
+  let g:latex_latexmk_continuous = 1
 <
                                                       *g:latex_latexmk_output*
 Set desired output for `latexmk` compilation. >
@@ -615,9 +624,9 @@ Associated settings:
 ==============================================================================
 LATEXMK                                                    *vim-latex-latexmk*
 
-|vim-latex| provides a basic interface to `latexmk` for background
-compilation.  The interface may be disabled with |g:latex_latexmk_enabled|.
-The default mappings are: >
+|vim-latex| provides a basic interface to `latexmk` for compilation.  The
+interface may be disabled with |g:latex_latexmk_enabled|.  The default
+mappings are: >
 
   nnoremap <localleader>ll :call latex#latexmk#compile()<cr>
   nnoremap <localleader>lk :call latex#latexmk#stop(1)<cr>
@@ -629,11 +638,17 @@ The default mappings are: >
   nnoremap <localleader>lc :call latex#latexmk#clean(0)<cr>
   nnoremap <localleader>lC :call latex#latexmk#clean(1)<cr>
 
-The background compilation is started with |latex#latexmk#compile|.  It relies
-on the preview continuous mode of `latexmk`.  If vim is compiled with the
-|+clientserver| option and if |g:latex_latexmk_callback| is enabled, then
-compilation errors are parsed automatically.  This is done by utilizing the
-tricks explained in |vim-latex-latexmk-tricks|.
+Compilation is started with |latex#latexmk#compile|.  The default behaviour
+uses preview continuous mode of `latexmk`, which may be disabled with
+|g:latex_latexmk_continuous|.  If it is disabled, then the option
+|g:latex_latexmk_background| may be used to decide if the single shot
+compilation should run in the foreground or the background.
+
+If vim is compiled with the |+clientserver| option and if
+|g:latex_latexmk_callback| is enabled, then compilation errors are parsed
+automatically.  This is done by utilizing the tricks explained in
+|vim-latex-latexmk-tricks|.  Note however that this only works for continuous
+compilation mode.
 
 To check for and view errors in the quickfix window, use
 |latex#latexmk#errors|.  To check if background compilation is running, use
@@ -643,7 +658,8 @@ Associated settings:
     |g:latex_latexmk_enabled|
     |g:latex_latexmk_callback|
     |g:latex_latexmk_autojump|
-    |g:latex_latexmk_options|
+    |g:latex_latexmk_continuous|
+    |g:latex_latexmk_background|
     |g:latex_latexmk_output|
 
 Functions:
@@ -1016,6 +1032,19 @@ CHANGELOG                                                *vim-latex-changelog*
 
 The following changelog only logs important changes, such as changes that
 break backwards compatibility.  See the git log for the detailed changelog.
+
+2014-08-24: Made continuous mode optional~
+Added option |g:latex_latexmk_continuous| to set whether or not the `latexmk`
+process should run in continuous mode.  Also added option
+|g:latex_latexmk_background| to set whether single compilations should run in
+the foreground or the background.
+
+I also deprecated the old variable that sets options for `latexmk`, because
+I find that it makes more sense to control `latexmk` through `latexmkrc`
+files.
+
+Deprecated option:
+  *g:latex_latexmk_options*
 
 2014-06-13: Changed some option names~
 Some |vim-latex| option names were changed in an attempt to make the names

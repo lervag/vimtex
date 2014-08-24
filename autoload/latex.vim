@@ -232,6 +232,7 @@ function! s:init_options() " {{{1
   call latex#util#error_deprecated('g:latex_errorformat_show_warnings')
   call latex#util#error_deprecated('g:latex_latexmk_autojump')
   call latex#util#error_deprecated('g:latex_latexmk_quickfix')
+  call latex#util#error_deprecated('g:latex_latexmk_options')
 
   call latex#util#set_default('g:latex_build_dir', '.')
   call latex#util#set_default('g:latex_complete_enabled', 1)
@@ -264,7 +265,8 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_indent_enabled', 1)
   call latex#util#set_default('g:latex_latexmk_enabled', 1)
   call latex#util#set_default('g:latex_latexmk_callback', 1)
-  call latex#util#set_default('g:latex_latexmk_options', '')
+  call latex#util#set_default('g:latex_latexmk_continuous', 1)
+  call latex#util#set_default('g:latex_latexmk_background', 0)
   call latex#util#set_default('g:latex_latexmk_output', 'pdf')
   call latex#util#set_default('g:latex_mappings_enabled', 1)
   call latex#util#set_default('g:latex_motion_enabled', 1)

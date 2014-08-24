@@ -140,7 +140,11 @@ function! latex#util#execute(exe) " {{{1
     endif
   endif
 
-  silent execute cmd
+  if bg
+    silent execute cmd
+  else
+    execute cmd
+  endif
 
   " Return to previous working directory
   if has_key(a:exe, 'wd')
