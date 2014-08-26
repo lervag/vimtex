@@ -121,6 +121,7 @@ function! latex#latexmk#compile() " {{{1
   let exe.null = 0
   if !g:latex_latexmk_continuous && !g:latex_latexmk_background
     let exe.bg = 0
+    let exe.silent = 0
   endif
   let exe.cmd  = data.cmds.compile
   call latex#util#execute(exe)

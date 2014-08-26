@@ -99,6 +99,7 @@ function! latex#util#execute(exe) " {{{1
   "
   "   exe.cmd     String          String that contains the command to run
   "   exe.bg      0 or 1          Run in background or not
+  "   exe.silent  0 or 1          Show output or not
   "   exe.null    0 or 1          Send output to /dev/null
   "   exe.wd      String          Run command in provided working directory
   "
@@ -111,8 +112,9 @@ function! latex#util#execute(exe) " {{{1
     echoerr "Argument error, exe.cmd does not exist!"
     return
   endif
-  let bg   = has_key(a:exe, 'bg')   ? a:exe.bg   : 1
-  let null = has_key(a:exe, 'null') ? a:exe.null : 1
+  let bg     = has_key(a:exe, 'bg')     ? a:exe.bg     : 1
+  let silent = has_key(a:exe, 'silent') ? a:exe.silent : 1
+  let null   = has_key(a:exe, 'null')   ? a:exe.null   : 1
 
   " Change directory if wanted
   if has_key(a:exe, 'wd')
@@ -140,7 +142,7 @@ function! latex#util#execute(exe) " {{{1
     endif
   endif
 
-  if bg
+  if silent
     silent execute cmd
   else
     execute cmd
