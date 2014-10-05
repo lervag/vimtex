@@ -21,6 +21,10 @@ is to combine vim-latex with the strength of other plugins.  I personally
 recommend [UltiSnips](https://github.com/SirVer/ultisnips) for snippets and
 [neocomplete](https://github.com/Shougo/neocomplete.vim) for completion.
 
+Note that vim-latex should not be confused with LaTeX-Suite, which is also to
+some extent known as vim-latex.  The present plugin is not related to
+LaTeX-Suite in any way.
+
 Read the documentation for a more thorough introduction.
 
 ## Installation
