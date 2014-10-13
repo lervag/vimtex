@@ -13,7 +13,7 @@ function! latex#fold#init(initialized) " {{{1
   setl foldtext=latex#fold#text()
 
   " Initalize folds
-  call latex#fold#refresh('zx')
+  call latex#fold#refresh('zX')
 
   " Remap zx to refresh fold levels
   nnoremap <silent><buffer> zx :call latex#fold#refresh('zx')<cr>
