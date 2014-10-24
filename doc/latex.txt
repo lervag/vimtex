@@ -711,7 +711,14 @@ must end with a semicolon in order to allow |vim-latex| to append safely.
 Latexmk synctex:~                                  *vim-latex-latexmk-synctex*
                                                            *vim-latex-synctex*
 
-|vim-latex| does not include automatic support for synctex.  However, the view
+|vim-latex| does not include automatic support for synctex.  First off, it has to 
+be enabled by adding the line >
+
+  $pdflatex = 'pdflatex -synctex=1 %O %S';
+
+to ~/.latexmkrc.
+
+However, the view
 command does accept arguments, which makes it easy to add a forward search
 mapping, such as this for the popular viewer Okular: >
 
