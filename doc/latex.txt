@@ -711,7 +711,14 @@ must end with a semicolon in order to allow |vim-latex| to append safely.
 Latexmk synctex:~                                  *vim-latex-latexmk-synctex*
                                                            *vim-latex-synctex*
 
-|vim-latex| does not include automatic support for synctex.  However, the view
+|vim-latex| does not include automatic support for synctex.  First off, it has to 
+be enabled by adding the line >
+
+  $pdflatex = 'pdflatex -synctex=1 %O %S';
+
+to ~/.latexmkrc.
+
+However, the view
 command does accept arguments, which makes it easy to add a forward search
 mapping, such as this for the popular viewer Okular: >
 
@@ -722,10 +729,24 @@ mapping, such as this for the popular viewer Okular: >
       \ . '\#src:' . line(".") . expand('%:p'))
   endfunction
   nmap <leader>ls :call SyncTexForward()<cr>
+  
+Or, as this for the popular viewer SumatraPDF under Windows: >
+
+  nnoremap <expr><buffer><silent> <F11> ':VimLatexView '.
+      \ '-forward-search '.shellescape(expand('%:p')).' '.line(".").' '.
+      \ g:latex#data[b:latex.id].out().'<CR>'
 
 Backward search is generally set up inside the specific viewers, and how to do
 this depends on the viewer.  Please read the specific manuals or search the
-web to find out how to do it.
+web to find out how to do it. For example for SumatraPDF a working setup is: >
+
+  let g:latex_viewer='SumatraPDF -reuse-instance -inverse-search '.
+	    \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
+ 	    \ ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
+ 	    \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+
+
+
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
