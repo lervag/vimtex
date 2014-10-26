@@ -718,9 +718,9 @@ be enabled by adding the line >
 
 to ~/.latexmkrc.
 
-However, the view
-command does accept arguments, which makes it easy to add a forward search
-mapping, such as this for the popular viewer Okular: >
+However, the view command does accept arguments, which makes it easy to add
+a forward search mapping.  To add a forward search mapping for Okular on
+Linux, one may use the following: >
 
   let g:latex_viewer = 'okular'
   function! SyncTexForward()
@@ -729,24 +729,21 @@ mapping, such as this for the popular viewer Okular: >
       \ . '\#src:' . line(".") . expand('%:p'))
   endfunction
   nmap <leader>ls :call SyncTexForward()<cr>
-  
-Or, as this for the popular viewer SumatraPDF under Windows: >
+
+To add a forward search mapping for SumatraPDF under Windows: >
 
   nnoremap <expr><buffer><silent> <F11> ':VimLatexView '.
-      \ '-forward-search '.shellescape(expand('%:p')).' '.line(".").' '.
-      \ g:latex#data[b:latex.id].out().'<CR>'
+    \ '-forward-search '.shellescape(expand('%:p')).' '.line(".").' '.
+    \ g:latex#data[b:latex.id].out().'<CR>'
 
 Backward search is generally set up inside the specific viewers, and how to do
 this depends on the viewer.  Please read the specific manuals or search the
-web to find out how to do it. For example for SumatraPDF a working setup is: >
+web to find out how to do it.  For example for SumatraPDF a working setup is: >
 
   let g:latex_viewer='SumatraPDF -reuse-instance -inverse-search '.
-	    \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
- 	    \ ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
- 	    \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
-
-
-
+    \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
+    \ ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
+    \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
