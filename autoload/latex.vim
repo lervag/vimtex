@@ -359,7 +359,7 @@ function! s:get_main_recurse(file) " {{{1
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
   endwhile
-  let l:candidates = globpath(l:dirs, '*.tex', 0, 1)
+  let l:candidates = split(globpath(l:dirs, '*.tex'), '\n')
 
   "
   " Search through candidates for \include{current file}
