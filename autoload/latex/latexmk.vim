@@ -34,7 +34,7 @@ function! latex#latexmk#init(initialized) " {{{1
   " Set default mappings
   "
   if g:latex_mappings_enabled
-    nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#compile()<cr>
+    nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#toggle()<cr>
     nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean(0)<cr>
     nnoremap <silent><buffer> <localleader>lC :call latex#latexmk#clean(1)<cr>
     nnoremap <silent><buffer> <localleader>lg :call latex#latexmk#status(0)<cr>
@@ -102,6 +102,17 @@ function! latex#latexmk#clean(full) " {{{1
     echomsg "latexmk full clean finished"
   else
     echomsg "latexmk clean finished"
+  endif
+endfunction
+
+" }}}1
+function! latex#latexmk#toggle() " {{{1
+  let data = g:latex#data[b:latex.id]
+
+  if data.pid
+    call latex#latexmk#stop()
+  else
+    call latex#latexmk#compile()
   endif
 endfunction
 
