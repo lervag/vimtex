@@ -186,8 +186,12 @@ endfunction
 
 " }}}1
 function! latex#latexmk#output() " {{{1
-  let tmp = g:latex#data[b:latex.id].tmp
-  if empty(tmp) | return | endif
+  if has_key(g:latex#data[b:latex.id], 'tmp')
+    let tmp = g:latex#data[b:latex.id].tmp
+  else
+    echo "vim-latex: No output exists"
+    return
+  endif
 
   " Create latexmk output window
   if bufnr(tmp) >= 0
