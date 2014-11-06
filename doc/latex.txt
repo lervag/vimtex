@@ -213,7 +213,7 @@ n  <localleader>lv  *@:call latex#view()<cr>
 n  <localleader>lR  *@:call latex#reinit()<cr>
 n  <localleader>lt  *@:call latex#toc#open()<cr>
 n  <localleader>lT  *@:call latex#toc#toggle()<cr>
-n  <localleader>ll  *@:call latex#latexmk#compile()<cr>
+n  <localleader>ll  *@:call latex#latexmk#toggle()<cr>
 n  <localleader>lk  *@:call latex#latexmk#stop(1)<cr>
 n  <localleader>lK  *@:call latex#latexmk#stop_all()<cr>
 n  <localleader>le  *@:call latex#latexmk#errors(1)<cr>
@@ -242,6 +242,7 @@ Below the commands are listed in alphabetical order.
 VimLatexClean                call latex#latexmk#clean()
 VimLatexClean!               call latex#latexmk#clean(1)
 VimLatexCompile              call latex#latexmk#compile()
+VimLatexCompileToggle        call latex#latexmk#toggle()
 VimLatexErrors               call latex#latexmk#errors(1)
 VimLatexHelp                 call latex#help()
 VimLatexInfo                 call latex#info()
@@ -628,8 +629,8 @@ LATEXMK                                                    *vim-latex-latexmk*
 interface may be disabled with |g:latex_latexmk_enabled|.  The default
 mappings are: >
 
-  nnoremap <localleader>ll :call latex#latexmk#compile()<cr>
-  nnoremap <localleader>lk :call latex#latexmk#stop(1)<cr>
+  nnoremap <localleader>ll :call latex#latexmk#toggle()<cr>
+  nnoremap <localleader>lk :call latex#latexmk#stop()<cr>
   nnoremap <localleader>lK :call latex#latexmk#stop_all()<cr>
   nnoremap <localleader>le :call latex#latexmk#errors(1)<cr>
   nnoremap <localleader>lo :call latex#latexmk#output()<cr>
@@ -638,11 +639,11 @@ mappings are: >
   nnoremap <localleader>lc :call latex#latexmk#clean(0)<cr>
   nnoremap <localleader>lC :call latex#latexmk#clean(1)<cr>
 
-Compilation is started with |latex#latexmk#compile|.  The default behaviour
-uses preview continuous mode of `latexmk`, which may be disabled with
-|g:latex_latexmk_continuous|.  If it is disabled, then the option
-|g:latex_latexmk_background| may be used to decide if the single shot
-compilation should run in the foreground or the background.
+Compilation is started with |latex#latexmk#compile| or may be toggled by
+|latex#latexmk#toggle|.  The default behaviour uses preview continuous mode of
+`latexmk`, which may be disabled with |g:latex_latexmk_continuous|.  If it is
+disabled, then the option |g:latex_latexmk_background| may be used to decide
+if the single shot compilation should run in the foreground or the background.
 
 If vim is compiled with the |+clientserver| option and if
 |g:latex_latexmk_callback| is enabled, then compilation errors are parsed
@@ -670,6 +671,7 @@ Functions:
     |latex#latexmk#status|
     |latex#latexmk#stop|
     |latex#latexmk#stop_all|
+    |latex#latexmk#toggle|
 
 ------------------------------------------------------------------------------
 Latexmk tricks:~                                    *vim-latex-latexmk-tricks*
@@ -711,8 +713,8 @@ must end with a semicolon in order to allow |vim-latex| to append safely.
 Latexmk synctex:~                                  *vim-latex-latexmk-synctex*
                                                            *vim-latex-synctex*
 
-|vim-latex| does not include automatic support for synctex.  First off, it has to 
-be enabled by adding the line >
+|vim-latex| does not include automatic support for synctex.  First off, it has
+to be enabled by adding the line >
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
@@ -853,6 +855,7 @@ Overview:~
   |latex#latexmk#status|
   |latex#latexmk#stop|
   |latex#latexmk#stop_all|
+  |latex#latexmk#toggle|
   |latex#motion#find_matching_pair|
   |latex#motion#next_sec|
   |latex#motion#sel_delimiter|
@@ -966,6 +969,10 @@ argument may be given, in which case the function becomes verbose.
 
                                                       *latex#latexmk#stop_all*
 Stops all running `latexmk` processes.
+
+                                                        *latex#latexmk#toggle*
+Toggle compilation.  Calls |latex#latexmk#compile| if `latexmk` is not running
+for the current file.  Else it calls |latex#latexmk#stop|.
 
                                              *latex#motion#find_matching_pair*
 Finds a matching pair of parentheses or begin-end-tags.  The functions is used
