@@ -419,8 +419,10 @@ quickfix window.  LaTeX errors will of course still be listed. >
   let g:latex_quickfix_ignore_all_warnings = 0
 <
                                            *g:latex_quickfix_ignored_warnings*
-List of warning messages that should be ignored. By default, no warnings are
-ignored. To ignore some common LaTeX warnings, try the following setting: >
+List of warning messages that should be ignored.  By default, the list is
+empty, thus no warnings are ignored.  The list is a list of strings.  Any
+LaTeX warning that contains a string in the list will be ignored.  To ignore
+some common LaTeX warnings, try the following setting: >
   let g:latex_quickfix_ignored_warnings = [
         \ 'Underfull',
         \ 'Overfull',
