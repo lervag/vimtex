@@ -124,13 +124,14 @@ function! latex#util#execute(exe) " {{{1
 
   " Set up command string based on the given system
   if has('win32')
-    if bg
-      let cmd = '!start /b ' . a:exe.cmd
-    else
-      let cmd = '!' . a:exe.cmd
-    endif
+    let cmd = a:exe.cmd
     if null
       let cmd .= ' >nul'
+    endif
+    if bg
+      let cmd = '!start /b "' . cmd . '"'
+    else
+      let cmd = '!' . cmd
     endif
   else
     let cmd = '!' . a:exe.cmd
