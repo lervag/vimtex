@@ -91,6 +91,7 @@ function! latex#latexmk#clean(full) " {{{1
   else
     let cmd .= 'latexmk -c '
   endif
+  let cmd .= ' -outdir=' . g:latex_build_dir
   let cmd .= shellescape(data.base)
   let g:latex#data[b:latex.id].cmds.clean = cmd
   let exe = {
@@ -291,6 +292,7 @@ function! s:latexmk_set_cmd(data) " {{{1
 
   let cmd .= ' -' . g:latex_latexmk_output
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
+  let cmd .= ' -outdir=' . g:latex_build_dir
 
   if g:latex_latexmk_continuous
     let cmd .= ' -pvc'
