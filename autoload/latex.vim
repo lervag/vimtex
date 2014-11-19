@@ -115,7 +115,7 @@ function! latex#view(...) " {{{1
       echomsg "Can't view: Output file is not readable!"
       return
     endif
-    let args .= outfile
+    let args .= shellescape(outfile)
   endif
 
   let exe = {}
