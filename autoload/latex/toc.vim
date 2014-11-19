@@ -248,6 +248,10 @@ endfunction
 function! s:parse_line_input(line, file) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
 
+  " Trim whitespaces from beginning and end of string
+  let l:file = substitute(l:file, '^\s*', '', '')
+  let l:file = substitute(l:file, '\s*$', '', '')
+
   " Ensure file has extension
   if l:file !~# '.tex$'
     let l:file .= '.tex'
