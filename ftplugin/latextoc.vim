@@ -91,13 +91,32 @@ function! s:toc_close() "{{{1
 endfunction
 
 function! s:toc_open_entry(entry) "{{{1
-  " Open file buffer
+  " Get buffer number (add buffer if necessary)
   let bnr = bufnr(a:entry.file)
   if bnr == -1
     execute 'badd ' . fnameescape(a:entry.file)
     let bnr = bufnr(a:entry.file)
   endif
-  execute 'buffer! ' . bnr
+
+  " Set bufferopen command
+  "   The point here is to use existing open buffer if the user has turned on
+  "   the &switchbuf option to either 'useopen' or 'usetab'
+  let cmd = 'buffer! '
+  if &switchbuf =~ 'usetab'
+    for i in range(tabpagenr('$'))
+      if index(tabpagebuflist(i + 1), bnr) >= 0
+        let cmd = 'sbuffer! '
+        break
+      endif
+    endfor
+  elseif &switchbuf =~ 'useopen'
+    if bufwinnr(bnr) > 0
+      let cmd = 'sbuffer! '
+    endif
+  endif
+
+  " Open file buffer
+  execute cmd . bnr
 
   " Go to entry line
   call setpos('.', [0, a:entry.line, 0, 0])
