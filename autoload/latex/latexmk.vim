@@ -86,12 +86,12 @@ function! latex#latexmk#clean(full) " {{{1
   else
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
+  let cmd .= 'latexmk -outdir=' . g:latex_build_dir
   if a:full
-    let cmd .= 'latexmk -C '
+    let cmd .= ' -C '
   else
-    let cmd .= 'latexmk -c '
+    let cmd .= ' -c '
   endif
-  let cmd .= ' -outdir=' . g:latex_build_dir
   let cmd .= shellescape(data.base)
   let g:latex#data[b:latex.id].cmds.clean = cmd
   let exe = {
