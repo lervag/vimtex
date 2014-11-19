@@ -366,8 +366,8 @@ function! s:get_main_recurse(file) " {{{1
   "
   for l:file in l:candidates
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
-          \ . '((.*)\/)?'
-          \ . fnamemodify(a:file, ':t:r') . '(\.tex)?''')) > 0
+          \ . '\s*((.*)\/)?'
+          \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
       return s:get_main_recurse(l:file)
     endif
   endfor
