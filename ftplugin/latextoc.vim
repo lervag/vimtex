@@ -19,6 +19,8 @@ setlocal nowrap
 setlocal nonumber
 setlocal nolist
 setlocal nospell
+setlocal nonumber
+setlocal norelativenumber
 setlocal cursorline
 setlocal tabstop=8
 setlocal cole=0
@@ -126,10 +128,10 @@ function! s:toc_open_entry(entry) "{{{1
 endfunction
 
 function! s:toc_toggle_numbers() "{{{1
-  if b:toc_numbers
-    let b:toc_numbers = 0
+  if g:latex_toc_numbers
+    let g:latex_toc_numbers = 0
   else
-    let b:toc_numbers = 1
+    let g:latex_toc_numbers = 1
   endif
 
   call latextoc#refresh()

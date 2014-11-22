@@ -69,7 +69,13 @@ endfunction
 " }}}1
 function! s:add_entries() " {{{1
   let closest_index = 0
-  let s:num_format = '%-' . 2*(b:toc_secnumdepth+2) . 's'
+  if g:latex_toc_numbers_width
+    let s:width = g:latex_toc_numbers_width
+  else
+    let s:width = 2*(b:toc_secnumdepth+2)
+  endi
+  let s:width = max([0, s:width])
+  let s:num_format = '%-' . s:width . 's'
 
   let index = 0
   for entry in b:toc
@@ -107,9 +113,9 @@ function! s:print_entry(entry) " {{{1
 
   " Create entry string
   let entry = ''
-  if b:toc_numbers
+  if g:latex_toc_numbers
     let entry .= printf(s:num_format, level >= b:toc_secnumdepth + 2
-          \ ? '' : s:print_number(a:entry.number))
+          \ ? '' : strpart(s:print_number(a:entry.number), 0, s:width))
   endif
   let entry .= printf('%-140s%s', a:entry.title, level)
 
