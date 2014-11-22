@@ -17,10 +17,9 @@ setlocal nobuflisted
 setlocal noswapfile
 setlocal nowrap
 setlocal nonumber
+setlocal norelativenumber
 setlocal nolist
 setlocal nospell
-setlocal nonumber
-setlocal norelativenumber
 setlocal cursorline
 setlocal tabstop=8
 setlocal cole=0
