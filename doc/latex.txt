@@ -484,7 +484,7 @@ Allow the TOC help text to be hidden. >
   let g:latex_toc_hide_help = 0
 <
                                                    *g:latex_toc_hide_preamble*
-If enabled, the start of the preamble is not shown in the TOC.
+If enabled, the start of the preamble is not shown in the TOC. >
   let g:latex_toc_hide_preamble = 0
 <
                                                           *g:latex_toc_resize*
