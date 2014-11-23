@@ -50,7 +50,6 @@ let s:delimiters_close = '\(' . join([
 let s:tikz_commands = '\\\(' . join([
         \ 'draw',
         \ 'fill',
-        \ 'foreach',
         \ 'path',
         \ 'node',
         \ 'add\(legendentry\|plot\)',
@@ -127,7 +126,11 @@ function! LatexIndent()
   endif
 
   " Indent opening and closing delimiters
-  let ind += s:indent_braces(cline, pline) * &sw
+  let popen  = s:count_delimiters(pline, s:delimiters_open)
+  let copen  = s:count_delimiters(cline, s:delimiters_open)
+  let pclose = s:count_delimiters(pline, s:delimiters_close)
+  let cclose = s:count_delimiters(cline, s:delimiters_close)
+  let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
 
   " Indent list items
   if pline =~ '^\s*\\\(bib\)\?item'
@@ -151,14 +154,8 @@ function! LatexIndent()
 endfunction
 "}}}
 
-" {{{1 s:indent_braces
-function! s:indent_braces(cline, pline)
-  return     s:match_brace(a:pline, s:delimiters_open)
-         \ - s:match_brace(a:pline, s:delimiters_close)
-endfunction
-
-" {{{1 s:match_brace
-function! s:match_brace(line, pattern)
+" {{{1 s:count_delimiters
+function! s:count_delimiters(line, pattern)
   let sum = 0
   let indx = match(a:line, a:pattern)
   while indx >= 0
