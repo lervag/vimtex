@@ -119,7 +119,7 @@ function! latex#util#execute(exe) " {{{1
   " Change directory if wanted
   if has_key(a:exe, 'wd')
     let pwd = getcwd()
-    execute 'lcd ' . a:exe.wd
+    execute 'lcd ' . fnameescape(a:exe.wd)
   endif
 
   " Set up command string based on the given system
@@ -151,7 +151,7 @@ function! latex#util#execute(exe) " {{{1
 
   " Return to previous working directory
   if has_key(a:exe, 'wd')
-    execute 'lcd ' . pwd
+    execute 'lcd ' . fnameescape(pwd)
   endif
 
   if !has("gui_running")

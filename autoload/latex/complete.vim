@@ -160,7 +160,7 @@ function! s:bibtex_search(regexp) " {{{2
 
   " The bibtex completion seems to require that we are in the project root
   let l:save_pwd = getcwd()
-  execute 'lcd ' . g:latex#data[b:latex.id].root
+  execute 'lcd ' . fnameescape(g:latex#data[b:latex.id].root)
 
   " Find data from external bib files
   let bibfiles = join(s:bibtex_find_bibs(), ',')
@@ -211,7 +211,7 @@ function! s:bibtex_search(regexp) " {{{2
   endif
 
   " Return to previous working directory
-  execute 'lcd ' . l:save_pwd
+  execute 'lcd ' . fnameescape(l:save_pwd)
 
   " Find data from 'thebibliography' environments
   let lines = readfile(g:latex#data[b:latex.id].tex)
