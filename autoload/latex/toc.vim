@@ -13,8 +13,8 @@ function! latex#toc#init(initialized) " {{{1
 
   " Define mappings
   if g:latex_mappings_enabled
-    nnoremap <buffer> <LocalLeader>lt :call latex#toc#open()<cr>
-    nnoremap <buffer> <LocalLeader>lT :call latex#toc#toggle()<cr>
+    nnoremap <buffer> <localleader>lt :call latex#toc#open()<cr>
+    nnoremap <buffer> <localleader>lT :call latex#toc#toggle()<cr>
   endif
 endfunction
 
