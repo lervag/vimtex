@@ -239,24 +239,24 @@ COMMANDS                                                  *vim-latex-commands*
 |vim-latex-functions|.  However, commands are also defined for convenience.
 Below the commands are listed in alphabetical order.
 
-VimLatexClean                call latex#latexmk#clean()
+*VimLatexClean*                call latex#latexmk#clean()
 VimLatexClean!               call latex#latexmk#clean(1)
-VimLatexCompile              call latex#latexmk#compile()
-VimLatexCompileSS            call latex#latexmk#compile_singleshot()
-VimLatexCompileToggle        call latex#latexmk#toggle()
-VimLatexErrors               call latex#latexmk#errors(1)
-VimLatexHelp                 call latex#help()
-VimLatexInfo                 call latex#info()
-VimLatexOutput               call latex#latexmk#output()
-VimLatexRefreshFolds         call latex#fold#refresh()
-VimLatexReinitialize         call latex#reinit()
-VimLatexStatus               call latex#latexmk#status()
+*VimLatexCompile*              call latex#latexmk#compile()
+*VimLatexCompileSS            call latex#latexmk#compile_singleshot()
+*VimLatexCompileToggle*        call latex#latexmk#toggle()
+*VimLatexErrors*               call latex#latexmk#errors(1)
+*VimLatexHelp*                 call latex#help()
+*VimLatexInfo*                 call latex#info()
+*VimLatexOutput*               call latex#latexmk#output()
+*VimLatexRefreshFolds*         call latex#fold#refresh()
+*VimLatexReinitialize*         call latex#reinit()
+*VimLatexStatus*               call latex#latexmk#status()
 VimLatexStatus!              call latex#latexmk#status(1)
-VimLatexStop                 call latex#latexmk#stop()
-VimLatexStopAll              call latex#latexmk#stop_all()
-VimLatexTocOpen              call latex#toc#open()
-VimLatexTocToggle            call latex#toc#toggle()
-VimLatexView                 call latex#view()
+*VimLatexStop*                 call latex#latexmk#stop()
+*VimLatexStopAll*              call latex#latexmk#stop_all()
+*VimLatexTocOpen*              call latex#toc#open()
+*VimLatexTocToggle*            call latex#toc#toggle()
+*VimLatexView*                 call latex#view()
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -541,7 +541,7 @@ Associated settings:
         |g:latex_complete_patterns.ref|
         |g:latex_complete_patterns.bib|
         |g:latex_complete_close_braces|
-        |g:latex_complete_recursive_bib|       
+        |g:latex_complete_recursive_bib|
 
 Functions:
         |latex#complete#omnifunc|
