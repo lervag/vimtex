@@ -659,8 +659,16 @@ Compilation is started with |latex#latexmk#compile| or may be toggled by
 `latexmk`, which may be disabled with |g:latex_latexmk_continuous|.  If it is
 disabled, then the option |g:latex_latexmk_background| may be used to decide
 if single shot compilation should run in the foreground or the background.
+
 Single shot compilation may always be issued with the function
-|latex#latexmk#compile_singleshot|.
+|latex#latexmk#compile_singleshot|.  This function ignores the
+|g:latex_latexmk_background|` setting, though, and will show the output from
+the `latexmk` command.  The function is available through the command
+|VimLatexCompileSS|, and if desired one may create a custom mapping such as >
+
+  nnoremap <localleader>ls :VimLatexCompileSS<cr>
+
+Here one may also use the |silent| command to ignore compilation output.
 
 If vim is compiled with the |+clientserver| option and if
 |g:latex_latexmk_callback| is enabled, then compilation errors are parsed

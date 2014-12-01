@@ -165,16 +165,10 @@ function! latex#latexmk#compile_singleshot() " {{{1
   " Start latexmk
   let exe = {}
   let exe.null = 0
-  if !g:latex_latexmk_background
-    let exe.bg = 0
-    let exe.silent = 0
-  endif
+  let exe.bg = 0
+  let exe.silent = 0
   let exe.cmd  = data.cmds.compile
   call latex#util#execute(exe)
-
-  if g:latex_latexmk_background
-    echomsg 'latexmk compiling'
-  endif
 endfunction
 
 " }}}1
