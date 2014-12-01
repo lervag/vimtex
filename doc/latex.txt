@@ -242,6 +242,7 @@ Below the commands are listed in alphabetical order.
 VimLatexClean                call latex#latexmk#clean()
 VimLatexClean!               call latex#latexmk#clean(1)
 VimLatexCompile              call latex#latexmk#compile()
+VimLatexCompileSS            call latex#latexmk#compile_singleshot()
 VimLatexCompileToggle        call latex#latexmk#toggle()
 VimLatexErrors               call latex#latexmk#errors(1)
 VimLatexHelp                 call latex#help()
@@ -657,7 +658,9 @@ Compilation is started with |latex#latexmk#compile| or may be toggled by
 |latex#latexmk#toggle|.  The default behaviour uses preview continuous mode of
 `latexmk`, which may be disabled with |g:latex_latexmk_continuous|.  If it is
 disabled, then the option |g:latex_latexmk_background| may be used to decide
-if the single shot compilation should run in the foreground or the background.
+if single shot compilation should run in the foreground or the background.
+Single shot compilation may always be issued with the function
+|latex#latexmk#compile_singleshot|.
 
 If vim is compiled with the |+clientserver| option and if
 |g:latex_latexmk_callback| is enabled, then compilation errors are parsed
@@ -680,6 +683,7 @@ Associated settings:
 Functions:
     |latex#latexmk#clean|
     |latex#latexmk#compile|
+    |latex#latexmk#compile_singleshot|
     |latex#latexmk#errors|
     |latex#latexmk#output|
     |latex#latexmk#status|
@@ -867,6 +871,7 @@ Overview:~
   |latex#info|
   |latex#latexmk#clean|
   |latex#latexmk#compile|
+  |latex#latexmk#compile_singleshot|
   |latex#latexmk#errors|
   |latex#latexmk#output|
   |latex#latexmk#status|
@@ -957,6 +962,10 @@ output files.  This will only be run if `latexmk` is not already running.
 
                                                        *latex#latexmk#compile*
 Starts `latexmk -pvc ...` for the given buffer, if it is not already running.
+
+                                            *latex#latexmk#compile_singleshot*
+Starts a single shot compile with `latexmk ...` for the given buffer (if it is
+not already running).
 
                                                         *latex#latexmk#errors*
 Parse the log file for errors and warnings.  If any errors or warnings are

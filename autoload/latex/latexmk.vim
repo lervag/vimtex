@@ -23,6 +23,7 @@ function! latex#latexmk#init(initialized) " {{{1
   " Define commands
   "
   com! -buffer VimLatexCompile       call latex#latexmk#compile()
+  com! -buffer VimLatexCompileSS     call latex#latexmk#compile_singleshot()
   com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
   com! -buffer VimLatexStop          call latex#latexmk#stop()
   com! -buffer VimLatexStopAll       call latex#latexmk#stop_all()
@@ -143,6 +144,35 @@ function! latex#latexmk#compile() " {{{1
     call s:latexmk_set_pid(data)
     echomsg 'latexmk continuous mode started successfully'
   else
+    echomsg 'latexmk compiling'
+  endif
+endfunction
+
+" }}}1
+function! latex#latexmk#compile_singleshot() " {{{1
+  let data = g:latex#data[b:latex.id]
+
+  if data.pid
+    echomsg "latexmk is already running for `" . data.base . "'"
+    return
+  endif
+
+  let l:latex_latexmk_continuous = g:latex_latexmk_continuous
+  let g:latex_latexmk_continuous = 0
+  call s:latexmk_set_cmd(data)
+  let g:latex_latexmk_continuous = l:latex_latexmk_continuous
+
+  " Start latexmk
+  let exe = {}
+  let exe.null = 0
+  if !g:latex_latexmk_background
+    let exe.bg = 0
+    let exe.silent = 0
+  endif
+  let exe.cmd  = data.cmds.compile
+  call latex#util#execute(exe)
+
+  if g:latex_latexmk_background
     echomsg 'latexmk compiling'
   endif
 endfunction
