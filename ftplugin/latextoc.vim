@@ -16,8 +16,10 @@ setlocal listchars=
 setlocal nobuflisted
 setlocal noswapfile
 setlocal nowrap
-setlocal nonumber
-setlocal norelativenumber
+if g:latex_toc_hide_line_numbers
+  setlocal nonumber
+  setlocal norelativenumber
+endif
 setlocal nolist
 setlocal nospell
 setlocal cursorline
