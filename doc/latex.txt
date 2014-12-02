@@ -297,6 +297,7 @@ Overview:~
   |g:latex_toc_fold|
   |g:latex_toc_hide_help|
   |g:latex_toc_hide_preamble|
+  |g:latex_toc_hide_line_numbers|
   |g:latex_toc_numbers|
   |g:latex_toc_numbers_width|
   |g:latex_toc_resize|
@@ -489,6 +490,11 @@ Allow the TOC help text to be hidden. >
                                                    *g:latex_toc_hide_preamble*
 If enabled, the start of the preamble is not shown in the TOC. >
   let g:latex_toc_hide_preamble = 0
+<
+                                               *g:latex_toc_hide_line_numbers*
+If enabled, line numbers will be hidden in the TOC window.  That is,
+|nonumber| and |norelativenumber| will be set locally for the TOC window. >
+  let g:latex_toc_hide_line_numbers = 1
 <
                                                          *g:latex_toc_numbers*
 Toggle display of numbers in TOC.  The numbers may also be toggled inside the
@@ -841,6 +847,7 @@ Associated settings:
     |g:latex_toc_fold|
     |g:latex_toc_hide_help|
     |g:latex_toc_hide_preamble|
+    |g:latex_toc_hide_line_numbers|
     |g:latex_toc_numbers|
     |g:latex_toc_numbers_width|
     |g:latex_toc_resize|
