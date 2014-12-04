@@ -786,7 +786,14 @@ web to find out how to do it.  For example for SumatraPDF a working setup is: >
     \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
 
 Note that both of these commands assume that the folder that contains gVim.exe
-is in your %PATH% environment variable.
+is in your %PATH% environment variable.  Also note that the simpler approach
+
+  let g:latex_viewer='SumatraPDF'
+
+with `SumatraPDF settings > options > set inverse search command-line` set
+to `gvim --remote-silent +%l "%f"` also works.  However, this does not specify
+the vim server, and if you have several vim instances running, then it might
+not work as expected.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
