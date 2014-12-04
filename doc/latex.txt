@@ -775,10 +775,10 @@ Backward search is generally set up inside the specific viewers, and how to do
 this depends on the viewer.  Please read the specific manuals or search the
 web to find out how to do it.  For example for SumatraPDF a working setup is: >
 
-let g:latex_viewer='SumatraPDF -reuse-instance -inverse-search '.
-  \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
-  \ ':execute ''drop ''.fnameescape(''\%f'')^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
-  \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+  let g:latex_viewer='SumatraPDF -reuse-instance -inverse-search '.
+    \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
+    \ ':execute ''drop ''.fnameescape(''\%f'')^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
+    \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
 
 Note that both of these commands assume that the folder that contains gVim.exe
 is in your %PATH% environment variable.
