@@ -23,14 +23,15 @@ function! latex#latexmk#init(initialized) " {{{1
   " Define commands
   "
   com! -buffer VimLatexCompile       call latex#latexmk#compile()
-  com! -buffer VimLatexCompileSS     call latex#latexmk#compile_singleshot()
   com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
   com! -buffer VimLatexStop          call latex#latexmk#stop()
   com! -buffer VimLatexStopAll       call latex#latexmk#stop_all()
   com! -buffer VimLatexErrors        call latex#latexmk#errors(1)
   com! -buffer VimLatexOutput        call latex#latexmk#output()
-  com! -buffer -bang VimLatexClean  call latex#latexmk#clean(<q-bang> == "!")
-  com! -buffer -bang VimLatexStatus call latex#latexmk#status(<q-bang> == "!")
+  com! -buffer -bang VimLatexClean   call latex#latexmk#clean(<q-bang> == "!")
+  com! -buffer -bang VimLatexStatus  call latex#latexmk#status(<q-bang> == "!")
+  com! -buffer -bang VimLatexCompileSS
+        \ call latex#latexmk#compile_singleshot(<q-bang> == "!")
 
   "
   " Set default mappings
@@ -149,7 +150,7 @@ function! latex#latexmk#compile() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#compile_singleshot() " {{{1
+function! latex#latexmk#compile_singleshot(verbose) " {{{1
   let data = g:latex#data[b:latex.id]
 
   if data.pid
@@ -165,8 +166,10 @@ function! latex#latexmk#compile_singleshot() " {{{1
   " Start latexmk
   let exe = {}
   let exe.null = 0
-  let exe.bg = 0
-  let exe.silent = 0
+  if a:verbose
+    let exe.bg = 0
+    let exe.silent = 0
+  endif
   let exe.cmd  = data.cmds.compile
   call latex#util#execute(exe)
 endfunction

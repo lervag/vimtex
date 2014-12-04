@@ -239,10 +239,11 @@ COMMANDS                                                  *vim-latex-commands*
 |vim-latex-functions|.  However, commands are also defined for convenience.
 Below the commands are listed in alphabetical order.
 
-*VimLatexClean*                call latex#latexmk#clean()
+*VimLatexClean*                call latex#latexmk#clean(0)
 *VimLatexClean!*               call latex#latexmk#clean(1)
 *VimLatexCompile*              call latex#latexmk#compile()
-*VimLatexCompileSS*            call latex#latexmk#compile_singleshot()
+*VimLatexCompileSS*            call latex#latexmk#compile_singleshot(0)
+*VimLatexCompileSS!*           call latex#latexmk#compile_singleshot(1)
 *VimLatexCompileToggle*        call latex#latexmk#toggle()
 *VimLatexErrors*               call latex#latexmk#errors(1)
 *VimLatexHelp*                 call latex#help()
@@ -250,7 +251,7 @@ Below the commands are listed in alphabetical order.
 *VimLatexOutput*               call latex#latexmk#output()
 *VimLatexRefreshFolds*         call latex#fold#refresh()
 *VimLatexReinitialize*         call latex#reinit()
-*VimLatexStatus*               call latex#latexmk#status()
+*VimLatexStatus*               call latex#latexmk#status(0)
 *VimLatexStatus!*              call latex#latexmk#status(1)
 *VimLatexStop*                 call latex#latexmk#stop()
 *VimLatexStopAll*              call latex#latexmk#stop_all()
@@ -668,13 +669,15 @@ if single shot compilation should run in the foreground or the background.
 
 Single shot compilation may always be issued with the function
 |latex#latexmk#compile_singleshot|.  This function ignores the
-|g:latex_latexmk_background|` setting, though, and will show the output from
-the `latexmk` command.  The function is available through the command
-|VimLatexCompileSS|, and if desired one may create a custom mapping such as >
+|g:latex_latexmk_background|` setting, though, and will by default hide the
+output from the `latexmk` command.  The function is available through the
+command |VimLatexCompileSS|, and if desired one may create a custom mapping
+such as >
 
   nnoremap <localleader>ls :VimLatexCompileSS<cr>
 
-Here one may also use the |silent| command to ignore compilation output.
+A banged version of the command also exists, which will provide a more verbose
+output.
 
 If vim is compiled with the |+clientserver| option and if
 |g:latex_latexmk_callback| is enabled, then compilation errors are parsed
