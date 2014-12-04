@@ -769,7 +769,7 @@ Linux, one may use the following: >
 
 To add a forward search mapping for SumatraPDF under Windows: >
 
-  nnoremap <expr><buffer><silent> <F11> ':VimLatexView -forward-search '
+  nnoremap <expr><silent> <F11> ':VimLatexView -forward-search '
     \ . shellescape(expand('%:p')) . ' '
     \ . line(".") . ' '
     \ . shellescape(g:latex#data[b:latex.id].out()) . '<CR>'
