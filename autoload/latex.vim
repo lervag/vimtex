@@ -14,6 +14,7 @@ function! latex#init() " {{{1
 
   call latex#toc#init(s:initialized)
   call latex#fold#init(s:initialized)
+  call latex#view#init(s:initialized)
   call latex#motion#init(s:initialized)
   call latex#change#init(s:initialized)
   call latex#latexmk#init(s:initialized)
@@ -104,27 +105,6 @@ function! latex#reinit() " {{{1
         \ endif
   silent execute 'buffer ' . n
 endfunction
-
-function! latex#view(...) " {{{1
-  let args = ' '
-  if a:0 > 0
-    let args .= join(a:000, ' ')
-  else
-    let outfile = g:latex#data[b:latex.id].out()
-    if !filereadable(outfile)
-      echomsg "Can't view: Output file is not readable!"
-      return
-    endif
-    let args .= shellescape(outfile)
-  endif
-
-  let exe = {}
-  let exe.cmd = g:latex_viewer . args
-
-  call latex#util#execute(exe)
-
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
-endfunction
 " }}}1
 
 function! s:init_environment() " {{{1
@@ -167,15 +147,13 @@ function! s:init_environment() " {{{1
     let b:latex.id = len(g:latex#data) - 1
   endif
 
-  command! -buffer          VimLatexInfo         call latex#info()
-  command! -buffer          VimLatexHelp         call latex#help()
-  command! -buffer -nargs=* VimLatexView         call latex#view('<args>')
-  command! -buffer          VimLatexReinitialize call latex#reinit()
+  command! -buffer VimLatexInfo         call latex#info()
+  command! -buffer VimLatexHelp         call latex#help()
+  command! -buffer VimLatexReinitialize call latex#reinit()
 
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>li :call latex#info()<cr>
     nnoremap <silent><buffer> <localleader>lh :call latex#help()<cr>
-    nnoremap <silent><buffer> <localleader>lv :call latex#view()<cr>
     nnoremap <silent><buffer> <localleader>lR :call latex#reinit()<cr>
   endif
 endfunction
@@ -288,7 +266,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_toc_secnumdepth', 3)
   call latex#util#set_default('g:latex_toc_split_side', 'leftabove')
   call latex#util#set_default('g:latex_toc_width', 30)
-  call latex#util#set_default('g:latex_viewer', 'xdg-open')
+  call latex#util#set_default('g:latex_view_enabled', 1)
 endfunction
 " }}}1
 

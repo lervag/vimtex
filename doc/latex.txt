@@ -36,13 +36,14 @@ CONTENTS                                                  *vim-latex-contents*
     9. Latexmk .............................. |vim-latex-latexmk|
        Latexmk tricks ....................... |vim-latex-latexmk-tricks|
        Latexmk synctex ...................... |vim-latex-latexmk-synctex|
-   10. Motion ............................... |vim-latex-motion|
-   11. Change ............................... |vim-latex-change|
-   12. Table of contents .................... |vim-latex-toc|
-   13. Utility functions .................... |vim-latex-util|
-   14. Function reference ................... |vim-latex-functions|
-   15. Credits .............................. |vim-latex-credits|
-   16. Changelog ............................ |vim-latex-changelog|
+   10. View ................................. |vim-latex-view|
+   11. Motion ............................... |vim-latex-motion|
+   12. Change ............................... |vim-latex-change|
+   13. Table of contents .................... |vim-latex-toc|
+   14. Utility functions .................... |vim-latex-util|
+   15. Function reference ................... |vim-latex-functions|
+   16. Credits .............................. |vim-latex-credits|
+   17. Changelog ............................ |vim-latex-changelog|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -78,15 +79,14 @@ initialization script that sets default mappings, creates autocommands and
 performs other necessary initialization.  This initialization script is then
 called from |latex#init|.
 
-The main interface provides some basic functionality.  |latex#view|, by
-default mapped to '<localleader>lv', opens the current output file in
-a viewer.  |latex#help| lists all mappings that are defined specifically for
-the current buffer, by default mapped to '<localleader>lh'.  If the default
-mappings are used, |latex#help| will display them.  |latex#info| echoes the
-contents of |g:latex#data| and |b:latex|.  This is useful mainly for
-debugging.  Finally, |latex#reinit| clears the current data in |g:latex#data|
-and |b:latex|, stops running `latexmk` processes |latex#latexmk#stop_all|,  and
-then performs a new initialization with |latex#init|.
+The main interface provides some basic functionality.  |latex#help| lists all
+`vim-latex` mappings defined for the current buffer, by default mapped to
+'<localleader>lh'.  If the default mappings are used, |latex#help| will
+display them.  |latex#info| echoes the contents of |g:latex#data| and
+|b:latex|.  This is useful mainly for debugging.  Finally, |latex#reinit|
+clears the current data in |g:latex#data| and |b:latex|, stops running
+`latexmk` processes |latex#latexmk#stop_all|,  and then performs a new
+initialization with |latex#init|.
 
 For each latex project that is opened, a |Dictionary| is created and added to
 the list |g:latex#data|.  The dictionary is initialized with information tied
@@ -140,7 +140,6 @@ Functions:
         |latex#info|
         |latex#help|
         |latex#reinit|
-        |latex#view|
 
 ------------------------------------------------------------------------------
 Support for multi-file projects:~
@@ -209,7 +208,6 @@ o  ]]               *@:normal v]]<cr>
 
 n  <localleader>li  *@:call latex#info()<cr>
 n  <localleader>lh  *@:call latex#help()<cr>
-n  <localleader>lv  *@:call latex#view()<cr>
 n  <localleader>lR  *@:call latex#reinit()<cr>
 n  <localleader>lt  *@:call latex#toc#open()<cr>
 n  <localleader>lT  *@:call latex#toc#toggle()<cr>
@@ -222,6 +220,7 @@ n  <localleader>lg  *@:call latex#latexmk#status()<cr>
 n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
+n  <localleader>lv  *@:call latex#view#view()<cr>
 
 n  zx               *@:call latex#fold#refresh()<cr>
 n  dse              *@:call latex#change#env('')<cr>
@@ -257,7 +256,7 @@ Below the commands are listed in alphabetical order.
 *VimLatexStopAll*              call latex#latexmk#stop_all()
 *VimLatexTocOpen*              call latex#toc#open()
 *VimLatexTocToggle*            call latex#toc#toggle()
-*VimLatexView*                 call latex#view()
+*VimLatexView*                 call latex#view#view()
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -305,7 +304,11 @@ Overview:~
   |g:latex_toc_secnumdepth|
   |g:latex_toc_split_side|
   |g:latex_toc_width|
-  |g:latex_viewer|
+  |g:latex_view_enabled|
+  |g:latex_view_general_viewer|
+  |g:latex_view_general_options|
+  |g:latex_view_method|
+  |g:latex_view_mupdf_options|
 
 ------------------------------------------------------------------------------
 Detailed descriptions and default values:~
@@ -526,9 +529,29 @@ Define where the TOC window is opened. >
 Set width of TOC window. >
   let g:latex_toc_width = 30
 <
-                                                              *g:latex_viewer*
-Set default viewer application. >
-  let g:latex_viewer = 'xdg-open'
+                                                        *g:latex_view_enabled*
+Enable interface for view functionality. >
+  let g:latex_view_enabled = 1
+<
+                                                *g:latex_view_general_options*
+Set custom options for general view command. >
+  let g:latex_view_general_options = ''
+<
+                                                 *g:latex_view_general_viewer*
+Set general viewer. >
+  let g:latex_view_general_viewer = 'xdg-open'
+<
+                                                         *g:latex_view_method*
+Set viewer method.  If not set or set to `general`, it uses the general
+viewer, see |g:latex_view_general_viewer|. >
+  let g:latex_view_method = ''
+The currently available choices are: >
+  general
+  mupdf
+<
+                                                  *g:latex_view_mupdf_options*
+Set custom options for mupdf viewer. >
+  let g:latex_view_mupdf_options = ''
 <
 ==============================================================================
 OMNI COMPLETION                                         *vim-latex-completion*
@@ -794,6 +817,25 @@ with `SumatraPDF settings > options > set inverse search command-line` set
 to `gvim --remote-silent +%l "%f"` also works.  However, this does not specify
 the vim server, and if you have several vim instances running, then it might
 not work as expected.
+
+==============================================================================
+VIEW                                                          *vim-latex-view*
+
+|vim-latex| provides functions for viewing the compiled documents.  A command
+and a mapping is defined for the multipurpose `view` function, which calls the
+chosen view method defined by |g:latex_view_method|.
+
+Associated settings:
+    |g:latex_view_enabled|
+    |g:latex_view_general_viewer|
+    |g:latex_view_general_options|
+    |g:latex_view_method|
+    |g:latex_view_mupdf_options|
+
+Functions:
+    |latex#view#view|
+    |latex#view#general|
+    |latex#view#mupdf|
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
@@ -1114,18 +1156,17 @@ CHANGELOG                                                *vim-latex-changelog*
 The following changelog only logs important changes, such as changes that
 break backwards compatibility.  See the git log for the detailed changelog.
 
-2014-08-24: Made continuous mode optional~
-Added option |g:latex_latexmk_continuous| to set whether or not the `latexmk`
-process should run in continuous mode.  Also added option
-|g:latex_latexmk_background| to set whether single compilations should run in
-the foreground or the background.
+2014-12-07: Added more general view functionality~
+Added new module for view functionality.  This allows more complex view
+functions (and commands), for instance to do forward (and possibly backwards)
+searching through `synctex`.  In the first version, I added forward search for
+mupdf by use of the `synctex` command and `xdotools`.
 
-I also deprecated the old variable that sets options for `latexmk`, because
-I find that it makes more sense to control `latexmk` through `latexmkrc`
-files.
+The `g:latex_viewer` option has now been deprecated.  Instead one should use
+|g:latex_view_method| and |g:latex_view_general_viewer|.
 
 Deprecated option:
-  *g:latex_latexmk_options*
+  *g:latex_viewer*
 
 2014-06-13: Changed some option names~
 Some |vim-latex| option names were changed in an attempt to make the names
