@@ -91,7 +91,7 @@ function! latex#view#mupdf(args) "{{{1
         \ . (line(".") + 1) . ":"
         \ . (col(".") + 1) . ":"
         \ . shellescape(expand("%:p"))
-        \ . " -o " . outfile
+        \ . " -o " . shellescape(outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let l:page = system(l:cmd)
   let g:latex#data[b:latex.id].cmds.view_mupdf_synctex = l:cmd
