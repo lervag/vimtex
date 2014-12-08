@@ -127,6 +127,7 @@ function! latex#view#sumatrapdf(args) "{{{1
 endfunction
 
 " }}}1
+
 function! s:check_method_general() "{{{1
   if !executable(g:latex_view_general_viewer)
     echoerr "General viewer is not available!"

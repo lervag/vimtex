@@ -548,6 +548,7 @@ viewer, see |g:latex_view_general_viewer|. >
 The currently available choices are: >
   general
   mupdf
+  sumatrapdf
 <
                                                   *g:latex_view_mupdf_options*
 Set custom options for mupdf viewer. >
