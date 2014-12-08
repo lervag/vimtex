@@ -383,4 +383,4 @@ function! s:search_and_skip_comments(pat, ...) " {{{1
 endfunction
 " }}}1
 
-" vim: fdm=marker
+" vim: fdm=marker sw=2

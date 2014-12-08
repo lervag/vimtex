@@ -41,3 +41,5 @@ syn match texInputFile
       \ "\\lstinputlisting\s*\(\[.*\]\)\={.\{-}}"
       \ contains=texStatement,texInputCurlies,texInputFileOpt
 syn match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
+
+" vim: fdm=marker sw=2

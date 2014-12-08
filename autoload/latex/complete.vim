@@ -361,4 +361,4 @@ function! s:next_chars_match(regex) " {{{1
 endfunction
 " }}}1
 
-" vim: fdm=marker
+" vim: fdm=marker sw=2

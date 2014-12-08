@@ -313,4 +313,4 @@ function! s:parse_caption_frame(line) " {{{1
 endfunction
 " }}}1
 
-" vim: fdm=marker
+" vim: fdm=marker sw=2

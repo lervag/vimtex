@@ -19,3 +19,5 @@ highlight link TocSec1     Normal
 highlight link TocSec2     helpVim
 highlight link TocSec3     NonText
 highlight link TocSec4     Comment
+
+" vim: fdm=marker sw=2

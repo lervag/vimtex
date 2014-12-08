@@ -338,4 +338,4 @@ endfunction
 
 " }}}1
 
-" vim: fdm=marker
+" vim: fdm=marker sw=2

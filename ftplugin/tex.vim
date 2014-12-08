@@ -14,4 +14,4 @@ let b:did_ftplugin = 1
 
 call latex#init()
 
-" vim: fdm=marker
+" vim: fdm=marker sw=2
