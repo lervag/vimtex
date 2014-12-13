@@ -354,13 +354,9 @@ endfunction
 " }}}1
 function! s:latexmk_set_pid(data) " {{{1
   if has('win32')
-    " Use qprocess instead of wmic because this is available in Windows XP
-    " Home Edition whereas wmic only from Windows 7 upwards.
-    " The latexmk process just started is last in the list given by qprocess.
     let pidcmd = 'qprocess latexmk.exe'
     let pidinfo = systemlist(pidcmd)[-1]
     let a:data.pid = split(pidinfo,'\s\+')[-2]
-
   else
     let a:data.pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
   endif
