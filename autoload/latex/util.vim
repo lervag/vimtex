@@ -156,7 +156,7 @@ function! latex#util#execute(exe) " {{{1
     execute cmd
   endif
 
-  if has('win32') && &shell !~? 'cmd'
+  if has('win32') && exists('savedShell')
     let [&shell, &shellcmdflag, &shellxquote, &shellxescape,
           \ &shellquote, &shellpipe, &shellredir, &shellslash] = savedShell
   endif
