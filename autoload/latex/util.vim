@@ -143,10 +143,19 @@ function! latex#util#execute(exe) " {{{1
     endif
   endif
 
+  if has('win32') && &shell !~? 'cmd'
+    let savedShell=[&shell, &shellcmdflag, &shellxquote, &shellxescape, &shellquote, &shellpipe, &shellredir, &shellslash]
+    set             shell&  shellcmdflag&  shellxquote&  shellxescape&  shellquote&  shellpipe&  shellredir&  shellslash&
+  endif
+
   if silent
     silent execute cmd
   else
     execute cmd
+  endif
+
+  if has('win32') && &shell !~? 'cmd'
+    let            [&shell, &shellcmdflag, &shellxquote, &shellxescape, &shellquote, &shellpipe, &shellredir, &shellslash]=savedShell
   endif
 
   " Return to previous working directory
