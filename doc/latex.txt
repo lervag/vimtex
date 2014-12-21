@@ -42,8 +42,9 @@ CONTENTS                                                  *vim-latex-contents*
    13. Table of contents .................... |vim-latex-toc|
    14. Utility functions .................... |vim-latex-util|
    15. Function reference ................... |vim-latex-functions|
-   16. Credits .............................. |vim-latex-credits|
-   17. Changelog ............................ |vim-latex-changelog|
+   16. FAQ .................................. |vim-latex-faq|
+   17. Credits .............................. |vim-latex-credits|
+   18. Changelog ............................ |vim-latex-changelog|
 
 ==============================================================================
 INTRO                                                        *vim-latex-intro*
@@ -1135,6 +1136,16 @@ Turns a tree composed of lists into tex structure.  E.g. >
                                                                   *latex#view*
 Open the output file (specified with |g:latex_latexmk_output|) with the
 default viewer |g:latex_viewer|.
+
+==============================================================================
+FAQ                                                            *vim-latex-faq*
+
+Q: Vim throws error when jumping to file with |gf|.
+A: This might be due to the |isfname| setting, which by default contains `{,}`
+   on windows.  |isfname| is a global option, and can therefore not be set by
+   `vim-latex`.  Suggested solution is to remove `{,}` from |isfname| by: >
+
+  set isfname-={,}
 
 ==============================================================================
 CREDITS                                                    *vim-latex-credits*
