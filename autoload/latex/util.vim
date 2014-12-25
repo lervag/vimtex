@@ -341,6 +341,16 @@ function! latex#util#set_default(variable, default) " {{{1
   endif
 endfunction
 
+function! latex#util#set_vim_executable() " {{{1
+  if exists('g:latex_vim_executable') | return | endif
+
+  if exists('mac')
+    let g:latex_vim_executable = 'mvim'
+  else
+    let g:latex_vim_executable = 'vim'
+  endif
+endfunction
+
 function! latex#util#tex2tree(str) " {{{1
   let tree = []
   let i1 = 0

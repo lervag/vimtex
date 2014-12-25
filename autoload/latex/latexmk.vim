@@ -324,8 +324,9 @@ function! s:latexmk_set_cmd(data) " {{{1
   if g:latex_latexmk_continuous
     let cmd .= ' -pvc'
     if g:latex_latexmk_callback && has('clientserver')
-      let callback = 'vim --servername ' . v:servername
-            \ . ' --remote-expr \"latex\#latexmk\#errors(0)\"'
+      let callback  = g:latex_vim_executable
+      let callback .= ' --servername ' . v:servername
+      let callback .= ' --remote-expr \"latex\#latexmk\#errors(0)\"'
       if has('win32')
         let cmd .= ' -e "$success_cmd .= ''' . callback . '''"'
               \ .  ' -e "$failure_cmd .= ''' . callback . '''"'
