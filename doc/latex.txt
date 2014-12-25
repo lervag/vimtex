@@ -35,8 +35,8 @@ CONTENTS                                                  *vim-latex-contents*
     8. Indentation .......................... |vim-latex-indent|
     9. Latexmk .............................. |vim-latex-latexmk|
        Latexmk tricks ....................... |vim-latex-latexmk-tricks|
-       Latexmk synctex ...................... |vim-latex-latexmk-synctex|
    10. View ................................. |vim-latex-view|
+       synctex .............................. |vim-latex-synctex|
    11. Motion ............................... |vim-latex-motion|
    12. Change ............................... |vim-latex-change|
    13. Table of contents .................... |vim-latex-toc|
@@ -769,57 +769,6 @@ This command is then appended to the existing `$success_cmd` and
 `$failure_cmd`.  Note that if the existing commands are not empty, then they
 must end with a semicolon in order to allow |vim-latex| to append safely.
 
-------------------------------------------------------------------------------
-Latexmk synctex:~                                  *vim-latex-latexmk-synctex*
-                                                           *vim-latex-synctex*
-
-|vim-latex| does not include automatic support for synctex.  First off, it has
-to be enabled by adding the line >
-
-  $pdflatex = 'pdflatex -synctex=1 %O %S';
-
-to ~/.latexmkrc.
-
-However, the view command does accept arguments, which makes it easy to add
-a forward search mapping.  To add a forward search mapping for Okular on
-Linux, one may use the following: >
-
-  let g:latex_viewer = 'okular'
-  function! SyncTexForward()
-    call latex#view('--unique '
-      \ . g:latex#data[b:latex.id].out()
-      \ . '\#src:' . line(".") . expand('%:p'))
-  endfunction
-  nmap <leader>ls :call SyncTexForward()<cr>
-
-To add a forward search mapping for SumatraPDF under Windows: >
-
-  nnoremap <expr><silent> <F11> ':VimLatexView -forward-search '
-    \ . shellescape(expand('%:p')) . ' '
-    \ . line(".") . ' '
-    \ . shellescape(g:latex#data[b:latex.id].out()) . '<CR>'
-
-Backward search is generally set up inside the specific viewers, and how to do
-this depends on the viewer.  Please read the specific manuals or search the
-web to find out how to do it.  For example for SumatraPDF a working setup is: >
-
-  let g:latex_viewer='SumatraPDF -reuse-instance -inverse-search '.
-    \ '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'.
-    \ ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'.
-    \ ':execute ''drop ''.fnameescape(''\%f'')^<CR^>'.
-    \ ':\%l^<CR^>:normal\!  zzzv^<CR^>'.
-    \ ':call remote_foreground('''.v:servername.''')^<CR^>\""'
-
-Note that both of these commands assume that the folder that contains gVim.exe
-is in your %PATH% environment variable.  Also note that the simpler approach
-
-  let g:latex_viewer='SumatraPDF'
-
-with `SumatraPDF settings > options > set inverse search command-line` set
-to `gvim --remote-silent +%l "%f"` also works.  However, this does not specify
-the vim server, and if you have several vim instances running, then it might
-not work as expected.
-
 ==============================================================================
 VIEW                                                          *vim-latex-view*
 
@@ -838,6 +787,67 @@ Functions:
     |latex#view#view|
     |latex#view#general|
     |latex#view#mupdf|
+
+------------------------------------------------------------------------------
+SYNCTEX SUPPORT                                            *vim-latex-synctex*
+
+Synctex is a tool that enables synchronization of the text editor position and
+the pdf viewer position.  The tool may be used to add mappings in vim to go to
+the current position in the compiled pdf document (forward search), and also
+to go from a specific position in the pdf file to the corresponding position
+in vim (inverse/backward search).
+
+To make synctex work, one must enable synctex manually by adding the line >
+
+  $pdflatex = 'pdflatex -synctex=1 %O %S';
+
+to `~/.latexmkrc`.
+
+Forward search~
+
+There is currently support for forward search with MuPDF and SumatraPDF, which
+may be enabled through |g:latex_view_method|.  More viewers and functionality
+will be implemented in the future.
+
+For unsupported viewers, one may add support manually.  Here an example is
+provided for Okular on Linux, which involves a few lines added to ones |vimrc| file.  Other viewers should work in a similar fashion. >
+
+  let g:latex_view_method = 'general'
+  let g:latex_view_general_viewer = 'okular'
+  function! SyncTexForward()
+    call latex#view#view('--unique '
+      \ . g:latex#data[b:latex.id].out()
+      \ . '\#src:' . line(".") . expand('%:p'))
+  endfunction
+  nmap <leader>ls :call SyncTexForward()<cr>
+
+Backward search~
+
+Backward or inverse search is set up on the viewer side, typically through an
+option named something like "inverse search command-line".  A standard value
+for the option is: >
+
+  gvim --remote-silent +%l "%f"
+  
+Note however that this implies that the server name is the default value and
+that one does not run several instances of vim, see |clientserver|.
+
+For SumatraPDF one may set the inverse search setting from vim directly by
+adding some command line options as shown below.  The advantage of doing this
+is that one may specify the vim server name explicitly, which means that the
+backward search will also work as expected if one has several vim instances
+running.  To enable this, use: >
+
+  let g:latex_view_general_viewer='SumatraPDF '
+    \ . '-reuse-instance -inverse-search '
+    \ . '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'
+    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+    \ . ':execute ''drop ''.fnameescape(''\%f'')^<CR^>'
+    \ . ':\%l^<CR^>:normal\!  zzzv^<CR^>'
+    \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+
+Note that for backward search to work on windows, one must ensure that the
+folder that contains `gVim.exe` is in your `%PATH%` environment variable.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
