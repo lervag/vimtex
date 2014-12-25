@@ -344,7 +344,9 @@ endfunction
 function! latex#util#set_vim_executable() " {{{1
   if exists('g:latex_vim_executable') | return | endif
 
-  if has('macunix') || has('gui_mac')
+  if has('unix') && system('uname') =~ 'Darwin'
+        \ || has('macunix')
+        \ || has('gui_mac')
     let g:latex_vim_executable = 'mvim'
   else
     let g:latex_vim_executable = 'vim'
