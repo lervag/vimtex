@@ -304,6 +304,7 @@ Overview:~
   |g:latex_toc_resize|
   |g:latex_toc_secnumdepth|
   |g:latex_toc_split_side|
+  |g:latex_toc_split_vertically|
   |g:latex_toc_width|
   |g:latex_view_enabled|
   |g:latex_view_general_viewer|
@@ -525,6 +526,11 @@ http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure >
                                                       *g:latex_toc_split_side*
 Define where the TOC window is opened. >
   let g:latex_toc_split_side = 'leftabove'
+<
+                                                      *g:latex_toc_split_vertically*
+If enabled, TOC window split vertically. Otherwise TOC window split
+horizontally. >
+  let g:latex_toc_split_vertically = 1
 <
                                                            *g:latex_toc_width*
 Set width of TOC window. >
@@ -922,6 +928,7 @@ Associated settings:
     |g:latex_toc_resize|
     |g:latex_toc_secnumdepth|
     |g:latex_toc_split_side|
+    |g:latex_toc_split_vertically|
     |g:latex_toc_width|
 
 Functions:

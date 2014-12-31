@@ -266,6 +266,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_toc_resize', 1)
   call latex#util#set_default('g:latex_toc_secnumdepth', 3)
   call latex#util#set_default('g:latex_toc_split_side', 'leftabove')
+  call latex#util#set_default('g:latex_toc_split_vertically', 1)
   call latex#util#set_default('g:latex_toc_width', 30)
   call latex#util#set_default('g:latex_view_enabled', 1)
 endfunction
