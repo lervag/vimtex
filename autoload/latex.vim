@@ -246,6 +246,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_latexmk_callback', 1)
   call latex#util#set_default('g:latex_latexmk_continuous', 1)
   call latex#util#set_default('g:latex_latexmk_background', 0)
+  call latex#util#set_default('g:latex_latexmk_option', '-pdf')
   call latex#util#set_default('g:latex_latexmk_output', 'pdf')
   call latex#util#set_default('g:latex_mappings_enabled', 1)
   call latex#util#set_default('g:latex_motion_enabled', 1)

@@ -317,7 +317,7 @@ function! s:latexmk_set_cmd(data) " {{{1
     let cmd .= ' && max_print_line=2000 latexmk'
   endif
 
-  let cmd .= ' -' . g:latex_latexmk_output
+  let cmd .= ' ' . g:latex_latexmk_option
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
   let cmd .= ' -outdir=' . g:latex_build_dir
 
