@@ -36,7 +36,11 @@ function! latex#toc#open() " {{{1
   if g:latex_toc_resize
     silent exe "set columns+=" . g:latex_toc_width
   endif
-  silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
+  if g:latex_toc_split_vertically == 1
+    silent exe g:latex_toc_split_side g:latex_toc_width . 'vnew LaTeX\ TOC'
+  else
+    silent exe g:latex_toc_split_side g:latex_toc_width . 'new LaTeX\ TOC'
+  endif
 
   " Set buffer local variables
   let b:toc = toc
