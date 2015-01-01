@@ -303,7 +303,7 @@ Overview:~
   |g:latex_toc_numbers_width|
   |g:latex_toc_resize|
   |g:latex_toc_secnumdepth|
-  |g:latex_toc_split_side|
+  |g:latex_toc_split_pos|
   |g:latex_toc_width|
   |g:latex_view_enabled|
   |g:latex_view_general_viewer|
@@ -522,9 +522,9 @@ directly through the TOC window.  For more info on `secnumdepth` see e.g.
 http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure >
   let g:latex_toc_secnumdepth = 3
 <
-                                                      *g:latex_toc_split_side*
+                                                       *g:latex_toc_split_pos*
 Define where the TOC window is opened. >
-  let g:latex_toc_split_side = 'leftabove'
+  let g:latex_toc_split_pos = 'vert leftabove'
 <
                                                            *g:latex_toc_width*
 Set width of TOC window. >
@@ -921,7 +921,7 @@ Associated settings:
     |g:latex_toc_numbers_width|
     |g:latex_toc_resize|
     |g:latex_toc_secnumdepth|
-    |g:latex_toc_split_side|
+    |g:latex_toc_split_pos|
     |g:latex_toc_width|
 
 Functions:

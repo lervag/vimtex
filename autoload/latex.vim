@@ -212,6 +212,7 @@ function! s:init_options() " {{{1
   call latex#util#error_deprecated('g:latex_latexmk_autojump')
   call latex#util#error_deprecated('g:latex_latexmk_quickfix')
   call latex#util#error_deprecated('g:latex_latexmk_options')
+  call latex#util#error_deprecated('g:latex_toc_split_side')
 
   call latex#util#set_default('g:latex_build_dir', '.')
   call latex#util#set_default('g:latex_complete_enabled', 1)
@@ -265,7 +266,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_toc_numbers_width', 0)
   call latex#util#set_default('g:latex_toc_resize', 1)
   call latex#util#set_default('g:latex_toc_secnumdepth', 3)
-  call latex#util#set_default('g:latex_toc_split_side', 'leftabove')
+  call latex#util#set_default('g:latex_toc_split_pos', 'vert leftabove')
   call latex#util#set_default('g:latex_toc_width', 30)
   call latex#util#set_default('g:latex_view_enabled', 1)
 endfunction
