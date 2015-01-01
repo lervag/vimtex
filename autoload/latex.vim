@@ -141,7 +141,7 @@ function! s:init_environment() " {{{1
       return s:get_main_ext(self, 'log')
     endfunction
     function data.out() dict
-      return s:get_main_ext(self, g:latex_latexmk_output)
+      return s:get_main_out(self)
     endfunction
 
     call add(g:latex#data, data)
@@ -211,7 +211,7 @@ function! s:init_options() " {{{1
   call latex#util#error_deprecated('g:latex_errorformat_show_warnings')
   call latex#util#error_deprecated('g:latex_latexmk_autojump')
   call latex#util#error_deprecated('g:latex_latexmk_quickfix')
-  call latex#util#error_deprecated('g:latex_latexmk_options')
+  call latex#util#error_deprecated('g:latex_latexmk_output')
   call latex#util#error_deprecated('g:latex_toc_split_side')
 
   call latex#util#set_default('g:latex_build_dir', '.')
@@ -247,7 +247,7 @@ function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_latexmk_callback', 1)
   call latex#util#set_default('g:latex_latexmk_continuous', 1)
   call latex#util#set_default('g:latex_latexmk_background', 0)
-  call latex#util#set_default('g:latex_latexmk_output', 'pdf')
+  call latex#util#set_default('g:latex_latexmk_options', '-pdf')
   call latex#util#set_default('g:latex_mappings_enabled', 1)
   call latex#util#set_default('g:latex_motion_enabled', 1)
   call latex#util#set_default('g:latex_motion_matchparen', 1)
@@ -371,6 +371,33 @@ function! s:get_main_ext(texdata, ext) " {{{1
   " Search through the candidates
   for f in map(candidates,
         \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
+    if filereadable(f)
+      return fnamemodify(f, ':p')
+    endif
+  endfor
+
+  " Return empty string if no entry is found
+  return ''
+endfunction
+
+function! s:get_main_out(texdata) " {{{1
+  " Create set of candidates
+  let candidates = [
+        \ a:texdata.name,
+        \ g:latex_build_dir . '/' . a:texdata.name,
+        \ ]
+
+  " Check for pdf files
+  for f in map(candidates,
+        \ 'a:texdata.root . ''/'' . v:val . ''.pdf''')
+    if filereadable(f)
+      return fnamemodify(f, ':p')
+    endif
+  endfor
+
+  " Check for dvi files
+  for f in map(candidates,
+        \ 'a:texdata.root . ''/'' . v:val . ''.dvi''')
     if filereadable(f)
       return fnamemodify(f, ':p')
     endif

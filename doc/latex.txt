@@ -285,7 +285,7 @@ Overview:~
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_continuous|
   |g:latex_latexmk_background|
-  |g:latex_latexmk_output|
+  |g:latex_latexmk_options|
   |g:latex_mappings_enabled|
   |g:latex_motion_enabled|
   |g:latex_motion_matchparen|
@@ -413,9 +413,10 @@ document is compiled every time a document file has been changed.  Set to 0 to
 disable.  Note that the callback functions only work if continuous mode is enabled. >
   let g:latex_latexmk_continuous = 1
 <
-                                                      *g:latex_latexmk_output*
-Set desired output for `latexmk` compilation. >
-  let g:latex_latexmk_output = 'pdf'
+                                                     *g:latex_latexmk_options*
+Set desired options for `latexmk` compilation. Note that options may also be
+specified indirectly through a `.latexmkrc` file. >
+  let g:latex_latexmk_options = '-pdf'
 <
                                                    *g:latex_quickfix_autojump*
 Whether to automatically jump to the first error whenever the |quickfix| window
@@ -720,7 +721,7 @@ Associated settings:
     |g:latex_latexmk_autojump|
     |g:latex_latexmk_continuous|
     |g:latex_latexmk_background|
-    |g:latex_latexmk_output|
+    |g:latex_latexmk_options|
 
 Functions:
     |latex#latexmk#clean|
@@ -957,7 +958,7 @@ Overview:~
   |latex#latexmk#compile|
   |latex#latexmk#compile_singleshot|
   |latex#latexmk#errors|
-  |latex#latexmk#output|
+  |latex#latexmk#options|
   |latex#latexmk#status|
   |latex#latexmk#stop|
   |latex#latexmk#stop_all|
@@ -1143,9 +1144,8 @@ Turn tex structure to a tree composed of lists.  E.g. >
 Turns a tree composed of lists into tex structure.  E.g. >
   [ "testing" , [ "tex2tree", []]] => { testing { tex2tree { } } }
 <
-                                                                  *latex#view*
-Open the output file (specified with |g:latex_latexmk_output|) with the
-default viewer |g:latex_viewer|.
+                                                             *latex#view#view*
+Open the output file with the default viewer |g:latex_view_method|.
 
 ==============================================================================
 FAQ                                                            *vim-latex-faq*
