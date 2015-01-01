@@ -117,7 +117,7 @@ function! s:print_entry(entry) " {{{1
     let entry .= printf(s:num_format, level >= b:toc_secnumdepth + 2
           \ ? '' : strpart(s:print_number(a:entry.number), 0, s:width))
   endif
-  let entry .= printf('%-140s%s', a:entry.title, level)
+  let entry .= printf('%-140S%s', a:entry.title, level)
 
   call append('$', entry)
 endfunction
