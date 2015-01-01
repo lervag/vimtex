@@ -413,8 +413,12 @@ document is compiled every time a document file has been changed.  Set to 0 to
 disable.  Note that the callback functions only work if continuous mode is enabled. >
   let g:latex_latexmk_continuous = 1
 <
+                                                      *g:latex_latexmk_option*
+Set desired option of `latexmk`. >
+  let g:latex_latexmk_option = '-pdf'
+<
                                                       *g:latex_latexmk_output*
-Set desired output for `latexmk` compilation. >
+Set output file suffix of `latexmk` compilation. >
   let g:latex_latexmk_output = 'pdf'
 <
                                                    *g:latex_quickfix_autojump*
@@ -720,6 +724,7 @@ Associated settings:
     |g:latex_latexmk_autojump|
     |g:latex_latexmk_continuous|
     |g:latex_latexmk_background|
+    |g:latex_latexmk_option|
     |g:latex_latexmk_output|
 
 Functions:
