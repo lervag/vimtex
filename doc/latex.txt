@@ -222,6 +222,7 @@ n  <localleader>lG  *@:call latex#latexmk#status(1)<cr>
 n  <localleader>lc  *@:call latex#latexmk#clean()<cr>
 n  <localleader>lC  *@:call latex#latexmk#clean(1)<cr>
 n  <localleader>lv  *@:call latex#view#view()<cr>
+n  <localleader>lr  *@:call latex#view#rsearch()<cr>
 
 n  zx               *@:call latex#fold#refresh()<cr>
 n  dse              *@:call latex#change#env('')<cr>
@@ -258,6 +259,7 @@ Below the commands are listed in alphabetical order.
 *VimLatexTocOpen*              call latex#toc#open()
 *VimLatexTocToggle*            call latex#toc#toggle()
 *VimLatexView*                 call latex#view#view()
+*VimLatexRSearch*              call latex#view#rsearch()
 
 ==============================================================================
 OPTIONS                                                    *vim-latex-options*
@@ -547,6 +549,7 @@ Set general viewer. >
 Set viewer method.  If not set or set to `general`, it uses the general
 viewer, see |g:latex_view_general_viewer|. >
   let g:latex_view_method = ''
+
 The currently available choices are: >
   general
   mupdf
@@ -788,6 +791,7 @@ Functions:
     |latex#view#view|
     |latex#view#general|
     |latex#view#mupdf|
+    |latex#view#mupdf_rsearch|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                            *vim-latex-synctex*
@@ -811,7 +815,8 @@ may be enabled through |g:latex_view_method|.  More viewers and functionality
 will be implemented in the future.
 
 For unsupported viewers, one may add support manually.  Here an example is
-provided for Okular on Linux, which involves a few lines added to ones |vimrc| file.  Other viewers should work in a similar fashion. >
+provided for Okular on Linux, which involves a few lines added to ones |vimrc|
+file.  Other viewers should work in a similar fashion. >
 
   let g:latex_view_method = 'general'
   let g:latex_view_general_viewer = 'okular'
@@ -824,9 +829,13 @@ provided for Okular on Linux, which involves a few lines added to ones |vimrc| f
 
 Backward search~
 
-Backward or inverse search is set up on the viewer side, typically through an
-option named something like "inverse search command-line".  A standard value
-for the option is: >
+Backward search is available through the command |VimLatexRSearch| and the
+mapping `<localleader>lr` for MuPDF, which does not inherently support inverse
+search.
+
+In most other viewers, backward or inverse search is typially set up through
+an option named something like "inverse search command-line".  A standard
+value for the option is: >
 
   gvim --remote-silent +%l "%f"
   
@@ -979,7 +988,7 @@ Overview:~
   |latex#util#kpsewhich|
   |latex#util#tex2tree|
   |latex#util#tree2tex|
-  |latex#view|
+  |latex#view#view|
 
 ------------------------------------------------------------------------------
 Detailed descriptions:~

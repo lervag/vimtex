@@ -14,21 +14,32 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_general_viewer', 'xdg-open')
   call latex#util#set_default('g:latex_view_general_options', '')
 
+  let data = g:latex#data[b:latex.id]
   if g:latex_view_method == 'mupdf'
     call s:check_method_mupdf()
-    let g:latex#data[b:latex.id].view = function('latex#view#mupdf')
+    let data.view = function('latex#view#mupdf')
+    let data.rsearch = function('latex#view#mupdf_rsearch')
   elseif g:latex_view_method == 'sumatrapdf'
     call s:check_method_sumatrapdf()
-    let g:latex#data[b:latex.id].view = function('latex#view#sumatrapdf')
+    let data.view = function('latex#view#sumatrapdf')
   else
     call s:check_method_general()
-    let g:latex#data[b:latex.id].view = function('latex#view#general')
+    let data.view = function('latex#view#general')
   endif
 
   command! -buffer -nargs=* VimLatexView call latex#view#view('<args>')
+  if has_key(data, 'rsearch')
+    command! -buffer -nargs=* VimLatexRSearch
+          \ call g:latex#data[b:latex.id].rsearch()
+  endif
 
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>lv :call latex#view#view()<cr>
+
+    if has_key(data, 'rsearch')
+      nnoremap <silent><buffer> <localleader>lr
+            \ :call g:latex#data[b:latex.id].rsearch()<cr>
+    endif
   endif
 endfunction
 
@@ -103,6 +114,52 @@ function! latex#view#mupdf(args) "{{{1
           \ . l:page . 'g"'
     call latex#util#execute(exe)
     let g:latex#data[b:latex.id].cmds.view_mupdf_xdotool = exe.cmd
+  endif
+endfunction
+
+" }}}1
+function! latex#view#mupdf_rsearch() "{{{1
+  let data = g:latex#data[b:latex.id]
+  let data.mupdf_rsearch = {}
+  let outfile = data.out()
+
+  " Get window ID
+  let cmd  = 'xdotool search '
+  let cmd .= '--name "' . fnamemodify(outfile, ':t') . '"'
+  let mupdf_ids = systemlist(cmd)
+  let data.mupdf_rsearch.ids = mupdf_ids
+  let data.mupdf_rsearch.ids_cmd = cmd
+  if len(mupdf_ids) != 1 | return | endif
+  let mupdf_id = mupdf_ids[0]
+
+  " Get page number
+  let cmd  = "xdotool getwindowname " . mupdf_id
+  let cmd .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:' | tr -d '\n'"
+  let mupdf_page = system(cmd)
+  let data.mupdf_rsearch.page = mupdf_page
+  let data.mupdf_rsearch.page_cmd = cmd
+  if mupdf_page <= 0 | return | endif
+
+  " Return if wrong file
+  let cmd  = "synctex edit "
+  let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
+  let cmd .= "| grep 'Input:' | sed 's/Input://' "
+  let cmd .= "| head -n1 | tr -d '\n' 2>/dev/null"
+  let mupdf_infile = system(cmd)
+  let data.mupdf_rsearch.infile = mupdf_infile
+  let data.mupdf_rsearch.infile_cmd = cmd
+  if mupdf_infile !~ expand("%") | return | endif
+
+  " Get line and goto line
+  let cmd  = "synctex edit "
+  let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
+  let cmd .= "| grep -m1 'Line:' | sed 's/Line://' "
+  let cmd .= "| head -n1 | tr -d '\n'"
+  let line = system(cmd)
+  let data.mupdf_rsearch.line = line
+  let data.mupdf_rsearch.line_cmd = cmd
+  if line > 0
+    silent exec ":" . line
   endif
 endfunction
 
