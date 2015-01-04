@@ -140,7 +140,7 @@ function! latex#view#mupdf_rsearch() "{{{1
   let data.mupdf_rsearch.page_cmd = cmd
   if mupdf_page <= 0 | return | endif
 
-  " Return if wrong file
+  " Get file
   let cmd  = "synctex edit "
   let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
   let cmd .= "| grep 'Input:' | sed 's/Input://' "
@@ -148,9 +148,8 @@ function! latex#view#mupdf_rsearch() "{{{1
   let mupdf_infile = system(cmd)
   let data.mupdf_rsearch.infile = mupdf_infile
   let data.mupdf_rsearch.infile_cmd = cmd
-  if mupdf_infile !~ expand("%") | return | endif
 
-  " Get line and goto line
+  " Get line
   let cmd  = "synctex edit "
   let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
   let cmd .= "| grep -m1 'Line:' | sed 's/Line://' "
@@ -158,6 +157,9 @@ function! latex#view#mupdf_rsearch() "{{{1
   let line = system(cmd)
   let data.mupdf_rsearch.line = line
   let data.mupdf_rsearch.line_cmd = cmd
+
+  " Go to file and line
+  silent exec "edit " . mupdf_infile
   if line > 0
     silent exec ":" . line
   endif
