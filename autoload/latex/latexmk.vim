@@ -26,7 +26,7 @@ function! latex#latexmk#init(initialized) " {{{1
   com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
   com! -buffer VimLatexStop          call latex#latexmk#stop()
   com! -buffer VimLatexStopAll       call latex#latexmk#stop_all()
-  com! -buffer VimLatexErrors        call latex#latexmk#errors(1)
+  com! -buffer -bang VimLatexErrors  call latex#latexmk#errors(<q-bang> == "!")
   com! -buffer VimLatexOutput        call latex#latexmk#output()
   com! -buffer -bang VimLatexClean   call latex#latexmk#clean(<q-bang> == "!")
   com! -buffer -bang VimLatexStatus  call latex#latexmk#status(<q-bang> == "!")

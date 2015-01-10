@@ -247,6 +247,7 @@ Below the commands are listed in alphabetical order.
 *VimLatexCompileSS!*           call latex#latexmk#compile_singleshot(1)
 *VimLatexCompileToggle*        call latex#latexmk#toggle()
 *VimLatexErrors*               call latex#latexmk#errors(1)
+*VimLatexErrors!*              call latex#latexmk#errors(0)
 *VimLatexHelp*                 call latex#help()
 *VimLatexInfo*                 call latex#info()
 *VimLatexOutput*               call latex#latexmk#output()
