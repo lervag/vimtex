@@ -158,6 +158,9 @@ function! latex#view#mupdf_rsearch() "{{{1
   silent exec "edit " . mupdf_infile
   if line > 0
     silent exec ":" . line
+    " Unfold, move to top line to correspond to top pdf line, and go to end of
+    " line in case the corresponding pdf line begins on previous pdf page.
+    normal! zvztg_
   endif
 endfunction
 
