@@ -82,17 +82,15 @@ function! latex#view#mupdf(args) "{{{1
   if !has_key(g:latex#data[b:latex.id],'mupdf_id')
     let g:latex#data[b:latex.id].mupdf_id = 0
   endif
+  " mupdf already running?
+  if !s:exists_mupdf_win(g:latex#data[b:latex.id].mupdf_id)
+    call s:start_mupdf(outfile)
+  endif
 
   let mupdf_id = g:latex#data[b:latex.id].mupdf_id
 
-  if mupdf_id == 0 || !s:exists_mupdf_win(mupdf_id)
-    call s:start_mupdf(outfile)
-    " Update mupdf_id (=> use g:latex#data... everywhere?!)
-    let mupfd_id = g:latex#data[b:latex.id].mupdf_id
-  endif
-
-  " Do forward search if possible
-  if mupdf_id == 0 || !s:mupdf_forward_search | return | endif
+  " Do forward search if possible and mupdf running
+  if !s:mupdf_forward_search || mupdf_id == 0 | return | endif
 
   let l:cmd = "synctex view -i "
         \ . (line(".") + 1) . ":"
@@ -239,6 +237,7 @@ function! s:start_mupdf(outfile) "{{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
   " Get window ID
+  " sleep
   let cmd  = 'xdotool search --class MuPDF'
   let mupdf_ids = systemlist(cmd)
 
