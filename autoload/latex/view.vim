@@ -125,9 +125,8 @@ function! latex#view#mupdf_rsearch() "{{{1
 
   let mupdf_id = data.mupdf_id
 
-  if mupdf_id == 0
-    return
-  endif
+  let data.mupdf_rsearch = {}
+  let outfile = data.out()
 
   " Get page number
   let cmd  = "xdotool getwindowname " . mupdf_id
