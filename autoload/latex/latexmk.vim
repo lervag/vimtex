@@ -144,7 +144,22 @@ function! latex#latexmk#compile() " {{{1
   if g:latex_latexmk_continuous
     call s:latexmk_set_pid(data)
     echomsg 'latexmk continuous mode started successfully'
+
+    " Get window ID
+    if g:latex_view_method == 'mupdf'
+      " give time to read window ID
+      sleep
+      let cmd  = 'xdotool search --class MuPDF'
+      let mupdf_ids = systemlist(cmd)
+
+      if len(mupdf_ids) == 0
+        let g:latex#data[b:latex.id].mupdf_id = 0
+      else
+        let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+      endif
+    endif
   else
+
     echomsg 'latexmk compiling'
   endif
 endfunction
