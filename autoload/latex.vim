@@ -113,7 +113,6 @@ function! s:init_environment() " {{{1
   "
   call latex#util#set_default('g:latex#data', [])
   call latex#util#set_default('b:latex', {})
-  call latex#util#set_vim_executable()
 
   "
   " Set some file type specific vim options
