@@ -26,7 +26,7 @@ function! latex#latexmk#init(initialized) " {{{1
   com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
   com! -buffer VimLatexStop          call latex#latexmk#stop()
   com! -buffer VimLatexStopAll       call latex#latexmk#stop_all()
-  com! -buffer VimLatexErrors        call latex#latexmk#errors(1)
+  com! -buffer -bang VimLatexErrors  call latex#latexmk#errors(<q-bang> == "!")
   com! -buffer VimLatexOutput        call latex#latexmk#output()
   com! -buffer -bang VimLatexClean   call latex#latexmk#clean(<q-bang> == "!")
   com! -buffer -bang VimLatexStatus  call latex#latexmk#status(<q-bang> == "!")
@@ -144,7 +144,22 @@ function! latex#latexmk#compile() " {{{1
   if g:latex_latexmk_continuous
     call s:latexmk_set_pid(data)
     echomsg 'latexmk continuous mode started successfully'
+
+    " Get window ID
+    if g:latex_view_method == 'mupdf'
+      " give time to read window ID
+      sleep
+      let cmd  = 'xdotool search --class MuPDF'
+      let mupdf_ids = systemlist(cmd)
+
+      if len(mupdf_ids) == 0
+        let g:latex#data[b:latex.id].mupdf_id = 0
+      else
+        let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+      endif
+    endif
   else
+
     echomsg 'latexmk compiling'
   endif
 endfunction
