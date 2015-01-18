@@ -307,6 +307,18 @@ let s:delimiters_close = [
       \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ]
 
+function! latex#util#get_os() " {{{1
+  if has("win32")
+    return "win"
+  elseif has("unix")
+    if system('uname') =~ 'Darwin'
+      return "mac"
+    else
+      return "linux"
+    endif
+  endif
+endfunction
+
 function! latex#util#has_syntax(name, ...) " {{{1
   " Usage: latex#util#has_syntax(name, [line], [col])
   let line = a:0 >= 1 ? a:1 : line('.')
@@ -338,6 +350,12 @@ endfunction
 function! latex#util#set_default(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = a:default
+  endif
+endfunction
+
+function! latex#util#set_default_os_specific(variable, default) " {{{1
+  if !exists(a:variable)
+    let {a:variable} = get(a:default, latex#util#get_os(), '')
   endif
 endfunction
 

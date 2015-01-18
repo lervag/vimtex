@@ -11,8 +11,12 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_method', '')
   call latex#util#set_default('g:latex_view_mupdf_options', '')
   call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
-  call latex#util#set_default('g:latex_view_general_viewer', 'xdg-open')
   call latex#util#set_default('g:latex_view_general_options', '')
+  call latex#util#set_default_os_specific('g:latex_view_general_viewer',
+        \ {
+        \   'linux' : 'xdg-open',
+        \   'mac'   : 'open',
+        \ })
 
   let data = g:latex#data[b:latex.id]
   if g:latex_view_method == 'mupdf'
