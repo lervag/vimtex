@@ -31,8 +31,8 @@ Read the documentation for a more thorough introduction.
 ### With gmarik vundle
 _https://github.com/gmarik/vundle_
 
-Add `Bundle 'lervag/vim-latex'` to your ~/.vimrc and run
-`:BundleInstall` in a vim buffer. Add `!` to the command to update.
+Add `Plugin 'lervag/vim-latex'` to your ~/.vimrc and run
+`:PluginInstall` in a vim buffer. Add `!` to the command to update.
 
 ### With neobundle
 _https://github.com/Shougo/neobundle.vim_
