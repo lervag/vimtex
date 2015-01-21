@@ -339,7 +339,7 @@ function! s:latexmk_set_cmd(data) " {{{1
   if g:latex_latexmk_continuous
     let cmd .= ' -pvc'
     if g:latex_latexmk_callback && has('clientserver')
-      let callback  = v:progpath
+      let callback  = v:progname
       let callback .= ' --servername ' . v:servername
       let callback .= ' --remote-expr \"latex\#latexmk\#errors(0)\"'
       if has('win32')
