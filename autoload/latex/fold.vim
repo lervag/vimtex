@@ -5,7 +5,28 @@
 "
 
 function! latex#fold#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_fold_enabled', 1)
   if !g:latex_fold_enabled | return | endif
+
+  " Set default options
+  call latex#util#set_default('g:latex_fold_automatic', 1)
+  call latex#util#set_default('g:latex_fold_preamble', 1)
+  call latex#util#set_default('g:latex_fold_envs', 1)
+  call latex#util#set_default('g:latex_fold_parts',
+        \ [
+        \   "part",
+        \   "appendix",
+        \   "frontmatter",
+        \   "mainmatter",
+        \   "backmatter",
+        \ ])
+  call latex#util#set_default('g:latex_fold_sections',
+        \ [
+        \   "chapter",
+        \   "section",
+        \   "subsection",
+        \   "subsubsection",
+        \ ])
 
   " Set fold options
   setl foldmethod=expr

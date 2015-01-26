@@ -5,7 +5,22 @@
 "
 
 function! latex#toc#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_toc_enabled', 1)
   if !g:latex_toc_enabled | return | endif
+
+  " Set default options
+  call latex#util#set_default('g:latex_toc_fold', 0)
+  call latex#util#set_default('g:latex_toc_fold_levels', 10)
+  call latex#util#set_default('g:latex_toc_hide_help', 0)
+  call latex#util#set_default('g:latex_toc_hide_line_numbers', 1)
+  call latex#util#set_default('g:latex_toc_hide_preamble', 0)
+  call latex#util#set_default('g:latex_toc_numbers', 1)
+  call latex#util#set_default('g:latex_toc_numbers_width', 0)
+  call latex#util#set_default('g:latex_toc_resize', 1)
+  call latex#util#set_default('g:latex_toc_secnumdepth', 3)
+  call latex#util#set_default('g:latex_toc_split_pos', 'vert leftabove')
+  call latex#util#set_default('g:latex_toc_width', 30)
+  call latex#util#error_deprecated('g:latex_toc_split_side')
 
   " Define commands
   command! -buffer VimLatexTocOpen   call latex#toc#open()

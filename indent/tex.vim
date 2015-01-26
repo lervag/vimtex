@@ -7,10 +7,11 @@
 if exists("b:did_indent")
   finish
 endif
-if !g:latex_indent_enabled
-  finish
-endif
 let b:did_indent = 1
+
+call latex#util#set_default('g:latex_indent_enabled', 1)
+if !g:latex_indent_enabled | finish | endif
+
 let s:cpo_save = &cpo
 set cpo&vim
 

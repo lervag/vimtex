@@ -5,20 +5,26 @@
 "
 
 function! latex#complete#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_complete_enabled', 1)
   if !g:latex_complete_enabled | return | endif
 
-  "
+  " Set default options
+  call latex#util#set_default('g:latex_complete_close_braces', 0)
+  call latex#util#set_default('g:latex_complete_recursive_bib', 0)
+  call latex#util#set_default('g:latex_complete_patterns',
+        \ {
+        \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
+        \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
+        \ })
+
   " Check if bibtex is available
-  "
   if !executable('bibtex')
     echom "Warning: bibtex completion not available"
     echom "         Missing executable: bibtex"
     let s:bibtex = 0
   endif
 
-  "
   " Check if kpsewhich is required and available
-  "
   if g:latex_complete_recursive_bib && !executable('kpsewhich')
     echom "Warning: bibtex completion not available"
     echom "         Missing executable: kpsewhich"

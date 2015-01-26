@@ -5,9 +5,12 @@
 "
 
 function! latex#view#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_view_enabled', 1)
   if !g:latex_view_enabled | return | endif
 
-  call latex#util#error_deprecated('g:latex_viewer')
+  "
+  " Set default options
+  "
   call latex#util#set_default('g:latex_view_method', '')
   call latex#util#set_default('g:latex_view_mupdf_options', '')
   call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
@@ -17,7 +20,11 @@ function! latex#view#init(initialized) " {{{1
         \   'linux' : 'xdg-open',
         \   'mac'   : 'open',
         \ })
+  call latex#util#error_deprecated('g:latex_viewer')
 
+  "
+  " Set view functions
+  "
   let data = g:latex#data[b:latex.id]
   if g:latex_view_method == 'mupdf'
     call s:check_method_mupdf()
@@ -31,12 +38,18 @@ function! latex#view#init(initialized) " {{{1
     let data.view = function('latex#view#general')
   endif
 
+  "
+  " Define commands
+  "
   command! -buffer -nargs=* VimLatexView call latex#view#view('<args>')
   if has_key(data, 'rsearch')
     command! -buffer -nargs=* VimLatexRSearch
           \ call g:latex#data[b:latex.id].rsearch()
   endif
 
+  "
+  " Define mappings
+  "
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>lv :call latex#view#view()<cr>
 

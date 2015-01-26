@@ -5,23 +5,31 @@
 "
 
 function! latex#latexmk#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_latexmk_enabled', 1)
   if !g:latex_latexmk_enabled | return | endif
 
-  "
+  " Set default options
+  call latex#util#set_default('g:latex_latexmk_callback', 1)
+  call latex#util#set_default('g:latex_latexmk_continuous', 1)
+  call latex#util#set_default('g:latex_latexmk_background', 0)
+  call latex#util#set_default('g:latex_latexmk_options', '-pdf')
+  call latex#util#set_default('g:latex_latexmk_build_dir', '.')
+  call latex#util#set_default('g:latex_quickfix_autojump', '0')
+  call latex#util#set_default('g:latex_quickfix_mode', '2')
+  call latex#util#set_default('g:latex_quickfix_open_on_warning', '1')
+  call latex#util#error_deprecated('g:latex_latexmk_autojump')
+  call latex#util#error_deprecated('g:latex_latexmk_quickfix')
+  call latex#util#error_deprecated('g:latex_latexmk_output')
+
   " Check system compatibility
-  "
   if s:system_incompatible() | return | endif
 
-  "
   " Initialize pid for current tex file
-  "
   if !has_key(g:latex#data[b:latex.id], 'pid')
     let g:latex#data[b:latex.id].pid = 0
   endif
 
-  "
   " Define commands
-  "
   com! -buffer VimLatexCompile       call latex#latexmk#compile()
   com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
   com! -buffer VimLatexStop          call latex#latexmk#stop()
@@ -33,9 +41,7 @@ function! latex#latexmk#init(initialized) " {{{1
   com! -buffer -bang VimLatexCompileSS
         \ call latex#latexmk#compile_singleshot(<q-bang> == "!")
 
-  "
   " Set default mappings
-  "
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#toggle()<cr>
     nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean(0)<cr>
@@ -51,10 +57,8 @@ function! latex#latexmk#init(initialized) " {{{1
   " The remaining part is only relevant for continuous mode
   if !g:latex_latexmk_continuous | return | endif
 
-  "
   " Ensure that all latexmk processes are stopped when vim exits
   " Note: Only need to define this once, globally.
-  "
   if !a:initialized
     augroup latex_latexmk
       autocmd!
@@ -62,11 +66,9 @@ function! latex#latexmk#init(initialized) " {{{1
     augroup END
   endif
 
-  "
   " If all buffers for a given latex project are closed, kill latexmk
   " Note: This must come after the above so that the autocmd group is properly
   "       refreshed if necessary
-  "
   augroup latex_latexmk
     autocmd BufUnload <buffer> call s:stop_buffer()
   augroup END
@@ -88,7 +90,7 @@ function! latex#latexmk#clean(full) " {{{1
   else
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
-  let cmd .= 'latexmk -outdir=' . g:latex_build_dir
+  let cmd .= 'latexmk -outdir=' . g:latex_latexmk_build_dir
   if a:full
     let cmd .= ' -C '
   else
@@ -334,7 +336,7 @@ function! s:latexmk_set_cmd(data) " {{{1
 
   let cmd .= ' ' . g:latex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
-  let cmd .= ' -outdir=' . g:latex_build_dir
+  let cmd .= ' -outdir=' . g:latex_latexmk_build_dir
 
   if g:latex_latexmk_continuous
     let cmd .= ' -pvc'

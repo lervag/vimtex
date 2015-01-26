@@ -5,7 +5,11 @@
 "
 
 function! latex#motion#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_motion_enabled', 1)
   if !g:latex_motion_enabled | return | endif
+
+  " Set default options
+  call latex#util#set_default('g:latex_motion_matchparen', 1)
 
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> % :call latex#motion#find_matching_pair()<cr>

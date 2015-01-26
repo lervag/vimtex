@@ -272,7 +272,6 @@ descriptions also list the default values.
 Overview:~
 
   |g:latex_enabled|
-  |g:latex_build_dir|
   |g:latex_complete_close_braces|
   |g:latex_complete_enabled|
   |g:latex_complete_recursive_bib|
@@ -284,6 +283,7 @@ Overview:~
   |g:latex_fold_preamble|
   |g:latex_fold_sections|
   |g:latex_indent_enabled|
+  |g:latex_latexmk_build_dir|
   |g:latex_latexmk_callback|
   |g:latex_latexmk_enabled|
   |g:latex_latexmk_continuous|
@@ -321,11 +321,6 @@ Detailed descriptions and default values:~
 If this variable exists and is 0, then |vim-latex| is completely disabled.  By
 default, it is not defined.
 
-                                                           *g:latex_build_dir*
-Set this variable in case a dedicated build dir is used with `latexmk`/`latex`
-compilations. >
-  let g:latex_build_dir = '.'
-<
                                                *g:latex_complete_close_braces*
 When a label or a cite has been completed, this option controls whether it
 will be followed by a closing brace. >
@@ -390,6 +385,11 @@ List of section constructs that should be folded. >
 Use |vim-latex| indentation function.  Not as customizable as the official
 indentation function, but imho it is better. >
   let g:latex_indent_enabled = 1
+<
+                                                   *g:latex_latexmk_build_dir*
+Set this variable in case a dedicated build dir is used with `latexmk`/`latex`
+compilations. >
+  let g:latex_latexmk_build_dir = '.'
 <
                                                     *g:latex_latexmk_callback*
 If enabled, this option tells `latexmk` to run |latex#latexmk#errors| after
