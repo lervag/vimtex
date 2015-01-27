@@ -7,8 +7,12 @@
 function! latex#change#init(initialized) " {{{1
   if g:latex_mappings_enabled
     nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
-
     nnoremap <silent><buffer> cse :call latex#change#env_prompt()<cr>
+
+    if exists('g:loaded_surround') && g:loaded_surround
+      nmap <silent><buffer> dsc ds}dF\
+    endif
+    nnoremap <silent><buffer> csc :call latex#change#command()<cr>
 
     nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
     nnoremap <silent><buffer> tsd :call latex#change#toggle_delim()<cr>
@@ -18,6 +22,30 @@ function! latex#change#init(initialized) " {{{1
 
     inoremap <silent><buffer> ]]   <c-r>=latex#change#close_environment()<cr>
   endif
+endfunction
+
+function! latex#change#command() " {{{1
+  let pos_save = getpos('.')
+  let savereg = @a
+
+  " This is a hack to make undo restore the correct position
+  normal! ix
+  normal! x
+
+  normal! F\lve"ay
+  let old = @a
+  
+  let new = input('Change ' . old . ' for: ')
+  if empty(new)
+    let new = old
+  endif
+  let pos_save[2] += len(new) - len(old)
+
+  let @a = new
+  normal! F\lcea
+
+  let @a = savereg
+  call setpos('.', pos_save)
 endfunction
 
 function! latex#change#close_environment() " {{{1
