@@ -227,6 +227,8 @@ n  <localleader>lr  *@:call latex#view#rsearch()<cr>
 n  zx               *@:call latex#fold#refresh()<cr>
 n  dse              *@:call latex#change#env('')<cr>
 n  cse              *@:call latex#change#env_prompt()<cr>
+n  dsc               @ds}dF\
+n  csc              *@:call latex#change#command()<cr>
 n  tse              *@:call latex#change#toggle_env_star()<cr>
 n  tsd              *@:call latex#change#toggle_delim()<cr>
 n  <F7>             *@:call latex#change#to_command()<cr>i
@@ -882,12 +884,25 @@ Functions:
 ==============================================================================
 CHANGE                                                      *vim-latex-change*
 
-|vim-latex| has a nice functionality that enables quick toggling of stars in
-environments or toggling of `\left` and `\right` pairs of delimiters.
-Functions are also provided to change or close the current environment and to
-wrap the selected text.
+|vim-latex| provides mappings that are inspired by `surround.vim`
+(https://github.com/tpope/vim-surround).  These mappings are:
+  `cse`  - change surrounding environment
+  `dse`  - delete surrounding environment
+  `csc`  - change surrounding command
+  `dsc`  - delete surrounding command
+         Note: This mappings is only available if `surround.vim` is also
+               available.
+  `tsd`  - toggle delimiters (add/remove `\left` and `\right`)
+  `tse`  - toggle starred environment
+
+An environment that has been opened but not closed may be closed by the
+mapping `]]`.
+
+In addition, some functionality is provided to wrap the current selection.
+This is not mapped to anything by default.
 
 Functions:
+    |latex#change#command|
     |latex#change#close_environment|
     |latex#change#env|
     |latex#change#env_prompt|
@@ -948,6 +963,7 @@ descriptions follow.
 
 Overview:~
 
+  |latex#change#command|
   |latex#change#close_environment|
   |latex#change#env|
   |latex#change#env_prompt|
@@ -993,6 +1009,9 @@ Overview:~
 
 ------------------------------------------------------------------------------
 Detailed descriptions:~
+
+                                                         *latex#change#command*
+Change the current command name to one typed at a prompt.
 
                                                *latex#change#close_environment*
 Closes current delimiter or environment command.  The function is only useful
