@@ -28,6 +28,10 @@ function! latex#fold#init(initialized) " {{{1
         \   "subsubsection",
         \ ])
 
+  " Define some script variables
+  let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_parts, '|') . ')>'
+  let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_sections,  '|') . ')>'
+
   " Set fold options
   setl foldmethod=expr
   setl foldexpr=latex#fold#level(v:lnum)
@@ -265,9 +269,6 @@ function! s:parse_folded() " {{{1
 
   return folded
 endfunction
-
-let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_parts, '|') . ')>'
-let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_sections,  '|') . ')>'
 
 " }}}1
 function! s:parse_label() " {{{1
