@@ -20,6 +20,7 @@ function! latex#latexmk#init(initialized) " {{{1
   call latex#util#error_deprecated('g:latex_latexmk_autojump')
   call latex#util#error_deprecated('g:latex_latexmk_quickfix')
   call latex#util#error_deprecated('g:latex_latexmk_output')
+  call latex#util#error_deprecated('g:latex_build_dir')
 
   " Check system compatibility
   if s:system_incompatible() | return | endif

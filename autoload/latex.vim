@@ -308,7 +308,7 @@ function! s:get_main_ext(texdata, ext) " {{{1
   " Create set of candidates
   let candidates = [
         \ a:texdata.name,
-        \ g:latex_build_dir . '/' . a:texdata.name,
+        \ g:latex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Search through the candidates
@@ -327,7 +327,7 @@ function! s:get_main_out(texdata) " {{{1
   " Create set of candidates
   let candidates = [
         \ a:texdata.name,
-        \ g:latex_build_dir . '/' . a:texdata.name,
+        \ g:latex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Check for pdf files
