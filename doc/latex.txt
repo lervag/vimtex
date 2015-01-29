@@ -764,11 +764,11 @@ $compiling_cmd = "xdotool search --name \"%D\" " .
                  "set_window --name \"%D compiling...\"";
 $success_cmd = "xdotool search --name \"%D\" " .
                "set_window --name \"%D OK\"; " .
-               "gvim --remote-expr 'latex#latexmk#errors(0)'";
+               "gvim --remote-expr 'latex#latexmk#callback(1)'";
 $failure_cmd = "xdotool search --name \"%D\" " .
                "set_window --name \"%D FAILURE\"; " .
-               "gvim --remote-expr 'latex#latexmk#errors(0)'";
-<
+               "gvim --remote-expr 'latex#latexmk#callback(0)'";
+
 Here `xdotool` (http://www.semicomplete.com/projects/xdotool/) is used to
 change the title of the pdf viewer during and after compilation.  In addition,
 |latex#latexmk#errors| is called through the |clientserver| after each run to
@@ -780,7 +780,7 @@ commands if vim has the option |+clientserver|, and if the option
 |g:latex_latexmk_callback| is enabled.  The command that is used by `latexmk`
 is then on the following form: >
 
-  gvim --servername v:servername --remote-expr 'latex#latexmk#errors(0)'
+  gvim --servername v:servername --remote-expr 'latex#latexmk#callback(0)'
 
 This command is then appended to the existing `$success_cmd` and
 `$failure_cmd`.  Note that if the existing commands are not empty, then they
