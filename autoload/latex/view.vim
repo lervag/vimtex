@@ -11,15 +11,16 @@ function! latex#view#init(initialized) " {{{1
   "
   " Set default options
   "
-  call latex#util#set_default('g:latex_view_method', '')
-  call latex#util#set_default('g:latex_view_mupdf_options', '')
-  call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
   call latex#util#set_default('g:latex_view_general_options', '')
   call latex#util#set_default_os_specific('g:latex_view_general_viewer',
         \ {
         \   'linux' : 'xdg-open',
         \   'mac'   : 'open',
         \ })
+  call latex#util#set_default('g:latex_view_method', '')
+  call latex#util#set_default('g:latex_view_mupdf_options', '')
+  call latex#util#set_default('g:latex_view_okular_options', '')
+  call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
   "
@@ -30,6 +31,9 @@ function! latex#view#init(initialized) " {{{1
     call s:check_method_mupdf()
     let data.view = function('latex#view#mupdf')
     let data.rsearch = function('latex#view#mupdf_rsearch')
+  elseif g:latex_view_method == 'okular'
+    call s:check_method_okular()
+    let data.view = function('latex#view#okular')
   elseif g:latex_view_method == 'sumatrapdf'
     call s:check_method_sumatrapdf()
     let data.view = function('latex#view#sumatrapdf')
@@ -41,7 +45,7 @@ function! latex#view#init(initialized) " {{{1
   "
   " Define commands
   "
-  command! -buffer -nargs=* VimLatexView call latex#view#view('<args>')
+  command! -buffer VimLatexView call g:latex#data[b:latex.id].view()
   if has_key(data, 'rsearch')
     command! -buffer -nargs=* VimLatexRSearch
           \ call g:latex#data[b:latex.id].rsearch()
@@ -51,7 +55,8 @@ function! latex#view#init(initialized) " {{{1
   " Define mappings
   "
   if g:latex_mappings_enabled
-    nnoremap <silent><buffer> <localleader>lv :call latex#view#view()<cr>
+    nnoremap <silent><buffer> <localleader>lv
+          \ :call g:latex#data[b:latex.id].view()<cr>
 
     if has_key(data, 'rsearch')
       nnoremap <silent><buffer> <localleader>lr
@@ -61,39 +66,24 @@ function! latex#view#init(initialized) " {{{1
 endfunction
 
 "}}}1
-function! latex#view#view(...) " {{{1
-  if a:0 > 0
-    let args = join(a:000, ' ')
-  else
-    let args = ''
-  endif
-
-  call g:latex#data[b:latex.id].view(args)
-endfunction
-
-" }}}1
-function! latex#view#general(args) " {{{1
+function! latex#view#general() " {{{1
   let exe = {}
   let exe.cmd = g:latex_view_general_viewer
 
-  if a:args != ''
-    let exe.cmd .= ' ' . a:args
-  else
-    let outfile = g:latex#data[b:latex.id].out()
-    if !filereadable(outfile)
-      echomsg "Can't view: Output file is not readable!"
-      return
-    endif
-    let exe.cmd .= ' ' . g:latex_view_general_options
-    let exe.cmd .= ' ' . shellescape(outfile)
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
   endif
+  let exe.cmd .= ' ' . g:latex_view_general_options
+  let exe.cmd .= ' ' . shellescape(outfile)
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 
 "}}}1
-function! latex#view#mupdf(args) "{{{1
+function! latex#view#mupdf() "{{{1
   let outfile = g:latex#data[b:latex.id].out()
 
   if !has_key(g:latex#data[b:latex.id],'mupdf_id')
@@ -182,7 +172,7 @@ function! latex#view#mupdf_rsearch() "{{{1
 endfunction
 
 " }}}1
-function! latex#view#sumatrapdf(args) "{{{1
+function! latex#view#sumatrapdf() "{{{1
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -191,11 +181,26 @@ function! latex#view#sumatrapdf(args) "{{{1
 
   let exe = {}
   let exe.cmd = 'SumatraPDF ' . g:latex_view_sumatrapdf_options
-  " SumatraPDF will ignore '-forward-search' if a pdfsync
-  " or SyncTeX (either gzipped or normal) file isn't present
   let exe.cmd .= ' -forward-search ' . shellescape(expand('%:p'))
   let exe.cmd .= ' ' . line('.')
   let exe.cmd .= ' ' . shellescape(outfile)
+
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+endfunction
+
+" }}}1
+function! latex#view#okular() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  let exe = {}
+  let exe.cmd = 'okular ' . g:latex_view_okular_options
+  let exe.cmd .= ' --unique ' . shellescape(outfile)
+  let exe.cmd .= '\#src:' . line('.') . shellescape(expand('%:p'))
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
@@ -229,6 +234,13 @@ function! s:check_method_sumatrapdf() "{{{1
 endfunction
 
 "}}}1
+function! s:check_method_okular() "{{{1
+  if !executable('okular')
+    echoerr "okular is not available!"
+  endif
+endfunction
+
+"}}}1
 
 function! s:exists_mupdf_win(id) "{{{1
   let cmd  = 'xdotool search --class MuPDF'
@@ -240,8 +252,8 @@ function! s:exists_mupdf_win(id) "{{{1
 
   return 0
 endfunction
-"}}}1
 
+"}}}1
 function! s:start_mupdf(outfile) "{{{1
   let outfile = a:outfile
   if !filereadable(outfile)
@@ -267,6 +279,7 @@ function! s:start_mupdf(outfile) "{{{1
   endif
 
 endfunction
+
 "}}}1
 
 " vim: fdm=marker sw=2

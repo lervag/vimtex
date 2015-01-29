@@ -315,6 +315,8 @@ Overview:~
   |g:latex_view_general_options|
   |g:latex_view_method|
   |g:latex_view_mupdf_options|
+  |g:latex_view_okular_options|
+  |g:latex_view_sumatrapdf_options|
 
 ------------------------------------------------------------------------------
 Detailed descriptions and default values:~
@@ -540,10 +542,6 @@ Set width of TOC window. >
 Enable interface for view functionality. >
   let g:latex_view_enabled = 1
 <
-                                                *g:latex_view_general_options*
-Set custom options for general view command. >
-  let g:latex_view_general_options = ''
-<
                                                  *g:latex_view_general_viewer*
 Set general viewer. >
   let g:latex_view_general_viewer = 'xdg-open'
@@ -556,11 +554,18 @@ viewer, see |g:latex_view_general_viewer|. >
 The currently available choices are: >
   general
   mupdf
+  okular
   sumatrapdf
 <
+                                                *g:latex_view_general_options*
                                                   *g:latex_view_mupdf_options*
-Set custom options for mupdf viewer. >
+                                                 *g:latex_view_okular_options*
+                                             *g:latex_view_sumatrapdf_options*
+Set custom options for the given viewer. >
+  let g:latex_view_general_options = ''
   let g:latex_view_mupdf_options = ''
+  let g:latex_view_okular_options = ''
+  let g:latex_view_sumatrapdf_options = ''
 <
 ==============================================================================
 OMNI COMPLETION                                         *vim-latex-completion*
@@ -789,12 +794,15 @@ Associated settings:
     |g:latex_view_general_options|
     |g:latex_view_method|
     |g:latex_view_mupdf_options|
+    |g:latex_view_okular_options|
+    |g:latex_view_sumatrapdf_options|
 
 Functions:
-    |latex#view#view|
     |latex#view#general|
     |latex#view#mupdf|
     |latex#view#mupdf_rsearch|
+    |latex#view#okular|
+    |latex#view#sumatrapdf|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                            *vim-latex-synctex*
@@ -813,43 +821,49 @@ to `~/.latexmkrc`.
 
 Forward search~
 
-There is currently support for forward search with MuPDF and SumatraPDF, which
-may be enabled through |g:latex_view_method|.  More viewers and functionality
-will be implemented in the future.
-
-For unsupported viewers, one may add support manually.  Here an example is
-provided for Okular on Linux, which involves a few lines added to ones |vimrc|
-file.  Other viewers should work in a similar fashion. >
-
-  let g:latex_view_method = 'general'
-  let g:latex_view_general_viewer = 'okular'
-  function! SyncTexForward()
-    call latex#view#view('--unique '
-      \ . g:latex#data[b:latex.id].out()
-      \ . '\#src:' . line(".") . expand('%:p'))
-  endfunction
-  nmap <leader>ls :call SyncTexForward()<cr>
+|vim-latex| currently supports forward search for a limited set of viewers.
+The functionality is enabled by choosing the desired viewer with the
+|g:latex_view_method| option.  The currently supported viewers are:
+ * MuPDF
+ * SumatraPDF
+ * Okular
+More viewers and functionality will be implemented in the future.
 
 Backward search~
 
-Backward search is available through the command |VimLatexRSearch| and the
-mapping `<localleader>lr` for MuPDF, which does not inherently support inverse
-search.
-
-In most other viewers, backward or inverse search is typially set up through
-an option named something like "inverse search command-line".  A standard
-value for the option is: >
+Backward or inverse search is typially set up inside the specific viewer
+through an option named something like "inverse search command-line".
+A standard value for the option is: >
 
   gvim --remote-silent +%l "%f"
+
+Backward search is unfortunately not supported by all pdf viewers.  The
+following is a list of viewers that to my knowledge should support backward
+search:
+  * Okular
+  * SumatraPDF
+  * Evince (since version 2.91.3)
   
-Note however that this implies that the server name is the default value and
-that one does not run several instances of vim, see |clientserver|.
+Note: Inverse search relies on the |clientserver| functionality of vim.  Each
+      instance of vim runs its own server.  The above mentioned standard value
+      implies the default server name, which might not be the actual name of
+      the server for the vim instance you are using.
+
+Note: For backward search to work on windows, one must ensure that the folder
+      that contains `gVim.exe` is in your `%PATH%` environment variable.
+
+MuPDF does not support inverse search.  However, by the use of some semi ugly
+hacks, we have implemented a command inside vim that simulates the
+functionality.  The command is |VimLatexRSearch|, and is by default mapped to
+`<localleader>lr` if MuPDF is chosen as the viewer.  The command will go to
+the line in the tex project that corresponds to the FIRST line on the page
+that is open in MuPDF.
 
 For SumatraPDF one may set the inverse search setting from vim directly by
 adding some command line options as shown below.  The advantage of doing this
 is that one may specify the vim server name explicitly, which means that the
 backward search will also work as expected if one has several vim instances
-running.  To enable this, use: >
+running.  To enable this, use the general viewer and: >
 
   let g:latex_view_general_viewer='SumatraPDF '
     \ . '-reuse-instance -inverse-search '
@@ -858,9 +872,6 @@ running.  To enable this, use: >
     \ . ':execute ''drop ''.fnameescape(''\%f'')^<CR^>'
     \ . ':\%l^<CR^>:normal\!  zzzv^<CR^>'
     \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
-
-Note that for backward search to work on windows, one must ensure that the
-folder that contains `gVim.exe` is in your `%PATH%` environment variable.
 
 ==============================================================================
 MOTION                                                      *vim-latex-motion*
