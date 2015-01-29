@@ -78,6 +78,16 @@ endfunction
 " }}}1
 function! latex#latexmk#callback(status) " {{{1
   call latex#latexmk#errors(0)
+  redraw!
+
+  if a:status
+    echohl Statement
+    echo "latexmk compile: success"
+  else
+    echohl Error
+    echo "latexmk compile: fail"
+  endif
+  echohl None
 endfunction
 
 " }}}1
@@ -151,7 +161,7 @@ function! latex#latexmk#compile() " {{{1
 
   if g:latex_latexmk_continuous
     call s:latexmk_set_pid(data)
-    echomsg 'latexmk continuous mode started successfully'
+    echomsg 'latexmk started in continuous mode ...'
 
     " Get window ID
     if g:latex_view_method == 'mupdf'
@@ -167,8 +177,7 @@ function! latex#latexmk#compile() " {{{1
       endif
     endif
   else
-
-    echomsg 'latexmk compiling'
+    echomsg 'latexmk compiling ...'
   endif
 endfunction
 
