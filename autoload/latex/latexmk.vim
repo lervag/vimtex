@@ -76,6 +76,11 @@ function! latex#latexmk#init(initialized) " {{{1
 endfunction
 
 " }}}1
+function! latex#latexmk#callback(status) " {{{1
+  call latex#latexmk#errors(0)
+endfunction
+
+" }}}1
 function! latex#latexmk#clean(full) " {{{1
   let data = g:latex#data[b:latex.id]
   if data.pid
@@ -341,17 +346,21 @@ function! s:latexmk_set_cmd(data) " {{{1
 
   if g:latex_latexmk_continuous
     let cmd .= ' -pvc'
-    if g:latex_latexmk_callback && has('clientserver')
-      let callback  = v:progname
-      let callback .= ' --servername ' . v:servername
-      let callback .= ' --remote-expr \"latex\#latexmk\#errors(0)\"'
-      if has('win32')
-        let cmd .= ' -e "$success_cmd .= ''' . callback . '''"'
-              \ .  ' -e "$failure_cmd .= ''' . callback . '''"'
-      else
-        let cmd .= ' -e ''$success_cmd .= "' . callback . '"'''
-              \ .  ' -e ''$failure_cmd .= "' . callback . '"'''
-      endif
+  endif
+
+  if g:latex_latexmk_callback && has('clientserver')
+    let success  = v:progname
+    let success .= ' --servername ' . v:servername
+    let success .= ' --remote-expr \"latex\#latexmk\#callback(1)\"'
+    let failed   = v:progname
+    let failed  .= ' --servername ' . v:servername
+    let failed  .= ' --remote-expr \"latex\#latexmk\#callback(0)\"'
+    if has('win32')
+      let cmd .= ' -e "$success_cmd .= ''' . success . '''"'
+      let cmd .= ' -e "$failure_cmd .= ''' . failed . '''"'
+    else
+      let cmd .= ' -e ''$success_cmd .= "' . success . '"'''
+      let cmd .= ' -e ''$failure_cmd .= "' . failed . '"'''
     endif
   endif
 
