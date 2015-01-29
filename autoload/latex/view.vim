@@ -84,56 +84,26 @@ endfunction
 
 "}}}1
 function! latex#view#mupdf() "{{{1
-  let outfile = g:latex#data[b:latex.id].out()
-
-  if !has_key(g:latex#data[b:latex.id],'mupdf_id')
-    let g:latex#data[b:latex.id].mupdf_id = 0
-  endif
-  " mupdf already running?
-  if !s:exists_mupdf_win(g:latex#data[b:latex.id].mupdf_id)
-    call s:start_mupdf(outfile)
+  if !s:mupdf_exists_win()
+    call s:mupdf_start()
   endif
 
-  let mupdf_id = g:latex#data[b:latex.id].mupdf_id
-
-  " Do forward search if possible and mupdf running
-  if !s:mupdf_forward_search || mupdf_id == 0 | return | endif
-
-  let l:cmd = "synctex view -i "
-        \ . (line(".") + 1) . ":"
-        \ . (col(".") + 1) . ":"
-        \ . shellescape(expand("%:p"))
-        \ . " -o " . shellescape(outfile)
-        \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
-  let l:page = system(l:cmd)
-  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex = l:cmd
-  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex_page = l:page
-
-  if l:page > 0
-    let exe = {}
-    let exe.cmd = 'xdotool type --window ' .mupdf_id. ' "'
-          \ . l:page . 'g"'
-    call latex#util#execute(exe)
-    let g:latex#data[b:latex.id].cmds.view_mupdf_xdotool = exe.cmd
+  if s:mupdf_forward_search
+    call s:mupdf_forward_search()
   endif
 endfunction
 
 " }}}1
 function! latex#view#mupdf_rsearch() "{{{1
-  let data = g:latex#data[b:latex.id]
-
-  let data.mupdf_rsearch = {}
-  let outfile = data.out()
-
-  if !has_key(data,'mupdf_id') || data.mupdf_id == 0|| !s:exists_mupdf_win(data.mupdf_id)
-    echomsg "Can't search backwards: Open PDF from Vim first!"
+  if !s:mupdf_exists_win()
+    echomsg "Can't search backwards: Is the PDF file open?"
     return
   endif
 
-  let mupdf_id = data.mupdf_id
-
-  let data.mupdf_rsearch = {}
+  let data = g:latex#data[b:latex.id]
   let outfile = data.out()
+  let mupdf_id = data.mupdf_id
+  let data.mupdf_rsearch = {}
 
   " Get page number
   let cmd  = "xdotool getwindowname " . mupdf_id
@@ -242,25 +212,55 @@ endfunction
 
 "}}}1
 
-function! s:exists_mupdf_win(id) "{{{1
-  let cmd  = 'xdotool search --class MuPDF'
-  let mupdf_ids = systemlist(cmd)
+function! s:mupdf_exists_win() "{{{1
+  if !has_key(g:latex#data[b:latex.id], 'mupdf_id')
+    let g:latex#data[b:latex.id].mupdf_id = 0
+  endif
 
-  for id in mupdf_ids
-    if id == a:id | return 1 | endif
-  endfor
+  if executable('xdotool')
+    let cmd  = 'xdotool search --class MuPDF'
+    let mupdf_ids = systemlist(cmd)
+    for id in mupdf_ids
+      if id == g:latex#data[b:latex.id].mupdf_id | return 1 | endif
+    endfor
+  endif
 
   return 0
 endfunction
 
 "}}}1
-function! s:start_mupdf(outfile) "{{{1
-  let outfile = a:outfile
+function! s:mupdf_forward_search() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+
+  let l:cmd = "synctex view -i "
+        \ . (line(".") + 1) . ":"
+        \ . (col(".") + 1) . ":"
+        \ . shellescape(expand("%:p"))
+        \ . " -o " . shellescape(outfile)
+        \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
+  let l:page = system(l:cmd)
+  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex = l:cmd
+  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex_page = l:page
+
+  if l:page > 0
+    let exe = {}
+    let exe.cmd  = 'xdotool'
+    let exe.cmd .= ' type --window ' . g:latex#data[b:latex.id].mupdf_id
+    let exe.cmd .= ' "' . l:page . 'g"'
+    call latex#util#execute(exe)
+    let g:latex#data[b:latex.id].cmds.view_mupdf_xdotool = exe.cmd
+  endif
+endfunction
+
+"}}}1
+function! s:mupdf_start() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
   endif
 
+  " Start MuPDF
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:latex_view_mupdf_options
   let exe.cmd .= ' ' . shellescape(outfile)
@@ -268,16 +268,16 @@ function! s:start_mupdf(outfile) "{{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
   " Get window ID
-  " sleep
-  let cmd  = 'xdotool search --class MuPDF'
-  let mupdf_ids = systemlist(cmd)
-
-  if len(mupdf_ids) == 0
-    let g:latex#data[b:latex.id].mupdf_id = 0
-  else
-    let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+  if executable('xdotool')
+    let cmd  = 'xdotool search --class MuPDF'
+    let mupdf_ids = systemlist(cmd)
+    if len(mupdf_ids) == 0
+      echomsg "Couldn't find MuPDF window ID!"
+      let g:latex#data[b:latex.id].mupdf_id = 0
+    else
+      let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+    endif
   endif
-
 endfunction
 
 "}}}1
