@@ -9,18 +9,18 @@ function! latex#latexmk#init(initialized) " {{{1
   if !g:latex_latexmk_enabled | return | endif
 
   " Set default options
+  call latex#util#set_default('g:latex_latexmk_background', 0)
+  call latex#util#set_default('g:latex_latexmk_build_dir', '.')
   call latex#util#set_default('g:latex_latexmk_callback', 1)
   call latex#util#set_default('g:latex_latexmk_continuous', 1)
-  call latex#util#set_default('g:latex_latexmk_background', 0)
   call latex#util#set_default('g:latex_latexmk_options', '-pdf')
-  call latex#util#set_default('g:latex_latexmk_build_dir', '.')
   call latex#util#set_default('g:latex_quickfix_autojump', '0')
   call latex#util#set_default('g:latex_quickfix_mode', '2')
   call latex#util#set_default('g:latex_quickfix_open_on_warning', '1')
-  call latex#util#error_deprecated('g:latex_latexmk_autojump')
-  call latex#util#error_deprecated('g:latex_latexmk_quickfix')
-  call latex#util#error_deprecated('g:latex_latexmk_output')
   call latex#util#error_deprecated('g:latex_build_dir')
+  call latex#util#error_deprecated('g:latex_latexmk_autojump')
+  call latex#util#error_deprecated('g:latex_latexmk_output')
+  call latex#util#error_deprecated('g:latex_latexmk_quickfix')
 
   " Check system compatibility
   if s:system_incompatible() | return | endif
