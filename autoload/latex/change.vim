@@ -9,9 +9,7 @@ function! latex#change#init(initialized) " {{{1
     nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
     nnoremap <silent><buffer> cse :call latex#change#env_prompt()<cr>
 
-    if exists('g:loaded_surround') && g:loaded_surround
-      nmap <silent><buffer> dsc ds}dF\
-    endif
+    nnoremap <silent><buffer> dsc vaBom`o<esc>xg``xdF\
     nnoremap <silent><buffer> csc :call latex#change#command()<cr>
 
     nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
