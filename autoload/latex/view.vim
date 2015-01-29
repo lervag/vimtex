@@ -19,6 +19,7 @@ function! latex#view#init(initialized) " {{{1
         \ })
   call latex#util#set_default('g:latex_view_method', '')
   call latex#util#set_default('g:latex_view_mupdf_options', '')
+  call latex#util#set_default('g:latex_view_mupdf_send_keys', '')
   call latex#util#set_default('g:latex_view_okular_options', '')
   call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
   call latex#util#error_deprecated('g:latex_viewer')
@@ -94,6 +95,33 @@ function! latex#view#mupdf() "{{{1
 endfunction
 
 " }}}1
+function! latex#view#mupdf_poststart() "{{{1
+  " First get the window id
+  let mupdf_ids = []
+  if executable('xdotool')
+    let cmd  = 'xdotool search --class MuPDF'
+    let mupdf_ids = systemlist(cmd)
+  endif
+  if len(mupdf_ids) == 0
+    echomsg "Couldn't find MuPDF window ID!"
+    let g:latex#data[b:latex.id].mupdf_id = 0
+  else
+    let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+  endif
+
+  " Next return focus to vim and send some keys to mupdf if desired
+  if executable('xdotool')
+    if g:latex_view_mupdf_send_keys != ''
+      let cmd  = 'xdotool key --window ' . g:latex#data[b:latex.id].mupdf_id
+      let cmd .= ' ' . g:latex_view_mupdf_send_keys
+      call system(cmd)
+    endif
+
+    silent execute '!xdotool windowfocus ' . v:windowid
+  endif
+endfunction
+
+"}}}1
 function! latex#view#mupdf_rsearch() "{{{1
   if !s:mupdf_exists_win()
     echomsg "Can't search backwards: Is the PDF file open?"
@@ -268,17 +296,7 @@ function! s:mupdf_start() "{{{1
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
-  " Get window ID
-  if executable('xdotool')
-    let cmd  = 'xdotool search --class MuPDF'
-    let mupdf_ids = systemlist(cmd)
-    if len(mupdf_ids) == 0
-      echomsg "Couldn't find MuPDF window ID!"
-      let g:latex#data[b:latex.id].mupdf_id = 0
-    else
-      let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
-    endif
-  endif
+  call latex#view#mupdf_poststart()
 endfunction
 
 "}}}1

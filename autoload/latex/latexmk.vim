@@ -88,6 +88,14 @@ function! latex#latexmk#callback(status) " {{{1
     echo "latexmk compile: fail"
   endif
   echohl None
+
+  " Get window ID after first callback
+  if s:first_callback
+    let s:first_callback = 0
+    if g:latex_view_method == 'mupdf'
+      call latex#view#mupdf_poststart()
+    endif
+  endif
 endfunction
 
 " }}}1
@@ -141,41 +149,19 @@ endfunction
 " }}}1
 function! latex#latexmk#compile() " {{{1
   let data = g:latex#data[b:latex.id]
-
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"
     return
   endif
 
-  call s:latexmk_set_cmd(data)
-
-  " Start latexmk
-  let exe = {}
-  let exe.null = 0
-  if !g:latex_latexmk_continuous && !g:latex_latexmk_background
-    let exe.bg = 0
-    let exe.silent = 0
-  endif
-  let exe.cmd  = data.cmds.compile
+  " Build command line and start latexmk
+  let exe = s:latexmk_build_cmd(data)
   call latex#util#execute(exe)
 
   if g:latex_latexmk_continuous
     call s:latexmk_set_pid(data)
+
     echomsg 'latexmk started in continuous mode ...'
-
-    " Get window ID
-    if g:latex_view_method == 'mupdf'
-      " give time to read window ID
-      sleep
-      let cmd  = 'xdotool search --class MuPDF'
-      let mupdf_ids = systemlist(cmd)
-
-      if len(mupdf_ids) == 0
-        let g:latex#data[b:latex.id].mupdf_id = 0
-      else
-        let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
-      endif
-    endif
   else
     echomsg 'latexmk compiling ...'
   endif
@@ -336,7 +322,10 @@ endfunction
 " }}}1
 
 " Helper functions for latexmk command
-function! s:latexmk_set_cmd(data) " {{{1
+function! s:latexmk_build_cmd(data) " {{{1
+  let exe = {}
+  let exe.null = 0
+
   " Note: We don't send output to /dev/null, but rather to a temporary file,
   "       which allows inspection of latexmk output
   let tmp = tempname()
@@ -371,6 +360,7 @@ function! s:latexmk_set_cmd(data) " {{{1
       let cmd .= ' -e ''$success_cmd .= "' . success . '"'''
       let cmd .= ' -e ''$failure_cmd .= "' . failed . '"'''
     endif
+    let s:first_callback = 1
   endif
 
   let cmd .= ' ' . shellescape(a:data.base)
@@ -384,8 +374,16 @@ function! s:latexmk_set_cmd(data) " {{{1
     endif
   endif
 
+  let exe.cmd  = cmd
   let a:data.cmds.compile = cmd
   let a:data.tmp = tmp
+
+  if !g:latex_latexmk_continuous && !g:latex_latexmk_background
+    let exe.bg = 0
+    let exe.silent = 0
+  endif
+
+  return exe
 endfunction
 
 " }}}1

@@ -567,6 +567,11 @@ Set custom options for the given viewer. >
   let g:latex_view_okular_options = ''
   let g:latex_view_sumatrapdf_options = ''
 <
+                                                *g:latex_view_mupdf_send_keys*
+String of keys sent to MuPDF after the PDF file has been opened.  The keys are
+sent by the function |latex#view#mupdf_poststart|. >
+  let g:latex_view_mupdf_send_keys = ''
+<
 ==============================================================================
 OMNI COMPLETION                                         *vim-latex-completion*
 
@@ -1016,7 +1021,12 @@ Overview:~
   |latex#util#kpsewhich|
   |latex#util#tex2tree|
   |latex#util#tree2tex|
-  |latex#view#view|
+  |latex#view#general|
+  |latex#view#mupdf|
+  |latex#view#mupdf_poststart|
+  |latex#view#mupdf_rsearch|
+  |latex#view#okular|
+  |latex#view#sumatrapdf|
 
 ------------------------------------------------------------------------------
 Detailed descriptions:~
@@ -1184,8 +1194,23 @@ Turn tex structure to a tree composed of lists.  E.g. >
 Turns a tree composed of lists into tex structure.  E.g. >
   [ "testing" , [ "tex2tree", []]] => { testing { tex2tree { } } }
 <
-                                                             *latex#view#view*
-Open the output file with the default viewer |g:latex_view_method|.
+                                                          *latex#view#general*
+Open the output file with the viewer that is specified with the option
+|g:latex_view_general_viewer|.
+
+                                                            *latex#view#mupdf*
+                                                           *latex#view#okular*
+                                                       *latex#view#sumatrapdf*
+First open the output file if it is not open with MuPDF/Okular/SumatraPDF.
+Then perform a forward search.
+
+                                                  *latex#view#mupdf_poststart*
+Function that is called after the MuPDF window has been opened.  The function
+is used to run `xdotool` commands, for instance to return focus to vim and to
+possibly send some keys to MuPDF as specified in |g:latex_view_mupdf_send_keys|.
+
+                                                    *latex#view#mupdf_rsearch*
+Perform a reverse search by use of `xdotool` and `synctex`.
 
 ==============================================================================
 FAQ                                                            *vim-latex-faq*
