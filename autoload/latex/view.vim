@@ -107,7 +107,8 @@ function! latex#view#mupdf_rsearch() "{{{1
 
   " Get page number
   let cmd  = "xdotool getwindowname " . mupdf_id
-  let cmd .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:' | tr -d '\n'"
+  let cmd .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
+  let cmd .= " | tr -d '\n'"
   let mupdf_page = system(cmd)
   let data.mupdf_rsearch.page = mupdf_page
   let data.mupdf_rsearch.page_cmd = cmd
