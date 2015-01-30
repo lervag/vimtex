@@ -149,9 +149,9 @@ function! s:init_environment() " {{{1
   command! -buffer VimLatexReinitialize call latex#reinit()
 
   " Define mappings
-  nnoremap <buffer> <plug>VimLatexInfo   :call latex#info()<cr>
-  nnoremap <buffer> <plug>VimLatexHelp   :call latex#help()<cr>
-  nnoremap <buffer> <plug>VimLatexReinit :call latex#reinit()<cr>
+  nnoremap <buffer> <plug>(vl-info)   :call latex#info()<cr>
+  nnoremap <buffer> <plug>(vl-help)   :call latex#help()<cr>
+  nnoremap <buffer> <plug>(vl-reinit) :call latex#reinit()<cr>
 endfunction
 
 function! s:init_errorformat() " {{{1

@@ -47,9 +47,9 @@ function! latex#view#init(initialized) " {{{1
   endif
 
   " Define mappings
-  nnoremap <buffer> <plug>VimLatexView :call g:latex#data[b:latex.id].view()<cr>
+  nnoremap <buffer> <plug>(vl-view) :call g:latex#data[b:latex.id].view()<cr>
   if has_key(data, 'rsearch')
-    nnoremap <buffer> <plug>VimLatexRSearch
+    nnoremap <buffer> <plug>(vl-reverse-search)
           \ :call g:latex#data[b:latex.id].rsearch()<cr>
   endif
 endfunction

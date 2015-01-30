@@ -42,17 +42,17 @@ function! latex#latexmk#init(initialized) " {{{1
   command! -buffer -bang VimLatexStatus        call latex#latexmk#status(<q-bang> == "!")
 
   " Define mappings
-  nnoremap <buffer> <plug>VimLatexCompile       :call latex#latexmk#compile()<cr>
-  nnoremap <buffer> <plug>VimLatexCompileSS     :call latex#latexmk#compile_ss(0)<cr>
-  nnoremap <buffer> <plug>VimLatexCompileToggle :call latex#latexmk#toggle()<cr>
-  nnoremap <buffer> <plug>VimLatexCompileOutput :call latex#latexmk#output()<cr>
-  nnoremap <buffer> <plug>VimLatexStop          :call latex#latexmk#stop()<cr>
-  nnoremap <buffer> <plug>VimLatexStopAll       :call latex#latexmk#stop_all()<cr>
-  nnoremap <buffer> <plug>VimLatexErrors        :call latex#latexmk#errors(1)<cr>
-  nnoremap <buffer> <plug>VimLatexClean         :call latex#latexmk#clean(0)<cr>
-  nnoremap <buffer> <plug>VimLatexCleanFull     :call latex#latexmk#clean(1)<cr>
-  nnoremap <buffer> <plug>VimLatexStatus        :call latex#latexmk#status(0)<cr>
-  nnoremap <buffer> <plug>VimLatexStatusAll     :call latex#latexmk#status(1)<cr>
+  nnoremap <buffer> <plug>(vl-compile)        :call latex#latexmk#compile()<cr>
+  nnoremap <buffer> <plug>(vl-compile-ss)     :call latex#latexmk#compile_ss(0)<cr>
+  nnoremap <buffer> <plug>(vl-compile-toggle) :call latex#latexmk#toggle()<cr>
+  nnoremap <buffer> <plug>(vl-compile-output) :call latex#latexmk#output()<cr>
+  nnoremap <buffer> <plug>(vl-stop)           :call latex#latexmk#stop()<cr>
+  nnoremap <buffer> <plug>(vl-stop-all)       :call latex#latexmk#stop_all()<cr>
+  nnoremap <buffer> <plug>(vl-errors)         :call latex#latexmk#errors(1)<cr>
+  nnoremap <buffer> <plug>(vl-clean)          :call latex#latexmk#clean(0)<cr>
+  nnoremap <buffer> <plug>(vl-clean-full)     :call latex#latexmk#clean(1)<cr>
+  nnoremap <buffer> <plug>(vl-status)         :call latex#latexmk#status(0)<cr>
+  nnoremap <buffer> <plug>(vl-status-all)     :call latex#latexmk#status(1)<cr>
 
   " The remaining part is only relevant for continuous mode
   if !g:latex_latexmk_continuous | return | endif

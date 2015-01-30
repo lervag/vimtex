@@ -12,33 +12,33 @@ function! latex#motion#init(initialized) " {{{1
   call latex#util#set_default('g:latex_motion_matchparen', 1)
 
   " Define mappings
-  nnoremap <buffer> <plug>VimLatex%  :call latex#motion#find_matching_pair()<cr>
-  xnoremap <buffer> <plug>VimLatex%  :<c-u>call latex#motion#find_matching_pair(1)<cr>
-  onoremap <buffer> <plug>VimLatex%  :normal v%<cr>
-  nnoremap <buffer> <plug>VimLatex]] :call latex#motion#next_section(0,0,0)<cr>
-  nnoremap <buffer> <plug>VimLatex][ :call latex#motion#next_section(1,0,0)<cr>
-  nnoremap <buffer> <plug>VimLatex[] :call latex#motion#next_section(1,1,0)<cr>
-  nnoremap <buffer> <plug>VimLatex[[ :call latex#motion#next_section(0,1,0)<cr>
-  xnoremap <buffer> <plug>VimLatex]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
-  xnoremap <buffer> <plug>VimLatex][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
-  xnoremap <buffer> <plug>VimLatex[] :<c-u>call latex#motion#next_section(1,1,1)<cr>
-  xnoremap <buffer> <plug>VimLatex[[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
-  onoremap <buffer> <plug>VimLatex]] :normal v]]<cr>
-  onoremap <buffer> <plug>VimLatex][ :normal v][<cr>
-  onoremap <buffer> <plug>VimLatex[] :normal v[]<cr>
-  onoremap <buffer> <plug>VimLatex[[ :normal v[[<cr>
-  xnoremap <buffer> <plug>VimLatexie :<c-u>call latex#motion#sel_environment(1)<cr>
-  xnoremap <buffer> <plug>VimLatexae :<c-u>call latex#motion#sel_environment()<cr>
-  onoremap <buffer> <plug>VimLatexie :normal vie<cr>
-  onoremap <buffer> <plug>VimLatexae :normal vae<cr>
-  xnoremap <buffer> <plug>VimLatexi$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
-  xnoremap <buffer> <plug>VimLatexa$ :<c-u>call latex#motion#sel_inline_math()<cr>
-  onoremap <buffer> <plug>VimLatexi$ :normal vi$<cr>
-  onoremap <buffer> <plug>VimLatexa$ :normal va$<cr>
-  xnoremap <buffer> <plug>VimLatexid :<c-u>call latex#motion#sel_delimiter(1)<cr>
-  xnoremap <buffer> <plug>VimLatexad :<c-u>call latex#motion#sel_delimiter()<cr>
-  onoremap <buffer> <plug>VimLatexid :normal vi(<cr>
-  onoremap <buffer> <plug>VimLatexad :normal va(<cr>
+  nnoremap <buffer> <plug>(vl-%)  :call latex#motion#find_matching_pair()<cr>
+  xnoremap <buffer> <plug>(vl-%)  :<c-u>call latex#motion#find_matching_pair(1)<cr>
+  onoremap <buffer> <plug>(vl-%)  :normal v%<cr>
+  nnoremap <buffer> <plug>(vl-]]) :call latex#motion#next_section(0,0,0)<cr>
+  nnoremap <buffer> <plug>(vl-][) :call latex#motion#next_section(1,0,0)<cr>
+  nnoremap <buffer> <plug>(vl-[]) :call latex#motion#next_section(1,1,0)<cr>
+  nnoremap <buffer> <plug>(vl-[[) :call latex#motion#next_section(0,1,0)<cr>
+  xnoremap <buffer> <plug>(vl-]]) :<c-u>call latex#motion#next_section(0,0,1)<cr>
+  xnoremap <buffer> <plug>(vl-][) :<c-u>call latex#motion#next_section(1,0,1)<cr>
+  xnoremap <buffer> <plug>(vl-[]) :<c-u>call latex#motion#next_section(1,1,1)<cr>
+  xnoremap <buffer> <plug>(vl-[[) :<c-u>call latex#motion#next_section(0,1,1)<cr>
+  onoremap <buffer> <plug>(vl-]]) :normal v]]<cr>
+  onoremap <buffer> <plug>(vl-][) :normal v][<cr>
+  onoremap <buffer> <plug>(vl-[]) :normal v[]<cr>
+  onoremap <buffer> <plug>(vl-[[) :normal v[[<cr>
+  xnoremap <buffer> <plug>(vl-ie) :<c-u>call latex#motion#sel_environment(1)<cr>
+  xnoremap <buffer> <plug>(vl-ae) :<c-u>call latex#motion#sel_environment()<cr>
+  onoremap <buffer> <plug>(vl-ie) :normal vie<cr>
+  onoremap <buffer> <plug>(vl-ae) :normal vae<cr>
+  xnoremap <buffer> <plug>(vl-i$) :<c-u>call latex#motion#sel_inline_math(1)<cr>
+  xnoremap <buffer> <plug>(vl-a$) :<c-u>call latex#motion#sel_inline_math()<cr>
+  onoremap <buffer> <plug>(vl-i$) :normal vi$<cr>
+  onoremap <buffer> <plug>(vl-a$) :normal va$<cr>
+  xnoremap <buffer> <plug>(vl-id) :<c-u>call latex#motion#sel_delimiter(1)<cr>
+  xnoremap <buffer> <plug>(vl-ad) :<c-u>call latex#motion#sel_delimiter()<cr>
+  onoremap <buffer> <plug>(vl-id) :normal vi(<cr>
+  onoremap <buffer> <plug>(vl-ad) :normal va(<cr>
 
   " Highlight matching parens ($, (), ...)
   if !a:initialized && g:latex_motion_matchparen
