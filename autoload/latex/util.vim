@@ -85,7 +85,7 @@ let s:convert_back_list = map([
 function! latex#util#error_deprecated(variable) " {{{1
   if exists(a:variable)
     echoerr "Deprecation error: " . a:variable
-	echoerr "Please read docs for more info!"
+    echoerr "Please read docs for more info!"
     echoerr ":h vim-latex-changelog"
   endif
 endfunction
@@ -173,11 +173,10 @@ endfunction
 
 function! latex#util#fnameescape(path) " {{{1
   "
-  " In a Windows environment, a path used in "cmd" only needs to be
-  " enclosed by double quotes. shellscape() on Windows with 
-  " "shellslash" set will produce a path enclosed by single quotes, 
-  " which "cmd" does not recognize and reports an error.
-  " Any path that goes into latex#util#execute() should be 
+  " In a Windows environment, a path used in "cmd" only needs to be enclosed by
+  " double quotes. shellscape() on Windows with "shellslash" set will produce
+  " a path enclosed by single quotes, which "cmd" does not recognize and
+  " reports an error.  Any path that goes into latex#util#execute() should be
   " processed through this function.
   "
   return has('win32') ? '"' . a:path . '"' : shellescape(a:path)

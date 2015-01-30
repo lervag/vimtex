@@ -270,7 +270,7 @@ function! s:mupdf_forward_search() "{{{1
   let l:cmd = "synctex view -i "
         \ . (line(".") + 1) . ":"
         \ . (col(".") + 1) . ":"
-		\ . latex#util#fnameescape(expand("%:p"))
+        \ . latex#util#fnameescape(expand("%:p"))
         \ . " -o " . latex#util#fnameescape(outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let l:page = system(l:cmd)

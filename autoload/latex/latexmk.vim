@@ -110,7 +110,7 @@ function! latex#latexmk#clean(full) " {{{1
   " Run latexmk clean process
   "
   if has('win32')
-	let cmd = 'cd /D "' . data.root . '" & '
+    let cmd = 'cd /D "' . data.root . '" & '
   else
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
