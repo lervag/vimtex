@@ -5,15 +5,16 @@
 "
 
 function! latex#change#init(initialized) " {{{1
-  nnoremap <buffer> <plug>(vl-delete-env)   :call latex#change#env('')<cr>
-  nnoremap <buffer> <plug>(vl-delete-cmd)   vaBom`o<esc>xg``xdF\
-  nnoremap <buffer> <plug>(vl-change-env)   :call latex#change#env_prompt()<cr>
-  nnoremap <buffer> <plug>(vl-change-cmd)   :call latex#change#command()<cr>
-  nnoremap <buffer> <plug>(vl-toggle-star)  :call latex#change#toggle_env_star()<cr>
-  nnoremap <buffer> <plug>(vl-toggle-delim) :call latex#change#toggle_delim()<cr>
-  nnoremap <buffer> <plug>(vl-create-cmd)   :call latex#change#to_command()<cr>i
-  inoremap <buffer> <plug>(vl-create-cmd)   <c-r>=latex#change#to_command()<cr>
-  inoremap <buffer> <plug>(vl-close-env)    <c-r>=latex#change#close_environment()<cr>
+  nnoremap <silent><buffer> <plug>(vl-delete-env)   :call latex#change#env('')<cr>
+  nnoremap <silent><buffer> <plug>(vl-delete-cmd)   vaBom`o<esc>xg``xdF\
+        \:silent! call repeat#set("\<plug>(vl-delete-cmd)", v:count)<cr>
+  nnoremap <silent><buffer> <plug>(vl-change-env)   :call latex#change#env_prompt()<cr>
+  nnoremap <silent><buffer> <plug>(vl-change-cmd)   :call latex#change#command()<cr>
+  nnoremap <silent><buffer> <plug>(vl-toggle-star)  :call latex#change#toggle_env_star()<cr>
+  nnoremap <silent><buffer> <plug>(vl-toggle-delim) :call latex#change#toggle_delim()<cr>
+  nnoremap <silent><buffer> <plug>(vl-create-cmd)   :call latex#change#to_command()<cr>i
+  inoremap <silent><buffer> <plug>(vl-create-cmd)   <c-r>=latex#change#to_command()<cr>
+  inoremap <silent><buffer> <plug>(vl-close-env)    <c-r>=latex#change#close_environment()<cr>
 endfunction
 
 function! latex#change#command() " {{{1
@@ -38,6 +39,8 @@ function! latex#change#command() " {{{1
 
   let @a = savereg
   call setpos('.', pos_save)
+
+  silent! call repeat#set("\<plug>(vl-change-cmd)" . new . '', v:count)
 endfunction
 
 function! latex#change#close_environment() " {{{1
@@ -90,21 +93,21 @@ function! latex#change#delim(open, close) " {{{1
   call setline(l2, line)
 endfunction
 
-function! latex#change#env(new_env) " {{{1
+function! latex#change#env(new) " {{{1
   let [env, l1, c1, l2, c2] = latex#util#get_env(1)
 
-  if a:new_env == ''
+  if a:new == ''
     let beg = ''
     let end = ''
-  elseif a:new_env == '\[' || a:new_env == '['
+  elseif a:new == '\[' || a:new == '['
     let beg = '\['
     let end = '\]'
-  elseif a:new_env == '\(' || a:new_env == '('
+  elseif a:new == '\(' || a:new == '('
     let beg = '\('
     let end = '\)'
   else
-    let beg = '\begin{' . a:new_env . '}'
-    let end = '\end{' . a:new_env . '}'
+    let beg = '\begin{' . a:new . '}'
+    let end = '\end{' . a:new . '}'
   endif
 
   let n1 = len(env) - 1
@@ -120,6 +123,12 @@ function! latex#change#env(new_env) " {{{1
   let line = getline(l2)
   let line = strpart(line, 0, c2 - 1) . l:end . strpart(line, c2 + n2)
   call setline(l2, line)
+
+  if a:new == ''
+    silent! call repeat#set("\<plug>(vl-delete-env)", v:count)
+  else
+    silent! call repeat#set("\<plug>(vl-change-env)" . a:new . "", v:count)
+  endif
 endfunction
 
 function! latex#change#env_prompt() " {{{1
@@ -205,6 +214,8 @@ function! latex#change#toggle_delim() " {{{1
   let line = getline(l2)
   let line = strpart(line, 0, c2 - 1) . newd2 . strpart(line, c2 + len(d2) - 1)
   call setline(l2, line)
+
+  silent! call repeat#set("\<plug>(vl-toggle-delim)", v:count)
 endfunction
 
 function! latex#change#toggle_env_star() " {{{1
@@ -221,6 +232,8 @@ function! latex#change#toggle_env_star() " {{{1
   endif
 
   call latex#change#env(new_env)
+
+  silent! call repeat#set("\<plug>(vl-toggle-star)", v:count)
 endfunction
 
 
