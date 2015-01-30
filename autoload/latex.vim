@@ -19,6 +19,7 @@ function! latex#init() " {{{1
   call latex#change#init(s:initialized)
   call latex#latexmk#init(s:initialized)
   call latex#complete#init(s:initialized)
+  call latex#mappings#init(s:initialized)
 
   "
   " This variable is used to allow a distinction between global and buffer
@@ -108,20 +109,15 @@ endfunction
 " }}}1
 
 function! s:init_environment() " {{{1
-  "
   " Initialize global and local data blobs
-  "
   call latex#util#set_default('g:latex#data', [])
   call latex#util#set_default('b:latex', {})
 
-  "
   " Set some file type specific vim options
   setlocal suffixesadd+=.tex
   setlocal commentstring=\%\ %s
 
-  "
   " Create new or link to existing blob
-  "
   let main = s:get_main()
   let id   = s:get_id(main)
   if id >= 0
@@ -147,15 +143,15 @@ function! s:init_environment() " {{{1
     let b:latex.id = len(g:latex#data) - 1
   endif
 
+  " Define commands
   command! -buffer VimLatexInfo         call latex#info()
   command! -buffer VimLatexHelp         call latex#help()
   command! -buffer VimLatexReinitialize call latex#reinit()
 
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> <localleader>li :call latex#info()<cr>
-    nnoremap <silent><buffer> <localleader>lh :call latex#help()<cr>
-    nnoremap <silent><buffer> <localleader>lR :call latex#reinit()<cr>
-  endif
+  " Define mappings
+  nnoremap <buffer> <plug>VimLatexInfo   :call latex#info()<cr>
+  nnoremap <buffer> <plug>VimLatexHelp   :call latex#help()<cr>
+  nnoremap <buffer> <plug>VimLatexReinit :call latex#reinit()<cr>
 endfunction
 
 function! s:init_errorformat() " {{{1
@@ -206,7 +202,6 @@ function! s:init_errorformat() " {{{1
 endfunction
 " }}}1
 function! s:init_options() " {{{1
-  call latex#util#set_default('g:latex_mappings_enabled', 1)
   call latex#util#set_default('g:latex_quickfix_ignore_all_warnings', 0)
   call latex#util#set_default('g:latex_quickfix_ignored_warnings', [])
 

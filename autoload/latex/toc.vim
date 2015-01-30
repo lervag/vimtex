@@ -27,10 +27,8 @@ function! latex#toc#init(initialized) " {{{1
   command! -buffer VimLatexTocToggle call latex#toc#toggle()
 
   " Define mappings
-  if g:latex_mappings_enabled
-    nnoremap <buffer> <localleader>lt :call latex#toc#open()<cr>
-    nnoremap <buffer> <localleader>lT :call latex#toc#toggle()<cr>
-  endif
+  nnoremap <buffer> <plug>VimLatexTocOpen   :call latex#toc#open()<cr>
+  nnoremap <buffer> <plug>VimLatexTocToggle :call latex#toc#toggle()<cr>
 endfunction
 
 function! latex#toc#open() " {{{1

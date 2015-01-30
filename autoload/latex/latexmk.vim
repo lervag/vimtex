@@ -31,29 +31,28 @@ function! latex#latexmk#init(initialized) " {{{1
   endif
 
   " Define commands
-  com! -buffer VimLatexCompile       call latex#latexmk#compile()
-  com! -buffer VimLatexCompileToggle call latex#latexmk#toggle()
-  com! -buffer VimLatexStop          call latex#latexmk#stop()
-  com! -buffer VimLatexStopAll       call latex#latexmk#stop_all()
-  com! -buffer -bang VimLatexErrors  call latex#latexmk#errors(<q-bang> == "!")
-  com! -buffer VimLatexOutput        call latex#latexmk#output()
-  com! -buffer -bang VimLatexClean   call latex#latexmk#clean(<q-bang> == "!")
-  com! -buffer -bang VimLatexStatus  call latex#latexmk#status(<q-bang> == "!")
-  com! -buffer -bang VimLatexCompileSS
-        \ call latex#latexmk#compile_singleshot(<q-bang> == "!")
+  command! -buffer       VimLatexCompile       call latex#latexmk#compile()
+  command! -buffer -bang VimLatexCompileSS     call latex#latexmk#compile_ss(<q-bang> == "!")
+  command! -buffer       VimLatexCompileToggle call latex#latexmk#toggle()
+  command! -buffer       VimLatexCompileOutput call latex#latexmk#output()
+  command! -buffer       VimLatexStop          call latex#latexmk#stop()
+  command! -buffer       VimLatexStopAll       call latex#latexmk#stop_all()
+  command! -buffer -bang VimLatexErrors        call latex#latexmk#errors(<q-bang> == "!")
+  command! -buffer -bang VimLatexClean         call latex#latexmk#clean(<q-bang> == "!")
+  command! -buffer -bang VimLatexStatus        call latex#latexmk#status(<q-bang> == "!")
 
-  " Set default mappings
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> <localleader>ll :call latex#latexmk#toggle()<cr>
-    nnoremap <silent><buffer> <localleader>lc :call latex#latexmk#clean(0)<cr>
-    nnoremap <silent><buffer> <localleader>lC :call latex#latexmk#clean(1)<cr>
-    nnoremap <silent><buffer> <localleader>lg :call latex#latexmk#status(0)<cr>
-    nnoremap <silent><buffer> <localleader>lG :call latex#latexmk#status(1)<cr>
-    nnoremap <silent><buffer> <localleader>lk :call latex#latexmk#stop()<cr>
-    nnoremap <silent><buffer> <localleader>lK :call latex#latexmk#stop_all()<cr>
-    nnoremap <silent><buffer> <localleader>le :call latex#latexmk#errors(1)<cr>
-    nnoremap <silent><buffer> <localleader>lo :call latex#latexmk#output()<cr>
-  endif
+  " Define mappings
+  nnoremap <buffer> <plug>VimLatexCompile       :call latex#latexmk#compile()<cr>
+  nnoremap <buffer> <plug>VimLatexCompileSS     :call latex#latexmk#compile_ss(0)<cr>
+  nnoremap <buffer> <plug>VimLatexCompileToggle :call latex#latexmk#toggle()<cr>
+  nnoremap <buffer> <plug>VimLatexCompileOutput :call latex#latexmk#output()<cr>
+  nnoremap <buffer> <plug>VimLatexStop          :call latex#latexmk#stop()<cr>
+  nnoremap <buffer> <plug>VimLatexStopAll       :call latex#latexmk#stop_all()<cr>
+  nnoremap <buffer> <plug>VimLatexErrors        :call latex#latexmk#errors(1)<cr>
+  nnoremap <buffer> <plug>VimLatexClean         :call latex#latexmk#clean(0)<cr>
+  nnoremap <buffer> <plug>VimLatexCleanFull     :call latex#latexmk#clean(1)<cr>
+  nnoremap <buffer> <plug>VimLatexStatus        :call latex#latexmk#status(0)<cr>
+  nnoremap <buffer> <plug>VimLatexStatusAll     :call latex#latexmk#status(1)<cr>
 
   " The remaining part is only relevant for continuous mode
   if !g:latex_latexmk_continuous | return | endif
@@ -172,7 +171,7 @@ function! latex#latexmk#compile() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#compile_singleshot(verbose) " {{{1
+function! latex#latexmk#compile_ss(verbose) " {{{1
   let data = g:latex#data[b:latex.id]
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"

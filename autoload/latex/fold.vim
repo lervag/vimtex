@@ -44,7 +44,7 @@ function! latex#fold#init(initialized) " {{{1
   nnoremap <silent><buffer> zx :call latex#fold#refresh('zx')<cr>
   nnoremap <silent><buffer> zX :call latex#fold#refresh('zX')<cr>
 
-  " Define commands and maps
+  " Define commands
   command! -buffer VimLatexRefreshFolds call latex#fold#refresh('zx')
 
   " Set options for automatic/manual mode

@@ -11,44 +11,36 @@ function! latex#motion#init(initialized) " {{{1
   " Set default options
   call latex#util#set_default('g:latex_motion_matchparen', 1)
 
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> % :call latex#motion#find_matching_pair()<cr>
-    xnoremap <silent><buffer> %
-          \ :<c-u>call latex#motion#find_matching_pair(1)<cr>
-    onoremap <silent><buffer> % :normal v%<cr>
+  " Define mappings
+  nnoremap <buffer> <plug>VimLatex%  :call latex#motion#find_matching_pair()<cr>
+  xnoremap <buffer> <plug>VimLatex%  :<c-u>call latex#motion#find_matching_pair(1)<cr>
+  onoremap <buffer> <plug>VimLatex%  :normal v%<cr>
+  nnoremap <buffer> <plug>VimLatex]] :call latex#motion#next_section(0,0,0)<cr>
+  nnoremap <buffer> <plug>VimLatex][ :call latex#motion#next_section(1,0,0)<cr>
+  nnoremap <buffer> <plug>VimLatex[] :call latex#motion#next_section(1,1,0)<cr>
+  nnoremap <buffer> <plug>VimLatex[[ :call latex#motion#next_section(0,1,0)<cr>
+  xnoremap <buffer> <plug>VimLatex]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
+  xnoremap <buffer> <plug>VimLatex][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
+  xnoremap <buffer> <plug>VimLatex[] :<c-u>call latex#motion#next_section(1,1,1)<cr>
+  xnoremap <buffer> <plug>VimLatex[[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
+  onoremap <buffer> <plug>VimLatex]] :normal v]]<cr>
+  onoremap <buffer> <plug>VimLatex][ :normal v][<cr>
+  onoremap <buffer> <plug>VimLatex[] :normal v[]<cr>
+  onoremap <buffer> <plug>VimLatex[[ :normal v[[<cr>
+  xnoremap <buffer> <plug>VimLatexie :<c-u>call latex#motion#sel_environment(1)<cr>
+  xnoremap <buffer> <plug>VimLatexae :<c-u>call latex#motion#sel_environment()<cr>
+  onoremap <buffer> <plug>VimLatexie :normal vie<cr>
+  onoremap <buffer> <plug>VimLatexae :normal vae<cr>
+  xnoremap <buffer> <plug>VimLatexi$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
+  xnoremap <buffer> <plug>VimLatexa$ :<c-u>call latex#motion#sel_inline_math()<cr>
+  onoremap <buffer> <plug>VimLatexi$ :normal vi$<cr>
+  onoremap <buffer> <plug>VimLatexa$ :normal va$<cr>
+  xnoremap <buffer> <plug>VimLatexid :<c-u>call latex#motion#sel_delimiter(1)<cr>
+  xnoremap <buffer> <plug>VimLatexad :<c-u>call latex#motion#sel_delimiter()<cr>
+  onoremap <buffer> <plug>VimLatexid :normal vi(<cr>
+  onoremap <buffer> <plug>VimLatexad :normal va(<cr>
 
-    nnoremap <silent><buffer> ]] :call latex#motion#next_section(0,0,0)<cr>
-    nnoremap <silent><buffer> ][ :call latex#motion#next_section(1,0,0)<cr>
-    nnoremap <silent><buffer> [] :call latex#motion#next_section(1,1,0)<cr>
-    nnoremap <silent><buffer> [[ :call latex#motion#next_section(0,1,0)<cr>
-    xnoremap <silent><buffer> ]] :<c-u>call latex#motion#next_section(0,0,1)<cr>
-    xnoremap <silent><buffer> ][ :<c-u>call latex#motion#next_section(1,0,1)<cr>
-    xnoremap <silent><buffer> [] :<c-u>call latex#motion#next_section(1,1,1)<cr>
-    xnoremap <silent><buffer> [[ :<c-u>call latex#motion#next_section(0,1,1)<cr>
-    onoremap <silent><buffer> ]] :normal v]]<cr>
-    onoremap <silent><buffer> ][ :normal v][<cr>
-    onoremap <silent><buffer> [] :normal v[]<cr>
-    onoremap <silent><buffer> [[ :normal v[[<cr>
-
-    xnoremap <silent><buffer> ie :<c-u>call latex#motion#sel_environment(1)<cr>
-    xnoremap <silent><buffer> ae :<c-u>call latex#motion#sel_environment()<cr>
-    onoremap <silent><buffer> ie :normal vie<cr>
-    onoremap <silent><buffer> ae :normal vae<cr>
-
-    xnoremap <silent><buffer> i$ :<c-u>call latex#motion#sel_inline_math(1)<cr>
-    xnoremap <silent><buffer> a$ :<c-u>call latex#motion#sel_inline_math()<cr>
-    onoremap <silent><buffer> i$ :normal vi$<cr>
-    onoremap <silent><buffer> a$ :normal va$<cr>
-
-    xnoremap <silent><buffer> id :<c-u>call latex#motion#sel_delimiter(1)<cr>
-    xnoremap <silent><buffer> ad :<c-u>call latex#motion#sel_delimiter()<cr>
-    onoremap <silent><buffer> id :normal vi(<cr>
-    onoremap <silent><buffer> ad :normal va(<cr>
-  endif
-
-  "
   " Highlight matching parens ($, (), ...)
-  "
   if !a:initialized && g:latex_motion_matchparen
     augroup latex_motion
       autocmd!

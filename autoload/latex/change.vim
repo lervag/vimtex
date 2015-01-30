@@ -5,21 +5,15 @@
 "
 
 function! latex#change#init(initialized) " {{{1
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> dse :call latex#change#env('')<cr>
-    nnoremap <silent><buffer> cse :call latex#change#env_prompt()<cr>
-
-    nnoremap <silent><buffer> dsc vaBom`o<esc>xg``xdF\
-    nnoremap <silent><buffer> csc :call latex#change#command()<cr>
-
-    nnoremap <silent><buffer> tse :call latex#change#toggle_env_star()<cr>
-    nnoremap <silent><buffer> tsd :call latex#change#toggle_delim()<cr>
-
-    nnoremap <silent><buffer> <F7> :call latex#change#to_command()<cr>i
-    inoremap <silent><buffer> <F7> <c-r>=latex#change#to_command()<cr>
-
-    inoremap <silent><buffer> ]]   <c-r>=latex#change#close_environment()<cr>
-  endif
+  nnoremap <buffer> <plug>VimLatexDeleteEnv     :call latex#change#env('')<cr>
+  nnoremap <buffer> <plug>VimLatexDeleteCmd     vaBom`o<esc>xg``xdF\
+  nnoremap <buffer> <plug>VimLatexChangeEnv     :call latex#change#env_prompt()<cr>
+  nnoremap <buffer> <plug>VimLatexChangeCmd     :call latex#change#command()<cr>
+  nnoremap <buffer> <plug>VimLatexToggleEnvStar :call latex#change#toggle_env_star()<cr>
+  nnoremap <buffer> <plug>VimLatexToggleDelim   :call latex#change#toggle_delim()<cr>
+  nnoremap <buffer> <plug>VimLatexChangeToCmd   :call latex#change#to_command()<cr>i
+  inoremap <buffer> <plug>VimLatexChangeToCmd   <c-r>=latex#change#to_command()<cr>
+  inoremap <buffer> <plug>VimLatexCloseEnv      <c-r>=latex#change#close_environment()<cr>
 endfunction
 
 function! latex#change#command() " {{{1

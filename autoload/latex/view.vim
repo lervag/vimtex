@@ -8,9 +8,7 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_enabled', 1)
   if !g:latex_view_enabled | return | endif
 
-  "
   " Set default options
-  "
   call latex#util#set_default('g:latex_view_general_options', '')
   call latex#util#set_default_os_specific('g:latex_view_general_viewer',
         \ {
@@ -24,9 +22,7 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
-  "
   " Set view functions
-  "
   let data = g:latex#data[b:latex.id]
   if g:latex_view_method == 'mupdf'
     call s:init_mupdf()
@@ -43,26 +39,18 @@ function! latex#view#init(initialized) " {{{1
     let data.view = function('latex#view#general')
   endif
 
-  "
   " Define commands
-  "
   command! -buffer VimLatexView call g:latex#data[b:latex.id].view()
   if has_key(data, 'rsearch')
     command! -buffer -nargs=* VimLatexRSearch
           \ call g:latex#data[b:latex.id].rsearch()
   endif
 
-  "
   " Define mappings
-  "
-  if g:latex_mappings_enabled
-    nnoremap <silent><buffer> <localleader>lv
-          \ :call g:latex#data[b:latex.id].view()<cr>
-
-    if has_key(data, 'rsearch')
-      nnoremap <silent><buffer> <localleader>lr
-            \ :call g:latex#data[b:latex.id].rsearch()<cr>
-    endif
+  nnoremap <buffer> <plug>VimLatexView :call g:latex#data[b:latex.id].view()<cr>
+  if has_key(data, 'rsearch')
+    nnoremap <buffer> <plug>VimLatexRSearch
+          \ :call g:latex#data[b:latex.id].rsearch()<cr>
   endif
 endfunction
 
