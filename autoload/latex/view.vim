@@ -87,9 +87,7 @@ endfunction
 function! latex#view#mupdf() "{{{1
   if !s:mupdf_exists_win()
     call s:mupdf_start()
-  endif
-
-  if s:mupdf_forward_search
+  elseif s:mupdf_forward_search
     call s:mupdf_forward_search()
   endif
 endfunction
@@ -118,6 +116,11 @@ function! latex#view#mupdf_poststart() "{{{1
     endif
 
     silent execute '!xdotool windowfocus ' . v:windowid
+  endif
+
+  " Finally do a forward search
+  if s:mupdf_forward_search
+    call s:mupdf_forward_search()
   endif
 endfunction
 
