@@ -29,17 +29,17 @@ function! latex#view#init(initialized) " {{{1
   "
   let data = g:latex#data[b:latex.id]
   if g:latex_view_method == 'mupdf'
-    call s:check_method_mupdf()
+    call s:init_mupdf()
     let data.view = function('latex#view#mupdf')
     let data.rsearch = function('latex#view#mupdf_rsearch')
   elseif g:latex_view_method == 'okular'
-    call s:check_method_okular()
+    call s:init_okular()
     let data.view = function('latex#view#okular')
   elseif g:latex_view_method == 'sumatrapdf'
-    call s:check_method_sumatrapdf()
+    call s:init_sumatrapdf()
     let data.view = function('latex#view#sumatrapdf')
   else
-    call s:check_method_general()
+    call s:init_general()
     let data.view = function('latex#view#general')
   endif
 
@@ -95,16 +95,18 @@ endfunction
 " }}}1
 function! latex#view#mupdf_poststart() "{{{1
   " First get the window id
-  let mupdf_ids = []
-  if executable('xdotool')
-    let cmd  = 'xdotool search --class MuPDF'
-    let mupdf_ids = systemlist(cmd)
-  endif
-  if len(mupdf_ids) == 0
-    echomsg "Couldn't find MuPDF window ID!"
-    let g:latex#data[b:latex.id].mupdf_id = 0
-  else
-    let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+  if g:latex#data[b:latex.id].mupdf_id == 0
+    let mupdf_ids = []
+    if executable('xdotool')
+      let cmd  = 'xdotool search --class MuPDF'
+      let mupdf_ids = systemlist(cmd)
+    endif
+    if len(mupdf_ids) == 0
+      echomsg "Couldn't find MuPDF window ID!"
+      let g:latex#data[b:latex.id].mupdf_id = 0
+    else
+      let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+    endif
   endif
 
   " Next return focus to vim and send some keys to mupdf if desired
@@ -210,7 +212,7 @@ endfunction
 
 " }}}1
 
-function! s:check_method_general() "{{{1
+function! s:init_general() "{{{1
   if !executable(g:latex_view_general_viewer)
     echoerr "General viewer is not available!"
     echoerr "g:latex_view_general_viewer = "
@@ -219,24 +221,29 @@ function! s:check_method_general() "{{{1
 endfunction
 
 " }}}1
-function! s:check_method_mupdf() "{{{1
+function! s:init_mupdf() "{{{1
   if !executable('mupdf')
     echoerr "MuPDF is not available!"
   endif
 
   " Check if forward search is possible
   let s:mupdf_forward_search = executable('synctex') && executable('xdotool')
+
+  " Initialize mupdf_id
+  if !has_key(g:latex#data[b:latex.id], 'mupdf_id')
+    let g:latex#data[b:latex.id].mupdf_id = 0
+  endif
 endfunction
 
 " }}}1
-function! s:check_method_sumatrapdf() "{{{1
+function! s:init_sumatrapdf() "{{{1
   if !executable('SumatraPDF')
     echoerr "SumatraPDF is not available!"
   endif
 endfunction
 
 "}}}1
-function! s:check_method_okular() "{{{1
+function! s:init_okular() "{{{1
   if !executable('okular')
     echoerr "okular is not available!"
   endif
@@ -245,10 +252,6 @@ endfunction
 "}}}1
 
 function! s:mupdf_exists_win() "{{{1
-  if !has_key(g:latex#data[b:latex.id], 'mupdf_id')
-    let g:latex#data[b:latex.id].mupdf_id = 0
-  endif
-
   if executable('xdotool')
     let cmd  = 'xdotool search --class MuPDF'
     let mupdf_ids = systemlist(cmd)
