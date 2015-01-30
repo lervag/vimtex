@@ -5,16 +5,25 @@
 "
 
 function! latex#change#init(initialized) " {{{1
-  nnoremap <silent><buffer> <plug>(vl-delete-env)   :call latex#change#env('')<cr>
+  " Define mappings
+  nnoremap <silent><buffer> <plug>(vl-delete-env)
+        \ :call latex#change#env('')<cr>
   nnoremap <silent><buffer> <plug>(vl-delete-cmd)   vaBom`o<esc>xg``xdF\
         \:silent! call repeat#set("\<plug>(vl-delete-cmd)", v:count)<cr>
-  nnoremap <silent><buffer> <plug>(vl-change-env)   :call latex#change#env_prompt()<cr>
-  nnoremap <silent><buffer> <plug>(vl-change-cmd)   :call latex#change#command()<cr>
-  nnoremap <silent><buffer> <plug>(vl-toggle-star)  :call latex#change#toggle_env_star()<cr>
-  nnoremap <silent><buffer> <plug>(vl-toggle-delim) :call latex#change#toggle_delim()<cr>
-  nnoremap <silent><buffer> <plug>(vl-create-cmd)   :call latex#change#to_command()<cr>i
-  inoremap <silent><buffer> <plug>(vl-create-cmd)   <c-r>=latex#change#to_command()<cr>
-  inoremap <silent><buffer> <plug>(vl-close-env)    <c-r>=latex#change#close_environment()<cr>
+  nnoremap <silent><buffer> <plug>(vl-change-env)
+        \ :call latex#change#env_prompt()<cr>
+  nnoremap <silent><buffer> <plug>(vl-change-cmd)
+        \ :call latex#change#command()<cr>
+  nnoremap <silent><buffer> <plug>(vl-toggle-star)
+        \ :call latex#change#toggle_env_star()<cr>
+  nnoremap <silent><buffer> <plug>(vl-toggle-delim)
+        \ :call latex#change#toggle_delim()<cr>
+  nnoremap <silent><buffer> <plug>(vl-create-cmd)
+        \ :call latex#change#to_command()<cr>i
+  inoremap <silent><buffer> <plug>(vl-create-cmd)
+        \ <c-r>=latex#change#to_command()<cr>
+  inoremap <silent><buffer> <plug>(vl-close-env)
+        \ <c-r>=latex#change#close_environment()<cr>
 endfunction
 
 function! latex#change#command() " {{{1
