@@ -14,8 +14,8 @@ function! latex#mappings#init(initialized)
 
   " Change
   nnoremap <buffer> dse  <plug>VimLatexDeleteEnv
-  nnoremap <buffer> cse  <plug>VimLatexDeleteCmd
-  nnoremap <buffer> dsc  <plug>VimLatexChangeEnv
+  nnoremap <buffer> dsc  <plug>VimLatexDeleteCmd
+  nnoremap <buffer> cse  <plug>VimLatexChangeEnv
   nnoremap <buffer> csc  <plug>VimLatexChangeCmd
   nnoremap <buffer> tse  <plug>VimLatexToggleEnvStar
   nnoremap <buffer> tsd  <plug>VimLatexToggleDelim
