@@ -156,6 +156,10 @@ function! latex#latexmk#compile() " {{{1
 
   " Build command line and start latexmk
   let exe = s:latexmk_build_cmd(data)
+  if !g:latex_latexmk_continuous && !g:latex_latexmk_background
+    let exe.bg = 0
+    let exe.silent = 0
+  endif
   call latex#util#execute(exe)
 
   if g:latex_latexmk_continuous
@@ -170,7 +174,6 @@ endfunction
 " }}}1
 function! latex#latexmk#compile_singleshot(verbose) " {{{1
   let data = g:latex#data[b:latex.id]
-
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"
     return
@@ -178,18 +181,13 @@ function! latex#latexmk#compile_singleshot(verbose) " {{{1
 
   let l:latex_latexmk_continuous = g:latex_latexmk_continuous
   let g:latex_latexmk_continuous = 0
-  call s:latexmk_set_cmd(data)
-  let g:latex_latexmk_continuous = l:latex_latexmk_continuous
-
-  " Start latexmk
-  let exe = {}
-  let exe.null = 0
+  let exe = s:latexmk_build_cmd(data)
   if a:verbose
     let exe.bg = 0
     let exe.silent = 0
   endif
-  let exe.cmd  = data.cmds.compile
   call latex#util#execute(exe)
+  let g:latex_latexmk_continuous = l:latex_latexmk_continuous
 endfunction
 
 " }}}1
@@ -377,11 +375,6 @@ function! s:latexmk_build_cmd(data) " {{{1
   let exe.cmd  = cmd
   let a:data.cmds.compile = cmd
   let a:data.tmp = tmp
-
-  if !g:latex_latexmk_continuous && !g:latex_latexmk_background
-    let exe.bg = 0
-    let exe.silent = 0
-  endif
 
   return exe
 endfunction
