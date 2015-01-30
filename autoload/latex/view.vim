@@ -77,7 +77,7 @@ function! latex#view#general() " {{{1
     return
   endif
   let exe.cmd .= ' ' . g:latex_view_general_options
-  let exe.cmd .= ' ' . shellescape(outfile)
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
@@ -180,9 +180,9 @@ function! latex#view#sumatrapdf() "{{{1
 
   let exe = {}
   let exe.cmd = 'SumatraPDF ' . g:latex_view_sumatrapdf_options
-  let exe.cmd .= ' -forward-search ' . shellescape(expand('%:p'))
+  let exe.cmd .= ' -forward-search ' . latex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ' ' . line('.')
-  let exe.cmd .= ' ' . shellescape(outfile)
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
@@ -198,8 +198,8 @@ function! latex#view#okular() "{{{1
 
   let exe = {}
   let exe.cmd = 'okular ' . g:latex_view_okular_options
-  let exe.cmd .= ' --unique ' . shellescape(outfile)
-  let exe.cmd .= '\#src:' . line('.') . shellescape(expand('%:p'))
+  let exe.cmd .= ' --unique ' . latex#util#fnameescape(outfile)
+  let exe.cmd .= '\#src:' . line('.') . latex#util#fnameescape(expand('%:p'))
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
@@ -264,8 +264,8 @@ function! s:mupdf_forward_search() "{{{1
   let l:cmd = "synctex view -i "
         \ . (line(".") + 1) . ":"
         \ . (col(".") + 1) . ":"
-        \ . shellescape(expand("%:p"))
-        \ . " -o " . shellescape(outfile)
+		\ . latex#util#fnameescape(expand("%:p"))
+        \ . " -o " . latex#util#fnameescape(outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let l:page = system(l:cmd)
   let g:latex#data[b:latex.id].cmds.view_mupdf_synctex = l:cmd
@@ -292,7 +292,7 @@ function! s:mupdf_start() "{{{1
   " Start MuPDF
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:latex_view_mupdf_options
-  let exe.cmd .= ' ' . shellescape(outfile)
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 

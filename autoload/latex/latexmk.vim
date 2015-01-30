@@ -110,7 +110,7 @@ function! latex#latexmk#clean(full) " {{{1
   " Run latexmk clean process
   "
   if has('win32')
-    let cmd = 'cd /D ' . shellescape(data.root) . ' & '
+	let cmd = 'cd /D "' . data.root . '" & '
   else
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
@@ -120,7 +120,7 @@ function! latex#latexmk#clean(full) " {{{1
   else
     let cmd .= ' -c '
   endif
-  let cmd .= shellescape(data.base)
+  let cmd .= latex#util#fnameescape(data.base)
   let g:latex#data[b:latex.id].cmds.clean = cmd
   let exe = {
         \ 'cmd' : cmd,
@@ -331,7 +331,7 @@ function! s:latexmk_build_cmd(data) " {{{1
   let tmp = tempname()
 
   if has('win32')
-    let cmd  = 'cd /D ' . shellescape(a:data.root)
+    let cmd  = 'cd /D "' . a:data.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
   else
     let cmd  = 'cd ' . shellescape(a:data.root)
@@ -363,7 +363,7 @@ function! s:latexmk_build_cmd(data) " {{{1
     let s:first_callback = 1
   endif
 
-  let cmd .= ' ' . shellescape(a:data.base)
+  let cmd .= ' ' . latex#util#fnameescape(a:data.base)
 
   if g:latex_latexmk_continuous || g:latex_latexmk_background
     if has('win32')

@@ -6,6 +6,18 @@
 " Utility functions sorted by name
 "
 
+function! latex#util#fnameescape(path)
+  "
+  " In a Windows environment, a path used in "cmd" only needs to be
+  " enclosed by double quotes. shellscape() on Windows with 
+  " "shellslash" set will produce a path enclosed by single quotes, 
+  " which "cmd" does not recognize and reports an error.
+  " Any path that goes into latex#util#execute() should be 
+  " processed through this function.
+  "
+  return has('win32') ? '"' . a:path . '"' : shellescape(a:path)
+endfunction
+
 function! latex#util#convert_back(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
