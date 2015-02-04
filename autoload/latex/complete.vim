@@ -353,8 +353,11 @@ endfunction
 function! s:labels_extract_inputs(file) " {{{2
   let matches = []
   let root = fnamemodify(a:file, ':p:h') . '/'
-  for line in filter(readfile(a:file), 'v:val =~ ''\\@input{''')
-    call add(matches, root . matchstr(line, '{\zs.*\ze}'))
+  for input in filter(readfile(a:file), 'v:val =~ ''\\@input{''')
+    let input = matchstr(input, '{\zs.*\ze}')
+    let input = substitute(input, '"', '', 'g')
+    let input = root . input
+    call add(matches, input)
   endfor
   return matches
 endfunction
