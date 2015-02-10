@@ -35,6 +35,7 @@ CONTENTS                                                  *vim-latex-contents*
     8. Indentation .......................... |vim-latex-indent|
     9. Latexmk .............................. |vim-latex-latexmk|
        Latexmk tricks ....................... |vim-latex-latexmk-tricks|
+       Lacheck .............................. |vim-latex-latexmk-lacheck|
    10. View ................................. |vim-latex-view|
        synctex .............................. |vim-latex-synctex|
    11. Motion ............................... |vim-latex-motion|
@@ -252,6 +253,7 @@ Below the commands are listed in alphabetical order.
 *VimLatexErrors!*              call latex#latexmk#errors(0)
 *VimLatexHelp*                 call latex#help()
 *VimLatexInfo*                 call latex#info()
+*VimLatexLacheck*              call latex#latexmk#lacheck()
 *VimLatexOutput*               call latex#latexmk#output()
 *VimLatexRefreshFolds*         call latex#fold#refresh()
 *VimLatexReinitialize*         call latex#reinit()
@@ -744,6 +746,7 @@ Functions:
     |latex#latexmk#compile|
     |latex#latexmk#compile_singleshot|
     |latex#latexmk#errors|
+    |latex#latexmk#lacheck|
     |latex#latexmk#output|
     |latex#latexmk#status|
     |latex#latexmk#stop|
@@ -751,7 +754,8 @@ Functions:
     |latex#latexmk#toggle|
 
 ------------------------------------------------------------------------------
-Latexmk tricks:~                                    *vim-latex-latexmk-tricks*
+                                                    *vim-latex-latexmk-tricks*
+Latexmk tricks~
 
 `latexmk` allows to set options through a configuration file
 `$HOME/.latexmkrc`.  A particular set of options are very convenient for
@@ -785,6 +789,17 @@ is then on the following form: >
 This command is then appended to the existing `$success_cmd` and
 `$failure_cmd`.  Note that if the existing commands are not empty, then they
 must end with a semicolon in order to allow |vim-latex| to append safely.
+
+------------------------------------------------------------------------------
+                                                   *vim-latex-latexmk-lacheck*
+Lacheck~
+
+After compilation of a LaTeX document, the log file will contain errors that
+are parsed by |vim-latex| as explained above.  However, there does exist
+syntax checker for LaTeX.  We here provide a simple interface to `lacheck` for
+checking your LaTeX manuscript for errors.
+
+Your manuscript may be checked using `lacheck` with the command `VimLatexLacheck`.
 
 ==============================================================================
 VIEW                                                          *vim-latex-view*

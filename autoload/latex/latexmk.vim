@@ -43,6 +43,7 @@ function! latex#latexmk#init(initialized) " {{{1
   command! -buffer -bang VimLatexErrors        call latex#latexmk#errors(<q-bang> == "!")
   command! -buffer -bang VimLatexClean         call latex#latexmk#clean(<q-bang> == "!")
   command! -buffer -bang VimLatexStatus        call latex#latexmk#status(<q-bang> == "!")
+  command! -buffer       VimLatexLacheck       call latex#latexmk#lacheck()
 
   " Define mappings
   nnoremap <buffer> <plug>(vl-compile)        :call latex#latexmk#compile()<cr>
@@ -56,6 +57,7 @@ function! latex#latexmk#init(initialized) " {{{1
   nnoremap <buffer> <plug>(vl-clean-full)     :call latex#latexmk#clean(1)<cr>
   nnoremap <buffer> <plug>(vl-status)         :call latex#latexmk#status(0)<cr>
   nnoremap <buffer> <plug>(vl-status-all)     :call latex#latexmk#status(1)<cr>
+  nnoremap <buffer> <plug>(vl-lacheck)        :call latex#latexmk#lacheck()<cr>
 
   " The remaining part is only relevant for continuous mode
   if !g:latex_latexmk_continuous | return | endif
@@ -135,6 +137,18 @@ function! latex#latexmk#clean(full) " {{{1
   else
     echomsg "latexmk clean finished"
   endif
+endfunction
+
+" }}}1
+function! latex#latexmk#lacheck() " {{{1
+  compiler lacheck
+
+  silent lmake %
+  lwindow
+  silent redraw!
+  wincmd p
+
+  compiler latexmk
 endfunction
 
 " }}}1
