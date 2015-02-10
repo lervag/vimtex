@@ -10,7 +10,6 @@ let s:initialized = 0
 function! latex#init() " {{{1
   call s:init_options()
   call s:init_environment()
-  call s:init_errorformat()
 
   call latex#toc#init(s:initialized)
   call latex#fold#init(s:initialized)
@@ -154,53 +153,6 @@ function! s:init_environment() " {{{1
   nnoremap <buffer> <plug>(vl-reinit) :call latex#reinit()<cr>
 endfunction
 
-function! s:init_errorformat() " {{{1
-  "
-  " Note: The error formats assume we're using the -file-line-error with
-  "       [pdf]latex. For more info, see |errorformat-LaTeX|.
-  "
-
-  " Push file to file stack
-  setlocal efm=%-P**%f
-  setlocal efm+=%-P**\"%f\"
-
-  " Match errors
-  setlocal efm+=%E!\ LaTeX\ %trror:\ %m
-  setlocal efm+=%E%f:%l:\ %m
-  setlocal efm+=%E!\ %m
-
-  " More info for undefined control sequences
-  setlocal efm+=%Z<argument>\ %m
-
-  " More info for some errors
-  setlocal efm+=%Cl.%l\ %m
-
-  " Show warnings
-  if ! g:latex_quickfix_ignore_all_warnings
-    " Ignore some warnings
-    for w in g:latex_quickfix_ignored_warnings
-      let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
-      exe 'setlocal efm+=%-G%.%#'. warning .'%.%#'
-    endfor
-    setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-    setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
-    setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
-    setlocal efm+=%+W%.%#%.%#Warning:\ %m
-
-    " Parse biblatex warnings
-    setlocal efm+=%-C(biblatex)%.%#in\ t%.%#
-    setlocal efm+=%-C(biblatex)%.%#Please\ v%.%#
-    setlocal efm+=%-C(biblatex)%.%#LaTeX\ a%.%#
-    setlocal efm+=%-Z(biblatex)%m
-
-    " Parse hyperref warnings
-    setlocal efm+=%-C(hyperref)%.%#on\ input\ line\ %l.
-  endif
-
-  " Ignore unmatched lines
-  setlocal efm+=%-G%.%#
-endfunction
-" }}}1
 function! s:init_options() " {{{1
   call latex#util#set_default('g:latex_quickfix_ignore_all_warnings', 0)
   call latex#util#set_default('g:latex_quickfix_ignored_warnings', [])

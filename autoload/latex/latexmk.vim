@@ -25,6 +25,9 @@ function! latex#latexmk#init(initialized) " {{{1
   " Check system compatibility
   if s:system_incompatible() | return | endif
 
+  " Set compiler (this defines the errorformat)
+  compiler latexmk
+
   " Initialize pid for current tex file
   if !has_key(g:latex#data[b:latex.id], 'pid')
     let g:latex#data[b:latex.id].pid = 0
