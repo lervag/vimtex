@@ -795,8 +795,8 @@ must end with a semicolon in order to allow |vim-latex| to append safely.
 Lacheck~
 
 After compilation of a LaTeX document, the log file will contain errors that
-are parsed by |vim-latex| as explained above.  However, there does exist
-syntax checker for LaTeX.  We here provide a simple interface to `lacheck` for
+are parsed by |vim-latex| as explained above.  However, there are a syntax
+checkers for LaTeX, and we here provide a simple interface to `lacheck` for
 checking your LaTeX manuscript for errors.
 
 Your manuscript may be checked using `lacheck` with the command `VimLatexLacheck`.
