@@ -334,12 +334,13 @@ function! s:labels_extract(file) " {{{2
   "
   let matches = []
   let lines = readfile(a:file)
-  let lines = filter(lines, 'v:val =~ ''\\newlabel{''')
-  let lines = filter(lines, 'v:val !~ ''@cref''')
+  let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
+  let lines = filter(lines, 'v:val !~# ''@cref''')
   let lines = map(lines, 'latex#util#convert_back(v:val)')
   for line in lines
     let tree = latex#util#tex2tree(line)
     if !empty(tree[2][0])
+      echom PP(tree[2])
       call add(matches, [
             \ latex#util#tree2tex(tree[1][0]),
             \ latex#util#tree2tex(tree[2][0][0]),
