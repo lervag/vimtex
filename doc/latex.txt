@@ -63,15 +63,11 @@ Some of the functionalities of |vim-latex| has certain requirements:
     Requires that the user has installed both `latexmk` and `pgrep`.  If these
     are not available, then the functionalities provided by
     |vim-latex-latexmk| will not be available.
-    If you use Vim under a Terminal in Linux or MacOS, then Vim must also 
-    explicitly be started as a command server by appending the parameter
-    `--servername`. For example, `vim --servername VIM`. 
-    A ready and mostly sufficient way to ensure this, is by adding an alias 
-    `alias vim=vim --servername VIM` to your Shell (for example, in ~/.bashrc 
-    or ~/.zshrc). 
-    A more thorough solution is to create a shell script `vim` in $PATH that
-    calls vim with the argument `--servername VIM`. See Method (B)
-    at http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
+
+    If you use Vim under a terminal in Linux or MacOS, then Vim must be
+    started as a command server with the command line option `--servername`,
+    e.g. `vim --servername VIM`.  For different ways of ensuring this, see:
+    http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
 
   |vim-latex-completion|
     The function |latex#complete#bibtex| requires `bibtex` and `kpsewhich` to
