@@ -1,4 +1,5 @@
 # vim-latex
+
 ## Introduction
 
 There exists several LaTeX plugins for vim, for instance:
@@ -28,6 +29,7 @@ LaTeX-Suite in any way.
 Read the documentation for a more thorough introduction.
 
 ## Installation
+
 ### With gmarik vundle
 _https://github.com/gmarik/vundle_
 
@@ -52,3 +54,4 @@ clone`.  This will typically be enough:
 ### Without a plugin manager
 
 Copy the directories to your `.vim/` folder.
+
