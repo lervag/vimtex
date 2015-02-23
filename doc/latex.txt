@@ -850,9 +850,9 @@ Forward search~
 The functionality is enabled by choosing the desired viewer with the
 |g:latex_view_method| option.  The currently supported viewers are:
  * MuPDF
- * SumatraPDF
  * Okular
-More viewers and functionality will be implemented in the future.
+ * SumatraPDF
+ * Zathura
 
 Backward search~
 
@@ -868,6 +868,7 @@ search:
   * Okular
   * SumatraPDF
   * Evince (since version 2.91.3)
+  * Zathura
   
 Note: Inverse search relies on the |clientserver| functionality of vim.  Each
       instance of vim runs its own server.  The above mentioned standard value

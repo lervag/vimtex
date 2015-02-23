@@ -28,6 +28,9 @@ function! latex#view#init(initialized) " {{{1
     call s:init_mupdf()
     let data.view = function('latex#view#mupdf')
     let data.rsearch = function('latex#view#mupdf_rsearch')
+  elseif g:latex_view_method == 'zathura'
+    call s:init_zathura()
+    let data.view = function('latex#view#zathura')
   elseif g:latex_view_method == 'okular'
     call s:init_okular()
     let data.view = function('latex#view#okular')
@@ -199,6 +202,36 @@ function! latex#view#okular() "{{{1
 endfunction
 
 " }}}1
+function! latex#view#zathura() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  " Start zathura if not already started
+  if !g:latex#data[b:latex.id].zathura.started
+    let exe = {}
+    let exe.cmd  = 'zathura ' .  g:latex_view_mupdf_options
+    let exe.cmd .= ' -x "' . exepath(v:progname)
+          \ . ' --servername ' . v:servername
+          \ . ' --remote +\%{line} \%{input}"'
+    let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
+    call latex#util#execute(exe)
+    let g:latex#data[b:latex.id].cmds.view = exe.cmd
+    let g:latex#data[b:latex.id].zathura.started = 1
+  endif
+
+  " Do forward search
+  let exe = {}
+  let exe.cmd  = 'zathura --synctex-forward '
+  let exe.cmd .= line(".") . ':' . col('.') . ':% '
+  let exe.cmd .= latex#util#fnameescape(outfile)
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].zathura.fsearch = exe.cmd
+endfunction
+
+" }}}1
 
 function! s:init_general() "{{{1
   if !executable(g:latex_view_general_viewer)
@@ -238,6 +271,20 @@ function! s:init_okular() "{{{1
 endfunction
 
 "}}}1
+function! s:init_zathura() "{{{1
+  if !executable('zathura')
+    echoerr "Zathura is not available!"
+  endif
+
+  " Check if forward search is possible
+  let s:mupdf_forward_search = executable('synctex')
+
+  " Initialize zathura dictionary
+  let g:latex#data[b:latex.id].zathura = {}
+  let g:latex#data[b:latex.id].zathura.started = 0
+endfunction
+
+" }}}1
 
 function! s:mupdf_exists_win() "{{{1
   if executable('xdotool')
