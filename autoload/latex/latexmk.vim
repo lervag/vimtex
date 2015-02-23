@@ -98,6 +98,8 @@ function! latex#latexmk#callback(status) " {{{1
     let s:first_callback = 0
     if g:latex_view_method == 'mupdf'
       call latex#view#mupdf_poststart()
+    elseif g:latex_view_method == 'zathura'
+      call latex#view#zathura_poststart()
     endif
   endif
 endfunction
@@ -378,10 +380,12 @@ function! s:latexmk_build_cmd(data) " {{{1
     let failed   = v:progname
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"latex\#latexmk\#callback(0)\"'
-      let cmd .= ' -e ''$failure_cmd .= "' . failed . '"'''
-    endif
+    let cmd .= latex#latexmk#add_option('success_cmd', success)
+    let cmd .= latex#latexmk#add_option('failure_cmd', failed)
     let s:first_callback = 1
   endif
+
+  let cmd .= latex#view#append_latexmk_argument()
 
   let cmd .= ' ' . latex#util#fnameescape(a:data.base)
 

@@ -59,6 +59,17 @@ function! latex#view#init(initialized) " {{{1
 endfunction
 
 "}}}1
+function! latex#view#append_latexmk_argument() " {{{1
+  if g:latex_view_method == 'mupdf'
+    return s:mupdf_append_latexmk_argument()
+  elseif g:latex_view_method == 'zathura'
+    return s:zathura_append_latexmk_argument()
+  else
+    return ''
+  endif
+endfunction
+
+"}}}1
 function! latex#view#general() " {{{1
   let exe = {}
   let exe.cmd = g:latex_view_general_viewer
@@ -204,35 +215,40 @@ endfunction
 
 " }}}1
 function! latex#view#zathura() "{{{1
-  let outfile = g:latex#data[b:latex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
+  if !s:zathura_exists_win()
+    call s:zathura_start()
+  else
+    call s:zathura_forward_search()
   endif
-
-  " Start zathura if not already started
-  if !g:latex#data[b:latex.id].zathura_started
-    let exe = {}
-    let exe.cmd  = 'zathura ' .  g:latex_view_zathura_options
-    let exe.cmd .= ' -x "' . exepath(v:progname)
-          \ . ' --servername ' . v:servername
-          \ . ' --remote +\%{line} \%{input}"'
-    let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
-    call latex#util#execute(exe)
-    let g:latex#data[b:latex.id].cmds.view = exe.cmd
-    let g:latex#data[b:latex.id].zathura_started = 1
-  endif
-
-  " Do forward search
-  let exe = {}
-  let exe.cmd  = 'zathura --synctex-forward '
-  let exe.cmd .= line(".") . ':' . col('.') . ':% '
-  let exe.cmd .= latex#util#fnameescape(outfile)
-  call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].zathura.fsearch = exe.cmd
 endfunction
 
 " }}}1
+function! latex#view#zathura_poststart() "{{{1
+  " First get the window id
+  if g:latex#data[b:latex.id].zathura_id == 0
+    let zathura_ids = []
+    if executable('xdotool')
+      let cmd  = 'xdotool search --class Zathura'
+      let zathura_ids = systemlist(cmd)
+    endif
+    if len(zathura_ids) == 0
+      echomsg "Couldn't find Zathura window ID!"
+      let g:latex#data[b:latex.id].zathura_id = 0
+    else
+      let g:latex#data[b:latex.id].zathura_id = zathura_ids[-1]
+    endif
+  endif
+
+  " Next return focus to vim
+  if executable('xdotool')
+    silent execute '!xdotool windowfocus ' . v:windowid
+  endif
+
+  " Finally do a forward search
+  call s:zathura_forward_search()
+endfunction
+
+"}}}1
 
 function! s:init_general() "{{{1
   if !executable(g:latex_view_general_viewer)
@@ -277,7 +293,10 @@ function! s:init_zathura() "{{{1
     echoerr "Zathura is not available!"
   endif
 
-  let g:latex#data[b:latex.id].zathura_started = 0
+  " Initialize zathura_id
+  if !has_key(g:latex#data[b:latex.id], 'zathura_id')
+    let g:latex#data[b:latex.id].zathura_id = 0
+  endif
 endfunction
 
 " }}}1
@@ -335,6 +354,80 @@ function! s:mupdf_start() "{{{1
 
   call latex#view#mupdf_poststart()
 endfunction
+
+"}}}1
+function! s:mupdf_append_latexmk_argument() " {{{1
+  let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
+  let cmd .= latex#latexmk#add_option('pdf_update_method', '2')
+  let cmd .= latex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
+  let cmd .= latex#latexmk#add_option('pdf_previewer',
+        \ 'start mupdf ' .  g:latex_view_mupdf_options)
+  return cmd
+endfunction
+
+"}}}1
+
+function! s:zathura_exists_win() "{{{1
+  if executable('xdotool')
+    let cmd  = 'xdotool search --class Zathura'
+    let zathura_ids = systemlist(cmd)
+    for id in zathura_ids
+      if id == g:latex#data[b:latex.id].zathura_id | return 1 | endif
+    endfor
+  endif
+
+  return 0
+endfunction
+
+"}}}1
+function! s:zathura_forward_search() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  let exe = {}
+  let exe.cmd  = 'zathura --synctex-forward '
+  let exe.cmd .= line(".") . ':' . col('.') . ':% '
+  let exe.cmd .= latex#util#fnameescape(outfile)
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].zathura_fsearch = exe.cmd
+endfunction
+
+" }}}1
+function! s:zathura_start() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  let exe = {}
+  let exe.cmd  = 'zathura ' .  g:latex_view_zathura_options
+  let exe.cmd .= ' -x "' . exepath(v:progname)
+        \ . ' --servername ' . v:servername
+        \ . ' --remote +\%{line} \%{input}"'
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+
+  call latex#view#zathura_poststart()
+endfunction
+
+" }}}1
+function! s:zathura_append_latexmk_argument() " {{{1
+  let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
+  let cmd .= latex#latexmk#add_option('pdf_previewer',
+        \ 'start zathura ' . g:latex_view_zathura_options
+        \ . ' -x \"' . exepath(v:progname)
+        \ . ' --servername ' . v:servername
+        \ . ' --remote +\%{line} \%{input}\" \%S')
+
+  return cmd
+endfunction
+
+"}}}1
 
 "}}}1
 
