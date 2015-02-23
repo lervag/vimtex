@@ -335,6 +335,17 @@ endfunction
 
 " }}}1
 
+" Helper function(s) for building the latexmk command
+function! latex#latexmk#add_option(name, value) " {{{1
+  if has('win32')
+    return ' -e "$' . a:name . ' = ''' . a:value . '''"'
+  else
+    return ' -e ''$' . a:name . ' = "' . a:value . '"'''
+  endif
+endfunction
+
+"}}}1
+
 " Helper functions for latexmk command
 function! s:latexmk_build_cmd(data) " {{{1
   let exe = {}
@@ -367,11 +378,6 @@ function! s:latexmk_build_cmd(data) " {{{1
     let failed   = v:progname
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"latex\#latexmk\#callback(0)\"'
-    if has('win32')
-      let cmd .= ' -e "$success_cmd .= ''' . success . '''"'
-      let cmd .= ' -e "$failure_cmd .= ''' . failed . '''"'
-    else
-      let cmd .= ' -e ''$success_cmd .= "' . success . '"'''
       let cmd .= ' -e ''$failure_cmd .= "' . failed . '"'''
     endif
     let s:first_callback = 1
