@@ -20,6 +20,7 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_mupdf_send_keys', '')
   call latex#util#set_default('g:latex_view_okular_options', '')
   call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
+  call latex#util#set_default('g:latex_view_zathura_options', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
   " Set view functions
@@ -210,16 +211,16 @@ function! latex#view#zathura() "{{{1
   endif
 
   " Start zathura if not already started
-  if !g:latex#data[b:latex.id].zathura.started
+  if !g:latex#data[b:latex.id].zathura_started
     let exe = {}
-    let exe.cmd  = 'zathura ' .  g:latex_view_mupdf_options
+    let exe.cmd  = 'zathura ' .  g:latex_view_zathura_options
     let exe.cmd .= ' -x "' . exepath(v:progname)
           \ . ' --servername ' . v:servername
           \ . ' --remote +\%{line} \%{input}"'
     let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
     call latex#util#execute(exe)
     let g:latex#data[b:latex.id].cmds.view = exe.cmd
-    let g:latex#data[b:latex.id].zathura.started = 1
+    let g:latex#data[b:latex.id].zathura_started = 1
   endif
 
   " Do forward search
@@ -276,12 +277,7 @@ function! s:init_zathura() "{{{1
     echoerr "Zathura is not available!"
   endif
 
-  " Check if forward search is possible
-  let s:mupdf_forward_search = executable('synctex')
-
-  " Initialize zathura dictionary
-  let g:latex#data[b:latex.id].zathura = {}
-  let g:latex#data[b:latex.id].zathura.started = 0
+  let g:latex#data[b:latex.id].zathura_started = 0
 endfunction
 
 " }}}1
