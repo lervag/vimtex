@@ -8,6 +8,7 @@ let s:viewers = [
       \ 'general',
       \ 'mupdf',
       \ 'okular',
+      \ 'qpdfview',
       \ 'sumatrapdf',
       \ 'zathura',
       \ ]
@@ -201,6 +202,25 @@ function! latex#view#okular() "{{{1
 endfunction
 
 " }}}1
+function! latex#view#qpdfview() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  let exe = {}
+  let exe.cmd = 'qpdfview ' . g:latex_view_qpdfview_options
+  let exe.cmd .= ' --unique ' . latex#util#fnameescape(outfile)
+  let exe.cmd .= '\#src:' . latex#util#fnameescape(expand('%:p'))
+  let exe.cmd .= ':' . line('.')
+  let exe.cmd .= ':' . col('.')
+
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+endfunction
+
+" }}}1
 function! latex#view#sumatrapdf() "{{{1
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
@@ -282,6 +302,13 @@ endfunction
 function! s:init_okular() "{{{1
   if !executable('okular')
     echoerr "okular is not available!"
+  endif
+endfunction
+
+"}}}1
+function! s:init_qpdfview() "{{{1
+  if !executable('qpdfview')
+    echoerr "qpdfview is not available!"
   endif
 endfunction
 
