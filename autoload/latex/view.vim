@@ -4,15 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-let s:viewers = [
-      \ 'general',
-      \ 'mupdf',
-      \ 'okular',
-      \ 'qpdfview',
-      \ 'sumatrapdf',
-      \ 'zathura',
-      \ ]
-
 function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_enabled', 1)
   if !g:latex_view_enabled | return | endif
@@ -34,49 +25,86 @@ function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_mupdf_send_keys', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
-  " Initialize view functions
-  let init = 's:init_' . g:latex_view_method
-  let view = 'latex#view#' . g:latex_view_method
-  let rsearch = 'latex#view#' . g:latex_view_method . '_rsearch'
-  if !exists('*' . init)
-    echoerr "Selected viewer does not exist!"
+  let viewer = 's:' . g:latex_view_method
+  if !exists(viewer)
+    echoerr "Viewer does not exist!"
     echoerr "Viewer: " . g:latex_view_method
     return
   endif
-  execute 'call ' . init . '()'
-  execute 'let data.view = function(''' . view . ''')'
-  if exists('*' . rsearch)
-    execute 'let data.rsearch = function(''' . rsearch . ''')'
-  endif
+
+  execute 'let data.viewer = ' . viewer
+  call data.viewer.init()
 
   " Define commands
-  command! -buffer VimLatexView call g:latex#data[b:latex.id].view()
-  if has_key(data, 'rsearch')
+  command! -buffer VimLatexView call g:latex#data[b:latex.id].viewer.view()
+  if has_key(data.viewer, 'reverse_search')
     command! -buffer -nargs=* VimLatexRSearch
-          \ call g:latex#data[b:latex.id].rsearch()
+          \ call g:latex#data[b:latex.id].viewer.reverse_search()
   endif
 
   " Define mappings
-  nnoremap <buffer> <plug>(vl-view) :call g:latex#data[b:latex.id].view()<cr>
-  if has_key(data, 'rsearch')
+  nnoremap <buffer> <plug>(vl-view)
+        \ :call g:latex#data[b:latex.id].viewer.view()<cr>
+  if has_key(data.viewer, 'reverse_search')
     nnoremap <buffer> <plug>(vl-reverse-search)
-          \ :call g:latex#data[b:latex.id].rsearch()<cr>
+          \ :call g:latex#data[b:latex.id].viewer.reverse_search()<cr>
   endif
+
+  " " Initialize view functions
+  " let init = 's:init_' . g:latex_view_method
+  " let view = 'latex#view#' . g:latex_view_method
+  " let reverse_search = 'latex#view#' . g:latex_view_method . '_reverse_search'
+  " if !exists('*' . init)
+  "   echoerr "Selected viewer does not exist!"
+  "   echoerr "Viewer: " . g:latex_view_method
+  "   return
+  " endif
+  " execute 'call ' . init . '()'
+  " execute 'let data.view = function(''' . view . ''')'
+  " if exists('*' . reverse_search)
+  "   execute 'let data.reverse_search = function(''' . reverse_search . ''')'
+  " endif
+
+  " " Define commands
+  " command! -buffer VimLatexView call g:latex#data[b:latex.id].view()
+  " if has_key(data, 'reverse_search')
+  "   command! -buffer -nargs=* VimLatexreverse_search
+  "         \ call g:latex#data[b:latex.id].reverse_search()
+  " endif
+
+  " " Define mappings
+  " nnoremap <buffer> <plug>(vl-view) :call g:latex#data[b:latex.id].view()<cr>
+  " if has_key(data, 'reverse_search')
+  "   nnoremap <buffer> <plug>(vl-reverse-search)
+  "         \ :call g:latex#data[b:latex.id].reverse_search()<cr>
+  " endif
 endfunction
 
 "}}}1
-function! latex#view#append_latexmk_argument() " {{{1
-  if g:latex_view_method == 'mupdf'
-    return s:mupdf_append_latexmk_argument()
-  elseif g:latex_view_method == 'zathura'
-    return s:zathura_append_latexmk_argument()
-  else
-    return ''
+
+let s:viewers = [
+      \ 'general',
+      \ 'mupdf',
+      \ 'okular',
+      \ 'qpdfview',
+      \ 'sumatrapdf',
+      \ 'zathura',
+      \ ]
+for viewer in s:viewers
+  execute 'let s:' . viewer . ' = {}'
+endfor
+
+" {{{1 General
+function! s:general.init() dict "{{{2
+  if !executable(g:latex_view_general_viewer)
+    echoerr "General viewer is not available!"
+    echoerr "g:latex_view_general_viewer = "
+          \ . g:latex_view_general_viewer
   endif
 endfunction
 
-"}}}1
-function! latex#view#general() " {{{1
+" }}}2
+function! s:general.view() dict " {{{2
   let exe = {}
   let exe.cmd = g:latex_view_general_viewer
 
@@ -92,100 +120,193 @@ function! latex#view#general() " {{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 
-"}}}1
-function! latex#view#mupdf() "{{{1
-  if !s:mupdf_exists_win()
-    call s:mupdf_start()
-  elseif s:mupdf_forward_search
-    call s:mupdf_forward_search()
+" }}}2
+
+" {{{1 MuPDF
+function! s:mupdf.init() dict "{{{2
+  if !executable('mupdf')
+    echoerr "MuPDF is not available!"
+  endif
+
+  " Initialize X window ID
+  let self.xwin_id = 0
+endfunction
+
+" }}}2
+function! s:mupdf.view() dict "{{{2
+  if !self.exists()
+    call self.start()
+  else
+    call self.forward_search()
   endif
 endfunction
 
-" }}}1
-function! latex#view#mupdf_poststart() "{{{1
-  " First get the window id
-  if g:latex#data[b:latex.id].mupdf_id == 0
-    let mupdf_ids = []
-    if executable('xdotool')
-      let cmd  = 'xdotool search --class MuPDF'
-      let mupdf_ids = systemlist(cmd)
-    endif
-    if len(mupdf_ids) == 0
+" }}}2
+function! s:mupdf.exists() dict "{{{2
+  if !executable('xdotool') | return 0 | endif
+
+  let cmd = 'xdotool search --class MuPDF'
+  let xwin_ids = systemlist(cmd)
+  for id in xwin_ids
+    if id == self.xwin_id | return 1 | endif
+  endfor
+
+  return 0
+endfunction
+
+"}}}2
+function! s:mupdf.start() dict "{{{2
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  " Start MuPDF
+  let exe = {}
+  let exe.cmd  = 'mupdf ' .  g:latex_view_mupdf_options
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+
+  if !executable('xdotool') | return | endif
+
+  " Get window id
+  if self.xwin_id == 0
+    let cmd = 'xdotool search --class MuPDF'
+    let xwin_ids = systemlist(cmd)
+    if len(xwin_ids) == 0
       echomsg "Couldn't find MuPDF window ID!"
-      let g:latex#data[b:latex.id].mupdf_id = 0
+      let self.xwin_id = 0
     else
-      let g:latex#data[b:latex.id].mupdf_id = mupdf_ids[-1]
+      let self.xwin_id = xwin_ids[-1]
     endif
   endif
 
-  " Next return focus to vim and send some keys to mupdf if desired
-  if executable('xdotool')
-    if g:latex_view_mupdf_send_keys != ''
-      let cmd  = 'xdotool key --window ' . g:latex#data[b:latex.id].mupdf_id
-      let cmd .= ' ' . g:latex_view_mupdf_send_keys
-      call system(cmd)
-    endif
-
-    silent execute '!xdotool windowfocus ' . v:windowid
+  " Send keys to mupdf
+  if g:latex_view_mupdf_send_keys != ''
+    let cmd  = 'xdotool key --window ' . self.xwin_id
+    let cmd .= ' ' . g:latex_view_mupdf_send_keys
+    call system(cmd)
   endif
 
-  " Finally do a forward search
-  if s:mupdf_forward_search
-    call s:mupdf_forward_search()
+  call self.forward_search()
+endfunction
+
+"}}}2
+function! s:mupdf.forward_search() dict "{{{2
+  if !executable('synctex') || !executable('xdotool') | return | endif
+
+  let outfile = g:latex#data[b:latex.id].out()
+
+  let self.synctex_cmd = "synctex view -i "
+        \ . (line(".") + 1) . ":"
+        \ . (col(".") + 1) . ":"
+        \ . latex#util#fnameescape(expand("%:p"))
+        \ . " -o " . latex#util#fnameescape(outfile)
+        \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
+  let self.synctex_page = system(self.synctex_cmd)
+
+  if self.synctex_page > 0
+    let exe = {}
+    let exe.cmd  = 'xdotool'
+    let exe.cmd .= ' type --window ' . self.xwin_id
+    let exe.cmd .= ' "' . self.synctex_page . 'g"'
+    call latex#util#execute(exe)
+    let self.forward_search_cmd = exe.cmd
   endif
 endfunction
 
-"}}}1
-function! latex#view#mupdf_rsearch() "{{{1
-  if !s:mupdf_exists_win()
+"}}}2
+function! s:mupdf.reverse_search() dict "{{{2
+  if !self.exists()
     echomsg "Can't search backwards: Is the PDF file open?"
     return
   endif
 
-  let data = g:latex#data[b:latex.id]
-  let outfile = data.out()
-  let mupdf_id = data.mupdf_id
-  let data.mupdf_rsearch = {}
+  let outfile = g:latex#data[b:latex.id].out()
 
   " Get page number
-  let cmd  = "xdotool getwindowname " . mupdf_id
-  let cmd .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
-  let cmd .= " | tr -d '\n'"
-  let mupdf_page = system(cmd)
-  let data.mupdf_rsearch.page = mupdf_page
-  let data.mupdf_rsearch.page_cmd = cmd
-  if mupdf_page <= 0 | return | endif
+  let self.cmd_getpage  = "xdotool getwindowname " . self.xwin_id
+  let self.cmd_getpage .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
+  let self.cmd_getpage .= " | tr -d '\n'"
+  let self.page = system(self.cmd_getpage)
+  if self.page <= 0 | return | endif
 
   " Get file
-  let cmd  = "synctex edit "
-  let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
-  let cmd .= "| grep 'Input:' | sed 's/Input://' "
-  let cmd .= "| head -n1 | tr -d '\n' 2>/dev/null"
-  let mupdf_infile = system(cmd)
-  let data.mupdf_rsearch.infile = mupdf_infile
-  let data.mupdf_rsearch.infile_cmd = cmd
+  let self.cmd_getfile  = "synctex edit "
+  let self.cmd_getfile .= "-o \"" . self.page . ":288:108:" . outfile . "\""
+  let self.cmd_getfile .= "| grep 'Input:' | sed 's/Input://' "
+  let self.cmd_getfile .= "| head -n1 | tr -d '\n' 2>/dev/null"
+  let self.file = system(self.cmd_getfile)
 
   " Get line
-  let cmd  = "synctex edit "
-  let cmd .= "-o \"" . mupdf_page . ":288:108:" . outfile . "\""
-  let cmd .= "| grep -m1 'Line:' | sed 's/Line://' "
-  let cmd .= "| head -n1 | tr -d '\n'"
-  let line = system(cmd)
-  let data.mupdf_rsearch.line = line
-  let data.mupdf_rsearch.line_cmd = cmd
+  let self.cmd_getline  = "synctex edit "
+  let self.cmd_getline .= "-o \"" . self.page . ":288:108:" . outfile . "\""
+  let self.cmd_getline .= "| grep -m1 'Line:' | sed 's/Line://' "
+  let self.cmd_getline .= "| head -n1 | tr -d '\n'"
+  let self.line = system(self.cmd_getline)
 
   " Go to file and line
-  silent exec "edit " . mupdf_infile
-  if line > 0
-    silent exec ":" . line
+  silent exec "edit " . self.file
+  if self.line > 0
+    silent exec ":" . self.line
     " Unfold, move to top line to correspond to top pdf line, and go to end of
     " line in case the corresponding pdf line begins on previous pdf page.
     normal! zvztg_
   endif
 endfunction
 
-" }}}1
-function! latex#view#okular() "{{{1
+" }}}2
+function! s:mupdf.latexmk_callback() dict "{{{2
+  if !executable('xdotool') | return | endif
+
+  " Get window id
+  if self.xwin_id == 0
+    let cmd = 'xdotool search --class MuPDF'
+    let xwin_ids = systemlist(cmd)
+    if len(xwin_ids) == 0
+      echomsg "Couldn't find MuPDF window ID!"
+      let self.xwin_id = 0
+    else
+      let self.xwin_id = xwin_ids[-1]
+    endif
+  endif
+
+  " Send keys to mupdf
+  if g:latex_view_mupdf_send_keys != ''
+    let cmd  = 'xdotool key --window ' . self.xwin_id
+    let cmd .= ' ' . g:latex_view_mupdf_send_keys
+    call system(cmd)
+  endif
+
+  " Return focus to vim
+  silent execute '!xdotool windowfocus ' . v:windowid
+
+  call self.forward_search()
+endfunction
+
+"}}}2
+function! s:mupdf.latexmk_append_argument() dict " {{{2
+  let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
+  let cmd .= latex#latexmk#add_option('pdf_update_method', '2')
+  let cmd .= latex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
+  let cmd .= latex#latexmk#add_option('pdf_previewer',
+        \ 'start mupdf ' .  g:latex_view_mupdf_options)
+  return cmd
+endfunction
+
+"}}}2
+
+" {{{1 Okular
+function! s:okular.init() dict "{{{2
+  if !executable('okular')
+    echoerr "okular is not available!"
+  endif
+endfunction
+
+"}}}2
+function! s:okular.view() dict "{{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -201,8 +322,17 @@ function! latex#view#okular() "{{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 
-" }}}1
-function! latex#view#qpdfview() "{{{1
+" }}}2
+
+" {{{1 qpdfview
+function! s:qpdfview.init() dict "{{{2
+  if !executable('qpdfview')
+    echoerr "qpdfview is not available!"
+  endif
+endfunction
+
+"}}}2
+function! s:qpdfview.view() dict "{{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -220,8 +350,17 @@ function! latex#view#qpdfview() "{{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 
-" }}}1
-function! latex#view#sumatrapdf() "{{{1
+" }}}2
+
+" {{{1 SumatraPDF
+function! s:sumatrapdf.init() dict "{{{2
+  if !executable('SumatraPDF')
+    echoerr "SumatraPDF is not available!"
+  endif
+endfunction
+
+"}}}2
+function! s:sumatrapdf.view() dict "{{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -238,181 +377,75 @@ function! latex#view#sumatrapdf() "{{{1
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 endfunction
 
-" }}}1
-function! latex#view#zathura() "{{{1
-  if !s:zathura_exists_win()
-    call s:zathura_start()
-  else
-    call s:zathura_forward_search()
-  endif
-endfunction
+" }}}2
 
-" }}}1
-function! latex#view#zathura_poststart() "{{{1
-  " First get the window id
-  if g:latex#data[b:latex.id].zathura_id == 0
-    let zathura_ids = []
-    if executable('xdotool')
-      let cmd  = 'xdotool search --class Zathura'
-      let zathura_ids = systemlist(cmd)
-    endif
-    if len(zathura_ids) == 0
-      echomsg "Couldn't find Zathura window ID!"
-      let g:latex#data[b:latex.id].zathura_id = 0
-    else
-      let g:latex#data[b:latex.id].zathura_id = zathura_ids[-1]
-    endif
-  endif
-
-  " Next return focus to vim
-  if executable('xdotool')
-    silent execute '!xdotool windowfocus ' . v:windowid
-  endif
-
-  " Finally do a forward search
-  call s:zathura_forward_search()
-endfunction
-
-"}}}1
-
-function! s:init_general() "{{{1
-  if !executable(g:latex_view_general_viewer)
-    echoerr "General viewer is not available!"
-    echoerr "g:latex_view_general_viewer = "
-          \ . g:latex_view_general_viewer
-  endif
-endfunction
-
-" }}}1
-function! s:init_mupdf() "{{{1
-  if !executable('mupdf')
-    echoerr "MuPDF is not available!"
-  endif
-
-  " Check if forward search is possible
-  let s:mupdf_forward_search = executable('synctex') && executable('xdotool')
-
-  " Initialize mupdf_id
-  if !has_key(g:latex#data[b:latex.id], 'mupdf_id')
-    let g:latex#data[b:latex.id].mupdf_id = 0
-  endif
-endfunction
-
-" }}}1
-function! s:init_okular() "{{{1
-  if !executable('okular')
-    echoerr "okular is not available!"
-  endif
-endfunction
-
-"}}}1
-function! s:init_qpdfview() "{{{1
-  if !executable('qpdfview')
-    echoerr "qpdfview is not available!"
-  endif
-endfunction
-
-"}}}1
-function! s:init_sumatrapdf() "{{{1
-  if !executable('SumatraPDF')
-    echoerr "SumatraPDF is not available!"
-  endif
-endfunction
-
-"}}}1
-function! s:init_zathura() "{{{1
+" {{{1 Zathura
+function! s:zathura.init() dict "{{{2
   if !executable('zathura')
     echoerr "Zathura is not available!"
   endif
 
-  " Initialize zathura_id
-  if !has_key(g:latex#data[b:latex.id], 'zathura_id')
-    let g:latex#data[b:latex.id].zathura_id = 0
+  let self.xwin_id = 0
+endfunction
+
+" }}}2
+function! s:zathura.view() dict "{{{2
+  if !self.exists()
+    call self.start()
+  else
+    call self.forward_search()
   endif
 endfunction
 
-" }}}1
+" }}}2
+function! s:zathura.exists() dict "{{{2
+  if !executable('xdotool') | return 0 | endif
 
-function! s:mupdf_exists_win() "{{{1
-  if executable('xdotool')
-    let cmd  = 'xdotool search --class MuPDF'
-    let mupdf_ids = systemlist(cmd)
-    for id in mupdf_ids
-      if id == g:latex#data[b:latex.id].mupdf_id | return 1 | endif
-    endfor
-  endif
+  let cmd = 'xdotool search --class Zathura'
+  let zathura_ids = systemlist(cmd)
+  for id in xwin_ids
+    if id == self.xwin_id | return 1 | endif
+  endfor
 
   return 0
 endfunction
 
-"}}}1
-function! s:mupdf_forward_search() "{{{1
-  let outfile = g:latex#data[b:latex.id].out()
-
-  let l:cmd = "synctex view -i "
-        \ . (line(".") + 1) . ":"
-        \ . (col(".") + 1) . ":"
-        \ . latex#util#fnameescape(expand("%:p"))
-        \ . " -o " . latex#util#fnameescape(outfile)
-        \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
-  let l:page = system(l:cmd)
-  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex = l:cmd
-  let g:latex#data[b:latex.id].cmds.view_mupdf_synctex_page = l:page
-
-  if l:page > 0
-    let exe = {}
-    let exe.cmd  = 'xdotool'
-    let exe.cmd .= ' type --window ' . g:latex#data[b:latex.id].mupdf_id
-    let exe.cmd .= ' "' . l:page . 'g"'
-    call latex#util#execute(exe)
-    let g:latex#data[b:latex.id].cmds.view_mupdf_xdotool = exe.cmd
-  endif
-endfunction
-
-"}}}1
-function! s:mupdf_start() "{{{1
+"}}}2
+function! s:zathura.start() dict "{{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
   endif
 
-  " Start MuPDF
   let exe = {}
-  let exe.cmd  = 'mupdf ' .  g:latex_view_mupdf_options
+  let exe.cmd  = 'zathura ' .  g:latex_view_zathura_options
+  let exe.cmd .= ' -x "' . exepath(v:progname)
+        \ . ' --servername ' . v:servername
+        \ . ' --remote +\%{line} \%{input}"'
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
-  call latex#view#mupdf_poststart()
-endfunction
+  if !executable('xdotool') | return | endif
 
-"}}}1
-function! s:mupdf_append_latexmk_argument() " {{{1
-  let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
-  let cmd .= latex#latexmk#add_option('pdf_update_method', '2')
-  let cmd .= latex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
-  let cmd .= latex#latexmk#add_option('pdf_previewer',
-        \ 'start mupdf ' .  g:latex_view_mupdf_options)
-  return cmd
-endfunction
-
-"}}}1
-
-function! s:zathura_exists_win() "{{{1
-  if executable('xdotool')
-    let cmd  = 'xdotool search --class Zathura'
-    let zathura_ids = systemlist(cmd)
-    for id in zathura_ids
-      if id == g:latex#data[b:latex.id].zathura_id | return 1 | endif
-    endfor
+  " Get window id
+  if self.xwin_id == 0
+    let cmd = 'xdotool search --class Zathura'
+    let xwin_ids = systemlist(cmd)
+    if len(xwin_ids) == 0
+      echomsg "Couldn't find Zathura window ID!"
+      let self.xwin_id = 0
+    else
+      let self.xwin_id = xwin_ids[-1]
+    endif
   endif
 
-  return 0
+  call self.forward_search()
 endfunction
 
-"}}}1
-function! s:zathura_forward_search() "{{{1
+" }}}2
+function! s:zathura.forward_search() dict "{{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -429,28 +462,30 @@ function! s:zathura_forward_search() "{{{1
   let g:latex#data[b:latex.id].zathura_fsearch = exe.cmd
 endfunction
 
-" }}}1
-function! s:zathura_start() "{{{1
-  let outfile = g:latex#data[b:latex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
+" }}}2
+function! s:zathura.latexmk_callback() dict "{{{2
+  if !executable('xdotool') | return | endif
+
+  " Get window id
+  if self.xwin_id == 0
+    let cmd = 'xdotool search --class Zathura'
+    let xwin_ids = systemlist(cmd)
+    if len(xwin_ids) == 0
+      echomsg "Couldn't find Zathura window ID!"
+      let self.xwin_id = 0
+    else
+      let self.xwin_id = xwin_ids[-1]
+    endif
   endif
 
-  let exe = {}
-  let exe.cmd  = 'zathura ' .  g:latex_view_zathura_options
-  let exe.cmd .= ' -x "' . exepath(v:progname)
-        \ . ' --servername ' . v:servername
-        \ . ' --remote +\%{line} \%{input}"'
-  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
-  call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+  " Return focus to vim
+  silent execute '!xdotool windowfocus ' . v:windowid
 
-  call latex#view#zathura_poststart()
+  call self.forward_search()
 endfunction
 
-" }}}1
-function! s:zathura_append_latexmk_argument() " {{{1
+"}}}2
+function! s:zathura.latexmk_append_argument() dict " {{{2
   let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
   let cmd .= latex#latexmk#add_option('pdf_previewer',
         \ 'start zathura ' . g:latex_view_zathura_options
@@ -461,8 +496,7 @@ function! s:zathura_append_latexmk_argument() " {{{1
   return cmd
 endfunction
 
-"}}}1
-
+"}}}2
 "}}}1
 
 " vim: fdm=marker sw=2

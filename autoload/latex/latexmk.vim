@@ -93,14 +93,8 @@ function! latex#latexmk#callback(status) " {{{1
   endif
   echohl None
 
-  " Get window ID after first callback
-  if s:first_callback
-    let s:first_callback = 0
-    if g:latex_view_method == 'mupdf'
-      call latex#view#mupdf_poststart()
-    elseif g:latex_view_method == 'zathura'
-      call latex#view#zathura_poststart()
-    endif
+  if has_key(g:latex#data[b:latex.id].viewer, 'latexmk_callback')
+    call g:latex#data[b:latex.id].viewer.latexmk_callback()
   endif
 endfunction
 
@@ -385,7 +379,9 @@ function! s:latexmk_build_cmd(data) " {{{1
     let s:first_callback = 1
   endif
 
-  let cmd .= latex#view#append_latexmk_argument()
+  if has_key(g:latex#data[b:latex.id].viewer, 'latexmk_append_argument')
+    let cmd .= g:latex#data[b:latex.id].viewer.latexmk_append_argument()
+  endif
 
   let cmd .= ' ' . latex#util#fnameescape(a:data.base)
 
