@@ -4,43 +4,48 @@
 " Email:      karl.yngve@gmail.com
 "
 
+let s:viewers = [
+      \ 'general',
+      \ 'mupdf',
+      \ 'okular',
+      \ 'sumatrapdf',
+      \ 'zathura',
+      \ ]
+
 function! latex#view#init(initialized) " {{{1
   call latex#util#set_default('g:latex_view_enabled', 1)
   if !g:latex_view_enabled | return | endif
 
-  " Set default options
-  call latex#util#set_default('g:latex_view_general_options', '')
+  let data = g:latex#data[b:latex.id]
+
+  " Initialize viewer options
+  for viewer in s:viewers
+    call latex#util#set_default('g:latex_view_' . viewer . '_options', '')
+  endfor
+
+  " Initialize other options
   call latex#util#set_default_os_specific('g:latex_view_general_viewer',
         \ {
         \   'linux' : 'xdg-open',
         \   'mac'   : 'open',
         \ })
   call latex#util#set_default('g:latex_view_method', '')
-  call latex#util#set_default('g:latex_view_mupdf_options', '')
   call latex#util#set_default('g:latex_view_mupdf_send_keys', '')
-  call latex#util#set_default('g:latex_view_okular_options', '')
-  call latex#util#set_default('g:latex_view_sumatrapdf_options', '')
-  call latex#util#set_default('g:latex_view_zathura_options', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
-  " Set view functions
-  let data = g:latex#data[b:latex.id]
-  if g:latex_view_method == 'mupdf'
-    call s:init_mupdf()
-    let data.view = function('latex#view#mupdf')
-    let data.rsearch = function('latex#view#mupdf_rsearch')
-  elseif g:latex_view_method == 'zathura'
-    call s:init_zathura()
-    let data.view = function('latex#view#zathura')
-  elseif g:latex_view_method == 'okular'
-    call s:init_okular()
-    let data.view = function('latex#view#okular')
-  elseif g:latex_view_method == 'sumatrapdf'
-    call s:init_sumatrapdf()
-    let data.view = function('latex#view#sumatrapdf')
-  else
-    call s:init_general()
-    let data.view = function('latex#view#general')
+  " Initialize view functions
+  let init = 's:init_' . g:latex_view_method
+  let view = 'latex#view#' . g:latex_view_method
+  let rsearch = 'latex#view#' . g:latex_view_method . '_rsearch'
+  if !exists('*' . init)
+    echoerr "Selected viewer does not exist!"
+    echoerr "Viewer: " . g:latex_view_method
+    return
+  endif
+  execute 'call ' . init . '()'
+  execute 'let data.view = function(''' . view . ''')'
+  if exists('*' . rsearch)
+    execute 'let data.rsearch = function(''' . rsearch . ''')'
   endif
 
   " Define commands
@@ -179,6 +184,23 @@ function! latex#view#mupdf_rsearch() "{{{1
 endfunction
 
 " }}}1
+function! latex#view#okular() "{{{1
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
+
+  let exe = {}
+  let exe.cmd = 'okular ' . g:latex_view_okular_options
+  let exe.cmd .= ' --unique ' . latex#util#fnameescape(outfile)
+  let exe.cmd .= '\#src:' . line('.') . latex#util#fnameescape(expand('%:p'))
+
+  call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+endfunction
+
+" }}}1
 function! latex#view#sumatrapdf() "{{{1
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
@@ -191,23 +213,6 @@ function! latex#view#sumatrapdf() "{{{1
   let exe.cmd .= ' -forward-search ' . latex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ' ' . line('.')
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
-
-  call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
-endfunction
-
-" }}}1
-function! latex#view#okular() "{{{1
-  let outfile = g:latex#data[b:latex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
-
-  let exe = {}
-  let exe.cmd = 'okular ' . g:latex_view_okular_options
-  let exe.cmd .= ' --unique ' . latex#util#fnameescape(outfile)
-  let exe.cmd .= '\#src:' . line('.') . latex#util#fnameescape(expand('%:p'))
 
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].cmds.view = exe.cmd
@@ -274,16 +279,16 @@ function! s:init_mupdf() "{{{1
 endfunction
 
 " }}}1
-function! s:init_sumatrapdf() "{{{1
-  if !executable('SumatraPDF')
-    echoerr "SumatraPDF is not available!"
+function! s:init_okular() "{{{1
+  if !executable('okular')
+    echoerr "okular is not available!"
   endif
 endfunction
 
 "}}}1
-function! s:init_okular() "{{{1
-  if !executable('okular')
-    echoerr "okular is not available!"
+function! s:init_sumatrapdf() "{{{1
+  if !executable('SumatraPDF')
+    echoerr "SumatraPDF is not available!"
   endif
 endfunction
 
@@ -389,7 +394,9 @@ function! s:zathura_forward_search() "{{{1
 
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
-  let exe.cmd .= line(".") . ':' . col('.') . ':% '
+  let exe.cmd .= line(".")
+  let exe.cmd .= ':' . col('.')
+  let exe.cmd .= ':' . latex#util#fnameescape(expand('%:p'))
   let exe.cmd .= latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
   let g:latex#data[b:latex.id].zathura_fsearch = exe.cmd
