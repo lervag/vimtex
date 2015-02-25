@@ -49,35 +49,6 @@ function! latex#view#init(initialized) " {{{1
     nnoremap <buffer> <plug>(vl-reverse-search)
           \ :call g:latex#data[b:latex.id].viewer.reverse_search()<cr>
   endif
-
-  " " Initialize view functions
-  " let init = 's:init_' . g:latex_view_method
-  " let view = 'latex#view#' . g:latex_view_method
-  " let reverse_search = 'latex#view#' . g:latex_view_method . '_reverse_search'
-  " if !exists('*' . init)
-  "   echoerr "Selected viewer does not exist!"
-  "   echoerr "Viewer: " . g:latex_view_method
-  "   return
-  " endif
-  " execute 'call ' . init . '()'
-  " execute 'let data.view = function(''' . view . ''')'
-  " if exists('*' . reverse_search)
-  "   execute 'let data.reverse_search = function(''' . reverse_search . ''')'
-  " endif
-
-  " " Define commands
-  " command! -buffer VimLatexView call g:latex#data[b:latex.id].view()
-  " if has_key(data, 'reverse_search')
-  "   command! -buffer -nargs=* VimLatexreverse_search
-  "         \ call g:latex#data[b:latex.id].reverse_search()
-  " endif
-
-  " " Define mappings
-  " nnoremap <buffer> <plug>(vl-view) :call g:latex#data[b:latex.id].view()<cr>
-  " if has_key(data, 'reverse_search')
-  "   nnoremap <buffer> <plug>(vl-reverse-search)
-  "         \ :call g:latex#data[b:latex.id].reverse_search()<cr>
-  " endif
 endfunction
 
 "}}}1
@@ -402,7 +373,7 @@ function! s:zathura.exists() dict "{{{2
   if !executable('xdotool') | return 0 | endif
 
   let cmd = 'xdotool search --class Zathura'
-  let zathura_ids = systemlist(cmd)
+  let xwin_ids = systemlist(cmd)
   for id in xwin_ids
     if id == self.xwin_id | return 1 | endif
   endfor
