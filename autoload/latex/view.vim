@@ -21,7 +21,7 @@ function! latex#view#init(initialized) " {{{1
         \   'linux' : 'xdg-open',
         \   'mac'   : 'open',
         \ })
-  call latex#util#set_default('g:latex_view_method', '')
+  call latex#util#set_default('g:latex_view_method', 'general')
   call latex#util#set_default('g:latex_view_mupdf_send_keys', '')
   call latex#util#error_deprecated('g:latex_viewer')
 
