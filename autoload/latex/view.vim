@@ -51,7 +51,7 @@ function! latex#view#init(initialized) " {{{1
   endif
 endfunction
 
-"}}}1
+" }}}1
 
 let s:viewers = [
       \ 'general',
@@ -66,7 +66,7 @@ for viewer in s:viewers
 endfor
 
 " {{{1 General
-function! s:general.init() dict "{{{2
+function! s:general.init() dict " {{{2
   if !executable(g:latex_view_general_viewer)
     echoerr "General viewer is not available!"
     echoerr "g:latex_view_general_viewer = "
@@ -94,18 +94,27 @@ endfunction
 " }}}2
 
 " {{{1 MuPDF
-function! s:mupdf.init() dict "{{{2
+function! s:mupdf.init() dict " {{{2
   if !executable('mupdf')
     echoerr "MuPDF is not available!"
   endif
 
-  " Initialize X window ID
+  if !executable('xdotool')
+    echomsg "For full MuPDF support, please install xdotool"
+  endif
+
+  let self.class = 'MuPDF'
   let self.xwin_id = 0
+  let self.xwin_exists = function("s:xwin_exists")
+  let self.xwin_get_id = function("s:xwin_get_id")
+  let self.xwin_send_keys = function("s:xwin_send_keys")
+  let self.focus_vim = function("s:focus_vim")
+  let self.focus_viewer = function("s:focus_viewer")
 endfunction
 
 " }}}2
-function! s:mupdf.view() dict "{{{2
-  if !self.exists()
+function! s:mupdf.view() dict " {{{2
+  if !self.xwin_exists()
     call self.start()
   else
     call self.forward_search()
@@ -113,89 +122,71 @@ function! s:mupdf.view() dict "{{{2
 endfunction
 
 " }}}2
-function! s:mupdf.exists() dict "{{{2
-  if !executable('xdotool') | return 0 | endif
-
-  let cmd = 'xdotool search --class MuPDF'
-  let xwin_ids = systemlist(cmd)
-  for id in xwin_ids
-    if id == self.xwin_id | return 1 | endif
-  endfor
-
-  return 0
-endfunction
-
-"}}}2
-function! s:mupdf.start() dict "{{{2
+function! s:mupdf.start() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
     return
   endif
 
-  " Start MuPDF
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:latex_view_mupdf_options
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
-  if !executable('xdotool') | return | endif
+  let self.cmd_start = exe.cmd
 
-  " Get window id
-  if self.xwin_id == 0
-    let cmd = 'xdotool search --class MuPDF'
-    let xwin_ids = systemlist(cmd)
-    if len(xwin_ids) == 0
-      echomsg "Couldn't find MuPDF window ID!"
-      let self.xwin_id = 0
-    else
-      let self.xwin_id = xwin_ids[-1]
-    endif
-  endif
-
-  " Send keys to mupdf
-  if g:latex_view_mupdf_send_keys != ''
-    let cmd  = 'xdotool key --window ' . self.xwin_id
-    let cmd .= ' ' . g:latex_view_mupdf_send_keys
-    call system(cmd)
-  endif
-
+  call self.xwin_get_id()
+  call self.xwin_send_keys(g:latex_view_mupdf_send_keys)
   call self.forward_search()
 endfunction
 
-"}}}2
-function! s:mupdf.forward_search() dict "{{{2
-  if !executable('synctex') || !executable('xdotool') | return | endif
+" }}}2
+function! s:mupdf.forward_search() dict " {{{2
+  if !executable('xdotool') | return | endif
+  if !executable('synctex') | return | endif
 
   let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
+    return
+  endif
 
-  let self.synctex_cmd = "synctex view -i "
+  let self.cmd_synctex_view = "synctex view -i "
         \ . (line(".") + 1) . ":"
         \ . (col(".") + 1) . ":"
         \ . latex#util#fnameescape(expand("%:p"))
         \ . " -o " . latex#util#fnameescape(outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
-  let self.synctex_page = system(self.synctex_cmd)
+  let self.page = system(self.cmd_synctex_view)
 
-  if self.synctex_page > 0
+  if self.page > 0
     let exe = {}
     let exe.cmd  = 'xdotool'
     let exe.cmd .= ' type --window ' . self.xwin_id
-    let exe.cmd .= ' "' . self.synctex_page . 'g"'
+    let exe.cmd .= ' "' . self.page . 'g"'
     call latex#util#execute(exe)
-    let self.forward_search_cmd = exe.cmd
+    let self.cmd_forward_search = exe.cmd
   endif
+
+  call self.focus_viewer()
 endfunction
 
-"}}}2
-function! s:mupdf.reverse_search() dict "{{{2
-  if !self.exists()
-    echomsg "Can't search backwards: Is the PDF file open?"
+" }}}2
+function! s:mupdf.reverse_search() dict " {{{2
+  if !executable('xdotool') | return | endif
+  if !executable('synctex') | return | endif
+
+  let outfile = g:latex#data[b:latex.id].out()
+  if !filereadable(outfile)
+    echomsg "Can't view: Output file is not readable!"
     return
   endif
 
-  let outfile = g:latex#data[b:latex.id].out()
+  if !self.xwin_exists()
+    echomsg "Can't search backwards: Is the PDF file open?"
+    return
+  endif
 
   " Get page number
   let self.cmd_getpage  = "xdotool getwindowname " . self.xwin_id
@@ -229,35 +220,14 @@ function! s:mupdf.reverse_search() dict "{{{2
 endfunction
 
 " }}}2
-function! s:mupdf.latexmk_callback() dict "{{{2
-  if !executable('xdotool') | return | endif
-
-  " Get window id
-  if self.xwin_id == 0
-    let cmd = 'xdotool search --class MuPDF'
-    let xwin_ids = systemlist(cmd)
-    if len(xwin_ids) == 0
-      echomsg "Couldn't find MuPDF window ID!"
-      let self.xwin_id = 0
-    else
-      let self.xwin_id = xwin_ids[-1]
-    endif
-  endif
-
-  " Send keys to mupdf
-  if g:latex_view_mupdf_send_keys != ''
-    let cmd  = 'xdotool key --window ' . self.xwin_id
-    let cmd .= ' ' . g:latex_view_mupdf_send_keys
-    call system(cmd)
-  endif
-
-  " Return focus to vim
-  silent execute '!xdotool windowfocus ' . v:windowid
-
+function! s:mupdf.latexmk_callback() dict " {{{2
+  call self.xwin_get_id()
+  call self.xwin_send_keys(g:latex_view_mupdf_send_keys)
   call self.forward_search()
+  call self.focus_vim()
 endfunction
 
-"}}}2
+" }}}2
 function! s:mupdf.latexmk_append_argument() dict " {{{2
   let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
   let cmd .= latex#latexmk#add_option('pdf_update_method', '2')
@@ -267,17 +237,17 @@ function! s:mupdf.latexmk_append_argument() dict " {{{2
   return cmd
 endfunction
 
-"}}}2
+" }}}2
 
 " {{{1 Okular
-function! s:okular.init() dict "{{{2
+function! s:okular.init() dict " {{{2
   if !executable('okular')
     echoerr "okular is not available!"
   endif
 endfunction
 
-"}}}2
-function! s:okular.view() dict "{{{2
+" }}}2
+function! s:okular.view() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -296,14 +266,14 @@ endfunction
 " }}}2
 
 " {{{1 qpdfview
-function! s:qpdfview.init() dict "{{{2
+function! s:qpdfview.init() dict " {{{2
   if !executable('qpdfview')
     echoerr "qpdfview is not available!"
   endif
 endfunction
 
-"}}}2
-function! s:qpdfview.view() dict "{{{2
+" }}}2
+function! s:qpdfview.view() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -324,14 +294,14 @@ endfunction
 " }}}2
 
 " {{{1 SumatraPDF
-function! s:sumatrapdf.init() dict "{{{2
+function! s:sumatrapdf.init() dict " {{{2
   if !executable('SumatraPDF')
     echoerr "SumatraPDF is not available!"
   endif
 endfunction
 
-"}}}2
-function! s:sumatrapdf.view() dict "{{{2
+" }}}2
+function! s:sumatrapdf.view() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -351,17 +321,25 @@ endfunction
 " }}}2
 
 " {{{1 Zathura
-function! s:zathura.init() dict "{{{2
+function! s:zathura.init() dict " {{{2
   if !executable('zathura')
     echoerr "Zathura is not available!"
   endif
 
+  if !executable('xdotool')
+    echomsg "For full Zathura support, please install xdotool"
+  endif
+
+  let self.class = 'Zathura'
   let self.xwin_id = 0
+  let self.xwin_get_id = function("s:xwin_get_id")
+  let self.xwin_exists = function("s:xwin_exists")
+  let self.focus_vim = function("s:focus_vim")
 endfunction
 
 " }}}2
-function! s:zathura.view() dict "{{{2
-  if !self.exists()
+function! s:zathura.view() dict " {{{2
+  if !self.xwin_exists()
     call self.start()
   else
     call self.forward_search()
@@ -369,20 +347,7 @@ function! s:zathura.view() dict "{{{2
 endfunction
 
 " }}}2
-function! s:zathura.exists() dict "{{{2
-  if !executable('xdotool') | return 0 | endif
-
-  let cmd = 'xdotool search --class Zathura'
-  let xwin_ids = systemlist(cmd)
-  for id in xwin_ids
-    if id == self.xwin_id | return 1 | endif
-  endfor
-
-  return 0
-endfunction
-
-"}}}2
-function! s:zathura.start() dict "{{{2
+function! s:zathura.start() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -396,27 +361,15 @@ function! s:zathura.start() dict "{{{2
         \ . ' --remote +\%{line} \%{input}"'
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
 
-  if !executable('xdotool') | return | endif
+  let self.cmd_start = exe.cmd
 
-  " Get window id
-  if self.xwin_id == 0
-    let cmd = 'xdotool search --class Zathura'
-    let xwin_ids = systemlist(cmd)
-    if len(xwin_ids) == 0
-      echomsg "Couldn't find Zathura window ID!"
-      let self.xwin_id = 0
-    else
-      let self.xwin_id = xwin_ids[-1]
-    endif
-  endif
-
+  call self.xwin_get_id()
   call self.forward_search()
 endfunction
 
 " }}}2
-function! s:zathura.forward_search() dict "{{{2
+function! s:zathura.forward_search() dict " {{{2
   let outfile = g:latex#data[b:latex.id].out()
   if !filereadable(outfile)
     echomsg "Can't view: Output file is not readable!"
@@ -428,34 +381,20 @@ function! s:zathura.forward_search() dict "{{{2
   let exe.cmd .= line(".")
   let exe.cmd .= ':' . col('.')
   let exe.cmd .= ':' . latex#util#fnameescape(expand('%:p'))
-  let exe.cmd .= latex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].zathura_fsearch = exe.cmd
+
+  let self.cmd_forward_search = exe.cmd
 endfunction
 
 " }}}2
-function! s:zathura.latexmk_callback() dict "{{{2
-  if !executable('xdotool') | return | endif
-
-  " Get window id
-  if self.xwin_id == 0
-    let cmd = 'xdotool search --class Zathura'
-    let xwin_ids = systemlist(cmd)
-    if len(xwin_ids) == 0
-      echomsg "Couldn't find Zathura window ID!"
-      let self.xwin_id = 0
-    else
-      let self.xwin_id = xwin_ids[-1]
-    endif
-  endif
-
-  " Return focus to vim
-  silent execute '!xdotool windowfocus ' . v:windowid
-
+function! s:zathura.latexmk_callback() dict " {{{2
+  call self.xwin_get_id()
   call self.forward_search()
+  call self.focus_vim()
 endfunction
 
-"}}}2
+" }}}2
 function! s:zathura.latexmk_append_argument() dict " {{{2
   let cmd  = latex#latexmk#add_option('new_viewer_always', '0')
   let cmd .= latex#latexmk#add_option('pdf_previewer',
@@ -467,7 +406,70 @@ function! s:zathura.latexmk_append_argument() dict " {{{2
   return cmd
 endfunction
 
-"}}}2
-"}}}1
+" }}}2
+" }}}1
+
+" {{{1 Common functionality
+
+function! s:xwin_get_id() dict " {{{2
+  if !executable('xdotool') | return | endif
+  if self.xwin_id > 0 | return | endif
+  sleep 500m
+
+  let cmd = 'xdotool search --class ' . self.class
+  let xwin_ids = systemlist(cmd)
+  if len(xwin_ids) == 0
+    echomsg "Couldn't find " . self.class . " window ID!"
+    let self.xwin_id = 0
+  else
+    let self.xwin_id = xwin_ids[-1]
+  endif
+endfunction
+
+" }}}2
+function! s:xwin_exists() dict " {{{2
+  if !executable('xdotool') | return 0 | endif
+
+  let cmd = 'xdotool search --class ' . self.class
+  if index(systemlist(cmd), self.xwin_id) >= 0
+    return 1
+  endif
+
+  if self.xwin_id > 0
+    let self.xwin_id = 0
+  endif
+
+  return 0
+endfunction
+
+" }}}2
+function! s:xwin_send_keys(keys) dict " {{{2
+  if !executable('xdotool') | return | endif
+
+  if a:keys != ''
+    let cmd  = 'xdotool key --window ' . self.xwin_id
+    let cmd .= ' ' . a:keys
+    call system(cmd)
+  endif
+endfunction
+
+" }}}2
+function! s:focus_viewer() dict " {{{2
+  if !executable('xdotool') | return | endif
+
+  if self.xwin_exists()
+    silent execute '!xdotool windowfocus ' . self.xwin_id
+  endif
+endfunction
+
+function! s:focus_vim() dict " {{{2
+  if !executable('xdotool') | return | endif
+
+  silent execute '!xdotool windowfocus ' . v:windowid
+endfunction
+
+" }}}2
+
+" }}}1
 
 " vim: fdm=marker sw=2
