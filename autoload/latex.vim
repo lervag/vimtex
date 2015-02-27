@@ -34,41 +34,22 @@ function! latex#info() " {{{1
   endif
 
   " Print buffer data
-  echo printf('%-19s%-s', 'b:latex.id', b:latex.id)
-  if has_key(b:latex, 'fold_parts') && !empty(b:latex.fold_parts)
-    echo 'b:latex.fold_parts'
-    for entry in reverse(copy(b:latex.fold_parts))
-      echo printf('  %s  %s', entry[1], entry[0])
-    endfor
-  endif
+  echo "b:latex"
+  call s:print_dict(b:latex)
 
   " Print global data
   let n = 0
-  for d in g:latex#data
-    echo "\n"
-    echo "g:latex#data[" . n . "]"
-    if has_key(d, 'pid') && d.pid
-      echo printf('  %-6s%-s', 'pid', d.pid)
-    endif
-    echo printf('  %-6s%-s', 'name', s:truncate(d.name))
-    echo printf('  %-6s%-s', 'base', s:truncate(d.base))
-    echo printf('  %-6s%-s', 'root', s:truncate(d.root))
-    echo printf('  %-6s%-s', 'tex',  s:truncate(d.tex))
-
+  for data in g:latex#data
+    " Prepare for printing
+    let d = deepcopy(data)
     for f in ['aux', 'out', 'log']
-      silent execute 'let l:tmp = d.' . f . '()'
-      if l:tmp != ''
-        echo printf('  %-6s%-s', f, s:truncate(l:tmp))
-      endif
+      silent execute 'let d.' . f . ' = data.' . f . '()'
     endfor
 
-    let cmds = items(d.cmds)
-    if len(cmds) > 0
-      for [key, val] in cmds
-        echo printf('  command: %-9s', key)
-        echo printf('    %-s', val)
-      endfor
-    endif
+    " Print data blob title line
+    echo "\n"
+    echo "g:latex#data[" . n . "] : " . remove(d, 'name')
+    call s:print_dict(d)
     let n += 1
   endfor
 endfunction
@@ -297,13 +278,41 @@ function! s:get_main_out(texdata) " {{{1
   return ''
 endfunction
 
-function! s:truncate(string) " {{{1
-  if len(a:string) >= winwidth('.') - 9
-    return a:string[0:10] . "..." . a:string[-winwidth('.')+23:]
-  else
-    return a:string
-  endif
+" }}}1
+
+function! s:print_dict(dict, ...) " {{{1
+  let level = a:0 > 0 ? a:1 : 0
+
+  for entry in sort(sort(items(a:dict),
+        \ "s:print_dict_sort_2"),
+        \ "s:print_dict_sort_1")
+    let title = repeat(' ', 2 + 2*level) . entry[0] . ' : '
+    if type(entry[1]) == type([])
+      echo title
+      for val in entry[1]
+        echo repeat(' ', 4 + 2*level) . string(val)
+      endfor
+    elseif type(entry[1]) == type({})
+      echo title
+      call s:print_dict(entry[1], level + 1)
+    else
+      echo printf('%-s%-s', title, string(entry[1]))
+    endif
+  endfor
 endfunction
+
+" }}}1
+function! s:print_dict_sort_1(i1, i2) " {{{1
+  return type(a:i1[1]) - type(a:i2[1])
+endfunction
+
+" }}}1
+function! s:print_dict_sort_2(i1, i2) " {{{1
+  return string(a:i1[1]) == string(a:i2[1]) ? 0
+        \ : string(a:i1[1]) > string(a:i2[1]) ? 1
+        \ : -1
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2
