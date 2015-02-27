@@ -7,6 +7,7 @@
 function! latex#latexmk#init(initialized) " {{{1
   call latex#util#set_default('g:latex_latexmk_enabled', 1)
   if !g:latex_latexmk_enabled | return | endif
+  if s:system_incompatible() | return | endif
 
   " Set default options
   call latex#util#set_default('g:latex_latexmk_background', 0)
@@ -22,16 +23,10 @@ function! latex#latexmk#init(initialized) " {{{1
   call latex#util#error_deprecated('g:latex_latexmk_output')
   call latex#util#error_deprecated('g:latex_latexmk_quickfix')
 
-  " Check system compatibility
-  if s:system_incompatible() | return | endif
-
   " Set compiler (this defines the errorformat)
   compiler latexmk
 
-  " Initialize pid for current tex file
-  if !has_key(g:latex#data[b:latex.id], 'pid')
-    let g:latex#data[b:latex.id].pid = 0
-  endif
+  let g:latex#data[b:latex.id].pid = 0
 
   " Define commands
   command! -buffer       VimLatexCompile       call latex#latexmk#compile()
@@ -115,18 +110,14 @@ function! latex#latexmk#clean(full) " {{{1
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
   let cmd .= 'latexmk -outdir=' . g:latex_latexmk_build_dir
-  if a:full
-    let cmd .= ' -C '
-  else
-    let cmd .= ' -c '
-  endif
+  let cmd .= a:full ? ' -C ' : ' -c'
   let cmd .= latex#util#fnameescape(data.base)
-  let g:latex#data[b:latex.id].cmds.clean = cmd
   let exe = {
         \ 'cmd' : cmd,
         \ 'bg'  : 0,
         \ }
   call latex#util#execute(exe)
+  let g:latex#data[b:latex.id].cmd_latexmk_clean = cmd
 
   if a:full
     echomsg "latexmk full clean finished"
@@ -395,7 +386,7 @@ function! s:latexmk_build_cmd(data) " {{{1
   endif
 
   let exe.cmd  = cmd
-  let a:data.cmds.compile = cmd
+  let a:data.cmd_latexmk_compile = cmd
   let a:data.tmp = tmp
 
   return exe

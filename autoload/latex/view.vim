@@ -88,7 +88,7 @@ function! s:general.view() dict " {{{2
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
 
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+  let self.cmd_view = exe.cmd
 endfunction
 
 " }}}2
@@ -260,7 +260,7 @@ function! s:okular.view() dict " {{{2
   let exe.cmd .= '\#src:' . line('.') . latex#util#fnameescape(expand('%:p'))
 
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+  let self.cmd_view = exe.cmd
 endfunction
 
 " }}}2
@@ -288,7 +288,7 @@ function! s:qpdfview.view() dict " {{{2
   let exe.cmd .= ':' . col('.')
 
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+  let self.cmd_view = exe.cmd
 endfunction
 
 " }}}2
@@ -315,7 +315,7 @@ function! s:sumatrapdf.view() dict " {{{2
   let exe.cmd .= ' ' . latex#util#fnameescape(outfile)
 
   call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmds.view = exe.cmd
+  let self.cmd_view = exe.cmd
 endfunction
 
 " }}}2

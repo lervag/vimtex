@@ -104,7 +104,6 @@ function! s:init_environment() " {{{1
     let b:latex.id = id
   else
     let data = {}
-    let data.cmds = {}
     let data.tex  = main
     let data.root = fnamemodify(data.tex, ':h')
     let data.base = fnamemodify(data.tex, ':t')
