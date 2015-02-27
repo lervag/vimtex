@@ -15,6 +15,7 @@ function! latex#init() " {{{1
   call latex#fold#init(s:initialized)
   call latex#view#init(s:initialized)
   call latex#motion#init(s:initialized)
+  call latex#labels#init(s:initialized)
   call latex#change#init(s:initialized)
   call latex#latexmk#init(s:initialized)
   call latex#complete#init(s:initialized)

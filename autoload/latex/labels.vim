@@ -4,10 +4,11 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#tol#gather_labels() " {{{1
-  let file = g:latex#data[b:latex.id].tex
-  let labels = s:gather_labels(file)
-  PP labels
+function! latex#labels#init(initialized) " {{{1
+  call latex#util#set_default('g:latex_labels_enabled', 1)
+  if !g:latex_labels_enabled | return | endif
+
+  let g:latex#data[b:latex.id].labels = function('s:gather_labels')
 endfunction
 
 " }}}1
@@ -21,7 +22,12 @@ let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
 
 " }}}1
 
-function! s:gather_labels(file) " {{{1
+function! s:gather_labels() dict " {{{1
+  return s:gather_labels_file(self.tex)
+endfunction
+
+" }}}1
+function! s:gather_labels_file(file) " {{{1
   let tac = []
   let lnum = 0
   for line in readfile(a:file)
@@ -29,7 +35,8 @@ function! s:gather_labels(file) " {{{1
 
     " 1. Parse inputs or includes
     if line =~# s:re_input
-      call extend(tac, s:gather_labels(s:parse_line_input(line, a:file)))
+      call extend(tac,
+            \ s:gather_labels_file(s:gather_labels_input(line, a:file)))
       continue
     endif
 
@@ -43,7 +50,7 @@ function! s:gather_labels(file) " {{{1
 endfunction
 
 " }}}1
-function! s:parse_line_input(line, file) " {{{1
+function! s:gather_labels_input(line, file) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
 
   " Trim whitespaces from beginning and end of string
