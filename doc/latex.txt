@@ -922,7 +922,8 @@ Functions:
 CHANGE                                                      *vim-latex-change*
 
 |vim-latex| provides mappings that are inspired by `surround.vim`
-(https://github.com/tpope/vim-surround).  These mappings are:
+(https://github.com/tpope/vim-surround) (if it is installed, see
+|surround.txt|).  These mappings are:
   `cse`  - change surrounding environment
   `dse`  - delete surrounding environment
   `csc`  - change surrounding command
@@ -937,6 +938,19 @@ mapping `]]`.
 
 In addition, some functionality is provided to wrap the current selection.
 This is not mapped to anything by default.
+
+For additional coupling with `surround.vim`, one may add the following lines
+to ones `.vimrc` file to obtain corresonding `yse` and `ysc` mappings. >
+
+  augroup latexSurround
+     autocmd!
+     autocmd FileType tex call s:latexSurround()
+  augroup END
+
+  function! s:latexSurround()
+     let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
+     let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
+  endfunction
 
 Functions:
     |latex#change#command|
