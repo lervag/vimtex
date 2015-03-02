@@ -91,6 +91,8 @@ function! latex#latexmk#callback(status) " {{{1
   if has_key(g:latex#data[b:latex.id].viewer, 'latexmk_callback')
     call g:latex#data[b:latex.id].viewer.latexmk_callback()
   endif
+
+  return ""
 endfunction
 
 " }}}1
