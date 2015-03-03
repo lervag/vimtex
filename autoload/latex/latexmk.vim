@@ -79,12 +79,14 @@ function! latex#latexmk#callback(status) " {{{1
   call latex#latexmk#errors(0)
   redraw!
 
+  echohl ModeMsg
+  echon "latexmk compile: "
   if a:status
     echohl Statement
-    echo "latexmk compile: success"
+    echon "success"
   else
-    echohl Error
-    echo "latexmk compile: fail"
+    echohl WarningMsg
+    echon "fail"
   endif
   echohl None
 
