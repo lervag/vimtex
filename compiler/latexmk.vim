@@ -1,3 +1,9 @@
+" vimtex - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 if exists("current_compiler") | finish | endif
 let current_compiler = "latexmk"
 
@@ -24,11 +30,11 @@ CompilerSet errorformat+=%Z<argument>\ %m
 CompilerSet errorformat+=%Cl.%l\ %m
 
 " Show warnings
-if exists("g:latex_quickfix_ignore_all_warnings")
-      \ && exists("g:latex_quickfix_ignored_warnings")
-      \ && !g:latex_quickfix_ignore_all_warnings
+if exists("g:vimtex_quickfix_ignore_all_warnings")
+      \ && exists("g:vimtex_quickfix_ignored_warnings")
+      \ && !g:vimtex_quickfix_ignore_all_warnings
   " Ignore some warnings
-  for w in g:latex_quickfix_ignored_warnings
+  for w in g:vimtex_quickfix_ignored_warnings
     let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
     exe 'CompilerSet errorformat+=%-G%.%#'. warning .'%.%#'
   endfor

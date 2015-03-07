@@ -1,4 +1,4 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -16,7 +16,7 @@ setlocal listchars=
 setlocal nobuflisted
 setlocal noswapfile
 setlocal nowrap
-if g:latex_toc_hide_line_numbers
+if g:vimtex_toc_hide_line_numbers
   setlocal nonumber
   setlocal norelativenumber
 endif
@@ -26,14 +26,14 @@ setlocal cursorline
 setlocal tabstop=8
 setlocal cole=0
 setlocal cocu=nvic
-if g:latex_toc_fold
+if g:vimtex_toc_fold
   setlocal foldmethod=expr
-  setlocal foldexpr=latextoc#fold_level(v:lnum)
-  setlocal foldtext=latextoc#fold_text()
+  setlocal foldexpr=vimtex_toc#fold_level(v:lnum)
+  setlocal foldtext=vimtex_toc#fold_text()
 endif
 
 " Refresh/Initialize TOC content
-call latextoc#init()
+call vimtex_toc#init()
 
 " Define mappings
 nnoremap <buffer> <silent> G G4k
@@ -77,8 +77,8 @@ function! s:toc_activate(close) "{{{1
 
   " Keep or close TOC window (based on options)
   if a:close
-    if g:latex_toc_resize
-      silent exe "set columns-=" . g:latex_toc_width
+    if g:vimtex_toc_resize
+      silent exe "set columns-=" . g:vimtex_toc_width
     endif
     execute 'bwipeout ' . toc_bnr
   else
@@ -87,8 +87,8 @@ function! s:toc_activate(close) "{{{1
 endfunction
 
 function! s:toc_close() "{{{1
-  if g:latex_toc_resize
-    silent exe "set columns-=" . g:latex_toc_width
+  if g:vimtex_toc_resize
+    silent exe "set columns-=" . g:vimtex_toc_width
   endif
   bwipeout
 endfunction
@@ -129,25 +129,25 @@ function! s:toc_open_entry(entry) "{{{1
 endfunction
 
 function! s:toc_toggle_numbers() "{{{1
-  if g:latex_toc_numbers
-    let g:latex_toc_numbers = 0
+  if g:vimtex_toc_numbers
+    let g:vimtex_toc_numbers = 0
   else
-    let g:latex_toc_numbers = 1
+    let g:vimtex_toc_numbers = 1
   endif
 
-  call latextoc#refresh()
+  call vimtex_toc#refresh()
 endfunction
 
 function! s:toc_inc_secnumdepth() "{{{1
   let b:toc_secnumdepth = min([b:toc_secnumdepth + 1, 5])
-  let g:latex_toc_secnumdepth = b:toc_secnumdepth
-  call latextoc#refresh()
+  let g:vimtex_toc_secnumdepth = b:toc_secnumdepth
+  call vimtex_toc#refresh()
 endfunction
 
 function! s:toc_dec_secnumdepth() "{{{1
   let b:toc_secnumdepth = max([b:toc_secnumdepth - 1, -2])
-  let g:latex_toc_secnumdepth = b:toc_secnumdepth
-  call latextoc#refresh()
+  let g:vimtex_toc_secnumdepth = b:toc_secnumdepth
+  call vimtex_toc#refresh()
 endfunction
 
 " }}}1

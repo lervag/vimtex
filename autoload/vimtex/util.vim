@@ -1,12 +1,10 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
-" Utility functions sorted by name
-"
 
-function! latex#util#convert_back(line) " {{{1
+function! vimtex#util#convert_back(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
   "
@@ -82,15 +80,15 @@ let s:convert_back_list = map([
       \ ['\\\~n}'        , 'ñ'],
       \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
-function! latex#util#error_deprecated(variable) " {{{1
+function! vimtex#util#error_deprecated(variable) " {{{1
   if exists(a:variable)
     echoerr "Deprecation error: " . a:variable
     echoerr "Please read docs for more info!"
-    echoerr ":h vim-latex-changelog"
+    echoerr ":h vimtex-changelog"
   endif
 endfunction
 
-function! latex#util#execute(exe) " {{{1
+function! vimtex#util#execute(exe) " {{{1
   " Execute the given command on the current system.  Wrapper function to make
   " it easier to run on both windows and unix.
   "
@@ -108,7 +106,7 @@ function! latex#util#execute(exe) " {{{1
 
   " Check and parse arguments
   if !has_key(a:exe, 'cmd')
-    echoerr "Error in latex#util#execute!"
+    echoerr "Error in vimtex#util#execute!"
     echoerr "Argument error, exe.cmd does not exist!"
     return
   endif
@@ -171,19 +169,19 @@ function! latex#util#execute(exe) " {{{1
   endif
 endfunction
 
-function! latex#util#fnameescape(path) " {{{1
+function! vimtex#util#fnameescape(path) " {{{1
   "
   " In a Windows environment, a path used in "cmd" only needs to be enclosed by
   " double quotes. shellscape() on Windows with "shellslash" set will produce
   " a path enclosed by single quotes, which "cmd" does not recognize and
-  " reports an error.  Any path that goes into latex#util#execute() should be
+  " reports an error.  Any path that goes into vimtex#util#execute() should be
   " processed through this function.
   "
   return has('win32') ? '"' . a:path . '"' : shellescape(a:path)
 endfunction
 
-function! latex#util#get_env(...) " {{{1
-  " latex#util#get_env([with_pos])
+function! vimtex#util#get_env(...) " {{{1
+  " vimtex#util#get_env([with_pos])
   " Returns:
   " - environment
   "         if with_pos is not given
@@ -209,7 +207,7 @@ function! latex#util#get_env(...) " {{{1
     let flags .= 'c'
   endif
   let [lnum1, cnum1] = searchpairpos(begin_pat, '', end_pat, flags,
-        \ 'latex#util#in_comment()')
+        \ 'vimtex#util#in_comment()')
 
   let env = ''
 
@@ -234,7 +232,7 @@ function! latex#util#get_env(...) " {{{1
     endif
 
     let [lnum2, cnum2] = searchpairpos(begin_pat, '', end_pat, flags,
-          \ 'latex#util#in_comment()')
+          \ 'vimtex#util#in_comment()')
 
     call setpos('.', saved_pos)
     return [env, lnum1, cnum1, lnum2, cnum2]
@@ -244,7 +242,7 @@ function! latex#util#get_env(...) " {{{1
   endif
 endfunction
 
-function! latex#util#get_delim() " {{{1
+function! vimtex#util#get_delim() " {{{1
   " Save position in order to restore before finishing
   let pos_original = getpos('.')
 
@@ -283,7 +281,7 @@ function! latex#util#get_delim() " {{{1
     endif
 
     " Search for closing delimiter
-    let pos = searchpairpos(open, '', close, flags, 'latex#util#in_comment()')
+    let pos = searchpairpos(open, '', close, flags, 'vimtex#util#in_comment()')
 
     " Check if the current is pair is the closest pair
     if pos[0] && pos[0]*1000 + pos[1] < l2*1000 + c2
@@ -291,7 +289,7 @@ function! latex#util#get_delim() " {{{1
       let c2=pos[1]
       let d2=matchstr(strpart(getline(l2), c2 - 1), close)
 
-      let pos = searchpairpos(open,'',close,'bW', 'latex#util#in_comment()')
+      let pos = searchpairpos(open,'',close,'bW', 'vimtex#util#in_comment()')
       let l1=pos[0]
       let c1=pos[1]
       let d1=matchstr(strpart(getline(l1), c1 - 1), open)
@@ -318,7 +316,7 @@ let s:delimiters_close = [
       \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ]
 
-function! latex#util#get_os() " {{{1
+function! vimtex#util#get_os() " {{{1
   if has("win32")
     return "win"
   elseif has("unix")
@@ -330,19 +328,19 @@ function! latex#util#get_os() " {{{1
   endif
 endfunction
 
-function! latex#util#has_syntax(name, ...) " {{{1
-  " Usage: latex#util#has_syntax(name, [line], [col])
+function! vimtex#util#has_syntax(name, ...) " {{{1
+  " Usage: vimtex#util#has_syntax(name, [line], [col])
   let line = a:0 >= 1 ? a:1 : line('.')
   let col  = a:0 >= 2 ? a:2 : col('.')
   return 0 <= index(map(synstack(line, col),
         \ 'synIDattr(v:val, "name") == "' . a:name . '"'), 1)
 endfunction
 
-function! latex#util#in_comment(...) " {{{1
+function! vimtex#util#in_comment(...) " {{{1
   return synIDattr(synID(line('.'), col('.'), 0), "name") =~# '^texComment'
 endfunction
 
-function! latex#util#kpsewhich(file, ...) " {{{1
+function! vimtex#util#kpsewhich(file, ...) " {{{1
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
   let cmd .= ' "' . a:file . '"'
@@ -358,19 +356,19 @@ function! latex#util#kpsewhich(file, ...) " {{{1
   return out
 endfunction
 
-function! latex#util#set_default(variable, default) " {{{1
+function! vimtex#util#set_default(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = a:default
   endif
 endfunction
 
-function! latex#util#set_default_os_specific(variable, default) " {{{1
+function! vimtex#util#set_default_os_specific(variable, default) " {{{1
   if !exists(a:variable)
-    let {a:variable} = get(a:default, latex#util#get_os(), '')
+    let {a:variable} = get(a:default, vimtex#util#get_os(), '')
   endif
 endfunction
 
-function! latex#util#tex2tree(str) " {{{1
+function! vimtex#util#tex2tree(str) " {{{1
   let tree = []
   let i1 = 0
   let i2 = -1
@@ -393,7 +391,7 @@ function! latex#util#tex2tree(str) " {{{1
     else
       let depth -= 1
       if depth == 0
-        call add(tree, latex#util#tex2tree(strpart(a:str, i1, i2 - i1)))
+        call add(tree, vimtex#util#tex2tree(strpart(a:str, i1, i2 - i1)))
         let i1 = i2 + 1
       endif
     endif
@@ -401,11 +399,11 @@ function! latex#util#tex2tree(str) " {{{1
   return tree
 endfunction
 
-function! latex#util#tree2tex(tree) " {{{1
+function! vimtex#util#tree2tex(tree) " {{{1
   if type(a:tree) == type('')
     return a:tree
   else
-    return '{' . join(map(a:tree, 'latex#util#tree2tex(v:val)'), '') . '}'
+    return '{' . join(map(a:tree, 'vimtex#util#tree2tex(v:val)'), '') . '}'
   endif
 endfunction
 

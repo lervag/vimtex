@@ -1,14 +1,14 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#labels#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_labels_enabled', 1)
-  if !g:latex_labels_enabled | return | endif
+function! vimtex#labels#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
+  if !g:vimtex_labels_enabled | return | endif
 
-  let g:latex#data[b:latex.id].labels = function('s:gather_labels')
+  let g:vimtex#data[b:vimtex.id].labels = function('s:gather_labels')
 endfunction
 
 " }}}1

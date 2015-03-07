@@ -1,25 +1,25 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-" vim-latex is not initialized until latex#init() has been run once
+" vimtex is not initialized until vimtex#init() has been run once
 let s:initialized = 0
 
-function! latex#init() " {{{1
+function! vimtex#init() " {{{1
   call s:init_options()
   call s:init_environment()
 
-  call latex#toc#init(s:initialized)
-  call latex#fold#init(s:initialized)
-  call latex#view#init(s:initialized)
-  call latex#motion#init(s:initialized)
-  call latex#labels#init(s:initialized)
-  call latex#change#init(s:initialized)
-  call latex#latexmk#init(s:initialized)
-  call latex#complete#init(s:initialized)
-  call latex#mappings#init(s:initialized)
+  call vimtex#toc#init(s:initialized)
+  call vimtex#fold#init(s:initialized)
+  call vimtex#view#init(s:initialized)
+  call vimtex#motion#init(s:initialized)
+  call vimtex#labels#init(s:initialized)
+  call vimtex#change#init(s:initialized)
+  call vimtex#latexmk#init(s:initialized)
+  call vimtex#complete#init(s:initialized)
+  call vimtex#mappings#init(s:initialized)
 
   "
   " This variable is used to allow a distinction between global and buffer
@@ -28,19 +28,19 @@ function! latex#init() " {{{1
   let s:initialized = 1
 endfunction
 
-function! latex#info() " {{{1
+function! vimtex#info() " {{{1
   if !s:initialized
-    echoerr "Error: vim-latex has not been initialized!"
+    echoerr "Error: vimtex has not been initialized!"
     return
   endif
 
   " Print buffer data
-  echo "b:latex"
-  call s:print_dict(b:latex)
+  echo "b:vimtex"
+  call s:print_dict(b:vimtex)
 
   " Print global data
   let n = 0
-  for data in g:latex#data
+  for data in g:vimtex#data
     " Prepare for printing
     let d = deepcopy(data)
     for f in ['aux', 'out', 'log']
@@ -49,14 +49,14 @@ function! latex#info() " {{{1
 
     " Print data blob title line
     echo "\n"
-    echo "g:latex#data[" . n . "] : " . remove(d, 'name')
+    echo "g:vimtex#data[" . n . "] : " . remove(d, 'name')
     call s:print_dict(d)
     let n += 1
   endfor
 endfunction
 
-function! latex#help() " {{{1
-  if g:latex_mappings_enabled
+function! vimtex#help() " {{{1
+  if g:vimtex_mappings_enabled
     nmap <buffer>
     xmap <buffer>
     omap <buffer>
@@ -65,25 +65,25 @@ function! latex#help() " {{{1
   endif
 endfunction
 
-function! latex#reinit() " {{{1
+function! vimtex#reinit() " {{{1
   "
   " Stop latexmk processes (if running)
   "
-  call latex#latexmk#stop_all()
+  call vimtex#latexmk#stop_all()
 
   "
   " Reset global variables
   "
   let s:initialized = 0
-  unlet g:latex#data
+  unlet g:vimtex#data
 
   "
   " Reset and reinitialize buffers
   "
   let n = bufnr('%')
   bufdo   if getbufvar('%', '&filetype') == 'tex' |
-        \   unlet b:latex                         |
-        \   call latex#init()                     |
+        \   unlet b:vimtex                         |
+        \   call vimtex#init()                     |
         \ endif
   silent execute 'buffer ' . n
 endfunction
@@ -91,8 +91,8 @@ endfunction
 
 function! s:init_environment() " {{{1
   " Initialize global and local data blobs
-  call latex#util#set_default('g:latex#data', [])
-  call latex#util#set_default('b:latex', {})
+  call vimtex#util#set_default('g:vimtex#data', [])
+  call vimtex#util#set_default('b:vimtex', {})
 
   " Set some file type specific vim options
   setlocal suffixesadd+=.tex
@@ -102,7 +102,7 @@ function! s:init_environment() " {{{1
   let main = s:get_main()
   let id   = s:get_id(main)
   if id >= 0
-    let b:latex.id = id
+    let b:vimtex.id = id
   else
     let data = {}
     let data.tex  = main
@@ -119,35 +119,35 @@ function! s:init_environment() " {{{1
       return s:get_main_out(self)
     endfunction
 
-    call add(g:latex#data, data)
-    let b:latex.id = len(g:latex#data) - 1
+    call add(g:vimtex#data, data)
+    let b:vimtex.id = len(g:vimtex#data) - 1
   endif
 
   " Define commands
-  command! -buffer VimLatexInfo         call latex#info()
-  command! -buffer VimLatexHelp         call latex#help()
-  command! -buffer VimLatexReinitialize call latex#reinit()
+  command! -buffer VimtexInfo         call Vimtex#info()
+  command! -buffer VimtexHelp         call vimtex#help()
+  command! -buffer VimtexReinitialize call vimtex#reinit()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vl-info)   :call latex#info()<cr>
-  nnoremap <buffer> <plug>(vl-help)   :call latex#help()<cr>
-  nnoremap <buffer> <plug>(vl-reinit) :call latex#reinit()<cr>
+  nnoremap <buffer> <plug>(vimtex-info)   :call vimtex#info()<cr>
+  nnoremap <buffer> <plug>(vimtex-help)   :call vimtex#help()<cr>
+  nnoremap <buffer> <plug>(vimtex-reinit) :call vimtex#reinit()<cr>
 endfunction
 
 function! s:init_options() " {{{1
-  call latex#util#set_default('g:latex_quickfix_ignore_all_warnings', 0)
-  call latex#util#set_default('g:latex_quickfix_ignored_warnings', [])
+  call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
+  call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
 
-  call latex#util#error_deprecated('g:latex_errorformat_ignore_warnings')
-  call latex#util#error_deprecated('g:latex_errorformat_show_warnings')
+  call vimtex#util#error_deprecated('g:vimtex_errorformat_ignore_warnings')
+  call vimtex#util#error_deprecated('g:vimtex_errorformat_show_warnings')
 endfunction
 " }}}1
 
 function! s:get_id(main) " {{{1
-  if exists('g:latex#data') && !empty(g:latex#data)
+  if exists('g:vimtex#data') && !empty(g:vimtex#data)
     let id = 0
-    while id < len(g:latex#data)
-      if g:latex#data[id].tex == a:main
+    while id < len(g:vimtex#data)
+      if g:vimtex#data[id].tex == a:main
         return id
       endif
       let id += 1
@@ -236,7 +236,7 @@ function! s:get_main_ext(texdata, ext) " {{{1
   " Create set of candidates
   let candidates = [
         \ a:texdata.name,
-        \ g:latex_latexmk_build_dir . '/' . a:texdata.name,
+        \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Search through the candidates
@@ -255,7 +255,7 @@ function! s:get_main_out(texdata) " {{{1
   " Create set of candidates
   let candidates = [
         \ a:texdata.name,
-        \ g:latex_latexmk_build_dir . '/' . a:texdata.name,
+        \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Check for pdf files

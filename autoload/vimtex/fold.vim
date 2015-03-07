@@ -1,18 +1,18 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#fold#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_fold_enabled', 1)
-  if !g:latex_fold_enabled | return | endif
+function! vimtex#fold#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
+  if !g:vimtex_fold_enabled | return | endif
 
   " Set default options
-  call latex#util#set_default('g:latex_fold_automatic', 1)
-  call latex#util#set_default('g:latex_fold_preamble', 1)
-  call latex#util#set_default('g:latex_fold_envs', 1)
-  call latex#util#set_default('g:latex_fold_parts',
+  call vimtex#util#set_default('g:vimtex_fold_automatic', 1)
+  call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
+  call vimtex#util#set_default('g:vimtex_fold_envs', 1)
+  call vimtex#util#set_default('g:vimtex_fold_parts',
         \ [
         \   "part",
         \   "appendix",
@@ -20,7 +20,7 @@ function! latex#fold#init(initialized) " {{{1
         \   "mainmatter",
         \   "backmatter",
         \ ])
-  call latex#util#set_default('g:latex_fold_sections',
+  call vimtex#util#set_default('g:vimtex_fold_sections',
         \ [
         \   "chapter",
         \   "section",
@@ -29,26 +29,26 @@ function! latex#fold#init(initialized) " {{{1
         \ ])
 
   " Define some script variables
-  let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_parts, '|') . ')>'
-  let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:latex_fold_sections,  '|') . ')>'
+  let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
+  let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
 
   " Set fold options
   setl foldmethod=expr
-  setl foldexpr=latex#fold#level(v:lnum)
-  setl foldtext=latex#fold#text()
+  setl foldexpr=vimtex#fold#level(v:lnum)
+  setl foldtext=vimtex#fold#text()
 
   " Initalize folds
-  call latex#fold#refresh('zX')
+  call vimtex#fold#refresh('zX')
 
   " Remap zx to refresh fold levels
-  nnoremap <silent><buffer> zx :call latex#fold#refresh('zx')<cr>
-  nnoremap <silent><buffer> zX :call latex#fold#refresh('zX')<cr>
+  nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
+  nnoremap <silent><buffer> zX :call vimtex#fold#refresh('zX')<cr>
 
   " Define commands
-  command! -buffer VimLatexRefreshFolds call latex#fold#refresh('zx')
+  command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
 
   " Set options for automatic/manual mode
-  if g:latex_fold_automatic
+  if g:vimtex_fold_automatic
     " For some reason, foldmethod=expr makes undo slow (at least in some cases)
     nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
 
@@ -68,12 +68,12 @@ function! latex#fold#init(initialized) " {{{1
   endif
 endfunction
 
-function! latex#fold#refresh(map) " {{{1
+function! vimtex#fold#refresh(map) " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
-  let b:latex.fold_parts = s:parse_folded()
+  let b:vimtex.fold_parts = s:parse_folded()
 
   " Refresh folds
-  if g:latex_fold_automatic
+  if g:vimtex_fold_automatic
     execute 'normal! ' . a:map
   else
     setl foldmethod=expr
@@ -82,7 +82,7 @@ function! latex#fold#refresh(map) " {{{1
   endif
 endfunction
 
-function! latex#fold#level(lnum) " {{{1
+function! vimtex#fold#level(lnum) " {{{1
   " Check for normal lines first (optimization)
   let line  = getline(a:lnum)
   if line !~ '\(% Fake\|\\\(document\|begin\|end\|'
@@ -91,7 +91,7 @@ function! latex#fold#level(lnum) " {{{1
   endif
 
   " Fold preamble
-  if g:latex_fold_preamble
+  if g:vimtex_fold_preamble
     if line =~# '^\s*\\documentclass'
       return ">1"
     elseif line =~# '^\s*\\begin\s*{\s*document\s*}'
@@ -100,7 +100,7 @@ function! latex#fold#level(lnum) " {{{1
   endif
 
   " Fold chapters and sections
-  for [part, level] in b:latex.fold_parts
+  for [part, level] in b:vimtex.fold_parts
     if line =~# part
       return ">" . level
     endif
@@ -112,7 +112,7 @@ function! latex#fold#level(lnum) " {{{1
   endif
 
   " Fold environments
-  if g:latex_fold_envs
+  if g:vimtex_fold_envs
     if line =~# s:notcomment . s:notbslash . '\\begin\s*{.\{-}}'
       if line !~# '\\end'
         return "a1"
@@ -128,7 +128,7 @@ function! latex#fold#level(lnum) " {{{1
   return "="
 endfunction
 
-function! latex#fold#text() " {{{1
+function! vimtex#fold#text() " {{{1
   " Initialize
   let line = getline(v:foldstart)
   let level = v:foldlevel > 1 ? repeat('-', v:foldlevel-2) . '*' : ''
@@ -236,7 +236,7 @@ function! s:parse_folded() " {{{1
 
   " Parse part commands (frontmatter, appendix, part, etc)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
-  for part in g:latex_fold_parts
+  for part in g:vimtex_fold_parts
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
     for line in lines
       if line =~# partpattern
@@ -256,7 +256,7 @@ function! s:parse_folded() " {{{1
 
   " Parse section commands (chapter, [sub...]section)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
-  for part in g:latex_fold_sections
+  for part in g:vimtex_fold_sections
     let partpattern = '^\s*\(\\\|% Fake\)' . part . '\>'
     for line in lines
       if line =~# partpattern

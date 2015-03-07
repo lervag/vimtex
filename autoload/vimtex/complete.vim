@@ -1,17 +1,17 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#complete#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_complete_enabled', 1)
-  if !g:latex_complete_enabled | return | endif
+function! vimtex#complete#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_complete_enabled', 1)
+  if !g:vimtex_complete_enabled | return | endif
 
   " Set default options
-  call latex#util#set_default('g:latex_complete_close_braces', 0)
-  call latex#util#set_default('g:latex_complete_recursive_bib', 0)
-  call latex#util#set_default('g:latex_complete_patterns',
+  call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
+  call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
+  call vimtex#util#set_default('g:vimtex_complete_patterns',
         \ {
         \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
         \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
@@ -25,29 +25,29 @@ function! latex#complete#init(initialized) " {{{1
   endif
 
   " Check if kpsewhich is required and available
-  if g:latex_complete_recursive_bib && !executable('kpsewhich')
+  if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
     echom "Warning: bibtex completion not available"
     echom "         Missing executable: kpsewhich"
     echom "         You could try to turn off recursive bib functionality"
     let s:bibtex = 0
   endif
 
-  setlocal omnifunc=latex#complete#omnifunc
+  setlocal omnifunc=vimtex#complete#omnifunc
 endfunction
 
-function! latex#complete#omnifunc(findstart, base) " {{{1
+function! vimtex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
     "
     " First call:  Find start of text to be completed
     "
-    " Note: g:latex_complete_patterns is a dictionary where the keys are the
+    " Note: g:vimtex_complete_patterns is a dictionary where the keys are the
     " types of completion and the values are the patterns that must match for
     " the given type.  Currently, it completes labels (e.g. \ref{...), bibtex
     " entries (e.g. \cite{...) and commands (e.g. \...).
     "
     let pos  = col('.') - 1
     let line = getline('.')[:pos-1]
-    for [type, pattern] in items(g:latex_complete_patterns)
+    for [type, pattern] in items(g:vimtex_complete_patterns)
       if line =~ pattern . '$'
         let s:completion_type = type
         while pos > 0
@@ -65,9 +65,9 @@ function! latex#complete#omnifunc(findstart, base) " {{{1
     " Second call:  Find list of matches
     "
     if s:completion_type == 'ref'
-      return latex#complete#labels(a:base)
+      return vimtex#complete#labels(a:base)
     elseif s:completion_type == 'bib' && s:bibtex
-      return latex#complete#bibtex(a:base)
+      return vimtex#complete#bibtex(a:base)
     endif
   endif
 endfunction
@@ -76,8 +76,8 @@ endfunction
 let s:bibtex = 1
 let s:completion_type = ''
 
-function! latex#complete#labels(regex) " {{{1
-  let labels = s:labels_get(g:latex#data[b:latex.id].aux())
+function! vimtex#complete#labels(regex) " {{{1
+  let labels = s:labels_get(g:vimtex#data[b:vimtex.id].aux())
   let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
 
   " Try to match label and number
@@ -103,7 +103,7 @@ function! latex#complete#labels(regex) " {{{1
           \ 'word': m[0],
           \ 'menu': printf("%7s [p. %s]", '('.m[1].')', m[2])
           \ }
-    if g:latex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
+    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
       let entry = copy(entry)
       let entry.abbr = entry.word
       let entry.word = entry.word . '}'
@@ -114,7 +114,7 @@ function! latex#complete#labels(regex) " {{{1
   return suggestions
 endfunction
 
-function! latex#complete#bibtex(regexp) " {{{1
+function! vimtex#complete#bibtex(regexp) " {{{1
   let res = []
 
   let s:type_length = 4
@@ -135,7 +135,7 @@ function! latex#complete#bibtex(regexp) " {{{1
           \ }
 
     " Close braces if desired
-    if g:latex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
+    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
       let w.word = w.word . '}'
     endif
 
@@ -166,7 +166,7 @@ function! s:bibtex_search(regexp) " {{{2
 
   " The bibtex completion seems to require that we are in the project root
   let l:save_pwd = getcwd()
-  execute 'lcd ' . fnameescape(g:latex#data[b:latex.id].root)
+  execute 'lcd ' . fnameescape(g:vimtex#data[b:vimtex.id].root)
 
   " Find data from external bib files
   let bibfiles = join(s:bibtex_find_bibs(), ',')
@@ -189,7 +189,7 @@ function! s:bibtex_search(regexp) " {{{2
     let exe = {}
     let exe.cmd = 'bibtex -terse ' . tmp.aux
     let exe.bg = 0
-    call latex#util#execute(exe)
+    call vimtex#util#execute(exe)
 
     " Parse temporary bbl file
     let lines = split(substitute(join(readfile(tmp.bbl), "\n"),
@@ -220,7 +220,7 @@ function! s:bibtex_search(regexp) " {{{2
   execute 'lcd ' . fnameescape(l:save_pwd)
 
   " Find data from 'thebibliography' environments
-  let lines = readfile(g:latex#data[b:latex.id].tex)
+  let lines = readfile(g:vimtex#data[b:vimtex.id].tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
     for line in filter(filter(lines, 'v:val =~ ''\C\\bibitem'''),
           \ 'v:val =~ a:regexp')
@@ -242,7 +242,7 @@ function! s:bibtex_find_bibs(...) " {{{2
   if a:0
     let file = a:1
   else
-    let file = g:latex#data[b:latex.id].tex
+    let file = g:vimtex#data[b:vimtex.id].tex
   endif
 
   if !filereadable(file)
@@ -265,11 +265,11 @@ function! s:bibtex_find_bibs(...) " {{{2
   "
   " Recursively search included files
   "
-  if g:latex_complete_recursive_bib
+  if g:vimtex_complete_recursive_bib
     for entry in map(filter(lines,
           \ 'v:val =~ ' . s:re_incsearch),
           \ 'matchstr(v:val, ' . s:re_incsearch . ')')
-      let bibfiles += s:bibtex_find_bibs(latex#util#kpsewhich(entry))
+      let bibfiles += s:bibtex_find_bibs(vimtex#util#kpsewhich(entry))
     endfor
   endif
 
@@ -336,14 +336,14 @@ function! s:labels_extract(file) " {{{2
   let lines = readfile(a:file)
   let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
   let lines = filter(lines, 'v:val !~# ''@cref''')
-  let lines = map(lines, 'latex#util#convert_back(v:val)')
+  let lines = map(lines, 'vimtex#util#convert_back(v:val)')
   for line in lines
-    let tree = latex#util#tex2tree(line)
+    let tree = vimtex#util#tex2tree(line)
     if !empty(tree[2][0])
       call add(matches, [
-            \ latex#util#tree2tex(tree[1][0]),
-            \ latex#util#tree2tex(tree[2][0][0]),
-            \ latex#util#tree2tex(tree[2][1][0]),
+            \ vimtex#util#tree2tex(tree[1][0]),
+            \ vimtex#util#tree2tex(tree[2][0][0]),
+            \ vimtex#util#tree2tex(tree[2][1][0]),
             \ ])
     endif
   endfor

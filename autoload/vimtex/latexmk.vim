@@ -1,68 +1,68 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#latexmk#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_latexmk_enabled', 1)
-  if !g:latex_latexmk_enabled | return | endif
+function! vimtex#latexmk#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
+  if !g:vimtex_latexmk_enabled | return | endif
   if s:system_incompatible() | return | endif
 
   " Set default options
-  call latex#util#set_default('g:latex_latexmk_background', 0)
-  call latex#util#set_default('g:latex_latexmk_build_dir', '.')
-  call latex#util#set_default('g:latex_latexmk_callback', 1)
-  call latex#util#set_default('g:latex_latexmk_continuous', 1)
-  call latex#util#set_default('g:latex_latexmk_options', '-pdf')
-  call latex#util#set_default('g:latex_quickfix_autojump', '0')
-  call latex#util#set_default('g:latex_quickfix_mode', '2')
-  call latex#util#set_default('g:latex_quickfix_open_on_warning', '1')
-  call latex#util#error_deprecated('g:latex_build_dir')
-  call latex#util#error_deprecated('g:latex_latexmk_autojump')
-  call latex#util#error_deprecated('g:latex_latexmk_output')
-  call latex#util#error_deprecated('g:latex_latexmk_quickfix')
+  call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
+  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '.')
+  call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
+  call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
+  call vimtex#util#set_default('g:vimtex_latexmk_options', '-pdf')
+  call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
+  call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
+  call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
+  call vimtex#util#error_deprecated('g:vimtex_build_dir')
+  call vimtex#util#error_deprecated('g:vimtex_latexmk_autojump')
+  call vimtex#util#error_deprecated('g:vimtex_latexmk_output')
+  call vimtex#util#error_deprecated('g:vimtex_latexmk_quickfix')
 
   " Set compiler (this defines the errorformat)
   compiler latexmk
 
-  let g:latex#data[b:latex.id].pid = 0
+  let g:vimtex#data[b:vimtex.id].pid = 0
 
   " Define commands
-  command! -buffer       VimLatexCompile       call latex#latexmk#compile()
-  command! -buffer -bang VimLatexCompileSS     call latex#latexmk#compile_ss(<q-bang> == "!")
-  command! -buffer       VimLatexCompileToggle call latex#latexmk#toggle()
-  command! -buffer       VimLatexCompileOutput call latex#latexmk#output()
-  command! -buffer       VimLatexStop          call latex#latexmk#stop()
-  command! -buffer       VimLatexStopAll       call latex#latexmk#stop_all()
-  command! -buffer -bang VimLatexErrors        call latex#latexmk#errors(<q-bang> == "!")
-  command! -buffer -bang VimLatexClean         call latex#latexmk#clean(<q-bang> == "!")
-  command! -buffer -bang VimLatexStatus        call latex#latexmk#status(<q-bang> == "!")
-  command! -buffer       VimLatexLacheck       call latex#latexmk#lacheck()
+  command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
+  command! -buffer -bang VimtexCompileSS     call vimtex#latexmk#compile_ss(<q-bang> == "!")
+  command! -buffer       VimtexCompileToggle call vimtex#latexmk#toggle()
+  command! -buffer       VimtexCompileOutput call vimtex#latexmk#output()
+  command! -buffer       VimtexStop          call vimtex#latexmk#stop()
+  command! -buffer       VimtexStopAll       call vimtex#latexmk#stop_all()
+  command! -buffer -bang VimtexErrors        call vimtex#latexmk#errors(<q-bang> == "!")
+  command! -buffer -bang VimtexClean         call vimtex#latexmk#clean(<q-bang> == "!")
+  command! -buffer -bang VimtexStatus        call vimtex#latexmk#status(<q-bang> == "!")
+  command! -buffer       VimtexLacheck       call vimtex#latexmk#lacheck()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vl-compile)        :call latex#latexmk#compile()<cr>
-  nnoremap <buffer> <plug>(vl-compile-ss)     :call latex#latexmk#compile_ss(0)<cr>
-  nnoremap <buffer> <plug>(vl-compile-toggle) :call latex#latexmk#toggle()<cr>
-  nnoremap <buffer> <plug>(vl-compile-output) :call latex#latexmk#output()<cr>
-  nnoremap <buffer> <plug>(vl-stop)           :call latex#latexmk#stop()<cr>
-  nnoremap <buffer> <plug>(vl-stop-all)       :call latex#latexmk#stop_all()<cr>
-  nnoremap <buffer> <plug>(vl-errors)         :call latex#latexmk#errors(1)<cr>
-  nnoremap <buffer> <plug>(vl-clean)          :call latex#latexmk#clean(0)<cr>
-  nnoremap <buffer> <plug>(vl-clean-full)     :call latex#latexmk#clean(1)<cr>
-  nnoremap <buffer> <plug>(vl-status)         :call latex#latexmk#status(0)<cr>
-  nnoremap <buffer> <plug>(vl-status-all)     :call latex#latexmk#status(1)<cr>
-  nnoremap <buffer> <plug>(vl-lacheck)        :call latex#latexmk#lacheck()<cr>
+  nnoremap <buffer> <plug>(vimtex-compile)        :call vimtex#latexmk#compile()<cr>
+  nnoremap <buffer> <plug>(vimtex-compile-ss)     :call vimtex#latexmk#compile_ss(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-compile-toggle) :call vimtex#latexmk#toggle()<cr>
+  nnoremap <buffer> <plug>(vimtex-compile-output) :call vimtex#latexmk#output()<cr>
+  nnoremap <buffer> <plug>(vimtex-stop)           :call vimtex#latexmk#stop()<cr>
+  nnoremap <buffer> <plug>(vimtex-stop-all)       :call vimtex#latexmk#stop_all()<cr>
+  nnoremap <buffer> <plug>(vimtex-errors)         :call vimtex#latexmk#errors(1)<cr>
+  nnoremap <buffer> <plug>(vimtex-clean)          :call vimtex#latexmk#clean(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-clean-full)     :call vimtex#latexmk#clean(1)<cr>
+  nnoremap <buffer> <plug>(vimtex-status)         :call vimtex#latexmk#status(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-status-all)     :call vimtex#latexmk#status(1)<cr>
+  nnoremap <buffer> <plug>(vimtex-lacheck)        :call vimtex#latexmk#lacheck()<cr>
 
   " The remaining part is only relevant for continuous mode
-  if !g:latex_latexmk_continuous | return | endif
+  if !g:vimtex_latexmk_continuous | return | endif
 
   " Ensure that all latexmk processes are stopped when vim exits
   " Note: Only need to define this once, globally.
   if !a:initialized
     augroup latex_latexmk
       autocmd!
-      autocmd VimLeave * call latex#latexmk#stop_all()
+      autocmd VimLeave * call vimtex#latexmk#stop_all()
     augroup END
   endif
 
@@ -75,8 +75,8 @@ function! latex#latexmk#init(initialized) " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#callback(status) " {{{1
-  call latex#latexmk#errors(0)
+function! vimtex#latexmk#callback(status) " {{{1
+  call vimtex#latexmk#errors(0)
   redraw!
 
   echohl ModeMsg
@@ -90,16 +90,16 @@ function! latex#latexmk#callback(status) " {{{1
   endif
   echohl None
 
-  if has_key(g:latex#data[b:latex.id].viewer, 'latexmk_callback')
-    call g:latex#data[b:latex.id].viewer.latexmk_callback()
+  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
+    call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
   endif
 
   return ""
 endfunction
 
 " }}}1
-function! latex#latexmk#clean(full) " {{{1
-  let data = g:latex#data[b:latex.id]
+function! vimtex#latexmk#clean(full) " {{{1
+  let data = g:vimtex#data[b:vimtex.id]
   if data.pid
     echomsg "latexmk is already running"
     return
@@ -113,15 +113,15 @@ function! latex#latexmk#clean(full) " {{{1
   else
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
-  let cmd .= 'latexmk -outdir=' . g:latex_latexmk_build_dir
+  let cmd .= 'latexmk -outdir=' . g:vimtex_latexmk_build_dir
   let cmd .= a:full ? ' -C ' : ' -c'
-  let cmd .= latex#util#fnameescape(data.base)
+  let cmd .= vimtex#util#fnameescape(data.base)
   let exe = {
         \ 'cmd' : cmd,
         \ 'bg'  : 0,
         \ }
-  call latex#util#execute(exe)
-  let g:latex#data[b:latex.id].cmd_latexmk_clean = cmd
+  call vimtex#util#execute(exe)
+  let g:vimtex#data[b:vimtex.id].cmd_latexmk_clean = cmd
 
   if a:full
     echomsg "latexmk full clean finished"
@@ -131,7 +131,7 @@ function! latex#latexmk#clean(full) " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#lacheck() " {{{1
+function! vimtex#latexmk#lacheck() " {{{1
   compiler lacheck
 
   silent lmake %
@@ -143,19 +143,19 @@ function! latex#latexmk#lacheck() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#toggle() " {{{1
-  let data = g:latex#data[b:latex.id]
+function! vimtex#latexmk#toggle() " {{{1
+  let data = g:vimtex#data[b:vimtex.id]
 
   if data.pid
-    call latex#latexmk#stop()
+    call vimtex#latexmk#stop()
   else
-    call latex#latexmk#compile()
+    call vimtex#latexmk#compile()
   endif
 endfunction
 
 " }}}1
-function! latex#latexmk#compile() " {{{1
-  let data = g:latex#data[b:latex.id]
+function! vimtex#latexmk#compile() " {{{1
+  let data = g:vimtex#data[b:vimtex.id]
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"
     return
@@ -163,13 +163,13 @@ function! latex#latexmk#compile() " {{{1
 
   " Build command line and start latexmk
   let exe = s:latexmk_build_cmd(data)
-  if !g:latex_latexmk_continuous && !g:latex_latexmk_background
+  if !g:vimtex_latexmk_continuous && !g:vimtex_latexmk_background
     let exe.bg = 0
     let exe.silent = 0
   endif
-  call latex#util#execute(exe)
+  call vimtex#util#execute(exe)
 
-  if g:latex_latexmk_continuous
+  if g:vimtex_latexmk_continuous
     call s:latexmk_set_pid(data)
 
     echomsg 'latexmk started in continuous mode ...'
@@ -179,29 +179,29 @@ function! latex#latexmk#compile() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#compile_ss(verbose) " {{{1
-  let data = g:latex#data[b:latex.id]
+function! vimtex#latexmk#compile_ss(verbose) " {{{1
+  let data = g:vimtex#data[b:vimtex.id]
   if data.pid
     echomsg "latexmk is already running for `" . data.base . "'"
     return
   endif
 
-  let l:latex_latexmk_continuous = g:latex_latexmk_continuous
-  let g:latex_latexmk_continuous = 0
+  let l:vimtex_latexmk_continuous = g:vimtex_latexmk_continuous
+  let g:vimtex_latexmk_continuous = 0
   let exe = s:latexmk_build_cmd(data)
   if a:verbose
     let exe.bg = 0
     let exe.silent = 0
   endif
-  call latex#util#execute(exe)
-  let g:latex_latexmk_continuous = l:latex_latexmk_continuous
+  call vimtex#util#execute(exe)
+  let g:vimtex_latexmk_continuous = l:vimtex_latexmk_continuous
 endfunction
 
 " }}}1
-function! latex#latexmk#errors(force) " {{{1
+function! vimtex#latexmk#errors(force) " {{{1
   cclose
 
-  let log = g:latex#data[b:latex.id].log()
+  let log = g:vimtex#data[b:vimtex.id].log()
   if empty(log)
     if a:force
       echo "No log file found!"
@@ -209,7 +209,7 @@ function! latex#latexmk#errors(force) " {{{1
     return
   endif
 
-  if g:latex_quickfix_autojump
+  if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
   else
     execute 'cgetfile ' . fnameescape(log)
@@ -222,13 +222,13 @@ function! latex#latexmk#errors(force) " {{{1
   " normal mode mapping).  Else the behaviour is based on the settings.
   "
   let open_quickfix_window = a:force
-        \ || (g:latex_quickfix_mode > 0
-        \     && (g:latex_quickfix_open_on_warning
+        \ || (g:vimtex_quickfix_mode > 0
+        \     && (g:vimtex_quickfix_open_on_warning
         \         || s:log_contains_error(log)))
 
   if open_quickfix_window
     botright cwindow
-    if g:latex_quickfix_mode == 2
+    if g:vimtex_quickfix_mode == 2
       wincmd p
     endif
     redraw!
@@ -236,11 +236,11 @@ function! latex#latexmk#errors(force) " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#output() " {{{1
-  if has_key(g:latex#data[b:latex.id], 'tmp')
-    let tmp = g:latex#data[b:latex.id].tmp
+function! vimtex#latexmk#output() " {{{1
+  if has_key(g:vimtex#data[b:vimtex.id], 'tmp')
+    let tmp = g:vimtex#data[b:vimtex.id].tmp
   else
-    echo "vim-latex: No output exists"
+    echo "vimtex: No output exists"
     return
   endif
 
@@ -270,10 +270,10 @@ function! latex#latexmk#output() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#status(detailed) " {{{1
+function! vimtex#latexmk#status(detailed) " {{{1
   if a:detailed
     let running = 0
-    for data in g:latex#data
+    for data in g:vimtex#data
       if data.pid
         if !running
           echo "latexmk is running"
@@ -293,7 +293,7 @@ function! latex#latexmk#status(detailed) " {{{1
       echo "latexmk is not running"
     endif
   else
-    if g:latex#data[b:latex.id].pid
+    if g:vimtex#data[b:vimtex.id].pid
       echo "latexmk is running"
     else
       echo "latexmk is not running"
@@ -302,12 +302,12 @@ function! latex#latexmk#status(detailed) " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#stop() " {{{1
-  let pid  = g:latex#data[b:latex.id].pid
-  let base = g:latex#data[b:latex.id].base
+function! vimtex#latexmk#stop() " {{{1
+  let pid  = g:vimtex#data[b:vimtex.id].pid
+  let base = g:vimtex#data[b:vimtex.id].base
   if pid
     call s:latexmk_kill_pid(pid)
-    let g:latex#data[b:latex.id].pid = 0
+    let g:vimtex#data[b:vimtex.id].pid = 0
     echo "latexmk stopped for `" . base . "'"
   else
     echo "latexmk is not running for `" . base . "'"
@@ -315,8 +315,8 @@ function! latex#latexmk#stop() " {{{1
 endfunction
 
 " }}}1
-function! latex#latexmk#stop_all() " {{{1
-  for data in g:latex#data
+function! vimtex#latexmk#stop_all() " {{{1
+  for data in g:vimtex#data
     if data.pid
       call s:latexmk_kill_pid(data.pid)
       let data.pid = 0
@@ -327,7 +327,7 @@ endfunction
 " }}}1
 
 " Helper function(s) for building the latexmk command
-function! latex#latexmk#add_option(name, value) " {{{1
+function! vimtex#latexmk#add_option(name, value) " {{{1
   if has('win32')
     return ' -e "$' . a:name . ' = ''' . a:value . '''"'
   else
@@ -354,33 +354,33 @@ function! s:latexmk_build_cmd(data) " {{{1
     let cmd .= ' && max_print_line=2000 latexmk'
   endif
 
-  let cmd .= ' ' . g:latex_latexmk_options
+  let cmd .= ' ' . g:vimtex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
-  let cmd .= ' -outdir=' . g:latex_latexmk_build_dir
+  let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
 
-  if g:latex_latexmk_continuous
+  if g:vimtex_latexmk_continuous
     let cmd .= ' -pvc'
   endif
 
-  if g:latex_latexmk_callback && has('clientserver')
+  if g:vimtex_latexmk_callback && has('clientserver')
     let success  = v:progname
     let success .= ' --servername ' . v:servername
-    let success .= ' --remote-expr \"latex\#latexmk\#callback(1)\"'
+    let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
     let failed   = v:progname
     let failed  .= ' --servername ' . v:servername
-    let failed  .= ' --remote-expr \"latex\#latexmk\#callback(0)\"'
-    let cmd .= latex#latexmk#add_option('success_cmd', success)
-    let cmd .= latex#latexmk#add_option('failure_cmd', failed)
+    let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
+    let cmd .= vimtex#latexmk#add_option('success_cmd', success)
+    let cmd .= vimtex#latexmk#add_option('failure_cmd', failed)
     let s:first_callback = 1
   endif
 
-  if has_key(g:latex#data[b:latex.id].viewer, 'latexmk_append_argument')
-    let cmd .= g:latex#data[b:latex.id].viewer.latexmk_append_argument()
+  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_append_argument')
+    let cmd .= g:vimtex#data[b:vimtex.id].viewer.latexmk_append_argument()
   endif
 
-  let cmd .= ' ' . latex#util#fnameescape(a:data.base)
+  let cmd .= ' ' . vimtex#util#fnameescape(a:data.base)
 
-  if g:latex_latexmk_continuous || g:latex_latexmk_background
+  if g:vimtex_latexmk_continuous || g:vimtex_latexmk_background
     if has('win32')
       let cmd .= ' >'  . tmp
       let cmd = 'cmd /s /c "' . cmd . '"'
@@ -418,7 +418,7 @@ function! s:latexmk_kill_pid(pid) " {{{1
     let exe.cmd = 'kill ' . a:pid
   endif
 
-  call latex#util#execute(exe)
+  call vimtex#util#execute(exe)
 endfunction
 
 " }}}1
@@ -436,9 +436,9 @@ function! s:stop_buffer() " {{{1
   "
   " Only run if latex variables are set
   "
-  if !exists('b:latex') | return | endif
-  let id = b:latex.id
-  let pid = g:latex#data[id].pid
+  if !exists('b:vimtex') | return | endif
+  let id = b:vimtex.id
+  let pid = g:vimtex#data[id].pid
 
   "
   " Only stop if latexmk is running
@@ -449,7 +449,7 @@ function! s:stop_buffer() " {{{1
     "
     let n = 0
     for b in filter(range(1, bufnr("$")), 'buflisted(v:val)')
-      if id == getbufvar(b, 'latex', {'id' : -1}).id
+      if id == getbufvar(b, 'vimtex', {'id' : -1}).id
         let n += 1
       endif
     endfor
@@ -458,7 +458,7 @@ function! s:stop_buffer() " {{{1
     " Only stop if current buffer is the last for current latex blob
     "
     if n == 1
-      silent call latex#latexmk#stop()
+      silent call vimtex#latexmk#stop()
     endif
   endif
 endfunction
@@ -475,7 +475,7 @@ function! s:system_incompatible() " {{{1
   "
   for cmd in required
     if !executable(cmd)
-      echom "Warning: Could not initialize latex#latexmk"
+      echom "Warning: Could not initialize vimtex#latexmk"
       echom "         Missing executable: " . cmd
       return 1
     endif

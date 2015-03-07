@@ -1,4 +1,4 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -9,56 +9,18 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
-call latex#util#set_default('g:latex_indent_enabled', 1)
-if !g:latex_indent_enabled | finish | endif
+call vimtex#util#set_default('g:vimtex_indent_enabled', 1)
+if !g:vimtex_indent_enabled | finish | endif
 
 let s:cpo_save = &cpo
 set cpo&vim
 
-" {{{1 Options and common patterns
 setlocal autoindent
-setlocal indentexpr=LatexIndent()
+setlocal indentexpr=s:vimtex_indent()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=\\item
 
-let s:tikz_indented = 0
-
-" Define some common patterns
-let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
-let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:delimiters_open = '\(' . join([
-        \ '{',
-        \ '(',
-        \ '\[',
-        \ '\\{',
-        \ '\\(',
-        \ '\\\[',
-        \ '\\\Cbegin\s*{.\{-}}',
-        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ], '\|') . '\)'
-let s:delimiters_close = '\(' . join([
-        \ '}',
-        \ ')',
-        \ '\]',
-        \ '\\}',
-        \ '\\)',
-        \ '\\\]',
-        \ '\\\Cend\s*{.\{-}}',
-        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ], '\|') . '\)'
-let s:tikz_commands = '\\\(' . join([
-        \ 'draw',
-        \ 'fill',
-        \ 'path',
-        \ 'node',
-        \ 'add\(legendentry\|plot\)',
-      \ ], '\|') . '\)'
-" }}}1
-
-" {{{1 LatexIndent
-function! LatexIndent()
+function! s:vimtex_indent() " {{{1
   " Find a non-blank non-comment line above the current line
   let lnum = prevnonblank(v:lnum - 1)
   while lnum != 0 && getline(lnum) =~ '^\s*%'
@@ -154,9 +116,7 @@ function! LatexIndent()
   return ind
 endfunction
 "}}}
-
-" {{{1 s:count_delimiters
-function! s:count_delimiters(line, pattern)
+function! s:count_delimiters(line, pattern) " {{{1
   let sum = 0
   let indx = match(a:line, a:pattern)
   while indx >= 0
@@ -167,6 +127,45 @@ function! s:count_delimiters(line, pattern)
   endwhile
   return sum
 endfunction
+
+" }}}1
+
+" {{{1 Script variables
+let s:tikz_indented = 0
+
+" Define some common patterns
+let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
+let s:envs_noindent = 'document\|verbatim\|lstlisting'
+let s:delimiters_open = '\(' . join([
+        \ '{',
+        \ '(',
+        \ '\[',
+        \ '\\{',
+        \ '\\(',
+        \ '\\\[',
+        \ '\\\Cbegin\s*{.\{-}}',
+        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
+      \ ], '\|') . '\)'
+let s:delimiters_close = '\(' . join([
+        \ '}',
+        \ ')',
+        \ '\]',
+        \ '\\}',
+        \ '\\)',
+        \ '\\\]',
+        \ '\\\Cend\s*{.\{-}}',
+        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\()\|\]\|\\}\)',
+      \ ], '\|') . '\)'
+let s:tikz_commands = '\\\(' . join([
+        \ 'draw',
+        \ 'fill',
+        \ 'path',
+        \ 'node',
+        \ 'add\(legendentry\|plot\)',
+      \ ], '\|') . '\)'
+
 " }}}1
 
 let &cpo = s:cpo_save

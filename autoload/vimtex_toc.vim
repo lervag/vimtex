@@ -1,10 +1,24 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latextoc#fold_level(lnum) " {{{1
+function! vimtextoc#init() " {{{1
+  if !exists('b:toc') | return | endif
+
+  " Fill TOC entries
+  call s:add_start()
+  call s:add_entries()
+  call s:add_help()
+  call s:add_end()
+
+  " Jump to closest index
+  call setpos('.', b:toc_pos_closest)
+endfunction
+
+" }}}1
+function! vimtextoc#fold_level(lnum) " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)
   let nline = getline(a:lnum + 1)
@@ -17,36 +31,24 @@ function! latextoc#fold_level(lnum) " {{{1
     return 0
   endif
 
-  if l:nn > l:cn && g:latex_toc_fold_levels >= l:nn
+  if l:nn > l:cn && g:vimtex_toc_fold_levels >= l:nn
     return '>' . l:nn
   endif
 
-  if l:cn < l:pn && l:cn >= l:nn && g:latex_toc_fold_levels >= l:cn
+  if l:cn < l:pn && l:cn >= l:nn && g:vimtex_toc_fold_levels >= l:cn
     return l:cn
   endif
 
   return '='
 endfunction
 
-function! latextoc#fold_text() " {{{1
+" }}}1
+function! vimtextoc#fold_text() " {{{1
   return getline(v:foldstart)
 endfunction
+
 " }}}1
-
-function! latextoc#init() " {{{1
-  if !exists('b:toc') | return | endif
-
-  " Fill TOC entries
-  call s:add_start()
-  call s:add_entries()
-  call s:add_help()
-  call s:add_end()
-
-  " Jump to closest index
-  call setpos('.', b:toc_pos_closest)
-endfunction
-" }}}1
-function! latextoc#refresh() " {{{1
+function! vimtextoc#refresh() " {{{1
   if !exists('b:toc') | return | endif
 
   " Fill TOC entries
@@ -58,6 +60,7 @@ function! latextoc#refresh() " {{{1
   " Restore old position
   call setpos('.', b:toc_pos_saved)
 endfunction
+
 " }}}1
 
 function! s:add_start() " {{{1
@@ -69,8 +72,8 @@ endfunction
 " }}}1
 function! s:add_entries() " {{{1
   let closest_index = 0
-  if g:latex_toc_numbers_width
-    let s:width = g:latex_toc_numbers_width
+  if g:vimtex_toc_numbers_width
+    let s:width = g:vimtex_toc_numbers_width
   else
     let s:width = 2*(b:toc_secnumdepth+2)
   endi
@@ -90,7 +93,7 @@ function! s:add_entries() " {{{1
 endfunction
 " }}}1
 function! s:add_help() " {{{1
-  if !g:latex_toc_hide_help
+  if !g:vimtex_toc_hide_help
     call append('$', "")
     call append('$', "<Esc>/q: close")
     call append('$', "<Space>: jump")
@@ -113,7 +116,7 @@ function! s:print_entry(entry) " {{{1
 
   " Create entry string
   let entry = ''
-  if g:latex_toc_numbers
+  if g:vimtex_toc_numbers
     let entry .= printf(s:num_format, level >= b:toc_secnumdepth + 2
           \ ? '' : strpart(s:print_number(a:entry.number), 0, s:width))
   endif

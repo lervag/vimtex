@@ -1,32 +1,32 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#change#init(initialized) " {{{1
+function! vimtex#change#init(initialized) " {{{1
   " Define mappings
-  nnoremap <silent><buffer> <plug>(vl-delete-env)
-        \ :call latex#change#env('')<cr>
-  nnoremap <silent><buffer> <plug>(vl-delete-cmd)   vaBom`o<esc>xg``xdF\
-        \:silent! call repeat#set("\<plug>(vl-delete-cmd)", v:count)<cr>
-  nnoremap <silent><buffer> <plug>(vl-change-env)
-        \ :call latex#change#env_prompt()<cr>
-  nnoremap <silent><buffer> <plug>(vl-change-cmd)
-        \ :call latex#change#command()<cr>
-  nnoremap <silent><buffer> <plug>(vl-toggle-star)
-        \ :call latex#change#toggle_env_star()<cr>
-  nnoremap <silent><buffer> <plug>(vl-toggle-delim)
-        \ :call latex#change#toggle_delim()<cr>
-  nnoremap <silent><buffer> <plug>(vl-create-cmd)
-        \ :call latex#change#to_command()<cr>i
-  inoremap <silent><buffer> <plug>(vl-create-cmd)
-        \ <c-r>=latex#change#to_command()<cr>
-  inoremap <silent><buffer> <plug>(vl-close-env)
-        \ <c-r>=latex#change#close_environment()<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-delete-env)
+        \ :call vimtex#change#env('')<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-delete-cmd)   vaBom`o<esc>xg``xdF\
+        \:silent! call repeat#set("\<plug>(vimtex-delete-cmd)", v:count)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-change-env)
+        \ :call vimtex#change#env_prompt()<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-change-cmd)
+        \ :call vimtex#change#command()<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-toggle-star)
+        \ :call vimtex#change#toggle_env_star()<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-toggle-delim)
+        \ :call vimtex#change#toggle_delim()<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-create-cmd)
+        \ :call vimtex#change#to_command()<cr>i
+  inoremap <silent><buffer> <plug>(vimtex-create-cmd)
+        \ <c-r>=vimtex#change#to_command()<cr>
+  inoremap <silent><buffer> <plug>(vimtex-close-env)
+        \ <c-r>=vimtex#change#close_environment()<cr>
 endfunction
 
-function! latex#change#command() " {{{1
+function! vimtex#change#command() " {{{1
   let pos_save = getpos('.')
   let savereg = @a
 
@@ -49,13 +49,13 @@ function! latex#change#command() " {{{1
   let @a = savereg
   call setpos('.', pos_save)
 
-  silent! call repeat#set("\<plug>(vl-change-cmd)" . new . '', v:count)
+  silent! call repeat#set("\<plug>(vimtex-change-cmd)" . new . '', v:count)
 endfunction
 
-function! latex#change#close_environment() " {{{1
+function! vimtex#change#close_environment() " {{{1
   " Close delimiters
   let [lnum, cnum] = searchpairpos('\C\\left\>', '', '\C\\right\>', 'bnW',
-        \ 'latex#util#in_comment()')
+        \ 'vimtex#util#in_comment()')
   if lnum > 0
     let line = strpart(getline(lnum), cnum - 1)
     let bracket = matchstr(line, '^\\left\zs\((\|\[\|\\{\||\|\.\)\ze')
@@ -72,7 +72,7 @@ function! latex#change#close_environment() " {{{1
   endif
 
   " Close environment
-  let env = latex#util#get_env()
+  let env = vimtex#util#get_env()
   if env == '\['
     return '\]'
   elseif env == '\('
@@ -82,8 +82,8 @@ function! latex#change#close_environment() " {{{1
   endif
 endfunction
 
-function! latex#change#delim(open, close) " {{{1
-  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
+function! vimtex#change#delim(open, close) " {{{1
+  let [d1, l1, c1, d2, l2, c2] = vimtex#util#get_delim()
 
   let line = getline(l1)
   let line = strpart(line,0,c1 - 1) . a:open . strpart(line, c1 + len(d1) - 1)
@@ -102,8 +102,8 @@ function! latex#change#delim(open, close) " {{{1
   call setline(l2, line)
 endfunction
 
-function! latex#change#env(new) " {{{1
-  let [env, l1, c1, l2, c2] = latex#util#get_env(1)
+function! vimtex#change#env(new) " {{{1
+  let [env, l1, c1, l2, c2] = vimtex#util#get_env(1)
 
   if a:new == ''
     let beg = ''
@@ -134,23 +134,23 @@ function! latex#change#env(new) " {{{1
   call setline(l2, line)
 
   if a:new == ''
-    silent! call repeat#set("\<plug>(vl-delete-env)", v:count)
+    silent! call repeat#set("\<plug>(vimtex-delete-env)", v:count)
   else
-    silent! call repeat#set("\<plug>(vl-change-env)" . a:new . "", v:count)
+    silent! call repeat#set("\<plug>(vimtex-change-env)" . a:new . "", v:count)
   endif
 endfunction
 
-function! latex#change#env_prompt() " {{{1
-  let new_env = input('Change ' . latex#util#get_env() . ' for: ', '',
+function! vimtex#change#env_prompt() " {{{1
+  let new_env = input('Change ' . vimtex#util#get_env() . ' for: ', '',
         \ 'customlist,' . s:sidwrap('input_complete'))
   if empty(new_env)
     return
   else
-    call latex#change#env(new_env)
+    call vimtex#change#env(new_env)
   endif
 endfunction
 
-function! latex#change#to_command() " {{{1
+function! vimtex#change#to_command() " {{{1
   " Get current line
   let line = getline('.')
 
@@ -190,11 +190,11 @@ function! latex#change#to_command() " {{{1
   return ''
 endfunction
 
-function! latex#change#toggle_delim() " {{{1
+function! vimtex#change#toggle_delim() " {{{1
   "
   " Toggle \left and \right variants of delimiters
   "
-  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
+  let [d1, l1, c1, d2, l2, c2] = vimtex#util#get_delim()
 
   if d1 == ''
     return 0
@@ -224,11 +224,11 @@ function! latex#change#toggle_delim() " {{{1
   let line = strpart(line, 0, c2 - 1) . newd2 . strpart(line, c2 + len(d2) - 1)
   call setline(l2, line)
 
-  silent! call repeat#set("\<plug>(vl-toggle-delim)", v:count)
+  silent! call repeat#set("\<plug>(vimtex-toggle-delim)", v:count)
 endfunction
 
-function! latex#change#toggle_env_star() " {{{1
-  let env = latex#util#get_env()
+function! vimtex#change#toggle_env_star() " {{{1
+  let env = vimtex#util#get_env()
 
   if env == '\('
     return
@@ -240,18 +240,18 @@ function! latex#change#toggle_env_star() " {{{1
     let new_env = env . '*'
   endif
 
-  call latex#change#env(new_env)
+  call vimtex#change#env(new_env)
 
-  silent! call repeat#set("\<plug>(vl-toggle-star)", v:count)
+  silent! call repeat#set("\<plug>(vimtex-toggle-star)", v:count)
 endfunction
 
 
-function! latex#change#wrap_selection(wrapper) " {{{1
+function! vimtex#change#wrap_selection(wrapper) " {{{1
   keepjumps normal! `>a}
   execute 'keepjumps normal! `<i\' . a:wrapper . '{'
 endfunction
 
-function! latex#change#wrap_selection_prompt(...) " {{{1
+function! vimtex#change#wrap_selection_prompt(...) " {{{1
   let env = input('Environment: ', '',
         \ 'customlist,' . s:sidwrap('input_complete'))
   if empty(env)
@@ -287,7 +287,7 @@ let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
 
 function! s:input_complete(lead, cmdline, pos) " {{{1
   let suggestions = []
-  for entry in g:latex_complete_environments
+  for entry in g:vimtex_complete_environments
     let env = entry.word
     if env =~ '^' . a:lead
       call add(suggestions, env)
@@ -310,7 +310,7 @@ function! s:search_and_skip_comments(pat, ...) " {{{1
     let flags = substitute(flags, 'c', '', 'g')
 
     " keep searching while in comment
-    while latex#util#in_comment()
+    while vimtex#util#in_comment()
       let ret = search(a:pat, flags, stopline)
       if !ret
         break

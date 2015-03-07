@@ -1,47 +1,47 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#motion#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_motion_enabled', 1)
-  if !g:latex_motion_enabled | return | endif
+function! vimtex#motion#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_motion_enabled', 1)
+  if !g:vimtex_motion_enabled | return | endif
 
   " Set default options
-  call latex#util#set_default('g:latex_motion_matchparen', 1)
+  call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
 
   " Define mappings
-  nnoremap <buffer> <plug>(vl-%)  :call latex#motion#find_matching_pair()<cr>
-  xnoremap <buffer> <plug>(vl-%)  :<c-u>call latex#motion#find_matching_pair(1)<cr>
-  onoremap <buffer> <plug>(vl-%)  :normal v%<cr>
-  nnoremap <buffer> <plug>(vl-]]) :call latex#motion#next_section(0,0,0)<cr>
-  nnoremap <buffer> <plug>(vl-][) :call latex#motion#next_section(1,0,0)<cr>
-  nnoremap <buffer> <plug>(vl-[]) :call latex#motion#next_section(1,1,0)<cr>
-  nnoremap <buffer> <plug>(vl-[[) :call latex#motion#next_section(0,1,0)<cr>
-  xnoremap <buffer> <plug>(vl-]]) :<c-u>call latex#motion#next_section(0,0,1)<cr>
-  xnoremap <buffer> <plug>(vl-][) :<c-u>call latex#motion#next_section(1,0,1)<cr>
-  xnoremap <buffer> <plug>(vl-[]) :<c-u>call latex#motion#next_section(1,1,1)<cr>
-  xnoremap <buffer> <plug>(vl-[[) :<c-u>call latex#motion#next_section(0,1,1)<cr>
-  onoremap <buffer> <plug>(vl-]]) :normal v]]<cr>
-  onoremap <buffer> <plug>(vl-][) :normal v][<cr>
-  onoremap <buffer> <plug>(vl-[]) :normal v[]<cr>
-  onoremap <buffer> <plug>(vl-[[) :normal v[[<cr>
-  xnoremap <buffer> <plug>(vl-ie) :<c-u>call latex#motion#sel_environment(1)<cr>
-  xnoremap <buffer> <plug>(vl-ae) :<c-u>call latex#motion#sel_environment()<cr>
-  onoremap <buffer> <plug>(vl-ie) :normal vie<cr>
-  onoremap <buffer> <plug>(vl-ae) :normal vae<cr>
-  xnoremap <buffer> <plug>(vl-i$) :<c-u>call latex#motion#sel_inline_math(1)<cr>
-  xnoremap <buffer> <plug>(vl-a$) :<c-u>call latex#motion#sel_inline_math()<cr>
-  onoremap <buffer> <plug>(vl-i$) :normal vi$<cr>
-  onoremap <buffer> <plug>(vl-a$) :normal va$<cr>
-  xnoremap <buffer> <plug>(vl-id) :<c-u>call latex#motion#sel_delimiter(1)<cr>
-  xnoremap <buffer> <plug>(vl-ad) :<c-u>call latex#motion#sel_delimiter()<cr>
-  onoremap <buffer> <plug>(vl-id) :normal vi(<cr>
-  onoremap <buffer> <plug>(vl-ad) :normal va(<cr>
+  nnoremap <buffer> <plug>(vimtex-%)  :call vimtex#motion#find_matching_pair()<cr>
+  xnoremap <buffer> <plug>(vimtex-%)  :<c-u>call vimtex#motion#find_matching_pair(1)<cr>
+  onoremap <buffer> <plug>(vimtex-%)  :normal v%<cr>
+  nnoremap <buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
+  nnoremap <buffer> <plug>(vimtex-][) :call vimtex#motion#next_section(1,0,0)<cr>
+  nnoremap <buffer> <plug>(vimtex-[]) :call vimtex#motion#next_section(1,1,0)<cr>
+  nnoremap <buffer> <plug>(vimtex-[[) :call vimtex#motion#next_section(0,1,0)<cr>
+  xnoremap <buffer> <plug>(vimtex-]]) :<c-u>call vimtex#motion#next_section(0,0,1)<cr>
+  xnoremap <buffer> <plug>(vimtex-][) :<c-u>call vimtex#motion#next_section(1,0,1)<cr>
+  xnoremap <buffer> <plug>(vimtex-[]) :<c-u>call vimtex#motion#next_section(1,1,1)<cr>
+  xnoremap <buffer> <plug>(vimtex-[[) :<c-u>call vimtex#motion#next_section(0,1,1)<cr>
+  onoremap <buffer> <plug>(vimtex-]]) :normal v]]<cr>
+  onoremap <buffer> <plug>(vimtex-][) :normal v][<cr>
+  onoremap <buffer> <plug>(vimtex-[]) :normal v[]<cr>
+  onoremap <buffer> <plug>(vimtex-[[) :normal v[[<cr>
+  xnoremap <buffer> <plug>(vimtex-ie) :<c-u>call vimtex#motion#sel_environment(1)<cr>
+  xnoremap <buffer> <plug>(vimtex-ae) :<c-u>call vimtex#motion#sel_environment()<cr>
+  onoremap <buffer> <plug>(vimtex-ie) :normal vie<cr>
+  onoremap <buffer> <plug>(vimtex-ae) :normal vae<cr>
+  xnoremap <buffer> <plug>(vimtex-i$) :<c-u>call vimtex#motion#sel_inline_math(1)<cr>
+  xnoremap <buffer> <plug>(vimtex-a$) :<c-u>call vimtex#motion#sel_inline_math()<cr>
+  onoremap <buffer> <plug>(vimtex-i$) :normal vi$<cr>
+  onoremap <buffer> <plug>(vimtex-a$) :normal va$<cr>
+  xnoremap <buffer> <plug>(vimtex-id) :<c-u>call vimtex#motion#sel_delimiter(1)<cr>
+  xnoremap <buffer> <plug>(vimtex-ad) :<c-u>call vimtex#motion#sel_delimiter()<cr>
+  onoremap <buffer> <plug>(vimtex-id) :normal vi(<cr>
+  onoremap <buffer> <plug>(vimtex-ad) :normal va(<cr>
 
   " Highlight matching parens ($, (), ...)
-  if !a:initialized && g:latex_motion_matchparen
+  if !a:initialized && g:vimtex_motion_matchparen
     augroup latex_motion
       autocmd!
       " Disable matchparen autocommands
@@ -59,12 +59,12 @@ function! latex#motion#init(initialized) " {{{1
   endif
 endfunction
 
-function! latex#motion#find_matching_pair(...) " {{{1
+function! vimtex#motion#find_matching_pair(...) " {{{1
   if a:0 > 0
     normal! gv
   endif
 
-  if latex#util#in_comment() | return | endif
+  if vimtex#util#in_comment() | return | endif
 
   " Save position
   let nl = line('.')
@@ -90,7 +90,7 @@ function! latex#motion#find_matching_pair(...) " {{{1
   if delim =~ '^\$'
     let inline = s:notcomment . s:notbslash . '\$'
     let [lnum0, cnum0] = searchpos('.', 'nW')
-    if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
+    if lnum0 && vimtex#util#has_syntax('texMathZoneX', lnum0, cnum0)
       let [lnum2, cnum2] = searchpos(inline, 'nW', 0, 200)
     else
       let [lnum2, cnum2] = searchpos(not_cursor . inline, 'bnW', 0, 200)
@@ -104,19 +104,19 @@ function! latex#motion#find_matching_pair(...) " {{{1
 
       if delim =~# '^' . open_pat
         call searchpairpos(open_pat, '', close_pat,
-              \ 'W', 'latex#util#in_comment()', 0, 200)
+              \ 'W', 'vimtex#util#in_comment()', 0, 200)
         call search(close_pat, 'ce')
         return
       elseif delim =~# '^' . close_pat
         call searchpairpos(open_pat, '', not_cursor . close_pat,
-              \ 'bW', 'latex#util#in_comment()', 0, 200)
+              \ 'bW', 'vimtex#util#in_comment()', 0, 200)
         return
       endif
     endfor
   endif
 endfunction
 
-function! latex#motion#next_section(type, backwards, visual) " {{{1
+function! vimtex#motion#next_section(type, backwards, visual) " {{{1
   " Restore visual mode if desired
   if a:visual
     normal! gv
@@ -150,10 +150,10 @@ function! latex#motion#next_section(type, backwards, visual) " {{{1
   endif
 endfunction
 
-function! latex#motion#sel_delimiter(...) " {{{1
+function! vimtex#motion#sel_delimiter(...) " {{{1
   let inner = a:0 > 0
 
-  let [d1, l1, c1, d2, l2, c2] = latex#util#get_delim()
+  let [d1, l1, c1, d2, l2, c2] = vimtex#util#get_delim()
 
   if inner
     let c1 += len(d1)
@@ -184,10 +184,10 @@ function! latex#motion#sel_delimiter(...) " {{{1
   endif
 endfunction
 
-function! latex#motion#sel_environment(...) " {{{1
+function! vimtex#motion#sel_environment(...) " {{{1
   let inner = a:0 > 0
 
-  let [env, lnum, cnum, lnum2, cnum2] = latex#util#get_env(1)
+  let [env, lnum, cnum, lnum2, cnum2] = vimtex#util#get_env(1)
   call cursor(lnum, cnum)
   if inner
     if env =~ '^\'
@@ -213,12 +213,12 @@ function! latex#motion#sel_environment(...) " {{{1
   endif
 endfunction
 
-function! latex#motion#sel_inline_math(...) " {{{1
+function! vimtex#motion#sel_inline_math(...) " {{{1
   let inner = a:0 > 0
 
   let dollar_pat = '\\\@<!\$'
 
-  if latex#util#has_syntax('texMathZoneX')
+  if vimtex#util#has_syntax('texMathZoneX')
     call s:search_and_skip_comments(dollar_pat, 'cbW')
   elseif getline('.')[col('.') - 1] == '$'
     call s:search_and_skip_comments(dollar_pat, 'bW')
@@ -283,7 +283,7 @@ let s:section.= '>'
 " }}}1
 
 function! s:highlight_matching_pair(...) " {{{1
-  if latex#util#in_comment() | return | endif
+  if vimtex#util#in_comment() | return | endif
   let hmode = a:0 > 0 ? 1 : 0
 
   2match none
@@ -307,7 +307,7 @@ function! s:highlight_matching_pair(...) " {{{1
     " Match inline math
     "
     let [lnum0, cnum0] = searchpos('.', 'nW')
-    if lnum0 && latex#util#has_syntax('texMathZoneX', lnum0, cnum0)
+    if lnum0 && vimtex#util#has_syntax('texMathZoneX', lnum0, cnum0)
       let [lnum2, cnum2] = searchpos(s:notcomment . s:notbslash . '\$',
             \ 'nW', line('w$'), 200)
     else
@@ -328,7 +328,7 @@ function! s:highlight_matching_pair(...) " {{{1
 
       if delim =~# '^' . open_pat
         let [lnum2, cnum2] = searchpairpos(open_pat, '', close_pat,
-              \ 'nW', 'latex#util#in_comment()', line('w$'), 200)
+              \ 'nW', 'vimtex#util#in_comment()', line('w$'), 200)
         execute '2match MatchParen /\%(\%' . nl . 'l\%' . cnum
               \ . 'c' . s:delimiters_open[i] . '\|\%'
               \ . lnum2 . 'l\%' . cnum2 . 'c'
@@ -337,7 +337,7 @@ function! s:highlight_matching_pair(...) " {{{1
       elseif delim =~# '^' . close_pat
         let [lnum2, cnum2] =  searchpairpos(open_pat, '',
               \ '\C\%(\%'. nl . 'l\%' . cnum . 'c\)\@!' . close_pat,
-              \ 'bnW', 'latex#util#in_comment()', line('w0'), 200)
+              \ 'bnW', 'vimtex#util#in_comment()', line('w0'), 200)
         execute '2match MatchParen /\%(\%' . lnum2 . 'l\%' . cnum2
               \ . 'c' . s:delimiters_open[i] . '\|\%'
               \ . nl . 'l\%' . cnum . 'c'
@@ -362,7 +362,7 @@ function! s:search_and_skip_comments(pat, ...) " {{{1
     let flags = substitute(flags, 'c', '', 'g')
 
     " keep searching while in comment
-    while latex#util#in_comment()
+    while vimtex#util#in_comment()
       let ret = search(a:pat, flags, stopline)
       if !ret
         break

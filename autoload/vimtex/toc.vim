@@ -1,37 +1,37 @@
-" LaTeX plugin for Vim
+" vimtex - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
 "
 
-function! latex#toc#init(initialized) " {{{1
-  call latex#util#set_default('g:latex_toc_enabled', 1)
-  if !g:latex_toc_enabled | return | endif
+function! vimtex#toc#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_toc_enabled', 1)
+  if !g:vimtex_toc_enabled | return | endif
 
   " Set default options
-  call latex#util#set_default('g:latex_toc_fold', 0)
-  call latex#util#set_default('g:latex_toc_fold_levels', 10)
-  call latex#util#set_default('g:latex_toc_hide_help', 0)
-  call latex#util#set_default('g:latex_toc_hide_line_numbers', 1)
-  call latex#util#set_default('g:latex_toc_hide_preamble', 0)
-  call latex#util#set_default('g:latex_toc_numbers', 1)
-  call latex#util#set_default('g:latex_toc_numbers_width', 0)
-  call latex#util#set_default('g:latex_toc_resize', 1)
-  call latex#util#set_default('g:latex_toc_secnumdepth', 3)
-  call latex#util#set_default('g:latex_toc_split_pos', 'vert leftabove')
-  call latex#util#set_default('g:latex_toc_width', 30)
-  call latex#util#error_deprecated('g:latex_toc_split_side')
+  call vimtex#util#set_default('g:vimtex_toc_fold', 0)
+  call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
+  call vimtex#util#set_default('g:vimtex_toc_hide_help', 0)
+  call vimtex#util#set_default('g:vimtex_toc_hide_line_numbers', 1)
+  call vimtex#util#set_default('g:vimtex_toc_hide_preamble', 0)
+  call vimtex#util#set_default('g:vimtex_toc_numbers', 1)
+  call vimtex#util#set_default('g:vimtex_toc_numbers_width', 0)
+  call vimtex#util#set_default('g:vimtex_toc_resize', 1)
+  call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
+  call vimtex#util#set_default('g:vimtex_toc_split_pos', 'vert leftabove')
+  call vimtex#util#set_default('g:vimtex_toc_width', 30)
+  call vimtex#util#error_deprecated('g:vimtex_toc_split_side')
 
   " Define commands
-  command! -buffer VimLatexTocOpen   call latex#toc#open()
-  command! -buffer VimLatexTocToggle call latex#toc#toggle()
+  command! -buffer VimtexTocOpen   call vimtex#toc#open()
+  command! -buffer VimtexTocToggle call vimtex#toc#toggle()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vl-toc-open)   :call latex#toc#open()<cr>
-  nnoremap <buffer> <plug>(vl-toc-toggle) :call latex#toc#toggle()<cr>
+  nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
+  nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
 endfunction
 
-function! latex#toc#open() " {{{1
+function! vimtex#toc#open() " {{{1
   " Go to TOC if it already exists
   let winnr = bufwinnr(bufnr('LaTeX TOC'))
   if winnr >= 0
@@ -46,17 +46,17 @@ function! latex#toc#open() " {{{1
   let toc = s:parse_toc()
 
   " Resize vim session if wanted, then create TOC window
-  if g:latex_toc_resize
-    silent exe "set columns+=" . g:latex_toc_width
+  if g:vimtex_toc_resize
+    silent exe "set columns+=" . g:vimtex_toc_width
   endif
-  silent exe g:latex_toc_split_pos g:latex_toc_width . 'new LaTeX\ TOC'
+  silent exe g:vimtex_toc_split_pos g:vimtex_toc_width . 'new LaTeX\ TOC'
 
   " Set buffer local variables
   let b:toc = toc
   let b:toc_numbers = 1
   let b:toc_max_level = s:max_level
   let b:toc_topmatters = s:count_matters
-  let b:toc_secnumdepth = g:latex_toc_secnumdepth
+  let b:toc_secnumdepth = g:vimtex_toc_secnumdepth
   let b:calling_winnr = bufwinnr(calling_buf)
   let b:calling_file = calling_file
   let b:calling_line = calling_line
@@ -64,14 +64,14 @@ function! latex#toc#open() " {{{1
   setlocal filetype=latextoc
 endfunction
 
-function! latex#toc#toggle() " {{{1
+function! vimtex#toc#toggle() " {{{1
   if bufwinnr(bufnr('LaTeX TOC')) >= 0
-    if g:latex_toc_resize
-      silent exe "set columns-=" . g:latex_toc_width
+    if g:vimtex_toc_resize
+      silent exe "set columns-=" . g:vimtex_toc_width
     endif
     silent execute 'bwipeout' . bufnr('LaTeX TOC')
   else
-    call latex#toc#open()
+    call vimtex#toc#open()
     silent execute 'wincmd w'
   endif
 endfunction
@@ -140,7 +140,7 @@ let s:re_other = {
 " }}}1
 
 function! s:parse_toc() " {{{1
-  let file = g:latex#data[b:latex.id].tex
+  let file = g:vimtex#data[b:vimtex.id].tex
 
   " Reset TOC numbering
   call s:number_reset('preamble')
@@ -157,7 +157,7 @@ endfunction
 " }}}1
 function! s:parse_limits(file) " {{{1
   if !filereadable(a:file)
-    echoerr "Error in latex#toc s:parse_limits"
+    echoerr "Error in vimtex#toc s:parse_limits"
     echoerr "File not readable: " . a:file
     return ''
   endif
@@ -191,7 +191,7 @@ function! s:parse_file(file) " {{{1
   if a:file == ''
     return []
   elseif !filereadable(a:file)
-    echoerr "Error in latex#toc s:parse_file"
+    echoerr "Error in vimtex#toc s:parse_file"
     echoerr "File not readable: " . a:file
     return []
   endif
@@ -210,7 +210,7 @@ function! s:parse_file(file) " {{{1
 
     " 2. Parse preamble
     if s:number.preamble
-      if !g:latex_toc_hide_preamble && line =~# '\v^\s*\\documentclass'
+      if !g:vimtex_toc_hide_preamble && line =~# '\v^\s*\\documentclass'
         call add(toc, {
               \ 'title'  : 'Preamble',
               \ 'number' : '',
