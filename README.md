@@ -4,11 +4,13 @@
 
 `vimtex` is a [vim](http://www.vim.org/) plugin that provides support for writing LaTeX documents.  The
 main features are:
+
 1. Control over document compilation (through [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/))
 2. Completion of citations and labels
 3. A Convenient table of contents
 4. Control over `pdf` viewers with forward search for several different viewers
 5. Some vim motions and mappings
+
 See the [documentation](https://raw.githubusercontent.com/lervag/vimtex/master/doc/vimtex.txt) for a more thorough introduction of the plugin.
 
 ## Installation
