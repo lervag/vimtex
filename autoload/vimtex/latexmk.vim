@@ -427,7 +427,7 @@ function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
   let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
-  let lines = map(lines, 'fnameescape(fnamemodify(v:val, '':p''))')
+  let lines = map(lines, 'fnamemodify(v:val, '':p'')')
   let lines = filter(lines, 'filereadable(v:val)')
   return len(lines) > 0
 endfunction
