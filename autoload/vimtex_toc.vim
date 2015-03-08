@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtextoc#init() " {{{1
+function! vimtex_toc#init() " {{{1
   if !exists('b:toc') | return | endif
 
   " Fill TOC entries
@@ -18,7 +18,7 @@ function! vimtextoc#init() " {{{1
 endfunction
 
 " }}}1
-function! vimtextoc#fold_level(lnum) " {{{1
+function! vimtex_toc#fold_level(lnum) " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)
   let nline = getline(a:lnum + 1)
@@ -43,12 +43,12 @@ function! vimtextoc#fold_level(lnum) " {{{1
 endfunction
 
 " }}}1
-function! vimtextoc#fold_text() " {{{1
+function! vimtex_toc#fold_text() " {{{1
   return getline(v:foldstart)
 endfunction
 
 " }}}1
-function! vimtextoc#refresh() " {{{1
+function! vimtex_toc#refresh() " {{{1
   if !exists('b:toc') | return | endif
 
   " Fill TOC entries

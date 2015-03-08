@@ -61,7 +61,7 @@ function! vimtex#toc#open() " {{{1
   let b:calling_file = calling_file
   let b:calling_line = calling_line
 
-  setlocal filetype=latextoc
+  setlocal filetype=vimtex_toc
 endfunction
 
 function! vimtex#toc#toggle() " {{{1
