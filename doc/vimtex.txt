@@ -55,6 +55,10 @@ been to create a minimalistic and functional plugin that is easy to customize
 and evolve.  Most of the functionality provided is turned on by default, but
 the user may turn off features that are not desired.
 
+Note that vim itself ships with syntax hightlighting for LaTeX documents,
+please see |ft-tex-plugin| and |ft-tex-syntax|.  |vimtex| does not provide its
+own syntax highlighting, but does expand it a little bit.
+
                                                           *vimtex-requirements*
 Some of the functionalities of |vimtex| has certain requirements:
 
