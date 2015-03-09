@@ -1,5 +1,5 @@
 *vimtex.txt*    LaTeX plugin for Vim version 7.3 (and above)
-*vimtex* *vimtex* *latex*
+*vimtex* *latex*
 
 Author:  Karl Yngve Lervåg <karl.yngve@gmail.com>
 License: MIT license {{{
