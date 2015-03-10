@@ -76,17 +76,13 @@ endfunction
 
 " }}}2
 function! s:general.view() dict " {{{2
+  let outfile = g:vimtex#data[b:vimtex.id].out()
+  if s:output_not_readable(outfile) | return | endif
+
   let exe = {}
   let exe.cmd = g:vimtex_view_general_viewer
-
-  let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
   let exe.cmd .= ' ' . g:vimtex_view_general_options
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
-
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 endfunction
@@ -124,16 +120,12 @@ endfunction
 " }}}2
 function! s:mupdf.start() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:vimtex_view_mupdf_options
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
-
   let self.cmd_start = exe.cmd
 
   call self.xwin_get_id()
@@ -147,10 +139,7 @@ function! s:mupdf.forward_search() dict " {{{2
   if !executable('synctex') | return | endif
 
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let self.cmd_synctex_view = "synctex view -i "
         \ . (line(".") + 1) . ":"
@@ -178,10 +167,7 @@ function! s:mupdf.reverse_search() dict " {{{2
   if !executable('synctex') | return | endif
 
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
     echomsg "Can't search backwards: Is the PDF file open?"
@@ -249,16 +235,12 @@ endfunction
 " }}}2
 function! s:okular.view() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd = 'okular ' . g:vimtex_view_okular_options
   let exe.cmd .= ' --unique ' . vimtex#util#fnameescape(outfile)
   let exe.cmd .= '\#src:' . line('.') . vimtex#util#fnameescape(expand('%:p'))
-
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 endfunction
@@ -275,10 +257,7 @@ endfunction
 " }}}2
 function! s:qpdfview.view() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd = 'qpdfview ' . g:vimtex_view_qpdfview_options
@@ -286,7 +265,6 @@ function! s:qpdfview.view() dict " {{{2
   let exe.cmd .= '\#src:' . vimtex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ':' . line('.')
   let exe.cmd .= ':' . col('.')
-
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 endfunction
@@ -303,17 +281,13 @@ endfunction
 " }}}2
 function! s:sumatrapdf.view() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd = 'SumatraPDF ' . g:vimtex_view_sumatrapdf_options
   let exe.cmd .= ' -forward-search ' . vimtex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ' ' . line('.')
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
-
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 endfunction
@@ -349,10 +323,7 @@ endfunction
 " }}}2
 function! s:zathura.start() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd  = 'zathura ' .  g:vimtex_view_zathura_options
@@ -361,7 +332,6 @@ function! s:zathura.start() dict " {{{2
         \ . ' --remote +\%{line} \%{input}"'
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
-
   let self.cmd_start = exe.cmd
 
   call self.xwin_get_id()
@@ -371,10 +341,7 @@ endfunction
 " }}}2
 function! s:zathura.forward_search() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
-  if !filereadable(outfile)
-    echomsg "Can't view: Output file is not readable!"
-    return
-  endif
+  if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
@@ -383,7 +350,6 @@ function! s:zathura.forward_search() dict " {{{2
   let exe.cmd .= ':' . vimtex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
-
   let self.cmd_forward_search = exe.cmd
 endfunction
 
@@ -411,6 +377,16 @@ endfunction
 
 " {{{1 Common functionality
 
+function! s:output_not_readable(output) " {{{2
+  if !filereadable(a:output)
+    echomsg "Can't view: Output file is not readable!"
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+" }}}2
 function! s:xwin_get_id() dict " {{{2
   if !executable('xdotool') | return | endif
   if self.xwin_id > 0 | return | endif
