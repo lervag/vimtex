@@ -459,6 +459,7 @@ function! s:focus_viewer() dict " {{{2
 
   if self.xwin_exists()
     silent execute '!xdotool windowfocus ' . self.xwin_id
+    redraw!
   endif
 endfunction
 
@@ -466,6 +467,7 @@ function! s:focus_vim() dict " {{{2
   if !executable('xdotool') | return | endif
 
   silent execute '!xdotool windowfocus ' . v:windowid
+  redraw!
 endfunction
 
 " }}}2
