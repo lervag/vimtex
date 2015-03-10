@@ -35,7 +35,7 @@ function! vimtex#latexmk#init(initialized) " {{{1
   command! -buffer       VimtexCompileOutput call vimtex#latexmk#output()
   command! -buffer       VimtexStop          call vimtex#latexmk#stop()
   command! -buffer       VimtexStopAll       call vimtex#latexmk#stop_all()
-  command! -buffer -bang VimtexErrors        call vimtex#latexmk#errors(<q-bang> == "!")
+  command! -buffer       VimtexErrors        call vimtex#latexmk#errors()
   command! -buffer -bang VimtexClean         call vimtex#latexmk#clean(<q-bang> == "!")
   command! -buffer -bang VimtexStatus        call vimtex#latexmk#status(<q-bang> == "!")
   command! -buffer       VimtexLacheck       call vimtex#latexmk#lacheck()
@@ -47,7 +47,7 @@ function! vimtex#latexmk#init(initialized) " {{{1
   nnoremap <buffer> <plug>(vimtex-compile-output) :call vimtex#latexmk#output()<cr>
   nnoremap <buffer> <plug>(vimtex-stop)           :call vimtex#latexmk#stop()<cr>
   nnoremap <buffer> <plug>(vimtex-stop-all)       :call vimtex#latexmk#stop_all()<cr>
-  nnoremap <buffer> <plug>(vimtex-errors)         :call vimtex#latexmk#errors(1)<cr>
+  nnoremap <buffer> <plug>(vimtex-errors)         :call vimtex#latexmk#errors()<cr>
   nnoremap <buffer> <plug>(vimtex-clean)          :call vimtex#latexmk#clean(0)<cr>
   nnoremap <buffer> <plug>(vimtex-clean-full)     :call vimtex#latexmk#clean(1)<cr>
   nnoremap <buffer> <plug>(vimtex-status)         :call vimtex#latexmk#status(0)<cr>
@@ -76,7 +76,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#callback(status) " {{{1
-  call vimtex#latexmk#errors(0)
+  call vimtex#latexmk#errors_open(0)
   redraw!
 
   echohl ModeMsg
@@ -198,13 +198,27 @@ function! vimtex#latexmk#compile_ss(verbose) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#latexmk#errors(force) " {{{1
+function! vimtex#latexmk#errors() " {{{1
+  if s:open_quickfix_window
+    let s:open_quickfix_window = 0
+    cclose
+  else
+    call vimtex#latexmk#errors_open(1)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#latexmk#errors_open(force) " {{{1
   cclose
 
   let log = g:vimtex#data[b:vimtex.id].log()
   if empty(log)
     if a:force
-      echo "No log file found!"
+      echohl ModeMsg
+      echon "latexmk errors: "
+      echohl WarningMsg
+      echon "No log file found!"
+      echohl None
     endif
     return
   endif
@@ -214,6 +228,16 @@ function! vimtex#latexmk#errors(force) " {{{1
   else
     execute 'cgetfile ' . fnameescape(log)
   endif
+  if empty(getqflist())
+    if a:force
+      echohl ModeMsg
+      echon "latexmk errors: "
+      echohl Statement
+      echon "No errors!"
+      echohl None
+    endif
+    return
+  endif
 
   "
   " There are two options that determine when to open the quickfix window.  If
@@ -221,12 +245,12 @@ function! vimtex#latexmk#errors(force) " {{{1
   " warnings (forced typically imply that the functions is called from the
   " normal mode mapping).  Else the behaviour is based on the settings.
   "
-  let open_quickfix_window = a:force
+  let s:open_quickfix_window = a:force
         \ || (g:vimtex_quickfix_mode > 0
         \     && (g:vimtex_quickfix_open_on_warning
         \         || s:log_contains_error(log)))
 
-  if open_quickfix_window
+  if s:open_quickfix_window
     botright cwindow
     if g:vimtex_quickfix_mode == 2
       wincmd p
@@ -234,6 +258,8 @@ function! vimtex#latexmk#errors(force) " {{{1
     redraw!
   endif
 endfunction
+
+let s:open_quickfix_window = 0
 
 " }}}1
 function! vimtex#latexmk#output() " {{{1
