@@ -27,8 +27,7 @@ function! vimtex#view#init(initialized) " {{{1
 
   let viewer = 's:' . g:vimtex_view_method
   if !exists(viewer)
-    echoerr "Viewer does not exist!"
-    echoerr "Viewer: " . g:vimtex_view_method
+    echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
     return
   endif
 
@@ -68,7 +67,7 @@ endfor
 " {{{1 General
 function! s:general.init() dict " {{{2
   if !executable(g:vimtex_view_general_viewer)
-    echoerr "General viewer is not available!"
+    echoerr "vimtex viewer is not executable!"
     echoerr "g:vimtex_view_general_viewer = "
           \ . g:vimtex_view_general_viewer
   endif
@@ -92,11 +91,11 @@ endfunction
 " {{{1 MuPDF
 function! s:mupdf.init() dict " {{{2
   if !executable('mupdf')
-    echoerr "MuPDF is not available!"
+    echoerr "vimtex viewer MuPDF is not executable!"
   endif
 
   if !executable('xdotool')
-    echomsg "For full MuPDF support, please install xdotool"
+    call vimtex#echo#warning('vimtex viewer MuPDF requires xdotool!')
   endif
 
   let self.class = 'MuPDF'
@@ -170,7 +169,8 @@ function! s:mupdf.reverse_search() dict " {{{2
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
-    echomsg "Can't search backwards: Is the PDF file open?"
+    call vimtex#echo#warning(
+          \ 'vimtex reverse search failed (is MuPDF open?)')
     return
   endif
 
@@ -228,7 +228,7 @@ endfunction
 " {{{1 Okular
 function! s:okular.init() dict " {{{2
   if !executable('okular')
-    echoerr "okular is not available!"
+    echoerr "vimtex viewer Okular is not executable!"
   endif
 endfunction
 
@@ -250,7 +250,7 @@ endfunction
 " {{{1 qpdfview
 function! s:qpdfview.init() dict " {{{2
   if !executable('qpdfview')
-    echoerr "qpdfview is not available!"
+    echoerr "vimtex viewer qpdfview is not executable!"
   endif
 endfunction
 
@@ -274,7 +274,7 @@ endfunction
 " {{{1 SumatraPDF
 function! s:sumatrapdf.init() dict " {{{2
   if !executable('SumatraPDF')
-    echoerr "SumatraPDF is not available!"
+    echoerr "vimtex viewer SumatraPDF is not executable!"
   endif
 endfunction
 
@@ -297,11 +297,11 @@ endfunction
 " {{{1 Zathura
 function! s:zathura.init() dict " {{{2
   if !executable('zathura')
-    echoerr "Zathura is not available!"
+    echoerr "vimtex viewer Zathura is not executable!"
   endif
 
   if !executable('xdotool')
-    echomsg "For full Zathura support, please install xdotool"
+    call vimtex#echo#warning('vimtex viewer Zathura requires xdotool!')
   endif
 
   let self.class = 'Zathura'
@@ -379,7 +379,7 @@ endfunction
 
 function! s:output_not_readable(output) " {{{2
   if !filereadable(a:output)
-    echomsg "Can't view: Output file is not readable!"
+    call vimtex#echo#warning('vimtex viewer can not read PDF file!')
     return 1
   else
     return 0
@@ -395,7 +395,8 @@ function! s:xwin_get_id() dict " {{{2
   let cmd = 'xdotool search --class ' . self.class
   let xwin_ids = systemlist(cmd)
   if len(xwin_ids) == 0
-    echomsg "Couldn't find " . self.class . " window ID!"
+    call vimtex#echo#warning(
+          \ 'vimtex viewer can not find ' . self.class . ' window ID!')
     let self.xwin_id = 0
   else
     let self.xwin_id = xwin_ids[-1]

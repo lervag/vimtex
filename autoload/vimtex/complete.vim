@@ -19,16 +19,21 @@ function! vimtex#complete#init(initialized) " {{{1
 
   " Check if bibtex is available
   if !executable('bibtex')
-    echom "Warning: bibtex completion not available"
-    echom "         Missing executable: bibtex"
+    call vimtex#echo#warning('vimtex warning')
+    call vimtex#echo#warning('  bibtex completion is not available!',
+          \ 'None')
+    call vimtex#echo#warning('  bibtex is not executable', 'None')
     let s:bibtex = 0
   endif
 
   " Check if kpsewhich is required and available
-  if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
-    echom "Warning: bibtex completion not available"
-    echom "         Missing executable: kpsewhich"
-    echom "         You could try to turn off recursive bib functionality"
+  if s:bibtex && g:vimtex_complete_recursive_bib && !executable('kpsewhichc')
+    call vimtex#echo#warning('vimtex warning')
+    call vimtex#echo#warning('  bibtex completion is not available!',
+          \ 'None')
+    call vimtex#echo#warning('  recursive bib search requires kpsewhich',
+          \ 'None')
+    call vimtex#echo#warning('  kpsewhich is not executable', 'None')
     let s:bibtex = 0
   endif
 

@@ -12,6 +12,7 @@ function! vimtex#init() " {{{1
   call s:init_environment()
 
   call vimtex#toc#init(s:initialized)
+  call vimtex#echo#init(s:initialized)
   call vimtex#fold#init(s:initialized)
   call vimtex#view#init(s:initialized)
   call vimtex#motion#init(s:initialized)
@@ -35,7 +36,7 @@ function! vimtex#info() " {{{1
   endif
 
   " Print buffer data
-  echo "b:vimtex"
+  call vimtex#echo#echo("b:vimtex\n")
   call s:print_dict(b:vimtex)
 
   " Print global data
@@ -48,8 +49,11 @@ function! vimtex#info() " {{{1
     endfor
 
     " Print data blob title line
-    echo "\n"
-    echo "g:vimtex#data[" . n . "] : " . remove(d, 'name')
+    call vimtex#echo#formatted([
+          \ "\n\ng:vimtex#data[",
+          \ ['VimtexSuccess', n],
+          \ '] : ',
+          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
     call s:print_dict(d)
     let n += 1
   endfor
@@ -61,7 +65,7 @@ function! vimtex#help() " {{{1
     xmap <buffer>
     omap <buffer>
   else
-    echo "Mappings not enabled"
+    call vimtex#echo#warning('vimtex mappings are not enabled')
   endif
 endfunction
 
@@ -82,8 +86,8 @@ function! vimtex#reinit() " {{{1
   "
   let n = bufnr('%')
   bufdo   if getbufvar('%', '&filetype') == 'tex' |
-        \   unlet b:vimtex                         |
-        \   call vimtex#init()                     |
+        \   unlet b:vimtex                        |
+        \   call vimtex#init()                    |
         \ endif
   silent execute 'buffer ' . n
 endfunction
@@ -309,17 +313,18 @@ function! s:print_dict(dict, ...) " {{{1
   for entry in sort(sort(items(a:dict),
         \ "s:print_dict_sort_2"),
         \ "s:print_dict_sort_1")
-    let title = repeat(' ', 2 + 2*level) . entry[0] . ' : '
+    let title = repeat(' ', 2 + 2*level) . entry[0]
     if type(entry[1]) == type([])
-      echo title
+      call vimtex#echo#echo(title)
       for val in entry[1]
-        echo repeat(' ', 4 + 2*level) . string(val)
+        call vimtex#echo#echo(repeat(' ', 4 + 2*level) . string(val), 'None')
       endfor
     elseif type(entry[1]) == type({})
-      echo title
+      call vimtex#echo#echo(title . "\n")
       call s:print_dict(entry[1], level + 1)
     else
-      echo printf('%-s%-s', title, string(entry[1]))
+      call vimtex#echo#formatted([title . ' : ',
+            \ ['None', string(entry[1]) . "\n"]])
     endif
   endfor
 endfunction

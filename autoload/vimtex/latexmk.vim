@@ -82,16 +82,8 @@ function! vimtex#latexmk#callback(status) " {{{1
     call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
   endif
 
-  echohl ModeMsg
-  echon "latexmk compile: "
-  if a:status
-    echohl Statement
-    echon "success"
-  else
-    echohl WarningMsg
-    echon "fail"
-  endif
-  echohl None
+  call vimtex#echo#status(['latexmk compile: ',
+        \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
 
   return ""
 endfunction
@@ -100,11 +92,8 @@ endfunction
 function! vimtex#latexmk#clean(full) " {{{1
   let data = g:vimtex#data[b:vimtex.id]
   if data.pid
-    echohl ModeMsg
-    echon "latexmk clean: "
-    echohl WarningMsg
-    echon "not while latexmk is running!"
-    echohl None
+    call vimtex#echo#status(['latexmk clean: ',
+          \ ['VimtexWarning', 'not while latexmk is running!']])
     return
   endif
 
@@ -126,15 +115,8 @@ function! vimtex#latexmk#clean(full) " {{{1
   call vimtex#util#execute(exe)
   let g:vimtex#data[b:vimtex.id].cmd_latexmk_clean = cmd
 
-  echohl ModeMsg
-  echon "latexmk clean: "
-  echohl Statement
-  if a:full
-    echon "finished (full)"
-  else
-    echon "finished"
-  endif
-  echohl None
+  call vimtex#echo#status(['latexmk clean: ',
+        \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
 endfunction
 
 " }}}1
@@ -164,7 +146,8 @@ endfunction
 function! vimtex#latexmk#compile() " {{{1
   let data = g:vimtex#data[b:vimtex.id]
   if data.pid
-    echomsg "latexmk is already running for `" . data.base . "'"
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexWarning', 'already running for `' . data.base . "'"]])
     return
   endif
 
@@ -178,10 +161,11 @@ function! vimtex#latexmk#compile() " {{{1
 
   if g:vimtex_latexmk_continuous
     call s:latexmk_set_pid(data)
-
-    echomsg 'latexmk started in continuous mode ...'
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexSuccess', 'started continuous mode']])
   else
-    echomsg 'latexmk compiling ...'
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexSuccess', 'compiling ...']])
   endif
 endfunction
 
@@ -189,7 +173,8 @@ endfunction
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
   let data = g:vimtex#data[b:vimtex.id]
   if data.pid
-    echomsg "latexmk is already running for `" . data.base . "'"
+    call vimtex#echo#status(['latexmk compile: '
+          \ ['VimtexWarning', 'already running for `' . data.base . "'"]])
     return
   endif
 
@@ -221,11 +206,8 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   let log = g:vimtex#data[b:vimtex.id].log()
   if empty(log)
     if a:force
-      echohl ModeMsg
-      echon "latexmk errors: "
-      echohl WarningMsg
-      echon "No log file found!"
-      echohl None
+      call vimtex#echo#status(['latexmk errors: ',
+            \ ['VimtexWarning', 'No log file found']])
     endif
     return
   endif
@@ -237,11 +219,8 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   endif
   if empty(getqflist())
     if a:force
-      echohl ModeMsg
-      echon "latexmk errors: "
-      echohl Statement
-      echon "No errors!"
-      echohl None
+      call vimtex#echo#status(['latexmk errors: ',
+            \ ['VimtexSuccess', 'No errors!']])
     endif
     return
   endif
@@ -273,7 +252,7 @@ function! vimtex#latexmk#output() " {{{1
   if has_key(g:vimtex#data[b:vimtex.id], 'tmp')
     let tmp = g:vimtex#data[b:vimtex.id].tmp
   else
-    echo "vimtex: No output exists"
+    call vimtex#echo#status(['vimtex: ', ['VimtexWarning', 'No output exists']])
     return
   endif
 
@@ -309,7 +288,10 @@ function! vimtex#latexmk#status(detailed) " {{{1
     for data in g:vimtex#data
       if data.pid
         if !running
-          echo "latexmk is running"
+          call vimtex#echo#status(['latexmk status: ',
+                \ ['VimtexSuccess', "running\n"]])
+          call vimtex#echo#status([['None', '  pid    '],
+                \ ['None', "file\n"]])
           let running = 1
         endif
 
@@ -318,18 +300,23 @@ function! vimtex#latexmk#status(detailed) " {{{1
           let name = "..." . name[-winwidth('.')+23:]
         endif
 
-        echom printf('pid: %6s, file: %-s', data.pid, name)
+        call vimtex#echo#status([
+              \ ['None', printf('  %-6s ', data.pid)],
+              \ ['None', name . "\n"]])
       endif
     endfor
 
     if !running
-      echo "latexmk is not running"
+      call vimtex#echo#status(['latexmk status: ',
+            \ ['VimtexWarning', 'not running']])
     endif
   else
     if g:vimtex#data[b:vimtex.id].pid
-      echo "latexmk is running"
+      call vimtex#echo#status(['latexmk status: ',
+            \ ['VimtexSuccess', 'running']])
     else
-      echo "latexmk is not running"
+      call vimtex#echo#status(['latexmk status: ',
+            \ ['VimtexWarning', 'not running']])
     endif
   endif
 endfunction
@@ -341,17 +328,11 @@ function! vimtex#latexmk#stop() " {{{1
   if pid
     call s:latexmk_kill_pid(pid)
     let g:vimtex#data[b:vimtex.id].pid = 0
-    echohl ModeMsg
-    echon "latexmk compile: "
-    echohl Statement
-    echon "stopped (" . base . ")"
-    echohl None
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexSuccess', 'stopped (' . base . ')']])
   else
-    echohl ModeMsg
-    echon "latexmk compile: "
-    echohl WarningMsg
-    echon "no process to stop (" . base . ")"
-    echohl None
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexWarning', 'no process to stop (' . base . ')']])
   endif
 endfunction
 
@@ -516,8 +497,9 @@ function! s:system_incompatible() " {{{1
   "
   for cmd in required
     if !executable(cmd)
-      echom "Warning: Could not initialize vimtex#latexmk"
-      echom "         Missing executable: " . cmd
+      call vimtex#echo#warning('vimtex warning: ')
+      call vimtex#echo#warning('  vimtex#latexmk was not initialized', 'None')
+      call vimtex#echo#warning('  ' . cmd . ' is not executable', 'None')
       return 1
     endif
   endfor
