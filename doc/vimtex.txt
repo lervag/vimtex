@@ -224,7 +224,7 @@ n  <localleader>lT  *@:call vimtex#toc#toggle()<cr>
 n  <localleader>ll  *@:call vimtex#latexmk#toggle()<cr>
 n  <localleader>lk  *@:call vimtex#latexmk#stop(1)<cr>
 n  <localleader>lK  *@:call vimtex#latexmk#stop_all()<cr>
-n  <localleader>le  *@:call vimtex#latexmk#errors(1)<cr>
+n  <localleader>le  *@:call vimtex#latexmk#errors()<cr>
 n  <localleader>lo  *@:call vimtex#latexmk#output()<cr>
 n  <localleader>lg  *@:call vimtex#latexmk#status()<cr>
 n  <localleader>lG  *@:call vimtex#latexmk#status(1)<cr>
@@ -257,8 +257,7 @@ Below the commands are listed in alphabetical order.
 *VimtexCompileSS*            call vimtex#latexmk#compile_singleshot(0)
 *VimtexCompileSS!*           call vimtex#latexmk#compile_singleshot(1)
 *VimtexCompileToggle*        call vimtex#latexmk#toggle()
-*VimtexErrors*               call vimtex#latexmk#errors(1)
-*VimtexErrors!*              call vimtex#latexmk#errors(0)
+*VimtexErrors*               call vimtex#latexmk#errors()
 *VimtexHelp*                 call vimtex#help()
 *VimtexInfo*                 call vimtex#info()
 *VimtexLacheck*              call vimtex#latexmk#lacheck()
@@ -706,7 +705,7 @@ mappings are: >
   nnoremap <localleader>ll :call vimtex#latexmk#toggle()<cr>
   nnoremap <localleader>lk :call vimtex#latexmk#stop()<cr>
   nnoremap <localleader>lK :call vimtex#latexmk#stop_all()<cr>
-  nnoremap <localleader>le :call vimtex#latexmk#errors(1)<cr>
+  nnoremap <localleader>le :call vimtex#latexmk#errors()<cr>
   nnoremap <localleader>lo :call vimtex#latexmk#output()<cr>
   nnoremap <localleader>lg :call vimtex#latexmk#status(0)<cr>
   nnoremap <localleader>lG :call vimtex#latexmk#status(1)<cr>
@@ -1150,9 +1149,7 @@ controlled through the different quickfix specific option:
   |g:vimtex_quickfix_ignored_warnings|
   |g:vimtex_quickfix_mode|
 
-Note: The function takes one argument, which if nonzero will force open the
-quickfix window if any errors are present.  This is used in the normal mode
-mapping.
+If the quickfix window is already open, then the function closes it.
 
                                                         *vimtex#latexmk#output*
 Opens a new buffer that show the output from the `latexmk` command.  To close
