@@ -94,6 +94,29 @@ function! s:init_environment() " {{{1
   call vimtex#util#set_default('g:vimtex#data', [])
   call vimtex#util#set_default('b:vimtex', {})
 
+  " Ensure tex files are prioritized when listing files
+  for suf in [
+        \ '.log',
+        \ '.aux',
+        \ '.bbl',
+        \ '.out',
+        \ '.blg',
+        \ '.brf',
+        \ '.cb',
+        \ '.dvi',
+        \ '.fdb_latexmk',
+        \ '.fls',
+        \ '.idx',
+        \ '.ilg',
+        \ '.ind',
+        \ '.inx',
+        \ '.pdf',
+        \ '.synctex.gz',
+        \ '.toc',
+        \ ]
+    execute 'set suffixes+=' . suf
+  endfor
+
   " Set some file type specific vim options
   setlocal suffixesadd+=.tex
   setlocal commentstring=\%\ %s
