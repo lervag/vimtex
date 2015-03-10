@@ -101,7 +101,11 @@ endfunction
 function! vimtex#latexmk#clean(full) " {{{1
   let data = g:vimtex#data[b:vimtex.id]
   if data.pid
-    echomsg "latexmk is already running"
+    echohl ModeMsg
+    echon "latexmk clean: "
+    echohl WarningMsg
+    echon "not while latexmk is running!"
+    echohl None
     return
   endif
 
@@ -123,11 +127,15 @@ function! vimtex#latexmk#clean(full) " {{{1
   call vimtex#util#execute(exe)
   let g:vimtex#data[b:vimtex.id].cmd_latexmk_clean = cmd
 
+  echohl ModeMsg
+  echon "latexmk clean: "
+  echohl Statement
   if a:full
-    echomsg "latexmk full clean finished"
+    echon "finished (full)"
   else
-    echomsg "latexmk clean finished"
+    echon "finished"
   endif
+  echohl None
 endfunction
 
 " }}}1
@@ -334,9 +342,17 @@ function! vimtex#latexmk#stop() " {{{1
   if pid
     call s:latexmk_kill_pid(pid)
     let g:vimtex#data[b:vimtex.id].pid = 0
-    echo "latexmk stopped for `" . base . "'"
+    echohl ModeMsg
+    echon "latexmk compile: "
+    echohl Statement
+    echon "stopped (" . base . ")"
+    echohl None
   else
-    echo "latexmk is not running for `" . base . "'"
+    echohl ModeMsg
+    echon "latexmk compile: "
+    echohl WarningMsg
+    echon "no process to stop (" . base . ")"
+    echohl None
   endif
 endfunction
 
