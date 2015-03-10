@@ -77,7 +77,10 @@ endfunction
 " }}}1
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
-  redraw!
+
+  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
+    call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
+  endif
 
   echohl ModeMsg
   echon "latexmk compile: "
@@ -89,10 +92,6 @@ function! vimtex#latexmk#callback(status) " {{{1
     echon "fail"
   endif
   echohl None
-
-  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
-    call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
-  endif
 
   return ""
 endfunction
