@@ -207,10 +207,17 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_callback() dict " {{{2
-  call self.xwin_get_id()
-  call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-  call self.forward_search()
-  call self.focus_vim()
+  " Try to get xwin ID
+  if !self.xwin_exists()
+    call self.xwin_get_id()
+  endif
+
+  " Some additional callbacks if possible
+  if self.xwin_exists()
+    call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
+    call self.forward_search()
+    call self.focus_vim()
+  endif
 endfunction
 
 " }}}2
@@ -355,9 +362,16 @@ endfunction
 
 " }}}2
 function! s:zathura.latexmk_callback() dict " {{{2
-  call self.xwin_get_id()
-  call self.forward_search()
-  call self.focus_vim()
+  " Try to get xwin ID
+  if !self.xwin_exists()
+    call self.xwin_get_id()
+  endif
+
+  " Some additional callbacks if possible
+  if self.xwin_exists()
+    call self.forward_search()
+    call self.focus_vim()
+  endif
 endfunction
 
 " }}}2
