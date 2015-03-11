@@ -27,7 +27,7 @@ function! vimtex#complete#init(initialized) " {{{1
   endif
 
   " Check if kpsewhich is required and available
-  if s:bibtex && g:vimtex_complete_recursive_bib && !executable('kpsewhichc')
+  if s:bibtex && g:vimtex_complete_recursive_bib && !executable('kpsewhich')
     call vimtex#echo#warning('vimtex warning')
     call vimtex#echo#warning('  bibtex completion is not available!',
           \ 'None')
