@@ -209,14 +209,11 @@ endfunction
 function! s:mupdf.latexmk_callback() dict " {{{2
   " Try to get xwin ID
   if !self.xwin_exists()
-    call self.xwin_get_id()
-  endif
-
-  " Some additional callbacks if possible
-  if self.xwin_exists()
-    call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-    call self.forward_search()
-    call self.focus_vim()
+    if self.xwin_get_id()
+      call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
+      call self.forward_search()
+      call self.focus_vim()
+    endif
   endif
 endfunction
 
@@ -362,15 +359,11 @@ endfunction
 
 " }}}2
 function! s:zathura.latexmk_callback() dict " {{{2
-  " Try to get xwin ID
   if !self.xwin_exists()
-    call self.xwin_get_id()
-  endif
-
-  " Some additional callbacks if possible
-  if self.xwin_exists()
-    call self.forward_search()
-    call self.focus_vim()
+    if self.xwin_get_id()
+      call self.forward_search()
+      call self.focus_vim()
+    endif
   endif
 endfunction
 
@@ -402,8 +395,8 @@ endfunction
 
 " }}}2
 function! s:xwin_get_id() dict " {{{2
-  if !executable('xdotool') | return | endif
-  if self.xwin_id > 0 | return | endif
+  if !executable('xdotool') | return 0 | endif
+  if self.xwin_id > 0 | return 0 | endif
   sleep 500m
 
   let cmd = 'xdotool search --class ' . self.class
@@ -415,6 +408,8 @@ function! s:xwin_get_id() dict " {{{2
   else
     let self.xwin_id = xwin_ids[-1]
   endif
+
+  return self.xwin_id
 endfunction
 
 " }}}2
