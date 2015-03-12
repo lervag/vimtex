@@ -13,7 +13,7 @@ syntax match texRefZone
 " Add support for cleverref package
 " \Cref, \cref, \cpageref, \labelcref, \labelcpageref
 syntax region texRefZone matchgroup=texStatement
-      \ start="\\\(\(label\)\?c\(page\)\?\|C\)ref{"
+      \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
       \ end="}\|%stopzone\>"
       \ contains=@texRefGroup
 

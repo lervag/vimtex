@@ -13,7 +13,7 @@ function! vimtex#complete#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
   call vimtex#util#set_default('g:vimtex_complete_patterns',
         \ {
-        \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
+        \ 'ref' : '\C\\v\?\(auto\|eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
         \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
         \ })
 
