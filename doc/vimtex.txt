@@ -399,6 +399,10 @@ Use |vimtex| indentation function.  Not as customizable as the official
 indentation function, but imho it is better. >
   let g:vimtex_indent_enabled = 1
 <
+                                                  *g:vimtex_indent_bib_enabled*
+Use |vimtex| indentation function for bibliography files. >
+  let g:vimtex_indent_bib_enabled = 1
+<
                                                    *g:vimtex_latexmk_build_dir*
 Set this variable in case a dedicated build dir is used with `latexmk`/`latex`
 compilations. >
@@ -688,12 +692,15 @@ INDENTATION                                                     *vimtex-indent*
 
 The official indentation function is pretty good and allows for some
 customization.  However, I am not quite satisfied, so I wrote my own
-indentation function that is not customizable at all (at least for now), but
-that I think is better.  It is enabled by default, but may be disabled if
-desired |g:vimtex_indent_enabled|.
+indentation function that is not customizable, but that I think is better.  It
+is enabled by default, but may be disabled if desired.
+
+                                                            *vimtex-bib-indent*
+I've also written an indentation file for bibliography files (`.bib` files).
 
 Associated settings:
     |g:vimtex_indent_enabled|
+    |g:vimtex_indent_bib_enabled|
 
 ==============================================================================
 LATEXMK                                                        *vimtex-latexmk*
