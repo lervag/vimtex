@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if exists("b:did_indent")
+if exists('b:did_indent')
   finish
 endif
 let b:did_indent = 1
@@ -23,7 +23,7 @@ setlocal indentkeys+=[,(,{,),},],\&,=\\item
 function! s:vimtex_indent() " {{{1
   " Find a non-blank non-comment line above the current line
   let lnum = prevnonblank(v:lnum - 1)
-  while lnum != 0 && getline(lnum) =~ '^\s*%'
+  while lnum != 0 && getline(lnum) =~# '^\s*%'
     let lnum = prevnonblank(lnum - 1)
   endwhile
 
@@ -37,7 +37,7 @@ function! s:vimtex_indent() " {{{1
   let pline = substitute(getline(lnum),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
-  if synIDattr(synID(v:lnum, indent(v:lnum), 1), "name") == "texZone"
+  if synIDattr(synID(v:lnum, indent(v:lnum), 1), 'name') ==# 'texZone'
     if empty(cline)
       return indent(lnum)
     else
@@ -46,12 +46,12 @@ function! s:vimtex_indent() " {{{1
   endif
 
   " Align on ampersands
-  if cline =~ '^\s*&' && pline =~ '\\\@<!&.*'
-    return indent(v:lnum) + match(pline, '\\\@<!&') - stridx(cline, "&")
+  if cline =~# '^\s*&' && pline =~# '\\\@<!&.*'
+    return indent(v:lnum) + match(pline, '\\\@<!&') - stridx(cline, '&')
   endif
 
   " Find previous non-empty non-comment non-ampersand line
-  while lnum != 0 && (match(pline, '\\\@<!&') != -1 || pline =~ '^\s*%')
+  while lnum != 0 && (match(pline, '\\\@<!&') != -1 || pline =~# '^\s*%')
     let lnum = prevnonblank(lnum - 1)
     let pline = getline(lnum)
   endwhile
@@ -62,14 +62,14 @@ function! s:vimtex_indent() " {{{1
   endif
 
   " Use previous indentation for comments
-  if cline =~ '^\s*%'
+  if cline =~# '^\s*%'
     return indent(v:lnum)
   endif
 
   let ind = indent(lnum)
 
   " Add indent on begin environment
-  if pline =~ '\\begin{.*}' && pline !~ s:envs_noindent
+  if pline =~# '\\begin{.*}' && pline !~ s:envs_noindent
     let ind = ind + &sw
 
     " Add extra indent for list environments
@@ -79,7 +79,7 @@ function! s:vimtex_indent() " {{{1
   endif
 
   " Subtract indent on end environment
-  if cline =~ '\\end{.*}' && cline !~ s:envs_noindent
+  if cline =~# '\\end{.*}' && cline !~ s:envs_noindent
     let ind = ind - &sw
 
     " Subtract extra indent for list environments
@@ -96,10 +96,10 @@ function! s:vimtex_indent() " {{{1
   let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
 
   " Indent list items
-  if pline =~ '^\s*\\\(bib\)\?item'
+  if pline =~# '^\s*\\\(bib\)\?item'
     let ind += &sw
   endif
-  if cline =~ '^\s*\\\(bib\)\?item'
+  if cline =~# '^\s*\\\(bib\)\?item'
     let ind -= &sw
   endif
 
@@ -108,7 +108,7 @@ function! s:vimtex_indent() " {{{1
     let ind += &sw
     let s:tikz_indented += 1
   endif
-  if s:tikz_indented > 0 && pline =~ ';\s*$'
+  if s:tikz_indented > 0 && pline =~# ';\s*$'
     let ind -= &sw
     let s:tikz_indented -= 1
   endif
