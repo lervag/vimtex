@@ -16,11 +16,11 @@ let s:cpo_save = &cpo
 set cpo&vim
 
 setlocal autoindent
-setlocal indentexpr=s:vimtex_indent()
+setlocal indentexpr=VimtexIndent()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=\\item
 
-function! s:vimtex_indent() " {{{1
+function! VimtexIndent() " {{{1
   " Find a non-blank non-comment line above the current line
   let lnum = prevnonblank(v:lnum - 1)
   while lnum != 0 && getline(lnum) =~# '^\s*%'
