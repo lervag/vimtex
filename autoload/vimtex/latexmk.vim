@@ -85,7 +85,7 @@ function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#echo#status(['latexmk compile: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
 
-  return ""
+  return ''
 endfunction
 
 " }}}1
@@ -173,7 +173,7 @@ endfunction
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
   let data = g:vimtex#data[b:vimtex.id]
   if data.pid
-    call vimtex#echo#status(['latexmk compile: '
+    call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexWarning', 'already running for `' . data.base . "'"]])
     return
   endif
@@ -297,7 +297,7 @@ function! vimtex#latexmk#status(detailed) " {{{1
 
         let name = data.tex
         if len(name) >= winwidth('.') - 20
-          let name = "..." . name[-winwidth('.')+23:]
+          let name = '...' . name[-winwidth('.')+23:]
         endif
 
         call vimtex#echo#status([
@@ -447,7 +447,7 @@ endfunction
 
 function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
-  let lines = filter(lines, 'v:val =~ ''^.*:\d\+: ''')
+  let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
   let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
   let lines = map(lines, 'fnamemodify(v:val, '':p'')')
   let lines = filter(lines, 'filereadable(v:val)')
@@ -470,7 +470,7 @@ function! s:stop_buffer() " {{{1
     " Count the number of buffers that point to current latex blob
     "
     let n = 0
-    for b in filter(range(1, bufnr("$")), 'buflisted(v:val)')
+    for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
       if id == getbufvar(b, 'vimtex', {'id' : -1}).id
         let n += 1
       endif
