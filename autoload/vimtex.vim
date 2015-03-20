@@ -31,7 +31,7 @@ endfunction
 
 function! vimtex#info() " {{{1
   if !s:initialized
-    echoerr "Error: vimtex has not been initialized!"
+    echoerr 'Error: vimtex has not been initialized!'
     return
   endif
 
@@ -227,7 +227,7 @@ function! s:get_main_recurse(file) " {{{1
   " Check if current file is a main file
   "
   if len(filter(readfile(a:file),
-        \ 'v:val =~ ''\C\\begin\_\s*{document}''')) > 0
+        \ 'v:val =~# ''\C\\begin\_\s*{document}''')) > 0
     return fnamemodify(a:file, ':p')
   endif
 
@@ -311,8 +311,8 @@ function! s:print_dict(dict, ...) " {{{1
   let level = a:0 > 0 ? a:1 : 0
 
   for entry in sort(sort(items(a:dict),
-        \ "s:print_dict_sort_2"),
-        \ "s:print_dict_sort_1")
+        \ 's:print_dict_sort_2'),
+        \ 's:print_dict_sort_1')
     let title = repeat(' ', 2 + 2*level) . entry[0]
     if type(entry[1]) == type([])
       call vimtex#echo#echo(title)
