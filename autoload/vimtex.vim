@@ -151,7 +151,7 @@ function! s:init_environment() " {{{1
   endif
 
   " Define commands
-  command! -buffer VimtexInfo         call Vimtex#info()
+  command! -buffer VimtexInfo         call vimtex#info()
   command! -buffer VimtexHelp         call vimtex#help()
   command! -buffer VimtexReinitialize call vimtex#reinit()
 
