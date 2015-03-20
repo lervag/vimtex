@@ -6,12 +6,12 @@
 
 function! vimtex#latexmk#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '.')
   if !g:vimtex_latexmk_enabled | return | endif
   if s:system_incompatible() | return | endif
 
   " Set default options
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
-  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '.')
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '-pdf')
