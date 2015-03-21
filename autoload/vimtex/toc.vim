@@ -11,16 +11,13 @@ function! vimtex#toc#init(initialized) " {{{1
   " Set default options
   call vimtex#util#set_default('g:vimtex_toc_fold', 0)
   call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
-  call vimtex#util#set_default('g:vimtex_toc_hide_help', 0)
-  call vimtex#util#set_default('g:vimtex_toc_hide_line_numbers', 1)
-  call vimtex#util#set_default('g:vimtex_toc_hide_preamble', 0)
-  call vimtex#util#set_default('g:vimtex_toc_numbers', 1)
-  call vimtex#util#set_default('g:vimtex_toc_numbers_width', 0)
-  call vimtex#util#set_default('g:vimtex_toc_resize', 1)
+  call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
+  call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
+  call vimtex#util#set_default('g:vimtex_toc_number_width', 0)
   call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
-  call vimtex#util#set_default('g:vimtex_toc_split_pos', 'vert leftabove')
-  call vimtex#util#set_default('g:vimtex_toc_width', 30)
-  call vimtex#util#error_deprecated('g:vimtex_toc_split_side')
+
+  " Set some constants
+  let s:name = 'Table of contents (vimtex)'
 
   " Define commands
   command! -buffer VimtexTocOpen   call vimtex#toc#open()
@@ -32,48 +29,201 @@ function! vimtex#toc#init(initialized) " {{{1
 endfunction
 
 function! vimtex#toc#open() " {{{1
-  " Go to TOC if it already exists
-  let winnr = bufwinnr(bufnr('LaTeX TOC'))
-  if winnr >= 0
-    silent execute winnr . 'wincmd w'
-    return
-  endif
+  if vimtex#index#open(s:name) | return | endif
 
-  " Store tex buffer number and position and parse TOC data
-  let calling_buf = bufnr('%')
-  let calling_file = expand('%:p')
-  let calling_line = line('.')
-  let toc = s:parse_toc()
+  let index = {
+        \ 'name'            : s:name,
+        \ 'calling_file'    : expand('%:p'),
+        \ 'calling_line'    : line('.'),
+        \ 'entries'         : s:parse_toc(),
+        \ 'show_numbers'    : g:vimtex_toc_show_numbers,
+        \ 'max_level'       : s:max_level,
+        \ 'topmatters'      : s:count_matters,
+        \ 'secnumdepth'     : g:vimtex_toc_secnumdepth,
+        \ 'hook_init_post'  : function('s:index_hook_init_post'),
+        \ 'hook_print_help' : function('s:index_hook_print_help'),
+        \ 'print_entries'   : function('s:index_print_entries'),
+        \ 'print_entry'     : function('s:index_print_entry'),
+        \ 'print_number'    : function('s:index_print_number'),
+        \ 'increase_depth'  : function('s:index_secnumdepth_increase'),
+        \ 'decrease_depth'  : function('s:index_secnumdepth_decrease'),
+        \ 'syntax'          : function('s:index_syntax'),
+        \ 'toggle_numbers'  : function('s:index_toggle_numbers'),
+        \ }
 
-  " Resize vim session if wanted, then create TOC window
-  if g:vimtex_toc_resize
-    silent exe "set columns+=" . g:vimtex_toc_width
-  endif
-  silent exe g:vimtex_toc_split_pos g:vimtex_toc_width . 'new LaTeX\ TOC'
-
-  " Set buffer local variables
-  let b:toc = toc
-  let b:toc_numbers = 1
-  let b:toc_max_level = s:max_level
-  let b:toc_topmatters = s:count_matters
-  let b:toc_secnumdepth = g:vimtex_toc_secnumdepth
-  let b:calling_winnr = bufwinnr(calling_buf)
-  let b:calling_file = calling_file
-  let b:calling_line = calling_line
-
-  setlocal filetype=vimtex_toc
+  call vimtex#index#create(index)
 endfunction
 
 function! vimtex#toc#toggle() " {{{1
-  if bufwinnr(bufnr('LaTeX TOC')) >= 0
-    if g:vimtex_toc_resize
-      silent exe "set columns-=" . g:vimtex_toc_width
-    endif
-    silent execute 'bwipeout' . bufnr('LaTeX TOC')
+  if vimtex#index#open(s:name)
+    call vimtex#index#close(s:name)
   else
     call vimtex#toc#open()
     silent execute 'wincmd w'
   endif
+endfunction
+
+" }}}1
+
+function! s:index_fold_level(lnum) " {{{1
+  let pline = getline(a:lnum - 1)
+  let cline = getline(a:lnum)
+  let nline = getline(a:lnum + 1)
+  let l:pn = matchstr(pline, '\d$')
+  let l:cn = matchstr(cline, '\d$')
+  let l:nn = matchstr(nline, '\d$')
+
+  " Don't fold options
+  if cline =~# '^\s*$'
+    return 0
+  endif
+
+  if l:nn > l:cn && g:vimtex_toc_fold_levels >= l:nn
+    return '>' . l:nn
+  endif
+
+  if l:cn < l:pn && l:cn >= l:nn && g:vimtex_toc_fold_levels >= l:cn
+    return l:cn
+  endif
+
+  return '='
+endfunction
+
+" }}}1
+function! s:index_fold_text() " {{{1
+  return getline(v:foldstart)
+endfunction
+
+" }}}1
+function! s:index_hook_init_post() dict " {{{1
+  if g:vimtex_toc_fold
+    let self.fold_level = function('s:index_fold_level')
+    let self.fold_text  = function('s:index_fold_text')
+    setlocal foldmethod=expr
+    setlocal foldexpr=b:index.fold_level(v:lnum)
+    setlocal foldtext=b:index.fold_text()
+  endif
+
+  nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
+  nnoremap <buffer> <silent> - :call b:index.decrease_depth()<cr>
+  nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
+
+  " Jump to closest index
+  call setpos('.', self.pos_closest)
+endfunction
+
+" }}}1
+function! s:index_hook_print_help() dict " {{{1
+  call append('$', '-:       decrease secnumpdeth')
+  call append('$', '+:       increase secnumpdeth')
+  call append('$', 's:       hide numbering')
+endfunction
+
+" }}}1
+function! s:index_print_entries() dict " {{{1
+  if g:vimtex_toc_number_width
+    let self.number_width = g:vimtex_toc_number_width
+  else
+    let self.number_width = 2*(self.secnumdepth + 2)
+  endif
+  let self.number_width = max([0, self.number_width])
+  let self.number_format = '%-' . self.number_width . 's'
+
+  let index = 0
+  let closest_index = 0
+  for entry in self.entries
+    let index += 1
+    call self.print_entry(entry)
+    if entry.file == self.calling_file && entry.line <= self.calling_line
+      let closest_index = index
+    endif
+  endfor
+
+  let self.pos_closest = [0, closest_index, 0, 0]
+endfunction
+
+" }}}1
+function! s:index_print_entry(entry) dict " {{{1
+  let level = self.max_level - a:entry.level
+
+  let output = ''
+  if self.show_numbers
+    let number = level >= self.secnumdepth + 2 ? ''
+          \ : strpart(self.print_number(a:entry.number), 0, self.number_width - 1)
+    let output .= printf(self.number_format, number)
+  endif
+  let output .= printf('%-140S%s', a:entry.title, level)
+
+  call append('$', output)
+endfunction
+
+" }}}1
+function! s:index_print_number(number) dict " {{{1
+  if empty(a:number) | return '' | endif
+
+  let number = [
+        \ a:number.part,
+        \ a:number.chapter,
+        \ a:number.section,
+        \ a:number.subsection,
+        \ a:number.subsubsection,
+        \ a:number.subsubsubsection,
+        \ ]
+
+  " Remove unused parts
+  while number[0] == 0
+    call remove(number, 0)
+  endwhile
+  while number[-1] == 0
+    call remove(number, -1)
+  endwhile
+
+  " Change numbering in frontmatter, appendix, and backmatter
+  if self.topmatters > 1
+        \ && (a:number.frontmatter || a:number.backmatter)
+    return ''
+  elseif a:number.appendix
+    let number[0] = nr2char(number[0] + 64)
+  endif
+
+  return join(number, '.')
+endfunction
+
+" }}}1
+function! s:index_secnumdepth_decrease() dict "{{{1
+  let self.secnumdepth = max([self.secnumdepth - 1, -2])
+  call self.refresh()
+endfunction
+
+" }}}1
+function! s:index_secnumdepth_increase() dict "{{{1
+  let self.secnumdepth = min([self.secnumdepth + 1, 5])
+  call self.refresh()
+endfunction
+
+" }}}1
+function! s:index_syntax() dict "{{{1
+  syntax match TocNum  /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
+  syntax match TocSec0 /^.*0$/ contains=TocNum,@Tex
+  syntax match TocSec1 /^.*1$/ contains=TocNum,@Tex
+  syntax match TocSec2 /^.*2$/ contains=TocNum,@Tex
+  syntax match TocSec3 /^.*3$/ contains=TocNum,@Tex
+  syntax match TocSec4 /^.*4$/ contains=TocNum,@Tex
+  syntax match TocHelp /^.*: .*/
+
+  highlight link TocNum  Number
+  highlight link TocSec0 Title
+  highlight link TocSec1 Normal
+  highlight link TocSec2 helpVim
+  highlight link TocSec3 NonText
+  highlight link TocSec4 Comment
+  highlight link TocHelp helpVim
+endfunction
+
+" }}}1
+function! s:index_toggle_numbers() dict "{{{1
+  let self.show_numbers = self.show_numbers ? 0 : 1
+  call self.refresh()
 endfunction
 
 " }}}1
@@ -157,8 +307,8 @@ endfunction
 " }}}1
 function! s:parse_limits(file) " {{{1
   if !filereadable(a:file)
-    echoerr "Error in vimtex#toc s:parse_limits"
-    echoerr "File not readable: " . a:file
+    echoerr 'Error in vimtex#toc s:parse_limits'
+    echoerr 'File not readable: ' . a:file
     return ''
   endif
 
@@ -188,11 +338,11 @@ function! s:parse_file(file) " {{{1
   "     level  : 2,
   "   }
 
-  if a:file == ''
+  if a:file ==# ''
     return []
   elseif !filereadable(a:file)
-    echoerr "Error in vimtex#toc s:parse_file"
-    echoerr "File not readable: " . a:file
+    echoerr 'Error in vimtex#toc s:parse_file'
+    echoerr 'File not readable: ' . a:file
     return []
   endif
 
@@ -210,7 +360,7 @@ function! s:parse_file(file) " {{{1
 
     " 2. Parse preamble
     if s:number.preamble
-      if !g:vimtex_toc_hide_preamble && line =~# '\v^\s*\\documentclass'
+      if g:vimtex_toc_show_preamble && line =~# '\v^\s*\\documentclass'
         call add(toc, {
               \ 'title'  : 'Preamble',
               \ 'number' : '',
@@ -314,32 +464,32 @@ endfunction
 
 function! s:number_increment(level) " {{{1
   " Increment numbers
-  if a:level == 'part'
+  if a:level ==# 'part'
     let s:number.part += 1
     let s:number.chapter = 0
     let s:number.section = 0
     let s:number.subsection = 0
     let s:number.subsubsection = 0
     let s:number.subsubsubsection = 0
-  elseif a:level == 'chapter'
+  elseif a:level ==# 'chapter'
     let s:number.chapter += 1
     let s:number.section = 0
     let s:number.subsection = 0
     let s:number.subsubsection = 0
     let s:number.subsubsubsection = 0
-  elseif a:level == 'section'
+  elseif a:level ==# 'section'
     let s:number.section += 1
     let s:number.subsection = 0
     let s:number.subsubsection = 0
     let s:number.subsubsubsection = 0
-  elseif a:level == 'subsection'
+  elseif a:level ==# 'subsection'
     let s:number.subsection += 1
     let s:number.subsubsection = 0
     let s:number.subsubsubsection = 0
-  elseif a:level == 'subsubsection'
+  elseif a:level ==# 'subsubsection'
     let s:number.subsubsection += 1
     let s:number.subsubsubsection = 0
-  elseif a:level == 'subsubsubsection'
+  elseif a:level ==# 'subsubsubsection'
     let s:number.subsubsubsection += 1
   endif
 

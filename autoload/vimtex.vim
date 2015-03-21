@@ -15,6 +15,7 @@ function! vimtex#init() " {{{1
   call vimtex#echo#init(s:initialized)
   call vimtex#fold#init(s:initialized)
   call vimtex#view#init(s:initialized)
+  call vimtex#index#init(s:initialized)
   call vimtex#motion#init(s:initialized)
   call vimtex#labels#init(s:initialized)
   call vimtex#change#init(s:initialized)
