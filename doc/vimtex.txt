@@ -294,6 +294,10 @@ Overview:~
   |g:vimtex_fold_preamble|
   |g:vimtex_fold_sections|
   |g:vimtex_indent_enabled|
+  |g:vimtex_index_hide_line_numbers|
+  |g:vimtex_index_resize|
+  |g:vimtex_index_show_help|
+  |g:vimtex_index_split|
   |g:vimtex_latexmk_build_dir|
   |g:vimtex_latexmk_callback|
   |g:vimtex_latexmk_enabled|
@@ -308,17 +312,12 @@ Overview:~
   |g:vimtex_quickfix_ignore_all_warnings|
   |g:vimtex_quickfix_mode|
   |g:vimtex_toc_enabled|
-  |g:vimtex_toc_fold_levels|
   |g:vimtex_toc_fold|
-  |g:vimtex_toc_hide_help|
-  |g:vimtex_toc_hide_preamble|
-  |g:vimtex_toc_hide_line_numbers|
-  |g:vimtex_toc_numbers|
-  |g:vimtex_toc_numbers_width|
-  |g:vimtex_toc_resize|
+  |g:vimtex_toc_fold_levels|
+  |g:vimtex_toc_show_preamble|
+  |g:vimtex_toc_show_numbers|
+  |g:vimtex_toc_number_width|
   |g:vimtex_toc_secnumdepth|
-  |g:vimtex_toc_split_pos|
-  |g:vimtex_toc_width|
   |g:vimtex_view_enabled|
   |g:vimtex_view_general_viewer|
   |g:vimtex_view_general_options|
@@ -496,60 +495,57 @@ but disables the builtin |matchparen|. >
   let g:vimtex_motion_matchparen = 1
 <
                                                          *g:vimtex_toc_enabled*
-Enable interface for TOC.  If it is disabled, then mappings for the TOC will
+Enable interface for ToC.  If it is disabled, then mappings for the ToC will
 not be created. >
   let g:vimtex_toc_enabled = 1
 <
-                                                     *g:vimtex_toc_fold_levels*
-If TOC entries are folded, this option controls the number of fold levels that
-will be used. >
-  let g:vimtex_toc_fold_levels = 0
-<
                                                             *g:vimtex_toc_fold*
-Turn on folding of TOC entries. >
+Turn on folding of ToC entries. >
   let g:vimtex_toc_fold = 0
 <
-                                                       *g:vimtex_toc_hide_help*
-Allow the TOC help text to be hidden. >
-  let g:vimtex_toc_hide_help = 0
+                                                     *g:vimtex_toc_fold_levels*
+If ToC entries are folded, this option controls the number of fold levels that
+will be used. >
+  let g:vimtex_toc_fold_levels = 10
 <
-                                                   *g:vimtex_toc_hide_preamble*
-If enabled, the start of the preamble is not shown in the TOC. >
-  let g:vimtex_toc_hide_preamble = 0
-<
-                                               *g:vimtex_toc_hide_line_numbers*
-If enabled, line numbers will be hidden in the TOC window.  That is,
-|nonumber| and |norelativenumber| will be set locally for the TOC window. >
-  let g:vimtex_toc_hide_line_numbers = 1
-<
-                                                         *g:vimtex_toc_numbers*
-Toggle display of numbers in TOC.  The numbers may also be toggled inside the
-TOC window with the `s` keybinding. >
-  let g:vimtex_toc_numbers = 1
-<
-                                                   *g:vimtex_toc_numbers_width*
-Set display width of numbers in TOC.  If 0, the width is set based on the
-section depth. >
-  let g:vimtex_toc_numbers_width = 0
-<
-                                                          *g:vimtex_toc_resize*
-Automatically resize vim when the TOC window is opened. >
-  let g:vimtex_toc_resize = 1
+                                                   *g:vimtex_toc_number_width*
+Set display width of numbers in the ToC.  If 0, the width is set based on the
+section depth, see |g:vimtex_toc_secnumdepth|. >
+  let g:vimtex_toc_number_width = 0
 <
                                                      *g:vimtex_toc_secnumdepth*
 Define number of section levels to display.  Set level corresponding to the
 desired latex variable `secnumdepth`.  Note that the variable may be updated
-directly through the TOC window.  For more info on `secnumdepth` see e.g.
-http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure >
+directly through the ToC window with `+` or `-`.  For more info on `secnumdepth`
+see e.g. http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure >
   let g:vimtex_toc_secnumdepth = 3
 <
-                                                       *g:vimtex_toc_split_pos*
-Define where the TOC window is opened. >
-  let g:vimtex_toc_split_pos = 'vert leftabove'
+                                                    *g:vimtex_toc_show_numbers*
+Whether or not to show numbers in ToC.  The numbers may also be toggled inside
+the ToC window with the `s` keybinding. >
+  let g:vimtex_toc_show_numbers = 1
 <
-                                                           *g:vimtex_toc_width*
-Set width of TOC window. >
-  let g:vimtex_toc_width = 30
+                                                   *g:vimtex_toc_show_preamble*
+Whether to include preamble (`\documentclass`) in ToC. >
+  let g:vimtex_toc_show_preamble = 1
+<
+                                             *g:vimtex_index_hide_line_numbers*
+If enabled, line numbers will be hidden in the index windows.  That is,
+|nonumber| and |norelativenumber| will be set locally. >
+  let g:vimtex_index_hide_line_numbers = 1
+<
+                                                        *g:vimtex_index_resize*
+Whether or not to automatically resize vim when index windows are opened. >
+  let g:vimtex_index_resize = 0
+<
+                                                     *g:vimtex_index_show_help*
+Whether to display the index help text. >
+  let g:vimtex_index_show_help = 1
+<
+                                                         *g:vimtex_index_split*
+Define where the index windows are opened, including the size/width of the
+window. >
+  let g:vimtex_index_split = 'vert leftabove 30'
 <
                                                         *g:vimtex_view_enabled*
 Enable interface for view functionality. >
@@ -992,23 +988,22 @@ Functions:
 ==============================================================================
 TABLE OF CONTENTS                                                  *vimtex-toc*
 
-|vimtex| provides a table of contents (TOC) window that can be opened
-|vimtex#toc#open|  or toggled |vimtex#toc#toggle|.  In the TOC, one can use
-'<CR>' on a selected entry to navigate.
+|vimtex| provides a table of contents (ToC) window that can be opened
+|vimtex#toc#open| or toggled |vimtex#toc#toggle|.  In the ToC, one can use '<CR>'
+on a selected entry to navigate.
 
 Associated settings:
+    |g:vimtex_index_hide_line_numbers|
+    |g:vimtex_index_resize|
+    |g:vimtex_index_show_help|
+    |g:vimtex_index_split|
     |g:vimtex_toc_enabled|
-    |g:vimtex_toc_fold_levels|
     |g:vimtex_toc_fold|
-    |g:vimtex_toc_hide_help|
-    |g:vimtex_toc_hide_preamble|
-    |g:vimtex_toc_hide_line_numbers|
-    |g:vimtex_toc_numbers|
-    |g:vimtex_toc_numbers_width|
-    |g:vimtex_toc_resize|
+    |g:vimtex_toc_fold_levels|
+    |g:vimtex_toc_number_width|
+    |g:vimtex_toc_show_preamble|
+    |g:vimtex_toc_show_numbers|
     |g:vimtex_toc_secnumdepth|
-    |g:vimtex_toc_split_pos|
-    |g:vimtex_toc_width|
 
 Functions:
     |vimtex#toc#open|
@@ -1201,11 +1196,11 @@ stops running `latexmk` processes |vimtex#latexmk#stop_all|,  and then performs
 a new initialization.
 
                                                               *vimtex#toc#open*
-Open the TOC window.  If it is already open, then simply move the cursor to
-the TOC window.
+Open the ToC window.  If it is already open, then simply move the cursor to
+the ToC window.
 
                                                             *vimtex#toc#toggle*
-Toggle TOC window: If TOC window is open, then close it.  If it is closed,
+Toggle ToC window: If ToC window is open, then close it.  If it is closed,
 then open it (but do not move the cursor to the window).
 
                                                      *vimtex#util#convert_back*
