@@ -40,8 +40,12 @@ function! vimtex#toc#open() " {{{1
         \ 'max_level'       : s:max_level,
         \ 'topmatters'      : s:count_matters,
         \ 'secnumdepth'     : g:vimtex_toc_secnumdepth,
+        \ 'help'            : [
+        \   '-:       decrease secnumpdeth',
+        \   '+:       increase secnumpdeth',
+        \   's:       hide numbering',
+        \ ],
         \ 'hook_init_post'  : function('s:index_hook_init_post'),
-        \ 'hook_print_help' : function('s:index_hook_print_help'),
         \ 'print_entries'   : function('s:index_print_entries'),
         \ 'print_entry'     : function('s:index_print_entry'),
         \ 'print_number'    : function('s:index_print_number'),
@@ -113,13 +117,6 @@ function! s:index_hook_init_post() dict " {{{1
 endfunction
 
 " }}}1
-function! s:index_hook_print_help() dict " {{{1
-  call append('$', '-:       decrease secnumpdeth')
-  call append('$', '+:       increase secnumpdeth')
-  call append('$', 's:       hide numbering')
-endfunction
-
-" }}}1
 function! s:index_print_entries() dict " {{{1
   if g:vimtex_toc_number_width
     let self.number_width = g:vimtex_toc_number_width
@@ -139,7 +136,7 @@ function! s:index_print_entries() dict " {{{1
     endif
   endfor
 
-  let self.pos_closest = [0, closest_index, 0, 0]
+  let self.pos_closest = [0, closest_index + self.help_nlines, 0, 0]
 endfunction
 
 " }}}1
@@ -203,21 +200,22 @@ endfunction
 
 " }}}1
 function! s:index_syntax() dict "{{{1
-  syntax match TocNum  /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
-  syntax match TocSec0 /^.*0$/ contains=TocNum,@Tex
-  syntax match TocSec1 /^.*1$/ contains=TocNum,@Tex
-  syntax match TocSec2 /^.*2$/ contains=TocNum,@Tex
-  syntax match TocSec3 /^.*3$/ contains=TocNum,@Tex
-  syntax match TocSec4 /^.*4$/ contains=TocNum,@Tex
-  syntax match TocHelp /^.*: .*/
+  syntax match VimtexTocNum
+        \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
+  syntax match VimtexTocSec0 /^.*0$/ contains=TocNum,@Tex
+  syntax match VimtexTocSec1 /^.*1$/ contains=TocNum,@Tex
+  syntax match VimtexTocSec2 /^.*2$/ contains=TocNum,@Tex
+  syntax match VimtexTocSec3 /^.*3$/ contains=TocNum,@Tex
+  syntax match VimtexTocSec4 /^.*4$/ contains=TocNum,@Tex
+  syntax match VimtexTocHelp /^.*: .*/
 
-  highlight link TocNum  Number
-  highlight link TocSec0 Title
-  highlight link TocSec1 Normal
-  highlight link TocSec2 helpVim
-  highlight link TocSec3 NonText
-  highlight link TocSec4 Comment
-  highlight link TocHelp helpVim
+  highlight link VimtexTocNum  Number
+  highlight link VimtexTocSec0 Title
+  highlight link VimtexTocSec1 Normal
+  highlight link VimtexTocSec2 helpVim
+  highlight link VimtexTocSec3 NonText
+  highlight link VimtexTocSec4 Comment
+  highlight link VimtexTocHelp helpVim
 endfunction
 
 " }}}1

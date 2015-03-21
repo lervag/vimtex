@@ -33,13 +33,15 @@ endfunction
 " }}}1
 function! vimtex#index#create(index) " {{{1
   let default = {
-        \ 'refresh'       : function('s:actions_refresh'),
-        \ 'activate'      : function('s:actions_activate'),
-        \ 'close'         : function('s:actions_close'),
-        \ 'print_entries' : function('s:print_entries'),
-        \ 'print_help'    : function('s:print_help'),
-        \ 'syntax'        : function('s:syntax'),
-        \ 'show_help'     : g:vimtex_index_show_help,
+        \ 'refresh'          : function('s:actions_refresh'),
+        \ 'activate'         : function('s:actions_activate'),
+        \ 'close'            : function('s:actions_close'),
+        \ 'position_save'    : function('s:position_save'),
+        \ 'position_restore' : function('s:position_restore'),
+        \ 'print_entries'    : function('s:print_entries'),
+        \ 'print_help'       : function('s:print_help'),
+        \ 'syntax'           : function('s:syntax'),
+        \ 'show_help'        : g:vimtex_index_show_help,
         \ }
   for [key, FnVal] in items(default)
     if !has_key(a:index, key)
@@ -72,7 +74,7 @@ function! vimtex#index#create(index) " {{{1
     setlocal norelativenumber
   endif
 
-  nnoremap <silent><buffer> G G{k
+  nnoremap <silent><buffer> gg gg}j
   nnoremap <silent><buffer> <esc>OA k
   nnoremap <silent><buffer> <esc>OB j
   nnoremap <silent><buffer> <esc>OC k
@@ -96,25 +98,23 @@ endfunction
 " }}}1
 
 function! s:actions_refresh() dict " {{{1
-  let pos_saved = getpos('.')
+  call self.position_save()
   setlocal modifiable
   %delete
 
-  call self.print_entries()
   call self.print_help()
+  call self.print_entries()
 
   0delete _
   setlocal nomodifiable
-  call setpos('.', pos_saved)
+  call self.position_restore()
 endfunction
 
 " }}}1
 function! s:actions_activate(close) dict "{{{1
   let n = getpos('.')[1] - 1
-  if n >= len(self.entries)
-    return
-  endif
-  let entry = self.entries[n]
+  if n < self.help_nlines | return | endif
+  let entry = self.entries[n - self.help_nlines]
 
   " Save index buffer info for later use
   let toc_bnr = bufnr('%')
@@ -174,6 +174,19 @@ function! s:actions_close() dict "{{{1
   bwipeout
 endfunction
 
+function! s:position_save() dict " {{{1
+  let self.position = getpos('.')
+endfunction
+
+" }}}1
+function! s:position_restore() dict " {{{1
+  if self.position[1] <= self.help_nlines
+    let self.position[1] = self.help_nlines + 1
+  endif
+  call setpos('.', self.position)
+endfunction
+
+" }}}1
 function! s:print_entries() dict " {{{1
   for entry in self.entries
     call append('$', printf('  %s', entry.title))
@@ -182,24 +195,29 @@ endfunction
 
 " }}}1
 function! s:print_help() dict " {{{1
+  let self.help_nlines = 0
   if self.show_help
-    call append('$', '')
     call append('$', '<Esc>/q: close')
     call append('$', '<Space>: jump')
     call append('$', '<Enter>: jump and close')
-    if has_key(self, 'hook_print_help')
-      call self.hook_print_help()
+    if has_key(self, 'help')
+      for helpstring in self.help
+        call append('$', helpstring)
+      endfor
+      let self.help_nlines += len(self.help)
     endif
+    call append('$', '')
+    let self.help_nlines += 4
   endif
 endfunction
 
 " }}}1
 function! s:syntax() dict " {{{1
-  syntax match IndexLine /^.*$/ contains=@Tex
   syntax match IndexHelp /^.*: .*/
+  syntax match IndexLine /^  .*$/ contains=@Tex
 
-  highlight link IndexLine ModeMsg
   highlight link IndexHelp helpVim
+  highlight link IndexLine ModeMsg
 endfunction
 
 " }}}1
