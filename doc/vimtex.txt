@@ -41,11 +41,12 @@ CONTENTS                                                      *vimtex-contents*
    11. Motion ............................... |vimtex-motion|
    12. Change ............................... |vimtex-change|
    13. Table of contents .................... |vimtex-toc|
-   14. Utility functions .................... |vimtex-util|
-   15. Function reference ................... |vimtex-functions|
-   16. FAQ .................................. |vimtex-faq|
-   17. Credits .............................. |vimtex-credits|
-   18. Changelog ............................ |vimtex-changelog|
+   14. Table of labels ...................... |vimtex-labels|
+   15. Utility functions .................... |vimtex-util|
+   16. Function reference ................... |vimtex-functions|
+   17. FAQ .................................. |vimtex-faq|
+   18. Credits .............................. |vimtex-credits|
+   19. Changelog ............................ |vimtex-changelog|
 
 ==============================================================================
 INTRO                                                            *vimtex-intro*
@@ -270,6 +271,8 @@ Below the commands are listed in alphabetical order.
 *VimtexStopAll*              call vimtex#latexmk#stop_all()
 *VimtexTocOpen*              call vimtex#toc#open()
 *VimtexTocToggle*            call vimtex#toc#toggle()
+*VimtexLabelsOpen*           call vimtex#labels#open()
+*VimtexLabelsToggle*         call vimtex#labels#toggle()
 *VimtexView*                 call vimtex#view#view()
 *VimtexRSearch*              call vimtex#view#rsearch()
 
@@ -298,6 +301,7 @@ Overview:~
   |g:vimtex_index_resize|
   |g:vimtex_index_show_help|
   |g:vimtex_index_split|
+  |g:vimtex_labels_enabled|
   |g:vimtex_latexmk_build_dir|
   |g:vimtex_latexmk_callback|
   |g:vimtex_latexmk_enabled|
@@ -401,6 +405,10 @@ indentation function, but imho it is better. >
                                                   *g:vimtex_indent_bib_enabled*
 Use |vimtex| indentation function for bibliography files. >
   let g:vimtex_indent_bib_enabled = 1
+<
+                                                      *g:vimtex_labels_enabled*
+Enable table of labels functionality. >
+  let g:vimtex_labels_enabled = 1
 <
                                                    *g:vimtex_latexmk_build_dir*
 Set this variable in case a dedicated build dir is used with `latexmk`/`latex`
@@ -1008,6 +1016,24 @@ Associated settings:
 Functions:
     |vimtex#toc#open|
     |vimtex#toc#toggle|
+
+==============================================================================
+TABLE OF LABELS                                                 *vimtex-labels*
+
+|vimtex| provides a table of labels similar to the ToC |vimtex-toc|.  The
+table entries may be filtered with the `f` keybinding.  Filters may be removed
+with the `c` keybinding.
+
+Associated settings:
+    |g:vimtex_index_hide_line_numbers|
+    |g:vimtex_index_resize|
+    |g:vimtex_index_show_help|
+    |g:vimtex_index_split|
+    |g:vimtex_labels_enabled|
+
+Functions:
+    |vimtex#labels#open|
+    |vimtex#labels#toggle|
 
 ==============================================================================
 FUNCTION REFERENCE                                           *vimtex-functions*
