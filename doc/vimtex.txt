@@ -1280,8 +1280,29 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs important changes, such as changes that
 break backwards compatibility.  See the git log for the detailed changelog.
 
+2015-03-21: Implemented index buffers, deprecated vimtex_toc filetype~
+The system for displaying the table of content relied on a dedicated filetype
+plugin.  This was inherited from LaTeX-Box, and worked quite well.  However,
+I intend to implement more functionality that uses the same kind of buffer to
+display similar things, such as a list of labels.  I realized I wanted the ToC
+window to be more adaptable, so I implemented the `index` interface for such
+buffers.  The `index` in itself may be used to create ToC-like buffers with
+simple actions.  The |vimtex-toc| uses and expands the `index` in such a way
+that the changes should barely be noticable from the user perspective.  Note
+however the following variable name changes:
+
+  *g:vimtex_toc_numbers_width*     ---> |g:vimtex_toc_number_width|
+  *g:vimtex_toc_hide_preamble*     ---> |g:vimtex_toc_show_preamble|
+  *g:vimtex_toc_numbers*           ---> |g:vimtex_toc_show_numbers|
+
+  *g:vimtex_toc_hide_line_numbers* ---> |g:vimtex_index_hide_line_numbers| 
+  *g:vimtex_toc_resize*            ---> |g:vimtex_index_resize|            
+  *g:vimtex_toc_hide_help*         ---> |g:vimtex_index_show_help|         
+  *g:vimtex_toc_split_pos*         ---> |g:vimtex_index_split|             
+  *g:vimtex_toc_width*             -/
+
                                                          *vim-latex-namechange*
-2015-03-08: Changed the name to |vimtex|~
+2015-03-08: Changed the name to vimtex~
 The old name `vim-latex` was already used by LaTeX-Suite.  I was not aware of
 the name clash in the beginning.  Due to the rising popularity of this plugin,
 it has become clear that such a name clash is very inconvenient.  The present
