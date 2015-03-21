@@ -8,7 +8,80 @@ function! vimtex#labels#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
   if !g:vimtex_labels_enabled | return | endif
 
-  let g:vimtex#data[b:vimtex.id].labels = function('s:gather_labels')
+  " Set some constants
+  let s:name = 'Table of labels (vimtex)'
+
+  " Define commands
+  command! -buffer VimtexLabelsOpen   call vimtex#labels#open()
+  command! -buffer VimtexLabelsToggle call vimtex#labels#toggle()
+endfunction
+
+" }}}1
+function! vimtex#labels#open() " {{{1
+  if vimtex#index#open(s:name) | return | endif
+
+  let index = {}
+  let index.name            = s:name
+  let index.entries         = s:gather_labels(g:vimtex#data[b:vimtex.id].tex)
+  let index.all_entries     = deepcopy(index.entries)
+  let index.hook_init_post  = function('s:index_hook_init_post')
+  let index.help            = [
+        \ 'c:       clear filters',
+        \ 'f:       filter',
+        \ ]
+  let index.clear_filter    = function('s:index_clear_filter')
+  let index.filter          = function('s:index_filter')
+  let index.syntax          = function('s:index_syntax')
+
+  call vimtex#index#create(index)
+endfunction
+
+function! vimtex#labels#toggle() " {{{1
+  if vimtex#index#open(s:name)
+    call vimtex#index#close(s:name)
+  else
+    call vimtex#labels#open()
+    silent execute 'wincmd w'
+  endif
+endfunction
+
+" }}}1
+
+function! s:index_clear_filter() dict "{{{1
+  let self.entries = copy(self.all_entries)
+  call self.refresh()
+endfunction
+
+" }}}1
+function! s:index_filter() dict "{{{1
+  let filter = input('filter by: ')
+  let self.entries = filter(self.entries, 'v:val.title =~# filter') 
+  call self.refresh()
+endfunction
+
+" }}}1
+function! s:index_hook_init_post() dict " {{{1
+  nnoremap <buffer> <silent> c :call b:index.clear_filter()<cr>
+  nnoremap <buffer> <silent> f :call b:index.filter()<cr>
+endfunction
+
+" }}}1
+function! s:index_syntax() dict " {{{1
+  syntax match VimtexLabelsHelp /^.*: .*/
+  syntax match VimtexLabelsLine /^  .*$/ contains=@Tex
+  syntax match VimtexLabelsChap /^  chap:.*$/ contains=@Tex
+  syntax match VimtexLabelsEq   /^  eq:.*$/   contains=@Tex
+  syntax match VimtexLabelsFig  /^  fig:.*$/  contains=@Tex
+  syntax match VimtexLabelsSec  /^  sec:.*$/  contains=@Tex
+  syntax match VimtexLabelsTab  /^  tab:.*$/  contains=@Tex
+
+  highlight link VimtexLabelsHelp helpVim
+  highlight link VimtexLabelsLine Todo
+  highlight link VimtexLabelsChap PreProc
+  highlight link VimtexLabelsEq   Statement
+  highlight link VimtexLabelsFig  Identifier
+  highlight link VimtexLabelsSec  Type
+  highlight link VimtexLabelsTab  String
 endfunction
 
 " }}}1
@@ -22,12 +95,7 @@ let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
 
 " }}}1
 
-function! s:gather_labels() dict " {{{1
-  return s:gather_labels_file(self.tex)
-endfunction
-
-" }}}1
-function! s:gather_labels_file(file) " {{{1
+function! s:gather_labels(file) " {{{1
   let tac = []
   let lnum = 0
   for line in readfile(a:file)
@@ -35,13 +103,16 @@ function! s:gather_labels_file(file) " {{{1
 
     " 1. Parse inputs or includes
     if line =~# s:re_input
-      call extend(tac,
-            \ s:gather_labels_file(s:gather_labels_input(line, a:file)))
+      call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file)))
       continue
     endif
 
     if line =~# s:re_label
-      call add(tac, [matchstr(line, s:re_label_title), a:file, lnum])
+      call add(tac, {
+            \ 'title' : matchstr(line, s:re_label_title),
+            \ 'file'  : a:file,
+            \ 'line'  : lnum,
+            \ })
       continue
     endif
   endfor
