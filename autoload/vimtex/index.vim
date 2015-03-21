@@ -6,8 +6,8 @@
 
 function! vimtex#index#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_index_hide_line_numbers', 1)
-  call vimtex#util#set_default('g:vimtex_index_show_help', 1)
   call vimtex#util#set_default('g:vimtex_index_resize', 0)
+  call vimtex#util#set_default('g:vimtex_index_show_help', 1)
   call vimtex#util#set_default('g:vimtex_index_split', 'vert leftabove 30')
 endfunction
 

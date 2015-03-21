@@ -11,10 +11,10 @@ function! vimtex#toc#init(initialized) " {{{1
   " Set default options
   call vimtex#util#set_default('g:vimtex_toc_fold', 0)
   call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
-  call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
-  call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
   call vimtex#util#set_default('g:vimtex_toc_number_width', 0)
   call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
+  call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
+  call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
 
   " Set some constants
   let s:name = 'Table of contents (vimtex)'
