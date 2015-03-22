@@ -1,6 +1,6 @@
 # vimtex
 
-vimtex is a [vim](http://www.vim.org/) plugin that provides support for writing
+A [vim](http://www.vim.org/) plugin that provides support for writing
 LaTeX documents.
 
 ## Features
@@ -21,25 +21,29 @@ disabled if desired.
   - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
   - Other viewers are supported through a general interface
 - Completion of citations and labels
-- Document navigation through tables of
-  - content
-  - labels
+- Document navigation through
+  - table of content
+  - table of labels
 - Motions
-  - Move between sections `[[ [] ][ ]]`
-  - Move between delimiters `%` (with highlighting)
+  - Move between sections with `[[`, `[]`, `][`, `]]`
+  - Move between delimiters with `%`
+  - Matching delimiters are highlighted
 - Text objects
-  - LaTeX environments `ie ae`
-  - Inline math structures `i$ a$`
-  - Delimiters `id ad`
-- Utility mappings
-  - Delete/Change surrounding command or environment `cse`, `dse`, `csc`, `dsc`
-  - Toggle starred environment `tse`
-  - Toggle delimiters, e.g. between `()` and `\left(\right)`, `tsd`
-  - Close current environment in insert mode `]]`
+  - `ie ae` LaTeX environments
+  - `i$ a$` Inline math structures
+  - `id ad` Delimiters
+- Other mappings
+  - Delete the surrounding command or environment with `dse`/`dsc`
+  - Change the surrounding command or environment with `csd`/`cse`
+  - Toggle starred environment with `tse`
+  - Toggle between e.g. `()` and `\left(\right)` with `tsd`
+  - Close the current environment in insert mode `]]`
+  - Insert new command with `<F7>`
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
 
-See the [doc/vimtex.txt](https://raw.githubusercontent.com/lervag/vimtex/master/doc/vimtex.txt) for a more thorough introduction of the plugin.
+See the documentation for a more thorough introduction of the plugin (e.g. `:h
+vimtex`).
 
 ## Installation
 
