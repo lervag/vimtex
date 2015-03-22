@@ -1,51 +1,86 @@
 # vimtex
 
-## Introduction
+vimtex is a [vim](http://www.vim.org/) plugin that provides support for writing
+LaTeX documents.
 
-vimtex is a [vim](http://www.vim.org/) plugin that provides support for writing LaTeX documents.  The
-main features are:
+## Features
 
-1. Control over document compilation (through [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/))
-2. Completion of citations and labels
-3. A Convenient table of contents
-4. Control over pdf viewers with forward search for several different viewers
-5. Some vim motions and mappings
+Below is a list of features offered by vimtex.  The features are accessible as
+both commands and mappings.  The mappings generally start with
+`<localleader>l`, but if desired one can disable default mappings to define
+custom mappings.  All features are enabled by default, but each feature may be
+disabled if desired.
 
-See the [documentation](https://raw.githubusercontent.com/lervag/vimtex/master/doc/vimtex.txt) for a more thorough introduction of the plugin.
+- Document compilation through
+  [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/)
+- Support for several PDF viewers with forward search
+  - [MuPDF](http://www.mupdf.com/)
+  - [Zathura](https://pwmt.org/projects/zathura/)
+  - [Okular](https://okular.kde.org/)
+  - [qpdfview](https://launchpad.net/qpdfview)
+  - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
+  - Other viewers are supported through a general interface
+- Completion of citations and labels
+- Document navigation through tables of
+  - content
+  - labels
+- Motions
+  - Move between sections `[[ [] ][ ]]`
+  - Move between delimiters `%` (with highlighting)
+- Text objects
+  - LaTeX environments `ie ae`
+  - Inline math structures `i$ a$`
+  - Delimiters `id ad`
+- Utility mappings
+  - Delete/Change surrounding command or environment `cse`, `dse`, `csc`, `dsc`
+  - Toggle starred environment `tse`
+  - Toggle delimiters, e.g. between `()` and `\left(\right)`, `tsd`
+  - Close current environment in insert mode `]]`
+- Improved folding (`:h 'foldexpr'`)
+- Improved indentation (`:h 'indentexpr'`)
+
+See the [doc/vimtex.txt](https://raw.githubusercontent.com/lervag/vimtex/master/doc/vimtex.txt) for a more thorough introduction of the plugin.
 
 ## Installation
 
-### With gmarik vundle
-_https://github.com/gmarik/vundle_
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
+following line to your `vimrc` file:
 
-Add `Plugin 'lervag/vimtex'` to your ~/.vimrc and run
-`:PluginInstall` in a vim buffer. Add `!` to the command to update.
+```vim
+Plug 'lervag/vimtex'
+```
 
-### With neobundle
-_https://github.com/Shougo/neobundle.vim_
-
-Add `NeoBundle 'lervag/vimtex'` to your ~/.vimrc and run
-`:NeoBundleInstall` in a vim buffer. Add `!` to the command to update.
-
-### With pathogen
-_https://github.com/tpope/vim-pathogen_
-
-Add the vimtex bundle to your bundle directory, for instance with `git
-clone`.  This will typically be enough:
-
-    cd ~/.vim/bundle
-    git clone git://github.com/lervag/vimtex
-
-### Without a plugin manager
-
-Copy the directories to your `.vim/` folder.
+Or use some other plugin manager:
+- [vundle](https://github.com/gmarik/vundle)
+- [neobundle](https://github.com/Shougo/neobundle.vim)
+- [pathogen](https://github.com/tpope/vim-pathogen)
 
 ## Alternatives
 
-There exists several vim plugins for writing LaTeX documents.  Some of the most
-popular and/or interesting ones are:
+- [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box)
 - [LaTeX-Suite](http://vim-latex.sourceforge.net)
 - [AutomaticTexPlugin](http://atp-vim.sourceforge.net)
-- [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box)
 - [vim-latex-live-preview](https://github.com/xuhdev/vim-latex-live-preview)
+
+## License
+
+The MIT license (MIT)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
 
