@@ -9,8 +9,6 @@ function! vimtex#mappings#init(initialized)
   if !g:vimtex_mappings_enabled | return | endif
 
   nmap <silent><buffer> <localleader>li <plug>(vimtex-info)
-  nmap <silent><buffer> <localleader>lh <plug>(vimtex-help)
-  nmap <silent><buffer> <localleader>lR <plug>(vimtex-reinit)
 
   nmap <silent><buffer> dse  <plug>(vimtex-delete-env)
   nmap <silent><buffer> dsc  <plug>(vimtex-delete-cmd)
