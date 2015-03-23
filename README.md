@@ -11,7 +11,7 @@ both commands and mappings.  The mappings generally start with
 custom mappings.  All features are enabled by default, but each feature may be
 disabled if desired.
 
-- Document compilation through
+- Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/)
 - Support for several PDF viewers with forward search
   - [MuPDF](http://www.mupdf.com/)
@@ -26,8 +26,7 @@ disabled if desired.
   - table of labels
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
-  - Move between delimiters with `%`
-  - Matching delimiters are highlighted
+  - Move between matching delimiters with `%`
 - Text objects
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
@@ -39,6 +38,12 @@ disabled if desired.
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment in insert mode with `]]`
   - Insert new command with `<F7>`
+- Improved syntax highlighting
+  - Highlight matching delimiters
+  - Support for `biblatex`/`natbib` package
+  - Support for `cleveref` package
+  - Support for `listings` package
+  - Support for `dot2tex` with nested syntax highlighting
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
 
