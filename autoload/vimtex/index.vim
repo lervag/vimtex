@@ -9,7 +9,7 @@ function! vimtex#index#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_index_resize', 0)
   call vimtex#util#set_default('g:vimtex_index_show_help', 1)
   call vimtex#util#set_default('g:vimtex_index_split_pos', 'vert leftabove')
-  call vimtex#util#set_default('g:vimtex_index_split_width', '30')
+  call vimtex#util#set_default('g:vimtex_index_split_width', 30)
 endfunction
 
 " }}}1
