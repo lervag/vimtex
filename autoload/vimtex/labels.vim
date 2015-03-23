@@ -14,6 +14,10 @@ function! vimtex#labels#init(initialized) " {{{1
   " Define commands
   command! -buffer VimtexLabelsOpen   call vimtex#labels#open()
   command! -buffer VimtexLabelsToggle call vimtex#labels#toggle()
+
+  " Define mappings
+  nnoremap <buffer> <plug>(vimtex-labels-open)   :call vimtex#labels#open()<cr>
+  nnoremap <buffer> <plug>(vimtex-labels-toggle) :call vimtex#labels#toggle()<cr>
 endfunction
 
 " }}}1

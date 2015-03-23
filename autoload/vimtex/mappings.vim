@@ -67,6 +67,11 @@ function! vimtex#mappings#init(initialized)
     nmap <silent><buffer> <localleader>lT <plug>(vimtex-toc-toggle)
   endif
 
+  if g:vimtex_labels_enabled
+    nmap <silent><buffer> <localleader>lr <plug>(vimtex-labels-open)
+    nmap <silent><buffer> <localleader>lR <plug>(vimtex-labels-toggle)
+  endif
+
   if g:vimtex_view_enabled
     nmap <silent><buffer> <localleader>lv <plug>(vimtex-view)
     if has_key(g:vimtex#data[b:vimtex.id], 'rsearch')
