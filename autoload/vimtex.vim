@@ -63,38 +63,6 @@ function! vimtex#info() " {{{1
   endfor
 endfunction
 
-function! vimtex#help() " {{{1
-  if g:vimtex_mappings_enabled
-    nmap <buffer>
-    xmap <buffer>
-    omap <buffer>
-  else
-    call vimtex#echo#warning('vimtex mappings are not enabled')
-  endif
-endfunction
-
-function! vimtex#reinit() " {{{1
-  "
-  " Stop latexmk processes (if running)
-  "
-  call vimtex#latexmk#stop_all()
-
-  "
-  " Reset global variables
-  "
-  let s:initialized = 0
-  unlet g:vimtex#data
-
-  "
-  " Reset and reinitialize buffers
-  "
-  let n = bufnr('%')
-  bufdo   if getbufvar('%', '&filetype') == 'tex' |
-        \   unlet b:vimtex                        |
-        \   call vimtex#init()                    |
-        \ endif
-  silent execute 'buffer ' . n
-endfunction
 " }}}1
 
 function! s:init_environment() " {{{1
@@ -156,13 +124,9 @@ function! s:init_environment() " {{{1
 
   " Define commands
   command! -buffer VimtexInfo         call vimtex#info()
-  command! -buffer VimtexHelp         call vimtex#help()
-  command! -buffer VimtexReinitialize call vimtex#reinit()
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info)   :call vimtex#info()<cr>
-  nnoremap <buffer> <plug>(vimtex-help)   :call vimtex#help()<cr>
-  nnoremap <buffer> <plug>(vimtex-reinit) :call vimtex#reinit()<cr>
 endfunction
 
 function! s:init_options() " {{{1
