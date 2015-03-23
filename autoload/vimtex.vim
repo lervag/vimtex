@@ -5,7 +5,9 @@
 "
 
 " vimtex is not initialized until vimtex#init() has been run once
-let s:initialized = 0
+if !exists('s:initialized')
+  let s:initialized = 0
+endif
 
 function! vimtex#init() " {{{1
   call s:init_options()
@@ -30,6 +32,7 @@ function! vimtex#init() " {{{1
   let s:initialized = 1
 endfunction
 
+" }}}1
 function! vimtex#info() " {{{1
   if !s:initialized
     echoerr 'Error: vimtex has not been initialized!'
