@@ -10,7 +10,7 @@ syntax match texRefZone
       \ "\\\%(auto\|text\)\?cite\%([tp]\*\?\|author\)\?"
       \ nextgroup=texRefOption,texCite
 
-" Add support for cleverref package
+" Add support for cleveref package
 " \Cref, \cref, \cpageref, \labelcref, \labelcpageref
 syntax region texRefZone matchgroup=texStatement
       \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
