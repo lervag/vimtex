@@ -68,8 +68,8 @@ function! vimtex#mappings#init(initialized)
   endif
 
   if g:vimtex_labels_enabled
-    nmap <silent><buffer> <localleader>lr <plug>(vimtex-labels-open)
-    nmap <silent><buffer> <localleader>lR <plug>(vimtex-labels-toggle)
+    nmap <silent><buffer> <localleader>ly <plug>(vimtex-labels-open)
+    nmap <silent><buffer> <localleader>lY <plug>(vimtex-labels-toggle)
   endif
 
   if g:vimtex_view_enabled
