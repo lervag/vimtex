@@ -8,7 +8,8 @@ function! vimtex#index#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_index_hide_line_numbers', 1)
   call vimtex#util#set_default('g:vimtex_index_resize', 0)
   call vimtex#util#set_default('g:vimtex_index_show_help', 1)
-  call vimtex#util#set_default('g:vimtex_index_split', 'vert leftabove 30')
+  call vimtex#util#set_default('g:vimtex_index_split_pos', 'vert leftabove')
+  call vimtex#util#set_default('g:vimtex_index_split_width', '30')
 endfunction
 
 " }}}1
@@ -25,7 +26,7 @@ endfunction
 " }}}1
 function! vimtex#index#close(bufname) " {{{1
   if g:vimtex_index_resize
-    silent exe 'set columns -=' . g:vimtex_toc_width
+    silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
   silent execute 'bwipeout' . bufnr(a:bufname)
 endfunction
@@ -51,9 +52,9 @@ function! vimtex#index#create(index) " {{{1
   endfor
 
   if g:vimtex_index_resize
-    silent exe 'set columns +=' . g:vimtex_index_width
+    silent exe 'set columns +=' . g:vimtex_index_split_width
   endif
-  silent execute g:vimtex_index_split 'new' escape(a:index.name, ' ')
+  silent execute g:vimtex_index_split_pos 'new' escape(a:index.name, ' ')
   let b:index = a:index
 
   setlocal bufhidden=wipe
@@ -159,7 +160,7 @@ function! s:actions_activate(close) dict "{{{1
   " Keep or close index window (based on options)
   if a:close
     if g:vimtex_index_resize
-      silent exe 'set columns -=' . g:vimtex_index_width
+      silent exe 'set columns -=' . g:vimtex_index_split_width
     endif
     execute 'bwipeout ' . toc_bnr
   else
@@ -169,7 +170,7 @@ endfunction
 
 function! s:actions_close() dict "{{{1
   if g:vimtex_index_resize
-    silent exe 'set columns -=' . g:vimtex_index_width
+    silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
   bwipeout
 endfunction
