@@ -9,7 +9,7 @@ function! vimtex#fold#init(initialized) " {{{1
   if !g:vimtex_fold_enabled | return | endif
 
   " Set default options
-  call vimtex#util#set_default('g:vimtex_fold_automatic', 1)
+  call vimtex#util#set_default('g:vimtex_fold_automatic', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
