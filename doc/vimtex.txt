@@ -52,9 +52,7 @@ CONTENTS                                                      *vimtex-contents*
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
     Backward search                             |vimtex-synctex-backward-search|
-
   Code structure                                |vimtex-code|
-
   FAQ                                           |vimtex-faq|
   Credits                                       |vimtex-credits|
   Changelog                                     |vimtex-changelog|
@@ -414,7 +412,7 @@ Options~
   Default value: '.'
 
 *g:vimtex_latexmk_callback*
-  If enabled, this option tells `latexmk` to run |vimtex#latexmk#errors| after
+  If enabled, this option tells `latexmk` to run |vimtex#latexmk#callback| after
   compilation is finished.
   
   Note 1: This feature requires |clientserver|.
