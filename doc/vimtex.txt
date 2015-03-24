@@ -39,6 +39,7 @@ CONTENTS                                                      *vimtex-contents*
   Completion                                    |vimtex-completion|
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
+    Autocomplete                                |vimtex-complete-auto|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -448,6 +449,12 @@ Options~
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
   whenever the |quickfix| window is opened.
+  
+  Note: This option does not go well with continuous compilation and
+        callbacks, since the callbacks will open the quickfix window if there
+        are errors.  Thus I recommend to keep it disabled for continuous
+        compilation, and rather enable it if one prefers single shot
+        compilations.
 
   Default value: 0
 
@@ -811,6 +818,28 @@ Then the bibliography key `knuth1981` will be completed with e.g.: >
 
 In particular, note that regular expressions (or vim patterns) can be used
 after '\cite{' to search for candidates.
+
+------------------------------------------------------------------------------
+Autocomplete~
+                                                         *vimtex-complete-auto*
+
+Vim does not provide automatic completion by itself, but there exist at least
+two good plugins that provide this:
+  neocomplete     https://github.com/Shougo/neocomplete.vim
+  YouCompleteMe   https://github.com/Valloric/YouCompleteMe
+
+I personally use neocomplete with the following options to enable good
+automatic completion with |vimtex|: >
+
+  if !exists('g:neocomplete#sources#omni#input_patterns')
+    let g:neocomplete#sources#omni#input_patterns = {}
+  endif
+  let g:neocomplete#sources#omni#input_patterns.tex =
+        \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
+
+I do not know the appropriate settings to enable good autocomplete with
+YouCompleteMe.  If anyone has a good set of settings that provide autocomplete
+with YouCompleteMe for |vimtex|, I will be happy to accept pull requests.
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
