@@ -190,7 +190,7 @@ endfunction
 " }}}1
 function! s:print_entries() dict " {{{1
   for entry in self.entries
-    call append('$', printf('  %s', entry.title))
+    call append('$', printf('%s', entry.title))
   endfor
 endfunction
 

@@ -74,12 +74,12 @@ endfunction
 " }}}1
 function! s:index_syntax() dict " {{{1
   syntax match VimtexLabelsHelp /^.*: .*/
-  syntax match VimtexLabelsLine /^  .*$/ contains=@Tex
-  syntax match VimtexLabelsChap /^  chap:.*$/ contains=@Tex
-  syntax match VimtexLabelsEq   /^  eq:.*$/   contains=@Tex
-  syntax match VimtexLabelsFig  /^  fig:.*$/  contains=@Tex
-  syntax match VimtexLabelsSec  /^  sec:.*$/  contains=@Tex
-  syntax match VimtexLabelsTab  /^  tab:.*$/  contains=@Tex
+  syntax match VimtexLabelsLine /^.*$/      contains=@Tex
+  syntax match VimtexLabelsChap /^chap:.*$/ contains=@Tex
+  syntax match VimtexLabelsEq   /^eq:.*$/   contains=@Tex
+  syntax match VimtexLabelsFig  /^fig:.*$/  contains=@Tex
+  syntax match VimtexLabelsSec  /^sec:.*$/  contains=@Tex
+  syntax match VimtexLabelsTab  /^tab:.*$/  contains=@Tex
 
   highlight link VimtexLabelsHelp helpVim
   highlight link VimtexLabelsLine Todo
