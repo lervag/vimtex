@@ -1,8 +1,9 @@
-*vimtex.txt*    LaTeX plugin for Vim version 7.3 (and above)
-*vimtex* *latex*
+*vimtex.txt*    A modern vim plugin for editing LaTeX files.
+*vimtex*
 
 Author:  Karl Yngve Lervåg <karl.yngve@gmail.com>
 License: MIT license {{{
+
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to
   deal in the Software without restriction, including without limitation the
@@ -10,8 +11,8 @@ License: MIT license {{{
   sell copies of the Software, and to permit persons to whom the Software is
   furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,142 +21,113 @@ License: MIT license {{{
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
   IN THE SOFTWARE.
+
 }}}
 
 ==============================================================================
 CONTENTS                                                      *vimtex-contents*
 
-    1. Intro ................................ |vimtex-intro|
-    2. Main interface ....................... |vimtex-main|
-    3. Default mappings ..................... |vimtex-mappings|
-    4. Commands ............................. |vimtex-commands|
-    5. Options .............................. |vimtex-options|
-    6. Omni completion ...................... |vimtex-completion|
-    7. Folding .............................. |vimtex-folding|
-    8. Indentation .......................... |vimtex-indent|
-    9. Latexmk .............................. |vimtex-latexmk|
-       Latexmk tricks ....................... |vimtex-latexmk-tricks|
-       Lacheck .............................. |vimtex-latexmk-lacheck|
-   10. View ................................. |vimtex-view|
-       synctex .............................. |vimtex-synctex|
-   11. Motion ............................... |vimtex-motion|
-   12. Change ............................... |vimtex-change|
-   13. Table of contents .................... |vimtex-toc|
-   14. Table of labels ...................... |vimtex-labels|
-   15. Utility functions .................... |vimtex-util|
-   16. Function reference ................... |vimtex-functions|
-   17. FAQ .................................. |vimtex-faq|
-   18. Credits .............................. |vimtex-credits|
-   19. Changelog ............................ |vimtex-changelog|
+  Introduction                                  |vimtex-introduction|
+    Feature overview                            |vimtex-features|
+    Requirements                                |vimtex-requirements|
+    Support for multi-file projects             |vimtex-multi-file|
+  Usage                                         |vimtex-usage|
+    Default mappings                            |vimtex-default-mappings|
+    Options                                     |vimtex-options|
+    Commands                                    |vimtex-commands|
+    Map definitions                             |vimtex-mappings|
+  Completion                                    |vimtex-completion|
+    Complete labels                             |vimtex-complete-labels|
+    Complete citations                          |vimtex-complete-cites|
+  Folding                                       |vimtex-folding|
+  Indentation                                   |vimtex-indent|
+  Syntax highlighting                           |vimtex-syntax|
+  Navigation                                    |vimtex-navigation|
+    Table of contents                           |vimtex-toc|
+    Table of labels                             |vimtex-labels|
+  Latexmk                                       |vimtex-latexmk|
+    Latexmk tricks                              |vimtex-latexmk-tricks|
+    Lacheck                                     |vimtex-latexmk-lacheck|
+  View                                          |vimtex-view|
+    Synctex                                     |vimtex-synctex|
+    Forward search                              |vimtex-synctex-forward-search|
+    Backward search                             |vimtex-synctex-backward-search|
+
+  Code structure                                |vimtex-code|
+
+  FAQ                                           |vimtex-faq|
+  Credits                                       |vimtex-credits|
+  Changelog                                     |vimtex-changelog|
 
 ==============================================================================
-INTRO                                                            *vimtex-intro*
+INTRODUCTION                                              *vimtex-introduction*
 
-|vimtex| provides functionality for editing LaTeX documents.  The goal has
-been to create a minimalistic and functional plugin that is easy to customize
-and evolve.  Most of the functionality provided is turned on by default, but
-the user may turn off features that are not desired.
+|vimtex| provides convenient functionality for editing LaTeX documents.  The
+main goal of |vimtex| is to be simple, functional, and to be easy to customize
+and evolve.
 
-Note that vim itself ships with syntax hightlighting for LaTeX documents,
-please see |ft-tex-plugin| and |ft-tex-syntax|.  |vimtex| does not provide its
-own syntax highlighting, but does expand it a little bit.
+-----------------------------------------------------------------------------
+Feature overview~
+                                                              *vimtex-features*
 
+- Document compilation with `latexmk`
+- Forward search with several PDF viewers
+- Completion of citations and labels
+- Document navigation through
+  - table of content
+  - table of labels
+- Motions
+  - Move between sections with `[[`, `[]`, `][`, `]]`
+  - Move between matching delimiters with `%`
+- Text objects
+  - `ie` `ae` LaTeX environments
+  - `i$` `a$` Inline math structures
+  - `id` `ad` Delimiters
+- Other mappings
+  - Delete the surrounding command or environment with `dse`/`dsc`
+  - Change the surrounding command or environment with `csd`/`cse`
+  - Toggle starred environment with `tse`
+  - Toggle between e.g. `()` and `\left(\right)` with `tsd`
+  - Close the current environment in insert mode with `]]`
+  - Insert new command with `<F7>`
+- Folding
+- Indentation
+- Improved syntax highlighting
+  - Highlight matching delimiters
+  - Support for `biblatex`/`natbib` package
+  - Support for `cleveref` package
+  - Support for `listings` package
+  - Support for `dot2tex` with nested syntax highlighting
+
+------------------------------------------------------------------------------
+Requirements~
                                                           *vimtex-requirements*
-Some of the functionalities of |vimtex| has certain requirements:
 
-  |vimtex-latexmk|
-    Requires that the user has installed both `latexmk` and `pgrep`.  If these
-    are not available, then the functionalities provided by
-    |vimtex-latexmk| will not be available.
+  `latexmk`  http://users.phys.psu.edu/~collins/software/latexmk-jcc
+    |vimtex| uses `latexmk` to compile the LaTeX document.  `latexmk` is "a perl
+    script for running LaTeX the correct number of times to resolve cross
+    references, etc; it also runs auxiliary programs (bibtex, makeindex if
+    necessary, and dvips and/or a previewer as requested).  It has a number of
+    other useful capabilities, for example to start a previewer and then run
+    latex whenever the source files are updated, so that the previewer gives
+    an up-to-date view of the document. The script runs on both UNIX and
+    MS-WINDOWS (XP, etc)." [Copied from the latexmk page.]  For more info, see
+    |vimtex-latexmk|.
 
-    If you use Vim under a terminal in Linux or MacOS, then Vim must be
+  |clientserver|
+    |vimtex| requires the |clientserver| for the callback functionality to
+    work.  The callbacks are used to provide feedback when compilation is
+    finished, as well as to parse the log for errors and warnings and to open
+    the |quickfix| window when necessary.
+
+    If you use Vim under a terminal in Linux or OSX, then Vim must be
     started as a command server with the command line option `--servername`,
     e.g. `vim --servername VIM`.  For different ways of ensuring this, see:
     http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
 
-  |vimtex-completion|
-    The function |vimtex#complete#bibtex| requires `bibtex` and `kpsewhich` to
-    parse bib files for bibliography completion.
-
-==============================================================================
-MAIN INTERFACE                                                    *vimtex-main*
-
-The |vimtex| interface is based on the |autoload| feature of vim.  For each
-new latex buffer, the function *vimtex#init* initializes the variables and
-functionalities based on the desired options |vimtex-options|.  The first
-run performs some global initialization, which is mainly to define
-autocommands.  Other functionality is provided by additional autoloaded
-scripts, such as |vimtex-latexmk|.  Every additional script should have an
-initialization script that sets default mappings, creates autocommands and
-performs other necessary initialization.  This initialization script is then
-called from |vimtex#init|.
-
-The main interface provides some basic functionality.  |vimtex#help| lists all
-`vimtex` mappings defined for the current buffer, by default mapped to
-'<localleader>lh'.  If the default mappings are used, |vimtex#help| will
-display them.  |vimtex#info| echoes the contents of |g:vimtex#data| and
-|b:vimtex|.  This is useful mainly for debugging.  Finally, |vimtex#reinit|
-clears the current data in |g:vimtex#data| and |b:vimtex|, stops running
-`latexmk` processes |vimtex#latexmk#stop_all|,  and then performs a new
-initialization with |vimtex#init|.
-
-For each latex project that is opened, a |Dictionary| is created and added to
-the list |g:vimtex#data|.  The dictionary is initialized with information tied
-to the current project, mainly the different associated file names.  In
-addition, a dictionary is created for every buffer |b:vimtex|.  This contains
-data that is specific to the current buffer, most importantly it contains the
-ID of the main latex project.  This combination of local and global data
-enables |vimtex| to work properly for multi-file latex projects.  It also
-allows the editing of different latex projects simultaneously in different
-buffers.
-
-                                                                *g:vimtex#data*
-A |List| of |Dictionaries|, each containing data specific to a given latex
-project.  The ID of a latex project is the index of its dictionary in the list.
-An example of a dictionary is given here: >
-
-  {
-    'pid': 0,
-    'name': 'main',
-    'base': 'main.tex',
-    'root': '/some/path',
-    'tex': '/some/path/main.tex',
-    'aux': function('202'),
-    'log': function('203'),
-    'out': function('204'),
-  }
-
-Which entries are present in a given dictionary depends on the current
-settings.  For example, the entry `pid` is only available if
-|vimtex-latexmk| is enabled |g:vimtex_latexmk_enabled|.  Note that some of
-the file entries are functions.  The functions are used to find the files when
-necessary, in case they do not exist when the latex file is opened.  All
-defined dictionaries can be printed with the function |vimtex#info|, by default
-mapped to '<localleader>li'.
-
-                                                                     *b:vimtex*
-For each buffer, |vimtex| defines a |Dictionary| that contains buffer local
-information.  An example of such a dictionary is: >
-
-  {
-    'id': 0,
-    'fold_sections': [],
-  }
-
-The most important entry is `id`, which is the index of the corresponding
-entry in the list of latex projects |g:vimtex#data|.  Other entries may also be
-exist, such as `fold_sections`.  The dictionary can be printed with the
-function |vimtex#info|, by default mapped to '<localleader>li'.
-
-Functions:
-        |vimtex#info|
-        |vimtex#help|
-        |vimtex#reinit|
-
 ------------------------------------------------------------------------------
-Support for multi-file projects:~
+Support for multi-file projects~
                                                             *vimtex-multi-file*
-                                                                    *tex-root*
 
 |vimtex| supports multi-file documents in the sense that the plugin
 automatically detects the root file of the project.  This detection is based
@@ -177,219 +149,146 @@ first five lines of the current file similar to this: >
   %! TEX root = my-main.tex
 
 ==============================================================================
-DEFAULT MAPPINGS                                              *vimtex-mappings*
+USAGE                                                            *vimtex-usage*
 
-The default mappings for |vimtex| are given below.  See 'map-listing' for
-an explanation of the format.  The function |vimtex#help| is provided for
-convenience to list all the defined mappings, and it is by default mapped to
-'<localleader>lh'.  The default mappings may be disabled with the option
-|g:vimtex_mappings_enabled|, if the user wishes to create his/her own mappings.
-
-n  %                *@:call vimtex#motion#find_matching_pair()<cr>
-v  %                *@:<c-u>call vimtex#motion#find_matching_pair(1)<cr>
-o  %                *@:normal v%<cr>
-
-v  a$               *@:<c-u>call vimtex#motion#select_inline_math()<cr>
-v  i$               *@:<c-u>call vimtex#motion#select_inline_math(1)<cr>
-o  a$               *@:normal va$<cr>
-o  i$               *@:normal vi$<cr>
-
-v  ae               *@:<c-u>call vimtex#motion#select_environment()<cr>
-v  ie               *@:<c-u>call vimtex#motion#select_environment(1)<cr>
-o  ae               *@:normal vae<cr>
-o  ie               *@:normal vie<cr>
-
-v  ad               *@:<c-u>call vimtex#motion#select_delimiter()<cr>
-v  id               *@:<c-u>call vimtex#motion#select_delimiter(1)<cr>
-o  ad               *@:normal va(<cr>
-o  id               *@:normal vi(<cr>
-
-n  [[               *@:call vimtex#motion#next_sec(0,1,0)<cr>
-n  []               *@:call vimtex#motion#next_sec(1,1,0)<cr>
-n  ][               *@:call vimtex#motion#next_sec(1,0,0)<cr>
-n  ]]               *@:call vimtex#motion#next_sec(0,0,0)<cr>
-v  [[               *@:<c-u>call vimtex#motion#next_sec(0,1,1)<cr>
-v  []               *@:<c-u>call vimtex#motion#next_sec(1,1,1)<cr>
-v  ][               *@:<c-u>call vimtex#motion#next_sec(1,0,1)<cr>
-v  ]]               *@:<c-u>call vimtex#motion#next_sec(0,0,1)<cr>
-o  [[               *@:normal v[[<cr>
-o  []               *@:normal v[]<cr>
-o  ][               *@:normal v][<cr>
-o  ]]               *@:normal v]]<cr>
-
-n  <localleader>li  *@:call vimtex#info()<cr>
-n  <localleader>lh  *@:call vimtex#help()<cr>
-n  <localleader>lR  *@:call vimtex#reinit()<cr>
-n  <localleader>lt  *@:call vimtex#toc#open()<cr>
-n  <localleader>lT  *@:call vimtex#toc#toggle()<cr>
-n  <localleader>ll  *@:call vimtex#latexmk#toggle()<cr>
-n  <localleader>lk  *@:call vimtex#latexmk#stop(1)<cr>
-n  <localleader>lK  *@:call vimtex#latexmk#stop_all()<cr>
-n  <localleader>le  *@:call vimtex#latexmk#errors()<cr>
-n  <localleader>lo  *@:call vimtex#latexmk#output()<cr>
-n  <localleader>lg  *@:call vimtex#latexmk#status()<cr>
-n  <localleader>lG  *@:call vimtex#latexmk#status(1)<cr>
-n  <localleader>lc  *@:call vimtex#latexmk#clean()<cr>
-n  <localleader>lC  *@:call vimtex#latexmk#clean(1)<cr>
-n  <localleader>lv  *@:call vimtex#view#view()<cr>
-n  <localleader>lr  *@:call vimtex#view#rsearch()<cr>
-
-n  zx               *@:call vimtex#fold#refresh()<cr>
-n  dse              *@:call vimtex#change#env('')<cr>
-n  cse              *@:call vimtex#change#env_prompt()<cr>
-n  dsc               @ds}dF\
-n  csc              *@:call vimtex#change#command()<cr>
-n  tse              *@:call vimtex#change#toggle_env_star()<cr>
-n  tsd              *@:call vimtex#change#toggle_delim()<cr>
-n  <F7>             *@:call vimtex#change#to_command()<cr>i
-i  <F7>             *@:call vimtex#change#to_command()<cr>
-i  ]]               *@:call vimtex#change#close_environment()<cr>
-
-==============================================================================
-COMMANDS                                                      *vimtex-commands*
-
-|vimtex| is mainly based on a function API as described in the section
-|vimtex-functions|.  However, commands are also defined for convenience.
-Below the commands are listed in alphabetical order.
-
-*VimtexClean*                call vimtex#latexmk#clean(0)
-*VimtexClean!*               call vimtex#latexmk#clean(1)
-*VimtexCompile*              call vimtex#latexmk#compile()
-*VimtexCompileSS*            call vimtex#latexmk#compile_singleshot(0)
-*VimtexCompileSS!*           call vimtex#latexmk#compile_singleshot(1)
-*VimtexCompileToggle*        call vimtex#latexmk#toggle()
-*VimtexErrors*               call vimtex#latexmk#errors()
-*VimtexHelp*                 call vimtex#help()
-*VimtexInfo*                 call vimtex#info()
-*VimtexLacheck*              call vimtex#latexmk#lacheck()
-*VimtexOutput*               call vimtex#latexmk#output()
-*VimtexRefreshFolds*         call vimtex#fold#refresh()
-*VimtexReinitialize*         call vimtex#reinit()
-*VimtexStatus*               call vimtex#latexmk#status(0)
-*VimtexStatus!*              call vimtex#latexmk#status(1)
-*VimtexStop*                 call vimtex#latexmk#stop()
-*VimtexStopAll*              call vimtex#latexmk#stop_all()
-*VimtexTocOpen*              call vimtex#toc#open()
-*VimtexTocToggle*            call vimtex#toc#toggle()
-*VimtexLabelsOpen*           call vimtex#labels#open()
-*VimtexLabelsToggle*         call vimtex#labels#toggle()
-*VimtexView*                 call vimtex#view#view()
-*VimtexRSearch*              call vimtex#view#rsearch()
-
-==============================================================================
-OPTIONS                                                        *vimtex-options*
-
-This section describes the options for |vimtex|.  The options are first
-listed in alphabetical order, before they are described in more detail.  The
-descriptions also list the default values.
-
-Overview:~
-
-  |g:vimtex_enabled|
-  |g:vimtex_complete_close_braces|
-  |g:vimtex_complete_enabled|
-  |g:vimtex_complete_recursive_bib|
-  |g:vimtex_complete_patterns|
-  |g:vimtex_fold_enabled|
-  |g:vimtex_fold_automatic|
-  |g:vimtex_fold_envs|
-  |g:vimtex_fold_parts|
-  |g:vimtex_fold_preamble|
-  |g:vimtex_fold_sections|
-  |g:vimtex_indent_enabled|
-  |g:vimtex_index_hide_line_numbers|
-  |g:vimtex_index_resize|
-  |g:vimtex_index_show_help|
-  |g:vimtex_index_split|
-  |g:vimtex_labels_enabled|
-  |g:vimtex_latexmk_build_dir|
-  |g:vimtex_latexmk_callback|
-  |g:vimtex_latexmk_enabled|
-  |g:vimtex_latexmk_continuous|
-  |g:vimtex_latexmk_background|
-  |g:vimtex_latexmk_options|
-  |g:vimtex_mappings_enabled|
-  |g:vimtex_motion_enabled|
-  |g:vimtex_motion_matchparen|
-  |g:vimtex_quickfix_autojump|
-  |g:vimtex_quickfix_ignored_warnings|
-  |g:vimtex_quickfix_ignore_all_warnings|
-  |g:vimtex_quickfix_mode|
-  |g:vimtex_toc_enabled|
-  |g:vimtex_toc_fold|
-  |g:vimtex_toc_fold_levels|
-  |g:vimtex_toc_show_preamble|
-  |g:vimtex_toc_show_numbers|
-  |g:vimtex_toc_number_width|
-  |g:vimtex_toc_secnumdepth|
-  |g:vimtex_view_enabled|
-  |g:vimtex_view_general_viewer|
-  |g:vimtex_view_general_options|
-  |g:vimtex_view_method|
-  |g:vimtex_view_mupdf_options|
-  |g:vimtex_view_okular_options|
-  |g:vimtex_view_sumatrapdf_options|
+  Default mappings    |vimtex-default-mappings|
+  Options             |vimtex-options|
+  Commands            |vimtex-commands|
+  Mappings            |vimtex-user-mappings|
 
 ------------------------------------------------------------------------------
-Detailed descriptions and default values:~
+Default mappings~
+                                                      *vimtex-default-mappings*
 
-                                                             *g:vimtex_enabled*
-If this variable exists and is 0, then |vimtex| is completely disabled.  By
-default, it is not defined.
+|vimtex| is designed to be controlled by a selection of mappings.  The default
+mappings are listed below.  Most of the mappings are also available as
+commands, see |vimtex-commands|.
 
-                                               *g:vimtex_complete_close_braces*
-When a label or a cite has been completed, this option controls whether it
-will be followed by a closing brace. >
-  let g:vimtex_complete_close_braces = 0
-<
-                                                    *g:vimtex_complete_enabled*
-Use this option to prevent the plugin from setting the 'omnifunc': >
-  let g:vimtex_complete_enabled = 1
-<
-                                              *g:vimtex_complete_recursive_bib*
-This option toggles recursive searching for bibliography files.  Note that this
-option may lead to a significant slowdown for large projects if enabled. >
-  let g:vimtex_complete_recursive_bib = 0
-<
-                                                   *g:vimtex_complete_patterns*
-Define patterns that control when the label and citation completion is
-triggered. >
-  let g:vimtex_complete_patterns = {
+If one prefers, one may disable the default mappings through the option
+|g:vimtex_mappings_enabled|.  One can then define custom mappings through the
+listed RHS <plug>-maps or by mapping the available commands.
+
+In the below list of mappings, LHS is the default mapping, RHS is the
+corresponding <plug>-maps, and MODE indicates in which vim mode the mappings
+are valid.
+
+  -----------------------------------------------------------~
+   LHS              RHS                                 MODE~
+  -----------------------------------------------------------~
+   <localleader>li  |<plug>(vimtex-info)|                 `n`
+   <localleader>lt  |<plug>(vimtex-toc-open)|             `n`
+   <localleader>lT  |<plug>(vimtex-toc-toggle)|           `n`
+   <localleader>ly  |<plug>(vimtex-labels-open)|          `n`
+   <localleader>lY  |<plug>(vimtex-labels-toggle)|        `n`
+   <localleader>lv  |<plug>(vimtex-view)|                 `n`
+   <localleader>lr  |<plug>(vimtex-reverse-search)|       `n`
+   <localleader>ll  |<plug>(vimtex-compile-toggle)|       `n`
+   <localleader>lk  |<plug>(vimtex-stop)|                 `n`
+   <localleader>lK  |<plug>(vimtex-stop-all)|             `n`
+   <localleader>le  |<plug>(vimtex-errors)|               `n`
+   <localleader>lo  |<plug>(vimtex-compile-output)|       `n`
+   <localleader>lg  |<plug>(vimtex-status)|               `n`
+   <localleader>lG  |<plug>(vimtex-status-full)|          `n`
+   <localleader>lc  |<plug>(vimtex-clean)|                `n`
+   <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
+   dse              |<plug>(vimtex-delete-env)|           `n`
+   dsc              |<plug>(vimtex-delete-cmd)|           `n`
+   cse              |<plug>(vimtex-change-env)|           `n`
+   csc              |<plug>(vimtex-change-cmd)|           `n`
+   tse              |<plug>(vimtex-toggle-star)|          `n`
+   tsd              |<plug>(vimtex-toggle-delim)|         `n`
+   <F7>             |<plug>(vimtex-create-cmd)|           `ni`
+   ]]               |<plug>(vimtex-close-env)|            `i`
+   a$               |<plug>(vimtex-a$)|                   `nxo`
+   i$               |<plug>(vimtex-i$)|                   `nxo`
+   ae               |<plug>(vimtex-ae)|                   `nxo`
+   ie               |<plug>(vimtex-ie)|                   `nxo`
+   ad               |<plug>(vimtex-ad)|                   `nxo`
+   id               |<plug>(vimtex-id)|                   `nxo`
+   %                |<plug>(vimtex-%)|                    `nxo`
+   ]]               |<plug>(vimtex-]])|                   `nxo`
+   ][               |<plug>(vimtex-][)|                   `nxo`
+   []               |<plug>(vimtex-[])|                   `nxo`
+   [[               |<plug>(vimtex-[[)|                   `nxo`
+  -----------------------------------------------------------~
+
+------------------------------------------------------------------------------
+Options~
+                                                               *vimtex-options*
+
+*g:vimtex_enabled*
+  Set to 0 to disable |vimtex|.
+
+  Default value: Undefined.
+
+*g:vimtex_complete_enabled*
+  Use this option to disable/enable |vimtex| completion.
+
+  Default value: 1
+
+*g:vimtex_complete_close_braces*
+  This option controls whether to append a closing brace after a label or
+  a citation has been completed.
+
+  Default value: 0
+
+*g:vimtex_complete_recursive_bib*
+  This option toggles recursive searching for bibliography files.
+  
+  Note: This feature may lead to a significant lag for large projects.
+
+  Default value: 0
+
+*g:vimtex_complete_patterns*
+  Define patterns that control when the label and citation completion is
+  triggered.
+
+  Default value: >
+    let g:vimtex_complete_patterns = {
       \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\)\?ref\*\?\_\s*{[^{}]*',
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
 <
-                                                        *g:vimtex_fold_enabled*
-Use this option to disable/enable folding. >
-  let g:vimtex_fold_enabled = 1
-<
-                                                      *g:vimtex_fold_automatic*
-Set manual or automatic updating of fold levels.  For manual mode, one must
-use the |zx| mapping to update the foldlevels when desired.  For automatic
-mode, the fold levels will be updated automatically.  Beware that this may
-lead to some minor lags for large files. >
-  let g:vimtex_fold_automatic = 1
-<
-                                                           *g:vimtex_fold_envs*
-Decide whether environments should be folded or not. >
-  let g:vimtex_fold_envs = 1
-<
-                                                          *g:vimtex_fold_parts*
-List of parts that should be folded. >
-  let g:vimtex_fold_parts = [
+*g:vimtex_fold_enabled*
+  Use this option to disable/enable folding.
+
+  Default value: 1
+
+*g:vimtex_fold_automatic*
+  Turn on/off automatic updating of fold levels.  If it is off, one must use
+  the |zx| mapping to update the foldlevels when desired.
+
+  Note: Automatic updating of fold levels may lead to some lags for large
+        files.
+
+  Default value: 0
+
+*g:vimtex_fold_envs*
+  Control whether or not to fold environments.
+
+  Default value: 1
+
+*g:vimtex_fold_parts*
+  List of document parts that should be folded.
+
+  Default value: >
+    let g:vimtex_fold_parts = [
         \ "appendix",
         \ "frontmatter",
         \ "mainmatter",
         \ "backmatter",
       \ ]
 <
-                                                       *g:vimtex_fold_preamble*
-Decide whether preamble should be folded or not. >
-  let g:vimtex_fold_preamble = 1
-<
-                                                       *g:vimtex_fold_sections*
-List of section constructs that should be folded. >
-  let g:vimtex_fold_sections = [
+*g:vimtex_fold_preamble*
+  Control whether or not to fold the preamble.
+
+  Default value: 1
+
+*g:vimtex_fold_sections*
+  List of section constructs that should be folded.
+
+  Default value: >
+    let g:vimtex_fold_sections = [
         \ "part",
         \ "chapter",
         \ "section",
@@ -397,78 +296,189 @@ List of section constructs that should be folded. >
         \ "subsubsection",
       \ ]
 <
-                                                      *g:vimtex_indent_enabled*
-Use |vimtex| indentation function.  Not as customizable as the official
-indentation function, but imho it is better. >
-  let g:vimtex_indent_enabled = 1
-<
-                                                  *g:vimtex_indent_bib_enabled*
-Use |vimtex| indentation function for bibliography files. >
-  let g:vimtex_indent_bib_enabled = 1
-<
-                                                      *g:vimtex_labels_enabled*
-Enable table of labels functionality. >
-  let g:vimtex_labels_enabled = 1
-<
-                                                   *g:vimtex_latexmk_build_dir*
-Set this variable in case a dedicated build dir is used with `latexmk`/`latex`
-compilations. >
-  let g:vimtex_latexmk_build_dir = '.'
-<
-                                                    *g:vimtex_latexmk_callback*
-If enabled, this option tells `latexmk` to run |vimtex#latexmk#errors| after
-compilation is finished.  Note that this feature only works if vim is compiled
-with the |+clientserver| option. >
-  let g:vimtex_latexmk_callback = 1
-<
-                                                     *g:vimtex_latexmk_enabled*
-Whether to enable the `latexmk` interface or not.  Note that even if it is not
-enabled, the autoload functions will be available.  However, the
-necessary variables and autocommands will not be defined, and the mappings
-will not be created. >
-  let g:vimtex_latexmk_enabled = 1
-<
-                                                  *g:vimtex_latexmk_background*
-If continuous mode is disabled, then this option may be used to set
-whether single compilations should be run in the foreground or the
-background. >
-  let g:vimtex_latexmk_background = 0
-<
-                                                  *g:vimtex_latexmk_continuous*
-If enabled, `latexmk` will run in continuous mode.  This means that the
-document is compiled every time a document file has been changed.  Set to 0 to
-disable.  Note that the callback functions only work if continuous mode is enabled. >
-  let g:vimtex_latexmk_continuous = 1
-<
-                                                     *g:vimtex_latexmk_options*
-Set desired options for `latexmk` compilation. Note that options may also be
-specified indirectly through a `.latexmkrc` file. >
-  let g:vimtex_latexmk_options = '-pdf'
-<
-                                                   *g:vimtex_quickfix_autojump*
-Whether to automatically jump to the first error whenever the |quickfix| window
-is opened. >
-  let g:vimtex_latexmk_autojump = 0
-<
-                                        *g:vimtex_quickfix_ignore_all_warnings*
-If enabled, all LaTeX warnings are ignored and will not be listed in the
-quickfix window.  LaTeX errors will of course still be listed. >
-  let g:vimtex_quickfix_ignore_all_warnings = 0
-<
-                                           *g:vimtex_quickfix_ignored_warnings*
-List of warning messages that should be ignored.  By default, the list is
-empty, thus no warnings are ignored.  The list is a list of strings.  Any
-LaTeX warning that contains a string in the list will be ignored.  To ignore
-some common LaTeX warnings, try the following setting: >
-  let g:vimtex_quickfix_ignored_warnings = [
+*g:vimtex_indent_enabled*
+  Use this option to disable/enable |vimtex| indentation.
+
+  Default value: 1
+
+*g:vimtex_indent_bib_enabled*
+  Use this option to disable/enable |vimtex| indentation of bibliography files.
+
+  Default value: 1
+
+*g:vimtex_index_hide_line_numbers*
+  If enabled, then line numbers will be hidden in the index windows.  That is,
+  |nonumber| and |norelativenumber| will be set locally.
+
+  Default value: 1
+
+*g:vimtex_index_resize*
+  Whether or not to automatically resize vim when index windows are opened.
+
+  Note: This option makes sense if the index window is vertically split.
+
+  Default value: 0
+
+*g:vimtex_index_show_help*
+  Whether to display the index help text.
+
+  Default value: 1
+
+*g:vimtex_index_split_pos*
+  Define where index windows should be opened.
+
+  Default value: 'vert leftabove'
+
+*g:vimtex_index_split_width*
+  For vertically split windows: Set width of index window.
+
+  Default value: 30
+
+*g:vimtex_labels_enabled*
+  Use this option to disable/enable table of labels.
+
+  Default value: 1
+
+*g:vimtex_toc_enabled*
+  Use this option to disable/enable table of contents (ToC).
+
+  Default value: 1
+
+*g:vimtex_toc_fold*
+  Turn on folding of ToC entries.
+
+  Default value: 0
+
+*g:vimtex_toc_fold_levels*
+  This option controls the number of fold levels that will be used if the
+  folding of the ToC is enabled.
+
+  Default value: 1
+
+*g:vimtex_toc_show_preamble*
+  Whether to include the preamble in the ToC.
+
+  Default value: 1
+
+*g:vimtex_toc_show_numbers*
+  Set whether or not to show section numbers in ToC.
+  
+  Note: The numbers may also be toggled inside the ToC window with the `s`
+        keybinding. 
+
+  Default value: 1
+
+*g:vimtex_toc_number_width*
+  Set the display width of numbers in the ToC.  If it is set to 0, then the
+  width is set based on the section depth, see |g:vimtex_toc_secnumdepth|.
+
+  Default value: 0
+
+*g:vimtex_toc_secnumdepth*
+  Define the number of section levels to display.  Set level corresponding to
+  the desired latex variable `secnumdepth`.  For more info on `secnumdepth`,
+  see http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure.
+
+  Note: The variable may be updated inside the ToC window with the mappings
+        `+` and `-`.
+
+  Default value: 3
+
+*g:vimtex_mappings_enabled*
+  Control whether or not to load the default mappings.
+
+  Default value: 1
+
+*g:vimtex_motion_enabled*
+  This option enables the motion mappings `%`, `[[`, `[]`, `][`, and `]]`. It
+  also enables the highlighting of matching delimiters.
+
+  Default value: 1
+
+*g:vimtex_motion_matchparen*
+  Enable highlighting of matching delimiters.
+  
+  Note: This will override the builtin |matchparen|.
+
+  Default value: 1
+
+*g:vimtex_latexmk_enabled*
+  Use this option to disable/enable the `latexmk` interface |vimtex-latexmk|.
+
+  Default value: 1
+
+*g:vimtex_latexmk_build_dir*
+  This option sets the compilation build directory.  It corresponds to the
+  `-output-directory` option in `latexmk`.
+
+  Default value: '.'
+
+*g:vimtex_latexmk_callback*
+  If enabled, this option tells `latexmk` to run |vimtex#latexmk#errors| after
+  compilation is finished.
+  
+  Note 1: This feature requires |clientserver|.
+  Note 2: Callbacks are only possible when continuous mode is active, see
+          |g:vimtex_latexmk_continuous|.
+
+  Default value: 1
+
+*g:vimtex_latexmk_continuous*
+  If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
+  argument.  This means that the document is compiled every time a document
+  file has been changed.
+
+  If disabled, `latexmk` will run single shot compilations.
+
+  Default value: 1
+
+*g:vimtex_latexmk_background*
+  If continuous mode is disabled, then this option may be used to set
+  whether single shot compilations should be run in the foreground or the
+  background.
+
+  Default value: 0
+
+*g:vimtex_latexmk_options*
+  A string of options that will be passed on to `latexmk`.
+  
+  Note: Options may also be specified indirectly to `latexmk` through
+        both a global and a project specific `.latexmkrc` file.
+
+  Default value: '-pdf'
+
+*g:vimtex_quickfix_autojump*
+  This option controls if vim should automatically jump to the first error
+  whenever the |quickfix| window is opened.
+
+  Default value: 0
+
+*g:vimtex_quickfix_ignore_all_warnings*
+  This option controls whether or not LaTeX warnings should be included in the
+  |quickfix| window.  LaTeX errors will always be included.
+
+  Default value: 0
+
+*g:vimtex_quickfix_ignored_warnings*
+  A list of warning messages that should be ignored.  The list is a list of
+  strings.  Any LaTeX warning that contains a string in the list will be
+  ignored.
+  
+  To ignore some common LaTeX warnings, try the following setting: >
+    let g:vimtex_quickfix_ignored_warnings = [
         \ 'Underfull',
         \ 'Overfull',
         \ 'specifier changed to',
       \ ]
 <
-                                                       *g:vimtex_quickfix_mode*
-This option controls the behaviour of the quickfix window in case errors
-and/or warnings are found.  The recognized options are:
+  Note: This option is only relevant if |g:vimtex_quickfix_ignore_all_warnings|
+        is disabled.
+
+  Default value: []
+
+*g:vimtex_quickfix_mode*
+  This option controls the behaviour of the |quickfix| window in case errors
+  and/or warnings are found.  The recognized options are:
 
   Value  Effect ~
   0      The quickfix window is never opened automatically.
@@ -477,151 +487,291 @@ and/or warnings are found.  The recognized options are:
   2      The quickfix window is opened automatically when there are errors,
          but it does not become the active window.
 
-The default value is: >
-  let g:vimtex_quickfix_mode = 2
-<
-                                            *g:vimtex_quickfix_open_on_warning*
-If it is 0, then the quickfix window will only be opened on errors or when
-it is forced open. >
-  let g:vimtex_quickfix_open_on_warning = 1
-<
-                                                    *g:vimtex_mappings_enabled*
-Whether to load the default mappings.  If this is set to 0, then no mappings
-will be defined.  Since all of the functionality is available as functions,
-this allows the user to define his or her own mappings. >
-  let g:vimtex_mappings_enabled= 1
-<
-                                                      *g:vimtex_motion_enabled*
-Whether to enable the motion interface.  If it is disabled, then neither the
-default mappings nor the autocommands that enable highlighting of matching
-parens will be defined. >
-  let g:vimtex_motion_enabled = 1
-<
-                                                   *g:vimtex_motion_matchparen*
-Enable highlighting of matching parens.  This gives better support for LaTeX,
-but disables the builtin |matchparen|. >
-  let g:vimtex_motion_matchparen = 1
-<
-                                                         *g:vimtex_toc_enabled*
-Enable interface for ToC.  If it is disabled, then mappings for the ToC will
-not be created. >
-  let g:vimtex_toc_enabled = 1
-<
-                                                            *g:vimtex_toc_fold*
-Turn on folding of ToC entries. >
-  let g:vimtex_toc_fold = 0
-<
-                                                     *g:vimtex_toc_fold_levels*
-If ToC entries are folded, this option controls the number of fold levels that
-will be used. >
-  let g:vimtex_toc_fold_levels = 10
-<
-                                                   *g:vimtex_toc_number_width*
-Set display width of numbers in the ToC.  If 0, the width is set based on the
-section depth, see |g:vimtex_toc_secnumdepth|. >
-  let g:vimtex_toc_number_width = 0
-<
-                                                     *g:vimtex_toc_secnumdepth*
-Define number of section levels to display.  Set level corresponding to the
-desired latex variable `secnumdepth`.  Note that the variable may be updated
-directly through the ToC window with `+` or `-`.  For more info on `secnumdepth`
-see e.g. http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure >
-  let g:vimtex_toc_secnumdepth = 3
-<
-                                                    *g:vimtex_toc_show_numbers*
-Whether or not to show numbers in ToC.  The numbers may also be toggled inside
-the ToC window with the `s` keybinding. >
-  let g:vimtex_toc_show_numbers = 1
-<
-                                                   *g:vimtex_toc_show_preamble*
-Whether to include preamble (`\documentclass`) in ToC. >
-  let g:vimtex_toc_show_preamble = 1
-<
-                                             *g:vimtex_index_hide_line_numbers*
-If enabled, line numbers will be hidden in the index windows.  That is,
-|nonumber| and |norelativenumber| will be set locally. >
-  let g:vimtex_index_hide_line_numbers = 1
-<
-                                                        *g:vimtex_index_resize*
-Whether or not to automatically resize vim when index windows are opened. >
-  let g:vimtex_index_resize = 0
-<
-                                                     *g:vimtex_index_show_help*
-Whether to display the index help text. >
-  let g:vimtex_index_show_help = 1
-<
-                                                         *g:vimtex_index_split*
-Define where the index windows are opened, including the size/width of the
-window. >
-  let g:vimtex_index_split = 'vert leftabove 30'
-<
-                                                        *g:vimtex_view_enabled*
-Enable interface for view functionality. >
-  let g:vimtex_view_enabled = 1
-<
-                                                 *g:vimtex_view_general_viewer*
-Set general viewer. >
-  let g:vimtex_view_general_viewer = 'xdg-open'
-<
-                                                         *g:vimtex_view_method*
-Set viewer method.  If not set or set to `general`, it uses the general
-viewer, see |g:vimtex_view_general_viewer|. >
-  let g:vimtex_view_method = ''
+  Note: The quickfix window will only be opened automatically if both the
+        continuous mode and the callbacks are active, see
+        |g:vimtex_latexmk_continuous| and |g:vimtex_latexmk_callback|.
 
-The currently available choices are: >
-  general
-  mupdf
-  okular
-  sumatrapdf
+  Default value: 2
+
+*g:vimtex_quickfix_open_on_warning*
+  Control whether or not to automatically open the |quickfix| window in case
+  there are warning messages and no error messages.
+
+  Note: The quickfix window will only be opened automatically if both the
+        continuous mode and the callbacks are active, see
+        |g:vimtex_latexmk_continuous| and |g:vimtex_latexmk_callback|.
+
+  Default value: 1
+
+*g:vimtex_view_enabled*
+  Use this option to disable/enable the |vimtex| viewer interface.
+
+  Default value: 1
+
+*g:vimtex_view_method*
+  Set the viewer method.  The supported viewers are listed below.  Please see
+  |vimtex-synctex| for explanations of the terms 'forward search' and
+  'backward search'.
+
+    general~
+      This is a basic interface where the viewer can be specified through
+      |g:vimtex_view_general_viewer|.
+
+    mupdf~
+      http://www.mupdf.com/
+      A very minimalistic and quick PDF viewer.  Supports forward and backward
+      search.  Backward search is available with |VimtexRSearch|, which is
+      mapped to '<localleader>lr'.  One may also define a set of keys that is
+      sent to MuPDF on startup with |g:vimtex_view_mupdf_send_keys|.
+
+      Note: Both forward and backward search requires `xdotool` to work.
+            Forward search will only take you to the correct page.  Backward
+            search will take you to the line in Vim that corresponds to the
+            first line of the current page in MuPDF.
+
+    okular~
+      https://okular.kde.org/
+      A very feature rich PDF viewer.  Supports forward search.  Backward
+      search must be set up from the viewer.
+
+    qpdfview~
+      https://launchpad.net/qpdfview
+      A tabbed document viewer.  Supports forward search.  Backward search
+      must be set up from the viewer.
+
+    sumatrapdf~
+      http://www.sumatrapdfreader.org/free-pdf-reader.html
+      SumatraPDF is a PDF viewer for windows that is powerful, small, portable
+      and starts up very fast.  It supports forward search.  Backward search
+      must be set up from the viewer.
+
+      Note: It is possible to set up inverse search for SumatraPDF through the
+            command line.  This can be utilized to improve the current
+            implementation in order to set the correct |servername| for
+            inverse search.  At the moment, this is not implemented.  However,
+            one can achieve the functionality by using the general viewer with
+            the following setting: >
+
+              let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
+                \ . '-inverse-search "gvim --servername ' . v:servername
+                  \ . ' --remote-send \"^<C-\^>^<C-n^>'
+                  \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+                  \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+                  \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+                  \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
 <
-                                                *g:vimtex_view_general_options*
-                                                  *g:vimtex_view_mupdf_options*
-                                                 *g:vimtex_view_okular_options*
-                                             *g:vimtex_view_sumatrapdf_options*
-Set custom options for the given viewer. >
-  let g:vimtex_view_general_options = ''
-  let g:vimtex_view_mupdf_options = ''
-  let g:vimtex_view_okular_options = ''
-  let g:vimtex_view_sumatrapdf_options = ''
-<
-                                                *g:vimtex_view_mupdf_send_keys*
-String of keys sent to MuPDF after the PDF file has been opened.  The keys are
-sent by the function |vimtex#view#mupdf_poststart|. >
-  let g:vimtex_view_mupdf_send_keys = ''
-<
+    zathura~
+      https://pwmt.org/projects/zathura/
+      Zathura is like MuPDF a very fast and minimalistic viewer, but it allows
+      a more user configuration.  Supports forward search and backward search.
+
+  If one chooses a method that is not the default method, then the viewer will
+  support forward search, see |vimtex-synctex-forward-search|.
+
+  Default value: 'general'
+
+*g:vimtex_view_general_viewer*
+  Use a general viewer.
+
+  Default value:
+    Linux: `xdg-open`
+    Mac:   `open`
+
+*g:vimtex_view_<viewer>_options*
+  Set custom options for the given viewer.  See |g:vimtex_view_method| for
+  a list of possible viewers.
+
+  Default value: ''
+
+*g:vimtex_view_mupdf_send_keys*
+  A string of keys that will be sent to MuPDF just after the PDF file has been
+  opened.
+
+  Default value: ''
+
+------------------------------------------------------------------------------
+Commands~
+                                                              *vimtex-commands*
+
+                                             *VimtexInfo*
+                                             *<plug>(vimtex-info)*
+:VimtexInfo               Show information stored for all projects (available
+                          mostly for debug purposes).
+
+                                             *VimtexRefreshFolds*
+:VimtexRefreshFolds       Refresh folds, see |vimtex-zx|.
+
+                                             *VimtexTocOpen*
+                                             *<plug>(vimtex-toc-open)*
+:VimtexTocOpen            Open table of contents.
+
+                                             *VimtexTocToggle*
+                                             *<plug>(vimtex-toc-toggle)*
+:VimtexTocToggle          Toggle table of contents.
+
+                                             *VimtexLabelsOpen*
+                                             *<plug>(vimtex-labels-open)*
+:VimtexLabelsOpen         Open table of labels.
+
+                                             *VimtexLabelsToggle*
+                                             *<plug>(vimtex-labels-toggle)*
+:VimtexLabelsToggle       Toggle table of labels.
+
+                                             *VimtexCompile*
+                                             *<plug>(vimtex-compile)*
+:VimtexCompile            Starts compilation, either in continuous mode or in
+                          single shot mode, depending on the value of
+                          |g:vimtex_latexmk_continuous|.
+
+                                             *VimtexCompileToggle*
+                                             *<plug>(vimtex-compile-toggle)*
+:VimtexCompileToggle      Toggles compilation.  Only useful when continuous
+                          mode is enabled (|g:vimtex_latexmk_continuous|).
+
+                                             *VimtexCompileSS*
+                                             *<plug>(vimtex-compile-ss)*
+:VimtexCompileSS          Start single shot compilation in background.
+
+                                             *VimtexCompileSS!*
+:VimtexCompileSS!         Like |VimtexCompileSS|, but in foreground.
+
+                                             *VimtexOutput*
+                                             *<plug>(vimtex-compile-output)*
+:VimtexOutput             Open file where `latexmk` output is redirected.
+
+                                             *VimtexStop*
+                                             *<plug>(vimtex-stop)*
+:VimtexStop               Stop compilation for the current project.
+
+                                             *VimtexStopAll*
+                                             *<plug>(vimtex-stop-all)*
+:VimtexStopAll            Stop compilation for all open projects in the
+                          current vim instance.
+
+                                             *VimtexStatus*
+                                             *<plug>(vimtex-status)*
+:VimtexStatus             Show compilation status for current project.
+
+                                             *VimtexStatus!*
+                                             *<plug>(vimtex-status-all)*
+:VimtexStatus!            Show compilation status for all open projects in the
+                          current vim instance.
+
+                                             *VimtexClean*
+                                             *<plug>(vimtex-clean)*
+:VimtexClean              Clean auxilliary files
+
+                                             *VimtexClean!*
+                                             *<plug>(vimtex-clean-full)*
+:VimtexClean!             Clean auxilliary files, include output files
+
+                                             *VimtexErrors*
+                                             *<plug>(vimtex-errors)*
+:VimtexErrors             Open |quickfix| window if there are errors or
+                          warnings.
+
+                                             *VimtexLacheck*
+                                             *<plug>(vimtex-lacheck)*
+:VimtexLacheck            Run `lacheck` to check document for errors.
+
+                                             *VimtexView*
+                                             *<plug>(vimtex-view)*
+:VimtexView               View `pdf` for current project, perform forward
+                          search if available.
+
+                                             *VimtexRSearch*
+                                             *<plug>(vimtex-reverse-search)*
+:VimtexRSearch            Do reverse search (only available for MuPDF viewer).
+
+------------------------------------------------------------------------------
+Map definitions~
+                                                              *vimtex-mappings*
+
+*vimtex-zx* 
+  When |vimtex| folding is enabled, then |vimtex| remaps |zx| and |zX| in such
+  that the folds are refreshed appropriately.
+
+*<plug>(vimtex-delete-env)*
+*<plug>(vimtex-change-env)*
+  Delete/Change surrounding environment.
+
+*<plug>(vimtex-delete-cmd)*
+*<plug>(vimtex-change-cmd)*
+  Delete/Change surrounding command.  Note: <plug>(vimtex-delete-cmd) depends
+  on |surround.vim| (https://github.com/tpope/vim-surround).
+
+*<plug>(vimtex-toggle-star)*
+  Toggle starred environment.
+
+*<plug>(vimtex-toggle-delim)*
+  Toggle delimiters, for instance between `(...)` and `\left(...\right)`.
+
+*<plug>(vimtex-create-cmd)*
+  Convert current word into a command.  This works in both normal and insert
+  mode.
+
+*<plug>(vimtex-close-env)*
+  Close the current environment (insert mode).
+
+*<plug>(vimtex-a$)*
+  Text object for inline math (inclusive).
+
+*<plug>(vimtex-i$)*
+  Text object for inline math (exclusive).
+
+*<plug>(vimtex-ae)*
+  Text object for environments (inclusive).
+
+*<plug>(vimtex-ie)*
+  Text object for environments (exclusive).
+
+*<plug>(vimtex-ad)*
+  Text object for delimiters (inclusive).
+
+*<plug>(vimtex-id)*
+  Text object for delimiters (exclusive).
+
+*<plug>(vimtex-%)*
+  Find matching pair.
+
+*<plug>(vimtex-]])*
+  Section forward (inclusive).
+
+*<plug>(vimtex-][)*
+  Section forward (exclusive).
+
+*<plug>(vimtex-[])*
+  Section backward (inclusive).
+
+*<plug>(vimtex-[[)*
+  Section backward (exclusive).
+
 ==============================================================================
-OMNI COMPLETION                                             *vimtex-completion*
+COMPLETION                                                  *vimtex-completion*
 
-|vimtex| provides an 'omnifunc' for omni completion, see |compl-omni| and
-|vimtex#complete#omnifunc|.  The function is enabled by default, but may be
-disabled with |g:vimtex_complete_enabled|.  Omni completion is accessible with
-|i_CTRL-X_CTRL-O|.
+If |g:vimtex_complete_enabled| is 1 (default), then |vimtex| sets the
+'omnifunc' to provide omni completion, see |compl-omni|.  Omni completion is
+then accessible with |i_CTRL-X_CTRL-O|.
 
-The omni function completes labels and citations.  The completion candidates
-are gathered with the functions |vimtex#complete#labels| and
-|vimtex#complete#bibtex|.  If |g:vimtex_complete_close_braces| is set to 1, then
-the completion includes closing braces.
+The omni completion completes both labels and citations.  If desired, one may
+set |g:vimtex_complete_close_braces|, which makes the completion include
+closing braces.
 
 Associated settings:
-        |g:vimtex_complete_enabled|
-        |g:vimtex_complete_patterns.ref|
-        |g:vimtex_complete_patterns.bib|
-        |g:vimtex_complete_close_braces|
-        |g:vimtex_complete_recursive_bib|
-
-Functions:
-        |vimtex#complete#omnifunc|
-        |vimtex#complete#labels|
-        |vimtex#complete#bibtex|
+  |g:vimtex_complete_enabled|
+  |g:vimtex_complete_patterns.ref|
+  |g:vimtex_complete_patterns.bib|
+  |g:vimtex_complete_close_braces|
+  |g:vimtex_complete_recursive_bib|
 
 ------------------------------------------------------------------------------
 Complete labels~
+                                                       *vimtex-complete-labels*
 
 Label completion is triggered by '\ref{' commands as defined with
 |g:vimtex_complete_patterns.ref|.  The completion parses every relevant aux
-file to gather the completion candidates.  This is important to note, because
-it means that the completion only works when the LaTeX document has been
-compiled.
+file to gather the completion candidates.  This is important, because it means
+that the completion only works when the LaTeX document has been compiled.
 
 As an example: >
 
@@ -639,6 +789,7 @@ number.  The label completion matches:
 
 ------------------------------------------------------------------------------
 Complete citations~
+                                                        *vimtex-complete-cites*
 
 Citation completion is triggered by '\cite{' commands as defined with
 |g:vimtex_complete_patterns.bib|.  The completion parses included bibliography
@@ -666,90 +817,129 @@ after '\cite{' to search for candidates.
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
 
-|vimtex| can fold texts according to LaTeX structure (part, chapter, section
-and subsection).  Folding is turned on by default, but it can be disabled if
-desired |g:vimtex_fold_enabled|.
+|vimtex| can fold documents according to the LaTeX structure (part, chapter,
+section and subsection).  Folding is turned on by default, but it can be
+disabled if desired (|g:vimtex_fold_enabled|).
 
-When folding is turned on and a LaTeX document is opened, the document is
-parsed once in order to define the highest fold level based on which parts
-(such as frontmatter, backmatter, and appendix) and section types (chapter,
-section, etc.) are present.  If the document has been edited and a new fold
-level is required (or has become redundant), then |vimtex#fold#refresh| can be
-used to refresh the fold level settings.  This function is mapped by default
-to 'zx'.
+When folding is enabled and a LaTeX document is opened, the document is parsed
+once in order to define the highest fold level based on which parts (such as
+frontmatter, backmatter, and appendix) and section types (chapter, section,
+etc.) are present.  If the document has been edited and a new fold level is
+required (or has become redundant), then the mapping `zx` can be used to
+refresh the fold level settings (see |vimtex-zx|).
 
 Associated settings:
-    |g:vimtex_fold_enabled|
-    |g:vimtex_fold_automatic|
-    |g:vimtex_fold_preamble|
-    |g:vimtex_fold_parts|
-    |g:vimtex_fold_sections|
-    |g:vimtex_fold_envs|
-
-Functions:
-    |vimtex#fold#level|
-    |vimtex#fold#text|
-    |vimtex#fold#refresh|
+  |g:vimtex_fold_enabled|
+  |g:vimtex_fold_automatic|
+  |g:vimtex_fold_preamble|
+  |g:vimtex_fold_parts|
+  |g:vimtex_fold_sections|
+  |g:vimtex_fold_envs|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
-
-The official indentation function is pretty good and allows for some
-customization.  However, I am not quite satisfied, so I wrote my own
-indentation function that is not customizable, but that I think is better.  It
-is enabled by default, but may be disabled if desired.
-
                                                             *vimtex-bib-indent*
-I've also written an indentation file for bibliography files (`.bib` files).
+
+|vimtex| provides custom indentation functions both for LaTeX documents and
+for bibliography files (`.bib` files).
 
 Associated settings:
     |g:vimtex_indent_enabled|
     |g:vimtex_indent_bib_enabled|
 
 ==============================================================================
+SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
+
+Vim ships with syntax hightlighting for LaTeX documents out of the box, please
+see |ft-tex-plugin| and |ft-tex-syntax|.  |vimtex| therefore does not provide
+its own syntax highlighting.  However, |vimtex| does add some minor
+improvements:
+
+- Support for `biblatex` and `natbib` package
+- Support for `cleveref` package
+- Support for `listings` package
+- Nested syntax highlighting for `dot2tex`
+
+==============================================================================
+NAVIGATION                                                  *vimtex-navigation*
+                                                                 *vimtex-index*
+
+The |vimtex-index| is an interface that is used to display lists and indexes
+in vertically or horizontally split windows.  It supports custom keybindings
+inside the index window, including actions on the list elements.  The position
+of the window is controlled by |g:vimtex_index_split_pos|.  By default, the
+top of the buffer will display help text to explain the local keybindings.
+This may be turned off with |g:vimtex_index_show_help|.
+
+The |vimtex-index| interface is used by the table of contents |vimtex-toc| and
+the table of labels |vimtex-labels|.
+
+Associated settings:
+  |g:vimtex_index_hide_line_numbers|
+  |g:vimtex_index_resize|
+  |g:vimtex_index_show_help|
+  |g:vimtex_index_split_pos|
+  |g:vimtex_index_split_width|
+
+------------------------------------------------------------------------------
+Table of contents~
+                                                                   *vimtex-toc*
+
+|vimtex-toc| shows a table of contents (ToC) for the current LaTeX document.
+The ToC entries may be activated/jumped to with <cr> or <space>.  The local
+keybindings are described if |g:vimtex_index_show_help| is enabled.
+
+Associated settings:
+    |g:vimtex_toc_enabled|
+    |g:vimtex_toc_fold|
+    |g:vimtex_toc_fold_levels|
+    |g:vimtex_toc_number_width|
+    |g:vimtex_toc_show_preamble|
+    |g:vimtex_toc_show_numbers|
+    |g:vimtex_toc_secnumdepth|
+
+------------------------------------------------------------------------------
+Table of labels~
+                                                                *vimtex-labels*
+
+|vimtex-labels| shows a table of labels similar to the ToC.  The table entries
+may be filtered with the `f` keybinding.  Filters may be removed with the `c`
+keybinding.
+
+Associated settings:
+    |g:vimtex_labels_enabled|
+
+==============================================================================
 LATEXMK                                                        *vimtex-latexmk*
+    
+                      http://users.phys.psu.edu/~collins/software/latexmk-jcc
+> latexmk is a perl script for running LaTeX the correct number of times to
+> resolve cross references, etc; it also runs auxiliary programs (bibtex,
+> makeindex if necessary, and dvips and/or a previewer as requested).  It has
+> a number of other useful capabilities, for example to start a previewer and
+> then run latex whenever the source files are updated, so that the previewer
+> gives an up-to-date view of the document. The script runs on both UNIX and
+> MS-WINDOWS (XP, etc).
 
-|vimtex| provides a basic interface to `latexmk` for compilation.  The
-interface may be disabled with |g:vimtex_latexmk_enabled|.  The default
-mappings are: >
+|vimtex| uses `latexmk` to compile the LaTeX document.  It utilizes by default
+the preview continuous mode.  This means that after the compilation is turned
+on, `latexmk` will automatically recompile when any LaTeX project file is
+changed.
 
-  nnoremap <localleader>ll :call vimtex#latexmk#toggle()<cr>
-  nnoremap <localleader>lk :call vimtex#latexmk#stop()<cr>
-  nnoremap <localleader>lK :call vimtex#latexmk#stop_all()<cr>
-  nnoremap <localleader>le :call vimtex#latexmk#errors()<cr>
-  nnoremap <localleader>lo :call vimtex#latexmk#output()<cr>
-  nnoremap <localleader>lg :call vimtex#latexmk#status(0)<cr>
-  nnoremap <localleader>lG :call vimtex#latexmk#status(1)<cr>
-  nnoremap <localleader>lc :call vimtex#latexmk#clean(0)<cr>
-  nnoremap <localleader>lC :call vimtex#latexmk#clean(1)<cr>
+If one prefers to have single shot compilations, one may disable the
+continuous mode with |g:vimtex_latexmk_continuous|.  If it is disabled, then
+the option |g:vimtex_latexmk_background| may be used to decide if single shot
+compilation should run in the foreground or the background.
 
-Compilation is started with |vimtex#latexmk#compile| or may be toggled by
-|vimtex#latexmk#toggle|.  The default behaviour uses preview continuous mode of
-`latexmk`, which may be disabled with |g:vimtex_latexmk_continuous|.  If it is
-disabled, then the option |g:vimtex_latexmk_background| may be used to decide
-if single shot compilation should run in the foreground or the background.
-
-Single shot compilation may always be issued with the function
-|vimtex#latexmk#compile_singleshot|.  This function ignores the
-|g:vimtex_latexmk_background|` setting, though, and will by default hide the
-output from the `latexmk` command.  The function is available through the
-command |VimtexCompileSS|, and if desired one may create a custom mapping
-such as >
-
-  nnoremap <localleader>ls :VimtexCompileSS<cr>
-
-A banged version of the command also exists, which will provide a more verbose
-output.
+Regardless of the |g:vimtex_latexmk_continuous| option, single shot
+compilation may always be issued with |VimtexCompileSS|.
 
 If vim is compiled with the |+clientserver| option and if
-|g:vimtex_latexmk_callback| is enabled, then compilation errors are parsed
-automatically.  This is done by utilizing the tricks explained in
-|vimtex-latexmk-tricks|.  Note however that this only works for continuous
-compilation mode.
-
-To check for and view errors in the quickfix window, use
-|vimtex#latexmk#errors|.  To check if background compilation is running, use
-|vimtex#latexmk#status|.
+|g:vimtex_latexmk_callback| is enabled (which it is by default), then
+compilation errors will be parsed automatically.  This is done by utilizing
+the tricks explained in |vimtex-latexmk-tricks|.  Note that this only works
+for continuous compilation mode.  One can always check for compilation erors
+with |VimtexErrors|.
 
 Associated settings:
     |g:vimtex_latexmk_enabled|
@@ -759,91 +949,68 @@ Associated settings:
     |g:vimtex_latexmk_background|
     |g:vimtex_latexmk_options|
 
-Functions:
-    |vimtex#latexmk#clean|
-    |vimtex#latexmk#compile|
-    |vimtex#latexmk#compile_singleshot|
-    |vimtex#latexmk#errors|
-    |vimtex#latexmk#lacheck|
-    |vimtex#latexmk#output|
-    |vimtex#latexmk#status|
-    |vimtex#latexmk#stop|
-    |vimtex#latexmk#stop_all|
-    |vimtex#latexmk#toggle|
-
 ------------------------------------------------------------------------------
-                                                        *vimtex-latexmk-tricks*
 Latexmk tricks~
+                                                        *vimtex-latexmk-tricks*
 
-`latexmk` allows to set options through a configuration file
-`$HOME/.latexmkrc`.  A particular set of options are very convenient for
-a good coupling between |vimtex| and `latexmk`: `$..._cmd`, where `...`
-refers to either `compiling`, `success`, or `failure`.  These options can be
-used to specify commands that are run by `latexmk` before and after
-a compilation run.  For instance, one may use these options: >
+One may parse options to `latexmk` through |g:vimtex_latexmk_options|.
+However, one may also configure `latexmk` explicitly through a global
+`~/.latexmkrc` file, or a project specific `.latexmkrc` file.
 
-$compiling_cmd = "xdotool search --name \"%D\" " .
-                 "set_window --name \"%D compiling...\"";
-$success_cmd = "xdotool search --name \"%D\" " .
-               "set_window --name \"%D OK\"; " .
-               "gvim --remote-expr 'vimtex#latexmk#callback(1)'";
-$failure_cmd = "xdotool search --name \"%D\" " .
-               "set_window --name \"%D FAILURE\"; " .
-               "gvim --remote-expr 'vimtex#latexmk#callback(0)'";
+A particular set of options are very convenient for a good coupling between
+`latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`.  These options
+can be used to specify commands that are run by `latexmk` before and after
+compilation.  This is used by |vimtex| to achieve callbacks after compilation
+has finished with something like this: >
 
-Here `xdotool` (http://www.semicomplete.com/projects/xdotool/) is used to
-change the title of the pdf viewer during and after compilation.  In addition,
-|vimtex#latexmk#errors| is called through the |clientserver| after each run to
-either open the quickfix window when there are errors/warnings, or to close the
-quickfix window in case all errors/warnings are gone.
+  $success_cmd = "gvim --remote-expr 'vimtex#latexmk#callback(1)'";
+  $failure_cmd = "gvim --remote-expr 'vimtex#latexmk#callback(0)'";
 
-The latter trick is utilized in |vimtex| to automatically run the callback
-commands if vim has the option |+clientserver|, and if the option
-|g:vimtex_latexmk_callback| is enabled.  The command that is used by `latexmk`
-is then on the following form: >
+Another neat way to use this is to use `xdotool` to change the window title of
+the viewer to indicate the compilation status: >
 
-  gvim --servername v:servername --remote-expr 'vimtex#latexmk#callback(0)'
+  $compiling_cmd = "xdotool search --name \"%D\" " .
+                   "set_window --name \"%D compiling...\"";
+  $success_cmd   = "xdotool search --name \"%D\" " .
+                   "set_window --name \"%D OK\"";
+  $failure_cmd   = "xdotool search --name \"%D\" " .
+                   "set_window --name \"%D FAILURE\"";
 
-This command is then appended to the existing `$success_cmd` and
-`$failure_cmd`.  Note that if the existing commands are not empty, then they
-must end with a semicolon in order to allow |vimtex| to append safely.
+Note: If you define these options similar to the above `xdotool` trick and
+      still want to enable the |vimtex| callbacks, then one must include
+      a semicolon at the end of the `cmd` strings so that |vimtex| may append
+      safely to the options.
+
+Note: More info on `xdotool` here: http://www.semicomplete.com/projects/xdotool.
 
 ------------------------------------------------------------------------------
-                                                       *vimtex-latexmk-lacheck*
 Lacheck~
+                                                       *vimtex-latexmk-lacheck*
 
 After compilation of a LaTeX document, the log file will contain errors that
-are parsed by |vimtex| as explained above.  However, there are a syntax
-checkers for LaTeX, and we here provide a simple interface to `lacheck` for
-checking your LaTeX manuscript for errors.
-
-Your manuscript may be checked using `lacheck` with the command `VimtexLacheck`.
+are parsed by |vimtex| as explained above.  However, there are syntax checkers
+for LaTeX.  |vimtex| provides a simple interface to `lacheck` for checking
+LaTeX manuscripts for errors.  This is available through |VimtexLacheck|.
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
 
-|vimtex| provides functions for viewing the compiled documents.  A command
-and a mapping is defined for the multipurpose `view` function, which calls the
-chosen view method defined by |g:vimtex_view_method|.
+|vimtex| provides the command |VimtexView| to open the desired viewer.  The
+command is mapped to '<localleader>lv' by default.  The list of supported
+viewers are given in the description of |g:vimtex_view_method|.
+
+For supported viewers, |VimtexView| will also perform forward search when the
+viewer is opened.
 
 Associated settings:
     |g:vimtex_view_enabled|
-    |g:vimtex_view_general_viewer|
-    |g:vimtex_view_general_options|
     |g:vimtex_view_method|
-    |g:vimtex_view_mupdf_options|
-    |g:vimtex_view_okular_options|
-    |g:vimtex_view_sumatrapdf_options|
-
-Functions:
-    |vimtex#view#general|
-    |vimtex#view#mupdf|
-    |vimtex#view#mupdf_rsearch|
-    |vimtex#view#okular|
-    |vimtex#view#sumatrapdf|
+    |g:vimtex_view_general_viewer|
+    |g:vimtex_view_<viewer>_options|
 
 ------------------------------------------------------------------------------
-SYNCTEX SUPPORT                                                *vimtex-synctex*
+Synctex support~
+                                                               *vimtex-synctex*
 
 Synctex is a tool that enables synchronization of the text editor position and
 the pdf viewer position.  The tool may be used to add mappings in vim to go to
@@ -857,31 +1024,30 @@ To make synctex work, one must enable synctex manually by adding the line >
 
 to `~/.latexmkrc`.
 
+------------------------------------------------------------------------------
 Forward search~
+                                                *vimtex-synctex-forward-search*
 
-|vimtex| currently supports forward search for a limited set of viewers.
-The functionality is enabled by choosing the desired viewer with the
-|g:vimtex_view_method| option.  The currently supported viewers are:
- * MuPDF
- * Okular
- * SumatraPDF
- * Zathura
+For supported viewers, |VimtexView| (<localleader>lv) will issue a forward
+search if the viewer is already opened.  The forward search will take you to
+the page or position in the viewer that corresponds to the current line in
+your vim session.  See |g:vimtex_view_method| for a list of supported viewers.
 
+------------------------------------------------------------------------------
 Backward search~
+                                               *vimtex-synctex-backward-search*
+                                                *vimtex-synctex-inverse-search*
 
-Backward or inverse search is typially set up inside the specific viewer
-through an option named something like "inverse search command-line".
-A standard value for the option is: >
+In supported viewers one may set up backward or inverse search.  When
+correctly set up, this allows one to go directly from a selected line in the
+viewer (typically by dobbel clicking with the mouse or something similar) to
+the corresponding line inside the Vim instance.
+
+Backward search is typially set up inside the specific viewer through an
+option named something like "inverse search command-line".  A standard value
+for the option is: >
 
   gvim --remote-silent +%l "%f"
-
-Backward search is unfortunately not supported by all pdf viewers.  The
-following is a list of viewers that to my knowledge should support backward
-search:
-  * Okular
-  * SumatraPDF
-  * Evince (since version 2.91.3)
-  * Zathura
   
 Note: Inverse search relies on the |clientserver| functionality of vim.  Each
       instance of vim runs its own server.  The above mentioned standard value
@@ -891,69 +1057,39 @@ Note: Inverse search relies on the |clientserver| functionality of vim.  Each
 Note: For backward search to work on windows, one must ensure that the folder
       that contains `gVim.exe` is in your `%PATH%` environment variable.
 
-MuPDF does not support inverse search.  However, by the use of some semi ugly
-hacks, we have implemented a command inside vim that simulates the
-functionality.  The command is |VimtexRSearch|, and is by default mapped to
-`<localleader>lr` if MuPDF is chosen as the viewer.  The command will go to the
-line in the tex project that corresponds to the FIRST line on the page that is
-open in MuPDF.
+==============================================================================
+CODE STRUCTURE                                                    *vimtex-code*
 
-For SumatraPDF one may set the inverse search setting from vim directly by
-adding some command line options as shown below.  The advantage of doing this
-is that one may specify the vim server name explicitly, which means that the
-backward search will also work as expected if one has several vim instances
-running.  To enable this, use the general viewer and: >
+The |vimtex| code is based on the |autoload| feature of vim.  For each new
+latex buffer, the function *vimtex#init* initializes the variables and
+functionalities based on the desired options |vimtex-options|.  The first run
+performs some global initialization, which is mainly to define autocommands.
+Other functionality is provided by additional autoloaded scripts.  Every
+additional script should have an initialization script that sets default
+commands and mappings, creates autocommands and performs other necessary
+initialization.  This initialization script is then called from 'vimtex#init'.
 
-  let g:vimtex_view_general_viewer='SumatraPDF '
-    \ . '-reuse-instance -inverse-search '
-    \ . '"gvim --servername '.v:servername.' --remote-send \"^<C-\^>^<C-n^>'
-    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-    \ . ':execute ''drop ''.fnameescape(''\%f'')^<CR^>'
-    \ . ':\%l^<CR^>:normal\!  zzzv^<CR^>'
-    \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+For each LaTeX project that is opened, a |Dictionary| is created and added to
+the list 'g:vimtex#data'.  The dictionary is initialized with data tied to the
+current project.  In addition, a dictionary is created for every buffer
+'b:vimtex'.  This contains data that is specific to the current buffer, most
+importantly it contains the ID of the corresponding main LaTeX project.  The
+command |VimtexInfo| (mapped to <localleader>li by default) will show the
+contents of the buffer and global vimtex variables.  This combination of local
+and global data enables |vimtex| to work properly for multi-file latex
+projects.  It also allows the editing of different latex projects
+simultaneously in different buffers.
 
 ==============================================================================
-MOTION                                                          *vimtex-motion*
+FAQ                                                                *vimtex-faq*
 
-|vimtex| provides some functions that can be used to give improved motions
-and text objects.  For instance, |vimtex-motion| enables highlighting of
-matching parens or tags (such as begin/end structures).  The functionality is
-enabled by default, but may be disabled if desired.
-
-Associated settings:
-    |g:vimtex_motion_enabled|
-    |g:vimtex_motion_matchparen|
-
-Functions:
-    |vimtex#motion#find_matching_pair|
-    |vimtex#motion#next_section|
-    |vimtex#motion#sel_delimiter|
-    |vimtex#motion#sel_environment|
-    |vimtex#motion#sel_inline_math|
-
-==============================================================================
-CHANGE                                                          *vimtex-change*
-
-|vimtex| provides mappings that are inspired by `surround.vim`
-(https://github.com/tpope/vim-surround) (if it is installed, see
-|surround.txt|).  These mappings are:
-  `cse`  - change surrounding environment
-  `dse`  - delete surrounding environment
-  `csc`  - change surrounding command
-  `dsc`  - delete surrounding command
-         Note: This mappings is only available if `surround.vim` is also
-               available.
-  `tsd`  - toggle delimiters (add/remove `\left` and `\right`)
-  `tse`  - toggle starred environment
-
-An environment that has been opened but not closed may be closed by the
-mapping `]]`.
-
-In addition, some functionality is provided to wrap the current selection.
-This is not mapped to anything by default.
-
-For additional coupling with `surround.vim`, one may add the following lines
-to ones `.vimrc` file to obtain corresonding `yse` and `ysc` mappings. >
+                                                          *vimtex-faq-surround*
+Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
+   |surround.vim|.  Does |vimtex| also provide the corresponding `yse` and `ysc`?
+A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
+   |vimtex| does not provide `yse` and `ysc`.  If you use |surround.vim|, then
+   the asked for mappings may be easily added if one adds the following lines
+   to ones `vimrc` file: >
 
   augroup latexSurround
      autocmd!
@@ -961,323 +1097,12 @@ to ones `.vimrc` file to obtain corresonding `yse` and `ysc` mappings. >
   augroup END
 
   function! s:latexSurround()
-     let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
+     let b:surround_{char2nr("e")}
+       \ = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
      let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
   endfunction
-
-Functions:
-    |vimtex#change#command|
-    |vimtex#change#close_environment|
-    |vimtex#change#env|
-    |vimtex#change#env_prompt|
-    |vimtex#change#to_command|
-    |vimtex#change#toggle_delim|
-    |vimtex#change#toggle_env_star|
-    |vimtex#change#wrap_selection|
-    |vimtex#change#wrap_selection_prompt|
-
-==============================================================================
-UTILITY FUNCTIONS                                                 *vimtex-util*
-
-Several utility functions are available.  Many of these are used as building
-blocks for other functionalities, but are also available for users to add
-additional functionality.
-
-Functions:
-    |vimtex#util#convert_back|
-    |vimtex#util#get_delim|
-    |vimtex#util#get_env|
-    |vimtex#util#has_syntax|
-    |vimtex#util#in_comment|
-    |vimtex#util#kpsewhich|
-    |vimtex#util#tex2tree|
-    |vimtex#util#tree2tex|
-
-==============================================================================
-TABLE OF CONTENTS                                                  *vimtex-toc*
-
-|vimtex| provides a table of contents (ToC) window that can be opened
-|vimtex#toc#open| or toggled |vimtex#toc#toggle|.  In the ToC, one can use '<CR>'
-on a selected entry to navigate.
-
-Associated settings:
-    |g:vimtex_index_hide_line_numbers|
-    |g:vimtex_index_resize|
-    |g:vimtex_index_show_help|
-    |g:vimtex_index_split|
-    |g:vimtex_toc_enabled|
-    |g:vimtex_toc_fold|
-    |g:vimtex_toc_fold_levels|
-    |g:vimtex_toc_number_width|
-    |g:vimtex_toc_show_preamble|
-    |g:vimtex_toc_show_numbers|
-    |g:vimtex_toc_secnumdepth|
-
-Functions:
-    |vimtex#toc#open|
-    |vimtex#toc#toggle|
-
-==============================================================================
-TABLE OF LABELS                                                 *vimtex-labels*
-
-|vimtex| provides a table of labels similar to the ToC |vimtex-toc|.  The
-table entries may be filtered with the `f` keybinding.  Filters may be removed
-with the `c` keybinding.
-
-Associated settings:
-    |g:vimtex_index_hide_line_numbers|
-    |g:vimtex_index_resize|
-    |g:vimtex_index_show_help|
-    |g:vimtex_index_split|
-    |g:vimtex_labels_enabled|
-
-Functions:
-    |vimtex#labels#open|
-    |vimtex#labels#toggle|
-
-==============================================================================
-FUNCTION REFERENCE                                           *vimtex-functions*
-
-The following is a reference of the available functions, sorted
-alphabetically.  First a short overview is given, then more detailed
-descriptions follow.
-
-Overview:~
-
-  |vimtex#change#command|
-  |vimtex#change#close_environment|
-  |vimtex#change#env|
-  |vimtex#change#env_prompt|
-  |vimtex#change#to_command|
-  |vimtex#change#toggle_delim|
-  |vimtex#change#toggle_env_star|
-  |vimtex#change#wrap_selection|
-  |vimtex#change#wrap_selection_prompt|
-  |vimtex#complete#omnifunc|
-  |vimtex#complete#labels|
-  |vimtex#complete#bibtex|
-  |vimtex#fold#level|
-  |vimtex#fold#text|
-  |vimtex#fold#refresh|
-  |vimtex#help|
-  |vimtex#info|
-  |vimtex#latexmk#clean|
-  |vimtex#latexmk#compile|
-  |vimtex#latexmk#compile_singleshot|
-  |vimtex#latexmk#errors|
-  |vimtex#latexmk#options|
-  |vimtex#latexmk#status|
-  |vimtex#latexmk#stop|
-  |vimtex#latexmk#stop_all|
-  |vimtex#latexmk#toggle|
-  |vimtex#motion#find_matching_pair|
-  |vimtex#motion#next_sec|
-  |vimtex#motion#sel_delimiter|
-  |vimtex#motion#sel_environment|
-  |vimtex#motion#sel_inline_math|
-  |vimtex#reinit|
-  |vimtex#toc#open|
-  |vimtex#toc#toggle|
-  |vimtex#util#convert_back|
-  |vimtex#util#get_delim|
-  |vimtex#util#get_env|
-  |vimtex#util#has_syntax|
-  |vimtex#util#in_comment|
-  |vimtex#util#kpsewhich|
-  |vimtex#util#tex2tree|
-  |vimtex#util#tree2tex|
-  |vimtex#view#general|
-  |vimtex#view#mupdf|
-  |vimtex#view#mupdf_poststart|
-  |vimtex#view#mupdf_rsearch|
-  |vimtex#view#okular|
-  |vimtex#view#sumatrapdf|
-
-------------------------------------------------------------------------------
-Detailed descriptions:~
-
-                                                         *vimtex#change#command*
-Change the current command name to one typed at a prompt.
-
-                                               *vimtex#change#close_environment*
-Closes current delimiter or environment command.  The function is only useful
-when used as an insert mode command, since it returns the closing part of the
-delimiter or environment.
-
-                                                             *vimtex#change#env*
-Change the current environment name to the one passed as an argument.
-
-                                                      *vimtex#change#env_prompt*
-Change the current environment name to one typed at a prompt.
-
-                                                      *vimtex#change#to_command*
-Turn word under cursor into command.  This essentially prepends a backslash
-and adds an opening brace.  The function may be used both in an insert mode
-mapping and in a normal mode mapping.
-
-                                                    *vimtex#change#toggle_delim*
-Toggle delimiters between `(` `)` and `\left(` `\right)` (and similar).
-
-                                                 *vimtex#change#toggle_env_star*
-Toggle star for the current environment.
-
-                                                  *vimtex#change#wrap_selection*
-Wrap the current selection within a supplied command.
-
-                                           *vimtex#change#wrap_selection_prompt*
-Wrap the current selection within a command given at a prompt.
-
-                                                     *vimtex#complete#omnifunc*
-An 'omnifunc' for label and citation completion, see |vimtex-completion|.
-
-                                                       *vimtex#complete#labels*
-Parses aux files to gather label candidates for completion.
-
-                                                       *vimtex#complete#bibtex*
-Parses included bibliography files and `thebibliography` environments to
-gather candidates for completion.
-
-                                                            *vimtex#fold#level*
-Sets fold level for each line. 'foldexpr' |fold-expr|
-
-                                                             *vimtex#fold#text*
-Sets fold title text. 'foldtext'
-
-                                                          *vimtex#fold#refresh*
-Refreshes fold levels based on which parts and sections used in the current
-file buffer.  Also issues a |zx| call to update folds.
-
-                                                                  *vimtex#help*
-Lists all mappings that are defined specifically for the current buffer.  If
-the default mappings are used, then |vimtex#help| will display them.
-
-                                                                  *vimtex#info*
-Echoes the contents of |g:vimtex#data| and |b:vimtex|.  This is useful mainly
-for debugging.
-
-                                                         *vimtex#latexmk#clean*
-Clean up temporary files with `latexmk -c`.  An optional argument may be
-supplied to indicate that the `-C` flag should be used, which also cleans
-output files.  This will only be run if `latexmk` is not already running.
-
-                                                       *vimtex#latexmk#compile*
-Starts `latexmk -pvc ...` for the given buffer, if it is not already running.
-
-                                            *vimtex#latexmk#compile_singleshot*
-Starts a single shot compile with `latexmk ...` for the given buffer (if it is
-not already running).
-
-                                                        *vimtex#latexmk#errors*
-Parse the log file for errors and warnings.  If any errors or warnings are
-found, they are displayed in the quickfix window.  The exact behaviour is
-controlled through the different quickfix specific option:
-
-  |g:vimtex_quickfix_autojump|
-  |g:vimtex_quickfix_ignore_all_warnings|
-  |g:vimtex_quickfix_ignored_warnings|
-  |g:vimtex_quickfix_mode|
-
-If the quickfix window is already open, then the function closes it.
-
-                                                        *vimtex#latexmk#output*
-Opens a new buffer that show the output from the `latexmk` command.  To close
-the buffer, one may simply type `q`.
-
-                                                        *vimtex#latexmk#status*
-Show if `latexmk` has been started for the current buffer.  An optional
-argument may be supplied, in which case the status for all buffers is shown.
-
-                                                          *vimtex#latexmk#stop*
-Stop the `latexmk` process running for the current buffer.  An optional
-argument may be given, in which case the function becomes verbose.
-
-                                                      *vimtex#latexmk#stop_all*
-Stops all running `latexmk` processes.
-
-                                                        *vimtex#latexmk#toggle*
-Toggle compilation.  Calls |vimtex#latexmk#compile| if `latexmk` is not running
-for the current file.  Else it calls |vimtex#latexmk#stop|.
-
-                                             *vimtex#motion#find_matching_pair*
-Finds a matching pair of parentheses or begin-end-tags.  The functions is used
-to find the pair closest to the current cursor position.
-
-                                                       *vimtex#motion#next_sec*
-A motion command function that moves to the next section.  Used to redefine
-the mappings for ']]', '[[', and similar.
-
-                                                  *vimtex#motion#sel_delimiter*
-A function that is used to create text objects for text contained within a set
-of delimiters.
-
-                                                *vimtex#motion#sel_environment*
-A function that is used to create text objects for environments.
-
-                                                *vimtex#motion#sel_inline_math*
-A function that is used to create text objects for inline math structures.
-
-                                                                *vimtex#reinit*
-Clears the current global and local data in |g:vimtex#data| and |b:vimtex|,
-stops running `latexmk` processes |vimtex#latexmk#stop_all|,  and then performs
-a new initialization.
-
-                                                              *vimtex#toc#open*
-Open the ToC window.  If it is already open, then simply move the cursor to
-the ToC window.
-
-                                                            *vimtex#toc#toggle*
-Toggle ToC window: If ToC window is open, then close it.  If it is closed,
-then open it (but do not move the cursor to the window).
-
-                                                     *vimtex#util#convert_back*
-Convert from stuff like `\IeC{\"u}` to corresponding unicode symbols.
-
-                                                        *vimtex#util#get_delim*
-Get surrounding delimiters (with position).
-
-                                                          *vimtex#util#get_env*
-Get surrounding environment.  If optional argument supplied, the function also
-returns the position (line and column number) of the begin and end structure.
-
-                                                       *vimtex#util#has_syntax*
-Checks if the given position (or current position) is within the given syntax
-structure.
-
-                                                       *vimtex#util#in_comment*
-Checks if the given position (or current position) is within a comment.
-
-                                                        *vimtex#util#kpsewhich*
-Parse file with `kpsewhich`.
-
-                                                         *vimtex#util#tex2tree*
-Turn tex structure to a tree composed of lists.  E.g. >
-  { testing { tex2tree { } } } => [ "testing" , [ "tex2tree", []]]
 <
-                                                         *vimtex#util#tree2tex*
-Turns a tree composed of lists into tex structure.  E.g. >
-  [ "testing" , [ "tex2tree", []]] => { testing { tex2tree { } } }
-<
-                                                          *vimtex#view#general*
-Open the output file with the viewer that is specified with the option
-|g:vimtex_view_general_viewer|.
-
-                                                            *vimtex#view#mupdf*
-                                                           *vimtex#view#okular*
-                                                       *vimtex#view#sumatrapdf*
-First open the output file if it is not open with MuPDF/Okular/SumatraPDF.
-Then perform a forward search.
-
-                                                  *vimtex#view#mupdf_poststart*
-Function that is called after the MuPDF window has been opened.  The function
-is used to run `xdotool` commands, for instance to return focus to vim and to
-possibly send some keys to MuPDF as specified in |g:vimtex_view_mupdf_send_keys|.
-
-                                                    *vimtex#view#mupdf_rsearch*
-Perform a reverse search by use of `xdotool` and `synctex`.
-
-==============================================================================
-FAQ                                                                *vimtex-faq*
-
+                                                           *vimtex-faq-isfname*
 Q: Vim throws error when jumping to file with |gf|.
 A: This might be due to the |isfname| setting, which by default contains `{,}`
    on windows.  |isfname| is a global option, and can therefore not be set by
@@ -1290,21 +1115,18 @@ CREDITS                                                        *vimtex-credits*
 
 |vimtex| is developed by Karl Yngve Lervåg <karl.yngve@gmail.com>, and is
 distributed under the MIT license.  The project is available as a Git
-repository:  https://github.com/lervag/vimtex.
+repository: https://github.com/lervag/vimtex.
 
 |vimtex| was developed from scratch, but much of the code has been based on
 LaTeX-Box: https://github.com/LaTeX-Box-Team/LaTeX-Box.  LaTeX-suite was also
 an inspiration: http://vim-latex.sourceforge.net/.
 
-The documentation of |vimtex| is structured with inspiration from CtrlP
-(https://github.com/kien/ctrlp.vim), simply because CtrlP has a very good
-documentation.
-
 ==============================================================================
 CHANGELOG                                                    *vimtex-changelog*
 
-The following changelog only logs important changes, such as changes that
-break backwards compatibility.  See the git log for the detailed changelog.
+The following changelog only logs particularly important changes, such as
+changes that break backwards compatibility.  See the git log for the detailed
+changelog.
 
 2015-03-21: Implemented index buffers, deprecated vimtex_toc filetype~
 The system for displaying the table of content relied on a dedicated filetype
