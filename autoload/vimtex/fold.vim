@@ -14,18 +14,18 @@ function! vimtex#fold#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
         \ [
-        \   "part",
-        \   "appendix",
-        \   "frontmatter",
-        \   "mainmatter",
-        \   "backmatter",
+        \   'part',
+        \   'appendix',
+        \   'frontmatter',
+        \   'mainmatter',
+        \   'backmatter',
         \ ])
   call vimtex#util#set_default('g:vimtex_fold_sections',
         \ [
-        \   "chapter",
-        \   "section",
-        \   "subsection",
-        \   "subsubsection",
+        \   'chapter',
+        \   'section',
+        \   'subsection',
+        \   'subsubsection',
         \ ])
 
   " Define some script variables
@@ -87,22 +87,22 @@ function! vimtex#fold#level(lnum) " {{{1
   let line  = getline(a:lnum)
   if line !~ '\(% Fake\|\\\(document\|begin\|end\|'
         \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)\)'
-    return "="
+    return '='
   endif
 
   " Fold preamble
   if g:vimtex_fold_preamble
     if line =~# '^\s*\\documentclass'
-      return ">1"
+      return '>1'
     elseif line =~# '^\s*\\begin\s*{\s*document\s*}'
-      return "0"
+      return '0'
     endif
   endif
 
   " Fold chapters and sections
   for [part, level] in b:vimtex.fold_parts
     if line =~# part
-      return ">" . level
+      return '>' . level
     endif
   endfor
 
@@ -115,17 +115,17 @@ function! vimtex#fold#level(lnum) " {{{1
   if g:vimtex_fold_envs
     if line =~# s:notcomment . s:notbslash . '\\begin\s*{.\{-}}'
       if line !~# '\\end'
-        return "a1"
+        return 'a1'
       endif
     elseif line =~# s:notcomment . s:notbslash . '\\end\s*{.\{-}}'
       if line !~# '\\begin'
-        return "s1"
+        return 's1'
       endif
     endif
   endif
 
   " Return foldlevel of previous line
-  return "="
+  return '='
 endfunction
 
 function! vimtex#fold#text() " {{{1
@@ -139,16 +139,16 @@ function! vimtex#fold#text() " {{{1
   let sections = '\(\(sub\)*section\|part\|chapter\)'
   let secpat1 = '^\s*\\' . sections . '\*\?\s*{'
   let secpat2 = '^\s*\\' . sections . '\*\?\s*\['
-  if line =~ '\s*\\documentclass'
-    let title = "Preamble"
-  elseif line =~ '\\frontmatter'
-    let title = "Frontmatter"
-  elseif line =~ '\\mainmatter'
-    let title = "Mainmatter"
-  elseif line =~ '\\backmatter'
-    let title = "Backmatter"
-  elseif line =~ '\\appendix'
-    let title = "Appendix"
+  if line =~# '\s*\\documentclass'
+    let title = 'Preamble'
+  elseif line =~# '\\frontmatter'
+    let title = 'Frontmatter'
+  elseif line =~# '\\mainmatter'
+    let title = 'Mainmatter'
+  elseif line =~# '\\backmatter'
+    let title = 'Backmatter'
+  elseif line =~# '\\appendix'
+    let title = 'Appendix'
   elseif line =~ secpat1 . '.*}'
     let title =  matchstr(line, secpat1 . '\zs.*\ze}')
   elseif line =~ secpat1
@@ -164,16 +164,16 @@ function! vimtex#fold#text() " {{{1
   endif
 
   " Environments
-  if line =~ '\\begin'
+  if line =~# '\\begin'
     " Capture environment name
     let env = matchstr(line,'\\begin\*\?{\zs\w*\*\?\ze}')
     let ne = 12
 
     " Set caption/label based on type of environment
-    if env == 'frame'
+    if env ==# 'frame'
       let label = ''
       let caption = s:parse_caption_frame(line)
-    elseif env == 'table'
+    elseif env ==# 'table'
       let label = s:parse_label()
       let caption = s:parse_caption_table(line)
     else
@@ -182,7 +182,7 @@ function! vimtex#fold#text() " {{{1
     endif
 
     " Add paranthesis to label
-    if label != ''
+    if label !=# ''
       let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
     endif
 
@@ -274,18 +274,18 @@ endfunction
 function! s:parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
-    if getline(i) =~ '^\s*\\label'
+    if getline(i) =~# '^\s*\\label'
       return matchstr(getline(i), '^\s*\\label{\zs.*\ze}')
     end
     let i -= 1
   endwhile
-  return ""
+  return ''
 endfunction
 
 function! s:parse_caption(line) " {{{1
   let i = v:foldend
   while i >= v:foldstart
-    if getline(i) =~ '^\s*\\caption'
+    if getline(i) =~# '^\s*\\caption'
       return matchstr(getline(i),
             \ '^\s*\\caption\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
     end
@@ -299,7 +299,7 @@ endfunction
 function! s:parse_caption_table(line) " {{{1
   let i = v:foldstart
   while i <= v:foldend
-    if getline(i) =~ '^\s*\\caption'
+    if getline(i) =~# '^\s*\\caption'
       return matchstr(getline(i),
             \ '^\s*\\caption\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
     end
@@ -322,7 +322,7 @@ function! s:parse_caption_frame(line) " {{{1
   else
     let i = v:foldstart
     while i <= v:foldend
-      if getline(i) =~ '^\s*\\frametitle'
+      if getline(i) =~# '^\s*\\frametitle'
         return matchstr(getline(i),
               \ '^\s*\\frametitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
       end
