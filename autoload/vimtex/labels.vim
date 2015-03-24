@@ -24,6 +24,8 @@ endfunction
 function! vimtex#labels#open() " {{{1
   if vimtex#index#open(s:name) | return | endif
 
+  let s:preamble = 1
+
   let index = {}
   let index.name            = s:name
   let index.entries         = s:gather_labels(g:vimtex#data[b:vimtex.id].tex)
@@ -92,6 +94,7 @@ endfunction
 
 " {{{1 TOL variables
 
+let s:preamble = 1
 let s:re_input = '\v^\s*\\%(input|include)\s*\{'
 let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
 let s:re_label = '\v\\label\{'
@@ -105,8 +108,11 @@ function! s:gather_labels(file) " {{{1
   for line in readfile(a:file)
     let lnum += 1
 
-    " 1. Parse inputs or includes
-    if line =~# s:re_input
+    if line =~# '\v^\s*\\begin\{document\}'
+      let s:preamble = 0
+    endif
+
+    if line =~# s:re_input && !s:preamble
       call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file)))
       continue
     endif

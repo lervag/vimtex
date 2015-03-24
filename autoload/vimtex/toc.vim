@@ -351,7 +351,7 @@ function! s:parse_file(file) " {{{1
     let lnum += 1
 
     " 1. Parse inputs or includes
-    if line =~# s:re_input
+    if line =~# s:re_input && !s:number.preamble
       call extend(toc, s:parse_file(s:parse_line_input(line, a:file)))
       continue
     endif
