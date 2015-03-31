@@ -43,8 +43,10 @@ syntax match texInputFile
 syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 
 " Nested syntax highlighting for dot
-let s:current_syntax=b:current_syntax
-unlet b:current_syntax
+if exists('b:current_syntax')
+  let s:current_syntax = b:current_syntax
+  unlet b:current_syntax
+endif
 syntax include @DOT syntax/dot.vim
 syntax region texZone
       \ matchgroup=texRefZone
@@ -54,6 +56,8 @@ syntax region texZone
       \ keepend
       \ transparent
       \ contains=@DOT
-let b:current_syntax=s:current_syntax
+if exists('s:current_syntax')
+  let b:current_syntax = s:current_syntax
+endif
 
 " vim: fdm=marker sw=2
