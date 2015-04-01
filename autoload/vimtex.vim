@@ -130,11 +130,6 @@ function! s:init_environment() " {{{1
 endfunction
 
 function! s:init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
-  call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
-
-  call vimtex#util#error_deprecated('g:vimtex_errorformat_ignore_warnings')
-  call vimtex#util#error_deprecated('g:vimtex_errorformat_show_warnings')
 endfunction
 " }}}1
 

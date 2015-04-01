@@ -16,6 +16,8 @@ function! vimtex#latexmk#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '-pdf')
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
+  call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
+  call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
   call vimtex#util#error_deprecated('g:vimtex_build_dir')
