@@ -4,6 +4,11 @@
 " Email:      karl.yngve@gmail.com
 "
 
+if !exists('b:current_syntax') || b:current_syntax !=# 'tex'
+  echoerr 'vimtex syntax error: please report issue!'
+  finish
+endif
+
 " Better support for cite commands
 " \cite, \citep, \citet, \citeauthor, ...
 syntax match texRefZone
@@ -43,10 +48,7 @@ syntax match texInputFile
 syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 
 " Nested syntax highlighting for dot
-if exists('b:current_syntax')
-  let s:current_syntax = b:current_syntax
-  unlet b:current_syntax
-endif
+unlet b:current_syntax
 syntax include @DOT syntax/dot.vim
 syntax region texZone
       \ matchgroup=texRefZone
@@ -56,8 +58,6 @@ syntax region texZone
       \ keepend
       \ transparent
       \ contains=@DOT
-if exists('s:current_syntax')
-  let b:current_syntax = s:current_syntax
-endif
+let b:current_syntax = 'tex'
 
 " vim: fdm=marker sw=2
