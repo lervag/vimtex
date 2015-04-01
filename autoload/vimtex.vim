@@ -143,7 +143,9 @@ function! s:init_options() " {{{1
   let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
 
   let &l:include = '\\\(input\|include\){'
-  let &l:includeexpr = "substitute(v:fname, '^.\\{-}{\\|}.*', '', 'g')"
+  let &l:includeexpr  = 'substitute('
+  let &l:includeexpr .=   "substitute(v:fname, '\\\\space', '', 'g'),"
+  let &l:includeexpr .=   "'^.\\{-}{\"\\?\\|\"\\?}.*', '', 'g')"
 
   let &cpo = s:save_cpo
   unlet s:save_cpo
