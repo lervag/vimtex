@@ -70,33 +70,6 @@ function! s:init_environment() " {{{1
   call vimtex#util#set_default('g:vimtex#data', [])
   call vimtex#util#set_default('b:vimtex', {})
 
-  " Ensure tex files are prioritized when listing files
-  for suf in [
-        \ '.log',
-        \ '.aux',
-        \ '.bbl',
-        \ '.out',
-        \ '.blg',
-        \ '.brf',
-        \ '.cb',
-        \ '.dvi',
-        \ '.fdb_latexmk',
-        \ '.fls',
-        \ '.idx',
-        \ '.ilg',
-        \ '.ind',
-        \ '.inx',
-        \ '.pdf',
-        \ '.synctex.gz',
-        \ '.toc',
-        \ ]
-    execute 'set suffixes+=' . suf
-  endfor
-
-  " Set some file type specific vim options
-  setlocal suffixesadd+=.tex
-  setlocal commentstring=\%\ %s
-
   " Create new or link to existing blob
   let main = s:get_main()
   let id   = s:get_id(main)
@@ -123,14 +96,46 @@ function! s:init_environment() " {{{1
   endif
 
   " Define commands
-  command! -buffer VimtexInfo         call vimtex#info()
+  command! -buffer VimtexInfo call vimtex#info()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info)   :call vimtex#info()<cr>
+  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info()<cr>
 endfunction
 
 function! s:init_options() " {{{1
+  let s:save_cpo = &cpo
+  set cpo&vim
+
+  " Ensure tex files are prioritized when listing files
+  for suf in [
+        \ '.log',
+        \ '.aux',
+        \ '.bbl',
+        \ '.out',
+        \ '.blg',
+        \ '.brf',
+        \ '.cb',
+        \ '.dvi',
+        \ '.fdb_latexmk',
+        \ '.fls',
+        \ '.idx',
+        \ '.ilg',
+        \ '.ind',
+        \ '.inx',
+        \ '.pdf',
+        \ '.synctex.gz',
+        \ '.toc',
+        \ ]
+    execute 'set suffixes+=' . suf
+  endfor
+
+  setlocal suffixesadd=.tex
+  setlocal commentstring=\%\ %s
+
+  let &cpo = s:save_cpo
+  unlet s:save_cpo
 endfunction
+
 " }}}1
 
 function! s:get_id(main) " {{{1
