@@ -194,6 +194,7 @@ function! s:bibtex_search(regexp) " {{{2
     let exe = {}
     let exe.cmd = 'bibtex -terse ' . tmp.aux
     let exe.bg = 0
+    let exe.system = 1
     call vimtex#util#execute(exe)
 
     " Parse temporary bbl file

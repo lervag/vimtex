@@ -113,6 +113,7 @@ function! vimtex#util#execute(exe) " {{{1
   let bg     = has_key(a:exe, 'bg')     ? a:exe.bg     : 1
   let silent = has_key(a:exe, 'silent') ? a:exe.silent : 1
   let null   = has_key(a:exe, 'null')   ? a:exe.null   : 1
+  let system = has_key(a:exe, 'system') ? a:exe.system : 0
 
   " Change directory if wanted
   if has_key(a:exe, 'wd')
@@ -145,14 +146,22 @@ function! vimtex#util#execute(exe) " {{{1
     set shellquote& shellpipe& shellredir& shellslash&
   endif
 
-  if silent
-    silent execute '!' cmd
+  if system
+    if silent
+      silent call system(cmd)
+    else
+      call system(cmd)
+    endif
   else
-    execute '!' cmd
-  endif
+    if silent
+      silent execute '!' cmd
+    else
+      execute '!' cmd
+    endif
 
-  if !has("gui_running")
-    redraw!
+    if !has("gui_running")
+      redraw!
+    endif
   endif
 
   if has('win32') && exists('savedShell')
