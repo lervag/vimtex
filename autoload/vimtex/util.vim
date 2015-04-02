@@ -121,18 +121,15 @@ function! vimtex#util#execute(exe) " {{{1
   endif
 
   " Set up command string based on the given system
+  let cmd = a:exe.cmd
   if has('win32')
-    let cmd = a:exe.cmd
     if null
       let cmd .= ' >nul'
     endif
     if bg
-      let cmd = '!start /b "' . cmd . '"'
-    else
-      let cmd = '!' . cmd
+      let cmd = 'start /b "' . cmd . '"'
     endif
   else
-    let cmd = '!' . a:exe.cmd
     if null
       let cmd .= ' &>/dev/null'
     endif
@@ -149,9 +146,13 @@ function! vimtex#util#execute(exe) " {{{1
   endif
 
   if silent
-    silent execute cmd
+    silent execute '!' cmd
   else
-    execute cmd
+    execute '!' cmd
+  endif
+
+  if !has("gui_running")
+    redraw!
   endif
 
   if has('win32') && exists('savedShell')
@@ -162,10 +163,6 @@ function! vimtex#util#execute(exe) " {{{1
   " Return to previous working directory
   if has_key(a:exe, 'wd')
     execute 'lcd ' . fnameescape(pwd)
-  endif
-
-  if !has("gui_running")
-    redraw!
   endif
 endfunction
 
