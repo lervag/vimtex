@@ -31,6 +31,7 @@ CONTENTS                                                      *vimtex-contents*
     Feature overview                            |vimtex-features|
     Requirements                                |vimtex-requirements|
     Support for multi-file projects             |vimtex-multi-file|
+    Comment on internal tex plugin              |vimtex-comment-internal|
   Usage                                         |vimtex-usage|
     Default mappings                            |vimtex-default-mappings|
     Options                                     |vimtex-options|
@@ -146,6 +147,28 @@ It is also possible to specify the main TeX file with a comment in one of the
 first five lines of the current file similar to this: >
 
   %! TEX root = my-main.tex
+
+------------------------------------------------------------------------------
+Comment on internal tex plugin~
+                                                      *vimtex-comment-internal*
+
+Vim ships with some LaTeX support out of the box.  In particular, it provides
+good syntax highlighting (|ft-tex-syntax|), indentation (see the source file
+$VIMRUNTIME/indent/tex.vim for the documentation), and some sensible options
+(|ft-tex-plugin|).
+
+When |vimtex| is active, it will be used as the main |ftplugin|.  It will
+define the same set of sensible settings as the internal plugin.  However,
+|vimtex| does not provide its own syntax, instead it adds a few minor
+improvements to |ft-tex-syntax|, see |vimtex-syntax|.  |vimtex| also provides its
+own indentation plugin, see |vimtex-indent|.
+
+Vim will generally autodetect filetypes automatically.  In most cases this
+works as expected, however, in some cases it will detect a file with the `tex`
+suffix as a |plaintex|.  To prevent this, one may set the option
+|g:tex_flavor| in ones `vimrc` file, that is: >
+
+  let g:tex_flavor = 'latex'
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
@@ -878,9 +901,8 @@ Associated settings:
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
 
 Vim ships with syntax hightlighting for LaTeX documents out of the box, please
-see |ft-tex-plugin| and |ft-tex-syntax|.  |vimtex| therefore does not provide
-its own syntax highlighting.  However, |vimtex| does add some minor
-improvements:
+see ||ft-tex-syntax|.  |vimtex| therefore does not provide its own syntax
+highlighting.  However, |vimtex| does add some minor improvements:
 
 - Support for `biblatex` and `natbib` package
 - Support for `cleveref` package
