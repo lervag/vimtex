@@ -27,7 +27,7 @@ function! vimtex#motion#init(initialized) " {{{1
   onoremap <silent><buffer> <plug>(vimtex-]]) :execute "normal \<SID>(v)\<plug>(vimtex-]])"<cr>
   onoremap <silent><buffer> <plug>(vimtex-][) :execute "normal \<SID>(v)\<plug>(vimtex-][)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[]) :execute "normal \<SID>(v)\<plug>(vimtex-[])"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<SID>(v)\<plug>(vimtex-[[])"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<SID>(v)\<plug>(vimtex-[[)"<cr>
   xnoremap <silent><buffer> <plug>(vimtex-ie) :<c-u>call vimtex#motion#sel_environment(1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-ae) :<c-u>call vimtex#motion#sel_environment()<cr>
   onoremap <silent><buffer> <plug>(vimtex-ie) :execute "normal \<SID>(v)\<plug>(vimtex-ie)"<cr>
