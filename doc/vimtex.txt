@@ -41,6 +41,8 @@ CONTENTS                                                      *vimtex-contents*
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
     Autocomplete                                |vimtex-complete-auto|
+      Neocomplete                               |vimtex-complete-neocomplete|
+      YouCompleteMe                             |vimtex-complete-youcompleteme|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -847,32 +849,51 @@ Autocomplete~
                                                          *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-two good plugins that provide this:
-  neocomplete     https://github.com/Shougo/neocomplete.vim
-  YouCompleteMe   https://github.com/Valloric/YouCompleteMe
+two good plugins that provide this: |neocomplete| and |youcompleteme|.  See below
+for descriptions on how to setup these with |vimtex|.
 
-I personally use neocomplete with the following options to enable good
-automatic completion with |vimtex|: >
+neocomplete~
+                                                  *vimtex-complete-neocomplete*
+|neocomplete| is my preferred choice for an automatic completion engine in vim.
+The plugin is available here: https://github.com/Shougo/neocomplete.vim.
+
+The following options may be used to enable automatic completion for LaTeX
+documents with |neocomplete| and |vimtex|s omni completion function: >
 
   if !exists('g:neocomplete#sources#omni#input_patterns')
     let g:neocomplete#sources#omni#input_patterns = {}
   endif
   let g:neocomplete#sources#omni#input_patterns.tex =
         \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
+<
+YouCompleteMe~
+                                                *vimtex-complete-youcompleteme*
+|youcompleteme| is probably the most popular code-completion engine for Vim.  The
+github repository is here: https://github.com/Valloric/YouCompleteMe.
+It is described as:
+
+> YouCompleteMe is a fast, as-you-type, fuzzy-search code completion engine
+> for Vim. It has several completion engines: an identifier-based engine that
+> works with every programming language, a semantic, Clang [3]-based engine
+> that provides native semantic code completion for the C-family languages,
+> a Jedi [4]-based completion engine for Python, an OmniSharp [5]-based
+> completion engine for C# and an omnifunc-based completer that uses data from
+> Vim's omnicomplete system to provide semantic completions for many other
+> languages (Ruby, PHP etc.).
 
 To enable automatic completion with YouCompleteMe, it has to be explicitely
-enabled for the tex filetype. For tex files, it is also a good idea to disable
+enabled for the tex filetype.  For tex files, it is also a good idea to disable
 the identifier based completion and rely only on semantic completion, which
-will use the 'omnifunc' set by |vimtex|. Then the same patterns as above can
-be used to trigger the semantic completion.
+will use the 'omnifunc' set by |vimtex|.  Then the same patterns as above can
+be used to trigger the semantic completion. >
 
-  " enable YCM for tex files
+  " Enable YCM for tex files
   let g:ycm_filetype_whitelist.tex = 1
 
-  " disable identifier based completion for tex files
+  " Disable identifier based completion for tex files
   autocmd FileType tex let g:ycm_min_num_of_chars_for_completion = 99
 
-  " set patterns to trigger semantic completion
+  " Set patterns to trigger semantic completion
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
   endif
