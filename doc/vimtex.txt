@@ -860,9 +860,25 @@ automatic completion with |vimtex|: >
   let g:neocomplete#sources#omni#input_patterns.tex =
         \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
 
-I do not know the appropriate settings to enable good autocomplete with
-YouCompleteMe.  If anyone has a good set of settings that provide autocomplete
-with YouCompleteMe for |vimtex|, I will be happy to accept pull requests.
+To enable automatic completion with YouCompleteMe, it has to be explicitely
+enabled for the tex filetype. For tex files, it is also a good idea to disable
+the identifier based completion and rely only on semantic completion, which
+will use the 'omnifunc' set by |vimtex|. Then the same patterns as above can
+be used to trigger the semantic completion.
+
+  " enable YCM for tex files
+  let g:ycm_filetype_whitelist.tex = 1
+
+  " disable identifier based completion for tex files
+  autocmd FileType tex let g:ycm_min_num_of_chars_for_completion = 99
+
+  " set patterns to trigger semantic completion
+  if !exists('g:ycm_semantic_triggers')
+    let g:ycm_semantic_triggers = {}
+  endif
+  let g:ycm_semantic_triggers.tex = [
+        \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
+        \ ]
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
