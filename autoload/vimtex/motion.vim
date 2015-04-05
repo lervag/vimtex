@@ -88,7 +88,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
   let not_cursor = '\%(\%'. lnum . 'l\%' . cnum . 'c\)\@!'
 
   " Finally, find the matching delimiter
-  if delim =~ '^\$'
+  if delim =~# '^\$'
     let inline = s:notcomment . s:notbslash . '\$'
     let [lnum0, cnum0] = searchpos('.', 'nW')
     if lnum0 && vimtex#util#has_syntax('texMathZoneX', lnum0, cnum0)
@@ -191,7 +191,7 @@ function! vimtex#motion#sel_environment(...) " {{{1
   let [env, lnum, cnum, lnum2, cnum2] = vimtex#util#get_env(1)
   call cursor(lnum, cnum)
   if inner
-    if env =~ '^\'
+    if env =~# '^\'
       call search('\\.\_\s*\S', 'eW')
     else
       call search('}\(\_\s*\(\[\_[^]]*\]\|{\_\S\{-}}\)\)\?\_\s*\S', 'eW')
@@ -206,7 +206,7 @@ function! vimtex#motion#sel_environment(...) " {{{1
   if inner
     call search('\S\_\s*', 'bW')
   else
-    if env =~ '^\'
+    if env =~# '^\'
       normal! l
     else
       call search('}', 'eW')
@@ -221,7 +221,7 @@ function! vimtex#motion#sel_inline_math(...) " {{{1
 
   if vimtex#util#has_syntax('texMathZoneX')
     call s:search_and_skip_comments(dollar_pat, 'cbW')
-  elseif getline('.')[col('.') - 1] == '$'
+  elseif getline('.')[col('.') - 1] ==# '$'
     call s:search_and_skip_comments(dollar_pat, 'bW')
   else
     return
@@ -303,7 +303,7 @@ function! s:highlight_matching_pair(...) " {{{1
     return
   endif
 
-  if delim =~ '^\$'
+  if delim =~# '^\$'
     "
     " Match inline math
     "
