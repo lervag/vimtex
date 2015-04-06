@@ -881,24 +881,13 @@ It is described as:
 > Vim's omnicomplete system to provide semantic completions for many other
 > languages (Ruby, PHP etc.).
 
-To enable automatic completion with YouCompleteMe, it has to be explicitely
-enabled for the tex filetype.  For tex files, it is also a good idea to disable
-the identifier based completion and rely only on semantic completion, which
-will use the 'omnifunc' set by |vimtex|.  Then the same patterns as above can
-be used to trigger the semantic completion. >
+To enable automatic completion with |youcompleteme|, use the following options:
 
-  " Enable YCM for tex files
-  let g:ycm_filetype_whitelist.tex = 1
-
-  " Disable identifier based completion for tex files
-  autocmd FileType tex let g:ycm_min_num_of_chars_for_completion = 99
-
-  " Set patterns to trigger semantic completion
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
   endif
   let g:ycm_semantic_triggers.tex = [
-        \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
+        \ 're!\\[A-Za-z]*(ref|cite)[A-Za-z]*([^]]*])?{([^}]*, ?)*'
         \ ]
 
 ==============================================================================
