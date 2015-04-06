@@ -154,9 +154,9 @@ function! vimtex#util#execute(exe) " {{{1
     endif
   else
     if silent
-      silent execute '!' cmd
+      silent execute '!' . cmd
     else
-      execute '!' cmd
+      execute '!' . cmd
     endif
 
     if !has("gui_running")
