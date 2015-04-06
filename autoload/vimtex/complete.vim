@@ -65,6 +65,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
         return -2
       endif
     endfor
+    return -3
   else
     "
     " Second call:  Find list of matches
