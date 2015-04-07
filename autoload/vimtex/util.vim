@@ -132,7 +132,7 @@ function! vimtex#util#execute(exe) " {{{1
     endif
   else
     if null
-      let cmd .= ' &>/dev/null'
+      let cmd .= ' >/dev/null 2>&1'
     endif
     if bg
       let cmd .= ' &'

@@ -409,7 +409,7 @@ function! s:latexmk_build_cmd(data) " {{{1
       let cmd .= ' >'  . tmp
       let cmd = 'cmd /s /c "' . cmd . '"'
     else
-      let cmd .= ' &>' . tmp
+      let cmd .= ' >' . tmp . ' 2>&1'
     endif
   endif
 
