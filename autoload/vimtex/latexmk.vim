@@ -375,7 +375,11 @@ function! s:latexmk_build_cmd(data) " {{{1
     let cmd .= ' && set max_print_line=2000 & latexmk'
   else
     let cmd  = 'cd ' . shellescape(a:data.root)
-    let cmd .= ' && max_print_line=2000 latexmk'
+    if fnamemodify(&shell, ':t') ==# 'fish'
+      let cmd .= '; and set max_print_line 2000; and latexmk'
+    else
+      let cmd .= ' && max_print_line=2000 latexmk'
+    endif
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
