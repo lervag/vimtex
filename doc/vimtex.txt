@@ -904,6 +904,12 @@ etc.) are present.  If the document has been edited and a new fold level is
 required (or has become redundant), then the mapping `zx` can be used to
 refresh the fold level settings (see |vimtex-zx|).
 
+In order to get slightly cleaner fold text, I recommend setting the global
+'fillchars' option.  To preserve the default vertical separator and only
+change the fold filler, use e.g.: >
+
+  set fillchars=vert:|,fold:\ 
+
 Associated settings:
   |g:vimtex_fold_enabled|
   |g:vimtex_fold_automatic|

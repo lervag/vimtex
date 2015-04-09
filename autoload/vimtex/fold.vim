@@ -196,8 +196,9 @@ function! vimtex#fold#text() " {{{1
           \ env, caption, label)
   endif
 
-  let title = strpart(title, 0, nt)
-  return printf('%-5s %-' . nt . 's', level, title)
+  " Combine level and title and return the trimmed fold text
+  let text = printf('%-5s %-' . nt . 's', level, strpart(title, 0, nt))
+  return substitute(text, '\s\+$', '', '') . ' '
 endfunction
 " }}}1
 
