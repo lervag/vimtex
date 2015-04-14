@@ -108,7 +108,7 @@ function! vimtex#latexmk#clean(full) " {{{1
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
   let cmd .= 'latexmk -outdir=' . g:vimtex_latexmk_build_dir
-  let cmd .= a:full ? ' -C ' : ' -c'
+  let cmd .= a:full ? ' -C ' : ' -c '
   let cmd .= vimtex#util#fnameescape(data.base)
   let exe = {
         \ 'cmd' : cmd,
