@@ -80,7 +80,8 @@ endfunction
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
 
-  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
+  if g:vimtex_view_enabled
+        \ && has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
     call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
   endif
 
@@ -402,7 +403,9 @@ function! s:latexmk_build_cmd(data) " {{{1
     let s:first_callback = 1
   endif
 
-  if has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_append_argument')
+  if g:vimtex_view_enabled
+        \ && has_key(g:vimtex#data[b:vimtex.id].viewer,
+        \            'latexmk_append_argument')
     let cmd .= g:vimtex#data[b:vimtex.id].viewer.latexmk_append_argument()
   endif
 
