@@ -177,7 +177,12 @@ function! s:get_main() " {{{1
     let candidate = matchstr(line,
           \ '^\s*%\s*!\s*[tT][eE][xX]\s\+root\s*=\s*\zs.*\ze\s*$')
     if len(candidate) > 0
-      let main = fnamemodify(candidate, ':p')
+      if candidate[0] ==# '/'
+        let main = fnamemodify(candidate, ':p')
+      else
+        " Prepend directory of current file, if candidate is a relative path.
+        let main = fnamemodify(expand('%:h') . '/' . candidate, ':p')
+      endif
       if filereadable(main)
         return main
       endif
