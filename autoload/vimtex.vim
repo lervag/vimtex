@@ -234,6 +234,10 @@ function! s:get_main_recurse(file) " {{{1
   " Search through candidates for \include{current file}
   "
   for l:file in l:candidates
+    if l:file == a:file
+      " Avoid checking this file again.
+      continue
+    endif
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
           \ . '\s*((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
