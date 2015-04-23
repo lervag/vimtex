@@ -177,12 +177,11 @@ function! s:get_main() " {{{1
     let candidate = matchstr(line,
           \ '^\s*%\s*!\s*[tT][eE][xX]\s\+root\s*=\s*\zs.*\ze\s*$')
     if len(candidate) > 0
-      if candidate[0] ==# '/'
-        let main = fnamemodify(candidate, ':p')
-      else
-        " Prepend directory of current file, if candidate is a relative path.
-        let main = fnamemodify(expand('%:h') . '/' . candidate, ':p')
+      " If candidate is a relative path, then prepend root of current file
+      if candidate[0] !=# '/'
+        let candidate = expand('%:h') . '/' . candidate
       endif
+      let main = fnamemodify(candidate, ':p')
       if filereadable(main)
         return main
       endif
@@ -234,10 +233,9 @@ function! s:get_main_recurse(file) " {{{1
   " Search through candidates for \include{current file}
   "
   for l:file in l:candidates
-    if l:file == a:file
-      " Avoid checking this file again.
-      continue
-    endif
+    " Avoid infinite recursion (checking the same file repeatedly)
+    if l:file == a:file | continue | endif
+
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
           \ . '\s*((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
