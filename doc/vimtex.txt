@@ -150,6 +150,13 @@ first five lines of the current file similar to this: >
 
   %! TEX root = my-main.tex
 
+<                                                                *b:vimtex_main*
+Finally, the main file may be specified through the buffer variable
+`b:vimtex_main`.  If one uses project specific |vimrc| files, one may then use
+an |autocmd| to specify the main file through this buffer variable with >
+
+  autocmd FileType tex let b:vimtex_main = 'main.tex'
+
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
                                                       *vimtex-comment-internal*

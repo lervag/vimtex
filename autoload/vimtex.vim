@@ -169,6 +169,13 @@ endfunction
 
 function! s:get_main() " {{{1
   "
+  " Use buffer variable if it exists
+  "
+  if exists('b:vimtex_main') && filereadable(b:vimtex_main)
+    return fnamemodify(b:vimtex_main, ':p')
+  endif
+
+  "
   " Search for main file specifier at the beginning of file.  This is similar
   " to the method used by several other plugins and editors, such as vim with
   " LaTeX-Box, TextMate, TexWorks, and texmaker.
