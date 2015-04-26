@@ -67,8 +67,8 @@ endfor
 " {{{1 General
 function! s:general.init() dict " {{{2
   if !executable(g:vimtex_view_general_viewer)
-    echoerr "vimtex viewer is not executable!"
-    echoerr "g:vimtex_view_general_viewer = "
+    echoerr 'vimtex viewer is not executable!'
+    echoerr 'g:vimtex_view_general_viewer = '
           \ . g:vimtex_view_general_viewer
   endif
 endfunction
@@ -91,7 +91,7 @@ endfunction
 " {{{1 MuPDF
 function! s:mupdf.init() dict " {{{2
   if !executable('mupdf')
-    echoerr "vimtex viewer MuPDF is not executable!"
+    echoerr 'vimtex viewer MuPDF is not executable!'
   endif
 
   if !executable('xdotool')
@@ -100,11 +100,11 @@ function! s:mupdf.init() dict " {{{2
 
   let self.class = 'MuPDF'
   let self.xwin_id = 0
-  let self.xwin_exists = function("s:xwin_exists")
-  let self.xwin_get_id = function("s:xwin_get_id")
-  let self.xwin_send_keys = function("s:xwin_send_keys")
-  let self.focus_vim = function("s:focus_vim")
-  let self.focus_viewer = function("s:focus_viewer")
+  let self.xwin_exists = function('s:xwin_exists')
+  let self.xwin_get_id = function('s:xwin_get_id')
+  let self.xwin_send_keys = function('s:xwin_send_keys')
+  let self.focus_vim = function('s:focus_vim')
+  let self.focus_viewer = function('s:focus_viewer')
 endfunction
 
 " }}}2
@@ -140,11 +140,11 @@ function! s:mupdf.forward_search() dict " {{{2
   let outfile = g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
-  let self.cmd_synctex_view = "synctex view -i "
-        \ . (line(".") + 1) . ":"
-        \ . (col(".") + 1) . ":"
-        \ . vimtex#util#fnameescape(expand("%:p"))
-        \ . " -o " . vimtex#util#fnameescape(outfile)
+  let self.cmd_synctex_view = 'synctex view -i '
+        \ . (line('.') + 1) . ':'
+        \ . (col('.') + 1) . ':'
+        \ . vimtex#util#fnameescape(expand('%:p'))
+        \ . ' -o ' . vimtex#util#fnameescape(outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let self.page = system(self.cmd_synctex_view)
 
@@ -175,30 +175,30 @@ function! s:mupdf.reverse_search() dict " {{{2
   endif
 
   " Get page number
-  let self.cmd_getpage  = "xdotool getwindowname " . self.xwin_id
+  let self.cmd_getpage  = 'xdotool getwindowname ' . self.xwin_id
   let self.cmd_getpage .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
   let self.cmd_getpage .= " | tr -d '\n'"
   let self.page = system(self.cmd_getpage)
   if self.page <= 0 | return | endif
 
   " Get file
-  let self.cmd_getfile  = "synctex edit "
-  let self.cmd_getfile .= "-o \"" . self.page . ":288:108:" . outfile . "\""
+  let self.cmd_getfile  = 'synctex edit '
+  let self.cmd_getfile .= "-o \"" . self.page . ':288:108:' . outfile . "\""
   let self.cmd_getfile .= "| grep 'Input:' | sed 's/Input://' "
   let self.cmd_getfile .= "| head -n1 | tr -d '\n' 2>/dev/null"
   let self.file = system(self.cmd_getfile)
 
   " Get line
-  let self.cmd_getline  = "synctex edit "
-  let self.cmd_getline .= "-o \"" . self.page . ":288:108:" . outfile . "\""
+  let self.cmd_getline  = 'synctex edit '
+  let self.cmd_getline .= "-o \"" . self.page . ':288:108:' . outfile . "\""
   let self.cmd_getline .= "| grep -m1 'Line:' | sed 's/Line://' "
   let self.cmd_getline .= "| head -n1 | tr -d '\n'"
   let self.line = system(self.cmd_getline)
 
   " Go to file and line
-  silent exec "edit " . self.file
+  silent exec 'edit ' . self.file
   if self.line > 0
-    silent exec ":" . self.line
+    silent exec ':' . self.line
     " Unfold, move to top line to correspond to top pdf line, and go to end of
     " line in case the corresponding pdf line begins on previous pdf page.
     normal! zvztg_
@@ -232,7 +232,7 @@ endfunction
 " {{{1 Okular
 function! s:okular.init() dict " {{{2
   if !executable('okular')
-    echoerr "vimtex viewer Okular is not executable!"
+    echoerr 'vimtex viewer Okular is not executable!'
   endif
 endfunction
 
@@ -254,7 +254,7 @@ endfunction
 " {{{1 qpdfview
 function! s:qpdfview.init() dict " {{{2
   if !executable('qpdfview')
-    echoerr "vimtex viewer qpdfview is not executable!"
+    echoerr 'vimtex viewer qpdfview is not executable!'
   endif
 endfunction
 
@@ -278,7 +278,7 @@ endfunction
 " {{{1 SumatraPDF
 function! s:sumatrapdf.init() dict " {{{2
   if !executable('SumatraPDF')
-    echoerr "vimtex viewer SumatraPDF is not executable!"
+    echoerr 'vimtex viewer SumatraPDF is not executable!'
   endif
 endfunction
 
@@ -301,7 +301,7 @@ endfunction
 " {{{1 Zathura
 function! s:zathura.init() dict " {{{2
   if !executable('zathura')
-    echoerr "vimtex viewer Zathura is not executable!"
+    echoerr 'vimtex viewer Zathura is not executable!'
   endif
 
   if !executable('xdotool')
@@ -310,9 +310,9 @@ function! s:zathura.init() dict " {{{2
 
   let self.class = 'Zathura'
   let self.xwin_id = 0
-  let self.xwin_get_id = function("s:xwin_get_id")
-  let self.xwin_exists = function("s:xwin_exists")
-  let self.focus_vim = function("s:focus_vim")
+  let self.xwin_get_id = function('s:xwin_get_id')
+  let self.xwin_exists = function('s:xwin_exists')
+  let self.focus_vim = function('s:focus_vim')
 endfunction
 
 " }}}2
@@ -349,7 +349,7 @@ function! s:zathura.forward_search() dict " {{{2
 
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
-  let exe.cmd .= line(".")
+  let exe.cmd .= line('.')
   let exe.cmd .= ':' . col('.')
   let exe.cmd .= ':' . vimtex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
@@ -432,7 +432,7 @@ endfunction
 function! s:xwin_send_keys(keys) dict " {{{2
   if !executable('xdotool') | return | endif
 
-  if a:keys != ''
+  if a:keys !=# ''
     let cmd  = 'xdotool key --window ' . self.xwin_id
     let cmd .= ' ' . a:keys
     call system(cmd)
