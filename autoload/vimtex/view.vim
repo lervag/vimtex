@@ -130,7 +130,7 @@ function! s:mupdf.start(outfile) dict " {{{2
 
   call self.xwin_get_id()
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-  call self.forward_search()
+  call self.forward_search(a:outfile)
 endfunction
 
 " }}}2
@@ -337,7 +337,7 @@ function! s:zathura.start(outfile) dict " {{{2
   let self.cmd_start = exe.cmd
 
   call self.xwin_get_id()
-  call self.forward_search()
+  call self.forward_search(a:outfile)
 endfunction
 
 " }}}2
