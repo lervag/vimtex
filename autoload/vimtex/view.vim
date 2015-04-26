@@ -35,7 +35,8 @@ function! vimtex#view#init(initialized) " {{{1
   call data.viewer.init()
 
   " Define commands
-  command! -buffer VimtexView call g:vimtex#data[b:vimtex.id].viewer.view()
+  command! -buffer -nargs=? -complete=file VimtexView
+        \ call g:vimtex#data[b:vimtex.id].viewer.view(<q-args>)
   if has_key(data.viewer, 'reverse_search')
     command! -buffer -nargs=* VimtexRSearch
           \ call g:vimtex#data[b:vimtex.id].viewer.reverse_search()
@@ -43,7 +44,7 @@ function! vimtex#view#init(initialized) " {{{1
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-view)
-        \ :call g:vimtex#data[b:vimtex.id].viewer.view()<cr>
+        \ :call g:vimtex#data[b:vimtex.id].viewer.view('')<cr>
   if has_key(data.viewer, 'reverse_search')
     nnoremap <buffer> <plug>(vimtex-reverse-search)
           \ :call g:vimtex#data[b:vimtex.id].viewer.reverse_search()<cr>
@@ -74,8 +75,8 @@ function! s:general.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:general.view() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
+function! s:general.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -108,22 +109,22 @@ function! s:mupdf.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:mupdf.view() dict " {{{2
+function! s:mupdf.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  if s:output_not_readable(outfile) | return | endif
+
   if !self.xwin_exists()
-    call self.start()
+    call self.start(outfile)
   else
-    call self.forward_search()
+    call self.forward_search(outfile)
   endif
 endfunction
 
 " }}}2
-function! s:mupdf.start() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
-  if s:output_not_readable(outfile) | return | endif
-
+function! s:mupdf.start(outfile) dict " {{{2
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:vimtex_view_mupdf_options
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
@@ -133,18 +134,15 @@ function! s:mupdf.start() dict " {{{2
 endfunction
 
 " }}}2
-function! s:mupdf.forward_search() dict " {{{2
+function! s:mupdf.forward_search(outfile) dict " {{{2
   if !executable('xdotool') | return | endif
   if !executable('synctex') | return | endif
-
-  let outfile = g:vimtex#data[b:vimtex.id].out()
-  if s:output_not_readable(outfile) | return | endif
 
   let self.cmd_synctex_view = 'synctex view -i '
         \ . (line('.') + 1) . ':'
         \ . (col('.') + 1) . ':'
         \ . vimtex#util#fnameescape(expand('%:p'))
-        \ . ' -o ' . vimtex#util#fnameescape(outfile)
+        \ . ' -o ' . vimtex#util#fnameescape(a:outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let self.page = system(self.cmd_synctex_view)
 
@@ -211,7 +209,7 @@ function! s:mupdf.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-      call self.forward_search()
+      call self.forward_search(g:vimtex#data[b:vimtex.id].out())
       call self.focus_vim()
     endif
   endif
@@ -237,8 +235,8 @@ function! s:okular.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:okular.view() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
+function! s:okular.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -259,8 +257,8 @@ function! s:qpdfview.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:qpdfview.view() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
+function! s:qpdfview.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -283,8 +281,8 @@ function! s:sumatrapdf.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:sumatrapdf.view() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
+function! s:sumatrapdf.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -316,25 +314,25 @@ function! s:zathura.init() dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura.view() dict " {{{2
+function! s:zathura.view(file) dict " {{{2
+  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  if s:output_not_readable(outfile) | return | endif
+
   if !self.xwin_exists()
-    call self.start()
+    call self.start(outfile)
   else
-    call self.forward_search()
+    call self.forward_search(outfile)
   endif
 endfunction
 
 " }}}2
-function! s:zathura.start() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
-  if s:output_not_readable(outfile) | return | endif
-
+function! s:zathura.start(outfile) dict " {{{2
   let exe = {}
   let exe.cmd  = 'zathura ' .  g:vimtex_view_zathura_options
   let exe.cmd .= ' -x "' . exepath(v:progname)
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
@@ -343,16 +341,13 @@ function! s:zathura.start() dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura.forward_search() dict " {{{2
-  let outfile = g:vimtex#data[b:vimtex.id].out()
-  if s:output_not_readable(outfile) | return | endif
-
+function! s:zathura.forward_search(outfile) dict " {{{2
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
   let exe.cmd .= line('.')
   let exe.cmd .= ':' . col('.')
   let exe.cmd .= ':' . vimtex#util#fnameescape(expand('%:p'))
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_forward_search = exe.cmd
 endfunction
@@ -361,7 +356,7 @@ endfunction
 function! s:zathura.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
-      call self.forward_search()
+      call self.forward_search(g:vimtex#data[b:vimtex.id].out())
       call self.focus_vim()
     endif
   endif
