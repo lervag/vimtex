@@ -76,7 +76,7 @@ endfunction
 
 " }}}2
 function! s:general.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -110,7 +110,7 @@ endfunction
 
 " }}}2
 function! s:mupdf.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
@@ -236,7 +236,7 @@ endfunction
 
 " }}}2
 function! s:okular.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -258,7 +258,7 @@ endfunction
 
 " }}}2
 function! s:qpdfview.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -282,7 +282,7 @@ endfunction
 
 " }}}2
 function! s:sumatrapdf.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -315,7 +315,7 @@ endfunction
 
 " }}}2
 function! s:zathura.view(file) dict " {{{2
-  let outfile = a:file ? a:file : g:vimtex#data[b:vimtex.id].out()
+  let outfile = a:file !=# '' ? a:file : g:vimtex#data[b:vimtex.id].out()
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
