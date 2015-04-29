@@ -431,7 +431,7 @@ endfunction
 function! s:latexmk_set_pid(data) " {{{1
   if has('win32')
     let pidcmd = 'qprocess latexmk.exe'
-    let pidinfo = systemlist(pidcmd)[-1]
+    let pidinfo = split(system(pidcmd), '\n')[-1]
     let a:data.pid = split(pidinfo,'\s\+')[-2]
   else
     let a:data.pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
