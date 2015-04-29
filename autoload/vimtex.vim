@@ -176,23 +176,30 @@ function! s:get_main() " {{{1
   endif
 
   "
-  " Search for main file specifier at the beginning of file.  This is similar
-  " to the method used by several other plugins and editors, such as vim with
-  " LaTeX-Box, TextMate, TexWorks, and texmaker.
+  " Search for main file specifier at the beginning of file.  Recognized
+  " specifiers are:
   "
-  for line in getline(1, 5)
-    let candidate = matchstr(line,
-          \ '^\s*%\s*!\s*[tT][eE][xX]\s\+root\s*=\s*\zs.*\ze\s*$')
-    if len(candidate) > 0
-      " If candidate is a relative path, then prepend root of current file
-      if candidate[0] !=# '/'
-        let candidate = expand('%:h') . '/' . candidate
+  " 1. The TEX root specifier, which is used by by several other plugins and
+  "    editors.
+  " 2. Subfiles package specifier.  This parses the main tex file option in the
+  "    \documentclass line for the subfiles package.
+  "
+  for regexp in [
+        \ '^\c\s*%\s*!\?\s*tex\s\+root\s*=\s*\zs.*\ze\s*$',
+        \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}',
+        \ ]
+    for line in getline(1, 5)
+      let candidate = matchstr(line, regexp)
+      if len(candidate) > 0
+        if candidate[0] !=# '/'
+          let candidate = expand('%:h') . '/' . candidate
+        endif
+        let main = fnamemodify(candidate, ':p')
+        if filereadable(main)
+          return main
+        endif
       endif
-      let main = fnamemodify(candidate, ':p')
-      if filereadable(main)
-        return main
-      endif
-    endif
+    endfor
   endfor
 
   "

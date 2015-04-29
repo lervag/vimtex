@@ -150,6 +150,12 @@ first five lines of the current file similar to this: >
 
   %! TEX root = my-main.tex
 
+<                                                              *vimtex-subfiles*
+Further, |vimtex| supports the `subfiles` package.  That is, the main file is
+parsed from the `\documentclass` line whenever it has the following format: >
+
+  \documentclass[main.tex]{subfiles}
+
 <                                                                *b:vimtex_main*
 Finally, the main file may be specified through the buffer variable
 `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then use
