@@ -189,15 +189,21 @@ function! s:get_main() " {{{1
         \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}',
         \ ]
     for line in getline(1, 5)
-      let candidate = matchstr(line, regexp)
-      if len(candidate) > 0
-        if candidate[0] !=# '/'
-          let candidate = expand('%:h') . '/' . candidate
+      let filename = matchstr(line, regexp)
+      if len(filename) > 0
+        if filename[0] !=# '/'
+          let candidates = [
+                \ expand('%:h') . '/' . filename,
+                \ getcwd() . '/' . filename,
+                \ ]
+        else
+          let candidates = [fnamemodify(filename, ':p')]
         endif
-        let main = fnamemodify(candidate, ':p')
-        if filereadable(main)
-          return main
-        endif
+        for main in candidates
+          if filereadable(main)
+            return main
+          endif
+        endfor
       endif
     endfor
   endfor
