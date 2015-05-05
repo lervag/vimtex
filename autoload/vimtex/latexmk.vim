@@ -6,7 +6,7 @@
 
 function! vimtex#latexmk#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '.')
+  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
   if !g:vimtex_latexmk_enabled | return | endif
   if s:system_incompatible() | return | endif
 
@@ -109,7 +109,7 @@ function! vimtex#latexmk#clean(full) " {{{1
     let cmd = 'cd ' . shellescape(data.root) . '; '
   endif
   let cmd .= 'latexmk'
-  if g:vimtex_latexmk_build_dir !=# '.'
+  if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
@@ -388,7 +388,9 @@ function! s:latexmk_build_cmd(data) " {{{1
 
   let cmd .= ' ' . g:vimtex_latexmk_options
   let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
-  let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
+  if g:vimtex_latexmk_build_dir !=# ''
+    let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
+  endif
 
   if g:vimtex_latexmk_continuous
     let cmd .= ' -pvc'

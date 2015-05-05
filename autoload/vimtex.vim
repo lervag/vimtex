@@ -88,7 +88,7 @@ function! s:init_environment() " {{{1
       return s:get_main_ext(self, 'log')
     endfunction
     function data.out() dict
-      return s:get_main_out(self)
+      return s:get_main_ext(self, 'pdf')
     endfunction
 
     call add(g:vimtex#data, data)
@@ -269,49 +269,25 @@ function! s:get_main_recurse(file) " {{{1
   return 0
 endfunction
 
-function! s:get_main_ext(texdata, ext) " {{{1
-  " Create set of candidates
-  let candidates = [
-        \ a:texdata.name,
-        \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
-        \ ]
-
-  " Search through the candidates
-  for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
-    if filereadable(f)
-      return fnamemodify(f, ':p')
+function! s:get_main_ext(self, ext) " {{{1
+  " First check build dir (latexmk -output_directory option)
+  if g:vimtex_latexmk_build_dir !=# ''
+    let cand = g:vimtex_latexmk_build_dir . '/' . a:self.name . '.' . a:ext
+    if g:vimtex_latexmk_build_dir[0] !=# '/'
+      let cand = a:self.root . '/' . cand
     endif
-  endfor
-
-  " Return empty string if no entry is found
-  return ''
-endfunction
-
-function! s:get_main_out(texdata) " {{{1
-  " Create set of candidates
-  let candidates = [
-        \ a:texdata.name,
-        \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
-        \ ]
-
-  " Check for pdf files
-  for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.pdf''')
-    if filereadable(f)
-      return fnamemodify(f, ':p')
+    if filereadable(cand)
+      return fnamemodify(cand, ':p')
     endif
-  endfor
+  endif
 
-  " Check for dvi files
-  for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.dvi''')
-    if filereadable(f)
-      return fnamemodify(f, ':p')
-    endif
-  endfor
+  " Next check for file in project root folder
+  let cand = a:self.root . '/' . a:self.name . '.' . a:ext
+  if filereadable(cand)
+    return fnamemodify(cand, ':p')
+  endif
 
-  " Return empty string if no entry is found
+  " Finally return empty string if no entry is found
   return ''
 endfunction
 
