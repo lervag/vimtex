@@ -446,7 +446,8 @@ Options~
 
 *g:vimtex_latexmk_build_dir*
   This option sets the compilation build directory.  It corresponds to the
-  `-output-directory` option in `latexmk`.
+  `-output-directory` option in `latexmk`.  Note that this option only works
+  with `latexmk` version 4.27 and later.
 
   Default value: '.'
 
