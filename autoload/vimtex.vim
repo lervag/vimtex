@@ -272,13 +272,13 @@ endfunction
 function! s:get_main_ext(texdata, ext) " {{{1
   " Create set of candidates
   let candidates = [
-        \ a:texdata.name,
+        \ a:texdata.root . '/' . a:texdata.name,
         \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Search through the candidates
   for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.'' . a:ext')
+        \ 'v:val . ''.'' . a:ext')
     if filereadable(f)
       return fnamemodify(f, ':p')
     endif
@@ -291,21 +291,21 @@ endfunction
 function! s:get_main_out(texdata) " {{{1
   " Create set of candidates
   let candidates = [
-        \ a:texdata.name,
+        \ a:texdata.root . '/' . a:texdata.name,
         \ g:vimtex_latexmk_build_dir . '/' . a:texdata.name,
         \ ]
 
   " Check for pdf files
-  for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.pdf''')
+  for f in map(candidates, 
+        \ 'v:val . ''.pdf''')
     if filereadable(f)
       return fnamemodify(f, ':p')
     endif
   endfor
 
   " Check for dvi files
-  for f in map(candidates,
-        \ 'a:texdata.root . ''/'' . v:val . ''.dvi''')
+  for f in map(candidates, 
+        \ 'v:val . ''.dvi''')
     if filereadable(f)
       return fnamemodify(f, ':p')
     endif
