@@ -33,7 +33,7 @@ disabled if desired.
   - `id ad` Delimiters
 - Other mappings
   - Delete the surrounding command or environment with `dse`/`dsc`
-  - Change the surrounding command or environment with `csd`/`cse`
+  - Change the surrounding command or environment with `csc`/`cse`
   - Toggle starred environment with `tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment in insert mode with `]]`
