@@ -51,6 +51,7 @@ function! vimtex#info() " {{{1
     for f in ['aux', 'out', 'log']
       silent execute 'let d.' . f . ' = data.' . f . '()'
     endfor
+    let d.words = data.words()
 
     " Print data blob title line
     call vimtex#echo#formatted([
@@ -90,6 +91,7 @@ function! s:init_environment() " {{{1
     function data.out() dict
       return s:get_main_ext(self, 'pdf')
     endfunction
+    let data.words = function('s:get_wordcount')
 
     call add(g:vimtex#data, data)
     let b:vimtex.id = len(g:vimtex#data) - 1
@@ -97,6 +99,8 @@ function! s:init_environment() " {{{1
 
   " Define commands
   command! -buffer VimtexInfo call vimtex#info()
+  command! -buffer VimtexWordCount
+        \ echo g:vimtex#data[b:vimtex.id].words()
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info()<cr>
@@ -289,6 +293,14 @@ function! s:get_main_ext(self, ext) " {{{1
 
   " Finally return empty string if no entry is found
   return ''
+endfunction
+
+" }}}1
+function! s:get_wordcount() dict " {{{1
+  let cmd  = 'cd ' . vimtex#util#fnameescape(self.root)
+  let cmd .= '; texcount -sum -brief -merge '
+        \ . vimtex#util#fnameescape(self.base)
+  return str2nr(matchstr(system(cmd), '^\d\+'))
 endfunction
 
 " }}}1

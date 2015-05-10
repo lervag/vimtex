@@ -78,6 +78,7 @@ Feature overview~
 - Document navigation through
   - table of content
   - table of labels
+- Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
   - Move between matching delimiters with `%`
@@ -729,6 +730,13 @@ Commands~
                                              *<plug>(vimtex-reverse-search)*
 :VimtexRSearch            Do reverse search (only available for MuPDF viewer).
 
+                                             *VimtexWordCount*
+:VimtexWordCount          Shows the number of words in the current project.
+                          The count is created with `texcount` through a call
+                          on the main project file similar to: >
+
+                            texcount -sum -brief -merge FILE
+<
 ------------------------------------------------------------------------------
 Map definitions~
                                                               *vimtex-mappings*
