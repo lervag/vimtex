@@ -37,9 +37,6 @@ function! vimtex#fold#init(initialized) " {{{1
   setl foldexpr=vimtex#fold#level(v:lnum)
   setl foldtext=vimtex#fold#text()
 
-  " Initalize folds
-  call vimtex#fold#refresh('zX')
-
   " Remap zx to refresh fold levels
   nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
   nnoremap <silent><buffer> zX :call vimtex#fold#refresh('zX')<cr>
@@ -64,7 +61,11 @@ function! vimtex#fold#init(initialized) " {{{1
       augroup END
     endif
   else
-    setl foldmethod=manual
+    augroup latex_fold
+      autocmd!
+      autocmd CursorMoved *.tex call vimtex#fold#refresh('zx')
+      autocmd CursorMoved *.tex autocmd! latex_fold
+    augroup END
   endif
 endfunction
 
