@@ -65,6 +65,51 @@ function! vimtex#info() " {{{1
 endfunction
 
 " }}}1
+function! vimtex#wordcount(detailed) " {{{1
+  " Run texcount, save output to lines variable
+  let data = g:vimtex#data[b:vimtex.id]
+  let cmd  = 'cd ' . vimtex#util#fnameescape(data.root)
+  let cmd .= '; texcount -nosub -sum '
+  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
+  let cmd .= vimtex#util#fnameescape(data.base)
+  let lines = split(system(cmd), '\n')
+
+  " Create wordcount window
+  if bufnr('TeXcount') >= 0
+    bwipeout TeXcount
+  endif
+  split TeXcount
+
+  " Add lines to buffer
+  for line in lines
+    call append('$', printf('%s', line))
+  endfor
+  0delete _
+
+  " Set mappings
+  nnoremap <buffer> <silent> q :bwipeout<cr>
+
+  " Set buffer options
+  setlocal bufhidden=wipe
+  setlocal buftype=nofile
+  setlocal cursorline
+  setlocal listchars=
+  setlocal nobuflisted
+  setlocal nolist
+  setlocal nospell
+  setlocal noswapfile
+  setlocal nowrap
+  setlocal tabstop=8
+  setlocal nomodifiable
+
+  " Set highlighting
+  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
+  syntax match TexcountValue /.*:\zs.*/
+  highlight link TexcountText  VimtexMsg
+  highlight link TexcountValue Constant
+endfunction
+
+" }}}1
 
 function! s:init_environment() " {{{1
   " Initialize global and local data blobs
@@ -91,7 +136,6 @@ function! s:init_environment() " {{{1
     function data.out() dict
       return s:get_main_ext(self, 'pdf')
     endfunction
-    let data.words = function('s:get_wordcount')
 
     call add(g:vimtex#data, data)
     let b:vimtex.id = len(g:vimtex#data) - 1
@@ -99,8 +143,7 @@ function! s:init_environment() " {{{1
 
   " Define commands
   command! -buffer VimtexInfo call vimtex#info()
-  command! -buffer VimtexWordCount
-        \ echo g:vimtex#data[b:vimtex.id].words()
+  command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info()<cr>
@@ -293,14 +336,6 @@ function! s:get_main_ext(self, ext) " {{{1
 
   " Finally return empty string if no entry is found
   return ''
-endfunction
-
-" }}}1
-function! s:get_wordcount() dict " {{{1
-  let cmd  = 'cd ' . vimtex#util#fnameescape(self.root)
-  let cmd .= '; texcount -sum -brief -merge '
-        \ . vimtex#util#fnameescape(self.base)
-  return str2nr(matchstr(system(cmd), '^\d\+'))
 endfunction
 
 " }}}1
