@@ -346,7 +346,8 @@ function! s:labels_extract(file) " {{{2
   let lines = map(lines, 'vimtex#util#convert_back(v:val)')
   for line in lines
     let tree = vimtex#util#tex2tree(line)
-    if !empty(tree[2][0])
+    if type(tree[2][0]) == type([])
+          \ && !empty(tree[2][0])
       call add(matches, [
             \ vimtex#util#tree2tex(tree[1][0]),
             \ vimtex#util#tree2tex(tree[2][0][0]),
