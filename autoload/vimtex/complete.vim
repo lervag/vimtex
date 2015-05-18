@@ -56,7 +56,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
       if line =~ pattern . '$'
         let s:completion_type = type
         while pos > 0
-          if line[pos - 1] =~ '{\|,' || line[pos-2:pos-1] == ', '
+          if line[pos - 1] =~# '{\|,' || line[pos-2:pos-1] ==# ', '
             return pos
           else
             let pos -= 1
@@ -70,9 +70,9 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     "
     " Second call:  Find list of matches
     "
-    if s:completion_type == 'ref'
+    if s:completion_type ==# 'ref'
       return vimtex#complete#labels(a:base)
-    elseif s:completion_type == 'bib' && s:bibtex
+    elseif s:completion_type ==# 'bib' && s:bibtex
       return vimtex#complete#bibtex(a:base)
     endif
   endif
@@ -107,7 +107,7 @@ function! vimtex#complete#labels(regex) " {{{1
   for m in matches
     let entry = {
           \ 'word': m[0],
-          \ 'menu': printf("%7s [p. %s]", '('.m[1].')', m[2])
+          \ 'menu': printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ }
     if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
       let entry = copy(entry)
@@ -125,9 +125,9 @@ function! vimtex#complete#bibtex(regexp) " {{{1
 
   let s:type_length = 4
   for m in s:bibtex_search(a:regexp)
-    let type = m['type']   == '' ? '[-]' : '[' . m['type']   . '] '
-    let auth = m['author'] == '' ? ''    :       m['author'][:20] . ' '
-    let year = m['year']   == '' ? ''    : '(' . m['year']   . ')'
+    let type = m['type']   ==# '' ? '[-]' : '[' . m['type']   . '] '
+    let auth = m['author'] ==# '' ? ''    :       m['author'][:20] . ' '
+    let year = m['year']   ==# '' ? ''    : '(' . m['year']   . ')'
 
     " Align the type entry and fix minor annoyance in author list
     let type = printf('%-' . s:type_length . 's', type)
@@ -176,7 +176,7 @@ function! s:bibtex_search(regexp) " {{{2
 
   " Find data from external bib files
   let bibfiles = join(s:bibtex_find_bibs(), ',')
-  if bibfiles != ''
+  if bibfiles !=# ''
     " Define temporary files
     let tmp = {
           \ 'aux' : 'tmpfile.aux',
@@ -229,7 +229,7 @@ function! s:bibtex_search(regexp) " {{{2
   " Find data from 'thebibliography' environments
   let lines = readfile(g:vimtex#data[b:vimtex.id].tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
-    for line in filter(filter(lines, 'v:val =~ ''\C\\bibitem'''),
+    for line in filter(filter(lines, 'v:val =~# ''\C\\bibitem'''),
           \ 'v:val =~ a:regexp')
       let match = matchlist(line, '\\bibitem{\([^}]*\)')[1]
       call add(res, {
@@ -361,7 +361,7 @@ endfunction
 function! s:labels_extract_inputs(file) " {{{2
   let matches = []
   let root = fnamemodify(a:file, ':p:h') . '/'
-  for input in filter(readfile(a:file), 'v:val =~ ''\\@input{''')
+  for input in filter(readfile(a:file), 'v:val =~# ''\\@input{''')
     let input = matchstr(input, '{\zs.*\ze}')
     let input = substitute(input, '"', '', 'g')
     let input = root . input
