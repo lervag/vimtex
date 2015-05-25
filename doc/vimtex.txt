@@ -610,7 +610,11 @@ Options~
     zathura~
       https://pwmt.org/projects/zathura/
       Zathura is like MuPDF a very fast and minimalistic viewer, but it allows
-      a more user configuration.  Supports forward search and backward search.
+      more user configuration.  Zathura supports forward search and backward
+      search.
+
+      Note: Forward search requires `xdotool` to work properly, in order to
+            not open a new Zathura instance for invocation of |VimtexView|.
 
   If one chooses a method that is not the default method, then the viewer will
   support forward search, see |vimtex-synctex-forward-search|.
