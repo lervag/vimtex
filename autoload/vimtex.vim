@@ -51,7 +51,6 @@ function! vimtex#info() " {{{1
     for f in ['aux', 'out', 'log']
       silent execute 'let d.' . f . ' = data.' . f . '()'
     endfor
-    let d.words = data.words()
 
     " Print data blob title line
     call vimtex#echo#formatted([
