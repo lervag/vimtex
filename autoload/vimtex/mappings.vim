@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#mappings#init(initialized)
+function! vimtex#mappings#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_mappings_enabled', 1)
   if !g:vimtex_mappings_enabled | return | endif
 
@@ -78,6 +78,27 @@ function! vimtex#mappings#init(initialized)
       nmap <silent><buffer> <localleader>lr <plug>(vimtex-reverse-search)
     endif
   endif
+
+  let ultisnip_maps = [
+        \ ['__', '_\{$1\}'],
+        \ ['^^', '^\{$1\}'],
+        \ ['((', '\left($1\right)'],
+        \ ['[[', '\left[$1\right]'],
+        \]
+  for [lhs, rhs] in ultisnip_maps
+    silent execute 'inoremap <buffer><silent>' lhs
+          \ lhs . '<c-r>=UltiSnips#Anon(''' . rhs . ''', ''' . lhs
+          \ . ''', '''', ''i'')<cr>'
+  endfor
+
+  let abbreviations = [
+        \ ['`a', '\alpha'],
+        \]
+  for [lhs, rhs] in abbreviations
+    silent execute 'iabbrev <buffer>' lhs rhs
+  endfor
 endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2
