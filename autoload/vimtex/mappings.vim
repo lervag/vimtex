@@ -79,24 +79,37 @@ function! vimtex#mappings#init(initialized) " {{{1
     endif
   endif
 
-  let ultisnip_maps = [
-        \ ['__', '_\{$1\}'],
-        \ ['^^', '^\{$1\}'],
-        \ ['((', '\left($1\right)'],
-        \ ['[[', '\left[$1\right]'],
+  let g:vimtex_mappings = [
+        \ { 'lhs' : '__', 'rhs' : '_\{$1\}',         'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '^^', 'rhs' : '^\{$1\}',         'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '((', 'rhs' : '\left($1\right)', 'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '[[', 'rhs' : '\left[$1\right]', 'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '`a', 'rhs' : '\alpha',          'math' : 1, 'type' : 'abbrev'},
         \]
-  for [lhs, rhs] in ultisnip_maps
-    silent execute 'inoremap <buffer><silent>' lhs
-          \ lhs . '<c-r>=UltiSnips#Anon(''' . rhs . ''', ''' . lhs
-          \ . ''', '''', ''i'')<cr>'
-  endfor
 
-  let abbreviations = [
-        \ ['`a', '\alpha'],
-        \]
-  for [lhs, rhs] in abbreviations
-    silent execute 'iabbrev <buffer>' lhs rhs
+  call s:init_math_mappings()
+endfunction
+
+" }}}1
+
+function! s:init_math_mappings() " {{{1
+  for map in g:vimtex_mappings
+    if map.type ==# 'map'
+      silent execute 'inoremap <buffer><silent>' map.lhs
+            \ map.lhs . '<c-r>=UltiSnips#Anon(''' . map.rhs . ''', ''' . map.lhs
+            \ . ''', '''', ''i'')<cr>'
+    elseif map.type ==# 'abbrev'
+      silent execute 'inoremap <silent><buffer> ' . map.lhs
+            \ . ' <c-r>=<sid>is_math() ?'
+            \ string(map.rhs) ':' string(map.lhs) '<cr>'
+    endif
   endfor
+endfunction
+
+" }}}1
+function! s:is_math() " {{{1
+  return match(map(synstack(line('.'), col('.')),
+        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[EX]$') >= 0
 endfunction
 
 " }}}1
