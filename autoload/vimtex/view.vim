@@ -88,6 +88,15 @@ function! s:general.view(file) dict " {{{2
 endfunction
 
 " }}}2
+function! s:general.latexmk_append_argument() dict " {{{2
+  let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
+  let cmd .= vimtex#latexmk#add_option('pdf_update_method', '0')
+  let cmd .= vimtex#latexmk#add_option('pdf_previewer', 'start '
+        \ . g:vimtex_view_general_viewer .  g:vimtex_view_mupdf_options)
+  return cmd
+endfunction
+
+" }}}2
 
 " {{{1 MuPDF
 function! s:mupdf.init() dict " {{{2
