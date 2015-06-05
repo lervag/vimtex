@@ -646,8 +646,14 @@ Commands~
 
                                              *VimtexInfo*
                                              *<plug>(vimtex-info)*
-:VimtexInfo               Show information stored for all projects (available
-                          mostly for debug purposes).
+:VimtexInfo               Show information that is stored by vimtex about the
+                          current LaTeX project (available mostly for debug
+                          purposes).
+
+                                             *VimtexInfo!*
+:VimtexInfo!              Show information that is stored by vimtex about all
+                          open LaTeX projects (available mostly for debug
+                          purposes).
 
                                              *VimtexRefreshFolds*
 :VimtexRefreshFolds       Refresh folds, see |vimtex-zx|.
