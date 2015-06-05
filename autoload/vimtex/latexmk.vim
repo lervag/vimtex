@@ -486,7 +486,6 @@ function! s:stop_buffer() " {{{1
     "
     let n = 0
     for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-      echom getbufvar(b, 'vimtex', {'id' : -1}).id
       if b:vimtex.id == getbufvar(b, 'vimtex', {'id' : -1}).id
         let n += 1
       endif
