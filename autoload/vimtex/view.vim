@@ -308,6 +308,9 @@ endfunction
 
 " {{{1 Zathura
 function! s:zathura.init() dict " {{{2
+  " Only initialize once
+  if has_key(self, 'xwin_id') | return | endif
+
   if !executable('zathura')
     echoerr 'vimtex viewer Zathura is not executable!'
   endif
