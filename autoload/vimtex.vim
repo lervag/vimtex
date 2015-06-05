@@ -33,40 +33,44 @@ function! vimtex#init() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#info() " {{{1
+function! vimtex#info(global) " {{{1
   if !s:initialized
     echoerr 'Error: vimtex has not been initialized!'
     return
   endif
 
-  " Print buffer data
-  call vimtex#echo#echo("b:vimtex\n")
-  call s:print_dict(b:vimtex)
+  if a:global
+    let n = 0
+    for data in g:vimtex#data
+      let d = deepcopy(data)
+      for f in ['aux', 'out', 'log']
+        silent execute 'let d.' . f . ' = data.' . f . '()'
+      endfor
 
-  " Print global data
-  let n = 0
-  for data in g:vimtex#data
-    " Prepare for printing
-    let d = deepcopy(data)
-    for f in ['aux', 'out', 'log']
-      silent execute 'let d.' . f . ' = data.' . f . '()'
+      call vimtex#echo#formatted([
+            \ "\n\ng:vimtex#data[",
+            \ ['VimtexSuccess', n],
+            \ '] : ',
+            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+      call s:print_dict(d)
+      let n += 1
     endfor
-
-    " Print data blob title line
+  else
+    let d = deepcopy(b:vimtex)
+    for f in ['aux', 'out', 'log']
+      silent execute 'let d.data.' . f . ' = b:vimtex.data.' . f . '()'
+    endfor
     call vimtex#echo#formatted([
-          \ "\n\ng:vimtex#data[",
-          \ ['VimtexSuccess', n],
-          \ '] : ',
-          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+          \ "b:vimtex : ",
+          \ ['VimtexSuccess', remove(d.data, 'name') . "\n"]])
     call s:print_dict(d)
-    let n += 1
-  endfor
+  endif
 endfunction
 
 " }}}1
 function! vimtex#wordcount(detailed) " {{{1
   " Run texcount, save output to lines variable
-  let data = g:vimtex#data[b:vimtex.id]
+  let data = b:vimtex.data
   let cmd  = 'cd ' . vimtex#util#fnameescape(data.root)
   let cmd .= '; texcount -nosub -sum '
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
@@ -120,6 +124,7 @@ function! s:init_environment() " {{{1
   let id   = s:get_id(main)
   if id >= 0
     let b:vimtex.id = id
+    let b:vimtex.data = g:vimtex#data[id]
   else
     let data = {}
     let data.tex  = main
@@ -138,14 +143,15 @@ function! s:init_environment() " {{{1
 
     call add(g:vimtex#data, data)
     let b:vimtex.id = len(g:vimtex#data) - 1
+    let b:vimtex.data = g:vimtex#data[-1]
   endif
 
   " Define commands
-  command! -buffer VimtexInfo call vimtex#info()
+  command! -buffer -bang VimtexInfo      call vimtex#info(<q-bang> == "!")
   command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info()<cr>
+  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
 endfunction
 
 function! s:init_options() " {{{1

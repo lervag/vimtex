@@ -29,8 +29,8 @@ function! vimtex#latexmk#init(initialized) " {{{1
   compiler latexmk
 
   " Initialize system PID
-  if !has_key(g:vimtex#data[b:vimtex.id], 'pid')
-    let g:vimtex#data[b:vimtex.id].pid = 0
+  if !has_key(b:vimtex.data, 'pid')
+    let b:vimtex.data.pid = 0
   endif
 
   " Define commands
@@ -84,8 +84,8 @@ function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
 
   if g:vimtex_view_enabled
-        \ && has_key(g:vimtex#data[b:vimtex.id].viewer, 'latexmk_callback')
-    call g:vimtex#data[b:vimtex.id].viewer.latexmk_callback()
+        \ && has_key(b:vimtex.data.viewer, 'latexmk_callback')
+    call b:vimtex.data.viewer.latexmk_callback()
   endif
 
   call vimtex#echo#status(['latexmk compile: ',
@@ -96,7 +96,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#clean(full) " {{{1
-  let data = g:vimtex#data[b:vimtex.id]
+  let data = b:vimtex.data
   if data.pid
     call vimtex#echo#status(['latexmk clean: ',
           \ ['VimtexWarning', 'not while latexmk is running!']])
@@ -122,7 +122,7 @@ function! vimtex#latexmk#clean(full) " {{{1
         \ 'bg'  : 0,
         \ }
   call vimtex#util#execute(exe)
-  let g:vimtex#data[b:vimtex.id].cmd_latexmk_clean = cmd
+  let b:vimtex.data.cmd_latexmk_clean = cmd
 
   call vimtex#echo#status(['latexmk clean: ',
         \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
@@ -142,7 +142,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#toggle() " {{{1
-  let data = g:vimtex#data[b:vimtex.id]
+  let data = b:vimtex.data
 
   if data.pid
     call vimtex#latexmk#stop()
@@ -153,7 +153,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#compile() " {{{1
-  let data = g:vimtex#data[b:vimtex.id]
+  let data = b:vimtex.data
   if data.pid
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexWarning', 'already running for `' . data.base . "'"]])
@@ -180,7 +180,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
-  let data = g:vimtex#data[b:vimtex.id]
+  let data = b:vimtex.data
   if data.pid
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexWarning', 'already running for `' . data.base . "'"]])
@@ -212,7 +212,7 @@ endfunction
 function! vimtex#latexmk#errors_open(force) " {{{1
   cclose
 
-  let log = g:vimtex#data[b:vimtex.id].log()
+  let log = b:vimtex.data.log()
   if empty(log)
     if a:force
       call vimtex#echo#status(['latexmk errors: ',
@@ -258,8 +258,8 @@ let s:open_quickfix_window = 0
 
 " }}}1
 function! vimtex#latexmk#output() " {{{1
-  if has_key(g:vimtex#data[b:vimtex.id], 'tmp')
-    let tmp = g:vimtex#data[b:vimtex.id].tmp
+  if has_key(b:vimtex.data, 'tmp')
+    let tmp = b:vimtex.data.tmp
   else
     call vimtex#echo#status(['vimtex: ', ['VimtexWarning', 'No output exists']])
     return
@@ -320,7 +320,7 @@ function! vimtex#latexmk#status(detailed) " {{{1
             \ ['VimtexWarning', 'not running']])
     endif
   else
-    if g:vimtex#data[b:vimtex.id].pid
+    if b:vimtex.data.pid
       call vimtex#echo#status(['latexmk status: ',
             \ ['VimtexSuccess', 'running']])
     else
@@ -332,11 +332,11 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#stop() " {{{1
-  let pid  = g:vimtex#data[b:vimtex.id].pid
-  let base = g:vimtex#data[b:vimtex.id].base
+  let pid  = b:vimtex.data.pid
+  let base = b:vimtex.data.base
   if pid
     call s:latexmk_kill_pid(pid)
-    let g:vimtex#data[b:vimtex.id].pid = 0
+    let b:vimtex.data.pid = 0
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'stopped (' . base . ')']])
   else
@@ -412,9 +412,9 @@ function! s:latexmk_build_cmd(data) " {{{1
   endif
 
   if g:vimtex_view_enabled
-        \ && has_key(g:vimtex#data[b:vimtex.id].viewer,
+        \ && has_key(b:vimtex.data.viewer,
         \            'latexmk_append_argument')
-    let cmd .= g:vimtex#data[b:vimtex.id].viewer.latexmk_append_argument()
+    let cmd .= b:vimtex.data.viewer.latexmk_append_argument()
   endif
 
   let cmd .= ' ' . vimtex#util#fnameescape(a:data.base)
@@ -476,19 +476,18 @@ function! s:stop_buffer() " {{{1
   " Only run if latex variables are set
   "
   if !exists('b:vimtex') | return | endif
-  let id = b:vimtex.id
-  let pid = g:vimtex#data[id].pid
 
   "
   " Only stop if latexmk is running
   "
-  if pid
+  if b:vimtex.data.pid !=# 0
     "
     " Count the number of buffers that point to current latex blob
     "
     let n = 0
     for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-      if id == getbufvar(b, 'vimtex', {'id' : -1}).id
+      echom getbufvar(b, 'vimtex', {'id' : -1}).id
+      if b:vimtex.id == getbufvar(b, 'vimtex', {'id' : -1}).id
         let n += 1
       endif
     endfor

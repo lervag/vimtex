@@ -74,7 +74,7 @@ function! vimtex#mappings#init(initialized)
 
   if g:vimtex_view_enabled
     nmap <silent><buffer> <localleader>lv <plug>(vimtex-view)
-    if has_key(g:vimtex#data[b:vimtex.id], 'rsearch')
+    if has_key(b:vimtex.data, 'rsearch')
       nmap <silent><buffer> <localleader>lr <plug>(vimtex-reverse-search)
     endif
   endif
