@@ -101,6 +101,9 @@ endfunction
 
 " {{{1 MuPDF
 function! s:mupdf.init() dict " {{{2
+  " Only initialize once
+  if has_key(self, 'xwin_id') | return | endif
+
   if !executable('mupdf')
     echoerr 'vimtex viewer MuPDF is not executable!'
   endif
