@@ -28,7 +28,10 @@ function! vimtex#latexmk#init(initialized) " {{{1
   " Set compiler (this defines the errorformat)
   compiler latexmk
 
-  let g:vimtex#data[b:vimtex.id].pid = 0
+  " Initialize system PID
+  if !has_key(g:vimtex#data[b:vimtex.id], 'pid')
+    let g:vimtex#data[b:vimtex.id].pid = 0
+  endif
 
   " Define commands
   command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
