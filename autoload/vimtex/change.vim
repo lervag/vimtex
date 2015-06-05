@@ -280,20 +280,23 @@ endfunction
 " }}}1
 
 function! s:sidwrap(func) " {{{1
-  return s:SID . a:func
+  return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$') . a:func
 endfunction
 
-let s:SID = matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$')
-
 function! s:input_complete(lead, cmdline, pos) " {{{1
-  let suggestions = []
-  for entry in g:vimtex_complete_environments
-    let env = entry.word
-    if env =~ '^' . a:lead
-      call add(suggestions, env)
-    endif
-  endfor
-  return suggestions
+  return filter([
+        \ 'itemize',
+        \ 'enumerate',
+        \ 'description',
+        \ 'center',
+        \ 'figure',
+        \ 'table',
+        \ 'equation',
+        \ 'multline',
+        \ 'align',
+        \ 'split',
+        \ '\[',
+        \ ], 'v:val =~# ''^' . a:lead . '''')
 endfunction
 
 function! s:search_and_skip_comments(pat, ...) " {{{1
