@@ -71,7 +71,7 @@ endfunction
 
 function! vimtex#fold#refresh(map) " {{{1
   " Parse tex file to dynamically set the sectioning fold levels
-  let b:vimtex.fold_parts = s:parse_folded()
+  let b:vimtex_fold_parts = s:parse_folded()
 
   " Refresh folds
   if g:vimtex_fold_automatic
@@ -101,7 +101,7 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold chapters and sections
-  for [part, level] in b:vimtex.fold_parts
+  for [part, level] in b:vimtex_fold_parts
     if line =~# part
       return '>' . level
     endif

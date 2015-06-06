@@ -83,7 +83,7 @@ let s:bibtex = 1
 let s:completion_type = ''
 
 function! vimtex#complete#labels(regex) " {{{1
-  let labels = s:labels_get(b:vimtex.data.aux())
+  let labels = s:labels_get(b:vimtex.aux())
   let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
 
   " Try to match label and number
@@ -172,7 +172,7 @@ function! s:bibtex_search(regexp) " {{{2
 
   " The bibtex completion seems to require that we are in the project root
   let l:save_pwd = getcwd()
-  execute 'lcd ' . fnameescape(b:vimtex.data.root)
+  execute 'lcd ' . fnameescape(b:vimtex.root)
 
   " Find data from external bib files
   let bibfiles = join(s:bibtex_find_bibs(), ',')
@@ -227,7 +227,7 @@ function! s:bibtex_search(regexp) " {{{2
   execute 'lcd ' . fnameescape(l:save_pwd)
 
   " Find data from 'thebibliography' environments
-  let lines = readfile(b:vimtex.data.tex)
+  let lines = readfile(b:vimtex.tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
     for line in filter(filter(lines, 'v:val =~# ''\C\\bibitem'''),
           \ 'v:val =~ a:regexp')
@@ -249,7 +249,7 @@ function! s:bibtex_find_bibs(...) " {{{2
   if a:0
     let file = a:1
   else
-    let file = b:vimtex.data.tex
+    let file = b:vimtex.tex
   endif
 
   if !filereadable(file)

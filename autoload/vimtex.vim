@@ -41,16 +41,14 @@ function! vimtex#info(global) " {{{1
 
   if a:global
     let n = 0
-    for data in g:vimtex#data
+    for data in g:vimtex_data
       let d = deepcopy(data)
       for f in ['aux', 'out', 'log']
         silent execute 'let d.' . f . ' = data.' . f . '()'
       endfor
 
       call vimtex#echo#formatted([
-            \ "\n\ng:vimtex#data[",
-            \ ['VimtexSuccess', n],
-            \ '] : ',
+            \ "\n\ng:vimtex_data[", ['VimtexSuccess', n], '] : ',
             \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
       call s:print_dict(d)
       let n += 1
@@ -58,11 +56,11 @@ function! vimtex#info(global) " {{{1
   else
     let d = deepcopy(b:vimtex)
     for f in ['aux', 'out', 'log']
-      silent execute 'let d.data.' . f . ' = b:vimtex.data.' . f . '()'
+      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
     endfor
     call vimtex#echo#formatted([
-          \ "b:vimtex : ",
-          \ ['VimtexSuccess', remove(d.data, 'name') . "\n"]])
+          \ 'b:vimtex : ',
+          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
     call s:print_dict(d)
   endif
 endfunction
@@ -70,11 +68,10 @@ endfunction
 " }}}1
 function! vimtex#wordcount(detailed) " {{{1
   " Run texcount, save output to lines variable
-  let data = b:vimtex.data
-  let cmd  = 'cd ' . vimtex#util#fnameescape(data.root)
+  let cmd  = 'cd ' . vimtex#util#fnameescape(b:vimtex.root)
   let cmd .= '; texcount -nosub -sum '
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#fnameescape(data.base)
+  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
   let lines = split(system(cmd), '\n')
 
   " Create wordcount window
@@ -115,35 +112,36 @@ endfunction
 " }}}1
 
 function! s:init_environment() " {{{1
-  " Initialize global and local data blobs
-  call vimtex#util#set_default('g:vimtex#data', [])
-  call vimtex#util#set_default('b:vimtex', {})
+  " Initialize container for data blobs if it does not exist
+  let g:vimtex_data = get(g:, 'vimtex_data', [])
 
-  " Create new or link to existing blob
+  " Get main file number and check if data blob already exists
   let main = s:get_main()
   let id   = s:get_id(main)
+
   if id >= 0
-    let b:vimtex.id = id
-    let b:vimtex.data = g:vimtex#data[id]
+    " Link to existing blob
+    let b:vimtex_id = id
+    let b:vimtex = g:vimtex_data[id]
   else
-    let data = {}
-    let data.tex  = main
-    let data.root = fnamemodify(data.tex, ':h')
-    let data.base = fnamemodify(data.tex, ':t')
-    let data.name = fnamemodify(data.tex, ':t:r')
-    function data.aux() dict
+    " Create new blob
+    let b:vimtex = {}
+    let b:vimtex.tex  = main
+    let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
+    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
+    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
+    function b:vimtex.aux() dict
       return s:get_main_ext(self, 'aux')
     endfunction
-    function data.log() dict
+    function b:vimtex.log() dict
       return s:get_main_ext(self, 'log')
     endfunction
-    function data.out() dict
+    function b:vimtex.out() dict
       return s:get_main_ext(self, 'pdf')
     endfunction
 
-    call add(g:vimtex#data, data)
-    let b:vimtex.id = len(g:vimtex#data) - 1
-    let b:vimtex.data = g:vimtex#data[-1]
+    call add(g:vimtex_data, b:vimtex)
+    let b:vimtex_id = len(g:vimtex_data) - 1
   endif
 
   " Define commands
@@ -225,10 +223,10 @@ endfunction
 " }}}1
 
 function! s:get_id(main) " {{{1
-  if exists('g:vimtex#data') && !empty(g:vimtex#data)
+  if exists('g:vimtex_data') && !empty(g:vimtex_data)
     let id = 0
-    while id < len(g:vimtex#data)
-      if g:vimtex#data[id].tex == a:main
+    while id < len(g:vimtex_data)
+      if g:vimtex_data[id].tex == a:main
         return id
       endif
       let id += 1

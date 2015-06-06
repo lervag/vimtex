@@ -28,7 +28,7 @@ function! vimtex#labels#open() " {{{1
 
   let index = {}
   let index.name            = s:name
-  let index.entries         = s:gather_labels(b:vimtex.data.tex)
+  let index.entries         = s:gather_labels(b:vimtex.tex)
   let index.all_entries     = deepcopy(index.entries)
   let index.hook_init_post  = function('s:index_hook_init_post')
   let index.help            = [

@@ -8,8 +8,6 @@ function! vimtex#view#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_view_enabled', 1)
   if !g:vimtex_view_enabled | return | endif
 
-  let data = b:vimtex.data
-
   " Initialize viewer options
   for viewer in s:viewers
     call vimtex#util#set_default('g:vimtex_view_' . viewer . '_options', '')
@@ -31,23 +29,23 @@ function! vimtex#view#init(initialized) " {{{1
     return
   endif
 
-  execute 'let data.viewer = ' . viewer
-  call data.viewer.init()
+  execute 'let b:vimtex.viewer = ' . viewer
+  call b:vimtex.viewer.init()
 
   " Define commands
   command! -buffer -nargs=? -complete=file VimtexView
-        \ call b:vimtex.data.viewer.view(<q-args>)
-  if has_key(data.viewer, 'reverse_search')
+        \ call b:vimtex.viewer.view(<q-args>)
+  if has_key(b:vimtex.viewer, 'reverse_search')
     command! -buffer -nargs=* VimtexRSearch
-          \ call b:vimtex.data.viewer.reverse_search()
+          \ call b:vimtex.viewer.reverse_search()
   endif
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-view)
-        \ :call b:vimtex.data.viewer.view('')<cr>
-  if has_key(data.viewer, 'reverse_search')
+        \ :call b:vimtex.viewer.view('')<cr>
+  if has_key(b:vimtex.viewer, 'reverse_search')
     nnoremap <buffer> <plug>(vimtex-reverse-search)
-          \ :call b:vimtex.data.viewer.reverse_search()<cr>
+          \ :call b:vimtex.viewer.reverse_search()<cr>
   endif
 endfunction
 
@@ -76,7 +74,7 @@ endfunction
 
 " }}}2
 function! s:general.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -123,7 +121,7 @@ endfunction
 
 " }}}2
 function! s:mupdf.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
@@ -176,7 +174,7 @@ function! s:mupdf.reverse_search() dict " {{{2
   if !executable('xdotool') | return | endif
   if !executable('synctex') | return | endif
 
-  let outfile = b:vimtex.data.out()
+  let outfile = b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
@@ -222,7 +220,7 @@ function! s:mupdf.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-      call self.forward_search(b:vimtex.data.out())
+      call self.forward_search(b:vimtex.out())
       call self.focus_vim()
     endif
   endif
@@ -249,7 +247,7 @@ endfunction
 
 " }}}2
 function! s:okular.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -271,7 +269,7 @@ endfunction
 
 " }}}2
 function! s:qpdfview.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -295,7 +293,7 @@ endfunction
 
 " }}}2
 function! s:sumatrapdf.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   let exe = {}
@@ -331,7 +329,7 @@ endfunction
 
 " }}}2
 function! s:zathura.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.data.out()
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
@@ -372,7 +370,7 @@ endfunction
 function! s:zathura.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
-      call self.forward_search(b:vimtex.data.out())
+      call self.forward_search(b:vimtex.out())
       call self.focus_vim()
     endif
   endif
