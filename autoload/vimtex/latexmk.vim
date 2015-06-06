@@ -4,13 +4,11 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#latexmk#init(initialized) " {{{1
+function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
   if !g:vimtex_latexmk_enabled | return | endif
-  if s:system_incompatible() | return | endif
 
-  " Set default options
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
@@ -20,10 +18,26 @@ function! vimtex#latexmk#init(initialized) " {{{1
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
-  call vimtex#util#error_deprecated('g:vimtex_build_dir')
-  call vimtex#util#error_deprecated('g:vimtex_latexmk_autojump')
-  call vimtex#util#error_deprecated('g:vimtex_latexmk_output')
-  call vimtex#util#error_deprecated('g:vimtex_latexmk_quickfix')
+endfunction
+
+" }}}1
+function! vimtex#latexmk#init_script() " {{{1
+  call s:check_system_compatibility()
+
+  if !g:vimtex_latexmk_enabled | return | endif
+
+  " Ensure that all latexmk processes are stopped when vim exits
+  if g:vimtex_latexmk_continuous
+    augroup latex_latexmk
+      autocmd!
+      autocmd VimLeave * call vimtex#latexmk#stop_all()
+    augroup END
+  endif
+endfunction
+
+" }}}1
+function! vimtex#latexmk#init_buffer() " {{{1
+  if !g:vimtex_latexmk_enabled | return | endif
 
   " Set compiler (this defines the errorformat)
   compiler latexmk
@@ -57,27 +71,16 @@ function! vimtex#latexmk#init(initialized) " {{{1
   nnoremap <buffer> <plug>(vimtex-status-all)     :call vimtex#latexmk#status(1)<cr>
   nnoremap <buffer> <plug>(vimtex-lacheck)        :call vimtex#latexmk#lacheck()<cr>
 
-  " The remaining part is only relevant for continuous mode
-  if !g:vimtex_latexmk_continuous | return | endif
-
-  " Ensure that all latexmk processes are stopped when vim exits
-  " Note: Only need to define this once, globally.
-  if !a:initialized
+  " Kill running latexmk process if all buffers for a latex project are closed
+  if g:vimtex_latexmk_continuous
     augroup latex_latexmk
-      autocmd!
-      autocmd VimLeave * call vimtex#latexmk#stop_all()
+      autocmd BufUnload <buffer> call s:stop_buffer()
     augroup END
   endif
-
-  " If all buffers for a given latex project are closed, kill latexmk
-  " Note: This must come after the above so that the autocmd group is properly
-  "       refreshed if necessary
-  augroup latex_latexmk
-    autocmd BufUnload <buffer> call s:stop_buffer()
-  augroup END
 endfunction
 
 " }}}1
+
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
 
@@ -489,24 +492,28 @@ function! s:stop_buffer() " {{{1
   endif
 endfunction
 
-function! s:system_incompatible() " {{{1
+function! s:check_system_compatibility() " {{{1
+  "
+  " Check for required executables
+  "
   if has('win32')
     let required = ['latexmk']
   else
     let required = ['latexmk', 'pgrep']
   endif
+  let missing = filter(required, '!executable(v:val)')
 
   "
-  " Check for required executables
+  " Disable latexmk if required programs are missing
   "
-  for cmd in required
-    if !executable(cmd)
-      call vimtex#echo#warning('vimtex warning: ')
-      call vimtex#echo#warning('  vimtex#latexmk was not initialized', 'None')
+  if len(missing) > 0
+    call vimtex#echo#warning('vimtex warning: ')
+    call vimtex#echo#warning('  vimtex#latexmk was not initialized', 'None')
+    for cmd in missing
       call vimtex#echo#warning('  ' . cmd . ' is not executable', 'None')
-      return 1
-    endif
-  endfor
+    endfor
+    let g:vimtex_latexmk_enabled = 0
+  endif
 endfunction
 
 " }}}1

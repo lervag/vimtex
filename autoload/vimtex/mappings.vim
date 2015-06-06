@@ -4,8 +4,16 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#mappings#init(initialized)
+function! vimtex#mappings#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_mappings_enabled', 1)
+endfunction
+
+" }}}1
+function! vimtex#mappings#init_script() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#mappings#init_buffer() " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
   nmap <silent><buffer> <localleader>li <plug>(vimtex-info)
@@ -79,5 +87,7 @@ function! vimtex#mappings#init(initialized)
     endif
   endif
 endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2

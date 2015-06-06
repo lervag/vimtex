@@ -4,53 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#init(initialized) " {{{1
-  call vimtex#util#set_default('g:vimtex_view_enabled', 1)
-  if !g:vimtex_view_enabled | return | endif
-
-  " Initialize viewer options
-  for viewer in s:viewers
-    call vimtex#util#set_default('g:vimtex_view_' . viewer . '_options', '')
-  endfor
-
-  " Initialize other options
-  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
-        \ {
-        \   'linux' : 'xdg-open',
-        \   'mac'   : 'open',
-        \ })
-  call vimtex#util#set_default('g:vimtex_view_method', 'general')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
-  call vimtex#util#error_deprecated('g:vimtex_viewer')
-
-  let viewer = 's:' . g:vimtex_view_method
-  if !exists(viewer)
-    echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
-    return
-  endif
-
-  execute 'let b:vimtex.viewer = ' . viewer
-  call b:vimtex.viewer.init()
-
-  " Define commands
-  command! -buffer -nargs=? -complete=file VimtexView
-        \ call b:vimtex.viewer.view(<q-args>)
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    command! -buffer -nargs=* VimtexRSearch
-          \ call b:vimtex.viewer.reverse_search()
-  endif
-
-  " Define mappings
-  nnoremap <buffer> <plug>(vimtex-view)
-        \ :call b:vimtex.viewer.view('')<cr>
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    nnoremap <buffer> <plug>(vimtex-reverse-search)
-          \ :call b:vimtex.viewer.reverse_search()<cr>
-  endif
-endfunction
-
-" }}}1
-
 let s:viewers = [
       \ 'general',
       \ 'mupdf',
@@ -63,6 +16,68 @@ for viewer in s:viewers
   execute 'let s:' . viewer . ' = {}'
 endfor
 
+function! vimtex#view#init_options() " {{{1
+  call vimtex#util#set_default('g:vimtex_view_enabled', 1)
+  if !g:vimtex_view_enabled | return | endif
+
+  for viewer in s:viewers
+    call vimtex#util#set_default('g:vimtex_view_' . viewer . '_options', '')
+  endfor
+
+  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
+        \ {
+        \   'linux' : 'xdg-open',
+        \   'mac'   : 'open',
+        \ })
+  call vimtex#util#set_default('g:vimtex_view_method', 'general')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
+endfunction
+
+" }}}1
+function! vimtex#view#init_script() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#view#init_buffer() " {{{1
+  if !g:vimtex_view_enabled | return | endif
+
+  "
+  " Add viewer to the data blob
+  "
+  let viewer = 's:' . g:vimtex_view_method
+  if !exists(viewer)
+    echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
+    return
+  endif
+  execute 'let b:vimtex.viewer = ' . viewer
+  call b:vimtex.viewer.init()
+
+  "
+  " Define commands
+  "
+  command! -buffer -nargs=? -complete=file VimtexView
+        \ call b:vimtex.viewer.view(<q-args>)
+  if has_key(b:vimtex.viewer, 'reverse_search')
+    command! -buffer -nargs=* VimtexRSearch
+          \ call b:vimtex.viewer.reverse_search()
+  endif
+
+  "
+  " Define mappings
+  "
+  nnoremap <buffer> <plug>(vimtex-view)
+        \ :call b:vimtex.viewer.view('')<cr>
+  if has_key(b:vimtex.viewer, 'reverse_search')
+    nnoremap <buffer> <plug>(vimtex-reverse-search)
+          \ :call b:vimtex.viewer.reverse_search()<cr>
+  endif
+endfunction
+
+" }}}1
+
+"
+" Define viewers
+"
 " {{{1 General
 function! s:general.init() dict " {{{2
   if !executable(g:vimtex_view_general_viewer)
@@ -391,9 +406,10 @@ endfunction
 " }}}2
 " }}}1
 
-" {{{1 Common functionality
-
-function! s:output_not_readable(output) " {{{2
+"
+" Common functionality
+"
+function! s:output_not_readable(output) " {{{1
   if !filereadable(a:output)
     call vimtex#echo#warning('vimtex viewer can not read PDF file!')
     return 1
@@ -402,8 +418,8 @@ function! s:output_not_readable(output) " {{{2
   endif
 endfunction
 
-" }}}2
-function! s:xwin_get_id() dict " {{{2
+" }}}1
+function! s:xwin_get_id() dict " {{{1
   if !executable('xdotool') | return 0 | endif
   if self.xwin_id > 0 | return 0 | endif
   sleep 500m
@@ -421,8 +437,8 @@ function! s:xwin_get_id() dict " {{{2
   return self.xwin_id
 endfunction
 
-" }}}2
-function! s:xwin_exists() dict " {{{2
+" }}}1
+function! s:xwin_exists() dict " {{{1
   if !executable('xdotool') | return 0 | endif
 
   let cmd = 'xdotool search --class ' . self.class
@@ -437,8 +453,8 @@ function! s:xwin_exists() dict " {{{2
   return 0
 endfunction
 
-" }}}2
-function! s:xwin_send_keys(keys) dict " {{{2
+" }}}1
+function! s:xwin_send_keys(keys) dict " {{{1
   if !executable('xdotool') | return | endif
 
   if a:keys !=# ''
@@ -448,8 +464,8 @@ function! s:xwin_send_keys(keys) dict " {{{2
   endif
 endfunction
 
-" }}}2
-function! s:focus_viewer() dict " {{{2
+" }}}1
+function! s:focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_exists()
@@ -458,14 +474,13 @@ function! s:focus_viewer() dict " {{{2
   endif
 endfunction
 
-function! s:focus_vim() dict " {{{2
+" }}}1
+function! s:focus_vim() dict " {{{1
   if !executable('xdotool') | return | endif
 
   silent execute '!xdotool windowfocus ' . v:windowid
   redraw!
 endfunction
-
-" }}}2
 
 " }}}1
 

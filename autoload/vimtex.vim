@@ -4,155 +4,73 @@
 " Email:      karl.yngve@gmail.com
 "
 
-" vimtex is not initialized until vimtex#init() has been run once
+" {{{1 Initialization variables
+
+"
+" The flag s:initialized is set to 1 after vimtex has been initialized to
+" prevent errors if the scripts are loaded more than once (e.g. when opening
+" more than one LaTeX buffer in one vim instance).  Thus it allows us to
+" distinguish between global initialization and buffer initialization.
+"
 if !exists('s:initialized')
   let s:initialized = 0
 endif
 
+"
+" Define list of vimtex modules
+"
+if !exists('s:modules')
+  let s:modules = map(
+        \ split(
+        \   globpath(
+        \     fnamemodify(expand('<sfile>'), ':r'),
+        \     '*.vim'),
+        \   '\n'),
+        \ 'fnamemodify(v:val, '':t:r'')')
+endif
+
+" }}}1
+
+"
+" Main initialization function
+"
 function! vimtex#init() " {{{1
-  call s:init_options()
-  call s:init_environment()
-
-  call vimtex#toc#init(s:initialized)
-  call vimtex#echo#init(s:initialized)
-  call vimtex#fold#init(s:initialized)
-  call vimtex#view#init(s:initialized)
-  call vimtex#index#init(s:initialized)
-  call vimtex#motion#init(s:initialized)
-  call vimtex#labels#init(s:initialized)
-  call vimtex#change#init(s:initialized)
-  call vimtex#latexmk#init(s:initialized)
-  call vimtex#complete#init(s:initialized)
-  call vimtex#mappings#init(s:initialized)
+  "
+  " First initialize buffer options and construct (if necessary) the vimtex
+  " data blob.
+  "
+  call s:init_buffer()
 
   "
-  " This variable is used to allow a distinction between global and buffer
-  " initialization
+  " Then we initialize the modules.  This is done in three steps:
   "
+  " 1. Initialize options (load default options if not otherwise set).  This is
+  "    only done once for each vim session.
+  "
+  " 2. Initialize module scripts (set script variables and similar).  This is
+  "    also only done once for each vim session.
+  "
+  " 3. Initialize module for current buffer.  This is done for each new LaTeX
+  "    buffer.
+  "
+  if !s:initialized
+    call s:init_modules('options')
+    call s:init_modules('script')
+  endif
+  call s:init_modules('buffer')
+
   let s:initialized = 1
 endfunction
 
 " }}}1
-function! vimtex#info(global) " {{{1
-  if !s:initialized
-    echoerr 'Error: vimtex has not been initialized!'
-    return
-  endif
 
-  if a:global
-    let n = 0
-    for data in g:vimtex_data
-      let d = deepcopy(data)
-      for f in ['aux', 'out', 'log']
-        silent execute 'let d.' . f . ' = data.' . f . '()'
-      endfor
-
-      call vimtex#echo#formatted([
-            \ "\n\ng:vimtex_data[", ['VimtexSuccess', n], '] : ',
-            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-      call s:print_dict(d)
-      let n += 1
-    endfor
-  else
-    let d = deepcopy(b:vimtex)
-    for f in ['aux', 'out', 'log']
-      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
-    endfor
-    call vimtex#echo#formatted([
-          \ 'b:vimtex : ',
-          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-    call s:print_dict(d)
-  endif
-endfunction
-
-" }}}1
-function! vimtex#wordcount(detailed) " {{{1
-  " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#fnameescape(b:vimtex.root)
-  let cmd .= '; texcount -nosub -sum '
-  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
-  let lines = split(system(cmd), '\n')
-
-  " Create wordcount window
-  if bufnr('TeXcount') >= 0
-    bwipeout TeXcount
-  endif
-  split TeXcount
-
-  " Add lines to buffer
-  for line in lines
-    call append('$', printf('%s', line))
-  endfor
-  0delete _
-
-  " Set mappings
-  nnoremap <buffer> <silent> q :bwipeout<cr>
-
-  " Set buffer options
-  setlocal bufhidden=wipe
-  setlocal buftype=nofile
-  setlocal cursorline
-  setlocal listchars=
-  setlocal nobuflisted
-  setlocal nolist
-  setlocal nospell
-  setlocal noswapfile
-  setlocal nowrap
-  setlocal tabstop=8
-  setlocal nomodifiable
-
-  " Set highlighting
-  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
-  syntax match TexcountValue /.*:\zs.*/
-  highlight link TexcountText  VimtexMsg
-  highlight link TexcountValue Constant
-endfunction
-
-" }}}1
-
-function! s:init_environment() " {{{1
-  " Initialize container for data blobs if it does not exist
-  let g:vimtex_data = get(g:, 'vimtex_data', [])
-
-  " Get main file number and check if data blob already exists
-  let main = s:get_main()
-  let id   = s:get_id(main)
-
-  if id >= 0
-    " Link to existing blob
-    let b:vimtex_id = id
-    let b:vimtex = g:vimtex_data[id]
-  else
-    " Create new blob
-    let b:vimtex = {}
-    let b:vimtex.tex  = main
-    let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
-    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
-    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
-    function b:vimtex.aux() dict
-      return s:get_main_ext(self, 'aux')
-    endfunction
-    function b:vimtex.log() dict
-      return s:get_main_ext(self, 'log')
-    endfunction
-    function b:vimtex.out() dict
-      return s:get_main_ext(self, 'pdf')
-    endfunction
-
-    call add(g:vimtex_data, b:vimtex)
-    let b:vimtex_id = len(g:vimtex_data) - 1
-  endif
-
-  " Define commands
-  command! -buffer -bang VimtexInfo      call vimtex#info(<q-bang> == "!")
-  command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
-
-  " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
-endfunction
-
-function! s:init_options() " {{{1
+"
+" Auxilliary initialization functions
+"
+function! s:init_buffer() " {{{1
+  "
+  " First we set some vim options
+  "
   let s:save_cpo = &cpo
   set cpo&vim
 
@@ -199,6 +117,59 @@ function! s:init_options() " {{{1
 
   let &cpo = s:save_cpo
   unlet s:save_cpo
+
+  "
+  " Next we initialize the data blob
+  "
+
+  " Create container for data blobs if it does not exist
+  let g:vimtex_data = get(g:, 'vimtex_data', [])
+
+  " Get main file number and check if data blob already exists
+  let main = s:get_main()
+  let id   = s:get_id(main)
+  if id >= 0
+    " Link to existing blob
+    let b:vimtex_id = id
+    let b:vimtex = g:vimtex_data[id]
+  else
+    " Create new blob
+    let b:vimtex = {}
+    let b:vimtex.tex  = main
+    let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
+    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
+    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
+    function b:vimtex.aux() dict
+      return s:get_main_ext(self, 'aux')
+    endfunction
+    function b:vimtex.log() dict
+      return s:get_main_ext(self, 'log')
+    endfunction
+    function b:vimtex.out() dict
+      return s:get_main_ext(self, 'pdf')
+    endfunction
+
+    call add(g:vimtex_data, b:vimtex)
+    let b:vimtex_id = len(g:vimtex_data) - 1
+  endif
+
+  "
+  " Finally we define commands and mappings
+  "
+
+  " Define commands
+  command! -buffer -bang VimtexInfo      call vimtex#info(<q-bang> == "!")
+  command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
+
+  " Define mappings
+  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
+endfunction
+
+" }}}1
+function! s:init_modules(initmode) " {{{1
+  for module in s:modules
+    execute 'call vimtex#' . module . '#init_' . a:initmode . '()'
+  endfor
 endfunction
 
 " }}}1
@@ -339,6 +310,87 @@ function! s:get_main_ext(self, ext) " {{{1
 
   " Finally return empty string if no entry is found
   return ''
+endfunction
+
+" }}}1
+
+"
+" Simple utility features
+"
+function! vimtex#info(global) " {{{1
+  if !s:initialized
+    echoerr 'Error: vimtex has not been initialized!'
+    return
+  endif
+
+  if a:global
+    let n = 0
+    for data in g:vimtex_data
+      let d = deepcopy(data)
+      for f in ['aux', 'out', 'log']
+        silent execute 'let d.' . f . ' = data.' . f . '()'
+      endfor
+
+      call vimtex#echo#formatted([
+            \ "\n\ng:vimtex_data[", ['VimtexSuccess', n], '] : ',
+            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+      call s:print_dict(d)
+      let n += 1
+    endfor
+  else
+    let d = deepcopy(b:vimtex)
+    for f in ['aux', 'out', 'log']
+      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
+    endfor
+    call vimtex#echo#formatted([
+          \ 'b:vimtex : ',
+          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+    call s:print_dict(d)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#wordcount(detailed) " {{{1
+  " Run texcount, save output to lines variable
+  let cmd  = 'cd ' . vimtex#util#fnameescape(b:vimtex.root)
+  let cmd .= '; texcount -nosub -sum '
+  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
+  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
+  let lines = split(system(cmd), '\n')
+
+  " Create wordcount window
+  if bufnr('TeXcount') >= 0
+    bwipeout TeXcount
+  endif
+  split TeXcount
+
+  " Add lines to buffer
+  for line in lines
+    call append('$', printf('%s', line))
+  endfor
+  0delete _
+
+  " Set mappings
+  nnoremap <buffer> <silent> q :bwipeout<cr>
+
+  " Set buffer options
+  setlocal bufhidden=wipe
+  setlocal buftype=nofile
+  setlocal cursorline
+  setlocal listchars=
+  setlocal nobuflisted
+  setlocal nolist
+  setlocal nospell
+  setlocal noswapfile
+  setlocal nowrap
+  setlocal tabstop=8
+  setlocal nomodifiable
+
+  " Set highlighting
+  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
+  syntax match TexcountValue /.*:\zs.*/
+  highlight link TexcountText  VimtexMsg
+  highlight link TexcountValue Constant
 endfunction
 
 " }}}1

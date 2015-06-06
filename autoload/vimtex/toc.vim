@@ -4,20 +4,91 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#toc#init(initialized) " {{{1
+function! vimtex#toc#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_toc_enabled', 1)
   if !g:vimtex_toc_enabled | return | endif
 
-  " Set default options
   call vimtex#util#set_default('g:vimtex_toc_fold', 0)
   call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
   call vimtex#util#set_default('g:vimtex_toc_number_width', 0)
   call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
   call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
   call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
+endfunction
 
-  " Set some constants
+" }}}1
+function! vimtex#toc#init_script() " {{{1
+  if !g:vimtex_toc_enabled | return | endif
+
   let s:name = 'Table of contents (vimtex)'
+
+  "
+  " Define TOC variables
+  "
+
+  " Define counters
+  let s:max_level = 0
+  let s:count_matters = 0
+
+  " Define dictionary to keep track of TOC numbers
+  let s:number = {
+        \ 'part' : 0,
+        \ 'chapter' : 0,
+        \ 'section' : 0,
+        \ 'subsection' : 0,
+        \ 'subsubsection' : 0,
+        \ 'subsubsubsection' : 0,
+        \ 'current_level' : 0,
+        \ 'preamble' : 0,
+        \ 'frontmatter' : 0,
+        \ 'mainmatter' : 0,
+        \ 'appendix' : 0,
+        \ 'backmatter' : 0,
+        \ }
+
+  " Map for section hierarchy
+  let s:sec_to_value = {
+        \ '_' : 0,
+        \ 'subsubsubsection' : 1,
+        \ 'subsubsection' : 2,
+        \ 'subsection' : 3,
+        \ 'section' : 4,
+        \ 'chapter' : 5,
+        \ 'part' : 6,
+        \ }
+
+  " Define regular expressions to match document parts
+  let s:re_input = '\v^\s*\\%(input|include)\s*\{'
+  let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+  let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+  let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
+  let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
+  let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+  let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
+  let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
+  let s:re_structure_match = '\v((front|main|back)matter|appendix)'
+  let s:re_other = {
+        \ 'toc' : {
+        \   'title' : 'Table of contents',
+        \   're'    : '\v^\s*\\tableofcontents',
+        \   },
+        \ 'index' : {
+        \   'title' : 'Alphabetical index',
+        \   're'    : '\v^\s*\\printindex\[?',
+        \   },
+        \ 'bib' : {
+        \   'title' : 'Bibliography',
+        \   're'    : '\v^\s*\\%('
+        \             .  'printbib%(liography|heading)\s*(\{|\[)?'
+        \             . '|begin\s*\{\s*thebibliography\s*\}'
+        \             . '|bibliography\s*\{)',
+        \   },
+        \ }
+endfunction
+
+" }}}1
+function! vimtex#toc#init_buffer() " {{{1
+  if !g:vimtex_toc_enabled | return | endif
 
   " Define commands
   command! -buffer VimtexTocOpen   call vimtex#toc#open()
@@ -27,6 +98,8 @@ function! vimtex#toc#init(initialized) " {{{1
   nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
   nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
 endfunction
+
+" }}}1
 
 function! vimtex#toc#open() " {{{1
   if vimtex#index#open(s:name) | return | endif
@@ -58,6 +131,7 @@ function! vimtex#toc#open() " {{{1
   call vimtex#index#create(index)
 endfunction
 
+" }}}1
 function! vimtex#toc#toggle() " {{{1
   if vimtex#index#open(s:name)
     call vimtex#index#close(s:name)
@@ -226,67 +300,6 @@ endfunction
 
 " }}}1
 
-" {{{1 TOC variables
-let s:max_level = 0
-let s:count_matters = 0
-
-" Define dictionary to keep track of TOC numbers
-let s:number = {
-      \ 'part' : 0,
-      \ 'chapter' : 0,
-      \ 'section' : 0,
-      \ 'subsection' : 0,
-      \ 'subsubsection' : 0,
-      \ 'subsubsubsection' : 0,
-      \ 'current_level' : 0,
-      \ 'preamble' : 0,
-      \ 'frontmatter' : 0,
-      \ 'mainmatter' : 0,
-      \ 'appendix' : 0,
-      \ 'backmatter' : 0,
-      \ }
-
-" Map for section hierarchy
-let s:sec_to_value = {
-      \ '_' : 0,
-      \ 'subsubsubsection' : 1,
-      \ 'subsubsection' : 2,
-      \ 'subsection' : 3,
-      \ 'section' : 4,
-      \ 'chapter' : 5,
-      \ 'part' : 6,
-      \ }
-
-" Define regular expressions to match document parts
-let s:re_input = '\v^\s*\\%(input|include)\s*\{'
-let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
-let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
-let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
-let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
-let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
-let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
-let s:re_structure_match = '\v((front|main|back)matter|appendix)'
-let s:re_other = {
-      \ 'toc' : {
-      \   'title' : 'Table of contents',
-      \   're'    : '\v^\s*\\tableofcontents',
-      \   },
-      \ 'index' : {
-      \   'title' : 'Alphabetical index',
-      \   're'    : '\v^\s*\\printindex\[?',
-      \   },
-      \ 'bib' : {
-      \   'title' : 'Bibliography',
-      \   're'    : '\v^\s*\\%('
-      \             .  'printbib%(liography|heading)\s*(\{|\[)?'
-      \             . '|begin\s*\{\s*thebibliography\s*\}'
-      \             . '|bibliography\s*\{)',
-      \   },
-      \ }
-
-" }}}1
-
 function! s:parse_toc() " {{{1
   let file = b:vimtex.tex
 
@@ -406,6 +419,7 @@ function! s:parse_file(file) " {{{1
   return toc
 endfunction
 
+" }}}1
 function! s:parse_line_input(line, file) " {{{1
   let l:file = matchstr(a:line, s:re_input_file)
 
@@ -431,6 +445,7 @@ function! s:parse_line_input(line, file) " {{{1
   endif
 endfunction
 
+" }}}1
 function! s:parse_line_sec(file, lnum, line) " {{{1
   let title = matchstr(a:line, s:re_sec_title)
   let level = matchstr(a:line, s:re_sec_level)
@@ -460,8 +475,8 @@ function! s:number_reset(part) " {{{1
   let s:number[a:part] = 1
 endfunction
 
+" }}}1
 function! s:number_increment(level) " {{{1
-  " Increment numbers
   if a:level ==# 'part'
     let s:number.part += 1
     let s:number.chapter = 0

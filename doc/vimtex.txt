@@ -1270,6 +1270,20 @@ The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
+2015-06-06: Minor but convenient restructuring (++)~
+I've changed a lot of the code structure in relatively small ways.  For
+instance, instead of referring to the particular data blobs through the global
+array, I instead linked a buffer variable to the correct global array element.
+
+One particular change is that all modules are now initialized in three steps:
+
+  1. Initialize module options
+  2. Initialize script variables and single execution functionalities
+  3. Initialize buffer options
+
+Finally, I've cleaned up a lot of the code by removing some deprecation
+warnings and similar.
+
 2015-03-21: Implemented index buffers, deprecated vimtex_toc filetype~
 The system for displaying the table of content relied on a dedicated filetype
 plugin.  This was inherited from LaTeX-Box, and worked quite well.  However,

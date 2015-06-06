@@ -4,11 +4,10 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#fold#init(initialized) " {{{1
+function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
   if !g:vimtex_fold_enabled | return | endif
 
-  " Set default options
   call vimtex#util#set_default('g:vimtex_fold_automatic', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
@@ -27,10 +26,33 @@ function! vimtex#fold#init(initialized) " {{{1
         \   'subsection',
         \   'subsubsection',
         \ ])
+endfunction
+
+" }}}1
+function! vimtex#fold#init_script() " {{{1
+  if !g:vimtex_fold_enabled | return | endif
 
   " Define some script variables
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
+
+  " For automatic folding with foldmethod=expr:
+  "   The foldexpr function returns "=" for most lines, which means it can
+  "   become slow for large files.  The following is a hack that is based on
+  "   this reply to a discussion on the Vim Developer list:
+  "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
+  if g:vimtex_fold_automatic
+    augroup latex_fold
+      autocmd!
+      autocmd InsertEnter *.tex call FdmSave()
+      autocmd InsertLeave *.tex call FdmRestore()
+    augroup END
+  endif
+endfunction
+
+" }}}1
+function! vimtex#fold#init_buffer() " {{{1
+  if !g:vimtex_fold_enabled | return | endif
 
   " Set fold options
   setl foldmethod=expr
@@ -46,20 +68,7 @@ function! vimtex#fold#init(initialized) " {{{1
 
   " Set options for automatic/manual mode
   if g:vimtex_fold_automatic
-    " For some reason, foldmethod=expr makes undo slow (at least in some cases)
     nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
-
-    " The foldexpr function returns "=" for most lines, which means it can
-    " become slow for large files.  The following is a hack that is based on
-    " this reply to a discussion on the Vim Developer list:
-    " http://permalink.gmane.org/gmane.editors.vim.devel/14100
-    if !a:initialized
-      augroup latex_fold
-        autocmd!
-        autocmd InsertEnter *.tex call FdmSave()
-        autocmd InsertLeave *.tex call FdmRestore()
-      augroup END
-    endif
   else
     augroup latex_fold
       autocmd!
@@ -68,6 +77,8 @@ function! vimtex#fold#init(initialized) " {{{1
     augroup END
   endif
 endfunction
+
+" }}}1
 
 function! vimtex#fold#refresh(map) " {{{1
   " Parse tex file to dynamically set the sectioning fold levels

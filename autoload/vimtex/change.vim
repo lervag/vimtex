@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#change#init(initialized) " {{{1
+function! vimtex#change#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_change_complete_envs', [
         \ 'itemize',
         \ 'enumerate',
@@ -18,27 +18,43 @@ function! vimtex#change#init(initialized) " {{{1
         \ 'split',
         \ '\[',
         \ ])
+endfunction
 
-  " Define mappings
+" }}}1
+function! vimtex#change#init_script() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#change#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delete-env)
         \ :call vimtex#change#env('')<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-delete-cmd)   vaBom`o<esc>xg``xdF\
         \:silent! call repeat#set("\<plug>(vimtex-delete-cmd)", v:count)<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-change-env)
         \ :call vimtex#change#env_prompt()<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-change-cmd)
         \ :call vimtex#change#command()<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-toggle-star)
         \ :call vimtex#change#toggle_env_star()<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-toggle-delim)
         \ :call vimtex#change#toggle_delim()<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-create-cmd)
         \ :call vimtex#change#to_command()<cr>i
+
   inoremap <silent><buffer> <plug>(vimtex-create-cmd)
         \ <c-r>=vimtex#change#to_command()<cr>
+
   inoremap <silent><buffer> <plug>(vimtex-close-env)
         \ <c-r>=vimtex#change#close_environment()<cr>
 endfunction
+
+" }}}1
 
 function! vimtex#change#command() " {{{1
   let pos_save = getpos('.')
