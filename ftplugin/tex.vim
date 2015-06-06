@@ -4,21 +4,14 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if exists('g:vimtex_enabled') && !g:vimtex_enabled
+if !get(g:, 'vimtex_enabled', 1)
   finish
 endif
+
 if exists('b:did_ftplugin')
   finish
 endif
 let b:did_ftplugin = 1
-
-if exists('g:latex_enabled')
-  echohl Error
-  echom "vim-latex has been renamed to vimtex!"
-  echom "Please see docs for more information (:h vim-latex-namechange)."
-  echohl None
-  finish
-endif
 
 call vimtex#init()
 
