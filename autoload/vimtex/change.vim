@@ -5,6 +5,20 @@
 "
 
 function! vimtex#change#init(initialized) " {{{1
+  call vimtex#util#set_default('g:vimtex_change_complete_envs', [
+        \ 'itemize',
+        \ 'enumerate',
+        \ 'description',
+        \ 'center',
+        \ 'figure',
+        \ 'table',
+        \ 'equation',
+        \ 'multline',
+        \ 'align',
+        \ 'split',
+        \ '\[',
+        \ ])
+
   " Define mappings
   nnoremap <silent><buffer> <plug>(vimtex-delete-env)
         \ :call vimtex#change#env('')<cr>

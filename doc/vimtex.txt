@@ -287,6 +287,25 @@ Options~
       \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
       \ })
 <
+*g:vimtex_change_complete_envs*
+  Define a list of environments that will be completed when changing the
+  surrounding environments (see |<plug>(vimtex-change-env)|).
+
+  Default value: >
+    let g:vimtex_change_complete_envs = [
+      \ 'itemize',
+      \ 'enumerate',
+      \ 'description',
+      \ 'center',
+      \ 'figure',
+      \ 'table',
+      \ 'equation',
+      \ 'multline',
+      \ 'align',
+      \ 'split',
+      \ '\[',
+      \ ]
+<
 *g:vimtex_fold_enabled*
   Use this option to disable/enable folding.
 
