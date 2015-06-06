@@ -285,19 +285,7 @@ function! s:sidwrap(func) " {{{1
 endfunction
 
 function! s:input_complete(lead, cmdline, pos) " {{{1
-  return filter([
-        \ 'itemize',
-        \ 'enumerate',
-        \ 'description',
-        \ 'center',
-        \ 'figure',
-        \ 'table',
-        \ 'equation',
-        \ 'multline',
-        \ 'align',
-        \ 'split',
-        \ '\[',
-        \ ], 'v:val =~# ''^' . a:lead . '''')
+  return filter(g:vimtex_change_complete_envs, 'v:val =~# ''^' . a:lead . '''')
 endfunction
 
 function! s:search_and_skip_comments(pat, ...) " {{{1

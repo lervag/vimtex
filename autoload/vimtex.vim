@@ -155,6 +155,11 @@ function! s:init_environment() " {{{1
 endfunction
 
 function! s:init_options() " {{{1
+  "
+  " This function does two things:
+  " 1. Sets the buffer options for LaTeX editing
+  " 2. Defines all vimtex options with default values if not already defined
+  "
   let s:save_cpo = &cpo
   set cpo&vim
 
@@ -201,6 +206,20 @@ function! s:init_options() " {{{1
 
   let &cpo = s:save_cpo
   unlet s:save_cpo
+
+  let g:vimtex_change_complete_envs = [
+        \ 'itemize',
+        \ 'enumerate',
+        \ 'description',
+        \ 'center',
+        \ 'figure',
+        \ 'table',
+        \ 'equation',
+        \ 'multline',
+        \ 'align',
+        \ 'split',
+        \ '\[',
+        \ ]
 endfunction
 
 " }}}1
