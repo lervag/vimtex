@@ -73,11 +73,11 @@ function! vimtex#change#close_environment() " {{{1
 
   " Close environment
   let env = vimtex#util#get_env()
-  if env == '\['
+  if env ==# '\['
     return '\]'
-  elseif env == '\('
+  elseif env ==# '\('
     return '\)'
-  elseif env != ''
+  elseif env !=# ''
     return '\end{' . env . '}'
   endif
 endfunction
@@ -89,7 +89,7 @@ function! vimtex#change#delim(open, close) " {{{1
   let line = strpart(line,0,c1 - 1) . a:open . strpart(line, c1 + len(d1) - 1)
   call setline(l1, line)
 
-  if l1 == l2
+  if l1 ==# l2
     let n = len(a:open) - len(d1)
     let c2 += n
     let pos = getpos('.')
@@ -105,13 +105,13 @@ endfunction
 function! vimtex#change#env(new) " {{{1
   let [env, l1, c1, l2, c2] = vimtex#util#get_env(1)
 
-  if a:new == ''
+  if a:new ==# ''
     let beg = ''
     let end = ''
-  elseif a:new == '\[' || a:new == '['
+  elseif a:new ==# '\[' || a:new ==# '['
     let beg = '\['
     let end = '\]'
-  elseif a:new == '\(' || a:new == '('
+  elseif a:new ==# '\(' || a:new ==# '('
     let beg = '\('
     let end = '\)'
   else
@@ -121,7 +121,7 @@ function! vimtex#change#env(new) " {{{1
 
   let n1 = len(env) - 1
   let n2 = len(env) - 1
-  if env != '\[' && env != '\('
+  if env !=# '\[' && env !=# '\('
     let n1 += 8
     let n2 += 6
   endif
@@ -133,10 +133,11 @@ function! vimtex#change#env(new) " {{{1
   let line = strpart(line, 0, c2 - 1) . l:end . strpart(line, c2 + n2)
   call setline(l2, line)
 
-  if a:new == ''
+  if a:new ==# ''
     silent! call repeat#set("\<plug>(vimtex-delete-env)", v:count)
   else
-    silent! call repeat#set("\<plug>(vimtex-change-env)" . a:new . "", v:count)
+    silent! call repeat#set(
+          \ "\<plug>(vimtex-change-env)" . a:new . '', v:count)
   endif
 endfunction
 
@@ -158,19 +159,19 @@ function! vimtex#change#to_command() " {{{1
   let pos = getpos('.')
 
   " Return if there is no word at cursor
-  if mode() == 'n'
+  if mode() ==# 'n'
     let column = pos[2] - 1
   else
     let column = pos[2] - 2
   endif
-  if column <= 1 || line[column] =~ '\s'
+  if column <= 1 || line[column] =~# '\s'
     return ''
   endif
 
   " Prepend a backslash to beginning of the current word
   normal! B
   let column = getpos('.')[2]
-  if line[column - 1] != '\'
+  if line[column - 1] !=# '\'
     let line = strpart(line, 0, column - 1) . '\' . strpart(line, column - 1)
     call setline('.', line)
   endif
@@ -179,7 +180,7 @@ function! vimtex#change#to_command() " {{{1
   normal! E
   let column = getpos('.')[2]
   let pos[2] = column + 1
-  if line[column - 1] != '{'
+  if line[column - 1] !=# '{'
     let line = strpart(line, 0, column) . '{' . strpart(line, column)
     call setline('.', line)
     let pos[2] += 1
@@ -196,12 +197,12 @@ function! vimtex#change#toggle_delim() " {{{1
   "
   let [d1, l1, c1, d2, l2, c2] = vimtex#util#get_delim()
 
-  if d1 == ''
+  if d1 ==# ''
     return 0
-  elseif d1 =~ 'left'
+  elseif d1 =~# 'left'
     let newd1 = substitute(d1, '\\left', '', '')
     let newd2 = substitute(d2, '\\right', '', '')
-  elseif d1 !~ '\cbigg\?'
+  elseif d1 !~# '\cbigg\?'
     let newd1 = '\left' . d1
     let newd2 = '\right' . d2
   else
@@ -212,7 +213,7 @@ function! vimtex#change#toggle_delim() " {{{1
   let line = strpart(line, 0, c1 - 1) . newd1 . strpart(line, c1 + len(d1) - 1)
   call setline(l1, line)
 
-  if l1 == l2
+  if l1 ==# l2
     let n = len(newd1) - len(d1)
     let c2 += n
     let pos = getpos('.')
@@ -230,11 +231,11 @@ endfunction
 function! vimtex#change#toggle_env_star() " {{{1
   let env = vimtex#util#get_env()
 
-  if env == '\('
+  if env ==# '\('
     return
-  elseif env == '\['
+  elseif env ==# '\['
     let new_env = equation
-  elseif env[-1:] == '*'
+  elseif env[-1:] ==# '*'
     let new_env = env[:-2]
   else
     let new_env = env . '*'
@@ -275,7 +276,7 @@ function! vimtex#change#wrap_selection_prompt(...) " {{{1
     execute 'keepjumps normal! `<i\begin{' . env . '}'
   endif
 
-  exe "setlocal indentexpr=" . ieOld
+  exe 'setlocal indentexpr=' . ieOld
 endfunction
 " }}}1
 
