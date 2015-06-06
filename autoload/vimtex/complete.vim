@@ -4,11 +4,10 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#complete#init(initialized) " {{{1
+function! vimtex#complete#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_complete_enabled', 1)
   if !g:vimtex_complete_enabled | return | endif
 
-  " Set default options
   call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
   call vimtex#util#set_default('g:vimtex_complete_patterns',
@@ -16,8 +15,14 @@ function! vimtex#complete#init(initialized) " {{{1
         \ 'ref' : '\C\\v\?\(auto\|eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
         \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
         \ })
+endfunction
+
+" }}}1
+function! vimtex#complete#init_script() " {{{1
+  if !g:vimtex_complete_enabled | return | endif
 
   " Check if bibtex is available
+  let s:bibtex = 1
   if !executable('bibtex')
     call vimtex#echo#warning('vimtex warning')
     call vimtex#echo#warning('  bibtex completion is not available!',
@@ -37,8 +42,43 @@ function! vimtex#complete#init(initialized) " {{{1
     let s:bibtex = 0
   endif
 
+  " Define auxiliary variable for completion
+  let s:completion_type = ''
+  let s:type_length = 0
+
+  " Define some regular expressions
+  let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+  let s:re_bibs  = '''' . s:nocomment
+  let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+  let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
+  let s:re_incsearch  = '''' . s:nocomment
+  let s:re_incsearch .= '\\%(input|include)'
+  let s:re_incsearch .= '\m\s*{\zs[^}]\+\ze}'''
+
+  "
+  " s:label_cache is a dictionary that maps filenames to tuples of the form
+  "
+  "   [time, labels, inputs]
+  "
+  " where time is modification time of the cache entry, labels is a list like
+  " returned by extract_labels, and inputs is a list like returned by
+  " s:extract_inputs.
+  "
+  let s:label_cache = {}
+endfunction
+
+" The variable s:bstfile must be defined in script level in order to expand
+" into the script file name.
+let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
+
+" }}}1
+function! vimtex#complete#init_buffer() " {{{1
+  if !g:vimtex_complete_enabled | return | endif
+
   setlocal omnifunc=vimtex#complete#omnifunc
 endfunction
+
+" }}}1
 
 function! vimtex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
@@ -78,10 +118,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
   endif
 endfunction
 
-" Define auxiliary variables for completion
-let s:bibtex = 1
-let s:completion_type = ''
-
+" }}}1
 function! vimtex#complete#labels(regex) " {{{1
   let labels = s:labels_get(b:vimtex.aux())
   let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
@@ -120,6 +157,7 @@ function! vimtex#complete#labels(regex) " {{{1
   return suggestions
 endfunction
 
+" }}}1
 function! vimtex#complete#bibtex(regexp) " {{{1
   let res = []
 
@@ -150,24 +188,13 @@ function! vimtex#complete#bibtex(regexp) " {{{1
 
   return res
 endfunction
+
 " }}}1
 
-" {{{1 Bibtex completion
-
-" Define some regular expressions
-let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-let s:re_bibs  = '''' . s:nocomment
-let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
-let s:re_incsearch  = '''' . s:nocomment
-let s:re_incsearch .= '\\%(input|include)'
-let s:re_incsearch .= '\m\s*{\zs[^}]\+\ze}'''
-
-" Define some auxiliary variables
-let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
-let s:type_length = 0
-
-function! s:bibtex_search(regexp) " {{{2
+"
+" Bibtex completion
+"
+function! s:bibtex_search(regexp) " {{{1
   let res = []
 
   " The bibtex completion seems to require that we are in the project root
@@ -245,7 +272,8 @@ function! s:bibtex_search(regexp) " {{{2
   return res
 endfunction
 
-function! s:bibtex_find_bibs(...) " {{{2
+" }}}1
+function! s:bibtex_find_bibs(...) " {{{1
   if a:0
     let file = a:1
   else
@@ -283,21 +311,12 @@ function! s:bibtex_find_bibs(...) " {{{2
   return bibfiles
 endfunction
 
-" }}}2
 " }}}1
-" {{{1 Label completion
-"
-" s:label_cache is a dictionary that maps filenames to tuples of the form
-"
-"   [ time, labels, inputs ]
-"
-" where time is modification time of the cache entry, labels is a list like
-" returned by extract_labels, and inputs is a list like returned by
-" s:extract_inputs.
-"
-let s:label_cache = {}
 
-function! s:labels_get(file) " {{{2
+"
+" Label completion
+"
+function! s:labels_get(file) " {{{1
   "
   " s:labels_get compares modification time of each entry in the label cache
   " and updates it if necessary.  During traversal of the label cache, all
@@ -331,7 +350,8 @@ function! s:labels_get(file) " {{{2
   return labels
 endfunction
 
-function! s:labels_extract(file) " {{{2
+" }}}1
+function! s:labels_extract(file) " {{{1
   "
   " Searches file for commands of the form
   "
@@ -345,20 +365,21 @@ function! s:labels_extract(file) " {{{2
   let lines = filter(lines, 'v:val !~# ''@cref''')
   let lines = map(lines, 'vimtex#util#convert_back(v:val)')
   for line in lines
-    let tree = vimtex#util#tex2tree(line)
+    let tree = s:tex2tree(line)
     if type(tree[2][0]) == type([])
           \ && !empty(tree[2][0])
       call add(matches, [
-            \ vimtex#util#tree2tex(tree[1][0]),
-            \ vimtex#util#tree2tex(tree[2][0][0]),
-            \ vimtex#util#tree2tex(tree[2][1][0]),
+            \ s:tree2tex(tree[1][0]),
+            \ s:tree2tex(tree[2][0][0]),
+            \ s:tree2tex(tree[2][1][0]),
             \ ])
     endif
   endfor
   return matches
 endfunction
 
-function! s:labels_extract_inputs(file) " {{{2
+" }}}1
+function! s:labels_extract_inputs(file) " {{{1
   let matches = []
   let root = fnamemodify(a:file, ':p:h') . '/'
   for input in filter(readfile(a:file), 'v:val =~# ''\\@input{''')
@@ -370,12 +391,56 @@ function! s:labels_extract_inputs(file) " {{{2
   return matches
 endfunction
 
-" }}}2
 " }}}1
 
+"
+" Utility functions
+"
 function! s:next_chars_match(regex) " {{{1
   return strpart(getline('.'), col('.') - 1) =~ a:regex
 endfunction
+
+" }}}1
+function! s:tex2tree(str) " {{{1
+  let tree = []
+  let i1 = 0
+  let i2 = -1
+  let depth = 0
+  while i2 < len(a:str)
+    let i2 = match(a:str, '[{}]', i2 + 1)
+    if i2 < 0
+      let i2 = len(a:str)
+    endif
+    if i2 >= len(a:str) || a:str[i2] ==# '{'
+      if depth == 0
+        let item = substitute(strpart(a:str, i1, i2 - i1),
+              \ '^\s*\|\s*$', '', 'g')
+        if !empty(item)
+          call add(tree, item)
+        endif
+        let i1 = i2 + 1
+      endif
+      let depth += 1
+    else
+      let depth -= 1
+      if depth == 0
+        call add(tree, s:tex2tree(strpart(a:str, i1, i2 - i1)))
+        let i1 = i2 + 1
+      endif
+    endif
+  endwhile
+  return tree
+endfunction
+
+" }}}1
+function! s:tree2tex(tree) " {{{1
+  if type(a:tree) == type('')
+    return a:tree
+  else
+    return '{' . join(map(a:tree, 's:tree2tex(v:val)'), '') . '}'
+  endif
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2

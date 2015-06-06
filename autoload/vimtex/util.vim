@@ -4,6 +4,94 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#util#init_options() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#util#init_script() " {{{1
+  let s:delimiters_open = [
+        \ '(',
+        \ '\[',
+        \ '\\{',
+        \ '\\\Cleft\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
+        \ ]
+
+  let s:delimiters_close = [
+        \ ')',
+        \ '\]',
+        \ '\\}',
+        \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\()\|\]\|\\}\)',
+        \ ]
+
+  let s:convert_back_list = map([
+        \ ['\\''A}'        , 'Á'],
+        \ ['\\`A}'         , 'À'],
+        \ ['\\^A}'         , 'À'],
+        \ ['\\¨A}'         , 'Ä'],
+        \ ['\\"A}'         , 'Ä'],
+        \ ['\\''a}'        , 'á'],
+        \ ['\\`a}'         , 'à'],
+        \ ['\\^a}'         , 'à'],
+        \ ['\\¨a}'         , 'ä'],
+        \ ['\\"a}'         , 'ä'],
+        \ ['\\''E}'        , 'É'],
+        \ ['\\`E}'         , 'È'],
+        \ ['\\^E}'         , 'Ê'],
+        \ ['\\¨E}'         , 'Ë'],
+        \ ['\\"E}'         , 'Ë'],
+        \ ['\\''e}'        , 'é'],
+        \ ['\\`e}'         , 'è'],
+        \ ['\\^e}'         , 'ê'],
+        \ ['\\¨e}'         , 'ë'],
+        \ ['\\"e}'         , 'ë'],
+        \ ['\\''I}'        , 'Í'],
+        \ ['\\`I}'         , 'Î'],
+        \ ['\\^I}'         , 'Ì'],
+        \ ['\\¨I}'         , 'Ï'],
+        \ ['\\"I}'         , 'Ï'],
+        \ ['\\''i}'        , 'í'],
+        \ ['\\`i}'         , 'î'],
+        \ ['\\^i}'         , 'ì'],
+        \ ['\\¨i}'         , 'ï'],
+        \ ['\\"i}'         , 'ï'],
+        \ ['\\''{\?\\i }'  , 'í'],
+        \ ['\\''O}'        , 'Ó'],
+        \ ['\\`O}'         , 'Ò'],
+        \ ['\\^O}'         , 'Ô'],
+        \ ['\\¨O}'         , 'Ö'],
+        \ ['\\"O}'         , 'Ö'],
+        \ ['\\''o}'        , 'ó'],
+        \ ['\\`o}'         , 'ò'],
+        \ ['\\^o}'         , 'ô'],
+        \ ['\\¨o}'         , 'ö'],
+        \ ['\\"o}'         , 'ö'],
+        \ ['\\o }'         , 'ø'],
+        \ ['\\''U}'        , 'Ú'],
+        \ ['\\`U}'         , 'Ù'],
+        \ ['\\^U}'         , 'Û'],
+        \ ['\\¨U}'         , 'Ü'],
+        \ ['\\"U}'         , 'Ü'],
+        \ ['\\''u}'        , 'ú'],
+        \ ['\\`u}'         , 'ù'],
+        \ ['\\^u}'         , 'û'],
+        \ ['\\¨u}'         , 'ü'],
+        \ ['\\"u}'         , 'ü'],
+        \ ['\\`N}'         , 'Ǹ'],
+        \ ['\\\~N}'        , 'Ñ'],
+        \ ['\\''n}'        , 'ń'],
+        \ ['\\`n}'         , 'ǹ'],
+        \ ['\\\~n}'        , 'ñ'],
+        \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
+endfunction
+
+" }}}1
+function! vimtex#util#init_buffer() " {{{1
+endfunction
+
+" }}}1
+
 function! vimtex#util#convert_back(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
@@ -20,74 +108,7 @@ function! vimtex#util#convert_back(line) " {{{1
   return substitute(line, '\C\(\\IeC\s*{\)\?\\.\(.\)}', '\1', 'g')
 endfunction
 
-let s:convert_back_list = map([
-      \ ['\\''A}'        , 'Á'],
-      \ ['\\`A}'         , 'À'],
-      \ ['\\^A}'         , 'À'],
-      \ ['\\¨A}'         , 'Ä'],
-      \ ['\\"A}'         , 'Ä'],
-      \ ['\\''a}'        , 'á'],
-      \ ['\\`a}'         , 'à'],
-      \ ['\\^a}'         , 'à'],
-      \ ['\\¨a}'         , 'ä'],
-      \ ['\\"a}'         , 'ä'],
-      \ ['\\''E}'        , 'É'],
-      \ ['\\`E}'         , 'È'],
-      \ ['\\^E}'         , 'Ê'],
-      \ ['\\¨E}'         , 'Ë'],
-      \ ['\\"E}'         , 'Ë'],
-      \ ['\\''e}'        , 'é'],
-      \ ['\\`e}'         , 'è'],
-      \ ['\\^e}'         , 'ê'],
-      \ ['\\¨e}'         , 'ë'],
-      \ ['\\"e}'         , 'ë'],
-      \ ['\\''I}'        , 'Í'],
-      \ ['\\`I}'         , 'Î'],
-      \ ['\\^I}'         , 'Ì'],
-      \ ['\\¨I}'         , 'Ï'],
-      \ ['\\"I}'         , 'Ï'],
-      \ ['\\''i}'        , 'í'],
-      \ ['\\`i}'         , 'î'],
-      \ ['\\^i}'         , 'ì'],
-      \ ['\\¨i}'         , 'ï'],
-      \ ['\\"i}'         , 'ï'],
-      \ ['\\''{\?\\i }'  , 'í'],
-      \ ['\\''O}'        , 'Ó'],
-      \ ['\\`O}'         , 'Ò'],
-      \ ['\\^O}'         , 'Ô'],
-      \ ['\\¨O}'         , 'Ö'],
-      \ ['\\"O}'         , 'Ö'],
-      \ ['\\''o}'        , 'ó'],
-      \ ['\\`o}'         , 'ò'],
-      \ ['\\^o}'         , 'ô'],
-      \ ['\\¨o}'         , 'ö'],
-      \ ['\\"o}'         , 'ö'],
-      \ ['\\o }'         , 'ø'],
-      \ ['\\''U}'        , 'Ú'],
-      \ ['\\`U}'         , 'Ù'],
-      \ ['\\^U}'         , 'Û'],
-      \ ['\\¨U}'         , 'Ü'],
-      \ ['\\"U}'         , 'Ü'],
-      \ ['\\''u}'        , 'ú'],
-      \ ['\\`u}'         , 'ù'],
-      \ ['\\^u}'         , 'û'],
-      \ ['\\¨u}'         , 'ü'],
-      \ ['\\"u}'         , 'ü'],
-      \ ['\\`N}'         , 'Ǹ'],
-      \ ['\\\~N}'        , 'Ñ'],
-      \ ['\\''n}'        , 'ń'],
-      \ ['\\`n}'         , 'ǹ'],
-      \ ['\\\~n}'        , 'ñ'],
-      \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
-
-function! vimtex#util#error_deprecated(variable) " {{{1
-  if exists(a:variable)
-    echoerr "Deprecation error: " . a:variable
-    echoerr "Please read docs for more info!"
-    echoerr ":h vimtex-changelog"
-  endif
-endfunction
-
+" }}}1
 function! vimtex#util#execute(exe) " {{{1
   " Execute the given command on the current system.  Wrapper function to make
   " it easier to run on both windows and unix.
@@ -106,8 +127,8 @@ function! vimtex#util#execute(exe) " {{{1
 
   " Check and parse arguments
   if !has_key(a:exe, 'cmd')
-    echoerr "Error in vimtex#util#execute!"
-    echoerr "Argument error, exe.cmd does not exist!"
+    echoerr 'Error in vimtex#util#execute!'
+    echoerr 'Argument error, exe.cmd does not exist!'
     return
   endif
   let bg     = has_key(a:exe, 'bg')     ? a:exe.bg     : 1
@@ -159,7 +180,7 @@ function! vimtex#util#execute(exe) " {{{1
       execute '!' . cmd
     endif
 
-    if !has("gui_running")
+    if !has('gui_running')
       redraw!
     endif
   endif
@@ -175,6 +196,7 @@ function! vimtex#util#execute(exe) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#util#fnameescape(path) " {{{1
   "
   " In a Windows environment, a path used in "cmd" only needs to be enclosed by
@@ -186,6 +208,7 @@ function! vimtex#util#fnameescape(path) " {{{1
   return has('win32') ? '"' . a:path . '"' : shellescape(a:path)
 endfunction
 
+" }}}1
 function! vimtex#util#get_env(...) " {{{1
   " vimtex#util#get_env([with_pos])
   " Returns:
@@ -202,7 +225,7 @@ function! vimtex#util#get_env(...) " {{{1
   " move to the left until on a backslash
   let [bufnum, lnum, cnum, off] = getpos('.')
   let line = getline(lnum)
-  while cnum > 1 && line[cnum - 1] != '\'
+  while cnum > 1 && line[cnum - 1] !=# '\'
     let cnum -= 1
   endwhile
   call cursor(lnum, cnum)
@@ -248,6 +271,7 @@ function! vimtex#util#get_env(...) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#util#get_delim() " {{{1
   " Save position in order to restore before finishing
   let pos_original = getpos('.')
@@ -307,33 +331,20 @@ function! vimtex#util#get_delim() " {{{1
   return [d1,l1,c1,d2,l2,c2]
 endfunction
 
-let s:delimiters_open = [
-      \ '(',
-      \ '\[',
-      \ '\\{',
-      \ '\\\Cleft\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
-      \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ]
-let s:delimiters_close = [
-      \ ')',
-      \ '\]',
-      \ '\\}',
-      \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
-      \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ]
-
+" }}}1
 function! vimtex#util#get_os() " {{{1
-  if has("win32")
-    return "win"
-  elseif has("unix")
-    if system('uname') =~ 'Darwin'
-      return "mac"
+  if has('win32')
+    return 'win'
+  elseif has('unix')
+    if system('uname') =~# 'Darwin'
+      return 'mac'
     else
-      return "linux"
+      return 'linux'
     endif
   endif
 endfunction
 
+" }}}1
 function! vimtex#util#has_syntax(name, ...) " {{{1
   " Usage: vimtex#util#has_syntax(name, [line], [col])
   let line = a:0 >= 1 ? a:1 : line('.')
@@ -342,10 +353,12 @@ function! vimtex#util#has_syntax(name, ...) " {{{1
         \ 'synIDattr(v:val, "name") == "' . a:name . '"'), 1)
 endfunction
 
+" }}}1
 function! vimtex#util#in_comment(...) " {{{1
-  return synIDattr(synID(line('.'), col('.'), 0), "name") =~# '^texComment'
+  return synIDattr(synID(line('.'), col('.'), 0), 'name') =~# '^texComment'
 endfunction
 
+" }}}1
 function! vimtex#util#kpsewhich(file, ...) " {{{1
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
@@ -362,54 +375,17 @@ function! vimtex#util#kpsewhich(file, ...) " {{{1
   return out
 endfunction
 
+" }}}1
 function! vimtex#util#set_default(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = a:default
   endif
 endfunction
 
+" }}}1
 function! vimtex#util#set_default_os_specific(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = get(a:default, vimtex#util#get_os(), '')
-  endif
-endfunction
-
-function! vimtex#util#tex2tree(str) " {{{1
-  let tree = []
-  let i1 = 0
-  let i2 = -1
-  let depth = 0
-  while i2 < len(a:str)
-    let i2 = match(a:str, '[{}]', i2 + 1)
-    if i2 < 0
-      let i2 = len(a:str)
-    endif
-    if i2 >= len(a:str) || a:str[i2] == '{'
-      if depth == 0
-        let item = substitute(strpart(a:str, i1, i2 - i1),
-              \ '^\s*\|\s*$', '', 'g')
-        if !empty(item)
-          call add(tree, item)
-        endif
-        let i1 = i2 + 1
-      endif
-      let depth += 1
-    else
-      let depth -= 1
-      if depth == 0
-        call add(tree, vimtex#util#tex2tree(strpart(a:str, i1, i2 - i1)))
-        let i1 = i2 + 1
-      endif
-    endif
-  endwhile
-  return tree
-endfunction
-
-function! vimtex#util#tree2tex(tree) " {{{1
-  if type(a:tree) == type('')
-    return a:tree
-  else
-    return '{' . join(map(a:tree, 'vimtex#util#tree2tex(v:val)'), '') . '}'
   endif
 endfunction
 

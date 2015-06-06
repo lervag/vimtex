@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#index#init(initialized) " {{{1
+function! vimtex#index#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_index_hide_line_numbers', 1)
   call vimtex#util#set_default('g:vimtex_index_resize', 0)
   call vimtex#util#set_default('g:vimtex_index_show_help', 1)
@@ -13,6 +13,15 @@ function! vimtex#index#init(initialized) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#index#init_script() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#index#init_buffer() " {{{1
+endfunction
+
+" }}}1
+
 function! vimtex#index#open(bufname) " {{{1
   let winnr = bufwinnr(bufnr(a:bufname))
   if winnr >= 0

@@ -4,11 +4,21 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#echo#init(initialized) " {{{1
+function! vimtex#echo#init_options() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#echo#init_script() " {{{1
   highlight link VimtexMsg ModeMsg
   highlight link VimtexSuccess Statement
   highlight link VimtexWarning WarningMsg
 endfunction
+
+" }}}1
+function! vimtex#echo#init_buffer() " {{{1
+endfunction
+
+" }}}1
 
 function! vimtex#echo#echo(message, ...) " {{{1
   let hl = len(a:000) > 0 ? a:0 : 'VimtexMsg'

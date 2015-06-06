@@ -4,14 +4,81 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#motion#init(initialized) " {{{1
+function! vimtex#motion#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_motion_enabled', 1)
   if !g:vimtex_motion_enabled | return | endif
 
-  " Set default options
   call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
+endfunction
 
-  " Define mappings
+" }}}1
+function! vimtex#motion#init_script() " {{{1
+  if !g:vimtex_motion_enabled | return | endif
+
+  " Highlight matching parens ($, (), ...)
+  if g:vimtex_motion_matchparen
+    augroup latex_motion
+      autocmd!
+      " Disable matchparen autocommands
+      autocmd BufEnter *.tex
+            \   if !exists("g:loaded_matchparen") || !g:loaded_matchparen
+            \ |   runtime plugin/matchparen.vim
+            \ | endif
+      autocmd BufEnter *.tex
+            \ 3match none | unlet! g:loaded_matchparen | au! matchparen
+
+      " Enable latex matchparen functionality
+      autocmd! CursorMoved  *.tex call s:highlight_matching_pair(1)
+      autocmd! CursorMovedI *.tex call s:highlight_matching_pair()
+    augroup END
+  endif
+
+  "
+  " Define patterns used by motion.vim
+  "
+
+  " No preceding backslash
+  let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+
+  " Not in a comment
+  let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+
+  " Patterns to match opening and closing delimiters/environments
+  let s:delimiters_open = [
+          \ '{',
+          \ '(',
+          \ '\[',
+          \ '\\{',
+          \ '\\(',
+          \ '\\\[',
+          \ '\\\Cbegin\s*{.\{-}}',
+          \ '\\\Cleft\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
+          \ '\\\cbigg\?\((\|\[\|\\{\)',
+        \ ]
+  let s:delimiters_close = [
+          \ '}',
+          \ ')',
+          \ '\]',
+          \ '\\}',
+          \ '\\)',
+          \ '\\\]',
+          \ '\\\Cend\s*{.\{-}}',
+          \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
+          \ '\\\cbigg\?\()\|\]\|\\}\)',
+        \ ]
+  let s:delimiters = join(s:delimiters_open + s:delimiters_close, '\|')
+  let s:delimiters = '\(' . s:delimiters . '\|\$\)'
+
+  " Pattern to match section/chapter/...
+  let s:section  = s:notcomment . '\v\s*\\'
+  let s:section .= '((sub)*section|chapter|part|'
+  let s:section .= 'appendix|(front|back|main)matter)>'
+endfunction
+
+" }}}1
+function! vimtex#motion#init_buffer() " {{{1
+  if !g:vimtex_motion_enabled | return | endif
+
   nnoremap <buffer> <sid>(v) v
   nnoremap <silent><buffer> <plug>(vimtex-%)  :call vimtex#motion#find_matching_pair()<cr>
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
@@ -40,25 +107,9 @@ function! vimtex#motion#init(initialized) " {{{1
   onoremap <silent><buffer> <plug>(vimtex-a$) :execute "normal \<sid>(v)\<plug>(vimtex-a$)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-id) :execute "normal \<sid>(v)\<plug>(vimtex-id)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-ad) :execute "normal \<sid>(v)\<plug>(vimtex-ad)"<cr>
-
-  " Highlight matching parens ($, (), ...)
-  if !a:initialized && g:vimtex_motion_matchparen
-    augroup latex_motion
-      autocmd!
-      " Disable matchparen autocommands
-      autocmd BufEnter *.tex
-            \   if !exists("g:loaded_matchparen") || !g:loaded_matchparen
-            \ |   runtime plugin/matchparen.vim
-            \ | endif
-      autocmd BufEnter *.tex
-            \ 3match none | unlet! g:loaded_matchparen | au! matchparen
-
-      " Enable latex matchparen functionality
-      autocmd! CursorMoved  *.tex call s:highlight_matching_pair(1)
-      autocmd! CursorMovedI *.tex call s:highlight_matching_pair()
-    augroup END
-  endif
 endfunction
+
+" }}}1
 
 function! vimtex#motion#find_matching_pair(...) " {{{1
   if a:0 > 0
@@ -117,6 +168,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#motion#next_section(type, backwards, visual) " {{{1
   " Restore visual mode if desired
   if a:visual
@@ -151,6 +203,7 @@ function! vimtex#motion#next_section(type, backwards, visual) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#motion#sel_delimiter(...) " {{{1
   let inner = a:0 > 0
 
@@ -185,6 +238,7 @@ function! vimtex#motion#sel_delimiter(...) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#motion#sel_environment(...) " {{{1
   let inner = a:0 > 0
 
@@ -214,6 +268,7 @@ function! vimtex#motion#sel_environment(...) " {{{1
   endif
 endfunction
 
+" }}}1
 function! vimtex#motion#sel_inline_math(...) " {{{1
   let inner = a:0 > 0
 
@@ -243,44 +298,6 @@ function! vimtex#motion#sel_inline_math(...) " {{{1
     normal! h
   endif
 endfunction
-" }}}1
-
-" {{{1 Common patterns
-
-let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
-
-" Patterns to match opening and closing delimiters/environments
-let s:delimiters_open = [
-        \ '{',
-        \ '(',
-        \ '\[',
-        \ '\\{',
-        \ '\\(',
-        \ '\\\[',
-        \ '\\\Cbegin\s*{.\{-}}',
-        \ '\\\Cleft\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ]
-let s:delimiters_close = [
-        \ '}',
-        \ ')',
-        \ '\]',
-        \ '\\}',
-        \ '\\)',
-        \ '\\\]',
-        \ '\\\Cend\s*{.\{-}}',
-        \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ]
-let s:delimiters = join(s:delimiters_open + s:delimiters_close, '\|')
-let s:delimiters = '\(' . s:delimiters . '\|\$\)'
-
-" Pattern to match section/chapter/...
-let s:section = s:notcomment . '\v\s*\\'
-let s:section.= '((sub)*section|chapter|part|appendix|(front|back|main)matter)'
-let s:section.= '>'
-
 " }}}1
 
 function! s:highlight_matching_pair(...) " {{{1
@@ -349,6 +366,7 @@ function! s:highlight_matching_pair(...) " {{{1
   endif
 endfunction
 
+" }}}1
 function! s:search_and_skip_comments(pat, ...) " {{{1
   " Usage: s:search_and_skip_comments(pat, [flags, stopline])
   let flags             = a:0 >= 1 ? a:1 : ''

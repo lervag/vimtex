@@ -4,12 +4,25 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#labels#init(initialized) " {{{1
+function! vimtex#labels#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
+endfunction
+
+" }}}1
+function! vimtex#labels#init_script() " {{{1
   if !g:vimtex_labels_enabled | return | endif
 
-  " Set some constants
   let s:name = 'Table of labels (vimtex)'
+  let s:preamble = 1
+  let s:re_input = '\v^\s*\\%(input|include)\s*\{'
+  let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+  let s:re_label = '\v\\label\{'
+  let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
+endfunction
+
+" }}}1
+function! vimtex#labels#init_buffer() " {{{1
+  if !g:vimtex_labels_enabled | return | endif
 
   " Define commands
   command! -buffer VimtexLabelsOpen   call vimtex#labels#open()
@@ -21,6 +34,7 @@ function! vimtex#labels#init(initialized) " {{{1
 endfunction
 
 " }}}1
+
 function! vimtex#labels#open() " {{{1
   if vimtex#index#open(s:name) | return | endif
 
@@ -42,6 +56,7 @@ function! vimtex#labels#open() " {{{1
   call vimtex#index#create(index)
 endfunction
 
+" }}}1
 function! vimtex#labels#toggle() " {{{1
   if vimtex#index#open(s:name)
     call vimtex#index#close(s:name)
@@ -89,16 +104,6 @@ function! s:index_syntax() dict " {{{1
   highlight link VimtexLabelsSec  Type
   highlight link VimtexLabelsTab  String
 endfunction
-
-" }}}1
-
-" {{{1 TOL variables
-
-let s:preamble = 1
-let s:re_input = '\v^\s*\\%(input|include)\s*\{'
-let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
-let s:re_label = '\v\\label\{'
-let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
 
 " }}}1
 

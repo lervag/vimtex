@@ -4,8 +4,24 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#mappings#init(initialized) " {{{1
+function! vimtex#mappings#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_mappings_enabled', 1)
+
+  let g:vimtex_mappings = [
+        \ { 'lhs' : '__', 'rhs' : '_\{$1\}',         'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '^^', 'rhs' : '^\{$1\}',         'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '((', 'rhs' : '\left($1\right)', 'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '[[', 'rhs' : '\left[$1\right]', 'math' : 1, 'type' : 'map'},
+        \ { 'lhs' : '`a', 'rhs' : '\alpha',          'math' : 1, 'type' : 'abbrev'},
+        \]
+endfunction
+
+" }}}1
+function! vimtex#mappings#init_script() " {{{1
+endfunction
+
+" }}}1
+function! vimtex#mappings#init_buffer() " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
   nmap <silent><buffer> <localleader>li <plug>(vimtex-info)
@@ -78,14 +94,6 @@ function! vimtex#mappings#init(initialized) " {{{1
       nmap <silent><buffer> <localleader>lr <plug>(vimtex-reverse-search)
     endif
   endif
-
-  let g:vimtex_mappings = [
-        \ { 'lhs' : '__', 'rhs' : '_\{$1\}',         'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '^^', 'rhs' : '^\{$1\}',         'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '((', 'rhs' : '\left($1\right)', 'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '[[', 'rhs' : '\left[$1\right]', 'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '`a', 'rhs' : '\alpha',          'math' : 1, 'type' : 'abbrev'},
-        \]
 
   call s:init_math_mappings()
 endfunction
