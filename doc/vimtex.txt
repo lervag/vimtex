@@ -1211,15 +1211,16 @@ commands and mappings, creates autocommands and performs other necessary
 initialization.  This initialization script is then called from 'vimtex#init'.
 
 For each LaTeX project that is opened, a |Dictionary| is created and added to
-the list 'g:vimtex#data'.  The dictionary is initialized with data tied to the
-current project.  In addition, a dictionary is created for every buffer
-'b:vimtex'.  This contains data that is specific to the current buffer, most
-importantly it contains the ID of the corresponding main LaTeX project.  The
-command |VimtexInfo| (mapped to <localleader>li by default) will show the
-contents of the buffer and global vimtex variables.  This combination of local
-and global data enables |vimtex| to work properly for multi-file latex
-projects.  It also allows the editing of different latex projects
-simultaneously in different buffers.
+the list 'g:vimtex_data'.  The dictionary is initialized with data tied to the
+current project.  The dictionary is also linked to the buffer variable
+'b:vimtex'.  Note that a project might consist of several files, so for
+a multi-file project one may have several buffers that are linked to the same
+data blob.  This is by design, and enabled vimtex |vimtex| to work properly
+for multi-file latex projects.  It also allows the editing of different latex
+projects simultaneously in different buffers.
+
+The command |VimtexInfo| (mapped to <localleader>li by default) will show the
+contents of the local data blob.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
