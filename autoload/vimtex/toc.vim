@@ -288,7 +288,7 @@ let s:re_other = {
 " }}}1
 
 function! s:parse_toc() " {{{1
-  let file = g:vimtex#data[b:vimtex.id].tex
+  let file = b:vimtex.tex
 
   " Reset TOC numbering
   call s:number_reset('preamble')
