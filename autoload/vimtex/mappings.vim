@@ -7,17 +7,111 @@
 function! vimtex#mappings#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_mappings_enabled', 1)
 
-  let g:vimtex_mappings = [
-        \ { 'lhs' : '__', 'rhs' : '_\{$1\}',         'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '^^', 'rhs' : '^\{$1\}',         'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '((', 'rhs' : '\left($1\right)', 'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '[[', 'rhs' : '\left[$1\right]', 'math' : 1, 'type' : 'map'},
-        \ { 'lhs' : '`a', 'rhs' : '\alpha',          'math' : 1, 'type' : 'abbrev'},
-        \]
+  call vimtex#util#set_default('g:vimtex_mappings_leader', '`')
+  call vimtex#util#set_default('g:vimtex_mappings_container', {})
 endfunction
 
 " }}}1
 function! vimtex#mappings#init_script() " {{{1
+  "
+  " List of mappings
+  "
+  let g:mappings = {
+        \ 'math' : [
+        \   { 'lhs' : '__', 'rhs' : '_\{$1\}' },
+        \   { 'lhs' : '^^', 'rhs' : '^\{$1\}' },
+        \   { 'lhs' : '((', 'rhs' : '\left($1\right)' },
+        \   { 'lhs' : '[[', 'rhs' : '\left[$1\right]' },
+        \   { 'lhs' : '{{', 'rhs' : '\left\{$1\right\}' },
+        \  ],
+        \ 'all'  : [],
+        \}
+
+  "
+  " List of mappings with leader key
+  "
+  let l:mappings_math_leader = [
+          \ { 'lhs' : 'a', 'rhs' : '\alpha' },
+          \ { 'lhs' : 'b', 'rhs' : '\beta' },
+          \ { 'lhs' : 'c', 'rhs' : '\chi' },
+          \ { 'lhs' : 'd', 'rhs' : '\delta' },
+          \ { 'lhs' : 'e', 'rhs' : '\varepsilon' },
+          \ { 'lhs' : 'f', 'rhs' : '\varphi' },
+          \ { 'lhs' : 'g', 'rhs' : '\gamma' },
+          \ { 'lhs' : 'h', 'rhs' : '\eta' },
+          \ { 'lhs' : 'k', 'rhs' : '\kappa' },
+          \ { 'lhs' : 'l', 'rhs' : '\lambda' },
+          \ { 'lhs' : 'm', 'rhs' : '\mu' },
+          \ { 'lhs' : 'n', 'rhs' : '\nu' },
+          \ { 'lhs' : 'o', 'rhs' : '\omega' },
+          \ { 'lhs' : 'p', 'rhs' : '\pi' },
+          \ { 'lhs' : 'q', 'rhs' : '\theta' },
+          \ { 'lhs' : 'r', 'rhs' : '\rho' },
+          \ { 'lhs' : 's', 'rhs' : '\sigma' },
+          \ { 'lhs' : 't', 'rhs' : '\tau' },
+          \ { 'lhs' : 'u', 'rhs' : '\upsilon' },
+          \ { 'lhs' : 'z', 'rhs' : '\zeta' },
+          \ { 'lhs' : 'D', 'rhs' : '\Delta' },
+          \ { 'lhs' : 'F', 'rhs' : '\Phi' },
+          \ { 'lhs' : 'G', 'rhs' : '\Gamma' },
+          \ { 'lhs' : 'L', 'rhs' : '\Lambda' },
+          \ { 'lhs' : 'N', 'rhs' : '\nabla' },
+          \ { 'lhs' : 'O', 'rhs' : '\Omega' },
+          \ { 'lhs' : 'Q', 'rhs' : '\Theta' },
+          \ { 'lhs' : 'R', 'rhs' : '\varrho' },
+          \ { 'lhs' : 'U', 'rhs' : '\Upsilon' },
+          \ { 'lhs' : 'X', 'rhs' : '\Xi' },
+          \ { 'lhs' : 'Y', 'rhs' : '\Psi' },
+          \]
+  let g:mappings.math += map(l:mappings_math_leader,
+        \ '{  ''lhs'' : g:vimtex_mappings_leader . v:val.lhs,'
+        \  . '''rhs'' : v:val.rhs }')
+
+" i             \int_{}^{}
+" I             \int_{}^{}
+" S             \sum_{}^{}
+" /             \frac{}{}
+" %             \frac{}{}
+" v             \vee
+" w             \wedge
+" 0             \emptyset
+" 6             \partial
+" 8             \infty
+" @             \circ
+" \|            \Big\|
+" =             \equiv
+" \             \setminus
+" .             \cdot
+" *             \times
+" &             \wedge
+" -             \bigcap
+" +             \bigcup
+" (             \subset
+" )             \supset
+" <             \leq
+" >             \geq
+" ,             \nonumber
+" :             \dots
+" ~             \tilde{}
+" ^             \hat{}
+" ;             \dot{}
+" _             \bar{}
+" <M-c>         \cos
+" <C-E>         \exp\left(\right)
+" <C-I>         \in
+" <C-J>         \downarrow
+" <C-L>         \log
+" <C-P>         \uparrow
+" <Up>          \uparrow
+" <C-N>         \downarrow
+" <Down>        \downarrow
+" <C-F>         \to
+" <Right>       \lim_{}
+" <C-S>         \sin
+" <C-T>         \tan
+" <M-l>         \ell
+" <CR>          \nonumber\\
+
 endfunction
 
 " }}}1
@@ -95,13 +189,13 @@ function! vimtex#mappings#init_buffer() " {{{1
     endif
   endif
 
-  call s:init_math_mappings()
+  " call s:init_math_mappings()
 endfunction
 
 " }}}1
 
 function! s:init_math_mappings() " {{{1
-  for map in g:vimtex_mappings
+  for map in s:mappings
     if map.type ==# 'map'
       silent execute 'inoremap <buffer><silent>' map.lhs
             \ map.lhs . '<c-r>=UltiSnips#Anon(''' . map.rhs . ''', ''' . map.lhs
