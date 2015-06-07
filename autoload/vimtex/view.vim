@@ -231,7 +231,6 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_callback() dict " {{{2
-  " Try to get xwin ID
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
@@ -340,6 +339,7 @@ function! s:zathura.init() dict " {{{2
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
   let self.focus_vim = function('s:focus_vim')
+  let self.focus_viewer = function('s:focus_viewer')
 endfunction
 
 " }}}2
@@ -379,6 +379,7 @@ function! s:zathura.forward_search(outfile) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_forward_search = exe.cmd
+  call self.focus_viewer()
 endfunction
 
 " }}}2
@@ -460,7 +461,7 @@ function! s:xwin_send_keys(keys) dict " {{{1
   if a:keys !=# ''
     let cmd  = 'xdotool key --window ' . self.xwin_id
     let cmd .= ' ' . a:keys
-    call system(cmd)
+    silent call system(cmd)
   endif
 endfunction
 
@@ -469,8 +470,7 @@ function! s:focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_exists()
-    silent execute '!xdotool windowfocus ' . self.xwin_id
-    redraw!
+    silent call system('xdotool windowfocus ' . self.xwin_id . ' --sync')
   endif
 endfunction
 
@@ -478,8 +478,8 @@ endfunction
 function! s:focus_vim() dict " {{{1
   if !executable('xdotool') | return | endif
 
-  silent execute '!xdotool windowfocus ' . v:windowid
-  redraw!
+  silent call system('xdotool windowfocus ' . v:windowid . ' --sync')
+  silent call system('xdotool windowraise ' . v:windowid)
 endfunction
 
 " }}}1
