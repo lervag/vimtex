@@ -469,7 +469,7 @@ endfunction
 function! s:focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
-  if self.xwin_exists()
+  if self.xwin_id > 0
     silent call system('xdotool windowfocus ' . self.xwin_id . ' --sync')
   endif
 endfunction
