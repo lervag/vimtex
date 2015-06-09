@@ -53,6 +53,18 @@ function! vimtex#view#init_buffer() " {{{1
   call b:vimtex.viewer.init()
 
   "
+  " Create view and/or callback hooks (if they exist)
+  "
+  for hook in ['view', 'callback']
+    execute 'let hookfunc = ''*''
+          \ . g:vimtex_view_' . g:vimtex_view_method . '_hook_' . hook
+    if exists(hookfunc)
+      execute 'let b:vimtex.viewer.hook_' . hook . ' = function(g:vimtex_view_'
+            \ . g:vimtex_view_method . '_hook_' . hook . ')'
+    endif
+  endfor
+
+  "
   " Define commands
   "
   command! -buffer -nargs=? -complete=file VimtexView
@@ -98,6 +110,10 @@ function! s:general.view(file) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -125,6 +141,14 @@ function! s:mupdf.init() dict " {{{2
     call vimtex#echo#warning('vimtex viewer MuPDF requires xdotool!')
   endif
 
+  "
+  " Default MuPDF settings
+  "
+  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_callback',
+        \ 's:focus_vim')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_view',
+        \ 's:focus_viewer')
+
   let self.class = 'MuPDF'
   let self.xwin_id = 0
   let self.xwin_exists = function('s:xwin_exists')
@@ -143,6 +167,10 @@ function! s:mupdf.view(file) dict " {{{2
     call self.start(outfile)
   else
     call self.forward_search(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
   endif
 endfunction
 
@@ -235,7 +263,9 @@ function! s:mupdf.latexmk_callback() dict " {{{2
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
       call self.forward_search(b:vimtex.out())
-      call self.focus_vim()
+      if has_key(self, 'hook_callback')
+        call self.hook_callback()
+      endif
     endif
   endif
 endfunction
@@ -270,6 +300,10 @@ function! s:okular.view(file) dict " {{{2
   let exe.cmd .= '\#src:' . line('.') . vimtex#util#fnameescape(expand('%:p'))
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -294,6 +328,10 @@ function! s:qpdfview.view(file) dict " {{{2
   let exe.cmd .= ':' . col('.')
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -317,6 +355,10 @@ function! s:sumatrapdf.view(file) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -334,12 +376,18 @@ function! s:zathura.init() dict " {{{2
     call vimtex#echo#warning('vimtex viewer Zathura requires xdotool!')
   endif
 
+  "
+  " Default Zathura settings
+  "
+  call vimtex#util#set_default('g:vimtex_view_zathura_hook_callback',
+        \ 's:focus_vim')
+  call vimtex#util#set_default('g:vimtex_view_zathura_hook_view',
+        \ 's:focus_viewer')
+
   let self.class = 'Zathura'
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
-  let self.focus_vim = function('s:focus_vim')
-  let self.focus_viewer = function('s:focus_viewer')
 endfunction
 
 " }}}2
@@ -351,6 +399,10 @@ function! s:zathura.view(file) dict " {{{2
     call self.start(outfile)
   else
     call self.forward_search(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
   endif
 endfunction
 
@@ -379,7 +431,6 @@ function! s:zathura.forward_search(outfile) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_forward_search = exe.cmd
-  call self.focus_viewer()
 endfunction
 
 " }}}2
@@ -387,7 +438,9 @@ function! s:zathura.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.forward_search(b:vimtex.out())
-      call self.focus_vim()
+      if has_key(self, 'hook_callback')
+        call self.hook_callback()
+      endif
     endif
   endif
 endfunction
@@ -466,6 +519,10 @@ function! s:xwin_send_keys(keys) dict " {{{1
 endfunction
 
 " }}}1
+
+"
+" Hook functions (used as default hooks in some cases)
+"
 function! s:focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
