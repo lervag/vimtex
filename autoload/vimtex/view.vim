@@ -20,17 +20,7 @@ function! vimtex#view#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_view_enabled', 1)
   if !g:vimtex_view_enabled | return | endif
 
-  for viewer in s:viewers
-    call vimtex#util#set_default('g:vimtex_view_' . viewer . '_options', '')
-  endfor
-
-  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
-        \ {
-        \   'linux' : 'xdg-open',
-        \   'mac'   : 'open',
-        \ })
   call vimtex#util#set_default('g:vimtex_view_method', 'general')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
 endfunction
 
 " }}}1
@@ -97,6 +87,16 @@ function! s:general.init() dict " {{{2
     echoerr 'g:vimtex_view_general_viewer = '
           \ . g:vimtex_view_general_viewer
   endif
+
+  "
+  " Set default options
+  "
+  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
+        \ {
+        \   'linux' : 'xdg-open',
+        \   'mac'   : 'open',
+        \ })
+  call vimtex#util#set_default('g:vimtex_view_general_options', '')
 endfunction
 
 " }}}2
@@ -144,6 +144,8 @@ function! s:mupdf.init() dict " {{{2
   "
   " Default MuPDF settings
   "
+  call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
   call vimtex#util#set_default('g:vimtex_view_mupdf_hook_callback',
         \ 's:focus_vim')
   call vimtex#util#set_default('g:vimtex_view_mupdf_hook_view',
@@ -287,6 +289,8 @@ function! s:okular.init() dict " {{{2
   if !executable('okular')
     echoerr 'vimtex viewer Okular is not executable!'
   endif
+
+  call vimtex#util#set_default('g:vimtex_view_okular_options', '')
 endfunction
 
 " }}}2
@@ -313,6 +317,8 @@ function! s:qpdfview.init() dict " {{{2
   if !executable('qpdfview')
     echoerr 'vimtex viewer qpdfview is not executable!'
   endif
+
+  call vimtex#util#set_default('g:vimtex_view_qpdfview_options', '')
 endfunction
 
 " }}}2
@@ -341,6 +347,8 @@ function! s:sumatrapdf.init() dict " {{{2
   if !executable('SumatraPDF')
     echoerr 'vimtex viewer SumatraPDF is not executable!'
   endif
+
+  call vimtex#util#set_default('g:vimtex_view_sumatrapdf_options', '')
 endfunction
 
 " }}}2
@@ -379,6 +387,7 @@ function! s:zathura.init() dict " {{{2
   "
   " Default Zathura settings
   "
+  call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
   call vimtex#util#set_default('g:vimtex_view_zathura_hook_callback',
         \ 's:focus_vim')
   call vimtex#util#set_default('g:vimtex_view_zathura_hook_view',
