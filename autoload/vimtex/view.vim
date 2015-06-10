@@ -45,12 +45,14 @@ function! vimtex#view#init_buffer() " {{{1
   "
   " Create view and/or callback hooks (if they exist)
   "
-  for hook in ['view', 'callback']
-    execute 'let hookfunc = ''*''
-          \ . g:vimtex_view_' . g:vimtex_view_method . '_hook_' . hook
-    if exists(hookfunc)
-      execute 'let b:vimtex.viewer.hook_' . hook . ' = function(g:vimtex_view_'
-            \ . g:vimtex_view_method . '_hook_' . hook . ')'
+  for point in ['view', 'callback']
+    execute 'let hook = ''g:vimtex_view_'
+          \ . g:vimtex_view_method . '_hook_' . point . ''''
+    if exists(hook)
+      execute 'let hookfunc = ''*'' . ' . hook
+      if exists(hookfunc)
+        execute 'let b:vimtex.viewer.hook_' . point . ' = function(' . hook . ')'
+      endif
     endif
   endfor
 
@@ -82,12 +84,6 @@ endfunction
 "
 " {{{1 General
 function! s:general.init() dict " {{{2
-  if !executable(g:vimtex_view_general_viewer)
-    echoerr 'vimtex viewer is not executable!'
-    echoerr 'g:vimtex_view_general_viewer = '
-          \ . g:vimtex_view_general_viewer
-  endif
-
   "
   " Set default options
   "
@@ -97,6 +93,12 @@ function! s:general.init() dict " {{{2
         \   'mac'   : 'open',
         \ })
   call vimtex#util#set_default('g:vimtex_view_general_options', '')
+
+  if !executable(g:vimtex_view_general_viewer)
+    echoerr 'vimtex viewer is not executable!'
+    echoerr 'g:vimtex_view_general_viewer = '
+          \ . g:vimtex_view_general_viewer
+  endif
 endfunction
 
 " }}}2
@@ -133,14 +135,6 @@ function! s:mupdf.init() dict " {{{2
   " Only initialize once
   if has_key(self, 'xwin_id') | return | endif
 
-  if !executable('mupdf')
-    echoerr 'vimtex viewer MuPDF is not executable!'
-  endif
-
-  if !executable('xdotool')
-    call vimtex#echo#warning('vimtex viewer MuPDF requires xdotool!')
-  endif
-
   "
   " Default MuPDF settings
   "
@@ -150,6 +144,14 @@ function! s:mupdf.init() dict " {{{2
         \ 's:focus_vim')
   call vimtex#util#set_default('g:vimtex_view_mupdf_hook_view',
         \ 's:focus_viewer')
+
+  if !executable('mupdf')
+    echoerr 'vimtex viewer MuPDF is not executable!'
+  endif
+
+  if !executable('xdotool')
+    call vimtex#echo#warning('vimtex viewer MuPDF requires xdotool!')
+  endif
 
   let self.class = 'MuPDF'
   let self.xwin_id = 0
@@ -286,11 +288,11 @@ endfunction
 
 " {{{1 Okular
 function! s:okular.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_okular_options', '')
+
   if !executable('okular')
     echoerr 'vimtex viewer Okular is not executable!'
   endif
-
-  call vimtex#util#set_default('g:vimtex_view_okular_options', '')
 endfunction
 
 " }}}2
@@ -314,11 +316,11 @@ endfunction
 
 " {{{1 qpdfview
 function! s:qpdfview.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_qpdfview_options', '')
+
   if !executable('qpdfview')
     echoerr 'vimtex viewer qpdfview is not executable!'
   endif
-
-  call vimtex#util#set_default('g:vimtex_view_qpdfview_options', '')
 endfunction
 
 " }}}2
@@ -344,11 +346,11 @@ endfunction
 
 " {{{1 SumatraPDF
 function! s:sumatrapdf.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_sumatrapdf_options', '')
+
   if !executable('SumatraPDF')
     echoerr 'vimtex viewer SumatraPDF is not executable!'
   endif
-
-  call vimtex#util#set_default('g:vimtex_view_sumatrapdf_options', '')
 endfunction
 
 " }}}2
@@ -376,14 +378,6 @@ function! s:zathura.init() dict " {{{2
   " Only initialize once
   if has_key(self, 'xwin_id') | return | endif
 
-  if !executable('zathura')
-    echoerr 'vimtex viewer Zathura is not executable!'
-  endif
-
-  if !executable('xdotool')
-    call vimtex#echo#warning('vimtex viewer Zathura requires xdotool!')
-  endif
-
   "
   " Default Zathura settings
   "
@@ -392,6 +386,14 @@ function! s:zathura.init() dict " {{{2
         \ 's:focus_vim')
   call vimtex#util#set_default('g:vimtex_view_zathura_hook_view',
         \ 's:focus_viewer')
+
+  if !executable('zathura')
+    echoerr 'vimtex viewer Zathura is not executable!'
+  endif
+
+  if !executable('xdotool')
+    call vimtex#echo#warning('vimtex viewer Zathura requires xdotool!')
+  endif
 
   let self.class = 'Zathura'
   let self.xwin_id = 0
