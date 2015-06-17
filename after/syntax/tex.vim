@@ -38,26 +38,29 @@ syntax region texRefRangeEnd
 highlight link texRefRangeStart texRefZone
 highlight link texRefRangeEnd   texRefZone
 
-" Support for listings package
+" {{{1 Support for listings package
 syntax region texZone
-      \ start="\\begin{lstlisting}"
-      \ end="\\end{lstlisting}\|%stopzone\>"
+      \ start="\\begin{lstlisting}"rs=s
+      \ end="\\end{lstlisting}\|%stopzone\>"re=e
+      \ keepend
+      \ contains=texBeginEnd
 syntax match texInputFile
       \ "\\lstinputlisting\s*\(\[.*\]\)\={.\{-}}"
       \ contains=texStatement,texInputCurlies,texInputFileOpt
 syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 
-" Nested syntax highlighting for dot
+" }}}1
+" {{{1 Nested syntax highlighting for dot
 unlet b:current_syntax
 syntax include @DOT syntax/dot.vim
 syntax region texZone
-      \ matchgroup=texRefZone
-      \ start="\\begin{dot2tex}"
-      \ matchgroup=texRefZone
-      \ end="\\end{dot2tex}"
+      \ start="\\begin{dot2tex}"rs=s
+      \ end="\\end{dot2tex}"re=e
       \ keepend
       \ transparent
-      \ contains=@DOT
+      \ contains=texBeginEnd,@DOT
 let b:current_syntax = 'tex'
+
+" }}}1
 
 " vim: fdm=marker sw=2
