@@ -43,7 +43,7 @@ function! vimtex#latexmk#init_buffer() " {{{1
   compiler latexmk
 
   " Initialize system PID
-  let b:vimtex.pid = get(b:vimtex, 'pid', 0)
+  call s:latexmk_init_pid()
 
   " Define commands
   command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
@@ -427,6 +427,37 @@ function! s:latexmk_build_cmd() " {{{1
 endfunction
 
 " }}}1
+function! s:latexmk_init_pid() " {{{1
+  "
+  " First see if the PID is already defined
+  "
+  let b:vimtex.pid = get(b:vimtex, 'pid', 0)
+
+  "
+  " If the PID is 0, then search for existing processes
+  "
+  if b:vimtex.pid ==# 0
+    if has('win32')
+      "
+      " PASS - don't know how to do this on Windows yet.
+      "
+      return
+    else
+      "
+      " Use pgrep combined with /proc/PID/cwd to search for existing process
+      "
+      for l:pid in split(system(
+            \ 'pgrep -f "^perl.*latexmk.*' . b:vimtex.base . '"'), "\n")
+        let path = resolve('/proc/' . l:pid . '/cwd') . '/' . b:vimtex.base
+        if path ==# b:vimtex.tex
+          let b:vimtex.pid = str2nr(l:pid)
+          return
+        endif
+      endfor
+    endif
+  endif
+endfunction
+
 function! s:latexmk_set_pid() " {{{1
   if has('win32')
     let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
