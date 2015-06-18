@@ -65,6 +65,71 @@ function! vimtex#complete#init_script() " {{{1
   " s:extract_inputs.
   "
   let s:label_cache = {}
+
+  "
+  " Define list for converting stuff like '\IeC{\"u}' to corresponding unicode
+  " symbols (with s:tex2unicode()).
+  "
+  let s:tex2unicode_list = map([
+        \ ['\\''A}'        , 'Á'],
+        \ ['\\`A}'         , 'À'],
+        \ ['\\^A}'         , 'À'],
+        \ ['\\¨A}'         , 'Ä'],
+        \ ['\\"A}'         , 'Ä'],
+        \ ['\\''a}'        , 'á'],
+        \ ['\\`a}'         , 'à'],
+        \ ['\\^a}'         , 'à'],
+        \ ['\\¨a}'         , 'ä'],
+        \ ['\\"a}'         , 'ä'],
+        \ ['\\\~a}'        , 'ã'],
+        \ ['\\''E}'        , 'É'],
+        \ ['\\`E}'         , 'È'],
+        \ ['\\^E}'         , 'Ê'],
+        \ ['\\¨E}'         , 'Ë'],
+        \ ['\\"E}'         , 'Ë'],
+        \ ['\\''e}'        , 'é'],
+        \ ['\\`e}'         , 'è'],
+        \ ['\\^e}'         , 'ê'],
+        \ ['\\¨e}'         , 'ë'],
+        \ ['\\"e}'         , 'ë'],
+        \ ['\\''I}'        , 'Í'],
+        \ ['\\`I}'         , 'Î'],
+        \ ['\\^I}'         , 'Ì'],
+        \ ['\\¨I}'         , 'Ï'],
+        \ ['\\"I}'         , 'Ï'],
+        \ ['\\''i}'        , 'í'],
+        \ ['\\`i}'         , 'î'],
+        \ ['\\^i}'         , 'ì'],
+        \ ['\\¨i}'         , 'ï'],
+        \ ['\\"i}'         , 'ï'],
+        \ ['\\''{\?\\i }'  , 'í'],
+        \ ['\\''O}'        , 'Ó'],
+        \ ['\\`O}'         , 'Ò'],
+        \ ['\\^O}'         , 'Ô'],
+        \ ['\\¨O}'         , 'Ö'],
+        \ ['\\"O}'         , 'Ö'],
+        \ ['\\''o}'        , 'ó'],
+        \ ['\\`o}'         , 'ò'],
+        \ ['\\^o}'         , 'ô'],
+        \ ['\\¨o}'         , 'ö'],
+        \ ['\\"o}'         , 'ö'],
+        \ ['\\o }'         , 'ø'],
+        \ ['\\''U}'        , 'Ú'],
+        \ ['\\`U}'         , 'Ù'],
+        \ ['\\^U}'         , 'Û'],
+        \ ['\\¨U}'         , 'Ü'],
+        \ ['\\"U}'         , 'Ü'],
+        \ ['\\''u}'        , 'ú'],
+        \ ['\\`u}'         , 'ù'],
+        \ ['\\^u}'         , 'û'],
+        \ ['\\¨u}'         , 'ü'],
+        \ ['\\"u}'         , 'ü'],
+        \ ['\\`N}'         , 'Ǹ'],
+        \ ['\\\~N}'        , 'Ñ'],
+        \ ['\\''n}'        , 'ń'],
+        \ ['\\`n}'         , 'ǹ'],
+        \ ['\\\~n}'        , 'ñ'],
+        \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 endfunction
 
 " The variable s:bstfile must be defined in script level in order to expand
@@ -357,22 +422,26 @@ function! s:labels_extract(file) " {{{1
   "
   "   \newlabel{name}{{number}{page}.*}.*
   "
+  " or
+  "
+  "   \newlabel{name}{{text {number}}{page}.*}.*
+  "
   " and returns a list of [name, number, page] tuples.
   "
   let matches = []
   let lines = readfile(a:file)
   let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
   let lines = filter(lines, 'v:val !~# ''@cref''')
-  let lines = map(lines, 'vimtex#util#convert_back(v:val)')
+  let lines = map(lines, 's:tex2unicode(v:val)')
   for line in lines
-    let tree = s:tex2tree(line)
-    if type(tree[2][0]) == type([])
-          \ && !empty(tree[2][0])
-      call add(matches, [
-            \ s:tree2tex(tree[1][0]),
-            \ s:tree2tex(tree[2][0][0]),
-            \ s:tree2tex(tree[2][1][0]),
-            \ ])
+    let tree = s:tex2tree(line)[1:]
+    let name = remove(tree, 0)[0]
+    if type(tree[0]) == type([]) && !empty(tree[0])
+      let number = len(tree[0][0]) > 1
+            \ ? tree[0][0][1][0]
+            \ : tree[0][0][0]
+      let page = tree[0][1][0]
+      call add(matches, [name, number, page])
     endif
   endfor
   return matches
@@ -433,12 +502,20 @@ function! s:tex2tree(str) " {{{1
 endfunction
 
 " }}}1
-function! s:tree2tex(tree) " {{{1
-  if type(a:tree) == type('')
-    return a:tree
-  else
-    return '{' . join(map(a:tree, 's:tree2tex(v:val)'), '') . '}'
-  endif
+function! s:tex2unicode(line) " {{{1
+  "
+  " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
+  "
+  let line = a:line
+  for [pat, symbol] in s:tex2unicode_list
+    let line = substitute(line, pat, symbol, 'g')
+  endfor
+
+  "
+  " There might be some missing conversions, which might be fixed by the last
+  " substitution
+  "
+  return substitute(line, '\C\(\\IeC\s*{\)\?\\.\(.\)}', '\1', 'g')
 endfunction
 
 " }}}1
