@@ -74,7 +74,8 @@ function! vimtex#latexmk#init_buffer() " {{{1
   " Kill running latexmk process if all buffers for a latex project are closed
   if g:vimtex_latexmk_continuous
     augroup latex_latexmk
-      autocmd BufUnload <buffer> call s:stop_buffer()
+      autocmd BufLeave  <buffer> call s:buffer_left()
+      autocmd BufDelete <buffer> call s:buffer_deleted()
     augroup END
   endif
 endfunction
@@ -485,6 +486,34 @@ endfunction
 
 " }}}1
 
+function! s:buffer_left() " {{{1
+  "
+  " Store buffer variables as script variables so they are available if the
+  " buffer is deleted.  This is done in order to be able to kill remaining
+  " latexmk processes.
+  "
+  let s:vimtex = b:vimtex
+  let s:vimtex_id = b:vimtex_id
+endfunction
+
+function! s:buffer_deleted() " {{{1
+  if s:vimtex.pid == 0 | return | endif
+
+  "
+  " The buffer is deleted, so we must kill the remaining latexmk process if the
+  " current buffer was the last open buffer for the current LaTeX blob/project.
+  "
+  " The buffer variables has already been stored as script variables by
+  " s:buffer_left().  
+  "
+  if len(filter(
+        \   map(filter(range(1, bufnr('$')), 'buflisted(v:val)'),
+        \       'getbufvar(v:val, ''vimtex_id'', -1)'),
+        \   'v:val == s:vimtex_id')) == 1
+    silent call s:latexmk_kill(s:vimtex)
+  endif
+endfunction
+
 function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
@@ -492,35 +521,6 @@ function! s:log_contains_error(logfile) " {{{1
   let lines = map(lines, 'fnamemodify(v:val, '':p'')')
   let lines = filter(lines, 'filereadable(v:val)')
   return len(lines) > 0
-endfunction
-
-function! s:stop_buffer() " {{{1
-  "
-  " Only run if latex variables are set
-  "
-  if !exists('b:vimtex') | return | endif
-
-  "
-  " Only stop if latexmk is running
-  "
-  if b:vimtex.pid !=# 0
-    "
-    " Count the number of buffers that point to current latex blob
-    "
-    let n = 0
-    for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-      if b:vimtex_id == getbufvar(b, 'vimtex_id', -1)
-        let n += 1
-      endif
-    endfor
-
-    "
-    " Only stop if current buffer is the last for current latex blob
-    "
-    if n == 1
-      silent call vimtex#latexmk#stop()
-    endif
-  endif
 endfunction
 
 function! s:check_system_compatibility() " {{{1
