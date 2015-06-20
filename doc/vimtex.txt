@@ -128,6 +128,13 @@ Requirements~
     e.g. `vim --servername VIM`.  For different ways of ensuring this, see:
     http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
 
+  |hidden|
+    In order to properly kill associated `latexmk` processes when a buffer is
+    closed, |vimtex| uses a autocommand that is triggered for |BufUnload|
+    events.  With |nohidden| set, the buffer is unloaded when a new buffer is
+    opened in the same window.  It is therefore recommended that one enables
+    the |hidden| option.
+
 ------------------------------------------------------------------------------
 Support for multi-file projects~
                                                             *vimtex-multi-file*
