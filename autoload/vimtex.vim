@@ -154,7 +154,7 @@ function! s:init_buffer() " {{{1
   endif
 
   "
-  " Finally we define commands and mappings
+  " Define commands and mappings
   "
 
   " Define commands
@@ -163,6 +163,16 @@ function! s:init_buffer() " {{{1
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
+
+  "
+  " Attach autocommands
+  "
+
+  augroup vimtex
+    au!
+    au BufFilePre  <buffer> call s:filename_changed_pre()
+    au BufFilePost <buffer> call s:filename_changed_post()
+  augroup END
 endfunction
 
 " }}}1
@@ -243,6 +253,7 @@ function! s:get_main() " {{{1
   return expand('%:p')
 endfunction
 
+" }}}1
 function! s:get_main_recurse(file) " {{{1
   "
   " Check if file is readable
@@ -310,6 +321,25 @@ function! s:get_main_ext(self, ext) " {{{1
 
   " Finally return empty string if no entry is found
   return ''
+endfunction
+
+" }}}1
+
+"
+" Detect file name changes
+"
+function! s:filename_changed_pre() " {{{1
+  let thisfile = fnamemodify(expand('%'), ':p')
+  let s:update_blob = thisfile ==# b:vimtex.tex
+endfunction
+
+" }}}1
+function! s:filename_changed_post() " {{{1
+  if s:update_blob
+    let b:vimtex.tex = fnamemodify(expand('%'), ':p')
+    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
+    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
+  endif
 endfunction
 
 " }}}1
