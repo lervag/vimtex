@@ -28,7 +28,7 @@ function! vimtex#latexmk#init_script() " {{{1
 
   " Ensure that all latexmk processes are stopped when vim exits
   if g:vimtex_latexmk_continuous
-    augroup latex_latexmk
+    augroup vimtex_latexmk
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
     augroup END
@@ -73,7 +73,7 @@ function! vimtex#latexmk#init_buffer() " {{{1
 
   " Kill running latexmk process if all buffers for a latex project are closed
   if g:vimtex_latexmk_continuous
-    augroup latex_latexmk
+    augroup vimtex_latexmk
       autocmd BufLeave  <buffer> call s:buffer_left()
       autocmd BufDelete <buffer> call s:buffer_deleted()
     augroup END
@@ -269,7 +269,7 @@ function! vimtex#latexmk#output() " {{{1
   silent exe 'split ' . tmp
 
   " Better automatic update
-  augroup tmp_update
+  augroup vimtex_tmp_update
     autocmd!
     autocmd BufEnter        * silent! checktime
     autocmd CursorHold      * silent! checktime
@@ -277,7 +277,7 @@ function! vimtex#latexmk#output() " {{{1
     autocmd CursorMoved     * silent! checktime
     autocmd CursorMovedI    * silent! checktime
   augroup END
-  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! tmp_update'
+  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! vimtex_tmp_update'
 
   " Set some mappings
   nnoremap <buffer> <silent> q :bwipeout<cr>

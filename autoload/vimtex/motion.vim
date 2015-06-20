@@ -17,7 +17,7 @@ function! vimtex#motion#init_script() " {{{1
 
   " Highlight matching parens ($, (), ...)
   if g:vimtex_motion_matchparen
-    augroup latex_motion
+    augroup vimtex_motion
       autocmd!
       " Disable matchparen autocommands
       autocmd BufEnter *.tex
