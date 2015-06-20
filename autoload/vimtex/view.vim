@@ -9,6 +9,7 @@ let s:viewers = [
       \ 'mupdf',
       \ 'okular',
       \ 'qpdfview',
+      \ 'skim',
       \ 'sumatrapdf',
       \ 'zathura',
       \ ]
@@ -334,6 +335,36 @@ function! s:qpdfview.view(file) dict " {{{2
   let exe.cmd .= '\#src:' . vimtex#util#fnameescape(expand('%:p'))
   let exe.cmd .= ':' . line('.')
   let exe.cmd .= ':' . col('.')
+  call vimtex#util#execute(exe)
+  let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
+endfunction
+
+" }}}2
+
+" {{{1 Skim
+function! s:skim.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_skim_options', '')
+
+  if !executable('/Applications/Skim.app/Contents/SharedSupport/displayline')
+    echoerr 'vimtex viewer Skim is not executable!'
+  endif
+endfunction
+
+" }}}2
+function! s:skim.view(file) dict " {{{2
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
+  if s:output_not_readable(outfile) | return | endif
+
+  let exe = {}
+  let exe.cmd = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+  let exe.cmd .= ' ' . g:vimtex_view_skim_options
+  let exe.cmd .= ' ' . line('.')
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(expand('%:p'))
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 
