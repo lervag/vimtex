@@ -462,9 +462,9 @@ function! s:latexmk_set_pid() " {{{1
   if has('win32')
     let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
     let pidinfo = split(system(pidcmd), '\n')[-1]
-    let b:vimtex.pid = split(pidinfo,'\s\+')[1]
+    let b:vimtex.pid = str2nr(split(pidinfo,'\s\+')[1])
   else
-    let b:vimtex.pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
+    let b:vimtex.pid = str2nr(system('pgrep -nf "^perl.*latexmk"')[:-2])
   endif
 endfunction
 
