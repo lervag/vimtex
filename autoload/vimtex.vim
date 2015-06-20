@@ -330,15 +330,29 @@ endfunction
 "
 function! s:filename_changed_pre() " {{{1
   let thisfile = fnamemodify(expand('%'), ':p')
-  let s:update_blob = thisfile ==# b:vimtex.tex
+  let s:filename_changed = thisfile ==# b:vimtex.tex
+  let s:filename_old = b:vimtex.base
 endfunction
 
 " }}}1
 function! s:filename_changed_post() " {{{1
-  if s:update_blob
+  if s:filename_changed
     let b:vimtex.tex = fnamemodify(expand('%'), ':p')
     let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
     let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
+    let message = ['vimtex: ',
+          \ ['VimtexWarning', 'Filename change detected!'],
+          \ "\n  Old filename: ", ['VimtexInfo', s:filename_old],
+          \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base]]
+
+    if b:vimtex.pid
+      let message += ["\n  latexmk process: ",
+            \ ['VimtexInfo', b:vimtex.pid],
+            \ ['VimtexWarning', ' killed!']]
+      call vimtex#latexmk#stop()
+    endif
+
+    call vimtex#echo#status(message)
   endif
 endfunction
 
