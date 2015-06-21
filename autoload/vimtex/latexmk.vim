@@ -13,6 +13,8 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '-pdf')
+  call vimtex#util#set_default('g:vimtex_latexmk_progname',
+        \ get(v:, 'progpath', get(v:, 'progname')))
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
@@ -393,10 +395,10 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   if g:vimtex_latexmk_callback && has('clientserver')
-    let success  = v:progname
+    let success  = g:vimtex_latexmk_progname
     let success .= ' --servername ' . v:servername
     let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
-    let failed   = v:progname
+    let failed   = g:vimtex_latexmk_progname
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
     let cmd .= vimtex#latexmk#add_option('success_cmd', success)

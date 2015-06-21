@@ -480,6 +480,8 @@ Options~
   Note 1: This feature requires |clientserver|.
   Note 2: Callbacks are only possible when continuous mode is active, see
           |g:vimtex_latexmk_continuous|.
+  Note 3: The callback is run with the vim executable defined by
+          |g:vimtex_latexmk_progname|.
 
   Default value: 1
 
@@ -506,6 +508,15 @@ Options~
         both a global and a project specific `.latexmkrc` file.
 
   Default value: '-pdf'
+
+*g:vimtex_latexmk_progname*
+  Path to vim executable.  This is used for the callback functionality, and it
+  must be set correctly in order for the callback function to work.  The
+  default value should work correctly in most cases, but in some cases, e.g.
+  for MacVim, one might need to set it manually to get the callbacks to work
+  as expected.
+
+  Default value: |v:progpath| if it exists, else |v:progname|.
 
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
