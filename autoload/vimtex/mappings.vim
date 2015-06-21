@@ -6,112 +6,102 @@
 
 function! vimtex#mappings#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_mappings_enabled', 1)
-
+  call vimtex#util#set_default('g:vimtex_mappings_math_mode', 1)
   call vimtex#util#set_default('g:vimtex_mappings_leader', '`')
-  call vimtex#util#set_default('g:vimtex_mappings_container', {})
 endfunction
 
 " }}}1
 function! vimtex#mappings#init_script() " {{{1
   "
-  " List of mappings
+  " Define default lists of mappings
   "
-  let g:mappings = {
-        \ 'math' : [
-        \   { 'lhs' : '__', 'rhs' : '_\{$1\}' },
-        \   { 'lhs' : '^^', 'rhs' : '^\{$1\}' },
-        \   { 'lhs' : '((', 'rhs' : '\left($1\right)' },
-        \   { 'lhs' : '[[', 'rhs' : '\left[$1\right]' },
-        \   { 'lhs' : '{{', 'rhs' : '\left\{$1\right\}' },
-        \  ],
-        \ 'all'  : [],
+  let s:mappings = {
+        \ 'list' : [
+        \   ['...', '\dots'],
+        \   ['<m-i>', '\item '],
+        \ ],
         \}
 
-  "
-  " List of mappings with leader key
-  "
-  let l:mappings_math_leader = [
-          \ { 'lhs' : 'a', 'rhs' : '\alpha' },
-          \ { 'lhs' : 'b', 'rhs' : '\beta' },
-          \ { 'lhs' : 'c', 'rhs' : '\chi' },
-          \ { 'lhs' : 'd', 'rhs' : '\delta' },
-          \ { 'lhs' : 'e', 'rhs' : '\varepsilon' },
-          \ { 'lhs' : 'f', 'rhs' : '\varphi' },
-          \ { 'lhs' : 'g', 'rhs' : '\gamma' },
-          \ { 'lhs' : 'h', 'rhs' : '\eta' },
-          \ { 'lhs' : 'k', 'rhs' : '\kappa' },
-          \ { 'lhs' : 'l', 'rhs' : '\lambda' },
-          \ { 'lhs' : 'm', 'rhs' : '\mu' },
-          \ { 'lhs' : 'n', 'rhs' : '\nu' },
-          \ { 'lhs' : 'o', 'rhs' : '\omega' },
-          \ { 'lhs' : 'p', 'rhs' : '\pi' },
-          \ { 'lhs' : 'q', 'rhs' : '\theta' },
-          \ { 'lhs' : 'r', 'rhs' : '\rho' },
-          \ { 'lhs' : 's', 'rhs' : '\sigma' },
-          \ { 'lhs' : 't', 'rhs' : '\tau' },
-          \ { 'lhs' : 'u', 'rhs' : '\upsilon' },
-          \ { 'lhs' : 'z', 'rhs' : '\zeta' },
-          \ { 'lhs' : 'D', 'rhs' : '\Delta' },
-          \ { 'lhs' : 'F', 'rhs' : '\Phi' },
-          \ { 'lhs' : 'G', 'rhs' : '\Gamma' },
-          \ { 'lhs' : 'L', 'rhs' : '\Lambda' },
-          \ { 'lhs' : 'N', 'rhs' : '\nabla' },
-          \ { 'lhs' : 'O', 'rhs' : '\Omega' },
-          \ { 'lhs' : 'Q', 'rhs' : '\Theta' },
-          \ { 'lhs' : 'R', 'rhs' : '\varrho' },
-          \ { 'lhs' : 'U', 'rhs' : '\Upsilon' },
-          \ { 'lhs' : 'X', 'rhs' : '\Xi' },
-          \ { 'lhs' : 'Y', 'rhs' : '\Psi' },
-          \]
-  let g:mappings.math += map(l:mappings_math_leader,
-        \ '{  ''lhs'' : g:vimtex_mappings_leader . v:val.lhs,'
-        \  . '''rhs'' : v:val.rhs }')
+  let s:mappings_math = {
+        \ 'math' : 1,
+        \ 'list' : [
+        \   ['__', '_\{$1\}'],
+        \   ['^^', '^\{$1\}'],
+        \   ['((', '\left($1\right)'],
+        \   ['[[', '\left[$1\right]'],
+        \   ['{{', '\left\{$1\right\}'],
+        \   ['exp', '\exp\left($1\right)'],
+        \   ['cos', '\cos'],
+        \   ['sin', '\sin'],
+        \   ['tan', '\tan'],
+        \   ['log', '\log'],
+        \   ['in', '\in'],
+        \   ['to', '\to'],
+        \   ['lim', '\lim_{$1}'],
+        \   ['qj', '\downarrow'],
+        \   ['ql', '\leftarrow'],
+        \   ['qh', '\rightarrow'],
+        \   ['qk', '\uparrow'],
+        \   ['qJ', '\Downarrow'],
+        \   ['qL', '\Leftarrow'],
+        \   ['qH', '\Rightarrow'],
+        \   ['qK', '\Uparrow'],
+        \ ]
+        \}
 
-" i             \int_{}^{}
-" I             \int_{}^{}
-" S             \sum_{}^{}
-" /             \frac{}{}
-" %             \frac{}{}
-" v             \vee
-" w             \wedge
-" 0             \emptyset
-" 6             \partial
-" 8             \infty
-" @             \circ
-" \|            \Big\|
-" =             \equiv
-" \             \setminus
-" .             \cdot
-" *             \times
-" &             \wedge
-" -             \bigcap
-" +             \bigcup
-" (             \subset
-" )             \supset
-" <             \leq
-" >             \geq
-" ,             \nonumber
-" :             \dots
-" ~             \tilde{}
-" ^             \hat{}
-" ;             \dot{}
-" _             \bar{}
-" <M-c>         \cos
-" <C-E>         \exp\left(\right)
-" <C-I>         \in
-" <C-J>         \downarrow
-" <C-L>         \log
-" <C-P>         \uparrow
-" <Up>          \uparrow
-" <C-N>         \downarrow
-" <Down>        \downarrow
-" <C-F>         \to
-" <Right>       \lim_{}
-" <C-S>         \sin
-" <C-T>         \tan
-" <M-l>         \ell
-" <CR>          \nonumber\\
-
+  let s:mappings_math_leader = {
+        \ 'leader' : 1,
+        \ 'math' : 1,
+        \ 'list' : [
+        \   ['a', '\alpha'],
+        \   ['b', '\beta'],
+        \   ['c', '\chi'],
+        \   ['d', '\delta'],
+        \   ['e', '\varepsilon'],
+        \   ['f', '\varphi'],
+        \   ['g', '\gamma'],
+        \   ['h', '\eta'],
+        \   ['k', '\kappa'],
+        \   ['l', '\lambda'],
+        \   ['m', '\mu'],
+        \   ['n', '\nu'],
+        \   ['o', '\omega'],
+        \   ['p', '\pi'],
+        \   ['q', '\theta'],
+        \   ['r', '\rho'],
+        \   ['s', '\sigma'],
+        \   ['t', '\tau'],
+        \   ['u', '\upsilon'],
+        \   ['z', '\zeta'],
+        \   ['D', '\Delta'],
+        \   ['F', '\Phi'],
+        \   ['G', '\Gamma'],
+        \   ['L', '\Lambda'],
+        \   ['N', '\nabla'],
+        \   ['O', '\Omega'],
+        \   ['Q', '\Theta'],
+        \   ['R', '\varrho'],
+        \   ['U', '\Upsilon'],
+        \   ['X', '\Xi'],
+        \   ['Y', '\Psi'],
+        \   ['i', '\int_{$1}^{$2}'],
+        \   ['S', '\sum_{$1}^{$2}'],
+        \   ['/', '\frac{$1}{$2}'],
+        \   ['0', '\emptyset'],
+        \   ['6', '\partial'],
+        \   ['8', '\infty'],
+        \   ['=', '\equiv'],
+        \   ['\', '\setminus'],
+        \   ['.', '\cdot'],
+        \   ['*', '\times'],
+        \   ['<', '\leq'],
+        \   ['>', '\geq'],
+        \   ['~', '\tilde{$1}'],
+        \   ['^', '\hat{$1}'],
+        \   [';', '\dot{$1}'],
+        \   ['_', '\bar{$1}'],
+        \ ]
+        \}
 endfunction
 
 " }}}1
@@ -189,29 +179,70 @@ function! vimtex#mappings#init_buffer() " {{{1
     endif
   endif
 
-  " call s:init_math_mappings()
+  if g:vimtex_mappings_math_mode
+    call s:init_math_mappings(s:mappings)
+    call s:init_math_mappings(s:mappings_math)
+    call s:init_math_mappings(s:mappings_math_leader)
+    silent execute 'inoremap <silent><buffer>'
+          \ g:vimtex_mappings_leader . g:vimtex_mappings_leader
+          \ g:vimtex_mappings_leader
+  endif
 endfunction
 
 " }}}1
 
-function! s:init_math_mappings() " {{{1
-  for map in s:mappings
-    if map.type ==# 'map'
-      silent execute 'inoremap <buffer><silent>' map.lhs
-            \ map.lhs . '<c-r>=UltiSnips#Anon(''' . map.rhs . ''', ''' . map.lhs
-            \ . ''', '''', ''i'')<cr>'
-    elseif map.type ==# 'abbrev'
-      silent execute 'inoremap <silent><buffer> ' . map.lhs
-            \ . ' <c-r>=<sid>is_math() ?'
-            \ string(map.rhs) ':' string(map.lhs) '<cr>'
+"
+" Math mode functions
+"
+function! s:init_math_mappings(mappings) " {{{1
+  let l:leader = get(a:mappings, 'leader', 0)
+  let l:math = get(a:mappings, 'math', 0)
+
+  for [lhs, rhs] in a:mappings.list
+    let l:ultisnips = match(rhs, '$1') > 0
+
+    "
+    " Generate RHS
+    "
+    if l:math && l:ultisnips
+      let rhs = s:wrap_math_ultisnips(lhs, rhs)
+    elseif l:math
+      let rhs = s:wrap_math(lhs, rhs)
+    elseif l:ultisnips
+      let rhs = s:wrap_ultisnips(lhs, rhs)
     endif
+
+    "
+    " Add leader
+    "
+    let lhs = l:leader ? g:vimtex_mappings_leader . lhs : lhs
+
+    silent execute 'inoremap <silent><buffer>' lhs rhs
   endfor
+endfunction
+
+" }}}1
+function! s:wrap_math_ultisnips(lhs, rhs) " {{{1
+  return a:lhs . '<c-r>=<sid>is_math() ? ' . 'UltiSnips#Anon('''
+        \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')' . ' : ''''<cr>'
+endfunction
+
+" }}}1
+function! s:wrap_math(lhs, rhs) " {{{1
+  return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
+        \ . ' : ' . string(a:lhs) . '<cr>'
+endfunction
+
+" }}}1
+function! s:wrap_ultisnips(lhs, rhs) " {{{1
+  return a:lhs . '<c-r>=UltiSnips#Anon('''
+        \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')<cr>'
 endfunction
 
 " }}}1
 function! s:is_math() " {{{1
   return match(map(synstack(line('.'), col('.')),
-        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[EX]$') >= 0
+        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]$') >= 0
 endfunction
 
 " }}}1
