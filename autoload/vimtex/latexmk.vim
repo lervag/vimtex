@@ -209,6 +209,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#errors_open(force) " {{{1
+  if !exists('b:vimtex') | return | endif
   cclose
 
   let log = b:vimtex.log()
