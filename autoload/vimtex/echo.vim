@@ -12,6 +12,7 @@ function! vimtex#echo#init_script() " {{{1
   highlight link VimtexMsg ModeMsg
   highlight link VimtexSuccess Statement
   highlight link VimtexWarning WarningMsg
+  highlight link VimtexInfo Question
 endfunction
 
 " }}}1

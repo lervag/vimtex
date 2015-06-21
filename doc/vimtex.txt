@@ -480,6 +480,8 @@ Options~
   Note 1: This feature requires |clientserver|.
   Note 2: Callbacks are only possible when continuous mode is active, see
           |g:vimtex_latexmk_continuous|.
+  Note 3: The callback is run with the vim executable defined by
+          |g:vimtex_latexmk_progname|.
 
   Default value: 1
 
@@ -506,6 +508,15 @@ Options~
         both a global and a project specific `.latexmkrc` file.
 
   Default value: '-pdf'
+
+*g:vimtex_latexmk_progname*
+  Path to vim executable.  This is used for the callback functionality, and it
+  must be set correctly in order for the callback function to work.  The
+  default value should work correctly in most cases, but in some cases, e.g.
+  for MacVim, one might need to set it manually to get the callbacks to work
+  as expected.
+
+  Default value: |v:progpath| if it exists, else |v:progname|.
 
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
@@ -658,6 +669,23 @@ Options~
   opened.
 
   Default value: ''
+
+*g:vimtex_syntax_minted*
+  A list that contains dictionaries for each supported language.  A language
+  dictionary should be something similar to the following: >
+
+    {
+      'lang'    : NAME,
+      'syntax'  : SYNTAX-FILE-NAME,
+      'ignored' : IGNORED-GROUPS
+    }
+< 
+  If the `syntax` entry is not present, then the `lang` entry is used as name of
+  the syntax file.  The `ignored` entry is also optional, and is used to name
+  syntax groups to ignore in the minted region.  
+
+  Default value:
+    Please see `VIMTEX/after/syntax/tex.vim` for the default value.
 
 ------------------------------------------------------------------------------
 Commands~
@@ -998,8 +1026,9 @@ highlighting.  However, |vimtex| does add some minor improvements:
 
 - Support for `biblatex` and `natbib` package
 - Support for `cleveref` package
-- Support for `listings` package
+- Improved highlighting of `listings` package
 - Nested syntax highlighting for `dot2tex`
+- Nested syntax highlighting for `minted` (see |g:vimtex_syntax_minted|)
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*

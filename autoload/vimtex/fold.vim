@@ -35,19 +35,6 @@ function! vimtex#fold#init_script() " {{{1
   " Define some script variables
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-
-  " For automatic folding with foldmethod=expr:
-  "   The foldexpr function returns "=" for most lines, which means it can
-  "   become slow for large files.  The following is a hack that is based on
-  "   this reply to a discussion on the Vim Developer list:
-  "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
-  if g:vimtex_fold_automatic
-    augroup latex_fold
-      autocmd!
-      autocmd InsertEnter *.tex call FdmSave()
-      autocmd InsertLeave *.tex call FdmRestore()
-    augroup END
-  endif
 endfunction
 
 " }}}1
@@ -66,14 +53,27 @@ function! vimtex#fold#init_buffer() " {{{1
   " Define commands
   command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
 
-  " Set options for automatic/manual mode
+  " Set options for automatic/manual folding mode
   if g:vimtex_fold_automatic
     nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+
+    " For automatic folding with foldmethod=expr:
+    "   The foldexpr function returns "=" for most lines, which means it can
+    "   become slow for large files.  The following is a hack that is based on
+    "   this reply to a discussion on the Vim Developer list:
+    "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
+    if g:vimtex_fold_automatic
+      augroup vimtex_fold_automatic
+        autocmd!
+        autocmd InsertEnter <buffer> call FdmSave()
+        autocmd InsertLeave <buffer> call FdmRestore()
+      augroup END
+    endif
   else
-    augroup latex_fold
+    augroup vimtex_fold_manual
       autocmd!
-      autocmd CursorMoved *.tex call vimtex#fold#refresh('zx')
-      autocmd CursorMoved *.tex autocmd! latex_fold
+      autocmd CursorMoved <buffer> call vimtex#fold#refresh('zx')
+      autocmd CursorMoved <buffer> autocmd! vimtex_fold_manual
     augroup END
   endif
 endfunction

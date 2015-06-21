@@ -9,6 +9,7 @@ let s:viewers = [
       \ 'mupdf',
       \ 'okular',
       \ 'qpdfview',
+      \ 'skim',
       \ 'sumatrapdf',
       \ 'zathura',
       \ ]
@@ -20,17 +21,7 @@ function! vimtex#view#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_view_enabled', 1)
   if !g:vimtex_view_enabled | return | endif
 
-  for viewer in s:viewers
-    call vimtex#util#set_default('g:vimtex_view_' . viewer . '_options', '')
-  endfor
-
-  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
-        \ {
-        \   'linux' : 'xdg-open',
-        \   'mac'   : 'open',
-        \ })
   call vimtex#util#set_default('g:vimtex_view_method', 'general')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
 endfunction
 
 " }}}1
@@ -51,6 +42,20 @@ function! vimtex#view#init_buffer() " {{{1
   endif
   execute 'let b:vimtex.viewer = ' . viewer
   call b:vimtex.viewer.init()
+
+  "
+  " Create view and/or callback hooks (if they exist)
+  "
+  for point in ['view', 'callback']
+    execute 'let hook = ''g:vimtex_view_'
+          \ . g:vimtex_view_method . '_hook_' . point . ''''
+    if exists(hook)
+      execute 'let hookfunc = ''*'' . ' . hook
+      if exists(hookfunc)
+        execute 'let b:vimtex.viewer.hook_' . point . ' = function(' . hook . ')'
+      endif
+    endif
+  endfor
 
   "
   " Define commands
@@ -80,6 +85,16 @@ endfunction
 "
 " {{{1 General
 function! s:general.init() dict " {{{2
+  "
+  " Set default options
+  "
+  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
+        \ {
+        \   'linux' : 'xdg-open',
+        \   'mac'   : 'open',
+        \ })
+  call vimtex#util#set_default('g:vimtex_view_general_options', '')
+
   if !executable(g:vimtex_view_general_viewer)
     echoerr 'vimtex viewer is not executable!'
     echoerr 'g:vimtex_view_general_viewer = '
@@ -98,6 +113,10 @@ function! s:general.view(file) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -116,6 +135,16 @@ endfunction
 function! s:mupdf.init() dict " {{{2
   " Only initialize once
   if has_key(self, 'xwin_id') | return | endif
+
+  "
+  " Default MuPDF settings
+  "
+  call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_callback',
+        \ 's:focus_vim')
+  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_view',
+        \ 's:focus_viewer')
 
   if !executable('mupdf')
     echoerr 'vimtex viewer MuPDF is not executable!'
@@ -143,6 +172,10 @@ function! s:mupdf.view(file) dict " {{{2
     call self.start(outfile)
   else
     call self.forward_search(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
   endif
 endfunction
 
@@ -231,12 +264,13 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_callback() dict " {{{2
-  " Try to get xwin ID
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
       call self.forward_search(b:vimtex.out())
-      call self.focus_vim()
+      if has_key(self, 'hook_callback')
+        call self.hook_callback()
+      endif
     endif
   endif
 endfunction
@@ -255,6 +289,8 @@ endfunction
 
 " {{{1 Okular
 function! s:okular.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_okular_options', '')
+
   if !executable('okular')
     echoerr 'vimtex viewer Okular is not executable!'
   endif
@@ -271,12 +307,18 @@ function! s:okular.view(file) dict " {{{2
   let exe.cmd .= '\#src:' . line('.') . vimtex#util#fnameescape(expand('%:p'))
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
 
 " {{{1 qpdfview
 function! s:qpdfview.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_qpdfview_options', '')
+
   if !executable('qpdfview')
     echoerr 'vimtex viewer qpdfview is not executable!'
   endif
@@ -295,12 +337,48 @@ function! s:qpdfview.view(file) dict " {{{2
   let exe.cmd .= ':' . col('.')
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
+endfunction
+
+" }}}2
+
+" {{{1 Skim
+function! s:skim.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_skim_options', '')
+
+  if !executable('/Applications/Skim.app/Contents/SharedSupport/displayline')
+    echoerr 'vimtex viewer Skim is not executable!'
+  endif
+endfunction
+
+" }}}2
+function! s:skim.view(file) dict " {{{2
+  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
+  if s:output_not_readable(outfile) | return | endif
+
+  let exe = {}
+  let exe.cmd = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+  let exe.cmd .= ' ' . g:vimtex_view_skim_options
+  let exe.cmd .= ' ' . line('.')
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd .= ' ' . vimtex#util#fnameescape(expand('%:p'))
+  call vimtex#util#execute(exe)
+  let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
 
 " {{{1 SumatraPDF
 function! s:sumatrapdf.init() dict " {{{2
+  call vimtex#util#set_default('g:vimtex_view_sumatrapdf_options', '')
+
   if !executable('SumatraPDF')
     echoerr 'vimtex viewer SumatraPDF is not executable!'
   endif
@@ -318,6 +396,10 @@ function! s:sumatrapdf.view(file) dict " {{{2
   let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
 endfunction
 
 " }}}2
@@ -326,6 +408,15 @@ endfunction
 function! s:zathura.init() dict " {{{2
   " Only initialize once
   if has_key(self, 'xwin_id') | return | endif
+
+  "
+  " Default Zathura settings
+  "
+  call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
+  call vimtex#util#set_default('g:vimtex_view_zathura_hook_callback',
+        \ 's:focus_vim')
+  call vimtex#util#set_default('g:vimtex_view_zathura_hook_view',
+        \ 's:focus_viewer')
 
   if !executable('zathura')
     echoerr 'vimtex viewer Zathura is not executable!'
@@ -339,7 +430,6 @@ function! s:zathura.init() dict " {{{2
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
-  let self.focus_vim = function('s:focus_vim')
 endfunction
 
 " }}}2
@@ -351,6 +441,10 @@ function! s:zathura.view(file) dict " {{{2
     call self.start(outfile)
   else
     call self.forward_search(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
   endif
 endfunction
 
@@ -386,7 +480,9 @@ function! s:zathura.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.forward_search(b:vimtex.out())
-      call self.focus_vim()
+      if has_key(self, 'hook_callback')
+        call self.hook_callback()
+      endif
     endif
   endif
 endfunction
@@ -460,17 +556,21 @@ function! s:xwin_send_keys(keys) dict " {{{1
   if a:keys !=# ''
     let cmd  = 'xdotool key --window ' . self.xwin_id
     let cmd .= ' ' . a:keys
-    call system(cmd)
+    silent call system(cmd)
   endif
 endfunction
 
 " }}}1
+
+"
+" Hook functions (used as default hooks in some cases)
+"
 function! s:focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
-  if self.xwin_exists()
-    silent execute '!xdotool windowfocus ' . self.xwin_id
-    redraw!
+  if self.xwin_id > 0
+    silent call system('xdotool windowfocus ' . self.xwin_id . ' --sync')
+    silent call system('xdotool windowraise ' . self.xwin_id)
   endif
 endfunction
 
@@ -478,8 +578,8 @@ endfunction
 function! s:focus_vim() dict " {{{1
   if !executable('xdotool') | return | endif
 
-  silent execute '!xdotool windowfocus ' . v:windowid
-  redraw!
+  silent call system('xdotool windowfocus ' . v:windowid . ' --sync')
+  silent call system('xdotool windowraise ' . v:windowid)
 endfunction
 
 " }}}1
