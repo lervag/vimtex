@@ -432,14 +432,13 @@ function! s:labels_extract(file) " {{{1
   let lines = readfile(a:file)
   let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
   let lines = filter(lines, 'v:val !~# ''@cref''')
+  let lines = filter(lines, 'v:val !~# ''sub@''')
   let lines = map(lines, 's:tex2unicode(v:val)')
   for line in lines
     let tree = s:tex2tree(line)[1:]
     let name = remove(tree, 0)[0]
     if type(tree[0]) == type([]) && !empty(tree[0])
-      let number = len(tree[0][0]) > 1
-            \ ? tree[0][0][1][0]
-            \ : tree[0][0][0]
+      let number = s:labels_parse_number(tree[0][0])
       let page = tree[0][1][0]
       call add(matches, [name, number, page])
     endif
@@ -458,6 +457,18 @@ function! s:labels_extract_inputs(file) " {{{1
     call add(matches, input)
   endfor
   return matches
+endfunction
+
+" }}}1
+function! s:labels_parse_number(num_tree) " {{{1
+  if len(a:num_tree) == 0
+    return '-'
+  elseif len(a:num_tree) == 1
+    let l:num = str2nr(a:num_tree[0])
+    return l:num > 0 ? l:num : '-'
+  else
+    return s:labels_parse_number(a:num_tree[1])
+  endif
 endfunction
 
 " }}}1
