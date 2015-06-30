@@ -7,10 +7,6 @@
 let s:viewers = [
       \ 'general',
       \ 'mupdf',
-      \ 'okular',
-      \ 'qpdfview',
-      \ 'skim',
-      \ 'sumatrapdf',
       \ 'zathura',
       \ ]
 for viewer in s:viewers
@@ -38,6 +34,8 @@ function! vimtex#view#init_buffer() " {{{1
   let viewer = 's:' . g:vimtex_view_method
   if !exists(viewer)
     echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
+    echo "\nPlease see :h g:vimtex_view_method\n\n"
+    let b:vimtex.viewer = {}
     return
   endif
   execute 'let b:vimtex.viewer = ' . viewer
@@ -88,12 +86,14 @@ function! s:general.init() dict " {{{2
   "
   " Set default options
   "
+
   call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
         \ {
         \   'linux' : 'xdg-open',
         \   'mac'   : 'open',
         \ })
-  call vimtex#util#set_default('g:vimtex_view_general_options', '')
+  call vimtex#util#set_default('g:vimtex_view_general_options', '@pdf')
+  call vimtex#util#set_default('g:vimtex_view_general_options_latexmk', '')
 
   if !executable(g:vimtex_view_general_viewer)
     echoerr 'vimtex viewer is not executable!'
@@ -107,10 +107,17 @@ function! s:general.view(file) dict " {{{2
   let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
+  " Parse options
+  let opts = g:vimtex_view_general_options
+  let opts = substitute(opts, '@line', line('.'), 'g')
+  let opts = substitute(opts, '@col', col('.'), 'g')
+  let opts = substitute(opts, '@tex',
+        \ vimtex#util#fnameescape(expand('%:p')), 'g')
+  let opts = substitute(opts, '@pdf', vimtex#util#fnameescape(outfile), 'g')
+
+  " Construct the command
   let exe = {}
-  let exe.cmd = g:vimtex_view_general_viewer
-  let exe.cmd .= ' ' . g:vimtex_view_general_options
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
+  let exe.cmd = g:vimtex_view_general_viewer . ' ' . opts
   call vimtex#util#execute(exe)
   let self.cmd_view = exe.cmd
 
@@ -121,12 +128,9 @@ endfunction
 
 " }}}2
 function! s:general.latexmk_append_argument() dict " {{{2
-  let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
-  let cmd .= vimtex#latexmk#add_option('pdf_update_method', '0')
-  let cmd .= vimtex#latexmk#add_option('pdf_previewer', 'start '
+  return vimtex#latexmk#add_option('pdf_previewer', 'start '
         \ . g:vimtex_view_general_viewer . ' '
-        \ . g:vimtex_view_general_options)
-  return cmd
+        \ . g:vimtex_view_general_options_latexmk)
 endfunction
 
 " }}}2
@@ -283,123 +287,6 @@ function! s:mupdf.latexmk_append_argument() dict " {{{2
   let cmd .= vimtex#latexmk#add_option('pdf_previewer',
         \ 'start mupdf ' .  g:vimtex_view_mupdf_options)
   return cmd
-endfunction
-
-" }}}2
-
-" {{{1 Okular
-function! s:okular.init() dict " {{{2
-  call vimtex#util#set_default('g:vimtex_view_okular_options', '')
-
-  if !executable('okular')
-    echoerr 'vimtex viewer Okular is not executable!'
-  endif
-endfunction
-
-" }}}2
-function! s:okular.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  let exe = {}
-  let exe.cmd = 'okular ' . g:vimtex_view_okular_options
-  let exe.cmd .= ' --unique ' . vimtex#util#fnameescape(outfile)
-  let exe.cmd .= '\#src:' . line('.') . vimtex#util#fnameescape(expand('%:p'))
-  call vimtex#util#execute(exe)
-  let self.cmd_view = exe.cmd
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
-endfunction
-
-" }}}2
-
-" {{{1 qpdfview
-function! s:qpdfview.init() dict " {{{2
-  call vimtex#util#set_default('g:vimtex_view_qpdfview_options', '')
-
-  if !executable('qpdfview')
-    echoerr 'vimtex viewer qpdfview is not executable!'
-  endif
-endfunction
-
-" }}}2
-function! s:qpdfview.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  let exe = {}
-  let exe.cmd = 'qpdfview ' . g:vimtex_view_qpdfview_options
-  let exe.cmd .= ' --unique ' . vimtex#util#fnameescape(outfile)
-  let exe.cmd .= '\#src:' . vimtex#util#fnameescape(expand('%:p'))
-  let exe.cmd .= ':' . line('.')
-  let exe.cmd .= ':' . col('.')
-  call vimtex#util#execute(exe)
-  let self.cmd_view = exe.cmd
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
-endfunction
-
-" }}}2
-
-" {{{1 Skim
-function! s:skim.init() dict " {{{2
-  call vimtex#util#set_default('g:vimtex_view_skim_options', '')
-
-  if !executable('/Applications/Skim.app/Contents/SharedSupport/displayline')
-    echoerr 'vimtex viewer Skim is not executable!'
-  endif
-endfunction
-
-" }}}2
-function! s:skim.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  let exe = {}
-  let exe.cmd = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-  let exe.cmd .= ' ' . g:vimtex_view_skim_options
-  let exe.cmd .= ' ' . line('.')
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(expand('%:p'))
-  call vimtex#util#execute(exe)
-  let self.cmd_view = exe.cmd
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
-endfunction
-
-" }}}2
-
-" {{{1 SumatraPDF
-function! s:sumatrapdf.init() dict " {{{2
-  call vimtex#util#set_default('g:vimtex_view_sumatrapdf_options', '')
-
-  if !executable('SumatraPDF')
-    echoerr 'vimtex viewer SumatraPDF is not executable!'
-  endif
-endfunction
-
-" }}}2
-function! s:sumatrapdf.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  let exe = {}
-  let exe.cmd = 'SumatraPDF ' . g:vimtex_view_sumatrapdf_options
-  let exe.cmd .= ' -forward-search ' . vimtex#util#fnameescape(expand('%:p'))
-  let exe.cmd .= ' ' . line('.')
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(outfile)
-  call vimtex#util#execute(exe)
-  let self.cmd_view = exe.cmd
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
 endfunction
 
 " }}}2
