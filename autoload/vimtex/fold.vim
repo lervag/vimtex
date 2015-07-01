@@ -42,8 +42,7 @@ function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
 
   " Don't override modeline settings
-  silent let l:fdm_set_in_modeline = s:check_modeline()
-  if !l:fdm_set_in_modeline | return | endif
+  if s:check_modeline() | return | endif
 
   " Set fold options
   setlocal foldmethod=expr
@@ -353,12 +352,25 @@ endfunction
 " }}}1
 
 function! s:check_modeline() " {{{1
-  redir => l:check_modeline
-  verbose setlocal foldmethod
-  redir END
-  return l:check_modeline =~# 'Last set from modeline'
-endfunction
+  " Return 1 if foldmethod set in modeline 
+  " Return 0 otherwise
 
+  let l:search_string='vim:.*foldmethod'
+  
+  " Preserve current cursor position
+  let l:save_cursor = getpos(".")
+  " Check for modeline at the top
+  call cursor(1, 1)
+  let l:check_modeline_top = search(l:search_string, 'n', &modelines)
+
+  " Check for modeline at bottom
+  normal G$
+  let l:check_modeline_bottom = search(l:search_string, 'b', line('.')-1-&modelines)
+
+  " Reset original cursor position
+  call setpos('.', l:save_cursor)
+  return l:check_modeline_top || l:check_modeline_bottom
+endfunction
 " }}}1
 
 " vim: fdm=marker sw=2
