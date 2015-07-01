@@ -41,10 +41,14 @@ endfunction
 function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
 
+  " Don't override modeline settings
+  silent let l:fdm_set_in_modeline = s:check_modeline()
+  if !l:fdm_set_in_modeline | return | endif
+
   " Set fold options
-  setl foldmethod=expr
-  setl foldexpr=vimtex#fold#level(v:lnum)
-  setl foldtext=vimtex#fold#text()
+  setlocal foldmethod=expr
+  setlocal foldexpr=vimtex#fold#level(v:lnum)
+  setlocal foldtext=vimtex#fold#text()
 
   " Remap zx to refresh fold levels
   nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
@@ -346,6 +350,15 @@ function! s:parse_caption_frame(line) " {{{1
     return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
 endfunction
+" }}}1
+
+function! s:check_modeline() " {{{1
+  redir => l:check_modeline
+  verbose setlocal foldmethod
+  redir END
+  return l:check_modeline =~# 'Last set from modeline'
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2
