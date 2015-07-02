@@ -396,10 +396,10 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   if g:vimtex_latexmk_callback && has('clientserver')
-    let success  = g:vimtex_latexmk_progname
+    let success  = '\"' . g:vimtex_latexmk_progname . '\"'
     let success .= ' --servername ' . v:servername
     let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
-    let failed   = g:vimtex_latexmk_progname
+    let failed   = '\"' . g:vimtex_latexmk_progname . '\"'
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
     let cmd .= vimtex#latexmk#add_option('success_cmd', success)
