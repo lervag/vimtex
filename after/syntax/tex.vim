@@ -98,12 +98,23 @@ for entry in s:minted
         \ 'keepend'
         \ 'transparent'
         \ 'contains=texMinted,@' . toupper(lang)
+
+  execute 'syntax region texZone'
+        \ 'start="\\begin{' . lang . 'code\*\?}\(\s*\[.\{-}\]\)\?"rs=s'
+        \ 'end="\\end{' . lang . 'code\*\?}"re=e'
+        \ 'keepend'
+        \ 'transparent'
+        \ 'contains=texMinted,@' . toupper(lang)
 endfor
 let b:current_syntax = 'tex'
 
 syntax match texMinted "\\begin{minted}\_[^}]\{-}{\w\+}"
       \ contains=texBeginEnd,texMintedName
 syntax match texMinted "\\end{minted}"
+      \ contains=texBeginEnd
+syntax match texMinted "\\begin{\w*code\*\?}\(\s*\[.\{-}\]\)\?"
+      \ contains=texBeginEnd,texMintedName
+syntax match texMinted "\\end{\w*code\*\?}"
       \ contains=texBeginEnd
 syntax match texMintedName "{\w\+}"
 
