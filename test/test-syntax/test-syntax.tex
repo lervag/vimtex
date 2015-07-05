@@ -32,12 +32,27 @@ def function(arg):
     pass
 \end{minted}
 
-\begin{ccode}[...]
+\begin{cppcode}
 int main() {
   printf("hello, world");
   return 0;
 }
-\end{ccode}
+\end{cppcode}
+
+\begin{cppcode_test}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode_test}
+
+\begin{cppcode*}{a=0,
+                 b=1}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode*}
 
 \begin{minted}{c}
 int main() {
