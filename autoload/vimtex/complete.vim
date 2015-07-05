@@ -433,6 +433,7 @@ function! s:labels_extract(file) " {{{1
   let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
   let lines = filter(lines, 'v:val !~# ''@cref''')
   let lines = filter(lines, 'v:val !~# ''sub@''')
+  let lines = filter(lines, 'v:val !~# ''tocindent-\?[0-9]''')
   let lines = map(lines, 's:tex2unicode(v:val)')
   for line in lines
     let tree = s:tex2tree(line)[1:]
