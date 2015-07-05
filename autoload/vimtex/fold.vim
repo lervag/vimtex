@@ -352,25 +352,30 @@ endfunction
 " }}}1
 
 function! s:check_modeline() " {{{1
-  " Return 1 if foldmethod set in modeline 
-  " Return 0 otherwise
+  "
+  " Check if foldmethod is set in modeline
+  "
 
-  let l:search_string='vim:.*foldmethod'
+  let l:search_string = 'vim:.*\(foldmethod\|fdm\)'
   
   " Preserve current cursor position
-  let l:save_cursor = getpos(".")
+  let l:save_cursor = getpos('.')
+
   " Check for modeline at the top
   call cursor(1, 1)
-  let l:check_modeline_top = search(l:search_string, 'n', &modelines)
+  let l:check_modeline_top = search(l:search_string, 'cn', &modelines)
 
   " Check for modeline at bottom
-  normal G$
-  let l:check_modeline_bottom = search(l:search_string, 'b', line('.')-1-&modelines)
+  normal! G$
+  let l:check_modeline_bottom = search(l:search_string, 'b',
+        \ line('.') - 1 - &modelines)
 
   " Reset original cursor position
   call setpos('.', l:save_cursor)
+
   return l:check_modeline_top || l:check_modeline_bottom
 endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2
