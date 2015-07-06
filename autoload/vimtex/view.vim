@@ -408,7 +408,7 @@ function! s:xwin_get_id() dict " {{{1
   sleep 500m
 
   let cmd = 'xdotool search --class ' . self.class
-  let xwin_ids = systemlist(cmd)
+  let xwin_ids = split(system(cmd), '\n')
   if len(xwin_ids) == 0
     call vimtex#echo#warning(
           \ 'vimtex viewer can not find ' . self.class . ' window ID!')
@@ -425,7 +425,7 @@ function! s:xwin_exists() dict " {{{1
   if !executable('xdotool') | return 0 | endif
 
   let cmd = 'xdotool search --class ' . self.class
-  if index(systemlist(cmd), self.xwin_id) >= 0
+  if index(split(system(cmd), '\n'), self.xwin_id) >= 0
     return 1
   endif
 
