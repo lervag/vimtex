@@ -257,7 +257,7 @@ function! s:mupdf.reverse_search() dict " {{{2
   let self.line = system(self.cmd_getline)
 
   " Go to file and line
-  silent exec 'edit ' . self.file
+  silent exec 'edit ' . vimtex#util#fnameescape(self.file)
   if self.line > 0
     silent exec ':' . self.line
     " Unfold, move to top line to correspond to top pdf line, and go to end of
