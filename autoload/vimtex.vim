@@ -347,7 +347,7 @@ function! s:get_main_recurse(file) " {{{1
   " Check if current file is a main file
   "
   if len(filter(readfile(a:file),
-        \ 'v:val =~# ''\C\\begin\_\s*{document}''')) > 0
+        \ 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
     return fnamemodify(a:file, ':p')
   endif
 

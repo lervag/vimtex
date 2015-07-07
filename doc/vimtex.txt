@@ -136,7 +136,7 @@ Support for multi-file projects~
 automatically detects the root file of the project.  This detection is based
 on a recursive search for files that include the current tex file, until
 a main file is recognized.  A file is assumed to be the main file if it has
-the `\begin{document}` line.  Files are assumed to live in the same folder or
+the `\documentclass` line.  Files are assumed to live in the same folder or
 a parent folder of the current file.  This should work in most cases, but it
 may fail if for instance the project structure is something like this: >
 
