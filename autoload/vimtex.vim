@@ -477,10 +477,10 @@ endfunction
 " }}}1
 function! vimtex#wordcount(detailed) " {{{1
   " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#fnameescape(b:vimtex.root)
+  let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
   let cmd .= '; texcount -nosub -sum '
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
   let lines = split(system(cmd), '\n')
 
   " Create wordcount window

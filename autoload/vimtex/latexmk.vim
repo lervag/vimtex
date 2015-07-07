@@ -119,7 +119,7 @@ function! vimtex#latexmk#clean(full) " {{{1
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
   let exe = {
         \ 'cmd' : cmd,
         \ 'bg'  : 0,
@@ -412,7 +412,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd .= b:vimtex.viewer.latexmk_append_argument()
   endif
 
-  let cmd .= ' ' . vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= ' ' . vimtex#util#shellescape(b:vimtex.base)
 
   if g:vimtex_latexmk_continuous || g:vimtex_latexmk_background
     if has('win32')

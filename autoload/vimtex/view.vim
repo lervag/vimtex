@@ -112,8 +112,8 @@ function! s:general.view(file) dict " {{{2
   let opts = substitute(opts, '@line', line('.'), 'g')
   let opts = substitute(opts, '@col', col('.'), 'g')
   let opts = substitute(opts, '@tex',
-        \ vimtex#util#fnameescape(expand('%:p')), 'g')
-  let opts = substitute(opts, '@pdf', vimtex#util#fnameescape(outfile), 'g')
+        \ vimtex#util#shellescape(expand('%:p')), 'g')
+  let opts = substitute(opts, '@pdf', vimtex#util#shellescape(outfile), 'g')
 
   " Construct the command
   let exe = {}
@@ -187,7 +187,7 @@ endfunction
 function! s:mupdf.start(outfile) dict " {{{2
   let exe = {}
   let exe.cmd  = 'mupdf ' .  g:vimtex_view_mupdf_options
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
+  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
@@ -204,8 +204,8 @@ function! s:mupdf.forward_search(outfile) dict " {{{2
   let self.cmd_synctex_view = 'synctex view -i '
         \ . (line('.') + 1) . ':'
         \ . (col('.') + 1) . ':'
-        \ . vimtex#util#fnameescape(expand('%:p'))
-        \ . ' -o ' . vimtex#util#fnameescape(a:outfile)
+        \ . vimtex#util#shellescape(expand('%:p'))
+        \ . ' -o ' . vimtex#util#shellescape(a:outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
   let self.page = system(self.cmd_synctex_view)
 
@@ -342,7 +342,7 @@ function! s:zathura.start(outfile) dict " {{{2
   let exe.cmd .= ' -x "' . exepath(v:progname)
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
+  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
@@ -356,8 +356,8 @@ function! s:zathura.forward_search(outfile) dict " {{{2
   let exe.cmd  = 'zathura --synctex-forward '
   let exe.cmd .= line('.')
   let exe.cmd .= ':' . col('.')
-  let exe.cmd .= ':' . vimtex#util#fnameescape(expand('%:p'))
-  let exe.cmd .= ' ' . vimtex#util#fnameescape(a:outfile)
+  let exe.cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
+  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   call vimtex#util#execute(exe)
   let self.cmd_forward_search = exe.cmd
 endfunction

@@ -120,7 +120,7 @@ function! vimtex#util#execute(exe) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#fnameescape(path) " {{{1
+function! vimtex#util#shellescape(path) " {{{1
   " Blackslashes in path must be escaped to be correctly parsed by the
   " substitute() function.
   let l:path = escape(a:path, '\')
