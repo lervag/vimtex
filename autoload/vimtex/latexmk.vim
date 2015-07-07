@@ -112,7 +112,7 @@ function! vimtex#latexmk#clean(full) " {{{1
   if has('win32')
     let cmd = 'cd /D "' . b:vimtex.root . '" & '
   else
-    let cmd = 'cd ' . shellescape(b:vimtex.root) . '; '
+    let cmd = 'cd ' . vimtex#util#shellescape(b:vimtex.root) . '; '
   endif
   let cmd .= 'latexmk'
   if g:vimtex_latexmk_build_dir !=# ''
@@ -377,7 +377,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd  = 'cd /D "' . b:vimtex.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
   else
-    let cmd  = 'cd ' . shellescape(b:vimtex.root)
+    let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
       let cmd .= '; and set max_print_line 2000; and latexmk'
     else
@@ -386,7 +386,8 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
-  let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
+  let cmd .= ' -e ' . vimtex#util#shellescape(
+        \ '$pdflatex =~ s/ / -file-line-error /')
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
