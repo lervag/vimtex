@@ -250,8 +250,9 @@ function! vimtex#latexmk#errors_open(force) " {{{1
     if g:vimtex_quickfix_mode == 2
       wincmd p
     endif
-    redraw!
   endif
+
+  redraw!
 endfunction
 
 let s:open_quickfix_window = 0
