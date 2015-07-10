@@ -321,6 +321,14 @@ function! s:get_main() " {{{1
   endfor
 
   "
+  " Search for .latexmain-specifier
+  "
+  let main = s:get_main_latexmain(expand('%:p'))
+  if filereadable(main)
+    return main
+  endif
+
+  "
   " Search for main file recursively through \input and \include specifiers
   "
   let main = s:get_main_recurse(expand('%:p'))
@@ -335,13 +343,31 @@ function! s:get_main() " {{{1
 endfunction
 
 " }}}1
-function! s:get_main_recurse(file) " {{{1
+function! s:get_main_latexmain(file) " {{{1
+  if !filereadable(a:file) | return | endif
+
   "
-  " Check if file is readable
+  " Gather candidate files
   "
-  if !filereadable(a:file)
-    return 0
+  let l:path = expand('%:p:h')
+  let l:dirs = l:path
+  while l:path != fnamemodify(l:path, ':h')
+    let l:path = fnamemodify(l:path, ':h')
+    let l:dirs .= ',' . l:path
+  endwhile
+  let l:candidates = split(globpath(l:dirs, '*.latexmain'), '\n')
+
+  "
+  " If any candidates found, use the first one (corresponding to the one
+  " closest to the current file in the directory tree)
+  "
+  if len(l:candidates) > 0
+    return fnamemodify(l:candidates[0], ':p:r')
   endif
+endfunction
+
+function! s:get_main_recurse(file) " {{{1
+  if !filereadable(a:file) | return | endif
 
   "
   " Check if current file is a main file
@@ -375,11 +401,6 @@ function! s:get_main_recurse(file) " {{{1
       return s:get_main_recurse(l:file)
     endif
   endfor
-
-  "
-  " If not found, return 0
-  "
-  return 0
 endfunction
 
 function! s:get_main_ext(self, ext) " {{{1
