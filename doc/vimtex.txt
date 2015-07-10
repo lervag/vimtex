@@ -132,37 +132,71 @@ Requirements~
 Support for multi-file projects~
                                                             *vimtex-multi-file*
 
-|vimtex| supports multi-file documents in the sense that the plugin
-automatically detects the root file of the project.  This detection is based
-on a recursive search for files that include the current tex file, until
-a main file is recognized.  A file is assumed to be the main file if it has
-the `\documentclass` line.  Files are assumed to live in the same folder or
-a parent folder of the current file.  This should work in most cases, but it
-may fail if for instance the project structure is something like this: >
+|vimtex| supports most multi-file documents.  It uses a recursive search
+algorithm that should find the main LaTeX file in most cases.  For special
+cases, there are several alternative methods for specifying the main file, see
+below.  Note that the priority of the following methods are as follows:
 
-  path1/main.tex
-  path2/chapter.tex
+  1. Buffer variable
+  2. TeX root specifier
+  3. Subfiles package
+  4. File `.latexmain` specifier
+  5. Recursive search
 
-That is, the main file detection will not work for the file `chapter.tex`,
-because the main file does not live in the same folder or a parent folder.
+Recursive search~
+  The recursive search detects the main LaTeX file by searching for a file in
+  the current and parent directories that includes the present file and that
+  has the `\documentclass` line.
 
-It is also possible to specify the main TeX file with a comment in one of the
-first five lines of the current file similar to this: >
+  This should work in most cases, but it may fail if for instance the project
+  structure is something like this: >
 
-  %! TEX root = my-main.tex
+    path1/main.tex
+    path2/chapter.tex
+<
+  That is, the main file detection will not work for the file `chapter.tex`,
+  because the main file does not live in the same folder or a parent folder.
 
-<                                                              *vimtex-subfiles*
-Further, |vimtex| supports the `subfiles` package.  That is, the main file is
-parsed from the `\documentclass` line whenever it has the following format: >
+File .latexmain specifier~
+  In some cases, it might be preferable to specify the main file by creating
+  an indicator file.  The indicator file should be an empty file, and the name
+  must be the name of the desired main file with `.latexmain` appended.  An
+  example should make this clear: >
 
-  \documentclass[main.tex]{subfiles}
+    path/file.tex
+    path/file.tex.latexmain
+    path/sections/file1.tex
+    path/sections/file2.tex
+<
+  Here `path/file.tex.latexmain` indicates for `file1.tex` and `file2.tex`
+  that `path/file.tex` is the main LaTeX file.
 
-<                                                                *b:vimtex_main*
-Finally, the main file may be specified through the buffer variable
-`b:vimtex_main`.  If one uses project specific |vimrc| files, one may then use
-an |autocmd| to specify the main file through this buffer variable with >
+TeX root specifier~
+  It is also possible to specify the main TeX file with a comment in one of
+  the first five lines of the current file similar to this: >
 
-  autocmd FileType tex let b:vimtex_main = 'main.tex'
+    %! TEX root = /path/to/my-main.tex
+<
+  Note that this method should work for the case where the recursive search
+  does not work.
+
+                                                               *vimtex-subfiles*
+Subfiles~
+  Further, |vimtex| supports the `subfiles` package.  That is, the main file
+  is parsed from the `\documentclass` line whenever it has the following format: >
+
+    \documentclass[main.tex]{subfiles}
+<
+  Note that this is a special case in that it is only relevant for users who
+  use the `subfiles` package.
+
+                                                                 *b:vimtex_main*
+Buffer variable~
+  Finally, the main file may be specified through the buffer variable
+  `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then
+  use an |autocmd| to specify the main file through this buffer variable with >
+
+    autocmd FileType tex let b:vimtex_main = 'main.tex'
 
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
