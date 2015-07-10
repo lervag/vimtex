@@ -86,6 +86,7 @@ endfunction
 
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
+  redraw!
 
   if g:vimtex_view_enabled
         \ && has_key(b:vimtex.viewer, 'latexmk_callback')
@@ -250,9 +251,8 @@ function! vimtex#latexmk#errors_open(force) " {{{1
     if g:vimtex_quickfix_mode == 2
       wincmd p
     endif
+    redraw!
   endif
-
-  redraw!
 endfunction
 
 let s:open_quickfix_window = 0
