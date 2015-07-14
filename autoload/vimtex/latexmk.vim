@@ -121,11 +121,7 @@ function! vimtex#latexmk#clean(full) " {{{1
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
   let cmd .= vimtex#util#shellescape(b:vimtex.base)
-  let exe = {
-        \ 'cmd' : cmd,
-        \ 'bg'  : 0,
-        \ }
-  call vimtex#util#execute(exe)
+  call vimtex#util#execute({'cmd' : cmd})
   let b:vimtex.cmd_latexmk_clean = cmd
 
   call vimtex#echo#status(['latexmk clean: ',
@@ -476,7 +472,6 @@ endfunction
 
 function! s:latexmk_kill(data) " {{{1
   let exe = {}
-  let exe.bg = 0
   let exe.null = 0
 
   if has('win32')
