@@ -291,7 +291,8 @@ function! s:bibtex_search(regexp) " {{{1
     call vimtex#util#execute(exe)
 
     " Parse temporary bbl file
-    let lines = split(substitute(join(readfile(tmp.bbl), "\n"),
+    let lines = map(readfile(tmp.bbl), 's:tex2unicode(v:val)')
+    let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
     for line in filter(lines, 'v:val =~ a:regexp')
