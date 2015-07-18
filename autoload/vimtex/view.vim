@@ -128,8 +128,8 @@ endfunction
 
 " }}}2
 function! s:general.latexmk_append_argument() dict " {{{2
-  return vimtex#latexmk#add_option('pdf_previewer', 'start '
-        \ . g:vimtex_view_general_viewer . ' '
+  return vimtex#latexmk#add_option('pdf_previewer',
+        \   g:vimtex_view_general_viewer . ' '
         \ . g:vimtex_view_general_options_latexmk)
 endfunction
 
@@ -285,7 +285,7 @@ function! s:mupdf.latexmk_append_argument() dict " {{{2
   let cmd .= vimtex#latexmk#add_option('pdf_update_method', '2')
   let cmd .= vimtex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
   let cmd .= vimtex#latexmk#add_option('pdf_previewer',
-        \ 'start mupdf ' .  g:vimtex_view_mupdf_options)
+        \ 'mupdf ' .  g:vimtex_view_mupdf_options)
   return cmd
 endfunction
 
@@ -378,7 +378,7 @@ endfunction
 function! s:zathura.latexmk_append_argument() dict " {{{2
   let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
   let cmd .= vimtex#latexmk#add_option('pdf_previewer',
-        \ 'start zathura ' . g:vimtex_view_zathura_options
+        \ 'zathura ' . g:vimtex_view_zathura_options
         \ . ' -x \"' . exepath(v:progname)
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}\" \%S')
