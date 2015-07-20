@@ -59,6 +59,11 @@ function! vimtex#init() " {{{1
   endif
   call s:init_modules('buffer')
 
+  "
+  " Finally we create the mappings
+  "
+  call s:init_mappings()
+
   let s:initialized = 1
 endfunction
 
@@ -155,7 +160,7 @@ function! s:init_buffer() " {{{1
   endif
 
   "
-  " Finally we define commands and mappings
+  " Define commands and mappings
   "
 
   " Define commands
@@ -164,6 +169,92 @@ function! s:init_buffer() " {{{1
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
+
+  "
+  " Attach autocommands
+  "
+
+  augroup vimtex
+    au!
+    au BufFilePre  <buffer> call s:filename_changed_pre()
+    au BufFilePost <buffer> call s:filename_changed_post()
+  augroup END
+endfunction
+
+" }}}1
+function! s:init_mappings() " {{{1
+  if !get(g:,'vimtex_mappings_enabled', 1) | return | endif
+
+  nmap <silent><buffer> <localleader>li <plug>(vimtex-info)
+
+  nmap <silent><buffer> dse  <plug>(vimtex-delete-env)
+  nmap <silent><buffer> dsc  <plug>(vimtex-delete-cmd)
+  nmap <silent><buffer> cse  <plug>(vimtex-change-env)
+  nmap <silent><buffer> csc  <plug>(vimtex-change-cmd)
+  nmap <silent><buffer> tse  <plug>(vimtex-toggle-star)
+  nmap <silent><buffer> tsd  <plug>(vimtex-toggle-delim)
+  nmap <silent><buffer> <F7> <plug>(vimtex-create-cmd)
+  imap <silent><buffer> <F7> <plug>(vimtex-create-cmd)
+  imap <silent><buffer> ]]   <plug>(vimtex-close-env)
+
+  if g:vimtex_latexmk_enabled
+    nmap <silent><buffer> <localleader>ll <plug>(vimtex-compile-toggle)
+    nmap <silent><buffer> <localleader>lo <plug>(vimtex-compile-output)
+    nmap <silent><buffer> <localleader>lk <plug>(vimtex-stop)
+    nmap <silent><buffer> <localleader>lK <plug>(vimtex-stop-all)
+    nmap <silent><buffer> <localleader>le <plug>(vimtex-errors)
+    nmap <silent><buffer> <localleader>lc <plug>(vimtex-clean)
+    nmap <silent><buffer> <localleader>lC <plug>(vimtex-clean-full)
+    nmap <silent><buffer> <localleader>lg <plug>(vimtex-status)
+    nmap <silent><buffer> <localleader>lG <plug>(vimtex-status-all)
+  endif
+
+  if g:vimtex_motion_enabled
+    nmap <silent><buffer> %  <plug>(vimtex-%)
+    xmap <silent><buffer> %  <plug>(vimtex-%)
+    omap <silent><buffer> %  <plug>(vimtex-%)
+    nmap <silent><buffer> ]] <plug>(vimtex-]])
+    nmap <silent><buffer> ][ <plug>(vimtex-][)
+    nmap <silent><buffer> [] <plug>(vimtex-[])
+    nmap <silent><buffer> [[ <plug>(vimtex-[[)
+    xmap <silent><buffer> ]] <plug>(vimtex-]])
+    xmap <silent><buffer> ][ <plug>(vimtex-][)
+    xmap <silent><buffer> [] <plug>(vimtex-[])
+    xmap <silent><buffer> [[ <plug>(vimtex-[[)
+    omap <silent><buffer> ]] <plug>(vimtex-]])
+    omap <silent><buffer> ][ <plug>(vimtex-][)
+    omap <silent><buffer> [] <plug>(vimtex-[])
+    omap <silent><buffer> [[ <plug>(vimtex-[[)
+    xmap <silent><buffer> ie <plug>(vimtex-ie)
+    xmap <silent><buffer> ae <plug>(vimtex-ae)
+    omap <silent><buffer> ie <plug>(vimtex-ie)
+    omap <silent><buffer> ae <plug>(vimtex-ae)
+    xmap <silent><buffer> i$ <plug>(vimtex-i$)
+    xmap <silent><buffer> a$ <plug>(vimtex-a$)
+    omap <silent><buffer> i$ <plug>(vimtex-i$)
+    omap <silent><buffer> a$ <plug>(vimtex-a$)
+    xmap <silent><buffer> id <plug>(vimtex-id)
+    xmap <silent><buffer> ad <plug>(vimtex-ad)
+    omap <silent><buffer> id <plug>(vimtex-id)
+    omap <silent><buffer> ad <plug>(vimtex-ad)
+  endif
+
+  if g:vimtex_toc_enabled
+    nmap <silent><buffer> <localleader>lt <plug>(vimtex-toc-open)
+    nmap <silent><buffer> <localleader>lT <plug>(vimtex-toc-toggle)
+  endif
+
+  if g:vimtex_labels_enabled
+    nmap <silent><buffer> <localleader>ly <plug>(vimtex-labels-open)
+    nmap <silent><buffer> <localleader>lY <plug>(vimtex-labels-toggle)
+  endif
+
+  if g:vimtex_view_enabled
+    nmap <silent><buffer> <localleader>lv <plug>(vimtex-view)
+    if has_key(b:vimtex.viewer, 'reverse_search')
+      nmap <silent><buffer> <localleader>lr <plug>(vimtex-reverse-search)
+    endif
+  endif
 endfunction
 
 " }}}1
@@ -231,6 +322,14 @@ function! s:get_main() " {{{1
   endfor
 
   "
+  " Search for .latexmain-specifier
+  "
+  let main = s:get_main_latexmain(expand('%:p'))
+  if filereadable(main)
+    return main
+  endif
+
+  "
   " Search for main file recursively through \input and \include specifiers
   "
   let main = s:get_main_recurse(expand('%:p'))
@@ -244,19 +343,38 @@ function! s:get_main() " {{{1
   return expand('%:p')
 endfunction
 
-function! s:get_main_recurse(file) " {{{1
+" }}}1
+function! s:get_main_latexmain(file) " {{{1
+  if !filereadable(a:file) | return | endif
+
   "
-  " Check if file is readable
+  " Gather candidate files
   "
-  if !filereadable(a:file)
-    return 0
+  let l:path = expand('%:p:h')
+  let l:dirs = l:path
+  while l:path != fnamemodify(l:path, ':h')
+    let l:path = fnamemodify(l:path, ':h')
+    let l:dirs .= ',' . l:path
+  endwhile
+  let l:candidates = split(globpath(l:dirs, '*.latexmain'), '\n')
+
+  "
+  " If any candidates found, use the first one (corresponding to the one
+  " closest to the current file in the directory tree)
+  "
+  if len(l:candidates) > 0
+    return fnamemodify(l:candidates[0], ':p:r')
   endif
+endfunction
+
+function! s:get_main_recurse(file) " {{{1
+  if !filereadable(a:file) | return | endif
 
   "
   " Check if current file is a main file
   "
   if len(filter(readfile(a:file),
-        \ 'v:val =~# ''\C\\begin\_\s*{document}''')) > 0
+        \ 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
     return fnamemodify(a:file, ':p')
   endif
 
@@ -290,11 +408,6 @@ function! s:get_main_recurse(file) " {{{1
       return s:get_main_recurse(l:file)
     endif
   endfor
-
-  "
-  " If not found, return 0
-  "
-  return 0
 endfunction
 
 function! s:get_main_ext(self, ext) " {{{1
@@ -317,6 +430,39 @@ function! s:get_main_ext(self, ext) " {{{1
 
   " Finally return empty string if no entry is found
   return ''
+endfunction
+
+" }}}1
+
+"
+" Detect file name changes
+"
+function! s:filename_changed_pre() " {{{1
+  let thisfile = fnamemodify(expand('%'), ':p')
+  let s:filename_changed = thisfile ==# b:vimtex.tex
+  let s:filename_old = b:vimtex.base
+endfunction
+
+" }}}1
+function! s:filename_changed_post() " {{{1
+  if s:filename_changed
+    let b:vimtex.tex = fnamemodify(expand('%'), ':p')
+    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
+    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
+    let message = ['vimtex: ',
+          \ ['VimtexWarning', 'Filename change detected!'],
+          \ "\n  Old filename: ", ['VimtexInfo', s:filename_old],
+          \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base]]
+
+    if b:vimtex.pid
+      let message += ["\n  latexmk process: ",
+            \ ['VimtexInfo', b:vimtex.pid],
+            \ ['VimtexWarning', ' killed!']]
+      call vimtex#latexmk#stop()
+    endif
+
+    call vimtex#echo#status(message)
+  endif
 endfunction
 
 " }}}1
@@ -359,10 +505,10 @@ endfunction
 " }}}1
 function! vimtex#wordcount(detailed) " {{{1
   " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#fnameescape(b:vimtex.root)
+  let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
   let cmd .= '; texcount -nosub -sum '
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
   let lines = split(system(cmd), '\n')
 
   " Create wordcount window

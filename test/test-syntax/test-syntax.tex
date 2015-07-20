@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{minted}
+\begin{document}
+
+\begin{lstlisting}
+testing
+\end{lstlisting}
+
+\begin{align}
+  f(x) = 0
+\end{align}
+
+\begin{equation}
+  f(x) = 0
+\end{equation}
+
+\begin{quote}
+  test
+\end{quote}
+
+\begin{dot2tex}
+  graph graphname { 
+    a -- b; 
+    b -- c;
+    b -- d;
+    d -- a;
+  }
+\end{dot2tex}
+
+\begin{minted}{python}
+def function(arg):
+    pass
+\end{minted}
+
+\begin{cppcode}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode}
+
+\begin{cppcode_test}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode_test}
+
+\begin{cppcode*}{a=0,
+                 b=1}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode*}
+
+\begin{minted}{c}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{minted}
+
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               gobble=2,
+               frame=lines,
+               framesep=2mm]{csharp}
+string title = "This is a Unicode π in the sky"
+/*
+Defined as $\pi=\lim_{n\to\infty}\frac{P_n}{d}$ where $P$ is the perimeter
+of an $n$-sided regular polygon circumscribing a
+circle of diameter $d$.
+*/
+const double pi = 3.1415926535
+\end{minted}
+
+\end{document}

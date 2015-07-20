@@ -35,29 +35,19 @@ function! vimtex#fold#init_script() " {{{1
   " Define some script variables
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-
-  " For automatic folding with foldmethod=expr:
-  "   The foldexpr function returns "=" for most lines, which means it can
-  "   become slow for large files.  The following is a hack that is based on
-  "   this reply to a discussion on the Vim Developer list:
-  "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
-  if g:vimtex_fold_automatic
-    augroup latex_fold
-      autocmd!
-      autocmd InsertEnter *.tex call FdmSave()
-      autocmd InsertLeave *.tex call FdmRestore()
-    augroup END
-  endif
 endfunction
 
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
 
+  " Don't override modeline settings
+  if s:check_modeline() | return | endif
+
   " Set fold options
-  setl foldmethod=expr
-  setl foldexpr=vimtex#fold#level(v:lnum)
-  setl foldtext=vimtex#fold#text()
+  setlocal foldmethod=expr
+  setlocal foldexpr=vimtex#fold#level(v:lnum)
+  setlocal foldtext=vimtex#fold#text()
 
   " Remap zx to refresh fold levels
   nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
@@ -66,14 +56,27 @@ function! vimtex#fold#init_buffer() " {{{1
   " Define commands
   command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
 
-  " Set options for automatic/manual mode
+  " Set options for automatic/manual folding mode
   if g:vimtex_fold_automatic
     nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
+
+    " For automatic folding with foldmethod=expr:
+    "   The foldexpr function returns "=" for most lines, which means it can
+    "   become slow for large files.  The following is a hack that is based on
+    "   this reply to a discussion on the Vim Developer list:
+    "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
+    if g:vimtex_fold_automatic
+      augroup vimtex_fold_automatic
+        autocmd!
+        autocmd InsertEnter <buffer> call FdmSave()
+        autocmd InsertLeave <buffer> call FdmRestore()
+      augroup END
+    endif
   else
-    augroup latex_fold
+    augroup vimtex_fold_manual
       autocmd!
-      autocmd CursorMoved *.tex call vimtex#fold#refresh('zx')
-      autocmd CursorMoved *.tex autocmd! latex_fold
+      autocmd CursorMoved <buffer> call vimtex#fold#refresh('zx')
+      autocmd CursorMoved <buffer> autocmd! vimtex_fold_manual
     augroup END
   endif
 endfunction
@@ -346,6 +349,33 @@ function! s:parse_caption_frame(line) " {{{1
     return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
 endfunction
+" }}}1
+
+function! s:check_modeline() " {{{1
+  "
+  " Check if foldmethod is set in modeline
+  "
+
+  let l:search_string = 'vim:.*\(foldmethod\|fdm\)'
+  
+  " Preserve current cursor position
+  let l:save_cursor = getpos('.')
+
+  " Check for modeline at the top
+  call cursor(1, 1)
+  let l:check_modeline_top = search(l:search_string, 'cn', &modelines)
+
+  " Check for modeline at bottom
+  normal! G$
+  let l:check_modeline_bottom = search(l:search_string, 'b',
+        \ line('.') - 1 - &modelines)
+
+  " Reset original cursor position
+  call setpos('.', l:save_cursor)
+
+  return l:check_modeline_top || l:check_modeline_bottom
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2

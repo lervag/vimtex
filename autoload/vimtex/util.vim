@@ -24,66 +24,6 @@ function! vimtex#util#init_script() " {{{1
         \ '\\\Cright\s*\%([^\\a-zA-Z0-9]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
         \ ]
-
-  let s:convert_back_list = map([
-        \ ['\\''A}'        , 'Á'],
-        \ ['\\`A}'         , 'À'],
-        \ ['\\^A}'         , 'À'],
-        \ ['\\¨A}'         , 'Ä'],
-        \ ['\\"A}'         , 'Ä'],
-        \ ['\\''a}'        , 'á'],
-        \ ['\\`a}'         , 'à'],
-        \ ['\\^a}'         , 'à'],
-        \ ['\\¨a}'         , 'ä'],
-        \ ['\\"a}'         , 'ä'],
-        \ ['\\''E}'        , 'É'],
-        \ ['\\`E}'         , 'È'],
-        \ ['\\^E}'         , 'Ê'],
-        \ ['\\¨E}'         , 'Ë'],
-        \ ['\\"E}'         , 'Ë'],
-        \ ['\\''e}'        , 'é'],
-        \ ['\\`e}'         , 'è'],
-        \ ['\\^e}'         , 'ê'],
-        \ ['\\¨e}'         , 'ë'],
-        \ ['\\"e}'         , 'ë'],
-        \ ['\\''I}'        , 'Í'],
-        \ ['\\`I}'         , 'Î'],
-        \ ['\\^I}'         , 'Ì'],
-        \ ['\\¨I}'         , 'Ï'],
-        \ ['\\"I}'         , 'Ï'],
-        \ ['\\''i}'        , 'í'],
-        \ ['\\`i}'         , 'î'],
-        \ ['\\^i}'         , 'ì'],
-        \ ['\\¨i}'         , 'ï'],
-        \ ['\\"i}'         , 'ï'],
-        \ ['\\''{\?\\i }'  , 'í'],
-        \ ['\\''O}'        , 'Ó'],
-        \ ['\\`O}'         , 'Ò'],
-        \ ['\\^O}'         , 'Ô'],
-        \ ['\\¨O}'         , 'Ö'],
-        \ ['\\"O}'         , 'Ö'],
-        \ ['\\''o}'        , 'ó'],
-        \ ['\\`o}'         , 'ò'],
-        \ ['\\^o}'         , 'ô'],
-        \ ['\\¨o}'         , 'ö'],
-        \ ['\\"o}'         , 'ö'],
-        \ ['\\o }'         , 'ø'],
-        \ ['\\''U}'        , 'Ú'],
-        \ ['\\`U}'         , 'Ù'],
-        \ ['\\^U}'         , 'Û'],
-        \ ['\\¨U}'         , 'Ü'],
-        \ ['\\"U}'         , 'Ü'],
-        \ ['\\''u}'        , 'ú'],
-        \ ['\\`u}'         , 'ù'],
-        \ ['\\^u}'         , 'û'],
-        \ ['\\¨u}'         , 'ü'],
-        \ ['\\"u}'         , 'ü'],
-        \ ['\\`N}'         , 'Ǹ'],
-        \ ['\\\~N}'        , 'Ñ'],
-        \ ['\\''n}'        , 'ń'],
-        \ ['\\`n}'         , 'ǹ'],
-        \ ['\\\~n}'        , 'ñ'],
-        \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 endfunction
 
 " }}}1
@@ -92,23 +32,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#util#convert_back(line) " {{{1
-  "
-  " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
-  "
-  let line = a:line
-  for [pat, symbol] in s:convert_back_list
-    let line = substitute(line, pat, symbol, 'g')
-  endfor
-
-  "
-  " There might be some missing conversions, which might be fixed by the last
-  " substitution
-  "
-  return substitute(line, '\C\(\\IeC\s*{\)\?\\.\(.\)}', '\1', 'g')
-endfunction
-
-" }}}1
 function! vimtex#util#execute(exe) " {{{1
   " Execute the given command on the current system.  Wrapper function to make
   " it easier to run on both windows and unix.
@@ -197,15 +120,19 @@ function! vimtex#util#execute(exe) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#fnameescape(path) " {{{1
+function! vimtex#util#shellescape(path) " {{{1
+  " Blackslashes in path must be escaped to be correctly parsed by the
+  " substitute() function.
+  let l:path = escape(a:path, '\')
+
   "
   " In a Windows environment, a path used in "cmd" only needs to be enclosed by
-  " double quotes. shellscape() on Windows with "shellslash" set will produce
+  " double quotes. shellescape() on Windows with "shellslash" set will produce
   " a path enclosed by single quotes, which "cmd" does not recognize and
   " reports an error.  Any path that goes into vimtex#util#execute() should be
   " processed through this function.
   "
-  return has('win32') ? '"' . a:path . '"' : shellescape(a:path)
+  return has('win32') ? '"' . l:path . '"' : shellescape(l:path)
 endfunction
 
 " }}}1

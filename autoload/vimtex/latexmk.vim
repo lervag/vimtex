@@ -13,6 +13,8 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '-pdf')
+  call vimtex#util#set_default('g:vimtex_latexmk_progname',
+        \ get(v:, 'progpath', get(v:, 'progname')))
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
@@ -28,7 +30,7 @@ function! vimtex#latexmk#init_script() " {{{1
 
   " Ensure that all latexmk processes are stopped when vim exits
   if g:vimtex_latexmk_continuous
-    augroup latex_latexmk
+    augroup vimtex_latexmk
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
     augroup END
@@ -43,7 +45,7 @@ function! vimtex#latexmk#init_buffer() " {{{1
   compiler latexmk
 
   " Initialize system PID
-  let b:vimtex.pid = get(b:vimtex, 'pid', 0)
+  call s:latexmk_init_pid()
 
   " Define commands
   command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
@@ -73,8 +75,9 @@ function! vimtex#latexmk#init_buffer() " {{{1
 
   " Kill running latexmk process if all buffers for a latex project are closed
   if g:vimtex_latexmk_continuous
-    augroup latex_latexmk
-      autocmd BufUnload <buffer> call s:stop_buffer()
+    augroup vimtex_latexmk
+      autocmd BufLeave  <buffer> call s:buffer_left()
+      autocmd BufDelete <buffer> call s:buffer_deleted()
     augroup END
   endif
 endfunction
@@ -83,6 +86,7 @@ endfunction
 
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
+  redraw!
 
   if g:vimtex_view_enabled
         \ && has_key(b:vimtex.viewer, 'latexmk_callback')
@@ -109,19 +113,15 @@ function! vimtex#latexmk#clean(full) " {{{1
   if has('win32')
     let cmd = 'cd /D "' . b:vimtex.root . '" & '
   else
-    let cmd = 'cd ' . shellescape(b:vimtex.root) . '; '
+    let cmd = 'cd ' . vimtex#util#shellescape(b:vimtex.root) . '; '
   endif
   let cmd .= 'latexmk'
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
-  let exe = {
-        \ 'cmd' : cmd,
-        \ 'bg'  : 0,
-        \ }
-  call vimtex#util#execute(exe)
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
+  call vimtex#util#execute({'cmd' : cmd})
   let b:vimtex.cmd_latexmk_clean = cmd
 
   call vimtex#echo#status(['latexmk clean: ',
@@ -206,6 +206,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#errors_open(force) " {{{1
+  if !exists('b:vimtex') | return | endif
   cclose
 
   let log = b:vimtex.log()
@@ -268,7 +269,7 @@ function! vimtex#latexmk#output() " {{{1
   silent exe 'split ' . tmp
 
   " Better automatic update
-  augroup tmp_update
+  augroup vimtex_tmp_update
     autocmd!
     autocmd BufEnter        * silent! checktime
     autocmd CursorHold      * silent! checktime
@@ -276,7 +277,7 @@ function! vimtex#latexmk#output() " {{{1
     autocmd CursorMoved     * silent! checktime
     autocmd CursorMovedI    * silent! checktime
   augroup END
-  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! tmp_update'
+  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! vimtex_tmp_update'
 
   " Set some mappings
   nnoremap <buffer> <silent> q :bwipeout<cr>
@@ -373,7 +374,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd  = 'cd /D "' . b:vimtex.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
   else
-    let cmd  = 'cd ' . shellescape(b:vimtex.root)
+    let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
       let cmd .= '; and set max_print_line 2000; and latexmk'
     else
@@ -382,7 +383,8 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
-  let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
+  let cmd .= ' -e ' . vimtex#util#shellescape(
+        \ '$pdflatex =~ s/ / -file-line-error /')
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
@@ -392,10 +394,10 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   if g:vimtex_latexmk_callback && has('clientserver')
-    let success  = v:progname
+    let success  = '\"' . g:vimtex_latexmk_progname . '\"'
     let success .= ' --servername ' . v:servername
     let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
-    let failed   = v:progname
+    let failed   = '\"' . g:vimtex_latexmk_progname . '\"'
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
     let cmd .= vimtex#latexmk#add_option('success_cmd', success)
@@ -408,7 +410,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd .= b:vimtex.viewer.latexmk_append_argument()
   endif
 
-  let cmd .= ' ' . vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= ' ' . vimtex#util#shellescape(b:vimtex.base)
 
   if g:vimtex_latexmk_continuous || g:vimtex_latexmk_background
     if has('win32')
@@ -427,19 +429,49 @@ function! s:latexmk_build_cmd() " {{{1
 endfunction
 
 " }}}1
+function! s:latexmk_init_pid() " {{{1
+  "
+  " First see if the PID is already defined
+  "
+  let b:vimtex.pid = get(b:vimtex, 'pid', 0)
+
+  "
+  " If the PID is 0, then search for existing processes
+  "
+  if b:vimtex.pid ==# 0
+    if has('win32')
+      "
+      " PASS - don't know how to do this on Windows yet.
+      "
+      return
+    else
+      "
+      " Use pgrep combined with /proc/PID/cwd to search for existing process
+      "
+      for l:pid in split(system(
+            \ 'pgrep -f "^perl.*latexmk.*' . b:vimtex.base . '"'), "\n")
+        let path = resolve('/proc/' . l:pid . '/cwd') . '/' . b:vimtex.base
+        if path ==# b:vimtex.tex
+          let b:vimtex.pid = str2nr(l:pid)
+          return
+        endif
+      endfor
+    endif
+  endif
+endfunction
+
 function! s:latexmk_set_pid() " {{{1
   if has('win32')
     let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
     let pidinfo = split(system(pidcmd), '\n')[-1]
-    let b:vimtex.pid = split(pidinfo,'\s\+')[1]
+    let b:vimtex.pid = str2nr(split(pidinfo,'\s\+')[1])
   else
-    let b:vimtex.pid = system('pgrep -nf "^perl.*latexmk"')[:-2]
+    let b:vimtex.pid = str2nr(system('pgrep -nf "^perl.*latexmk"')[:-2])
   endif
 endfunction
 
 function! s:latexmk_kill(data) " {{{1
   let exe = {}
-  let exe.bg = 0
   let exe.null = 0
 
   if has('win32')
@@ -454,6 +486,34 @@ endfunction
 
 " }}}1
 
+function! s:buffer_left() " {{{1
+  "
+  " Store buffer variables as script variables so they are available if the
+  " buffer is deleted.  This is done in order to be able to kill remaining
+  " latexmk processes.
+  "
+  let s:vimtex = b:vimtex
+  let s:vimtex_id = b:vimtex_id
+endfunction
+
+function! s:buffer_deleted() " {{{1
+  if s:vimtex.pid == 0 | return | endif
+
+  "
+  " The buffer is deleted, so we must kill the remaining latexmk process if the
+  " current buffer was the last open buffer for the current LaTeX blob/project.
+  "
+  " The buffer variables has already been stored as script variables by
+  " s:buffer_left().  
+  "
+  if len(filter(
+        \   map(filter(range(1, bufnr('$')), 'buflisted(v:val)'),
+        \       'getbufvar(v:val, ''vimtex_id'', -1)'),
+        \   'v:val == s:vimtex_id')) == 1
+    silent call s:latexmk_kill(s:vimtex)
+  endif
+endfunction
+
 function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
@@ -461,35 +521,6 @@ function! s:log_contains_error(logfile) " {{{1
   let lines = map(lines, 'fnamemodify(v:val, '':p'')')
   let lines = filter(lines, 'filereadable(v:val)')
   return len(lines) > 0
-endfunction
-
-function! s:stop_buffer() " {{{1
-  "
-  " Only run if latex variables are set
-  "
-  if !exists('b:vimtex') | return | endif
-
-  "
-  " Only stop if latexmk is running
-  "
-  if b:vimtex.pid !=# 0
-    "
-    " Count the number of buffers that point to current latex blob
-    "
-    let n = 0
-    for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-      if b:vimtex_id == getbufvar(b, 'vimtex_id', -1)
-        let n += 1
-      endif
-    endfor
-
-    "
-    " Only stop if current buffer is the last for current latex blob
-    "
-    if n == 1
-      silent call vimtex#latexmk#stop()
-    endif
-  endif
 endfunction
 
 function! s:check_system_compatibility() " {{{1
