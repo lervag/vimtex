@@ -151,6 +151,7 @@ function! s:init_buffer() " {{{1
 
     call add(g:vimtex_data, b:vimtex)
     let b:vimtex_id = len(g:vimtex_data) - 1
+    execute 'cd' fnameescape(b:vimtex.root)
   endif
 
   "
@@ -278,6 +279,12 @@ function! s:get_main_recurse(file) " {{{1
     if l:file == a:file | continue | endif
 
     if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
+          \ . '\s*((.*)\/)?'
+          \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
+      return s:get_main_recurse(l:file)
+    endif
+    if len(filter(readfile(l:file), 'v:val =~ ''\v\\cf(part|chapter|section|subsection)\**'
+          \ . '(\[.*\])*\s*(\{.*\}){2}\{'
           \ . '\s*((.*)\/)?'
           \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
       return s:get_main_recurse(l:file)

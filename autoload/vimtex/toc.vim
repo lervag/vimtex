@@ -60,10 +60,22 @@ function! vimtex#toc#init_script() " {{{1
   " Define regular expressions to match document parts
   let s:re_input = '\v^\s*\\%(input|include)\s*\{'
   let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+  let s:re_cfinput = '\v^\s*\%*\s*\\cf%(part|chapter|%(sub)*section)\*?\s*(\[[^\]]+\])*\{'
+  let s:re_cfinput_filepath = s:re_cfinput . '[^\}]+\}\{\zs[^\}]+\ze}'
+  let s:re_cfinput_file = s:re_cfinput . '[^\}]+\}\{[^\}]+\}\{\zs[^\}]+\ze}'
+
   let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+  " let s:re_cfsec = '\v^\s*\%\+*\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+  let s:re_icfsec = '\v^\s*\%*\s*\\cf%(part|chapter|%(sub)*section)\*?\s*(\[(.*)\])*\{'
   let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
+  " let s:re_cfsec_starred = '\v^\s*\%\+*\s*\\%(part|chapter|%(sub)*section)\*'
+  let s:re_icfsec_starred = '\v^\s*\%*\s*\\cf%(part|chapter|%(sub)*section)\*'
   let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
+  " let s:re_cfsec_level = '\v^\%\+\s*\s*\\\zs%(part|chapter|%(sub)*section)'
+  let s:re_icfsec_level = '\v^\s*\%*\s*\\cf\zs%(part|chapter|%(sub)*section)'
   let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+  " let s:re_cfsec_title = s:re_cfsec . '\zs.{-}\ze\}?$'
+  let s:re_icfsec_title = s:re_icfsec . '\zs[^\}]+\ze'
   let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
   let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
   let s:re_structure_match = '\v((front|main|back)matter|appendix)'
@@ -322,13 +334,23 @@ function! s:parse_limits(file) " {{{1
     echoerr 'File not readable: ' . a:file
     return ''
   endif
+  " echom a:file
 
   for line in readfile(a:file)
+    " let s:lastpath = if a:0 > 2 ? a:2 : fnamemodify(a:file,".")
     if line =~# s:re_input
       call s:parse_limits(s:parse_line_input(line, a:file))
+    elseif line =~# s:re_cfinput
+      call s:parse_limits(s:parse_line_cfinput(line, a:file))
     elseif line =~# s:re_sec
       let s:max_level = max([s:max_level,
             \ s:sec_to_value[matchstr(line, s:re_sec_level)]])
+    " elseif line =~# s:re_cfsec
+    "   let s:max_level = max([s:max_level,
+    "         \ s:sec_to_value[matchstr(line, s:re_cfsec_level)]])
+    elseif line =~# s:re_icfsec
+      let s:max_level = max([s:max_level,
+            \ s:sec_to_value[matchstr(line, s:re_icfsec_level)]])
     elseif line =~# s:re_matters
       let s:count_matters += 1
     endif
@@ -368,6 +390,12 @@ function! s:parse_file(file) " {{{1
       call extend(toc, s:parse_file(s:parse_line_input(line, a:file)))
       continue
     endif
+    if line =~# s:re_cfinput && !s:number.preamble
+      " echom line
+      call add(toc, s:parse_line_icfsec(a:file, lnum, line))
+      call extend(toc, s:parse_file(s:parse_line_cfinput(line, a:file)))
+      " continue
+    endif
 
     " 2. Parse preamble
     if s:number.preamble
@@ -400,6 +428,16 @@ function! s:parse_file(file) " {{{1
       call add(toc, s:parse_line_sec(a:file, lnum, line))
       continue
     endif
+    " if line =~# s:re_cfsec
+    "   " echom line
+    "   call add(toc, s:parse_line_cfsec(a:file, lnum, line))
+    "   continue
+    " endif
+    " if line =~# s:re_icfsec
+    "   " echom line
+    "   call add(toc, s:parse_line_icfsec(a:file, lnum, line))
+    "   continue
+    " endif
 
     " 5. Parse other stuff
     for other in values(s:re_other)
@@ -445,6 +483,31 @@ function! s:parse_line_input(line, file) " {{{1
   endif
 endfunction
 
+function! s:parse_line_cfinput(line, file) " {{{1
+  let l:file = matchstr(a:line, s:re_cfinput_filepath)
+  let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
+
+  " Trim whitespaces from beginning and end of string
+  let l:file = substitute(l:file, '^\s*', '', '')
+  let l:file = substitute(l:file, '\s*$', '', '')
+
+  " Ensure file has extension
+  if l:file !~# '.tex$'
+    let l:file .= '.tex'
+  endif
+
+  " Only return full path names
+  if l:file !~# '\v^(\/|[A-Z]:)'
+    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
+  endif
+
+  " Only return filename if it is readable
+  if filereadable(l:file)
+    return l:file
+  else
+    return ''
+  endif
+endfunction
 " }}}1
 function! s:parse_line_sec(file, lnum, line) " {{{1
   let title = matchstr(a:line, s:re_sec_title)
@@ -462,6 +525,45 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
         \ 'number' : number,
         \ 'file'   : a:file,
         \ 'line'   : a:lnum,
+        \ 'level'  : s:number.current_level,
+        \ }
+endfunction
+function! s:parse_line_cfsec(file, lnum, line) " {{{1
+  let title = matchstr(a:line, s:re_cfsec_title)
+  let level = matchstr(a:line, s:re_cfsec_level)
+
+  " Check if section is starred
+  if a:line =~# s:re_cfsec_starred
+    let number = ''
+  else
+    let number = s:number_increment(level)
+  endif
+
+  return {
+        \ 'title'  : title,
+        \ 'number' : number,
+        \ 'file'   : a:file,
+        \ 'line'   : a:lnum,
+        \ 'level'  : s:number.current_level,
+        \ }
+endfunction
+function! s:parse_line_icfsec(file, lnum, line) " {{{1
+  let title = matchstr(a:line, s:re_icfsec_title)
+  let level = matchstr(a:line, s:re_icfsec_level)
+  let file = s:parse_line_cfinput(a:line, a:file)
+
+  " Check if section is starred
+  if a:line =~# s:re_icfsec_starred
+    let number = ''
+  else
+    let number = s:number_increment(level)
+  endif
+
+  return {
+        \ 'title'  : title,
+        \ 'number' : number,
+        \ 'file'   : file,
+        \ 'line'   : 1,
         \ 'level'  : s:number.current_level,
         \ }
 endfunction
