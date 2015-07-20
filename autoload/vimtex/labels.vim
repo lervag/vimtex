@@ -127,7 +127,8 @@ function! s:gather_labels(file) " {{{1
       continue
     endif
     if line =~# s:re_cfinput && !s:preamble
-      call extend(tac, s:gather_labels(s:gather_labels_cfinput(line, a:file)))
+      " call extend(tac, s:gather_labels(s:gather_labels_cfinput(line, a:file)))
+      call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file,"cf")))
       continue
     endif
 
@@ -145,33 +146,18 @@ function! s:gather_labels(file) " {{{1
 endfunction
 
 " }}}1
-function! s:gather_labels_input(line, file) " {{{1
-  let l:file = matchstr(a:line, s:re_input_file)
-
-  " Trim whitespaces from beginning and end of string
-  let l:file = substitute(l:file, '^\s*', '', '')
-  let l:file = substitute(l:file, '\s*$', '', '')
-
-  " Ensure file has extension
-  if l:file !~# '.tex$'
-    let l:file .= '.tex'
-  endif
-
-  " Only return full path names
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
-  endif
-
-  " Only return filename if it is readable
-  if filereadable(l:file)
-    return l:file
+function! s:gather_labels_input(line, file, ...) " {{{1
+  if a:0 == 0 
+    let l:file = matchstr(a:line, s:re_input_file)
   else
-    return ''
+    if a:1 == "cf"
+      let l:file = matchstr(a:line, s:re_cfinput_filepath)
+      let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
+    else "Default is CF"
+      let l:file = matchstr(a:line, s:re_cfinput_filepath)
+      let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
+    endif
   endif
-endfunction
-function! s:gather_labels_cfinput(line, file) " {{{1
-  let l:file = matchstr(a:line, s:re_cfinput_filepath)
-  let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
 
   " Trim whitespaces from beginning and end of string
   let l:file = substitute(l:file, '^\s*', '', '')
