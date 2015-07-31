@@ -669,6 +669,9 @@ Options~
     \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
   let g:vimtex_view_general_options = '@line @pdf @tex'
 <
+          Note: For some documentation on how to get backward search to work,
+                see: http://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization.
+
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
