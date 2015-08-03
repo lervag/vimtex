@@ -770,8 +770,30 @@ Options~
   the syntax file.  The `ignored` entry is also optional, and is used to name
   syntax groups to ignore in the minted region.  
 
-  Default value:
-    Please see `VIMTEX/after/syntax/tex.vim` for the default value.
+  Default value: []
+
+  Example for some languages: >
+
+    let g:vimtex_syntax_minted = [
+          \ {
+          \   'lang' : 'c',
+          \ },
+          \ {
+          \   'lang' : 'cpp',
+          \   'environments' : ['cppcode', 'cppcode_test'],
+          \ },
+          \ {
+          \   'lang' : 'csharp',
+          \   'syntax' : 'cs'
+          \ },
+          \ {
+          \   'lang' : 'python',
+          \   'ignore' : [
+          \     'pythonEscape',
+          \     'pythonBEscape',
+          \     ],
+          \ }
+          \])
 
 ------------------------------------------------------------------------------
 Commands~

@@ -63,28 +63,7 @@ let b:current_syntax = 'tex'
 
 " }}}1
 " {{{1 Nested syntax highlighting for minted
-let s:minted = get(g:, 'vimtex_syntax_minted', [
-      \ {
-      \   'lang' : 'c',
-      \ },
-      \ {
-      \   'lang' : 'cpp',
-      \   'environments' : ['cppcode', 'cppcode_test'],
-      \ },
-      \ {
-      \   'lang' : 'csharp',
-      \   'syntax' : 'cs'
-      \ },
-      \ {
-      \   'lang' : 'python',
-      \   'ignore' : [
-      \     'pythonEscape',
-      \     'pythonBEscape',
-      \     ],
-      \ }
-      \])
-
-for entry in s:minted
+for entry in get(g:, 'vimtex_syntax_minted', [])
   let lang = entry.lang
   let syntax = get(entry, 'syntax', lang)
 
