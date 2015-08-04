@@ -132,37 +132,71 @@ Requirements~
 Support for multi-file projects~
                                                             *vimtex-multi-file*
 
-|vimtex| supports multi-file documents in the sense that the plugin
-automatically detects the root file of the project.  This detection is based
-on a recursive search for files that include the current tex file, until
-a main file is recognized.  A file is assumed to be the main file if it has
-the `\begin{document}` line.  Files are assumed to live in the same folder or
-a parent folder of the current file.  This should work in most cases, but it
-may fail if for instance the project structure is something like this: >
+|vimtex| supports most multi-file documents.  It uses a recursive search
+algorithm that should find the main LaTeX file in most cases.  For special
+cases, there are several alternative methods for specifying the main file, see
+below.  Note that the priority of the following methods are as follows:
 
-  path1/main.tex
-  path2/chapter.tex
+  1. Buffer variable
+  2. TeX root specifier
+  3. Subfiles package
+  4. File `.latexmain` specifier
+  5. Recursive search
 
-That is, the main file detection will not work for the file `chapter.tex`,
-because the main file does not live in the same folder or a parent folder.
+Recursive search~
+  The recursive search detects the main LaTeX file by searching for a file in
+  the current and parent directories that includes the present file and that
+  has the `\documentclass` line.
 
-It is also possible to specify the main TeX file with a comment in one of the
-first five lines of the current file similar to this: >
+  This should work in most cases, but it may fail if for instance the project
+  structure is something like this: >
 
-  %! TEX root = my-main.tex
+    path1/main.tex
+    path2/chapter.tex
+<
+  That is, the main file detection will not work for the file `chapter.tex`,
+  because the main file does not live in the same folder or a parent folder.
 
-<                                                              *vimtex-subfiles*
-Further, |vimtex| supports the `subfiles` package.  That is, the main file is
-parsed from the `\documentclass` line whenever it has the following format: >
+File .latexmain specifier~
+  In some cases, it might be preferable to specify the main file by creating
+  an indicator file.  The indicator file should be an empty file, and the name
+  must be the name of the desired main file with `.latexmain` appended.  An
+  example should make this clear: >
 
-  \documentclass[main.tex]{subfiles}
+    path/file.tex
+    path/file.tex.latexmain
+    path/sections/file1.tex
+    path/sections/file2.tex
+<
+  Here `path/file.tex.latexmain` indicates for `file1.tex` and `file2.tex`
+  that `path/file.tex` is the main LaTeX file.
 
-<                                                                *b:vimtex_main*
-Finally, the main file may be specified through the buffer variable
-`b:vimtex_main`.  If one uses project specific |vimrc| files, one may then use
-an |autocmd| to specify the main file through this buffer variable with >
+TeX root specifier~
+  It is also possible to specify the main TeX file with a comment in one of
+  the first five lines of the current file similar to this: >
 
-  autocmd FileType tex let b:vimtex_main = 'main.tex'
+    %! TEX root = /path/to/my-main.tex
+<
+  Note that this method should work for the case where the recursive search
+  does not work.
+
+                                                               *vimtex-subfiles*
+Subfiles~
+  Further, |vimtex| supports the `subfiles` package.  That is, the main file
+  is parsed from the `\documentclass` line whenever it has the following format: >
+
+    \documentclass[main.tex]{subfiles}
+<
+  Note that this is a special case in that it is only relevant for users who
+  use the `subfiles` package.
+
+                                                                 *b:vimtex_main*
+Buffer variable~
+  Finally, the main file may be specified through the buffer variable
+  `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then
+  use an |autocmd| to specify the main file through this buffer variable with >
+
+    autocmd FileType tex let b:vimtex_main = 'main.tex'
 
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
@@ -586,15 +620,81 @@ Options~
   Default value: 1
 
 *g:vimtex_view_method*
-  Set the viewer method.  The supported viewers are listed below.  Please see
-  |vimtex-synctex| for explanations of the terms 'forward search' and
-  'backward search'.
+  Set the viewer method.  The general viewer |vimtex_viewer_general| defines
+  a generic interface that allows sufficient customization for most viewer
+  applications.  However, a few applications require some special attention,
+  and so |vimtex| provides a couple of custom viewers: |vimtex_viewer_mupdf| and
+  |vimtex_viewer_zathura|.
 
-    general~
-      This is a basic interface where the viewer can be specified through
-      |g:vimtex_view_general_viewer|.
+  Possible values:
+    'general' (default)
+    'mupdf'
+    'zathura'
 
-    mupdf~
+    *vimtex_viewer_general*
+      This is a generic interface where the viewer application is specified
+      through |g:vimtex_view_general_viewer| and the viewer options are given
+      with |g:vimtex_view_general_options|.  After successful compilation with
+      `latexmk`, the viewer is started with the options provided by
+      |g:vimtex_view_general_options_latexmk|.  The interface allows the
+      general viewer to support forward search with a lot of different
+      applications:
+
+        *vimtex_viewer_okular*
+          https://okular.kde.org/
+          Okular is a very feature rich PDF viewer that supports forward
+          and backward search.  Backward search must be set up from the
+          viewer. >
+
+  let g:vimtex_view_general_viewer = 'okular'
+  let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
+  let g:vimtex_view_general_options_latexmk = '--unique'
+<
+        *vimtex_viewer_qpdfview*
+          https://launchpad.net/qpdfview
+          qpdfview is a tabbed document viewer.  It supports forward search.
+          Backward search must be set up from the viewer. >
+
+  let g:vimtex_view_general_viewer = 'qpdfview'
+  let g:vimtex_view_general_options = '--unique @pdf\#src:@tex:@line:@col'
+  let g:vimtex_view_general_options_latexmk = '--unique'
+<
+        *vimtex_viewer_skim*
+          http://skim-app.sourceforge.net/
+          Skim is a PDF reader and note-taker for OS X.  It is designed to help
+          you read and annotate scientific papers in PDF, but is also great
+          for viewing any PDF file. >
+
+  let g:vimtex_view_general_viewer
+    \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+  let g:vimtex_view_general_options = '@line @pdf @tex'
+<
+          Note: For some documentation on how to get backward search to work,
+                see: http://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization.
+
+        *vimtex_viewer_sumatrapdf*
+          http://www.sumatrapdfreader.org/free-pdf-reader.html
+          SumatraPDF is a PDF viewer for windows that is powerful, small,
+          portable and starts up very fast.  It supports forward search.
+          Backward search must be set up from the viewer. >
+
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options = '-forward-search @tex @line @pdf'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+<
+          Note: It is possible to set up inverse search for SumatraPDF through
+                the command line.  This can be utilized to set the correct
+                |servername| for inverse search: >
+
+  let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
+      \ . '-inverse-search "gvim --servername ' . v:servername
+      \ . ' --remote-send \"^<C-\^>^<C-n^>'
+      \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+      \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+      \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+      \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+<
+    *vimtex_viewer_mupdf*
       http://www.mupdf.com/
       A very minimalistic and quick PDF viewer.  Supports forward and backward
       search.  Backward search is available with |VimtexRSearch|, which is
@@ -606,38 +706,7 @@ Options~
             search will take you to the line in Vim that corresponds to the
             first line of the current page in MuPDF.
 
-    okular~
-      https://okular.kde.org/
-      A very feature rich PDF viewer.  Supports forward search.  Backward
-      search must be set up from the viewer.
-
-    qpdfview~
-      https://launchpad.net/qpdfview
-      A tabbed document viewer.  Supports forward search.  Backward search
-      must be set up from the viewer.
-
-    sumatrapdf~
-      http://www.sumatrapdfreader.org/free-pdf-reader.html
-      SumatraPDF is a PDF viewer for windows that is powerful, small, portable
-      and starts up very fast.  It supports forward search.  Backward search
-      must be set up from the viewer.
-
-      Note: It is possible to set up inverse search for SumatraPDF through the
-            command line.  This can be utilized to improve the current
-            implementation in order to set the correct |servername| for
-            inverse search.  At the moment, this is not implemented.  However,
-            one can achieve the functionality by using the general viewer with
-            the following setting: >
-
-              let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
-                \ . '-inverse-search "gvim --servername ' . v:servername
-                  \ . ' --remote-send \"^<C-\^>^<C-n^>'
-                  \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-                  \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-                  \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                  \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
-<
-    zathura~
+    *vimtex_viewer_zathura*
       https://pwmt.org/projects/zathura/
       Zathura is like MuPDF a very fast and minimalistic viewer, but it allows
       more user configuration.  Zathura supports forward search and backward
@@ -646,21 +715,38 @@ Options~
       Note: Forward search requires `xdotool` to work properly, in order to
             not open a new Zathura instance for invocation of |VimtexView|.
 
-  If one chooses a method that is not the default method, then the viewer will
-  support forward search, see |vimtex-synctex-forward-search|.
-
-  Default value: 'general'
-
 *g:vimtex_view_general_viewer*
-  Use a general viewer.
+  Use generic viewer application, see |vimtex_viewer_general|.
 
   Default value:
     Linux: `xdg-open`
     Mac:   `open`
 
-*g:vimtex_view_<viewer>_options*
-  Set custom options for the given viewer.  See |g:vimtex_view_method| for
-  a list of possible viewers.
+*g:vimtex_view_general_options*
+  Set options for the specified general viewer, see |vimtex_viewer_general|.
+  The options are parsed to substitute the following keywords:
+
+    `@pdf`    Path to pdf file
+    `@tex`    Path to tex file
+    `@line`   Current line number
+    `@col`    Current column number
+
+  Default value: '@pdf'
+
+*g:vimtex_view_general_options_latexmk*
+  Set options that are passed on to `latexmk` for the specified general
+  viewer, see |vimtex_viewer_general|.  This allows to send options that
+  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|.
+
+  Default value: ''
+
+*g:vimtex_view_mupdf_options*
+  Set options for mupdf (|vimtex_viewer_mupdf|).
+
+  Default value: ''
+
+*g:vimtex_view_zathura_options*
+  Set options for zathura (|vimtex_viewer_zathura|).
 
   Default value: ''
 
@@ -684,8 +770,30 @@ Options~
   the syntax file.  The `ignored` entry is also optional, and is used to name
   syntax groups to ignore in the minted region.  
 
-  Default value:
-    Please see `VIMTEX/after/syntax/tex.vim` for the default value.
+  Default value: []
+
+  Example for some languages: >
+
+    let g:vimtex_syntax_minted = [
+          \ {
+          \   'lang' : 'c',
+          \ },
+          \ {
+          \   'lang' : 'cpp',
+          \   'environments' : ['cppcode', 'cppcode_test'],
+          \ },
+          \ {
+          \   'lang' : 'csharp',
+          \   'syntax' : 'cs'
+          \ },
+          \ {
+          \   'lang' : 'python',
+          \   'ignore' : [
+          \     'pythonEscape',
+          \     'pythonBEscape',
+          \     ],
+          \ }
+          \])
 
 ------------------------------------------------------------------------------
 Commands~

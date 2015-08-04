@@ -63,24 +63,7 @@ let b:current_syntax = 'tex'
 
 " }}}1
 " {{{1 Nested syntax highlighting for minted
-let s:minted = get(g:, 'vimtex_syntax_minted', [
-      \ {
-      \   'lang' : 'c',
-      \ },
-      \ {
-      \   'lang' : 'csharp',
-      \   'syntax' : 'cs'
-      \ },
-      \ {
-      \   'lang' : 'python',
-      \   'ignore' : [
-      \     'pythonEscape',
-      \     'pythonBEscape',
-      \     ],
-      \ }
-      \])
-
-for entry in s:minted
+for entry in get(g:, 'vimtex_syntax_minted', [])
   let lang = entry.lang
   let syntax = get(entry, 'syntax', lang)
 
@@ -98,14 +81,37 @@ for entry in s:minted
         \ 'keepend'
         \ 'transparent'
         \ 'contains=texMinted,@' . toupper(lang)
+
+  "
+  " Support for custom environment names
+  "
+  for env in get(entry, 'environments', [])
+    execute 'syntax region texZone'
+          \ 'start="\\begin{' . env . '}"rs=s'
+          \ 'end="\\end{' . env . '}"re=e'
+          \ 'keepend'
+          \ 'transparent'
+          \ 'contains=texBeginEnd,@' . toupper(lang)
+
+    " Match starred environments with options
+    execute 'syntax region texZone'
+          \ 'start="\\begin{' . env . '\*}\s*{\_.\{-}}"rs=s'
+          \ 'end="\\end{' . env . '\*}"re=e'
+          \ 'keepend'
+          \ 'transparent'
+          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(lang)
+    execute 'syntax match texMintedStarred'
+          \ '"\\begin{' . env . '\*}\s*{\_.\{-}}"'
+          \ 'contains=texBeginEnd,texDelimiter'
+  endfor
 endfor
 let b:current_syntax = 'tex'
 
-syntax match texMinted "\\begin{minted}\_[^}]\{-}{\w\+}"
+syntax match texMinted '\\begin{minted}\_[^}]\{-}{\w\+}'
       \ contains=texBeginEnd,texMintedName
-syntax match texMinted "\\end{minted}"
+syntax match texMinted '\\end{minted}'
       \ contains=texBeginEnd
-syntax match texMintedName "{\w\+}"
+syntax match texMintedName '{\w\+}'
 
 highlight link texMintedName texBeginEndName
 

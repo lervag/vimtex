@@ -86,6 +86,7 @@ endfunction
 
 function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
+  redraw!
 
   if g:vimtex_view_enabled
         \ && has_key(b:vimtex.viewer, 'latexmk_callback')
@@ -112,19 +113,15 @@ function! vimtex#latexmk#clean(full) " {{{1
   if has('win32')
     let cmd = 'cd /D "' . b:vimtex.root . '" & '
   else
-    let cmd = 'cd ' . shellescape(b:vimtex.root) . '; '
+    let cmd = 'cd ' . vimtex#util#shellescape(b:vimtex.root) . '; '
   endif
   let cmd .= 'latexmk'
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
-  let cmd .= vimtex#util#fnameescape(b:vimtex.base)
-  let exe = {
-        \ 'cmd' : cmd,
-        \ 'bg'  : 0,
-        \ }
-  call vimtex#util#execute(exe)
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
+  call vimtex#util#execute({'cmd' : cmd})
   let b:vimtex.cmd_latexmk_clean = cmd
 
   call vimtex#echo#status(['latexmk clean: ',
@@ -377,7 +374,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd  = 'cd /D "' . b:vimtex.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
   else
-    let cmd  = 'cd ' . shellescape(b:vimtex.root)
+    let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
       let cmd .= '; and set max_print_line 2000; and latexmk'
     else
@@ -386,7 +383,8 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
-  let cmd .= ' -e ' . shellescape('$pdflatex =~ s/ / -file-line-error /')
+  let cmd .= ' -e ' . vimtex#util#shellescape(
+        \ '$pdflatex =~ s/ / -file-line-error /')
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
@@ -396,10 +394,10 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   if g:vimtex_latexmk_callback && has('clientserver')
-    let success  = g:vimtex_latexmk_progname
+    let success  = '\"' . g:vimtex_latexmk_progname . '\"'
     let success .= ' --servername ' . v:servername
     let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
-    let failed   = g:vimtex_latexmk_progname
+    let failed   = '\"' . g:vimtex_latexmk_progname . '\"'
     let failed  .= ' --servername ' . v:servername
     let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
     let cmd .= vimtex#latexmk#add_option('success_cmd', success)
@@ -412,7 +410,7 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd .= b:vimtex.viewer.latexmk_append_argument()
   endif
 
-  let cmd .= ' ' . vimtex#util#fnameescape(b:vimtex.base)
+  let cmd .= ' ' . vimtex#util#shellescape(b:vimtex.base)
 
   if g:vimtex_latexmk_continuous || g:vimtex_latexmk_background
     if has('win32')
@@ -474,7 +472,6 @@ endfunction
 
 function! s:latexmk_kill(data) " {{{1
   let exe = {}
-  let exe.bg = 0
   let exe.null = 0
 
   if has('win32')
