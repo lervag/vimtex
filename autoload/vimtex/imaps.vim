@@ -4,17 +4,17 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#snippets#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_snippets_enabled', 1)
-  call vimtex#util#set_default('g:vimtex_snippets_leader', '`')
+function! vimtex#imaps#init_options() " {{{1
+  call vimtex#util#set_default('g:vimtex_imaps_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_imaps_leader', '`')
 endfunction
 
 " }}}1
-function! vimtex#snippets#init_script() " {{{1
+function! vimtex#imaps#init_script() " {{{1
   "
-  " Define default lists of snippets
+  " Define default lists of imaps
   "
-  let s:snippets = {
+  let s:imaps = {
         \ 'miscellaneous' : {
         \   'list' : [
         \     ['...', '\dots'],
@@ -110,44 +110,44 @@ function! vimtex#snippets#init_script() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#snippets#init_buffer() " {{{1
-  if !g:vimtex_snippets_enabled | return | endif
+function! vimtex#imaps#init_buffer() " {{{1
+  if !g:vimtex_imaps_enabled | return | endif
 
   "
-  " Create predefined snippets
+  " Create predefined imaps
   "
-  for [name, snippets] in items(s:snippets)
-    if get(g:, 'vimtex_snippets_' . name, 1)
-      echom 'Snippets created: ' . name
-      call s:create_snippets(snippets)
+  for [name, imaps] in items(s:imaps)
+    if get(g:, 'vimtex_imaps_' . name, 1)
+      echom 'imaps created: ' . name
+      call s:create_imaps(imaps)
     endif
   endfor
 
   "
-  " Create custom snippets if defined
+  " Create custom imaps if defined
   "
-  for snippets in get(g:, 'vimtex_snippets_custom', [])
-    call s:create_snippets(snippets)
+  for imaps in get(g:, 'vimtex_imaps_custom', [])
+    call s:create_imaps(imaps)
   endfor
 
   "
   " Escape the leader
   "
   silent execute 'inoremap <silent><buffer>'
-        \ g:vimtex_snippets_leader . g:vimtex_snippets_leader
-        \ g:vimtex_snippets_leader
+        \ g:vimtex_imaps_leader . g:vimtex_imaps_leader
+        \ g:vimtex_imaps_leader
 endfunction
 
 " }}}1
 
 "
-" Functions to create the snippets
+" Functions to create the imaps
 "
-function! s:create_snippets(snippets) " {{{1
-  let l:leader = get(a:snippets, 'leader', 0)
-  let l:math = get(a:snippets, 'math', 0)
+function! s:create_imaps(imaps) " {{{1
+  let l:leader = get(a:imaps, 'leader', 0)
+  let l:math = get(a:imaps, 'math', 0)
 
-  for [lhs, rhs] in a:snippets.list
+  for [lhs, rhs] in a:imaps.list
     let l:ultisnips = match(rhs, '$1') > 0
 
     "
@@ -164,7 +164,7 @@ function! s:create_snippets(snippets) " {{{1
     "
     " Add leader
     "
-    let lhs = l:leader ? g:vimtex_snippets_leader . lhs : lhs
+    let lhs = l:leader ? g:vimtex_imaps_leader . lhs : lhs
 
     silent execute 'inoremap <silent><buffer>' lhs rhs
   endfor
