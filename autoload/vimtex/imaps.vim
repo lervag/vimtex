@@ -101,6 +101,7 @@ function! vimtex#imaps#init_script() " {{{1
         \     ['O', '\Omega'],
         \     ['Q', '\Theta'],
         \     ['R', '\varrho'],
+        \     ['T', '\Tau'],
         \     ['U', '\Upsilon'],
         \     ['X', '\Xi'],
         \     ['Y', '\Psi'],
@@ -190,7 +191,7 @@ endfunction
 
 " }}}1
 function! s:is_math() " {{{1
-  return match(map(synstack(line('.'), col('.')),
+  return match(map(synstack(line('.'), max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]$') >= 0
 endfunction
 
