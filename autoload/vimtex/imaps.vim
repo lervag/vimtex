@@ -11,149 +11,153 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#init_script() " {{{1
-  "
-  " Define default lists of imaps
-  "
-  let s:imaps = {
-        \ 'miscellaneous' : {
-        \   'list' : [
-        \     ['...', '\dots'],
-        \     ['<m-i>', '\item '],
-        \   ],
-        \ },
-        \ 'math' : {
-        \   'math' : 1,
-        \   'list' : [
-        \     ['__', '_\{$1\}'],
-        \     ['^^', '^\{$1\}'],
-        \     ['((', '\left($1\right)'],
-        \     ['[[', '\left[$1\right]'],
-        \     ['{{', '\left\{$1\right\}'],
-        \     ['exp', '\exp\left($1\right)'],
-        \     ['cos', '\cos'],
-        \     ['sin', '\sin'],
-        \     ['tan', '\tan'],
-        \     ['log', '\log'],
-        \     ['in', '\in'],
-        \     ['to', '\to'],
-        \     ['lim', '\lim_{$1}'],
-        \     ['qj', '\downarrow'],
-        \     ['ql', '\leftarrow'],
-        \     ['qh', '\rightarrow'],
-        \     ['qk', '\uparrow'],
-        \     ['qJ', '\Downarrow'],
-        \     ['qL', '\Leftarrow'],
-        \     ['qH', '\Rightarrow'],
-        \     ['qK', '\Uparrow'],
-        \   ],
-        \ },
-        \ 'math_leader' : {
-        \   'leader' : 1,
-        \   'math' : 1,
-        \   'list' : [
-        \     ['i', '\int_{$1}^{$2}'],
-        \     ['S', '\sum_{$1}^{$2}'],
-        \     ['/', '\frac{$1}{$2}'],
-        \     ['0', '\emptyset'],
-        \     ['6', '\partial'],
-        \     ['8', '\infty'],
-        \     ['=', '\equiv'],
-        \     ['\', '\setminus'],
-        \     ['.', '\cdot'],
-        \     ['*', '\times'],
-        \     ['<', '\leq'],
-        \     ['>', '\geq'],
-        \     ['~', '\tilde{$1}'],
-        \     ['^', '\hat{$1}'],
-        \     [';', '\dot{$1}'],
-        \     ['_', '\bar{$1}'],
-        \   ],
-        \ },
-        \ 'greek' : { 
-        \   'leader' : 1,
-        \   'math' : 1,
-        \   'list' : [
-        \     ['a', '\alpha'],
-        \     ['b', '\beta'],
-        \     ['c', '\chi'],
-        \     ['d', '\delta'],
-        \     ['e', '\varepsilon'],
-        \     ['f', '\varphi'],
-        \     ['g', '\gamma'],
-        \     ['h', '\eta'],
-        \     ['k', '\kappa'],
-        \     ['l', '\lambda'],
-        \     ['m', '\mu'],
-        \     ['n', '\nu'],
-        \     ['o', '\omega'],
-        \     ['p', '\pi'],
-        \     ['q', '\theta'],
-        \     ['r', '\rho'],
-        \     ['s', '\sigma'],
-        \     ['t', '\tau'],
-        \     ['u', '\upsilon'],
-        \     ['z', '\zeta'],
-        \     ['D', '\Delta'],
-        \     ['F', '\Phi'],
-        \     ['G', '\Gamma'],
-        \     ['L', '\Lambda'],
-        \     ['N', '\nabla'],
-        \     ['O', '\Omega'],
-        \     ['Q', '\Theta'],
-        \     ['R', '\varrho'],
-        \     ['T', '\Tau'],
-        \     ['U', '\Upsilon'],
-        \     ['X', '\Xi'],
-        \     ['Y', '\Psi'],
-        \   ],
-        \ },
-        \}
+  let s:has_ultisnips = exists('*UltiSnips#Anon')
 endfunction
 
 " }}}1
 function! vimtex#imaps#init_buffer() " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
+  let b:vimtex.imap_collections = []
+
   "
   " Create predefined imaps
   "
-  for [name, imaps] in items(s:imaps)
-    if get(g:, 'vimtex_imaps_' . name, 1)
-      echom 'imaps created: ' . name
-      call s:create_imaps(imaps)
+  for collection in s:default_collections()
+    if get(g:, 'vimtex_imaps_' . collection.title, 1)
+      call s:parse_collection(collection)
     endif
   endfor
 
   "
   " Create custom imaps if defined
   "
-  for imaps in get(g:, 'vimtex_imaps_custom', [])
-    call s:create_imaps(imaps)
+  for collection in get(g:, 'vimtex_imaps_custom', [])
+    call s:parse_collection(collection)
   endfor
-
-  "
-  " Escape the leader
-  "
-  silent execute 'inoremap <silent><buffer>'
-        \ g:vimtex_imaps_leader . g:vimtex_imaps_leader
-        \ g:vimtex_imaps_leader
 endfunction
 
 " }}}1
 
-"
-" Functions to create the imaps
-"
-function! s:create_imaps(imaps) " {{{1
-  let l:leader = get(a:imaps, 'leader', 0)
-  let l:math = get(a:imaps, 'math', 0)
+function! s:default_collections() " {{{1
+  return [
+    \ {
+    \   'title' : 'miscellaneous',
+    \   'leader' : '',
+    \   'mode' : '',
+    \   'mappings' : [
+    \     ['...', '\dots'],
+    \     ['<m-i>', '\item '],
+    \   ],
+    \ },
+    \ {
+    \   'title' : 'math',
+    \   'leader' : '',
+    \   'mode' : 'm',
+    \   'mappings' : [
+    \     ['__', '_\{$1\}'],
+    \     ['^^', '^\{$1\}'],
+    \     ['((', '\left($1\right)'],
+    \     ['[[', '\left[$1\right]'],
+    \     ['{{', '\left\{$1\right\}'],
+    \     ['exp', '\exp\left($1\right)'],
+    \     ['cos', '\cos'],
+    \     ['sin', '\sin'],
+    \     ['tan', '\tan'],
+    \     ['log', '\log'],
+    \     ['in', '\in'],
+    \     ['to', '\to'],
+    \     ['lim', '\lim_{$1}'],
+    \     ['qj', '\downarrow'],
+    \     ['ql', '\leftarrow'],
+    \     ['qh', '\rightarrow'],
+    \     ['qk', '\uparrow'],
+    \     ['qJ', '\Downarrow'],
+    \     ['qL', '\Leftarrow'],
+    \     ['qH', '\Rightarrow'],
+    \     ['qK', '\Uparrow'],
+    \   ],
+    \ },
+    \ {
+    \   'title' : 'math_leader',
+    \   'mode' : 'm',
+    \   'mappings' : [
+    \     ['i', '\int_{$1}^{$2}'],
+    \     ['S', '\sum_{$1}^{$2}'],
+    \     ['/', '\frac{$1}{$2}'],
+    \     ['0', '\emptyset'],
+    \     ['6', '\partial'],
+    \     ['8', '\infty'],
+    \     ['=', '\equiv'],
+    \     ['\', '\setminus'],
+    \     ['.', '\cdot'],
+    \     ['*', '\times'],
+    \     ['<', '\leq'],
+    \     ['>', '\geq'],
+    \     ['~', '\tilde{$1}'],
+    \     ['^', '\hat{$1}'],
+    \     [';', '\dot{$1}'],
+    \     ['_', '\bar{$1}'],
+    \   ],
+    \ },
+    \ { 
+    \   'title' : 'greek',
+    \   'mode' : 'm',
+    \   'mappings' : [
+    \     ['a', '\alpha'],
+    \     ['b', '\beta'],
+    \     ['c', '\chi'],
+    \     ['d', '\delta'],
+    \     ['e', '\varepsilon'],
+    \     ['f', '\varphi'],
+    \     ['g', '\gamma'],
+    \     ['h', '\eta'],
+    \     ['k', '\kappa'],
+    \     ['l', '\lambda'],
+    \     ['m', '\mu'],
+    \     ['n', '\nu'],
+    \     ['o', '\omega'],
+    \     ['p', '\pi'],
+    \     ['q', '\theta'],
+    \     ['r', '\rho'],
+    \     ['s', '\sigma'],
+    \     ['t', '\tau'],
+    \     ['u', '\upsilon'],
+    \     ['z', '\zeta'],
+    \     ['D', '\Delta'],
+    \     ['F', '\Phi'],
+    \     ['G', '\Gamma'],
+    \     ['L', '\Lambda'],
+    \     ['N', '\nabla'],
+    \     ['O', '\Omega'],
+    \     ['Q', '\Theta'],
+    \     ['R', '\varrho'],
+    \     ['T', '\Tau'],
+    \     ['U', '\Upsilon'],
+    \     ['X', '\Xi'],
+    \     ['Y', '\Psi'],
+    \   ],
+    \ },
+    \]
+endfunction
 
-  for [lhs, rhs] in a:imaps.list
+" }}}1
+function! s:parse_collection(collection) " {{{1
+  "
+  " Extract some collection metadata
+  "
+  let l:leader = get(a:collection, 'leader', g:vimtex_imaps_leader)
+  let l:mode = get(a:collection, 'mode', '')
+  let l:math = l:mode =~# 'm'
+
+  "
+  " Create mappings
+  "
+  for [lhs, rhs] in a:collection.mappings
     let l:ultisnips = match(rhs, '$1') > 0
+    if l:ultisnips && !s:has_ultisnips | continue | endif
 
-    "
     " Generate RHS
-    "
     if l:math && l:ultisnips
       let rhs = s:wrap_math_ultisnips(lhs, rhs)
     elseif l:math
@@ -162,16 +166,24 @@ function! s:create_imaps(imaps) " {{{1
       let rhs = s:wrap_ultisnips(lhs, rhs)
     endif
 
-    "
-    " Add leader
-    "
-    let lhs = l:leader ? g:vimtex_imaps_leader . lhs : lhs
-
-    silent execute 'inoremap <silent><buffer>' lhs rhs
+    silent execute 'inoremap <silent><buffer>' l:leader . lhs rhs
   endfor
+
+  "
+  " Escape leader if it exists
+  "
+  if l:leader !=# '' && !hasmapto(l:leader, 'i')
+    silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
+  endif
+
+  let b:vimtex.imap_collections += [a:collection.title]
 endfunction
 
 " }}}1
+
+"
+" Helper functions
+"
 function! s:wrap_math_ultisnips(lhs, rhs) " {{{1
   return a:lhs . '<c-r>=<sid>is_math() ? UltiSnips#Anon('''
         \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'') : ''''<cr>'
