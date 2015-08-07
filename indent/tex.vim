@@ -138,7 +138,6 @@ let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_noindent = 'document\|verbatim\|lstlisting'
 let s:delimiters_open = '\(' . join([
         \ '{',
-        \ '(',
         \ '\[',
         \ '\\{',
         \ '\\(',
@@ -149,7 +148,6 @@ let s:delimiters_open = '\(' . join([
       \ ], '\|') . '\)'
 let s:delimiters_close = '\(' . join([
         \ '}',
-        \ ')',
         \ '\]',
         \ '\\}',
         \ '\\)',
