@@ -74,7 +74,6 @@ function! vimtex#fold#init_buffer() " {{{1
     endif
   else
     augroup vimtex_fold_manual
-      autocmd!
       autocmd CursorMoved <buffer> call vimtex#fold#refresh('zx')
       autocmd CursorMoved <buffer> autocmd! vimtex_fold_manual
     augroup END
