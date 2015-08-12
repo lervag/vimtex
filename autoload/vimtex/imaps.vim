@@ -153,6 +153,9 @@ function! s:parse_collection(collection) " {{{1
   "
   " Create mappings
   "
+  " TODO: This can be simplified extensively (I think) with <expr>-mappings!
+  "       Possibly, we can even use abbreviations
+  "
   for [lhs, rhs] in a:collection.mappings
     let l:ultisnips = match(rhs, '$1') > 0
     if l:ultisnips && !s:has_ultisnips | continue | endif
