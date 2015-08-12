@@ -81,7 +81,6 @@ function! vimtex#fold#init_buffer() " {{{1
     augroup END
 
     function! s:fold_manual_refresh()
-      echom 'refreshed ' . b:fold_manual_augroup
       call vimtex#fold#refresh('zx')
       execute 'autocmd!' b:fold_manual_augroup
       execute 'augroup!' b:fold_manual_augroup
