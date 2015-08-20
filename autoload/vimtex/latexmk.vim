@@ -497,7 +497,7 @@ function! s:buffer_left() " {{{1
 endfunction
 
 function! s:buffer_deleted() " {{{1
-  if s:vimtex.pid == 0 | return | endif
+  if get(get(s:, 'vimtex', {}), 'pid', 0) == 0 | return | endif
 
   "
   " The buffer is deleted, so we must kill the remaining latexmk process if the
