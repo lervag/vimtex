@@ -383,8 +383,8 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
-  let cmd .= ' -e ' . shellescape(
-        \ '$pdflatex =~ s/^((.(?<!^internal(?=\s)))*?) /$1 -file-line-error /', 1)
+  let cmd .= ' -e ' . vimtex#util#shellescape(
+        \ '$pdflatex =~ s/^((.(?<!^internal(?=\s)))*?) /$1 -file-line-error /')
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
