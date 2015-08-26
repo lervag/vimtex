@@ -89,11 +89,21 @@ function! VimtexIndent() " {{{1
   endif
 
   " Indent opening and closing delimiters
-  let popen  = s:count_delimiters(pline, s:delimiters_open)
-  let copen  = s:count_delimiters(cline, s:delimiters_open)
-  let pclose = s:count_delimiters(pline, s:delimiters_close)
-  let cclose = s:count_delimiters(cline, s:delimiters_close)
+  let popen  = s:count_delimiters(pline, s:tex_delimiters_open)
+  let copen  = s:count_delimiters(cline, s:tex_delimiters_open)
+  let pclose = s:count_delimiters(pline, s:tex_delimiters_close)
+  let cclose = s:count_delimiters(cline, s:tex_delimiters_close)
   let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
+
+  " Indent opening and closing delimiters for math mode
+  if match(map(synstack(v:lnum, max([col('.') - 1, 1])),
+        \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
+    let popen  = s:count_delimiters(pline, s:math_delimiters_open)
+    let copen  = s:count_delimiters(cline, s:math_delimiters_open)
+    let pclose = s:count_delimiters(pline, s:math_delimiters_close)
+    let cclose = s:count_delimiters(cline, s:math_delimiters_close)
+    let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
+  endif
 
   " Indent list items
   if pline =~# '^\s*\\\(bib\)\?item'
@@ -136,25 +146,31 @@ let s:tikz_indented = 0
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:delimiters_open = '\(' . join([
+let s:tex_delimiters_open = '\(' . join([
         \ '{',
-        \ '(',
         \ '\[',
-        \ '\\{',
         \ '\\(',
         \ '\\\[',
         \ '\\\Cbegin\s*{.\{-}}',
-        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ], '\|') . '\)'
-let s:delimiters_close = '\(' . join([
+let s:tex_delimiters_close = '\(' . join([
         \ '}',
-        \ ')',
         \ '\]',
-        \ '\\}',
         \ '\\)',
         \ '\\\]',
         \ '\\\Cend\s*{.\{-}}',
+      \ ], '\|') . '\)'
+let s:math_delimiters_open = '\(' . join([
+        \ '(',
+        \ '\[',
+        \ '\\{',
+        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
+        \ '\\\cbigg\?\((\|\[\|\\{\)',
+      \ ], '\|') . '\)'
+let s:math_delimiters_close = '\(' . join([
+        \ ')',
+        \ '\]',
+        \ '\\}',
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
       \ ], '\|') . '\)'
