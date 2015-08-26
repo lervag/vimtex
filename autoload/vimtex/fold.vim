@@ -73,10 +73,19 @@ function! vimtex#fold#init_buffer() " {{{1
       augroup END
     endif
   else
-    augroup vimtex_fold_manual
-      autocmd CursorMoved <buffer> call vimtex#fold#refresh('zx')
-      autocmd CursorMoved <buffer> autocmd! vimtex_fold_manual
+    let s:fold_manual_id = get(s:, 'fold_manual_id', 0) + 1
+    let b:fold_manual_augroup = 'vimtex_fold_' . s:fold_manual_id
+    execute 'augroup' b:fold_manual_augroup
+      autocmd!
+      autocmd CursorMoved <buffer> call s:fold_manual_refresh()
     augroup END
+
+    function! s:fold_manual_refresh()
+      call vimtex#fold#refresh('zx')
+      execute 'autocmd!' b:fold_manual_augroup
+      execute 'augroup!' b:fold_manual_augroup
+      unlet b:fold_manual_augroup
+    endfunction
   endif
 endfunction
 
