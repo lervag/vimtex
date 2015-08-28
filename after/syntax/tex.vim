@@ -9,14 +9,27 @@ if !exists('b:current_syntax') || b:current_syntax !=# 'tex'
   finish
 endif
 
-" Better support for cite commands
-" \cite, \citep, \citet, \citeauthor, ...
-syntax match texRefZone
+" {{{1 Add syntax highlighting for \url and \href
+syntax match texStatement '\\url'  nextgroup=texUrl
+syntax match texStatement '\\href' nextgroup=texHref
+syntax region texUrl  matchgroup=Delimiter start="{" end="}" contained
+syntax region texHref matchgroup=Delimiter start="{" end="}" contained
+      \ nextgroup=texHrefLinkText
+syntax region texHrefLinkText matchgroup=Delimiter start="{" end="}" contained
+      \ contains=@Spell
+
+highlight link texUrl          Function
+highlight link texHref         texUrl
+highlight link texHrefLinkText texSectionZone
+
+" }}}1
+" {{{1 Improve support for cite commands
+syntax match texStatement
       \ "\\\%(auto\|text\)\?cite\%([tp]\*\?\|author\)\?"
       \ nextgroup=texRefOption,texCite
 
-" Add support for cleveref package
-" \Cref, \cref, \cpageref, \labelcref, \labelcpageref
+" }}}1
+" {{{1 Add support for cleveref package
 syntax region texRefZone matchgroup=texStatement
       \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
       \ end="}\|%stopzone\>"
@@ -35,10 +48,12 @@ syntax region texRefRangeEnd
       \ start="{"rs=s+1 end="}"
       \ matchgroup=Delimiter
       \ contained contains=texRefZone
+
 highlight link texRefRangeStart texRefZone
 highlight link texRefRangeEnd   texRefZone
 
-" {{{1 Support for listings package
+" }}}1
+" {{{1 Add support for listings package
 syntax region texZone
       \ start="\\begin{lstlisting}"rs=s
       \ end="\\end{lstlisting}\|%stopzone\>"re=e
