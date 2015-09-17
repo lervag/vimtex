@@ -104,6 +104,10 @@ function! vimtex#motion#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-{)  :call vimtex#motion#next_paragraph(1,0)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-})  :<c-u>call vimtex#motion#next_paragraph(0,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-{)  :<c-u>call vimtex#motion#next_paragraph(1,1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-ip) :<c-u>call vimtex#motion#sel_paragraph(1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-ap) :<c-u>call vimtex#motion#sel_paragraph()<cr>
+  onoremap <silent><buffer> <plug>(vimtex-ip) :execute "normal \<sid>(v)\<plug>(vimtex-ip)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-ap) :execute "normal \<sid>(v)\<plug>(vimtex-ap)"<cr>
 
   " Sections
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
@@ -344,6 +348,22 @@ function! vimtex#motion#sel_inline_math(...) " {{{1
     normal! h
   endif
 endfunction
+" }}}1
+function! vimtex#motion#sel_paragraph(...) " {{{1
+  let inner = a:0 > 0
+
+  " Define selection
+  normal! 0j
+  call vimtex#motion#next_paragraph(1,0)
+  normal! jV
+  call vimtex#motion#next_paragraph(0,0)
+
+  " Go back one line for inner objects
+  if inner
+    normal! k
+  endif
+endfunction
+
 " }}}1
 
 function! s:highlight_matching_pair(...) " {{{1
