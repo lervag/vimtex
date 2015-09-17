@@ -219,12 +219,12 @@ function! vimtex#motion#next_paragraph(backwards, visual) " {{{1
   endif
 
   if vimtex#util#in_comment()
-    let l:search = '^\s*\(%\)\@!\S'
+    let l:search = '^\s*\($\|\(%\)\@!\S\)'
   else
     let l:search = '\v^\s*($|' . join(s:paragraph_boundaries, '|') . ')'
   endif
-
   call search(l:search, l:flags)
+
   if a:visual
     if a:backwards
       normal! j0
