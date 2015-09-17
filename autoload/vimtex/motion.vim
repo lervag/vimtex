@@ -93,6 +93,7 @@ function! vimtex#motion#init_buffer() " {{{1
 
   " Utility map to avoid conflict with "normal" command
   nnoremap <buffer> <sid>(v) v
+  nnoremap <buffer> <sid>(V) V
 
   " Matching pairs
   nnoremap <silent><buffer> <plug>(vimtex-%)  :call vimtex#motion#find_matching_pair()<cr>
@@ -104,12 +105,12 @@ function! vimtex#motion#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-{)  :call vimtex#motion#next_paragraph(1,0)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-})  :<c-u>call vimtex#motion#next_paragraph(0,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-{)  :<c-u>call vimtex#motion#next_paragraph(1,1)<cr>
-  onoremap <silent><buffer> <plug>(vimtex-}) :execute "normal \<sid>(v)\<plug>(vimtex-})"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-{) :execute "normal \<sid>(v)\<plug>(vimtex-{)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-}) :execute "normal \<sid>(V)\<plug>(vimtex-})"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-{) :execute "normal \<sid>(V)\<plug>(vimtex-{)"<cr>
   xnoremap <silent><buffer> <plug>(vimtex-ip) :<c-u>call vimtex#motion#sel_paragraph(1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-ap) :<c-u>call vimtex#motion#sel_paragraph()<cr>
-  onoremap <silent><buffer> <plug>(vimtex-ip) :execute "normal \<sid>(v)\<plug>(vimtex-ip)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-ap) :execute "normal \<sid>(v)\<plug>(vimtex-ap)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-ip) :execute "normal \<sid>(V)\<plug>(vimtex-ip)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-ap) :execute "normal \<sid>(V)\<plug>(vimtex-ap)"<cr>
 
   " Sections
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
@@ -205,11 +206,17 @@ endfunction
 
 " }}}1
 function! vimtex#motion#next_paragraph(backwards, visual) " {{{1
-  let l:flags = a:backwards > 0 ? 'Wb' : 'W'
   if a:visual
     normal! gv
   endif
-  call search('\S', l:flags)
+
+  if a:backwards
+    let l:flags = 'Wb'
+    normal! k
+  else
+    let l:flags = 'W'
+    call search('\S', l:flags)
+  endif
 
   if vimtex#util#in_comment()
     let l:search = '^\s*\(%\)\@!\S'
@@ -218,6 +225,13 @@ function! vimtex#motion#next_paragraph(backwards, visual) " {{{1
   endif
 
   call search(l:search, l:flags)
+  if a:visual
+    if a:backwards
+      normal! j0
+    else
+      normal! k$
+    endif
+  endif
 endfunction
 
 " }}}1
