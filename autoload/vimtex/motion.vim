@@ -79,32 +79,43 @@ endfunction
 function! vimtex#motion#init_buffer() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
+  " Utility map to avoid conflict with "normal" command
   nnoremap <buffer> <sid>(v) v
+
+  " Matching pairs
   nnoremap <silent><buffer> <plug>(vimtex-%)  :call vimtex#motion#find_matching_pair()<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-%)  :<c-u>call vimtex#motion#find_matching_pair(1)<cr>
+  onoremap <silent><buffer> <plug>(vimtex-%)  :execute "normal \<sid>(v)\<plug>(vimtex-%)"<cr>
+
+  " Sections
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-][) :call vimtex#motion#next_section(1,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-[]) :call vimtex#motion#next_section(1,1,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-[[) :call vimtex#motion#next_section(0,1,0)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-%)  :<c-u>call vimtex#motion#find_matching_pair(1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-]]) :<c-u>call vimtex#motion#next_section(0,0,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-][) :<c-u>call vimtex#motion#next_section(1,0,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-[]) :<c-u>call vimtex#motion#next_section(1,1,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-[[) :<c-u>call vimtex#motion#next_section(0,1,1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-ie) :<c-u>call vimtex#motion#sel_environment(1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-ae) :<c-u>call vimtex#motion#sel_environment()<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-i$) :<c-u>call vimtex#motion#sel_inline_math(1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-a$) :<c-u>call vimtex#motion#sel_inline_math()<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-id) :<c-u>call vimtex#motion#sel_delimiter(1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-ad) :<c-u>call vimtex#motion#sel_delimiter()<cr>
-  onoremap <silent><buffer> <plug>(vimtex-%)  :execute "normal \<sid>(v)\<plug>(vimtex-%)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-]]) :execute "normal \<sid>(v)\<plug>(vimtex-]])"<cr>
   onoremap <silent><buffer> <plug>(vimtex-][) :execute "normal \<sid>(v)\<plug>(vimtex-][)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[]) :execute "normal \<sid>(v)\<plug>(vimtex-[])"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<sid>(v)\<plug>(vimtex-[[)"<cr>
+
+  " Text object for environments
+  xnoremap <silent><buffer> <plug>(vimtex-ie) :<c-u>call vimtex#motion#sel_environment(1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-ae) :<c-u>call vimtex#motion#sel_environment()<cr>
   onoremap <silent><buffer> <plug>(vimtex-ie) :execute "normal \<sid>(v)\<plug>(vimtex-ie)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-ae) :execute "normal \<sid>(v)\<plug>(vimtex-ae)"<cr>
+
+  " Text object for inline math
+  xnoremap <silent><buffer> <plug>(vimtex-i$) :<c-u>call vimtex#motion#sel_inline_math(1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-a$) :<c-u>call vimtex#motion#sel_inline_math()<cr>
   onoremap <silent><buffer> <plug>(vimtex-i$) :execute "normal \<sid>(v)\<plug>(vimtex-i$)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-a$) :execute "normal \<sid>(v)\<plug>(vimtex-a$)"<cr>
+
+  " Text object for delimiters
+  xnoremap <silent><buffer> <plug>(vimtex-id) :<c-u>call vimtex#motion#sel_delimiter(1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-ad) :<c-u>call vimtex#motion#sel_delimiter()<cr>
   onoremap <silent><buffer> <plug>(vimtex-id) :execute "normal \<sid>(v)\<plug>(vimtex-id)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-ad) :execute "normal \<sid>(v)\<plug>(vimtex-ad)"<cr>
 endfunction
