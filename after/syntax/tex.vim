@@ -4,7 +4,9 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if !exists('b:current_syntax') || b:current_syntax !=# 'tex'
+if !exists('b:current_syntax')
+  let b:current_syntax = 'tex'
+elseif b:current_syntax !=# 'tex'
   echoerr 'vimtex syntax error: please report issue!'
   finish
 endif
