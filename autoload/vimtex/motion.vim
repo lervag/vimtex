@@ -73,6 +73,18 @@ function! vimtex#motion#init_script() " {{{1
   let s:section  = s:notcomment . '\v\s*\\'
   let s:section .= '((sub)*section|chapter|part|'
   let s:section .= 'appendix|(front|back|main)matter)>'
+
+  " List of paragraph boundaries
+  let s:paragraph_boundaries = [
+        \ '\%',
+        \ '\\part',
+        \ '\\chapter',
+        \ '\\(sub)*section',
+        \ '\\paragraph',
+        \ '\\label',
+        \ '\\begin',
+        \ '\\end',
+        \ ]
 endfunction
 
 " }}}1
@@ -86,6 +98,12 @@ function! vimtex#motion#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-%)  :call vimtex#motion#find_matching_pair()<cr>
   xnoremap <silent><buffer> <plug>(vimtex-%)  :<c-u>call vimtex#motion#find_matching_pair(1)<cr>
   onoremap <silent><buffer> <plug>(vimtex-%)  :execute "normal \<sid>(v)\<plug>(vimtex-%)"<cr>
+
+  " Paragraph motion
+  nnoremap <silent><buffer> <plug>(vimtex-})  :call vimtex#motion#next_paragraph(0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-{)  :call vimtex#motion#next_paragraph(1,0)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-})  :<c-u>call vimtex#motion#next_paragraph(0,1)<cr>
+  xnoremap <silent><buffer> <plug>(vimtex-{)  :<c-u>call vimtex#motion#next_paragraph(1,1)<cr>
 
   " Sections
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
@@ -177,6 +195,23 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
       endif
     endfor
   endif
+endfunction
+
+" }}}1
+function! vimtex#motion#next_paragraph(backwards, visual) " {{{1
+  let l:flags = a:backwards > 0 ? 'Wb' : 'W'
+  if a:visual
+    normal! gv
+  endif
+  call search('\S', l:flags)
+
+  if vimtex#util#in_comment()
+    let l:search = '^\s*\(%\)\@!\S'
+  else
+    let l:search = '\v^\s*($|' . join(s:paragraph_boundaries, '|') . ')'
+  endif
+
+  call search(l:search, l:flags)
 endfunction
 
 " }}}1
