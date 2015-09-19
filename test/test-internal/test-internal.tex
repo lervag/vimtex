@@ -1,0 +1,17 @@
+\documentclass[11pt,a4paper]{article}
+
+\begin{document}
+
+This is just a simple example. Compiling it with the following \texttt{.latexmkrc} should print ``This line should be printed'' before starting \texttt{pdflatex}.
+
+\begin{verbatim}
+$pdflatex = 'internal internalexample %R %O %S';
+
+sub internalexample {
+    my @args = @_;
+    print "This line should be printed\n";
+    return system("pdflatex @args");
+}
+\end{verbatim}
+
+\end{document}
