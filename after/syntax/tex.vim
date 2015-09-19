@@ -12,15 +12,21 @@ elseif b:current_syntax !=# 'tex'
 endif
 
 " {{{1 Add syntax highlighting for \url and \href
-syntax match texStatement '\\url'  nextgroup=texUrl
+syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
+syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
 syntax match texStatement '\\href' nextgroup=texHref
-syntax region texUrl  matchgroup=Delimiter start="{" end="}" contained
-syntax region texHref matchgroup=Delimiter start="{" end="}" contained
+
+syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
+syntax region texUrlVerb matchgroup=Delimiter
+      \ start='\z([^\ta-zA-Z]\)' end='\z1' contained
+
+syntax region texHref matchgroup=Delimiter start='{' end='}' contained
       \ nextgroup=texHrefLinkText
-syntax region texHrefLinkText matchgroup=Delimiter start="{" end="}" contained
+syntax region texHrefLinkText matchgroup=Delimiter start='{' end='}' contained
       \ contains=@Spell
 
 highlight link texUrl          Function
+highlight link texUrlVerb      texUrl
 highlight link texHref         texUrl
 highlight link texHrefLinkText texSectionZone
 
