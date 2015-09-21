@@ -41,6 +41,7 @@ if exists('g:vimtex_quickfix_ignore_all_warnings')
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
   CompilerSet errorformat+=%+W%.%#\ at\ lines\ %l--%*\\d
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
+  CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
   CompilerSet errorformat+=%+W%.%#%.%#Warning:\ %m
 
   " Parse biblatex warnings
