@@ -4,8 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if exists("current_compiler") | finish | endif
-let current_compiler = "latexmk"
+if exists('current_compiler') | finish | endif
+let current_compiler = 'latexmk'
 
 CompilerSet makeprg=""
 
@@ -30,8 +30,8 @@ CompilerSet errorformat+=%Z<argument>\ %m
 CompilerSet errorformat+=%Cl.%l\ %m
 
 " Show warnings
-if exists("g:vimtex_quickfix_ignore_all_warnings")
-      \ && exists("g:vimtex_quickfix_ignored_warnings")
+if exists('g:vimtex_quickfix_ignore_all_warnings')
+      \ && exists('g:vimtex_quickfix_ignored_warnings')
       \ && !g:vimtex_quickfix_ignore_all_warnings
   " Ignore some warnings
   for w in g:vimtex_quickfix_ignored_warnings
@@ -41,6 +41,7 @@ if exists("g:vimtex_quickfix_ignore_all_warnings")
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
   CompilerSet errorformat+=%+W%.%#\ at\ lines\ %l--%*\\d
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
+  CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
   CompilerSet errorformat+=%+W%.%#%.%#Warning:\ %m
 
   " Parse biblatex warnings

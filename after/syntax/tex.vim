@@ -11,6 +11,13 @@ elseif b:current_syntax !=# 'tex'
   finish
 endif
 
+" {{{1 Add conceal for \emph
+if has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b'
+  syntax region texItalStyle
+        \ matchgroup=texTypeStyle start="\\emph\s*{" end="}" concealends
+endif
+
+" }}}1
 " {{{1 Add syntax highlighting for \url and \href
 syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
 syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
