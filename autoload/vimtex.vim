@@ -365,7 +365,7 @@ function! s:get_main_latexmain(file) " {{{1
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
   endwhile
-  let l:candidates = split(globpath(l:dirs, '*.latexmain'), '\n')
+  let l:candidates = split(globpath(fnameescape(l:dirs), '*.latexmain'), '\n')
 
   "
   " If any candidates found, use the first one (corresponding to the one
@@ -396,7 +396,7 @@ function! s:get_main_recurse(file) " {{{1
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
   endwhile
-  let l:candidates = split(globpath(l:dirs, '*.tex'), '\n')
+  let l:candidates = split(globpath(fnameescape(l:dirs), '*.tex'), '\n')
 
   "
   " Search through candidates for \include{current file}
