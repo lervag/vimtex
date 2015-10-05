@@ -73,7 +73,6 @@ function! vimtex#index#create(index) " {{{1
   setlocal concealcursor=nvic
   setlocal conceallevel=0
   setlocal cursorline
-  setlocal listchars=
   setlocal nobuflisted
   setlocal nolist
   setlocal nospell

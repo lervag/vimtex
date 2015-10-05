@@ -533,7 +533,6 @@ function! vimtex#wordcount(detailed) " {{{1
   setlocal bufhidden=wipe
   setlocal buftype=nofile
   setlocal cursorline
-  setlocal listchars=
   setlocal nobuflisted
   setlocal nolist
   setlocal nospell
