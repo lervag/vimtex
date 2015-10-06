@@ -179,7 +179,7 @@ endfunction
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
   if b:vimtex.pid
     call vimtex#echo#status(['latexmk compile: ',
-          \ ['VimtexWarning', 'already running for `' . g:vimtex.base . "'"]])
+          \ ['VimtexWarning', 'already running for `' . b:vimtex.base . "'"]])
     return
   endif
 
