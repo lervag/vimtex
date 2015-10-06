@@ -431,6 +431,8 @@ function! s:latexmk_build_cmd() " {{{1
     else
       let cmd .= ' >' . tmp . ' 2>&1'
     endif
+  elseif has('win32')
+    let cmd = 'cmd /c "' . cmd . '"'
   endif
 
   let exe.cmd  = cmd
