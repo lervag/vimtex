@@ -12,6 +12,7 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
+  call vimtex#util#set_default('g:vimtex_latexmk_file_line_error', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
   call vimtex#util#set_default('g:vimtex_latexmk_progname',
         \ get(v:, 'progpath', get(v:, 'progname')))
@@ -392,8 +393,12 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   let cmd .= ' -verbose -pdf ' . g:vimtex_latexmk_options
-  let cmd .= ' -e ' . vimtex#util#shellescape(
-        \ '$pdflatex =~ s/^((.(?<!^internal(?=\s)))*?) /$1 -file-line-error /')
+
+  if g:vimtex_latexmk_file_line_error
+    let cmd .= ' -e ' . vimtex#util#shellescape(
+          \ '$pdflatex =~ s/ / -file-line-error /')
+  endif
+
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
