@@ -16,8 +16,13 @@ function! vimtex#labels#init_script() " {{{1
   let s:preamble = 1
   let s:re_input = '\v^\s*\\%(input|include)\s*\{'
   let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
+
+  let s:re_cfinput = '\v^\s*\%*\s*\\cf%(part|chapter|%(sub)*section)\*?\s*(\[[^\]]+\])*\{'
+  let s:re_cfinput_filepath = s:re_cfinput . '[^\}]+\}\{\zs[^\}]+\ze}'
+  let s:re_cfinput_file = s:re_cfinput . '[^\}]+\}\{[^\}]+\}\{\zs[^\}]+\ze}'
+
   let s:re_label = '\v\\label\{'
-  let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
+  let s:re_label_title = s:re_label . '\zs[^\}]*\ze'
 endfunction
 
 " }}}1
@@ -121,6 +126,11 @@ function! s:gather_labels(file) " {{{1
       call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file)))
       continue
     endif
+    if line =~# s:re_cfinput && !s:preamble
+      " call extend(tac, s:gather_labels(s:gather_labels_cfinput(line, a:file)))
+      call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file,"cf")))
+      continue
+    endif
 
     if line =~# s:re_label
       call add(tac, {
@@ -136,8 +146,18 @@ function! s:gather_labels(file) " {{{1
 endfunction
 
 " }}}1
-function! s:gather_labels_input(line, file) " {{{1
-  let l:file = matchstr(a:line, s:re_input_file)
+function! s:gather_labels_input(line, file, ...) " {{{1
+  if a:0 == 0 
+    let l:file = matchstr(a:line, s:re_input_file)
+  else
+    if a:1 == "cf"
+      let l:file = matchstr(a:line, s:re_cfinput_filepath)
+      let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
+    else "Default is CF"
+      let l:file = matchstr(a:line, s:re_cfinput_filepath)
+      let l:file = l:file . '/' . matchstr(a:line, s:re_cfinput_file)
+    endif
+  endif
 
   " Trim whitespaces from beginning and end of string
   let l:file = substitute(l:file, '^\s*', '', '')
