@@ -191,6 +191,8 @@ function! s:mupdf.start(outfile) dict " {{{2
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
+  sleep 300m
+
   call self.xwin_get_id()
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
   call self.forward_search(a:outfile)
@@ -346,6 +348,8 @@ function! s:zathura.start(outfile) dict " {{{2
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
+  sleep 300m
+
   call self.xwin_get_id()
   call self.forward_search(a:outfile)
 endfunction
@@ -405,7 +409,6 @@ endfunction
 function! s:xwin_get_id() dict " {{{1
   if !executable('xdotool') | return 0 | endif
   if self.xwin_id > 0 | return 0 | endif
-  sleep 500m
 
   let cmd = 'xdotool search --class ' . self.class
   let xwin_ids = split(system(cmd), '\n')

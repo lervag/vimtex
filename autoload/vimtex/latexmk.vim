@@ -85,6 +85,11 @@ endfunction
 " }}}1
 
 function! vimtex#latexmk#callback(status) " {{{1
+  if get(s:, 'silence_next_callback', 0)
+    let s:silence_next_callback = 0
+    return
+  endif
+
   call vimtex#latexmk#errors_open(0)
   redraw!
 
@@ -102,9 +107,9 @@ endfunction
 " }}}1
 function! vimtex#latexmk#clean(full) " {{{1
   if b:vimtex.pid
-    call vimtex#echo#status(['latexmk clean: ',
-          \ ['VimtexWarning', 'not while latexmk is running!']])
-    return
+    silent call vimtex#latexmk#stop()
+    let l:restart = 1
+    let s:silence_next_callback = 1
   endif
 
   "
@@ -123,6 +128,10 @@ function! vimtex#latexmk#clean(full) " {{{1
   let cmd .= vimtex#util#shellescape(b:vimtex.base)
   call vimtex#util#execute({'cmd' : cmd})
   let b:vimtex.cmd_latexmk_clean = cmd
+
+  if get(l:, 'restart', 0)
+    silent call vimtex#latexmk#compile()
+  endif
 
   call vimtex#echo#status(['latexmk clean: ',
         \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
@@ -179,7 +188,7 @@ endfunction
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
   if b:vimtex.pid
     call vimtex#echo#status(['latexmk compile: ',
-          \ ['VimtexWarning', 'already running for `' . g:vimtex.base . "'"]])
+          \ ['VimtexWarning', 'already running for `' . b:vimtex.base . "'"]])
     return
   endif
 
@@ -391,6 +400,9 @@ function! s:latexmk_build_cmd() " {{{1
 
   if g:vimtex_latexmk_continuous
     let cmd .= ' -pvc'
+    if get(s:, 'silence_next_callback', 0)
+      let cmd .= ' -view=none'
+    endif
   endif
 
   if g:vimtex_latexmk_callback && has('clientserver')
