@@ -120,19 +120,21 @@ function! vimtex#util#execute(exe) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#shellescape(path) " {{{1
-  " Blackslashes in path must be escaped to be correctly parsed by the
-  " substitute() function.
-  let l:path = has('win32') ? escape(a:path, '\') : a:path
-
-  "
-  " In a Windows environment, a path used in "cmd" only needs to be enclosed by
-  " double quotes. shellescape() on Windows with "shellslash" set will produce
-  " a path enclosed by single quotes, which "cmd" does not recognize and
-  " reports an error.  Any path that goes into vimtex#util#execute() should be
-  " processed through this function.
-  "
-  return has('win32') ? '"' . l:path . '"' : shellescape(l:path, 1)
+function! vimtex#util#shellescape(cmd) " {{{1
+  if has('win32')
+    "
+    " Path used in "cmd" only needs to be enclosed by double quotes.
+    " shellescape() on Windows with "shellslash" set will produce a path
+    " enclosed by single quotes, which "cmd" does not recognize and reports an
+    " error.
+    "
+    " Blackslashes in path must be escaped to be correctly parsed by the
+    " substitute() function.
+    "
+    return '"' . escape(a:cmd, '\') . '"'
+  else
+    return shellescape(a:cmd)
+  endif
 endfunction
 
 " }}}1
