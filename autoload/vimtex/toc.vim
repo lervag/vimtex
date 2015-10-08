@@ -84,6 +84,11 @@ function! vimtex#toc#init_script() " {{{1
         \             . '|bibliography\s*\{)',
         \   },
         \ }
+
+  let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+  let s:re_bibs  = s:nocomment
+  let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+  let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
 endfunction
 
 " }}}1
@@ -281,7 +286,7 @@ function! s:index_syntax() dict "{{{1
   syntax match VimtexTocSec2 /^.*2$/ contains=TocNum,@Tex
   syntax match VimtexTocSec3 /^.*3$/ contains=TocNum,@Tex
   syntax match VimtexTocSec4 /^.*4$/ contains=TocNum,@Tex
-  syntax match VimtexTocHelp /^.*: .*/
+  syntax match VimtexTocHelp /^\S.*: .*/
 
   highlight link VimtexTocNum  Number
   highlight link VimtexTocSec0 Title
@@ -318,8 +323,10 @@ endfunction
 " }}}1
 function! s:parse_limits(file) " {{{1
   if !filereadable(a:file)
-    echoerr 'Error in vimtex#toc s:parse_limits'
-    echoerr 'File not readable: ' . a:file
+    if a:file !=# ''
+      echoerr 'Error in vimtex#toc s:parse_limits'
+      echoerr 'File not readable: ' . a:file
+    endif
     return ''
   endif
 
@@ -363,13 +370,19 @@ function! s:parse_file(file) " {{{1
   for line in readfile(a:file)
     let lnum += 1
 
-    " 1. Parse inputs or includes
+    " Parse inputs or includes
     if line =~# s:re_input && !s:number.preamble
       call extend(toc, s:parse_file(s:parse_line_input(line, a:file)))
       continue
     endif
 
-    " 2. Parse preamble
+    " Parse bibliography files
+    if line =~# s:re_bibs
+      call add(toc, s:parse_bib_input(line))
+      continue
+    endif
+
+    " Parse preamble
     if s:number.preamble
       if g:vimtex_toc_show_preamble && line =~# '\v^\s*\\documentclass'
         call add(toc, {
@@ -389,19 +402,19 @@ function! s:parse_file(file) " {{{1
       continue
     endif
 
-    " 3. Parse document structure (front-/main-/backmatter, appendix)
+    " Parse document structure (front-/main-/backmatter, appendix)
     if line =~# s:re_structure
       call s:number_reset(matchstr(line, s:re_structure_match))
       continue
     endif
 
-    " 4. Parse \parts, \chapters, \sections, and \subsections
+    " Parse \parts, \chapters, \sections, and \subsections
     if line =~# s:re_sec
       call add(toc, s:parse_line_sec(a:file, lnum, line))
       continue
     endif
 
-    " 5. Parse other stuff
+    " Parse other stuff
     for other in values(s:re_other)
       if line =~# other.re
         call add(toc, {
@@ -421,28 +434,29 @@ endfunction
 
 " }}}1
 function! s:parse_line_input(line, file) " {{{1
-  let l:file = matchstr(a:line, s:re_input_file)
+  " Included file names may include spaces through the use of the \space
+  " command
+  let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
-  " Trim whitespaces from beginning and end of string
-  let l:file = substitute(l:file, '^\s*', '', '')
-  let l:file = substitute(l:file, '\s*$', '', '')
+  " Match the file name inside the include command
+  let l:file = matchstr(l:file, s:re_input_file)
 
-  " Ensure file has extension
+  " Trim whitespaces and quotes from beginning/end of string
+  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
+  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
+
+  " Ensure that the file name has extension
   if l:file !~# '\.tex$'
     let l:file .= '.tex'
   endif
 
-  " Only return full path names
+  " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
     let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
   endif
 
   " Only return filename if it is readable
-  if filereadable(l:file)
-    return l:file
-  else
-    return ''
-  endif
+  return filereadable(l:file) ? l:file : ''
 endfunction
 
 " }}}1
@@ -467,6 +481,25 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
 endfunction
 
 " }}}1
+function! s:parse_bib_input(line) " {{{1
+  let l:file = matchstr(a:line, s:re_bibs)
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.bib$'
+    let l:file .= '.bib'
+  endif
+
+  return {
+        \ 'title'  : printf('Included bib file: %-.60s', fnamemodify(l:file, ':t')),
+        \ 'number' : '',
+        \ 'file'   : vimtex#util#kpsewhich(l:file),
+        \ 'line'   : 0,
+        \ 'level'  : s:max_level,
+        \ }
+endfunction
+
+" }}}1
+
 
 function! s:number_reset(part) " {{{1
   for key in keys(s:number)
