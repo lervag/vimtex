@@ -84,6 +84,11 @@ function! vimtex#toc#init_script() " {{{1
         \             . '|bibliography\s*\{)',
         \   },
         \ }
+
+  let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+  let s:re_bibs  = s:nocomment
+  let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+  let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
 endfunction
 
 " }}}1
@@ -371,6 +376,12 @@ function! s:parse_file(file) " {{{1
       continue
     endif
 
+    " Parse bibliography files
+    if line =~# s:re_bibs
+      call add(toc, s:parse_bib_input(line))
+      continue
+    endif
+
     " Parse preamble
     if s:number.preamble
       if g:vimtex_toc_show_preamble && line =~# '\v^\s*\\documentclass'
@@ -470,6 +481,25 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
 endfunction
 
 " }}}1
+function! s:parse_bib_input(line) " {{{1
+  let l:file = matchstr(a:line, s:re_bibs)
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.bib$'
+    let l:file .= '.bib'
+  endif
+
+  return {
+        \ 'title'  : printf('Included bib file: %-.60s', fnamemodify(l:file, ':t')),
+        \ 'number' : '',
+        \ 'file'   : vimtex#util#kpsewhich(l:file),
+        \ 'line'   : 0,
+        \ 'level'  : s:max_level,
+        \ }
+endfunction
+
+" }}}1
+
 
 function! s:number_reset(part) " {{{1
   for key in keys(s:number)
