@@ -64,6 +64,7 @@ function! vimtex#change#command() " {{{1
   normal! ix
   normal! x
 
+  normal! vaBo
   normal! F\lve"ay
   let old = @a
   
@@ -74,7 +75,8 @@ function! vimtex#change#command() " {{{1
   let pos_save[2] += len(new) - len(old)
 
   let @a = new
-  normal! F\lcea
+  normal! vaBo
+  normal! F\lca
 
   let @a = savereg
   call setpos('.', pos_save)
