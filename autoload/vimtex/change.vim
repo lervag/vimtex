@@ -29,8 +29,8 @@ function! vimtex#change#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delete-env)
         \ :call vimtex#change#env('')<cr>
 
-  nnoremap <silent><buffer> <plug>(vimtex-delete-cmd)   vaBom`o<esc>xg``xdF\
-        \:silent! call repeat#set("\<plug>(vimtex-delete-cmd)", v:count)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-delete-cmd)
+        \ :call vimtex#change#command_delete()<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-change-env)
         \ :call vimtex#change#env_prompt()<cr>
@@ -56,30 +56,100 @@ endfunction
 
 " }}}1
 
+function! vimtex#change#get_command(...) " {{{1
+  let l:position = a:0 > 0 ? a:1 : searchpos('\S', 'bcn')
+  let l:line = getline(l:position[0])
+  let l:char = l:line[l:position[1]-1]
+
+  for l:syntax in reverse(map(call('synstack', l:position),
+        \ 'synIDattr(v:val, ''name'')'))
+    if l:syntax ==# 'texStatement'
+      let l:p = searchpos('\\', 'bcn')
+      let l:c = matchstr(l:line, '\\\zs\w\+', l:p[1]-1)
+      return [l:c] + l:p
+    elseif l:syntax ==# 'texMatcher'
+          \ || (l:syntax ==# 'Delimiter' && l:char =~# '{\|}')
+      let l:curpos = getcurpos()
+      normal! vaBoh
+      let l:result = vimtex#change#get_command(searchpos('\S', 'bcn'))
+      call setpos('.', l:curpos)
+      return l:result
+    endif
+  endfor
+
+  return ['', 0, 0]
+endfunction
+
 function! vimtex#change#command() " {{{1
-  let pos_save = getpos('.')
-  let savereg = @a
+  " Get old command
+  let [l:old, l:line, l:col] = vimtex#change#get_command()
+  if l:old ==# '' | return | endif
+
+  " Get new command
+  let l:new = input('Change ' . old . ' for: ')
+  let l:new = empty(l:new) ? l:old : l:new
+
+  " Store current cursor position
+  let l:curpos = getcurpos()
+  if l:line == l:curpos[1]
+    let l:curpos[2] += len(l:new) - len(l:old)
+  endif
 
   " This is a hack to make undo restore the correct position
   normal! ix
   normal! x
 
-  normal! F\lve"ay
-  let old = @a
-  
-  let new = input('Change ' . old . ' for: ')
-  if empty(new)
-    let new = old
-  endif
-  let pos_save[2] += len(new) - len(old)
+  " Perform the change
+  let l:tmppos = copy(l:curpos)
+  let l:tmppos[1:2] = [l:line, l:col+1]
+  cal setpos('.', l:tmppos)
+  let l:savereg = @a
+  let @a = l:new
+  normal! cea
+  let @a = l:savereg
 
-  let @a = new
-  normal! F\lcea
-
-  let @a = savereg
-  call setpos('.', pos_save)
-
+  " Restore cursor position and create repeat hook
+  call setpos('.', l:curpos)
   silent! call repeat#set("\<plug>(vimtex-change-cmd)" . new . '', v:count)
+endfunction
+
+function! vimtex#change#command_delete() " {{{1
+  " Get old command
+  let [l:old, l:line, l:col] = vimtex#change#get_command()
+  if l:old ==# '' | return | endif
+
+  " Store current cursor position
+  let l:curpos = getcurpos()
+  if l:line == l:curpos[1]
+    let l:curpos[2] -= len(l:old)+1
+  endif
+
+  " This is a hack to make undo restore the correct position
+  normal! ix
+  normal! x
+
+  " Use temporary cursor position
+  let l:tmppos = copy(l:curpos)
+  let l:tmppos[1:2] = [l:line, l:col]
+  call setpos('.', l:tmppos)
+  normal! de
+
+  " Delete surrounding braces if present
+  while getline('.')[l:col-1 :] =~# '^\s*{'
+    normal! f{vaBm`oxg``x
+    if l:line == l:curpos[1]
+      let l:curpos[2] -= 1
+      if l:curpos[2] < 0
+        let l:curpos[2] = 0
+      endif
+    endif
+    let l:tmppos = getpos('.')
+    let l:col = l:tmppos[2]
+  endwhile
+
+  " Restore cursor position and create repeat hook
+  call setpos('.', l:curpos)
+  silent! call repeat#set("\<plug>(vimtex-delete-cmd)", v:count)
 endfunction
 
 function! vimtex#change#close_environment() " {{{1
