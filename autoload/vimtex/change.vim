@@ -135,7 +135,7 @@ function! vimtex#change#command_delete() " {{{1
   normal! de
 
   " Delete surrounding braces if present
-  while getline('.')[l:col-1 :] =~# '^\s*{'
+  if getline('.')[l:col-1 :] =~# '^\s*{'
     normal! f{vaBm`oxg``x
     if l:line == l:curpos[1]
       let l:curpos[2] -= 1
@@ -143,9 +143,7 @@ function! vimtex#change#command_delete() " {{{1
         let l:curpos[2] = 0
       endif
     endif
-    let l:tmppos = getpos('.')
-    let l:col = l:tmppos[2]
-  endwhile
+  endif
 
   " Restore cursor position and create repeat hook
   call setpos('.', l:curpos)
