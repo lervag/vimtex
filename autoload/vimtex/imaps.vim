@@ -44,7 +44,6 @@ function! s:default_collections() " {{{1
     \ {
     \   'title' : 'miscellaneous',
     \   'leader' : '',
-    \   'mode' : '',
     \   'mappings' : [
     \     ['...', '\dots'],
     \     ['<m-i>', '\item '],
@@ -53,7 +52,7 @@ function! s:default_collections() " {{{1
     \ {
     \   'title' : 'math',
     \   'leader' : '',
-    \   'mode' : 'm',
+    \   'wrapper' : 's:wrap_math_ultisnips',
     \   'mappings' : [
     \     ['__', '_\{$1\}'],
     \     ['^^', '^\{$1\}'],
@@ -80,7 +79,7 @@ function! s:default_collections() " {{{1
     \ },
     \ {
     \   'title' : 'math_leader',
-    \   'mode' : 'm',
+    \   'wrapper' : 's:wrap_math_ultisnips',
     \   'mappings' : [
     \     ['i', '\int_{$1}^{$2}'],
     \     ['S', '\sum_{$1}^{$2}'],
@@ -102,7 +101,7 @@ function! s:default_collections() " {{{1
     \ },
     \ { 
     \   'title' : 'greek',
-    \   'mode' : 'm',
+    \   'wrapper' : 's:wrap_math',
     \   'mappings' : [
     \     ['a', '\alpha'],
     \     ['b', '\beta'],
@@ -151,38 +150,21 @@ endfunction
 
 " }}}1
 function! s:parse_collection(collection) " {{{1
-  "
-  " Extract some collection metadata
-  "
   let l:leader = get(a:collection, 'leader', g:vimtex_imaps_leader)
-  let l:mode = get(a:collection, 'mode', '')
-  let l:math = l:mode =~# 'm'
+  let l:wrapper = get(a:collection, 'wrapper', '')
 
-  "
   " Create mappings
-  "
-  " TODO: This can be simplified extensively (I think) with <expr>-mappings!
-  "       Possibly, we can even use abbreviations
-  "
   for [lhs, rhs] in a:collection.mappings
-    let l:ultisnips = match(rhs, '$1') > 0
-    if l:ultisnips && !s:has_ultisnips | continue | endif
+    if match(rhs, '$1') > 0 && !s:has_ultisnips | continue | endif
 
-    " Generate RHS
-    if l:math && l:ultisnips
-      let rhs = s:wrap_math_ultisnips(lhs, rhs)
-    elseif l:math
-      let rhs = s:wrap_math(lhs, rhs)
-    elseif l:ultisnips
-      let rhs = s:wrap_ultisnips(lhs, rhs)
+    if l:wrapper !=# '' && exists('*' . l:wrapper)
+      let rhs = call(l:wrapper, [lhs, rhs])
     endif
 
     silent execute 'inoremap <silent><buffer>' l:leader . lhs rhs
   endfor
 
-  "
   " Escape leader if it exists
-  "
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
   endif
@@ -193,14 +175,8 @@ endfunction
 " }}}1
 
 "
-" Helper functions
+" Wrappers
 "
-function! s:wrap_math_ultisnips(lhs, rhs) " {{{1
-  return a:lhs . '<c-r>=<sid>is_math() ? UltiSnips#Anon('''
-        \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'') : ''''<cr>'
-endfunction
-
-" }}}1
 function! s:wrap_math(lhs, rhs) " {{{1
   return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
         \ . ' : ' . string(a:lhs) . '<cr>'
@@ -213,6 +189,17 @@ function! s:wrap_ultisnips(lhs, rhs) " {{{1
 endfunction
 
 " }}}1
+function! s:wrap_math_ultisnips(lhs, rhs) " {{{1
+  return a:lhs . '<c-r>=<sid>is_math() ? '
+        \ . 'UltiSnips#Anon(''' . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')'
+        \ . ': ''''<cr>'
+endfunction
+
+" }}}1
+
+"
+" Helper functions
+"
 function! s:is_math() " {{{1
   return match(map(synstack(line('.'), max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]$') >= 0
