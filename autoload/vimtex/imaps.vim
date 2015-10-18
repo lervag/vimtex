@@ -58,7 +58,7 @@ function! s:default_collections() " {{{1
     \     ['^^', '^\{$1\}'],
     \     ['((', '\left($1\right)'],
     \     ['[[', '\left[$1\right]'],
-    \     ['{{', '\left\{$1\right\}'],
+    \     ['{{', '\left\\{$1\right\\}'],
     \   ],
     \ },
     \ {
