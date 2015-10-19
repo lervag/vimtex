@@ -39,14 +39,15 @@ disabled if desired.
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment in insert mode with `]]`
   - Insert new command with `<F7>`
+- Improved folding (`:h 'foldexpr'`)
+- Improved indentation (`:h 'indentexpr'`)
 - Improved syntax highlighting
   - Highlight matching delimiters
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package
   - Support for `listings` package
+  - Support for `minted` package
   - Support for `dot2tex` with nested syntax highlighting
-- Improved folding (`:h 'foldexpr'`)
-- Improved indentation (`:h 'indentexpr'`)
 
 See the documentation for a more thorough introduction of the plugin (e.g. `:h
 vimtex`).

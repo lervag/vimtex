@@ -73,7 +73,13 @@ Feature overview~
                                                               *vimtex-features*
 
 - Document compilation with `latexmk`
-- Forward search with several PDF viewers
+- Support for several PDF viewers with forward search
+  - `MuPDF`
+  - `Zathura`
+  - `Okular`
+  - `qpdfview`
+  - `SumatraPDF`
+  - Other viewers are supported through a general interface
 - Completion of citations and labels
 - Document navigation through
   - table of content
@@ -100,6 +106,7 @@ Feature overview~
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package
   - Support for `listings` package
+  - Support for `minted` package
   - Support for `dot2tex` with nested syntax highlighting
 
 ------------------------------------------------------------------------------
