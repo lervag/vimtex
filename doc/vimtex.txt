@@ -489,7 +489,10 @@ Options~
 *g:vimtex_motion_matchparen*
   Enable highlighting of matching delimiters.
   
-  Note: This will override the builtin |matchparen|.
+  Note: This is an improved version of |matchparen|. It should be possible to
+        keep |matchparen| activated, which matches delimiters listed in
+        'matchpairs'. The |vimtex| specific version will also match LaTeX
+        specific delimiters, which is not possible with |matchparen|.
 
   Default value: 1
 

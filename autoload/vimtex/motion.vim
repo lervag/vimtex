@@ -15,19 +15,10 @@ endfunction
 function! vimtex#motion#init_script() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
-  " Highlight matching parens ($, (), ...)
+  " Highlight matching delimiters ($, (), ...)
   if g:vimtex_motion_matchparen
     augroup vimtex_motion
       autocmd!
-      " Disable matchparen autocommands
-      autocmd BufEnter *.tex
-            \   if !exists("g:loaded_matchparen") || !g:loaded_matchparen
-            \ |   runtime plugin/matchparen.vim
-            \ | endif
-      autocmd BufEnter *.tex
-            \ 3match none | unlet! g:loaded_matchparen | au! matchparen
-
-      " Enable latex matchparen functionality
       autocmd! CursorMoved  *.tex call s:highlight_matching_pair(1)
       autocmd! CursorMovedI *.tex call s:highlight_matching_pair()
     augroup END
