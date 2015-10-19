@@ -37,6 +37,7 @@ CONTENTS                                                      *vimtex-contents*
     Options                                     |vimtex-options|
     Commands                                    |vimtex-commands|
     Map definitions                             |vimtex-mappings|
+    Insert mode mappings                        |vimtex-imaps|
   Completion                                    |vimtex-completion|
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
@@ -99,6 +100,7 @@ Feature overview~
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment in insert mode with `]]`
   - Insert new command with `<F7>`
+  - Convenient insert mode mappings for faster typing of e.g. maths
 - Folding
 - Indentation
 - Improved syntax highlighting
@@ -230,10 +232,11 @@ suffix as a |plaintex|.  To prevent this, one may set the option
 ==============================================================================
 USAGE                                                            *vimtex-usage*
 
-  Default mappings    |vimtex-default-mappings|
-  Options             |vimtex-options|
-  Commands            |vimtex-commands|
-  Mappings            |vimtex-user-mappings|
+  Default mappings        |vimtex-default-mappings|
+  Options                 |vimtex-options|
+  Commands                |vimtex-commands|
+  Map definitions         |vimtex-mappings|
+  Insert mode mappings    |vimtex-imaps|
 
 ------------------------------------------------------------------------------
 Default mappings~
@@ -242,6 +245,10 @@ Default mappings~
 |vimtex| is designed to be controlled by a selection of mappings.  The default
 mappings are listed below.  Most of the mappings are also available as
 commands, see |vimtex-commands|.
+
+In addition to the mappings listed below, |vimtex| provides convenient insert
+mode mappings to make it easier and faster to type mathematical equations.
+This feature is explained in more detail later, see |vimtex-imaps|.
 
 If one prefers, one may disable the default mappings through the option
 |g:vimtex_mappings_enabled|.  One can then define custom mappings through the
@@ -394,6 +401,30 @@ Options~
         \ "subsubsection",
       \ ]
 <
+*g:vimtex_imaps_enabled*
+  Use this option to disable/enable insert mode mappings.
+
+  Default value: 1
+
+*g:vimtex_imaps_leader*
+  The default leader key for insert mode mappings.
+
+  Default value: '`'
+
+*g:vimtex_imaps_disabled*
+  A list of mappings to disable. That is, any left-hand side that matches
+  a string in this list will not be mapped to its corresponding right-hand
+  side. This may be used to selectively disable one or more from the default
+  list of mappings.
+
+  Default value: []
+
+*g:vimtex_imaps_list*
+  The list of mappings to generate on start up.
+
+  Default value: Complicated, please see the source file for exact value
+                 `autoload/vimtex/imaps.vim`
+
 *g:vimtex_indent_enabled*
   Use this option to disable/enable |vimtex| indentation.
 
@@ -989,6 +1020,92 @@ Map definitions~
 *<plug>(vimtex-[[)*
   Section backward (exclusive).
 
+------------------------------------------------------------------------------
+Map definitions~
+                                                                 *vimtex-imaps*
+
+The following feature is optional. It is enabled by default, but may be
+disabled with |g:vimtex_imaps_enabled|.
+
+Some LaTeX commands are very common, and so it is both natural and convenient
+to have insert mode mappings/abbreviations for them. |vimtex| therefore
+provides a list of such mappings that are enabled by default, see
+|g:vimtex_imaps_list|. Most of the mappings utilize a map leader defined by
+|g:vimtex_imaps_leader|. Also, many of the mappings are only active inside
+mathematical environments.
+
+Some of the default mappings utilize the function |UltiSnips#Anon| from
+|UltiSnips| in order to provide a more advanced snippet-like functionality.
+This is in no way intended to replace |UltiSnips|. It is instead meant to be
+used for very simple things. For instance, the sequence `((` expands directly
+to `\left(|\right)` (though only when inside a math environment). The
+|UltiSnipsJumpForward| trigger may then be used to conveniently move the
+cursor out of the parantheses.
+
+It is of course possible to customize the list of mappings. First, one may
+specifically disable a default mapping through |g:vimtex_imaps_disabled|.
+Second, one may specify |g:vimtex_imaps_list|, which will overwrite the
+default list. Finally, one may add new maps through calls to the function
+|vimtex#imap#add_map|. The following are some examples of how to customize the
+mappings: >
+
+  " Disable <m-i> mapping
+  let g:vimtex_imaps_disabled = ['<m-i>']
+
+  " Define three of the default mappings
+  let g:vimtex_imaps_list = [
+    \ { 'lhs_rhs' : ['__',    '_\{$1\}'],
+       \'leader' : '',
+       \'wrapper' : 's:wrap_math_ultisnips'},
+    \ { 'lhs_rhs' : ['^^',    '^\{$1\}'],
+       \'leader' : '',
+       \'wrapper' : 's:wrap_math_ultisnips'},
+    \ { 'lhs_rhs' : ['((',    '\left($1\right)'],
+        \'leader' : '',
+        \'wrapper' : 's:wrap_math_ultisnips'},
+    \]
+
+  " Add custom mapping through vimtex#imap#add_map
+  call vimtex#imaps#add_map({
+    \ 'lhs_rhs' : [ 'v', '\vec{$1}'],
+    \ 'wrapper' : 's:wrap_math_ultisnips'})
+<
+                                                         *vimtex#imaps#add_map*
+
+This function is used to add new insert mode mappings. It takes a single
+dictionary argument: >
+
+  map = {
+    \ 'lhs_rhs' : [lhs, rhs],
+    \ 'leader' : leader_key,
+    \ 'wrapper' : function_name
+    \ }
+
+Explanation of the keys:
+
+  lhs_rhs~
+    The only mandatory argument: It is a list with two elements, `lhs` and
+    `rhs`, respectively. If nothing else is specified, |vimtex#imaps#add_map|
+    simply creates an insert mode mapping from `lhs` to `rhs`.
+
+  leader~
+    Custom leader key. If the key is not present, then |g:vimtex_imaps_leader|
+    is used as leader key.
+
+  wrapper~
+    The name of a wrapper function that is applied to `rhs`. Three functions
+    are available from |vimtex|:
+
+      `s:wrap_math`             Only define `rhs` if inside a math environment.
+      `s:wrap_ultisnips`        Send `rhs` through `UltiSnips#Anon` in order
+                              to create an anonymous snippet.
+      `s:wrap_math_ultisnips`   Same as `s:wrap_ultisnips`, except it is only
+                              expanded when inside a math environment.
+
+    Of course, one may use custom wrapper functions. To write a custom wrapper
+    function, please see how the |vimtex| wrappers are written for examples on
+    how it is done.
+
 ==============================================================================
 COMPLETION                                                  *vimtex-completion*
 
@@ -1423,6 +1540,10 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2015-10-19: Added convenient insert mode mappings~
+I've merged the `math_mappings` branch (see #172 and #251). It adds the
+feature that is explained in |vimtex-imaps|.
 
 2015-06-06: Minor but convenient restructuring (++)~
 I've changed a lot of the code structure in relatively small ways.  For
