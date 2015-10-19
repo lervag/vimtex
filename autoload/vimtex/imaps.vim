@@ -100,7 +100,7 @@ endfunction
 
 function! vimtex#imaps#add_map(map) " {{{1
   let l:lhs = a:map.lhs_rhs[0]
-  if index(g:vimtex_imaps_disabled, l:lhs) > 0 | return | endif
+  if index(g:vimtex_imaps_disabled, l:lhs) >= 0 | return | endif
 
   let l:rhs = a:map.lhs_rhs[1]
   if match(l:rhs, '$1') > 0 && !s:has_ultisnips | return | endif
