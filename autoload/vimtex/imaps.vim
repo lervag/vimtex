@@ -104,7 +104,7 @@ function! vimtex#imaps#add_map(map) " {{{1
   let l:leader = get(a:map, 'leader', g:vimtex_imaps_leader)
   let l:wrapper = get(a:map, 'wrapper', '')
   if index(g:vimtex_imaps_disabled, l:lhs) >= 0 | return | endif
-  if l:wrapper ==# 's:wrap_math_ultisnips' && !s:has_ultisnips | return | endif
+  if l:wrapper =~? 'ultisnips' && !s:has_ultisnips | return | endif
 
   " Escape leader if it exists
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
