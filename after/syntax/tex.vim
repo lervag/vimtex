@@ -141,7 +141,7 @@ syntax match texMinted '\\begin{minted}\_[^}]\{-}{\w\+}'
       \ contains=texBeginEnd,texMintedName
 syntax match texMinted '\\end{minted}'
       \ contains=texBeginEnd
-syntax match texMintedName '{\w\+}'
+syntax match texMintedName '{\w\+}' contained
 
 highlight link texMintedName texBeginEndName
 

@@ -68,6 +68,7 @@ function! vimtex#change#get_command(...) " {{{1
       let l:c = matchstr(l:line, '\\\zs\w\+', l:p[1]-1)
       return [l:c] + l:p
     elseif l:syntax ==# 'texMatcher'
+          \ || l:syntax ==# 'texRefZone'
           \ || (l:syntax ==# 'Delimiter' && l:char =~# '{\|}')
       let l:curpos = getcurpos()
       keepjumps normal! vaBoh
@@ -137,7 +138,7 @@ function! vimtex#change#command_delete() " {{{1
   " Delete surrounding braces if present
   if getline('.')[l:col-1 :] =~# '^\s*{'
     call searchpos('{', 'c')
-    keepjumps normal! vaBmzoxg`zx
+    keepjumps normal! vaBomzoxg`zx
     if l:line == l:curpos[1]
       let l:curpos[2] -= 1
       if l:curpos[2] < 0
