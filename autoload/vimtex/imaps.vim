@@ -19,28 +19,28 @@ function! vimtex#imaps#init_options() " {{{1
         \ { 'lhs_rhs' : ['i',     '\int_{$1}^{$2}'],      'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['S',     '\sum_{$1}^{$2}'],      'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['/',     '\frac{$1}{$2}'],       'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['0',     '\emptyset'],           'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['6',     '\partial'],            'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['8',     '\infty'],              'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['=',     '\equiv'],              'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['\',     '\setminus'],           'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['.',     '\cdot'],               'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['*',     '\times'],              'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['<',     '\leq'],                'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['>',     '\geq'],                'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['~',     '\tilde{$1}'],          'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['^',     '\hat{$1}'],            'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : [':',     '\dot{$1}'],            'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['_',     '\bar{$1}'],            'wrapper' : 's:wrap_math_ultisnips'},
         \ { 'lhs_rhs' : ['lim',   '\lim_{$1}'],           'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qj',    '\downarrow'],          'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['ql',    '\leftarrow'],          'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qh',    '\rightarrow'],         'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qk',    '\uparrow'],            'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qJ',    '\Downarrow'],          'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qL',    '\Leftarrow'],          'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qH',    '\Rightarrow'],         'wrapper' : 's:wrap_math_ultisnips'},
-        \ { 'lhs_rhs' : ['qK',    '\Uparrow'],            'wrapper' : 's:wrap_math_ultisnips'},
+        \ { 'lhs_rhs' : ['0',     '\emptyset'],           'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['6',     '\partial'],            'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['8',     '\infty'],              'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['=',     '\equiv'],              'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['\',     '\setminus'],           'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['.',     '\cdot'],               'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['*',     '\times'],              'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['<',     '\leq'],                'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['>',     '\geq'],                'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qj',    '\downarrow'],          'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['ql',    '\leftarrow'],          'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qh',    '\rightarrow'],         'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qk',    '\uparrow'],            'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qJ',    '\Downarrow'],          'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qL',    '\Leftarrow'],          'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qH',    '\Rightarrow'],         'wrapper' : 's:wrap_math'},
+        \ { 'lhs_rhs' : ['qK',    '\Uparrow'],            'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['a',     '\alpha'],              'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['b',     '\beta'],               'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['c',     '\chi'],                'wrapper' : 's:wrap_math'},
@@ -100,13 +100,11 @@ endfunction
 
 function! vimtex#imaps#add_map(map) " {{{1
   let l:lhs = a:map.lhs_rhs[0]
-  if index(g:vimtex_imaps_disabled, l:lhs) >= 0 | return | endif
-
   let l:rhs = a:map.lhs_rhs[1]
-  if match(l:rhs, '$1') > 0 && !s:has_ultisnips | return | endif
-
   let l:leader = get(a:map, 'leader', g:vimtex_imaps_leader)
   let l:wrapper = get(a:map, 'wrapper', '')
+  if index(g:vimtex_imaps_disabled, l:lhs) >= 0 | return | endif
+  if l:wrapper ==# 's:wrap_math_ultisnips' && !s:has_ultisnips | return | endif
 
   " Escape leader if it exists
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
