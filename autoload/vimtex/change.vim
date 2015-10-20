@@ -125,6 +125,10 @@ function! vimtex#change#command_delete() " {{{1
     let l:curpos[2] -= len(l:old)+1
   endif
 
+  " Save selection
+  let l:vstart = [l:curpos[0], line("'<"), col("'<"), l:curpos[3]]
+  let l:vstop = [l:curpos[0], line("'<"), col("'>"), l:curpos[3]]
+
   " This is a hack to make undo restore the correct position
   normal! ix
   normal! x
@@ -147,8 +151,12 @@ function! vimtex#change#command_delete() " {{{1
     endif
   endif
 
-  " Restore cursor position and create repeat hook
+  " Restore cursor position and visual selection
   call setpos('.', l:curpos)
+  call setpos("'<", l:vstart)
+  call setpos("'>", l:vstop)
+
+  " Create repeat hook
   silent! call repeat#set("\<plug>(vimtex-delete-cmd)", v:count)
 endfunction
 
