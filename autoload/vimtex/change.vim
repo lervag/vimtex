@@ -61,14 +61,17 @@ function! vimtex#change#get_command(...) " {{{1
   let l:line = getline(l:position[0])
   let l:char = l:line[l:position[1]-1]
 
+  " Lists of relevant syntax regions
+  let l:commands = ['texStatement', 'texTypeSize', 'texTypeStyle', 'texBeginEnd']
+  let l:argument = ['texMatcher', 'texRefZone', 'texBeginEndName']
+
   for l:syntax in reverse(map(call('synstack', l:position),
         \ 'synIDattr(v:val, ''name'')'))
-    if l:syntax ==# 'texStatement'
+    if index(l:commands, l:syntax) >= 0
       let l:p = searchpos('\\', 'bcn')
       let l:c = matchstr(l:line, '\\\zs\w\+', l:p[1]-1)
       return [l:c] + l:p
-    elseif l:syntax ==# 'texMatcher'
-          \ || l:syntax ==# 'texRefZone'
+    elseif index(l:argument, l:syntax) >= 0
           \ || (l:syntax ==# 'Delimiter' && l:char =~# '{\|}')
       let l:curpos = getcurpos()
       keepjumps normal! vaBoh
