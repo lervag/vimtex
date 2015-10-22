@@ -17,9 +17,9 @@ function! vimtex#imaps#init_script() " {{{1
   let s:has_ultisnips = exists('*UltiSnips#Anon')
 
   try
-    silent! call neosnippet#annonymous('')
+    silent! call neosnippet#anonymous('')
   endtry
-  let s:has_neosnippet = exists('*neosnippet#annonymous')
+  let s:has_neosnippet = exists('*neosnippet#anonymous')
 endfunction
 
 " }}}1
@@ -72,7 +72,7 @@ endfunction
 " }}}1
 function! s:wrap_snippet(lhs, rhs) " {{{1
   if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=neosnippet#annonymous(''' . a:rhs . ''')<cr>'
+    return '<c-r>=neosnippet#anonymous(''' . a:rhs . ''')<cr>'
   else
     return a:lhs . '<c-r>=UltiSnips#Anon('''
           \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')<cr>'
@@ -82,7 +82,7 @@ endfunction
 " }}}1
 function! s:wrap_math_snippet(lhs, rhs) " {{{1
   if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=<sid>is_math() ? neosnippet#annonymous(''' . a:rhs . ''')'
+    return '<c-r>=<sid>is_math() ? neosnippet#anonymous(''' . a:rhs . ''')'
           \ . ' : ' . string(a:lhs) . '<cr>'
   else
     return a:lhs . '<c-r>=<sid>is_math() ? '

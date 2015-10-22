@@ -419,6 +419,12 @@ Options~
 
   Default value: []
 
+*g:vimtex_imaps_snippet_engine*
+  Snippet engine for advanced mappings. May be either 'neosnippet' or
+  'ultisnips'.
+
+  Default value: 'ultisnips'
+
 *g:vimtex_imaps_list*
   The list of mappings to generate on start up.
 
@@ -1034,13 +1040,16 @@ provides a list of such mappings that are enabled by default, see
 |g:vimtex_imaps_leader|. Also, many of the mappings are only active inside
 mathematical environments.
 
-Some of the default mappings utilize the function |UltiSnips#Anon| from
-|UltiSnips| in order to provide a more advanced snippet-like functionality.
-This is in no way intended to replace |UltiSnips|. It is instead meant to be
-used for very simple things. For instance, the sequence `((` expands directly
-to `\left(|\right)` (though only when inside a math environment). The
-|UltiSnipsJumpForward| trigger may then be used to conveniently move the
-cursor out of the parantheses.
+Some of the default mappings utilize a snippet engine, either the function
+|UltiSnips#Anon| from |UltiSnips| or the function |neosnippet#anonymous| from
+|neosnippet|, in order to provide a more advanced snippet-like functionality.
+This is meant to be used for very simple things. For instance, the sequence
+`((` expands directly to `\left(|\right)` (though only when inside a math
+environment). Both snippet engines then allow a trigger key to jump out of the
+snippet. Note that only |neosnippet| allows nested snippets. However, the
+|neosnippet#anonymous| function was only very recently added to |neosnippet|,
+and so it requires a recent version in order to work. See also the option
+|g:vimtex_imaps_snippet_engine|.
 
 It is of course possible to customize the list of mappings. First, one may
 specifically disable a default mapping through |g:vimtex_imaps_disabled|.
@@ -1096,15 +1105,16 @@ Explanation of the keys:
     The name of a wrapper function that is applied to `rhs`. Three functions
     are available from |vimtex|:
 
-      `s:wrap_math`             Only define `rhs` if inside a math environment.
-      `s:wrap_ultisnips`        Send `rhs` through `UltiSnips#Anon` in order
-                              to create an anonymous snippet.
-      `s:wrap_math_ultisnips`   Same as `s:wrap_ultisnips`, except it is only
-                              expanded when inside a math environment.
+      `s:wrap_math`           Only define `rhs` if inside a math environment.
+      `s:wrap_snippet`        Send `rhs` through the chosen snippet engine in
+                            order to create an anonymous snippet. See
+                            |g:vimtex_imaps_snippet_engine| for more details.
+      `s:wrap_math_snippet`   Same as `s:wrap_snippet`, except it is only
+                            expanded when inside a math environment.
 
     Of course, one may use custom wrapper functions. To write a custom wrapper
-    function, please see how the |vimtex| wrappers are written for examples on
-    how it is done.
+    function, please see the source for examples on how the |vimtex| wrappers
+    are written.
 
 ==============================================================================
 COMPLETION                                                  *vimtex-completion*
