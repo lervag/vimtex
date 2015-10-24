@@ -93,6 +93,15 @@ let b:current_syntax = 'tex'
 
 " }}}1
 " {{{1 Nested syntax highlighting for minted
+
+" First set all minted environments to listings
+syntax region texZone
+      \ start="\\begin{minted}\_[^}]\{-}{\w\+}"rs=s
+      \ end="\\end{minted}"re=e
+      \ keepend
+      \ contains=texMinted
+
+" Next add nested syntax support for desired languages
 for entry in get(g:, 'vimtex_syntax_minted', [])
   let lang = entry.lang
   let syntax = get(entry, 'syntax', lang)
