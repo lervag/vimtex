@@ -14,12 +14,9 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#init_script() " {{{1
-  let s:has_ultisnips = exists('*UltiSnips#Anon')
-
-  try
-    silent! call neosnippet#anonymous('')
-  endtry
-  let s:has_neosnippet = exists('*neosnippet#anonymous')
+  let l:rtp = split(&rtp, ',')
+  let s:has_ultisnips = len(filter(copy(l:rtp), "v:val =~? 'ultisnips'")) > 0
+  let s:has_neosnippet = len(filter(copy(l:rtp), "v:val =~? 'neosnippet'")) > 0
 endfunction
 
 " }}}1
