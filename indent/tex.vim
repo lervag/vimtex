@@ -18,7 +18,7 @@ set cpo&vim
 setlocal autoindent
 setlocal indentexpr=VimtexIndent()
 setlocal indentkeys&
-setlocal indentkeys+=[,(,{,),},],\&,=\\item
+setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent() " {{{1
   " Find a non-blank non-comment line above the current line
