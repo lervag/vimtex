@@ -18,6 +18,10 @@ function! vimtex#change#init_options() " {{{1
         \ 'split',
         \ '\[',
         \ ])
+  call vimtex#util#set_default('g:vimtex_change_toggled_delims',
+        \ [['\\left', '\\right']])
+  call vimtex#util#set_default('g:vimtex_change_ignored_delims_pattern',
+        \ '\c\\bigg\?')
 endfunction
 
 " }}}1
@@ -307,18 +311,8 @@ function! vimtex#change#toggle_delim() " {{{1
   " Toggle \left and \right variants of delimiters
   "
   let [d1, l1, c1, d2, l2, c2] = vimtex#util#get_delim()
-
-  if d1 ==# ''
-    return 0
-  elseif d1 =~# 'left'
-    let newd1 = substitute(d1, '\\left', '', '')
-    let newd2 = substitute(d2, '\\right', '', '')
-  elseif d1 !~# '\cbigg\?'
-    let newd1 = '\left' . d1
-    let newd2 = '\right' . d2
-  else
-    return
-  endif
+  let [newd1, newd2] = s:toggle_delim_get_new(d1, d2)
+  if newd1 ==# '' | return 0 | endif
 
   let line = getline(l1)
   let line = strpart(line, 0, c1 - 1) . newd1 . strpart(line, c1 + len(d1) - 1)
@@ -428,6 +422,45 @@ function! s:search_and_skip_comments(pat, ...) " {{{1
 
   return ret
 endfunction
+" }}}1
+function! s:toggle_delim_get_new(d1,d2) " {{{1
+  if a:d1 =~# g:vimtex_change_ignored_delims_pattern
+    return ['', '']
+  endif
+
+  let newd1 = ''
+  let newd2 = ''
+  let delim = g:vimtex_change_toggled_delims
+
+  for i in range(len(delim))
+    let d1_1 = type(delim[i]) == 3 ? delim[i][0] : delim[i]
+    let d2_1 = type(delim[i]) == 3 ? delim[i][1] : delim[i]
+    if a:d1 =~# d1_1 . '\>'
+      if i+1 == len(delim)
+        let newd1 = substitute(a:d1, d1_1, '', '')
+        let newd2 = substitute(a:d2, d2_1, '', '')
+      else
+        let d1_2 = type(delim[i+1]) == 3 ? delim[i+1][0] : delim[i+1]
+        let d2_2 = type(delim[i+1]) == 3 ? delim[i+1][1] : delim[i+1]
+        let newd1 = substitute(a:d1, d1_1, d1_2, '')
+        let newd2 = substitute(a:d2, d2_1, d2_2, '')
+      endif
+      break
+    endif
+  endfor
+
+  if newd1 ==# ''
+    if len(a:d1) > 0
+      let d1_1 = type(delim[0]) == 3 ? delim[0][0] : delim[0]
+      let d2_1 = type(delim[0]) == 3 ? delim[0][1] : delim[0]
+      let newd1 = substitute(a:d1, '^', d1_1, '')
+      let newd2 = substitute(a:d2, '^', d2_1, '')
+    endif
+  endif
+
+  return [newd1, newd2]
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2

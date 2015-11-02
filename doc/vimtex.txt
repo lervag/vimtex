@@ -354,6 +354,21 @@ Options~
       \ '\[',
       \ ]
 <
+*g:vimtex_change_toggled_delims*
+  Define a list of delimiters to toggle through with
+  |<plug>(vimtex-toggle-delim)|.
+
+
+  Default value: >
+    let g:vimtex_change_toggled_delims = [['\\left', '\\right']]
+<
+*g:vimtex_change_ignored_delims_pattern*
+  A pattern for delimiters that will be ignored when toggling delimiters, see
+  |<plug>(vimtex-toggle-delim)|.
+
+  Default value: >
+    let g:vimtex_change_ignored_delims_pattern = '\c\\bigg\?'
+<
 *g:vimtex_fold_enabled*
   Use this option to disable/enable folding.
 
@@ -984,7 +999,9 @@ Map definitions~
   Toggle starred environment.
 
 *<plug>(vimtex-toggle-delim)*
-  Toggle delimiters, for instance between `(...)` and `\left(...\right)`.
+  Toggle delimiters, for instance between `(...)` and `\left(...\right)`. The
+  behaviour is controlled through |g:vimtex_change_toggled_delims| and
+  |g:vimtex_change_ignored_delims_pattern|.
 
 *<plug>(vimtex-create-cmd)*
   Convert current word into a command.  This works in both normal and insert
