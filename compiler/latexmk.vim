@@ -50,6 +50,10 @@ if exists('g:vimtex_quickfix_ignore_all_warnings')
   CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
   CompilerSet errorformat+=%-Z(biblatex)%m
 
+  " Parse babel warnings
+  CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
+  CompilerSet errorformat+=%-C(babel)%m
+
   " Parse hyperref warnings
   CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
 endif
