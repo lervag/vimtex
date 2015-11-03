@@ -38,7 +38,7 @@ function! vimtex#view#init_buffer() " {{{1
     let b:vimtex.viewer = {}
     return
   endif
-  execute 'let b:vimtex.viewer = ' . viewer
+  execute 'let b:vimtex.viewer = deepcopy(' . viewer . ')'
   call b:vimtex.viewer.init()
 
   "
