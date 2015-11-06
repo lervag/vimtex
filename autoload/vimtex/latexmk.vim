@@ -29,11 +29,13 @@ function! vimtex#latexmk#init_script() " {{{1
 
   if !g:vimtex_latexmk_enabled | return | endif
 
-  " Ensure that all latexmk processes are stopped when vim exits
+  " Ensure that all latexmk processes are stopped when a latex project is
+  " closed and when vim exits
   if g:vimtex_latexmk_continuous
     augroup vimtex_latexmk
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
+      autocmd User VimtexQuit call s:stop_before_leaving()
     augroup END
   endif
 endfunction
@@ -73,14 +75,6 @@ function! vimtex#latexmk#init_buffer() " {{{1
   nnoremap <buffer> <plug>(vimtex-status)         :call vimtex#latexmk#status(0)<cr>
   nnoremap <buffer> <plug>(vimtex-status-all)     :call vimtex#latexmk#status(1)<cr>
   nnoremap <buffer> <plug>(vimtex-lacheck)        :call vimtex#latexmk#lacheck()<cr>
-
-  " Kill running latexmk process if all buffers for a latex project are closed
-  if g:vimtex_latexmk_continuous
-    augroup vimtex_latexmk
-      autocmd BufLeave  <buffer> call s:buffer_left()
-      autocmd BufDelete <buffer> call s:buffer_deleted()
-    augroup END
-  endif
 endfunction
 
 " }}}1
@@ -505,31 +499,11 @@ endfunction
 
 " }}}1
 
-function! s:buffer_left() " {{{1
-  "
-  " Store buffer variables as script variables so they are available if the
-  " buffer is deleted.  This is done in order to be able to kill remaining
-  " latexmk processes.
-  "
-  let s:vimtex = b:vimtex
-  let s:vimtex_id = b:vimtex_id
-endfunction
-
-function! s:buffer_deleted() " {{{1
-  if get(get(s:, 'vimtex', {}), 'pid', 0) == 0 | return | endif
-
-  "
-  " The buffer is deleted, so we must kill the remaining latexmk process if the
-  " current buffer was the last open buffer for the current LaTeX blob/project.
-  "
-  " The buffer variables has already been stored as script variables by
-  " s:buffer_left().  
-  "
-  if len(filter(
-        \   map(filter(range(1, bufnr('$')), 'buflisted(v:val)'),
-        \       'getbufvar(v:val, ''vimtex_id'', -1)'),
-        \   'v:val == s:vimtex_id')) == 1
-    silent call s:latexmk_kill(s:vimtex)
+function! s:stop_before_leaving() " {{{1
+  if b:vimtex.pid > 0
+    call s:latexmk_kill(b:vimtex)
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexSuccess', 'stopped (' . b:vimtex.base . ')']])
   endif
 endfunction
 

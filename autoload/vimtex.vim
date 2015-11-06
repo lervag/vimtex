@@ -172,11 +172,11 @@ function! s:init_buffer() " {{{1
   "
   " Attach autocommands
   "
-
-  augroup vimtex
-    au!
+  augroup vimtex_buffers
     au BufFilePre  <buffer> call s:filename_changed_pre()
     au BufFilePost <buffer> call s:filename_changed_post()
+    au BufLeave    <buffer> call s:buffer_left()
+    au BufDelete   <buffer> call s:buffer_deleted()
   augroup END
 endfunction
 
@@ -550,6 +550,8 @@ endfunction
 
 " }}}1
 
+"
+" Private functions
 function! s:print_dict(dict, ...) " {{{1
   let level = a:0 > 0 ? a:1 : 0
 
@@ -582,6 +584,35 @@ function! s:print_dict_sort_2(i1, i2) " {{{1
   return string(a:i1[1]) == string(a:i2[1]) ? 0
         \ : string(a:i1[1]) > string(a:i2[1]) ? 1
         \ : -1
+endfunction
+
+" }}}1
+
+function! s:buffer_left() " {{{1
+  let s:vimtex_id = b:vimtex_id
+endfunction
+
+" }}}1
+function! s:buffer_deleted() " {{{1
+  " Check if the deleted buffer was the last remaining buffer of an opened
+  " latex project
+  let l:listed_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  let l:vimtex_ids = map(l:listed_buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
+  if count(l:vimtex_ids, s:vimtex_id) - 1 <= 0
+    if exists('b:vimtex')
+      let b:vimtex_tmp = b:vimtex
+    endif
+    let b:vimtex = g:vimtex_data[s:vimtex_id]
+    doautocmd User VimtexQuit
+    if exists('b:vimtex_tmp')
+      unlet b:vimtex_tmp
+    else
+      unlet b:vimtex
+    endif
+
+    " Clean up the global data list
+    call remove(g:vimtex_data, s:vimtex_id)
+  endif
 endfunction
 
 " }}}1
