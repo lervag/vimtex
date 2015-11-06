@@ -64,6 +64,11 @@ function! vimtex#init() " {{{1
   "
   call s:init_mappings()
 
+  "
+  " Allow custom configuration through an event hook
+  "
+  doautocmd User VimtexInitPost
+
   let s:initialized = 1
 endfunction
 
