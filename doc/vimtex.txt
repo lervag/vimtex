@@ -276,7 +276,7 @@ are valid.
    <localleader>le  |<plug>(vimtex-errors)|               `n`
    <localleader>lo  |<plug>(vimtex-compile-output)|       `n`
    <localleader>lg  |<plug>(vimtex-status)|               `n`
-   <localleader>lG  |<plug>(vimtex-status-full)|          `n`
+   <localleader>lG  |<plug>(vimtex-status-all)|           `n`
    <localleader>lc  |<plug>(vimtex-clean)|                `n`
    <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
    dse              |<plug>(vimtex-delete-env)|           `n`
@@ -293,11 +293,15 @@ are valid.
    ie               |<plug>(vimtex-ie)|                   `nxo`
    ad               |<plug>(vimtex-ad)|                   `nxo`
    id               |<plug>(vimtex-id)|                   `nxo`
+   ap               |<plug>(vimtex-ap)|                   `nxo`
+   ip               |<plug>(vimtex-ip)|                   `nxo`
    %                |<plug>(vimtex-%)|                    `nxo`
    ]]               |<plug>(vimtex-]])|                   `nxo`
    ][               |<plug>(vimtex-][)|                   `nxo`
    []               |<plug>(vimtex-[])|                   `nxo`
    [[               |<plug>(vimtex-[[)|                   `nxo`
+   }                |<plug>(vimtex-})|                    `nxo`
+   {                |<plug>(vimtex-{)|                    `nxo`
   -----------------------------------------------------------~
 
 ------------------------------------------------------------------------------
@@ -877,6 +881,7 @@ Commands~
                           purposes).
 
                                              *VimtexInfo!*
+                                             *<plug>(vimtex-info-full)*
 :VimtexInfo!              Show information that is stored by vimtex about all
                           open LaTeX projects (available mostly for debug
                           purposes).
@@ -1030,6 +1035,12 @@ Map definitions~
 *<plug>(vimtex-id)*
   Text object for delimiters (exclusive).
 
+*<plug>(vimtex-ap)*
+  Text object for paragraphs (inclusive).
+
+*<plug>(vimtex-ip)*
+  Text object for paragraphs (exclusive).
+
 *<plug>(vimtex-%)*
   Find matching pair.
 
@@ -1044,6 +1055,12 @@ Map definitions~
 
 *<plug>(vimtex-[[)*
   Section backward (exclusive).
+
+*<plug>(vimtex-})*
+  Paragraph forward.
+
+*<plug>(vimtex-{)*
+  Paragraph backward.
 
 ------------------------------------------------------------------------------
 Map definitions~
