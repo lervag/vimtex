@@ -244,21 +244,31 @@ USAGE                                                            *vimtex-usage*
 Default mappings~
                                                       *vimtex-default-mappings*
 
-|vimtex| is designed to be controlled by a selection of mappings.  The default
-mappings are listed below.  Most of the mappings are also available as
-commands, see |vimtex-commands|.
+|vimtex| is designed to be controlled by a selection of mappings.  Note,
+though, that most of the mappings are also available as commands, see
+|vimtex-commands|.
 
-In addition to the mappings listed below, |vimtex| provides convenient insert
-mode mappings to make it easier and faster to type mathematical equations.
-This feature is explained in more detail later, see |vimtex-imaps|.
+Many of the mappings utilize the |maplocalleader|. The right-hand sides are
+provided as <plug>-mappings, see |using-<plug>|. For any given <plug> map, the
+default mapping will only be created if it does not already exist. This means
+that if a user defines a custom mapping, e.g. with >
 
-If one prefers, one may disable the default mappings through the option
-|g:vimtex_mappings_enabled|.  One can then define custom mappings through the
-listed RHS <plug>-maps or by mapping the available commands.
+  nmap <space>li <plug>(vimtex-info)
+
+then the corresponding default left-hand side will not be mapped.
+
+If one prefers, one may disable all the default mappings through the option
+|g:vimtex_mappings_enabled|.  One must then define custom mappings for all
+desired features through the listed RHS <plug>-maps or by mapping the
+available commands.
 
 In the below list of mappings, LHS is the default mapping, RHS is the
 corresponding <plug>-maps, and MODE indicates in which vim mode the mappings
 are valid.
+
+In addition to the mappings listed below, |vimtex| provides convenient insert
+mode mappings to make it easier and faster to type mathematical equations.
+This feature is explained in more detail later, see |vimtex-imaps|.
 
   -----------------------------------------------------------~
    LHS              RHS                                 MODE~
