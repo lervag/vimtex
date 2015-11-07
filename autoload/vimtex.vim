@@ -178,7 +178,8 @@ function! s:init_buffer() " {{{1
   command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info) :call vimtex#info(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-info)      :call vimtex#info(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-info-full) :call vimtex#info(1)<cr>
 
   "
   " Attach autocommands
@@ -203,6 +204,7 @@ function! s:init_mappings() " {{{1
   endfunction
 
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
+  call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
 
   call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
   call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')

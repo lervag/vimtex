@@ -274,6 +274,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    LHS              RHS                                 MODE~
   -----------------------------------------------------------~
    <localleader>li  |<plug>(vimtex-info)|                 `n`
+   <localleader>lI  |<plug>(vimtex-info-full)|            `n`
    <localleader>lt  |<plug>(vimtex-toc-open)|             `n`
    <localleader>lT  |<plug>(vimtex-toc-toggle)|           `n`
    <localleader>ly  |<plug>(vimtex-labels-open)|          `n`
