@@ -38,6 +38,7 @@ CONTENTS                                                      *vimtex-contents*
     Commands                                    |vimtex-commands|
     Map definitions                             |vimtex-mappings|
     Insert mode mappings                        |vimtex-imaps|
+    Events                                      |vimtex-events|
   Completion                                    |vimtex-completion|
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
@@ -237,6 +238,7 @@ USAGE                                                            *vimtex-usage*
   Commands                |vimtex-commands|
   Map definitions         |vimtex-mappings|
   Insert mode mappings    |vimtex-imaps|
+  Events                  |vimtex-events|
 
 ------------------------------------------------------------------------------
 Default mappings~
@@ -1132,6 +1134,30 @@ Explanation of the keys:
     Of course, one may use custom wrapper functions. To write a custom wrapper
     function, please see the source for examples on how the |vimtex| wrappers
     are written.
+
+------------------------------------------------------------------------------
+Events~
+                                                                *vimtex-events*
+
+|vimtex| defines some events that may be used for further customization
+through |autocmd|s, in particular the |User| autocmd.
+
+  *VimtexEventQuit*
+    This event is triggered when the last buffer for a particular LaTeX
+    project is exited. The event may be used for instance to issue
+    a |VimtexClean| command when exiting.
+
+  *VimtexEventInitPost*
+    This event is triggered after |vimtex| initialization is completed. It may
+    be used to automatically start compiling a document.
+
+Examples: >
+
+  augroup vimtex_config
+    au!
+    au User VimtexEventQuit     VimtexClean
+    au User VimtexEventInitPost VimtexCompile
+  augroup END
 
 ==============================================================================
 COMPLETION                                                  *vimtex-completion*
