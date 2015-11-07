@@ -32,7 +32,8 @@ endif
 " Dummy autocmds for vimtex events (prevents silly warnings)
 augroup vimtex_init
   autocmd!
-  autocmd User VimtexInitPost sleep 1ms
+  autocmd User VimtexEventInitPost sleep 1ms
+  autocmd User VimtexEventQuit     sleep 1ms
 augroup END
 
 " }}}1
@@ -75,7 +76,7 @@ function! vimtex#init() " {{{1
   "
   " Allow custom configuration through an event hook
   "
-  doautocmd User VimtexInitPost
+  doautocmd User VimtexEventInitPost
 endfunction
 
 " }}}1
@@ -623,7 +624,7 @@ function! s:buffer_deleted() " {{{1
       let b:vimtex_tmp = b:vimtex
     endif
     let b:vimtex = g:vimtex_data[s:vimtex_id]
-    doautocmd User VimtexQuit
+    doautocmd User VimtexEventQuit
     if exists('b:vimtex_tmp')
       unlet b:vimtex_tmp
     else
