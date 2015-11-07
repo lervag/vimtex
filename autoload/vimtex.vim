@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-" {{{1 Initialization variables
+" {{{1 Script Initialization
 
 "
 " The flag s:initialized is set to 1 after vimtex has been initialized to
@@ -28,6 +28,12 @@ if !exists('s:modules')
         \   '\n'),
         \ 'fnamemodify(v:val, '':t:r'')')
 endif
+
+" Dummy autocmds for vimtex events (prevents silly warnings)
+augroup vimtex_init
+  autocmd!
+  autocmd User VimtexInitPost sleep 1ms
+augroup END
 
 " }}}1
 
