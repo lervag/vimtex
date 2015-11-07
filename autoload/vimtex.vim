@@ -191,6 +191,7 @@ function! s:init_buffer() " {{{1
     au BufFilePost <buffer> call s:filename_changed_post()
     au BufLeave    <buffer> call s:buffer_left()
     au BufDelete   <buffer> call s:buffer_deleted()
+    au QuitPre     <buffer> doautocmd User VimtexEventQuit
   augroup END
 endfunction
 
