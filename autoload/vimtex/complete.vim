@@ -51,9 +51,6 @@ function! vimtex#complete#init_script() " {{{1
   let s:re_bibs  = '''' . s:nocomment
   let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
   let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
-  let s:re_incsearch  = '''' . s:nocomment
-  let s:re_incsearch .= '\\%(input|include)'
-  let s:re_incsearch .= '\m\s*{\zs[^}]\+\ze}'''
 
   "
   " s:label_cache is a dictionary that maps filenames to tuples of the form
@@ -339,42 +336,23 @@ function! s:bibtex_search(regexp) " {{{1
 endfunction
 
 " }}}1
-function! s:bibtex_find_bibs(...) " {{{1
-  if a:0
-    let file = a:1
-  else
-    let file = b:vimtex.tex
-  endif
-
-  if !filereadable(file)
-    return []
-  endif
-  let lines = readfile(file)
-  let bibfiles = []
-
+function! s:bibtex_find_bibs() " {{{1
   "
   " Search for added bibliographies
   " * Parse commands such as \bibliography{file1,file2.bib,...}
   " * This also removes the .bib extensions
   "
-  for entry in map(filter(copy(lines),
-          \ 'v:val =~ ' . s:re_bibs),
-        \ 'matchstr(v:val, ' . s:re_bibs . ')')
-    let bibfiles += map(split(entry, ','), 'fnamemodify(v:val, '':r'')')
+  "
+  let l:lines = vimtex#parser#tex(b:vimtex.tex, 0,
+        \ g:vimtex_complete_recursive_bib)
+
+  let l:bibfiles = []
+  for l:entry in map(filter(l:lines, 'v:val =~ ' . s:re_bibs),
+        \            'matchstr(v:val, ' . s:re_bibs . ')')
+    let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
-  "
-  " Recursively search included files
-  "
-  if g:vimtex_complete_recursive_bib
-    for entry in map(filter(lines,
-          \ 'v:val =~ ' . s:re_incsearch),
-          \ 'matchstr(v:val, ' . s:re_incsearch . ')')
-      let bibfiles += s:bibtex_find_bibs(vimtex#util#kpsewhich(entry))
-    endfor
-  endif
-
-  return bibfiles
+  return l:bibfiles
 endfunction
 
 " }}}1

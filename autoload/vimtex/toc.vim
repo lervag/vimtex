@@ -58,8 +58,6 @@ function! vimtex#toc#init_script() " {{{1
         \ }
 
   " Define regular expressions to match document parts
-  let s:re_input = '\v^\s*\\%(input|include)\s*\{'
-  let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
   let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
   let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
   let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
@@ -306,45 +304,8 @@ endfunction
 " }}}1
 
 function! s:parse_toc() " {{{1
-  let file = b:vimtex.tex
-
-  " Reset TOC numbering
-  call s:number_reset('preamble')
-
-  " Find max level and number of \*matter commands
-  let s:max_level = 0
-  let s:count_matters = 0
-  call s:parse_limits(file)
-
-  " Parse TOC data
-  return s:parse_file(file)
-endfunction
-
-" }}}1
-function! s:parse_limits(file) " {{{1
-  if !filereadable(a:file)
-    if a:file !=# ''
-      echoerr 'Error in vimtex#toc s:parse_limits'
-      echoerr 'File not readable: ' . a:file
-    endif
-    return ''
-  endif
-
-  for line in readfile(a:file)
-    if line =~# s:re_input
-      call s:parse_limits(s:parse_line_input(line, a:file))
-    elseif line =~# s:re_sec
-      let s:max_level = max([s:max_level,
-            \ s:sec_to_value[matchstr(line, s:re_sec_level)]])
-    elseif line =~# s:re_matters
-      let s:count_matters += 1
-    endif
-  endfor
-endfunction
-
-" }}}1
-function! s:parse_file(file) " {{{1
-  " Parses tex file for TOC entries
+  "
+  " Parses tex project for TOC entries
   "
   " The function returns a list of entries.  Each entry is a dictionary:
   "
@@ -355,73 +316,71 @@ function! s:parse_file(file) " {{{1
   "     line   : 142,
   "     level  : 2,
   "   }
+  "
+  let l:parsed = vimtex#parser#tex(b:vimtex.tex)
 
-  if a:file ==# ''
-    return []
-  elseif !filereadable(a:file)
-    echoerr 'Error in vimtex#toc s:parse_file'
-    echoerr 'File not readable: ' . a:file
-    return []
-  endif
+  let s:max_level = 0
+  let s:count_matters = 0
+  for [l:file, l:lnum, l:line] in l:parsed
+    if l:line =~# s:re_sec
+      let s:max_level = max([s:max_level,
+            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]])
+    elseif l:line =~# s:re_matters
+      let s:count_matters += 1
+    endif
+  endfor
 
-  let toc = []
+  call s:number_reset('preamble')
 
-  let lnum = 0
-  for line in readfile(a:file)
-    let lnum += 1
+  let l:toc = []
+  for [l:file, l:lnum, l:line] in l:parsed
 
-    " Parse inputs or includes
-    if line =~# s:re_input && !s:number.preamble
-      call extend(toc, s:parse_file(s:parse_line_input(line, a:file)))
+    " Bibliography files
+    if l:line =~# s:re_bibs
+      call add(l:toc, s:parse_bib_input(l:line))
       continue
     endif
 
-    " Parse bibliography files
-    if line =~# s:re_bibs
-      call add(toc, s:parse_bib_input(line))
-      continue
-    endif
-
-    " Parse preamble
+    " Preamble
     if s:number.preamble
-      if g:vimtex_toc_show_preamble && line =~# '\v^\s*\\documentclass'
-        call add(toc, {
+      if g:vimtex_toc_show_preamble && l:line =~# '\v^\s*\\documentclass'
+        call add(l:toc, {
               \ 'title'  : 'Preamble',
               \ 'number' : '',
-              \ 'file'   : a:file,
-              \ 'line'   : lnum,
+              \ 'file'   : l:file,
+              \ 'line'   : l:lnum,
               \ 'level'  : s:max_level,
               \ })
         continue
       endif
 
-      if line =~# '\v^\s*\\begin\{document\}'
+      if l:line =~# '\v^\s*\\begin\{document\}'
         let s:number.preamble = 0
       endif
 
       continue
     endif
 
-    " Parse document structure (front-/main-/backmatter, appendix)
-    if line =~# s:re_structure
-      call s:number_reset(matchstr(line, s:re_structure_match))
+    " Document structure (front-/main-/backmatter, appendix)
+    if l:line =~# s:re_structure
+      call s:number_reset(matchstr(l:line, s:re_structure_match))
       continue
     endif
 
-    " Parse \parts, \chapters, \sections, and \subsections
-    if line =~# s:re_sec
-      call add(toc, s:parse_line_sec(a:file, lnum, line))
+    " Sections (\parts, \chapters, \sections, and \subsections, ...)
+    if l:line =~# s:re_sec
+      call add(l:toc, s:parse_line_sec(l:file, l:lnum, l:line))
       continue
     endif
 
-    " Parse other stuff
-    for other in values(s:re_other)
-      if line =~# other.re
-        call add(toc, {
-              \ 'title'  : other.title,
+    " Other stuff
+    for l:other in values(s:re_other)
+      if l:line =~# l:other.re
+        call add(l:toc, {
+              \ 'title'  : l:other.title,
               \ 'number' : '',
-              \ 'file'   : a:file,
-              \ 'line'   : lnum,
+              \ 'file'   : l:file,
+              \ 'line'   : l:lnum,
               \ 'level'  : s:max_level,
               \ })
         continue
@@ -429,34 +388,7 @@ function! s:parse_file(file) " {{{1
     endfor
   endfor
 
-  return toc
-endfunction
-
-" }}}1
-function! s:parse_line_input(line, file) " {{{1
-  " Included file names may include spaces through the use of the \space
-  " command
-  let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
-
-  " Match the file name inside the include command
-  let l:file = matchstr(l:file, s:re_input_file)
-
-  " Trim whitespaces and quotes from beginning/end of string
-  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
-  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.tex$'
-    let l:file .= '.tex'
-  endif
-
-  " Use absolute paths
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
-  endif
-
-  " Only return filename if it is readable
-  return filereadable(l:file) ? l:file : ''
+  return l:toc
 endfunction
 
 " }}}1
@@ -499,7 +431,6 @@ function! s:parse_bib_input(line) " {{{1
 endfunction
 
 " }}}1
-
 
 function! s:number_reset(part) " {{{1
   for key in keys(s:number)

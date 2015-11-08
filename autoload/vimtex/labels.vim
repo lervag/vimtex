@@ -13,11 +13,6 @@ function! vimtex#labels#init_script() " {{{1
   if !g:vimtex_labels_enabled | return | endif
 
   let s:name = 'Table of labels (vimtex)'
-  let s:preamble = 1
-  let s:re_input = '\v^\s*\\%(input|include)\s*\{'
-  let s:re_input_file = s:re_input . '\zs[^\}]+\ze}'
-  let s:re_label = '\v\\label\{'
-  let s:re_label_title = s:re_label . '\zs.{-}\ze\}?\s*$'
 endfunction
 
 " }}}1
@@ -37,8 +32,6 @@ endfunction
 
 function! vimtex#labels#open() " {{{1
   if vimtex#index#open(s:name) | return | endif
-
-  let s:preamble = 1
 
   let index = {}
   let index.name            = s:name
@@ -108,57 +101,27 @@ endfunction
 " }}}1
 
 function! s:gather_labels(file) " {{{1
-  let tac = []
-  let lnum = 0
-  for line in readfile(a:file)
-    let lnum += 1
-
-    if line =~# '\v^\s*\\begin\{document\}'
-      let s:preamble = 0
+  let l:tac = []
+  let l:preamble = 1
+  for [l:file, l:lnum, l:line] in vimtex#parser#tex(a:file)
+    if l:line =~# '\v^\s*\\begin\{document\}'
+      let l:preamble = 0
     endif
 
-    if line =~# s:re_input && !s:preamble
-      call extend(tac, s:gather_labels(s:gather_labels_input(line, a:file)))
+    if l:preamble
       continue
     endif
 
-    if line =~# s:re_label
+    if l:line =~# '\v\\label\{'
       call add(tac, {
-            \ 'title' : matchstr(line, s:re_label_title),
-            \ 'file'  : a:file,
-            \ 'line'  : lnum,
+            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}?\s*$'),
+            \ 'file'  : l:file,
+            \ 'line'  : l:lnum,
             \ })
       continue
     endif
   endfor
-
-  return tac
-endfunction
-
-" }}}1
-function! s:gather_labels_input(line, file) " {{{1
-  let l:file = matchstr(a:line, s:re_input_file)
-
-  " Trim whitespaces from beginning and end of string
-  let l:file = substitute(l:file, '^\s*', '', '')
-  let l:file = substitute(l:file, '\s*$', '', '')
-
-  " Ensure file has extension
-  if l:file !~# '.tex$'
-    let l:file .= '.tex'
-  endif
-
-  " Only return full path names
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
-  endif
-
-  " Only return filename if it is readable
-  if filereadable(l:file)
-    return l:file
-  else
-    return ''
-  endif
+  return l:tac
 endfunction
 
 " }}}1
