@@ -161,15 +161,11 @@ let s:tex_delimiters_close = '\(' . join([
         \ '\\\Cend\s*{.\{-}}',
       \ ], '\|') . '\)'
 let s:math_delimiters_open = '\(' . join([
-        \ '(',
-        \ '\[',
         \ '\\{',
         \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ], '\|') . '\)'
 let s:math_delimiters_close = '\(' . join([
-        \ ')',
-        \ '\]',
         \ '\\}',
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
