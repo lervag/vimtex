@@ -53,17 +53,6 @@ function! vimtex#complete#init_script() " {{{1
   let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
 
   "
-  " s:label_cache is a dictionary that maps filenames to tuples of the form
-  "
-  "   [time, labels, inputs]
-  "
-  " where time is modification time of the cache entry, labels is a list like
-  " returned by extract_labels, and inputs is a list like returned by
-  " s:extract_inputs.
-  "
-  let s:label_cache = {}
-
-  "
   " Define list for converting stuff like '\IeC{\"u}' to corresponding unicode
   " symbols (with s:tex2unicode()).
   "
@@ -362,81 +351,38 @@ endfunction
 "
 function! s:labels_get(file) " {{{1
   "
-  " s:labels_get compares modification time of each entry in the label cache
-  " and updates it if necessary.  During traversal of the label cache, all
-  " current labels are collected and returned.
+  " Searches aux files recursively for commands of the form
+  "
+  "   \newlabel{name}{{number}{page}.*}.*
+  "   \newlabel{name}{{text {number}}{page}.*}.*
+  "
+  " Returns a list of [name, number, page] tuples.
   "
   if !filereadable(a:file)
     return []
   endif
 
-  " Open file in temporary split window for label extraction.
-  if !has_key(s:label_cache , a:file)
-        \ || s:label_cache[a:file][0] != getftime(a:file)
-    let s:label_cache[a:file] = [
-          \ getftime(a:file),
-          \ s:labels_extract(a:file),
-          \ s:labels_extract_inputs(a:file),
-          \ ]
+  if get(s:, 'labels_created', 0) != getftime(a:file)
+    let s:labels_created = getftime(a:file)
+    let s:labels = []
+    let lines = vimtex#parser#aux(a:file)
+    let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
+    let lines = filter(lines, 'v:val !~# ''@cref''')
+    let lines = filter(lines, 'v:val !~# ''sub@''')
+    let lines = filter(lines, 'v:val !~# ''tocindent-\?[0-9]''')
+    for line in lines
+      let line = s:tex2unicode(line)
+      let tree = s:tex2tree(line)[1:]
+      let name = remove(tree, 0)[0]
+      if type(tree[0]) == type([]) && !empty(tree[0])
+        let number = s:labels_parse_number(tree[0][0])
+        let page = tree[0][1][0]
+        call add(s:labels, [name, number, page])
+      endif
+    endfor
   endif
 
-  " We need to create a copy of s:label_cache[fid][1], otherwise all inputs'
-  " labels would be added to the current file's label cache upon each
-  " completion call, leading to duplicates/triplicates/etc. and decreased
-  " performance.  Also, because we don't anything with the list besides
-  " matching copies, we can get away with a shallow copy for now.
-  let labels = copy(s:label_cache[a:file][1])
-
-  for input in s:label_cache[a:file][2]
-    let labels += s:labels_get(input)
-  endfor
-
-  return labels
-endfunction
-
-" }}}1
-function! s:labels_extract(file) " {{{1
-  "
-  " Searches file for commands of the form
-  "
-  "   \newlabel{name}{{number}{page}.*}.*
-  "
-  " or
-  "
-  "   \newlabel{name}{{text {number}}{page}.*}.*
-  "
-  " and returns a list of [name, number, page] tuples.
-  "
-  let matches = []
-  let lines = readfile(a:file)
-  let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
-  let lines = filter(lines, 'v:val !~# ''@cref''')
-  let lines = filter(lines, 'v:val !~# ''sub@''')
-  let lines = filter(lines, 'v:val !~# ''tocindent-\?[0-9]''')
-  let lines = map(lines, 's:tex2unicode(v:val)')
-  for line in lines
-    let tree = s:tex2tree(line)[1:]
-    let name = remove(tree, 0)[0]
-    if type(tree[0]) == type([]) && !empty(tree[0])
-      let number = s:labels_parse_number(tree[0][0])
-      let page = tree[0][1][0]
-      call add(matches, [name, number, page])
-    endif
-  endfor
-  return matches
-endfunction
-
-" }}}1
-function! s:labels_extract_inputs(file) " {{{1
-  let matches = []
-  let root = fnamemodify(a:file, ':p:h') . '/'
-  for input in filter(readfile(a:file), 'v:val =~# ''\\@input{''')
-    let input = matchstr(input, '{\zs.*\ze}')
-    let input = substitute(input, '"', '', 'g')
-    let input = root . input
-    call add(matches, input)
-  endfor
-  return matches
+  return s:labels
 endfunction
 
 " }}}1

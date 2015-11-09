@@ -39,7 +39,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
-  let l:detailed = a:0 > 0 ? a:1 : 1
+  let l:detailed = a:0 > 0 ? a:1 : 0
   return s:parser(a:file, l:detailed, 1, s:input_line_aux,
         \ 's:input_line_parser_aux')
 endfunction
