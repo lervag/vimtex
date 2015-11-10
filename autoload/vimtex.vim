@@ -35,6 +35,7 @@ endif
 " Main initialization function
 "
 function! vimtex#init() " {{{1
+  call s:check_version()
   "
   " First initialize buffer options and construct (if necessary) the vimtex
   " data blob.
@@ -79,6 +80,17 @@ endfunction
 "
 " Auxilliary initialization functions
 "
+function! s:check_version() " {{{1
+  if s:initialized || get(g:, 'vimtex_disable_version_warning', 0)
+    return
+  endif
+
+  if v:version <= 703 && !has('patch544')
+    echoerr 'vimtex error: Please use Vim version 7.3.544 or newer!'
+  endif
+endfunction
+
+" }}}1
 function! s:init_buffer() " {{{1
   "
   " First we set some vim options

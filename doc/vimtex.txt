@@ -324,6 +324,12 @@ Options~
 
   Default value: Undefined.
 
+*g:vimtex_disable_version_warning*
+  |vimtex| will warn you if you are using an unsupported version of Vim. This
+  warning may be disabled by setting this option to a nonzero value.
+
+  Default value: Undefined.
+
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
 
