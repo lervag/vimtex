@@ -143,7 +143,7 @@ function! s:init_buffer() " {{{1
   if id >= 0
     " Link to existing blob
     let b:vimtex_id = id
-    let b:vimtex = g:vimtex_data.id
+    let b:vimtex = g:vimtex_data[id]
   else
     " Create new blob
     let b:vimtex = {}
