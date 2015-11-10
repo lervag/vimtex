@@ -31,9 +31,6 @@ endif
 
 " }}}1
 
-"
-" Main initialization function
-"
 function! vimtex#init() " {{{1
   call s:check_version()
   "
@@ -76,10 +73,82 @@ function! vimtex#init() " {{{1
 endfunction
 
 " }}}1
+function! vimtex#info(global) " {{{1
+  if !s:initialized
+    echoerr 'Error: vimtex has not been initialized!'
+    return
+  endif
 
-"
-" Auxilliary initialization functions
-"
+  if a:global
+    for [id, data] in items(g:vimtex_data)
+      let d = deepcopy(data)
+      for f in ['aux', 'out', 'log']
+        silent execute 'let d.' . f . ' = data.' . f . '()'
+      endfor
+
+      call vimtex#echo#formatted([
+            \ "\ng:vimtex_data[", ['VimtexSuccess', id], '] : ',
+            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+      call s:print_dict(d)
+    endfor
+  else
+    let d = deepcopy(b:vimtex)
+    for f in ['aux', 'out', 'log']
+      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
+    endfor
+    call vimtex#echo#formatted([
+          \ 'b:vimtex : ',
+          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
+    call s:print_dict(d)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#wordcount(detailed) " {{{1
+  " Run texcount, save output to lines variable
+  let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
+  let cmd .= '; texcount -nosub -sum '
+  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
+  let cmd .= vimtex#util#shellescape(b:vimtex.base)
+  let lines = split(system(cmd), '\n')
+
+  " Create wordcount window
+  if bufnr('TeXcount') >= 0
+    bwipeout TeXcount
+  endif
+  split TeXcount
+
+  " Add lines to buffer
+  for line in lines
+    call append('$', printf('%s', line))
+  endfor
+  0delete _
+
+  " Set mappings
+  nnoremap <buffer> <silent> q :bwipeout<cr>
+
+  " Set buffer options
+  setlocal bufhidden=wipe
+  setlocal buftype=nofile
+  setlocal cursorline
+  setlocal nobuflisted
+  setlocal nolist
+  setlocal nospell
+  setlocal noswapfile
+  setlocal nowrap
+  setlocal tabstop=8
+  setlocal nomodifiable
+
+  " Set highlighting
+  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
+  syntax match TexcountValue /.*:\zs.*/
+  highlight link TexcountText  VimtexMsg
+  highlight link TexcountValue Constant
+endfunction
+
+" }}}1
+
+
 function! s:check_version() " {{{1
   if s:initialized || get(g:, 'vimtex_disable_version_warning', 0)
     return
@@ -91,6 +160,7 @@ function! s:check_version() " {{{1
 endfunction
 
 " }}}1
+
 function! s:init_buffer() " {{{1
   "
   " First we set some vim options
@@ -463,9 +533,6 @@ endfunction
 
 " }}}1
 
-"
-" Detect file name changes
-"
 function! s:filename_changed_pre() " {{{1
   let thisfile = fnamemodify(expand('%'), ':p')
   let s:filename_changed = thisfile ==# b:vimtex.tex
@@ -496,86 +563,6 @@ endfunction
 
 " }}}1
 
-"
-" Simple utility features
-"
-function! vimtex#info(global) " {{{1
-  if !s:initialized
-    echoerr 'Error: vimtex has not been initialized!'
-    return
-  endif
-
-  if a:global
-    for [id, data] in items(g:vimtex_data)
-      let d = deepcopy(data)
-      for f in ['aux', 'out', 'log']
-        silent execute 'let d.' . f . ' = data.' . f . '()'
-      endfor
-
-      call vimtex#echo#formatted([
-            \ "\ng:vimtex_data[", ['VimtexSuccess', id], '] : ',
-            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-      call s:print_dict(d)
-    endfor
-  else
-    let d = deepcopy(b:vimtex)
-    for f in ['aux', 'out', 'log']
-      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
-    endfor
-    call vimtex#echo#formatted([
-          \ 'b:vimtex : ',
-          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-    call s:print_dict(d)
-  endif
-endfunction
-
-" }}}1
-function! vimtex#wordcount(detailed) " {{{1
-  " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
-  let cmd .= '; texcount -nosub -sum '
-  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#shellescape(b:vimtex.base)
-  let lines = split(system(cmd), '\n')
-
-  " Create wordcount window
-  if bufnr('TeXcount') >= 0
-    bwipeout TeXcount
-  endif
-  split TeXcount
-
-  " Add lines to buffer
-  for line in lines
-    call append('$', printf('%s', line))
-  endfor
-  0delete _
-
-  " Set mappings
-  nnoremap <buffer> <silent> q :bwipeout<cr>
-
-  " Set buffer options
-  setlocal bufhidden=wipe
-  setlocal buftype=nofile
-  setlocal cursorline
-  setlocal nobuflisted
-  setlocal nolist
-  setlocal nospell
-  setlocal noswapfile
-  setlocal nowrap
-  setlocal tabstop=8
-  setlocal nomodifiable
-
-  " Set highlighting
-  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
-  syntax match TexcountValue /.*:\zs.*/
-  highlight link TexcountText  VimtexMsg
-  highlight link TexcountValue Constant
-endfunction
-
-" }}}1
-
-"
-" Private functions
 function! s:print_dict(dict, ...) " {{{1
   let level = a:0 > 0 ? a:1 : 0
 
