@@ -29,13 +29,6 @@ if !exists('s:modules')
         \ 'fnamemodify(v:val, '':t:r'')')
 endif
 
-" Dummy autocmds for vimtex events (prevents silly warnings)
-augroup vimtex_init
-  autocmd!
-  autocmd User VimtexEventInitPost sleep 1ms
-  autocmd User VimtexEventQuit     sleep 1ms
-augroup END
-
 " }}}1
 
 "
@@ -76,7 +69,9 @@ function! vimtex#init() " {{{1
   "
   " Allow custom configuration through an event hook
   "
-  doautocmd User VimtexEventInitPost
+  if exists('#User#VimtexEventInitPost')
+    doautocmd User VimtexEventInitPost
+  endif
 endfunction
 
 " }}}1
@@ -140,7 +135,7 @@ function! s:init_buffer() " {{{1
   "
 
   " Create container for data blobs if it does not exist
-  let g:vimtex_data = get(g:, 'vimtex_data', [])
+  let g:vimtex_data = get(g:, 'vimtex_data', {})
 
   " Get main file number and check if data blob already exists
   let main = s:get_main()
@@ -148,7 +143,7 @@ function! s:init_buffer() " {{{1
   if id >= 0
     " Link to existing blob
     let b:vimtex_id = id
-    let b:vimtex = g:vimtex_data[id]
+    let b:vimtex = g:vimtex_data.id
   else
     " Create new blob
     let b:vimtex = {}
@@ -166,8 +161,9 @@ function! s:init_buffer() " {{{1
       return s:get_main_ext(self, 'pdf')
     endfunction
 
-    call add(g:vimtex_data, b:vimtex)
-    let b:vimtex_id = len(g:vimtex_data) - 1
+    let s:vimtex_next_id = get(s:, 'vimtex_next_id', -1) + 1
+    let b:vimtex_id = s:vimtex_next_id
+    let g:vimtex_data[b:vimtex_id] = b:vimtex
   endif
 
   "
@@ -191,7 +187,7 @@ function! s:init_buffer() " {{{1
     au BufFilePost <buffer> call s:filename_changed_post()
     au BufLeave    <buffer> call s:buffer_left()
     au BufDelete   <buffer> call s:buffer_deleted()
-    au QuitPre     <buffer> doautocmd User VimtexEventQuit
+    au QuitPre     <buffer> silent! doautocmd User VimtexEventQuit
   augroup END
 endfunction
 
@@ -298,15 +294,11 @@ endfunction
 " }}}1
 
 function! s:get_id(main) " {{{1
-  if exists('g:vimtex_data') && !empty(g:vimtex_data)
-    let id = 0
-    while id < len(g:vimtex_data)
-      if g:vimtex_data[id].tex == a:main
-        return id
-      endif
-      let id += 1
-    endwhile
-  endif
+  for [id, data] in items(g:vimtex_data)
+    if data.tex == a:main
+      return id
+    endif
+  endfor
 
   return -1
 endfunction
@@ -502,18 +494,16 @@ function! vimtex#info(global) " {{{1
   endif
 
   if a:global
-    let n = 0
-    for data in g:vimtex_data
+    for [id, data] in items(g:vimtex_data)
       let d = deepcopy(data)
       for f in ['aux', 'out', 'log']
         silent execute 'let d.' . f . ' = data.' . f . '()'
       endfor
 
       call vimtex#echo#formatted([
-            \ "\n\ng:vimtex_data[", ['VimtexSuccess', n], '] : ',
+            \ "\ng:vimtex_data[", ['VimtexSuccess', id], '] : ',
             \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
       call s:print_dict(d)
-      let n += 1
     endfor
   else
     let d = deepcopy(b:vimtex)
@@ -616,24 +606,29 @@ endfunction
 
 " }}}1
 function! s:buffer_deleted() " {{{1
+  "
   " Check if the deleted buffer was the last remaining buffer of an opened
   " latex project
+  "
+  if !has_key(g:vimtex_data, s:vimtex_id) | return | endif
+
   let l:listed_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:vimtex_ids = map(l:listed_buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
   if count(l:vimtex_ids, s:vimtex_id) - 1 <= 0
-    if exists('b:vimtex')
-      let b:vimtex_tmp = b:vimtex
-    endif
-    let b:vimtex = g:vimtex_data[s:vimtex_id]
-    doautocmd User VimtexEventQuit
-    if exists('b:vimtex_tmp')
-      unlet b:vimtex_tmp
-    else
-      unlet b:vimtex
-    endif
+    let l:vimtex = remove(g:vimtex_data, s:vimtex_id)
 
-    " Clean up the global data list
-    call remove(g:vimtex_data, s:vimtex_id)
+    if exists('#User#VimtexEventQuit')
+      if exists('b:vimtex')
+        let b:vimtex_tmp = b:vimtex
+      endif
+      let b:vimtex = l:vimtex
+      doautocmd User VimtexEventQuit
+      if exists('b:vimtex_tmp')
+        unlet b:vimtex_tmp
+      else
+        unlet b:vimtex
+      endif
+    endif
   endif
 endfunction
 

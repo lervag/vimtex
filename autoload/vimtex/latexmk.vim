@@ -295,7 +295,7 @@ endfunction
 function! vimtex#latexmk#status(detailed) " {{{1
   if a:detailed
     let running = 0
-    for data in g:vimtex_data
+    for data in values(g:vimtex_data)
       if data.pid
         if !running
           call vimtex#echo#status(['latexmk status: ',
@@ -345,7 +345,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#stop_all() " {{{1
-  for data in g:vimtex_data
+  for data in values(g:vimtex_data)
     if data.pid
       call s:latexmk_kill(data)
     endif
