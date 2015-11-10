@@ -118,7 +118,7 @@ function! VimtexIndent() " {{{1
     let ind += &sw
     let s:tikz_indented += 1
   endif
-  if s:tikz_indented > 0 && pline =~# ';\s*$'
+  if s:tikz_indented > 0 && pline =~# ';'
     let ind -= &sw
     let s:tikz_indented -= 1
   endif
