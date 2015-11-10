@@ -77,7 +77,7 @@ function! vimtex#change#get_command(...) " {{{1
       return [l:c] + l:p
     elseif index(l:argument, l:syntax) >= 0
           \ || (l:syntax ==# 'Delimiter' && l:char =~# '{\|}')
-      let l:curpos = getcurpos()
+      let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
       keepjumps normal! vaBoh
       let l:result = vimtex#change#get_command(searchpos('\S', 'bcn'))
       call setpos('.', l:curpos)
@@ -98,7 +98,7 @@ function! vimtex#change#command() " {{{1
   let l:new = empty(l:new) ? l:old : l:new
 
   " Store current cursor position
-  let l:curpos = getcurpos()
+  let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
   if l:line == l:curpos[1]
     let l:curpos[2] += len(l:new) - len(l:old)
   endif
@@ -127,7 +127,7 @@ function! vimtex#change#command_delete() " {{{1
   if l:old ==# '' | return | endif
 
   " Store current cursor position
-  let l:curpos = getcurpos()
+  let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
   if l:line == l:curpos[1]
     let l:curpos[2] -= len(l:old)+1
   endif
