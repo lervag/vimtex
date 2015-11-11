@@ -66,8 +66,18 @@ function! vimtex#change#get_command(...) " {{{1
   let l:char = l:line[l:position[1]-1]
 
   " Lists of relevant syntax regions
-  let l:commands = ['texStatement', 'texTypeSize', 'texTypeStyle', 'texBeginEnd']
-  let l:argument = ['texMatcher', 'texRefZone', 'texBeginEndName']
+  let l:commands = [
+        \ 'texStatement',
+        \ 'texTypeSize',
+        \ 'texTypeStyle',
+        \ 'texBeginEnd',
+        \ ]
+  let l:argument = [
+        \ 'texMatcher',
+        \ 'texItalStyle',
+        \ 'texRefZone',
+        \ 'texBeginEndName',
+        \ ]
 
   for l:syntax in reverse(map(call('synstack', l:position),
         \ 'synIDattr(v:val, ''name'')'))

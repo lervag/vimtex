@@ -14,7 +14,8 @@ endif
 " {{{1 Add conceal for \emph
 if has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b'
   syntax region texItalStyle
-        \ matchgroup=texTypeStyle start="\\emph\s*{" end="}" concealends
+        \ matchgroup=texTypeStyle start="\\emph\s*{" end="}"
+        \ concealends contains=@texItalGroup
 endif
 
 " }}}1
