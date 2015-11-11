@@ -392,6 +392,13 @@ Options~
   Default value: >
     let g:vimtex_change_ignored_delims_pattern = '\c\\bigg\?'
 <
+*g:vimtex_change_set_formatexpr*
+  If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
+  comments. That is, if it is enabled, then comments at end of lines will not
+  be joined with the |gq| command.
+
+  Default value: 0
+
 *g:vimtex_fold_enabled*
   Use this option to disable/enable folding.
 
