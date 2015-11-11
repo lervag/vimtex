@@ -16,6 +16,7 @@ if has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b'
   syntax region texItalStyle
         \ matchgroup=texTypeStyle start="\\emph\s*{" end="}"
         \ concealends contains=@texItalGroup
+  syntax cluster texMatchGroup add=texItalStyle
 endif
 
 " }}}1
