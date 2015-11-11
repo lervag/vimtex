@@ -11,13 +11,17 @@ elseif b:current_syntax !=# 'tex'
   finish
 endif
 
-" {{{1 Add conceal for \emph
+" {{{1 Add italic font and conceal for \emph
 if has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b'
   syntax region texItalStyle
         \ matchgroup=texTypeStyle start="\\emph\s*{" end="}"
-        \ concealends contains=@texItalGroup
-  syntax cluster texMatchGroup add=texItalStyle
+        \ contains=@texItalGroup concealends
+else
+  syntax region texItalStyle
+        \ matchgroup=texTypeStyle start="\\emph\s*{" end="}"
+        \ contains=@texItalGroup
 endif
+syntax cluster texMatchGroup add=texItalStyle
 
 " }}}1
 " {{{1 Add syntax highlighting for \url and \href
