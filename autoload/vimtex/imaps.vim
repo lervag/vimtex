@@ -49,7 +49,7 @@ function! vimtex#imaps#add_map(map) " {{{1
 
   " Apply wrapper
   if l:wrapper !=# '' && exists('*' . l:wrapper)
-    let l:rhs = call(l:wrapper, [l:lhs, l:rhs])
+    let l:rhs = call(l:wrapper, [l:leader . l:lhs, l:rhs])
   endif
 
   " Add mapping
@@ -63,7 +63,7 @@ endfunction
 "
 function! s:wrap_math(lhs, rhs) " {{{1
   return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
-        \ . ' : ' . string(a:lhs) . '<cr>'
+        \ . ' : ' .  string(a:lhs) . '<cr>'
 endfunction
 
 " }}}1
