@@ -63,7 +63,7 @@ endfunction
 "
 function! s:wrap_math(lhs, rhs) " {{{1
   return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
-        \ . ' : ' .  string(a:lhs) . '<cr>'
+        \ . ' : ' . string(a:lhs) . '<cr>'
 endfunction
 
 " }}}1
