@@ -41,6 +41,9 @@ endfunction
 function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
 
+  " Don't apply fold settings during diff
+  if &diff | return | endif
+
   " Don't override modeline settings
   if s:check_modeline() | return | endif
 
