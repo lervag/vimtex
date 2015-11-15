@@ -147,6 +147,32 @@ function! vimtex#wordcount(detailed) " {{{1
 endfunction
 
 " }}}1
+" {{{1 function! vimtex#reload()
+let s:file = expand('<sfile>')
+
+if !exists('s:reloading_script')
+  function! vimtex#reload()
+    let s:reloading_script = 1
+
+    let l:scripts = [s:file]
+          \ + map(copy(s:modules),
+          \ 'fnamemodify(s:file, '':h'') . ''/vimtex/'' . v:val . ''.vim''')
+
+    for l:file in l:scripts
+      execute 'source' l:file
+    endfor
+
+    let s:initialized = 0
+    call vimtex#init()
+
+    call vimtex#echo#formatted([
+          \ 'vimtex: ', ['VimtexWarning', 'reloaded']])
+
+    unlet s:reloading_script
+  endfunction
+endif
+
+" }}}1
 
 
 function! s:check_version() " {{{1
@@ -255,10 +281,12 @@ function! s:init_buffer() " {{{1
   " Define commands
   command! -buffer -bang VimtexInfo      call vimtex#info(<q-bang> == "!")
   command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
+  command! -buffer       VimtexReload    call vimtex#reload()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info)      :call vimtex#info(0)<cr>
-  nnoremap <buffer> <plug>(vimtex-info-full) :call vimtex#info(1)<cr>
+  nnoremap <buffer> <plug>(vimtex-info)      :VimtexInfo<cr>
+  nnoremap <buffer> <plug>(vimtex-info-full) :VimtexInfo!<cr>
+  nnoremap <buffer> <plug>(vimtex-reload)    :VimtexReload<cr>
 
   "
   " Attach autocommands
@@ -285,6 +313,7 @@ function! s:init_mappings() " {{{1
 
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
+  call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
 
   call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
   call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')

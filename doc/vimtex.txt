@@ -290,6 +290,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lG  |<plug>(vimtex-status-all)|           `n`
    <localleader>lc  |<plug>(vimtex-clean)|                `n`
    <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
+   <localleader>lx  |<plug>(vimtex-reload)|               `n`
    dse              |<plug>(vimtex-delete-env)|           `n`
    dsc              |<plug>(vimtex-delete-cmd)|           `n`
    cse              |<plug>(vimtex-change-env)|           `n`
@@ -994,6 +995,11 @@ Commands~
                                              *VimtexRSearch*
                                              *<plug>(vimtex-reverse-search)*
 :VimtexRSearch            Do reverse search (only available for MuPDF viewer).
+
+                                             *VimtexReload*   
+                                             *<plug>(vimtex-reload)*
+:VimtexReload             Reload |vimtex| scripts. This is primarely useful
+                          when developing and debugging |vimtex| itself.
 
                                              *VimtexWordCount*
 :VimtexWordCount          Shows the number of words in the current project.

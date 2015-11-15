@@ -82,9 +82,11 @@ function! vimtex#fold#init_buffer() " {{{1
 
     function! s:fold_manual_refresh()
       call vimtex#fold#refresh('zx')
-      execute 'autocmd!' b:fold_manual_augroup
-      execute 'augroup!' b:fold_manual_augroup
-      unlet b:fold_manual_augroup
+      if exists('b:fold_manual_augroup')
+        execute 'autocmd!' b:fold_manual_augroup
+        execute 'augroup!' b:fold_manual_augroup
+        unlet b:fold_manual_augroup
+      endif
     endfunction
   endif
 endfunction
