@@ -638,6 +638,7 @@ function! s:buffer_deleted() " {{{1
   " Check if the deleted buffer was the last remaining buffer of an opened
   " latex project
   "
+  if !exists('s:vimtex_id') | return | endif
   if !has_key(g:vimtex_data, s:vimtex_id) | return | endif
 
   let l:listed_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
