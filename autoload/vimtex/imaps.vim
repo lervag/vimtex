@@ -95,7 +95,7 @@ endfunction
 "
 function! s:is_math() " {{{1
   return match(map(synstack(line('.'), max([col('.') - 1, 1])),
-        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]$') >= 0
+        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]S\?$') >= 0
 endfunction
 
 " }}}1
