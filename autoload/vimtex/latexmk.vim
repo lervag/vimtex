@@ -25,9 +25,9 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#init_script() " {{{1
-  call s:check_system_compatibility()
-
   if !g:vimtex_latexmk_enabled | return | endif
+
+  call s:check_system_compatibility()
 
   " Ensure that all latexmk processes are stopped when a latex project is
   " closed and when vim exits
