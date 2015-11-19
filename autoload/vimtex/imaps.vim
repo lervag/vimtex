@@ -62,8 +62,8 @@ endfunction
 " Wrappers
 "
 function! s:wrap_math(lhs, rhs) " {{{1
-  return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
-        \ . ' : ' . string(a:lhs) . '<cr>'
+  return '<c-r>=<sid>is_math() ? "' . a:rhs
+        \ . '" : "' .  a:lhs . '"<cr>'
 endfunction
 
 " }}}1
