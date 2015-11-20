@@ -6,8 +6,6 @@
 
 function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_enabled', ! &diff)
-  if !g:vimtex_fold_enabled | return | endif
-
   call vimtex#util#set_default('g:vimtex_fold_automatic', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
@@ -30,15 +28,14 @@ endfunction
 
 " }}}1
 function! vimtex#fold#init_script() " {{{1
-  if !g:vimtex_fold_enabled | return | endif
-
-  " Define some script variables
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
 endfunction
 
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
+  let b:vimtex_fold_parts = s:parse_folded()
+
   if !g:vimtex_fold_enabled | return | endif
 
   " Don't override modeline settings
