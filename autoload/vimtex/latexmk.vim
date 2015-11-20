@@ -21,6 +21,7 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
+  call vimtex#util#set_default('g:vimtex_quickfix_fix_paths', '0')
 endfunction
 
 " }}}1
@@ -36,6 +37,14 @@ function! vimtex#latexmk#init_script() " {{{1
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
       autocmd User VimtexQuit call s:stop_before_leaving()
+    augroup END
+  endif
+
+  " Add autocommand to fix paths in quickfix
+  if g:vimtex_quickfix_fix_paths
+    augroup vimtex_latexmk_fix_dirs
+      au!
+      au QuickFixCmdPost c*file call s:fix_quickfix_paths()
     augroup END
   endif
 endfunction
@@ -221,6 +230,9 @@ function! vimtex#latexmk#errors_open(force) " {{{1
     endif
     return
   endif
+
+  " Save root name for fixing quickfix paths
+  let s:vimtex_tmp_path = b:vimtex.root
 
   if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
@@ -499,6 +511,20 @@ endfunction
 
 " }}}1
 
+function! s:fix_quickfix_paths() " {{{1
+  let qflist = getqflist()
+  for i in qflist
+    let file = s:vimtex_tmp_path . '/'
+          \ . substitute(bufname(i.bufnr), '^\.\/', '', '')
+    if !bufexists(file) && filereadable(fnameescape(file))
+      execute 'badd' fnamemodify(file, ':~:.')
+    endif
+    let i.bufnr = bufnr(file)
+  endfor
+  call setqflist(qflist)
+endfunction
+
+" }}}1
 function! s:stop_before_leaving() " {{{1
   if b:vimtex.pid > 0
     call s:latexmk_kill(b:vimtex)
