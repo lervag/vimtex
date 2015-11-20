@@ -34,6 +34,7 @@ endfunction
 
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
+  " Parse tex file to dynamically set the sectioning fold levels
   let b:vimtex_fold_parts = s:parse_folded()
 
   if !g:vimtex_fold_enabled | return | endif
@@ -62,13 +63,11 @@ function! vimtex#fold#init_buffer() " {{{1
     "   become slow for large files.  The following is a hack that is based on
     "   this reply to a discussion on the Vim Developer list:
     "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
-    if g:vimtex_fold_automatic
-      augroup vimtex_fold_automatic
-        autocmd!
-        autocmd InsertEnter <buffer> call FdmSave()
-        autocmd InsertLeave <buffer> call FdmRestore()
-      augroup END
-    endif
+    augroup vimtex_fold_automatic
+      autocmd!
+      autocmd InsertEnter <buffer> call FdmSave()
+      autocmd InsertLeave <buffer> call FdmRestore()
+    augroup END
   else
     let s:fold_manual_id = get(s:, 'fold_manual_id', 0) + 1
     let b:fold_manual_augroup = 'vimtex_fold_' . s:fold_manual_id
