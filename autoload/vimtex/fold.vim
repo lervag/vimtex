@@ -5,7 +5,7 @@
 "
 
 function! vimtex#fold#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_fold_enabled', ! &diff)
   if !g:vimtex_fold_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_fold_automatic', 0)
@@ -40,9 +40,6 @@ endfunction
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
-
-  " Don't apply fold settings during diff
-  if &diff | return | endif
 
   " Don't override modeline settings
   if s:check_modeline() | return | endif
