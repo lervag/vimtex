@@ -344,7 +344,7 @@ Options~
 
 *g:vimtex_complete_recursive_bib*
   This option toggles recursive searching for bibliography files.
-  
+
   Note: This feature may lead to a significant lag for large projects.
 
   Default value: 0
@@ -406,11 +406,10 @@ Options~
   Default value: 1
 
 *g:vimtex_fold_automatic*
-  Turn on/off automatic updating of fold levels.  If it is off, one must use
-  the |zx| mapping to update the foldlevels when desired.
-
-  Note: Automatic updating of fold levels may lead to some lags for large
-        files.
+  By default, one must use the |vimtex-zx| mapping to update the foldlevels
+  when desired. This option may be enabled to allow automatic updating of fold
+  levels, although one should note that this may lead to some lags for large
+  files, or files with long lines.
 
   Default value: 0
 
@@ -543,9 +542,9 @@ Options~
 
 *g:vimtex_toc_show_numbers*
   Set whether or not to show section numbers in ToC.
-  
+
   Note: The numbers may also be toggled inside the ToC window with the `s`
-        keybinding. 
+        keybinding.
 
   Default value: 1
 
@@ -578,7 +577,7 @@ Options~
 
 *g:vimtex_motion_matchparen*
   Enable highlighting of matching delimiters.
-  
+
   Note: This is an improved version of |matchparen|. It should be possible to
         keep |matchparen| activated, which matches delimiters listed in
         'matchpairs'. The |vimtex| specific version will also match LaTeX
@@ -595,7 +594,7 @@ Options~
   This option sets the compilation build directory.  It corresponds to the
   `-output-directory` option in `latexmk`.  If the path is a relative path,
   then it will be considered relative to the main project file.
-  
+
   Note that this option only works with `latexmk` version 4.27 and later.
 
   Default value: ''
@@ -603,7 +602,7 @@ Options~
 *g:vimtex_latexmk_callback*
   If enabled, this option tells `latexmk` to run |vimtex#latexmk#callback| after
   compilation is finished.
-  
+
   Note 1: This feature requires |clientserver|.
   Note 2: Callbacks are only possible when continuous mode is active, see
           |g:vimtex_latexmk_continuous|.
@@ -637,7 +636,7 @@ Options~
 
 *g:vimtex_latexmk_options*
   A string of options that will be passed on to `latexmk`.
-  
+
   Note: Options may also be specified indirectly to `latexmk` through
         both a global and a project specific `.latexmkrc` file.
 
@@ -655,7 +654,7 @@ Options~
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
   whenever the |quickfix| window is opened.
-  
+
   Note: This option does not go well with continuous compilation and
         callbacks, since the callbacks will open the quickfix window if there
         are errors.  Thus I recommend to keep it disabled for continuous
@@ -687,7 +686,7 @@ Options~
   A list of warning messages that should be ignored.  The list is a list of
   strings.  Any LaTeX warning that contains a string in the list will be
   ignored.
-  
+
   To ignore some common LaTeX warnings, try the following setting: >
     let g:vimtex_quickfix_ignored_warnings = [
         \ 'Underfull',
@@ -878,10 +877,10 @@ Options~
       'syntax'  : SYNTAX-FILE-NAME,
       'ignored' : IGNORED-GROUPS
     }
-< 
+<
   If the `syntax` entry is not present, then the `lang` entry is used as name of
   the syntax file.  The `ignored` entry is also optional, and is used to name
-  syntax groups to ignore in the minted region.  
+  syntax groups to ignore in the minted region.
 
   Default value: []
 
@@ -1009,7 +1008,7 @@ Commands~
                                              *<plug>(vimtex-reverse-search)*
 :VimtexRSearch            Do reverse search (only available for MuPDF viewer).
 
-                                             *VimtexReload*   
+                                             *VimtexReload*
                                              *<plug>(vimtex-reload)*
 :VimtexReload             Reload |vimtex| scripts. This is primarely useful
                           when developing and debugging |vimtex| itself.
@@ -1032,7 +1031,7 @@ Commands~
 Map definitions~
                                                               *vimtex-mappings*
 
-*vimtex-zx* 
+*vimtex-zx*
   When |vimtex| folding is enabled, then |vimtex| remaps |zx| and |zX| in such
   that the folds are refreshed appropriately.
 
@@ -1351,7 +1350,7 @@ In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option.  To preserve the default vertical separator and only
 change the fold filler, use e.g.: >
 
-  set fillchars=vert:|,fold:\ 
+  set fillchars=vert:|,fold:\
 
 Associated settings:
   |g:vimtex_fold_enabled|
@@ -1436,7 +1435,7 @@ Associated settings:
 
 ==============================================================================
 LATEXMK                                                        *vimtex-latexmk*
-    
+
                       http://users.phys.psu.edu/~collins/software/latexmk-jcc
 > latexmk is a perl script for running LaTeX the correct number of times to
 > resolve cross references, etc; it also runs auxiliary programs (bibtex,
@@ -1573,7 +1572,7 @@ option named something like "inverse search command-line".  A standard value
 for the option is: >
 
   gvim --remote-silent +%l "%f"
-  
+
 Note: Inverse search relies on the |clientserver| functionality of vim.  Each
       instance of vim runs its own server.  The above mentioned standard value
       implies the default server name, which might not be the actual name of
@@ -1687,10 +1686,10 @@ however the following variable name changes:
   *g:vimtex_toc_hide_preamble*     ---> |g:vimtex_toc_show_preamble|
   *g:vimtex_toc_numbers*           ---> |g:vimtex_toc_show_numbers|
 
-  *g:vimtex_toc_hide_line_numbers* ---> |g:vimtex_index_hide_line_numbers| 
-  *g:vimtex_toc_resize*            ---> |g:vimtex_index_resize|            
-  *g:vimtex_toc_hide_help*         ---> |g:vimtex_index_show_help|         
-  *g:vimtex_toc_split_pos*         ---> |g:vimtex_index_split|             
+  *g:vimtex_toc_hide_line_numbers* ---> |g:vimtex_index_hide_line_numbers|
+  *g:vimtex_toc_resize*            ---> |g:vimtex_index_resize|
+  *g:vimtex_toc_hide_help*         ---> |g:vimtex_index_show_help|
+  *g:vimtex_toc_split_pos*         ---> |g:vimtex_index_split|
   *g:vimtex_toc_width*             -/
 
                                                          *vim-latex-namechange*
