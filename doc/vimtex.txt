@@ -405,14 +405,13 @@ Options~
 
   Default value: 1
 
-  By default, one must use the |zx| mapping to update the foldlevels when desired. For automatic updating of fold levels (that may lead to some lags for large files), put into .vim/ftplugin/tex.vim the lines: >
+*g:vimtex_fold_automatic*
+  By default, one must use the |vimtex-zx| mapping to update the foldlevels
+  when desired. This option may be enabled to allow automatic updating of fold
+  levels, although one should note that this may lead to some lags for large
+  files, or files with long lines.
 
-  setlocal foldmethod=expr foldexpr=vimtex#fold#level(v:lnum)
-
-  and optionally, for an adaption of the text line outlining each fold,
-
-  setlocal foldtext=vimtex#fold#text()
-<
+  Default value: 0
 
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
