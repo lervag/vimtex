@@ -5,8 +5,8 @@
 "
 
 function! vimtex#fold#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_fold_enabled', ! &diff)
-  call vimtex#util#set_default('g:vimtex_fold_automatic', 0)
+  call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_fold_manual', 1)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
@@ -24,51 +24,38 @@ function! vimtex#fold#init_options() " {{{1
         \   'subsection',
         \   'subsubsection',
         \ ])
+
+  " Disable manual mode in vimdiff
+  let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
 endfunction
 
 " }}}1
 function! vimtex#fold#init_script() " {{{1
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
+  let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+  let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 endfunction
 
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
-  " Parse tex file to dynamically set the sectioning fold levels
-  let b:vimtex_fold_parts = s:parse_folded()
-
   if !g:vimtex_fold_enabled | return | endif
-
-  " Don't override modeline settings
-  if s:check_modeline() | return | endif
+  if s:foldmethod_in_modeline() | return | endif
 
   " Set fold options
   setlocal foldmethod=expr
   setlocal foldexpr=vimtex#fold#level(v:lnum)
   setlocal foldtext=vimtex#fold#text()
 
-  " Remap zx to refresh fold levels
-  nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
-  nnoremap <silent><buffer> zX :call vimtex#fold#refresh('zX')<cr>
+  if g:vimtex_fold_manual
+    " Remap zx to refresh fold levels
+    nnoremap <silent><buffer> zx :call vimtex#fold#refresh('zx')<cr>
+    nnoremap <silent><buffer> zX :call vimtex#fold#refresh('zX')<cr>
 
-  " Define commands
-  command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
+    " Define commands
+    command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
 
-  " Set options for automatic/manual folding mode
-  if g:vimtex_fold_automatic
-    nnoremap <silent><buffer> u :call FdmSave()<cr>u:call FdmRestore()<cr>
-
-    " For automatic folding with foldmethod=expr:
-    "   The foldexpr function returns "=" for most lines, which means it can
-    "   become slow for large files.  The following is a hack that is based on
-    "   this reply to a discussion on the Vim Developer list:
-    "   http://permalink.gmane.org/gmane.editors.vim.devel/14100
-    augroup vimtex_fold_automatic
-      autocmd!
-      autocmd InsertEnter <buffer> call FdmSave()
-      autocmd InsertLeave <buffer> call FdmRestore()
-    augroup END
-  else
+    " Set options for automatic/manual folding mode
     let s:fold_manual_id = get(s:, 'fold_manual_id', 0) + 1
     let b:fold_manual_augroup = 'vimtex_fold_' . s:fold_manual_id
     execute 'augroup' b:fold_manual_augroup
@@ -87,23 +74,33 @@ function! vimtex#fold#init_buffer() " {{{1
   endif
 endfunction
 
+function! s:foldmethod_in_modeline()
+  let l:cursor_pos = getpos('.')
+  let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
+
+  call cursor(1, 1)
+  let l:check_top = search(l:fdm_modeline, 'cn', &modelines)
+
+  normal! G$
+  let l:check_btm = search(l:fdm_modeline, 'b', line('$') + 1 - &modelines)
+
+  call setpos('.', l:cursor_pos)
+  return l:check_top || l:check_btm
+endfunction
+
 " }}}1
 
 function! vimtex#fold#refresh(map) " {{{1
-  " Parse tex file to dynamically set the sectioning fold levels
-  let b:vimtex_fold_parts = s:parse_folded()
-
-  " Refresh folds
-  if g:vimtex_fold_automatic
-    execute 'normal! ' . a:map
-  else
-    setl foldmethod=expr
-    execute 'normal! ' . a:map
-    setl foldmethod=manual
-  endif
+  setlocal foldmethod=expr
+  execute 'normal! ' . a:map
+  setlocal foldmethod=manual
 endfunction
 
+" }}}1
 function! vimtex#fold#level(lnum) " {{{1
+  " Refresh fold levels for section commands
+  call s:refresh_folded_sections()
+
   " Check for normal lines first (optimization)
   let line  = getline(a:lnum)
   if line !~ '\(% Fake\|\\\(document\|begin\|end\|'
@@ -149,6 +146,58 @@ function! vimtex#fold#level(lnum) " {{{1
   return '='
 endfunction
 
+"
+" Parse current buffer to find which sections to fold and their levels.  The
+" patterns are predefined to optimize the folding.
+"
+" We ignore top level parts such as \frontmatter, \appendix, \part, and
+" similar, unless there are at least two such commands in a document.
+"
+function! s:refresh_folded_sections()
+  " Only refresh if file has been changed
+  let l:time = getftime(expand('%'))
+  if l:time == get(s:, 'time', 0) | return | endif
+  let s:time = l:time
+
+  " Initialize
+  let b:vimtex_fold_parts = []
+  let buffer = readfile(expand('%'))
+
+  " Parse part commands (frontmatter, appendix, part, etc)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
+  for part in g:vimtex_fold_parts
+    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        call insert(b:vimtex_fold_parts, [partpattern, 1])
+        break
+      endif
+    endfor
+  endfor
+
+  " We want a minimum of two top level parts
+  if len(b:vimtex_fold_parts) >= 2
+    let level = 1
+  else
+    let level = 0
+    let b:vimtex_fold_parts = []
+  endif
+
+  " Parse section commands (chapter, [sub...]section)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
+  for part in g:vimtex_fold_sections
+    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        let level += 1
+        call insert(b:vimtex_fold_parts, [partpattern, level])
+        break
+      endif
+    endfor
+  endfor
+endfunction
+
+" }}}1
 function! vimtex#fold#text() " {{{1
   " Initialize
   let line = getline(v:foldstart)
@@ -221,79 +270,11 @@ function! vimtex#fold#text() " {{{1
   let text = printf('%-5s %-' . nt . 's', level, strpart(title, 0, nt))
   return substitute(text, '\s\+$', '', '') . ' '
 endfunction
-" }}}1
 
-function! FdmRestore() " {{{1
-  let &l:foldmethod = s:fdm
-endfunction
-
-function! FdmSave() " {{{1
-  let s:fdm = &l:foldmethod
-  setlocal foldmethod=manual
-endfunction
-
-let s:fdm=''
-" }}}1
-
-" Define common regexps
-let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
-
-function! s:parse_folded() " {{{1
-  "
-  " Parse current buffer to find which sections to fold and their levels.  The
-  " patterns are predefined to optimize the folding.
-  "
-  " We ignore top level parts such as \frontmatter, \appendix, \part, and
-  " similar, unless there are at least two such commands in a document.
-  "
-
-  " Initialize
-  let folded = []
-  try
-    let buffer = readfile(expand('%'))
-  catch
-    return []
-  endtry
-
-  " Parse part commands (frontmatter, appendix, part, etc)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
-  for part in g:vimtex_fold_parts
-    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        call insert(folded, [partpattern, 1])
-        break
-      endif
-    endfor
-  endfor
-
-  " We want a minimum of two top level parts
-  if len(folded) >= 2
-    let level = 1
-  else
-    let level = 0
-    let folded = []
-  endif
-
-  " Parse section commands (chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
-  for part in g:vimtex_fold_sections
-    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        let level += 1
-        call insert(folded, [partpattern, level])
-        break
-      endif
-    endfor
-  endfor
-
-  return folded
-endfunction
-
-" }}}1
-function! s:parse_label() " {{{1
+"
+" Functions for setting fold text
+"
+function! s:parse_label()
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\label'
@@ -304,7 +285,7 @@ function! s:parse_label() " {{{1
   return ''
 endfunction
 
-function! s:parse_caption(line) " {{{1
+function! s:parse_caption(line)
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\caption'
@@ -318,7 +299,7 @@ function! s:parse_caption(line) " {{{1
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-function! s:parse_caption_table(line) " {{{1
+function! s:parse_caption_table(line)
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~# '^\s*\\caption'
@@ -332,7 +313,7 @@ function! s:parse_caption_table(line) " {{{1
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-function! s:parse_caption_frame(line) " {{{1
+function! s:parse_caption_frame(line)
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
   let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
@@ -354,32 +335,6 @@ function! s:parse_caption_frame(line) " {{{1
     " If no caption found, check for a caption comment
     return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
-endfunction
-" }}}1
-
-function! s:check_modeline() " {{{1
-  "
-  " Check if foldmethod is set in modeline
-  "
-
-  let l:search_string = 'vim:.*\(foldmethod\|fdm\)'
-  
-  " Preserve current cursor position
-  let l:save_cursor = getpos('.')
-
-  " Check for modeline at the top
-  call cursor(1, 1)
-  let l:check_modeline_top = search(l:search_string, 'cn', &modelines)
-
-  " Check for modeline at bottom
-  normal! G$
-  let l:check_modeline_bottom = search(l:search_string, 'b',
-        \ line('.') - 1 - &modelines)
-
-  " Reset original cursor position
-  call setpos('.', l:save_cursor)
-
-  return l:check_modeline_top || l:check_modeline_bottom
 endfunction
 
 " }}}1
