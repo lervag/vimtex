@@ -401,17 +401,30 @@ Options~
   Default value: 0
 
 *g:vimtex_fold_enabled*
-  Use this option to disable/enable folding.
+  Use this option to disable/enable folding. If disabled, one may still use
+  the vimtex folding functions manually with e.g.: >
 
+    set foldmethod=expr
+    set foldexpr=vimtex#fold#level(v:lnum)
+    set foldtext=vimtex#fold#text()
+<
   Default value: 1
 
-*g:vimtex_fold_automatic*
-  By default, one must use the |vimtex-zx| mapping to update the foldlevels
-  when desired. This option may be enabled to allow automatic updating of fold
-  levels, although one should note that this may lead to some lags for large
-  files, or files with long lines.
+*g:vimtex_fold_manual*
+  With this option enabled, |vimtex| uses |fold-manual| as the main
+  |foldmethod|.  It still uses the |foldexpr| function to compute the fold
+  levels, but it only computes the fold levels on demand, see
+  |VimtexRefreshFolds| and |vimtex-zx|.
 
-  Default value: 0
+  The reasoning behind this option is that the |fold-expr| method of folding
+  may sometimes be slow, e.g. for long lines and large files. |fold-manual| is
+  very fast.
+
+  An alternative to this method of speeding up is to use a dedicated plugin
+  for optimizing the fold functionality, see e.g.
+  https://github.com/Konfekt/FastFold.
+
+  Default value: 1
 
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
@@ -1032,8 +1045,9 @@ Map definitions~
                                                               *vimtex-mappings*
 
 *vimtex-zx*
-  When |vimtex| folding is enabled, then |vimtex| remaps |zx| and |zX| in such
-  that the folds are refreshed appropriately.
+  When |vimtex| folding is enabled and when the manual mode is turned on
+  (|g:vimtex_fold_manual|), then |vimtex| remaps |zx| and |zX| in such that
+  the folds are refreshed appropriately.
 
 *<plug>(vimtex-delete-env)*
 *<plug>(vimtex-change-env)*
@@ -1340,11 +1354,9 @@ section and subsection).  Folding is turned on by default, but it can be
 disabled if desired (|g:vimtex_fold_enabled|).
 
 When folding is enabled and a LaTeX document is opened, the document is parsed
-once in order to define the highest fold level based on which parts (such as
+in order to define the highest fold level based on which parts (such as
 frontmatter, backmatter, and appendix) and section types (chapter, section,
-etc.) are present.  If the document has been edited and a new fold level is
-required (or has become redundant), then the mapping `zx` can be used to
-refresh the fold level settings (see |vimtex-zx|).
+etc.) are present.
 
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option.  To preserve the default vertical separator and only
@@ -1354,7 +1366,7 @@ change the fold filler, use e.g.: >
 
 Associated settings:
   |g:vimtex_fold_enabled|
-  |g:vimtex_fold_automatic|
+  |g:vimtex_fold_manual|
   |g:vimtex_fold_preamble|
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|
