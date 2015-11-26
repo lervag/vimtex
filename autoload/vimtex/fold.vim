@@ -6,7 +6,7 @@
 
 function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
-  call vimtex#util#set_default('g:vimtex_fold_manual', 1)
+  call vimtex#util#set_default('g:vimtex_fold_manual', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
@@ -60,7 +60,9 @@ function! vimtex#fold#init_buffer() " {{{1
     let b:fold_manual_augroup = 'vimtex_fold_' . s:fold_manual_id
     execute 'augroup' b:fold_manual_augroup
       autocmd!
+      " vint: -ProhibitAutocmdWithNoGroup
       autocmd CursorMoved <buffer> call s:fold_manual_refresh()
+      " vint: +ProhibitAutocmdWithNoGroup
     augroup END
 
     function! s:fold_manual_refresh()

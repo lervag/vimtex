@@ -401,14 +401,10 @@ Options~
   Default value: 0
 
 *g:vimtex_fold_enabled*
-  Use this option to disable/enable folding. If disabled, one may still use
-  the vimtex folding functions manually with e.g.: >
+  Use this option to enable folding. More detailed info can be found in the
+  section |vimtex-folding|.
 
-    set foldmethod=expr
-    set foldexpr=vimtex#fold#level(v:lnum)
-    set foldtext=vimtex#fold#text()
-<
-  Default value: 1
+  Default value: 0
 
 *g:vimtex_fold_manual*
   With this option enabled, |vimtex| uses |fold-manual| as the main
@@ -424,7 +420,7 @@ Options~
   for optimizing the fold functionality, see e.g.
   https://github.com/Konfekt/FastFold.
 
-  Default value: 1
+  Default value: 0
 
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
@@ -1350,13 +1346,25 @@ To enable automatic completion with |youcompleteme|, use the following options:
 FOLDING                                                        *vimtex-folding*
 
 |vimtex| can fold documents according to the LaTeX structure (part, chapter,
-section and subsection).  Folding is turned on by default, but it can be
-disabled if desired (|g:vimtex_fold_enabled|).
+section and subsection).  Folding is turned off by default, but it can be
+enabled if desired, either through the option |g:vimtex_fold_enabled|, or
+manually with >
+
+  set foldmethod=expr
+  set foldexpr=vimtex#fold#level(v:lnum)
+  set foldtext=vimtex#fold#text()
 
 When folding is enabled and a LaTeX document is opened, the document is parsed
 in order to define the highest fold level based on which parts (such as
 frontmatter, backmatter, and appendix) and section types (chapter, section,
-etc.) are present.
+etc.) are present. This parsing is done automatically every time the folds are
+recomputed, if there are any changes to the file.
+
+Note: The |fold-expr| method of folding is well known to be slow, e.g. for
+      long lines and large files. To speed things up, the user may want to
+      enable the |g:vimtex_fold_manual| option. An alternative is to add
+      a dedicated plugin that improves folding speed for the slow fold
+      methods, e.g. https://github.com/Konfekt/FastFold.
 
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option.  To preserve the default vertical separator and only
