@@ -5,7 +5,7 @@
 "
 
 function! vimtex#fold#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_fold_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
   call vimtex#util#set_default('g:vimtex_fold_manual', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
