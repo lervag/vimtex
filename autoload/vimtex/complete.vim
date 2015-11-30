@@ -387,17 +387,16 @@ endfunction
 
 " }}}1
 function! s:labels_parse_number(num_tree) " {{{1
-  if len(a:num_tree) == 0
-    return '-'
-  elseif len(a:num_tree) == 1
-    if type(a:num_tree) == type([])
-      return s:labels_parse_number(a:num_tree[0])
+  if type(a:num_tree) == type([])
+    if len(a:num_tree) == 0
+      return '-'
     else
-      let l:num = str2nr(a:num_tree[0])
-      return l:num > 0 ? l:num : '-'
+      let l:index = len(a:num_tree) == 1 ? 0 : 1
+      return s:labels_parse_number(a:num_tree[l:index])
     endif
   else
-    return s:labels_parse_number(a:num_tree[1])
+    let l:num = str2nr(a:num_tree)
+    return l:num > 0 ? l:num : '-'
   endif
 endfunction
 
