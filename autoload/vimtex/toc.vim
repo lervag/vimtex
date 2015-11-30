@@ -58,7 +58,7 @@ function! vimtex#toc#init_script() " {{{1
         \ }
 
   " Define regular expressions to match document parts
-  let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*\{'
+  let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
   let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
   let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
   let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
