@@ -1584,7 +1584,7 @@ Backward search~
 
 In supported viewers one may set up backward or inverse search.  When
 correctly set up, this allows one to go directly from a selected line in the
-viewer (typically by dobbel clicking with the mouse or something similar) to
+viewer (typically by double clicking with the mouse or something similar) to
 the corresponding line inside the Vim instance.
 
 Backward search is typially set up inside the specific viewer through an
