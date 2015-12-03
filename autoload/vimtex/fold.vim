@@ -104,9 +104,9 @@ function! vimtex#fold#level(lnum) " {{{1
   call s:refresh_folded_sections()
 
   " Check for normal lines first (optimization)
-  let line  = getline(a:lnum)
-  if line !~ '\(% Fake\|\\\(document\|begin\|end\|'
-        \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)\)'
+  let line = getline(a:lnum)
+  if line !~# '% Fake\|\\\%(document\|begin\|end\|'
+        \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)'
     return '='
   endif
 
