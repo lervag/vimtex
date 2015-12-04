@@ -7,6 +7,7 @@
 function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
   call vimtex#util#set_default('g:vimtex_fold_manual', 0)
+  call vimtex#util#set_default('g:vimtex_fold_comments', 0)
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
@@ -105,7 +106,7 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Check for normal lines first (optimization)
   let line = getline(a:lnum)
-  if line !~# '% Fake\|\\\%(document\|begin\|end\|'
+  if line !~# '^\s*%\|\\\%(document\|begin\|end\|'
         \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)'
     return '='
   endif
@@ -125,6 +126,19 @@ function! vimtex#fold#level(lnum) " {{{1
       return '>' . level
     endif
   endfor
+
+  " Fold comments
+  if g:vimtex_fold_comments
+    if line =~# '^\s*%'
+      let l:next = getline(a:lnum-1) !~# '^\s*%'
+      let l:prev = getline(a:lnum+1) !~# '^\s*%'
+      if l:next && ! l:prev
+        return 'a1'
+      elseif l:prev && ! l:next
+        return 's1'
+      endif
+    endif
+  endif
 
   " Never fold \end{document}
   if line =~# '^\s*\\end{document}'
@@ -207,7 +221,7 @@ function! vimtex#fold#text() " {{{1
   let title = 'Not defined'
   let nt = 73
 
-  " Preamble, parts, sections and fakesections
+  " Preamble, parts, sections, fakesections and comments
   let sections = '\(\(sub\)*section\|part\|chapter\)'
   let secpat1 = '^\s*\\' . sections . '\*\?\s*{'
   let secpat2 = '^\s*\\' . sections . '\*\?\s*\['
@@ -221,16 +235,18 @@ function! vimtex#fold#text() " {{{1
     let title = 'Backmatter'
   elseif line =~# '\\appendix'
     let title = 'Appendix'
-  elseif line =~ secpat1 . '.*}'
-    let title =  matchstr(line, secpat1 . '\zs.*\ze}')
-  elseif line =~ secpat1
-    let title =  matchstr(line, secpat1 . '\zs.*')
-  elseif line =~ secpat2 . '.*\]'
-    let title =  matchstr(line, secpat2 . '\zs.*\ze\]')
-  elseif line =~ secpat2
-    let title =  matchstr(line, secpat2 . '\zs.*')
-  elseif line =~ 'Fake' . sections
-    let title =  matchstr(line, 'Fake' . sections . '.*')
+  elseif line =~# secpat1 . '.*}'
+    let title = matchstr(line, secpat1 . '\zs.*\ze}')
+  elseif line =~# secpat1
+    let title = matchstr(line, secpat1 . '\zs.*')
+  elseif line =~# secpat2 . '.*\]'
+    let title = matchstr(line, secpat2 . '\zs.*\ze\]')
+  elseif line =~# secpat2
+    let title = matchstr(line, secpat2 . '\zs.*')
+  elseif line =~# 'Fake' . sections
+    let title = matchstr(line, 'Fake' . sections . '.*')
+  elseif line =~# '^\s*%'
+    let title = matchstr(line, '^\s*\zs%.*')
   endif
 
   " Environments

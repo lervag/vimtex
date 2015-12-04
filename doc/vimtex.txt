@@ -422,6 +422,11 @@ Options~
 
   Default value: 0
 
+*g:vimtex_fold_comments*
+  Control whether or not to fold multiline comments.
+
+  Default value: 0
+
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
 
@@ -1387,6 +1392,7 @@ change the fold filler, use e.g.: >
 Associated settings:
   |g:vimtex_fold_enabled|
   |g:vimtex_fold_manual|
+  |g:vimtex_fold_comments|
   |g:vimtex_fold_preamble|
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|
