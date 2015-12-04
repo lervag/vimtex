@@ -229,10 +229,8 @@ function! vimtex#fold#text() " {{{1
     let title =  matchstr(line, secpat2 . '\zs.*\ze\]')
   elseif line =~ secpat2
     let title =  matchstr(line, secpat2 . '\zs.*')
-  elseif line =~ 'Fake' . sections . ':'
-    let title =  matchstr(line,'Fake' . sections . ':\s*\zs.*')
   elseif line =~ 'Fake' . sections
-    let title =  matchstr(line, 'Fake' . sections)
+    let title =  matchstr(line, 'Fake' . sections . '.*')
   endif
 
   " Environments

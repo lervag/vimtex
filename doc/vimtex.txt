@@ -1360,6 +1360,18 @@ frontmatter, backmatter, and appendix) and section types (chapter, section,
 etc.) are present. This parsing is done automatically every time the folds are
 recomputed, if there are any changes to the file.
 
+The fold function also recognizes "fake" sections. That is, it parses comments
+similar to: >
+
+  % Fakepart title
+  % Fakechapter title
+  % Fakesection title
+  % Fakesubsection title
+
+The fake sections are folded at the same level as the corresponding "real"
+sections. The fold title is the provided title with the `Fake...` part
+prepended.
+
 Note: The |fold-expr| method of folding is well known to be slow, e.g. for
       long lines and large files. To speed things up, the user may want to
       enable the |g:vimtex_fold_manual| option. An alternative is to add
