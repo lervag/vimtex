@@ -1158,13 +1158,13 @@ mappings: >
   let g:vimtex_imaps_list = [
     \ { 'lhs_rhs' : ['__',    '_\{$1\}'],
        \'leader' : '',
-       \'wrapper' : 's:wrap_math_ultisnips'},
+       \'wrapper' : 's:wrap_math_snippet'},
     \ { 'lhs_rhs' : ['^^',    '^\{$1\}'],
        \'leader' : '',
-       \'wrapper' : 's:wrap_math_ultisnips'},
+       \'wrapper' : 's:wrap_math_snippet'},
     \ { 'lhs_rhs' : ['((',    '\left($1\right)'],
         \'leader' : '',
-        \'wrapper' : 's:wrap_math_ultisnips'},
+        \'wrapper' : 's:wrap_math_snippet'},
     \]
 
   " Add custom mapping through vimtex#imap#add_map

@@ -23,14 +23,20 @@ endfunction
 function! vimtex#imaps#init_buffer() " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
-  for l:map in g:vimtex_imaps_list
-    call vimtex#imaps#add_map(l:map)
+  for l:map in g:vimtex_imaps_list + get(s:, 'custom_maps', [])
+    call s:create_map(l:map)
   endfor
 endfunction
 
 " }}}1
 
 function! vimtex#imaps#add_map(map) " {{{1
+  let s:custom_maps = get(s:, 'custom_maps', []) + [a:map]
+endfunction
+
+" }}}1
+
+function! s:create_map(map) " {{{1
   let l:lhs = a:map.lhs_rhs[0]
   let l:rhs = a:map.lhs_rhs[1]
   let l:leader = get(a:map, 'leader', g:vimtex_imaps_leader)
@@ -54,48 +60,6 @@ function! vimtex#imaps#add_map(map) " {{{1
 
   " Add mapping
   silent execute 'inoremap <silent><buffer>' l:leader . l:lhs l:rhs
-endfunction
-
-" }}}1
-
-"
-" Wrappers
-"
-function! s:wrap_math(lhs, rhs) " {{{1
-  return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
-        \ . ' : ' . string(a:lhs) . '<cr>'
-endfunction
-
-" }}}1
-function! s:wrap_snippet(lhs, rhs) " {{{1
-  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=neosnippet#anonymous(''' . a:rhs . ''')<cr>'
-  else
-    return a:lhs . '<c-r>=UltiSnips#Anon('''
-          \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')<cr>'
-  endif
-endfunction
-
-" }}}1
-function! s:wrap_math_snippet(lhs, rhs) " {{{1
-  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=<sid>is_math() ? neosnippet#anonymous(''' . a:rhs . ''')'
-          \ . ' : ' . string(a:lhs) . '<cr>'
-  else
-    return a:lhs . '<c-r>=<sid>is_math() ? '
-          \ . 'UltiSnips#Anon(''' . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')'
-          \ . ': ''''<cr>'
-  endif
-endfunction
-
-" }}}1
-
-"
-" Helper functions
-"
-function! s:is_math() " {{{1
-  return match(map(synstack(line('.'), max([col('.') - 1, 1])),
-        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]S\?$') >= 0
 endfunction
 
 " }}}1
@@ -191,6 +155,48 @@ function! s:default_maps() " {{{1
         \ { 'lhs_rhs' : ['Y',     '\Psi'],        'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['U',     '\Upsilon'],    'wrapper' : 's:wrap_math'},
         \]
+endfunction
+
+" }}}1
+
+"
+" Wrappers
+"
+function! s:wrap_math(lhs, rhs) " {{{1
+  return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
+        \ . ' : ' . string(a:lhs) . '<cr>'
+endfunction
+
+" }}}1
+function! s:wrap_snippet(lhs, rhs) " {{{1
+  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
+    return '<c-r>=neosnippet#anonymous(''' . a:rhs . ''')<cr>'
+  else
+    return a:lhs . '<c-r>=UltiSnips#Anon('''
+          \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')<cr>'
+  endif
+endfunction
+
+" }}}1
+function! s:wrap_math_snippet(lhs, rhs) " {{{1
+  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
+    return '<c-r>=<sid>is_math() ? neosnippet#anonymous(''' . a:rhs . ''')'
+          \ . ' : ' . string(a:lhs) . '<cr>'
+  else
+    return a:lhs . '<c-r>=<sid>is_math() ? '
+          \ . 'UltiSnips#Anon(''' . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')'
+          \ . ': ''''<cr>'
+  endif
+endfunction
+
+" }}}1
+
+"
+" Helper functions
+"
+function! s:is_math() " {{{1
+  return match(map(synstack(line('.'), max([col('.') - 1, 1])),
+        \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]S\?$') >= 0
 endfunction
 
 " }}}1
