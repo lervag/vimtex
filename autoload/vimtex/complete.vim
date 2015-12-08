@@ -395,8 +395,7 @@ function! s:labels_parse_number(num_tree) " {{{1
       return s:labels_parse_number(a:num_tree[l:index])
     endif
   else
-    let l:num = str2nr(a:num_tree)
-    return l:num > 0 ? l:num : '-'
+    return str2nr(a:num_tree) > 0 ? a:num_tree : '-'
   endif
 endfunction
 

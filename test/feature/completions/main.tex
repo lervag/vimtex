@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{biblatex}
+\usepackage{amsmath}
 \addbibresource{biblatex-examples.bib}
 \addbibresource{local1.bib}
 \addbibresource{~/.vim/bundle/vim-latex/test/completion/local2.bib}
@@ -67,5 +68,14 @@ To test label completion you need to compile the document first!
   \label{eq:test10}
   f(x) = 10
 \end{equation}
+
+\begin{subequations}
+  \begin{align}
+    \label{eq:test11a}
+    f(x) &= 11a \\
+    \label{eq:test11b}
+    f(x) &= 11b
+  \end{align}
+\end{subequations}
 
 \end{document}
