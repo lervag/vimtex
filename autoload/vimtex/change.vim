@@ -211,11 +211,26 @@ function! vimtex#change#command_delete() " {{{1
 endfunction
 
 function! vimtex#change#close_environment() " {{{1
-  " Close delimiters
-  let [lnum, cnum] = searchpairpos('\C\\left\>', '', '\C\\right\>', 'bnW',
+  " Get environment and delimiter info
+  let [env, env_l1, env_c1, env_l2, env_c2] = vimtex#util#get_env(1,0)
+  let [del_l1, del_c1] = searchpairpos('\C\\left\>', '', '\C\\right\>', 'bnW',
         \ 'vimtex#util#in_comment()')
-  if lnum > 0
-    let line = strpart(getline(lnum), cnum - 1)
+
+  " Calculate scores
+  let env_score = env_l1*1000 + env_c1
+  let del_score = del_l1*1000 + del_c1
+
+  " Complete environment or delimiter, if any
+  if env_score > del_score
+    if env ==# '\['
+      return '\]'
+    elseif env ==# '\('
+      return '\)'
+    elseif env !=# ''
+      return '\end{' . env . '}'
+    endif
+  elseif del_score > 0
+    let line = strpart(getline(del_l1), del_c1 - 1)
     let bracket = matchstr(line, '^\\left\zs\((\|\[\|\\{\||\|\.\)\ze')
     for [open, close] in [
           \ ['(', ')'],
@@ -229,15 +244,7 @@ function! vimtex#change#close_environment() " {{{1
     return '\right' . bracket
   endif
 
-  " Close environment
-  let env = vimtex#util#get_env()
-  if env ==# '\['
-    return '\]'
-  elseif env ==# '\('
-    return '\)'
-  elseif env !=# ''
-    return '\end{' . env . '}'
-  endif
+  return ''
 endfunction
 
 function! vimtex#change#delim(open, close) " {{{1

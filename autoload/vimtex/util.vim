@@ -146,18 +146,22 @@ function! vimtex#util#get_env(...) " {{{1
   " - [environment, lnum_begin, cnum_begin, lnum_end, cnum_end]
   "         if with_pos is nonzero
   let with_pos = a:0 > 0 ? a:1 : 0
+  let move_crs = a:0 > 1 ? a:2 : 1
 
   let begin_pat = '\C\\begin\_\s*{[^}]*}\|\\\@<!\\\[\|\\\@<!\\('
   let end_pat = '\C\\end\_\s*{[^}]*}\|\\\@<!\\\]\|\\\@<!\\)'
   let saved_pos = getpos('.')
 
-  " move to the left until on a backslash
+  " move to the left until on a backslash (this is necessary to match the
+  " current environment when the cursor is on the \end command)
   let [bufnum, lnum, cnum, off] = getpos('.')
-  let line = getline(lnum)
-  while cnum > 1 && line[cnum - 1] !=# '\'
-    let cnum -= 1
-  endwhile
-  call cursor(lnum, cnum)
+  if move_crs
+    let line = getline(lnum)
+    while cnum > 1 && line[cnum - 1] !=# '\'
+      let cnum -= 1
+    endwhile
+    call cursor(lnum, cnum)
+  endif
 
   " match begin/end pairs but skip comments
   let flags = 'bnW'
