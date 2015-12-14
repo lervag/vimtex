@@ -89,21 +89,15 @@ function! VimtexIndent() " {{{1
   endif
 
   " Indent opening and closing delimiters
-  let popen  = s:count_delimiters(pline, s:tex_delimiters_open)
-  let copen  = s:count_delimiters(cline, s:tex_delimiters_open)
-  let pclose = s:count_delimiters(pline, s:tex_delimiters_close)
-  let cclose = s:count_delimiters(cline, s:tex_delimiters_close)
-  let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
-
-  " Indent opening and closing delimiters for math mode
-  if match(map(synstack(v:lnum, max([col('.') - 1, 1])),
+  let l:delimiters = match(map(synstack(v:lnum, max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
-    let popen  = s:count_delimiters(pline, s:math_delimiters_open)
-    let copen  = s:count_delimiters(cline, s:math_delimiters_open)
-    let pclose = s:count_delimiters(pline, s:math_delimiters_close)
-    let cclose = s:count_delimiters(cline, s:math_delimiters_close)
-    let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
-  endif
+        \ ? [s:delimiters_open_math, s:delimiters_close_math]
+        \ : [s:delimiters_open_tex,  s:delimiters_close_tex]
+  let popen  = s:count_delimiters(pline, l:delimiters[0])
+  let copen  = s:count_delimiters(cline, l:delimiters[0])
+  let pclose = s:count_delimiters(pline, l:delimiters[1])
+  let cclose = s:count_delimiters(cline, l:delimiters[1])
+  let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
 
   " Indent list items
   if pline =~# '^\s*\\\(bib\)\?item'
@@ -146,26 +140,26 @@ let s:tikz_indented = 0
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:tex_delimiters_open = '\(' . join([
+let s:delimiters_open_tex = '\(' . join([
         \ '{',
         \ '\[',
         \ '\\(',
         \ '\\\[',
         \ '\\\Cbegin\s*{.\{-}}',
       \ ], '\|') . '\)'
-let s:tex_delimiters_close = '\(' . join([
+let s:delimiters_close_tex = '\(' . join([
         \ '}',
         \ '\]',
         \ '\\)',
         \ '\\\]',
         \ '\\\Cend\s*{.\{-}}',
       \ ], '\|') . '\)'
-let s:math_delimiters_open = '\(' . join([
+let s:delimiters_open_math = '\(' . join([
         \ '\\{',
         \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ], '\|') . '\)'
-let s:math_delimiters_close = '\(' . join([
+let s:delimiters_close_math = '\(' . join([
         \ '\\}',
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
