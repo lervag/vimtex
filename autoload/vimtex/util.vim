@@ -76,7 +76,11 @@ function! vimtex#util#execute(exe) " {{{1
     endif
   else
     if null
-      let cmd .= ' >/dev/null 2>&1'
+      if fnamemodify(&shell, ':t') ==# 'tcsh'
+        let cmd .= ' >/dev/null |& cat'
+      else
+        let cmd .= ' >/dev/null 2>&1'
+      endif
     endif
     if bg
       let cmd .= ' &'
