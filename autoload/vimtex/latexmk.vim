@@ -393,6 +393,8 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
       let cmd .= '; and set max_print_line 2000; and latexmk'
+    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
+      let cmd .= ' && set max_print_line=2000 && latexmk'
     else
       let cmd .= ' && max_print_line=2000 latexmk'
     endif
@@ -439,6 +441,8 @@ function! s:latexmk_build_cmd() " {{{1
     if has('win32')
       let cmd .= ' >'  . tmp
       let cmd = 'cmd /s /c "' . cmd . '"'
+    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
+      let cmd .= ' >' . tmp . ' |& cat'
     else
       let cmd .= ' >' . tmp . ' 2>&1'
     endif
