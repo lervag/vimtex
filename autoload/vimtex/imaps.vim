@@ -91,7 +91,6 @@ function! s:default_maps() " {{{1
 
   " Return default snippet list including list of simple maps
   return snippets + [
-        \ { 'lhs_rhs' : ['...',   '\dots'],       'leader' : '' },
         \ { 'lhs_rhs' : ['0',     '\emptyset'],   'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['6',     '\partial'],    'wrapper' : 's:wrap_math'},
         \ { 'lhs_rhs' : ['8',     '\infty'],      'wrapper' : 's:wrap_math'},
