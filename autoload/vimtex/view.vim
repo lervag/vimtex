@@ -145,10 +145,6 @@ function! s:mupdf.init() dict " {{{2
   "
   call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
   call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_callback',
-        \ 's:focus_vim')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_hook_view',
-        \ 's:focus_viewer')
 
   if !executable('mupdf')
     echoerr 'vimtex viewer MuPDF is not executable!'
@@ -302,10 +298,6 @@ function! s:zathura.init() dict " {{{2
   " Default Zathura settings
   "
   call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
-  call vimtex#util#set_default('g:vimtex_view_zathura_hook_callback',
-        \ 's:focus_vim')
-  call vimtex#util#set_default('g:vimtex_view_zathura_hook_view',
-        \ 's:focus_viewer')
 
   if !executable('zathura')
     echoerr 'vimtex viewer Zathura is not executable!'
