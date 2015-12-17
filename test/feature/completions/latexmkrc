@@ -1,0 +1,9 @@
+add_cus_dep( 'glc', 'glb', 1, 'makeglc2glb' );
+add_cus_dep( 'syc', 'syb', 1, 'makesyc2syb' );
+
+sub makeglc2glb {
+        system( "makeindex -s \"$_[0].ist\" -t \"$_[0].gla\" -o \"$_[0].glb\" \"$_[0].glc\"" );
+}
+sub makesyc2syb {
+        system( "makeindex -s \"$_[0].ist\" -t \"$_[0].sya\" -o \"$_[0].syb\" \"$_[0].syc\"" );
+}

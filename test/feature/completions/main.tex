@@ -1,9 +1,14 @@
 \documentclass{article}
-\usepackage{biblatex}
 \usepackage{amsmath}
+
+\usepackage[backend=biber]{biblatex}
 \addbibresource{biblatex-examples.bib}
 \addbibresource{local1.bib}
 \addbibresource{~/.vim/bundle/vim-latex/test/completion/local2.bib}
+
+\usepackage[nonumberlist,acronymlists={gloss,symbolslist}]{glossaries}
+\input{glossary.tex}
+
 \begin{document}
 
 To test label completion you need to compile the document first!
@@ -77,5 +82,20 @@ To test label completion you need to compile the document first!
     f(x) &= 11b
   \end{align}
 \end{subequations}
+
+\newpage
+\glsaddall
+\printglossary[
+  type=gloss,
+  style=long,
+  title={Glossary},
+  toctitle={Glossary}
+]
+\printglossary[
+  type=symbols,
+  style=long,
+  title={List of Symbols},
+  toctitle={List of Symbols}
+]
 
 \end{document}
