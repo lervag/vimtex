@@ -320,7 +320,7 @@ function! s:parse_caption_table(line)
   while i <= v:foldend
     if getline(i) =~# '^\s*\\caption'
       return matchstr(getline(i),
-            \ '^\s*\\caption\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
+            \ '^\s*\\caption\s*\(\[.*\]\)\?\s*{\zs.\{-1,}\ze\(}\s*\)\?$')
     end
     let i += 1
   endwhile
