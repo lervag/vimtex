@@ -99,7 +99,7 @@ function! vimtex#imaps#init_buffer() " {{{1
   "
   " Add mappings and commands
   "
-  command! -buffer  VimtexListImaps            call vimtex#imaps#list()
+  command! -buffer  VimtexImapsList            call vimtex#imaps#list()
   nnoremap <buffer> <plug>(vimtex-imaps-list) :call vimtex#imaps#list()<cr>
 endfunction
 
