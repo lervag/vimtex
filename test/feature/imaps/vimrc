@@ -1,20 +1,19 @@
 set nocompatible
-let &rtp = '~/.vim/bundle/neosnippet.vim/,' . &rtp
 let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-let g:vimtex_imaps_snippet_engine = 'neosnippet'
+let g:vimtex_imaps_disabled = [
+      \ 'a',
+      \ 'S',
+      \]
 
-let g:vimtex_imaps_list = [
-    \ { 'lhs_rhs' : ['((',    '\left($1\right)'],
-    \   'leader' : '',
-    \   'wrapper' : 's:wrap_math_snippet'},
-    \]
-
-" Add custom mapping through vimtex#imap#add_map
+call vimtex#imaps#add_map({ 'lhs' : 'vv', 'rhs' : '\vec{' })
 call vimtex#imaps#add_map({
-      \ 'lhs_rhs' : [ 'v', '\vec{${1}}${0}'],
-      \ 'wrapper' : 's:wrap_math_snippet'})
+  \ 'lhs' : 'test',
+  \ 'rhs' : 'tested',
+  \ 'leader' : '',
+  \ 'wrapper' : 'vimtex#imaps#wrap_trivial',
+  \})
 

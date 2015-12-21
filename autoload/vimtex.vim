@@ -393,6 +393,10 @@ function! s:init_mappings() " {{{1
       call s:map('n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
     endif
   endif
+
+  if g:vimtex_imaps_enabled
+    call s:map('n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
+  endif
 endfunction
 
 " }}}1

@@ -8,24 +8,99 @@ function! vimtex#imaps#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_imaps_enabled', 1)
   call vimtex#util#set_default('g:vimtex_imaps_leader', '`')
   call vimtex#util#set_default('g:vimtex_imaps_disabled', [])
-  call vimtex#util#set_default('g:vimtex_imaps_snippet_engine', 'ultisnips')
-  call vimtex#util#set_default('g:vimtex_imaps_list', s:default_maps())
+  call vimtex#util#set_default('g:vimtex_imaps_list', [
+        \ { 'lhs' : '0',  'rhs' : '\emptyset' },
+        \ { 'lhs' : '6',  'rhs' : '\partial' },
+        \ { 'lhs' : '8',  'rhs' : '\infty' },
+        \ { 'lhs' : '=',  'rhs' : '\equiv' },
+        \ { 'lhs' : '\',  'rhs' : '\setminus' },
+        \ { 'lhs' : '.',  'rhs' : '\cdot' },
+        \ { 'lhs' : '*',  'rhs' : '\times' },
+        \ { 'lhs' : '<',  'rhs' : '\leq' },
+        \ { 'lhs' : '>',  'rhs' : '\geq' },
+        \ { 'lhs' : '[',  'rhs' : '\subseteq' },
+        \ { 'lhs' : ']',  'rhs' : '\supseteq' },
+        \ { 'lhs' : '{',  'rhs' : '\subset' },
+        \ { 'lhs' : '}',  'rhs' : '\supset' },
+        \ { 'lhs' : 'qj', 'rhs' : '\downarrow' },
+        \ { 'lhs' : 'qJ', 'rhs' : '\Downarrow' },
+        \ { 'lhs' : 'qk', 'rhs' : '\uparrow' },
+        \ { 'lhs' : 'qK', 'rhs' : '\Uparrow' },
+        \ { 'lhs' : 'ql', 'rhs' : '\leftarrow' },
+        \ { 'lhs' : 'qL', 'rhs' : '\Leftarrow' },
+        \ { 'lhs' : 'qh', 'rhs' : '\rightarrow' },
+        \ { 'lhs' : 'qH', 'rhs' : '\Rightarrow' },
+        \ { 'lhs' : 'a',  'rhs' : '\alpha' },
+        \ { 'lhs' : 'b',  'rhs' : '\beta' },
+        \ { 'lhs' : 'c',  'rhs' : '\chi' },
+        \ { 'lhs' : 'd',  'rhs' : '\delta' },
+        \ { 'lhs' : 'e',  'rhs' : '\epsilon' },
+        \ { 'lhs' : 'f',  'rhs' : '\varphi' },
+        \ { 'lhs' : 'g',  'rhs' : '\gamma' },
+        \ { 'lhs' : 'h',  'rhs' : '\eta' },
+        \ { 'lhs' : 'i',  'rhs' : '\iota' },
+        \ { 'lhs' : 'k',  'rhs' : '\kappa' },
+        \ { 'lhs' : 'l',  'rhs' : '\lambda' },
+        \ { 'lhs' : 'm',  'rhs' : '\mu' },
+        \ { 'lhs' : 'n',  'rhs' : '\nu' },
+        \ { 'lhs' : 'p',  'rhs' : '\pi' },
+        \ { 'lhs' : 'q',  'rhs' : '\theta' },
+        \ { 'lhs' : 'r',  'rhs' : '\rho' },
+        \ { 'lhs' : 's',  'rhs' : '\sigma' },
+        \ { 'lhs' : 't',  'rhs' : '\tau' },
+        \ { 'lhs' : 'y',  'rhs' : '\psi' },
+        \ { 'lhs' : 'u',  'rhs' : '\upsilon' },
+        \ { 'lhs' : 'v',  'rhs' : '\vartheta' },
+        \ { 'lhs' : 'w',  'rhs' : '\omega' },
+        \ { 'lhs' : 'z',  'rhs' : '\zeta' },
+        \ { 'lhs' : 'x',  'rhs' : '\xi' },
+        \ { 'lhs' : 'A',  'rhs' : '\Alpha' },
+        \ { 'lhs' : 'B',  'rhs' : '\Beta' },
+        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
+        \ { 'lhs' : 'D',  'rhs' : '\Delta' },
+        \ { 'lhs' : 'E',  'rhs' : '\varepsilon' },
+        \ { 'lhs' : 'Z',  'rhs' : '\Zeta' },
+        \ { 'lhs' : 'Y',  'rhs' : '\Eta' },
+        \ { 'lhs' : 'F',  'rhs' : '\Phi' },
+        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
+        \ { 'lhs' : 'L',  'rhs' : '\Lambda' },
+        \ { 'lhs' : 'N',  'rhs' : '\Nabla' },
+        \ { 'lhs' : 'P',  'rhs' : '\Pi' },
+        \ { 'lhs' : 'Q',  'rhs' : '\Theta' },
+        \ { 'lhs' : 'R',  'rhs' : '\varrho' },
+        \ { 'lhs' : 'S',  'rhs' : '\Sigma' },
+        \ { 'lhs' : 'W',  'rhs' : '\Omega' },
+        \ { 'lhs' : 'X',  'rhs' : '\Xi' },
+        \ { 'lhs' : 'Y',  'rhs' : '\Psi' },
+        \ { 'lhs' : 'U',  'rhs' : '\Upsilon' },
+        \])
 endfunction
 
 " }}}1
 function! vimtex#imaps#init_script() " {{{1
-  let l:rtp = split(&rtp, ',')
-  let s:has_ultisnips = len(filter(copy(l:rtp), "v:val =~? 'ultisnips'")) > 0
-  let s:has_neosnippet = len(filter(copy(l:rtp), "v:val =~? 'neosnippet'")) > 0
+  let s:created_maps = []
 endfunction
 
 " }}}1
 function! vimtex#imaps#init_buffer() " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
-  for l:map in g:vimtex_imaps_list + get(s:, 'custom_maps', [])
+  "
+  " Create imaps
+  "
+  let l:maps = g:vimtex_imaps_list
+  for l:disable in g:vimtex_imaps_disabled
+    let l:maps = filter(l:maps, 'v:val.lhs !=# ''' . l:disable . '''')
+  endfor
+  for l:map in l:maps + get(s:, 'custom_maps', [])
     call s:create_map(l:map)
   endfor
+
+  "
+  " Add mappings and commands
+  "
+  command! -buffer  VimtexListImaps            call vimtex#imaps#list()
+  nnoremap <buffer> <plug>(vimtex-imaps-list) :call vimtex#imaps#list()<cr>
 endfunction
 
 " }}}1
@@ -35,126 +110,66 @@ function! vimtex#imaps#add_map(map) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#imaps#list() " {{{1
+  silent new vimtex\ imaps
 
+  for l:map in s:created_maps
+    call append('$', printf('%5S  ->  %-30S %S',
+          \ get(l:map, 'leader', g:vimtex_imaps_leader) . l:map.lhs,
+          \ l:map.rhs,
+          \ get(l:map, 'wrapper', 'vimtex#imaps#wrap_math')))
+  endfor
+  0delete _
+
+  nnoremap <silent><buffer> q     :bwipeout<cr>
+  nnoremap <silent><buffer> <esc> :bwipeout<cr>
+
+  setlocal bufhidden=wipe
+  setlocal buftype=nofile
+  setlocal concealcursor=nvic
+  setlocal conceallevel=0
+  setlocal cursorline
+  setlocal nobuflisted
+  setlocal nolist
+  setlocal nospell
+  setlocal noswapfile
+  setlocal nowrap
+  setlocal nonumber
+  setlocal norelativenumber
+  setlocal nomodifiable
+
+  syntax match VimtexImapsLhs     /^.*\ze->/ nextgroup=VimtexImapsArrow
+  syntax match VimtexImapsArrow   /->/       contained nextgroup=VimtexImapsRhs
+  syntax match VimtexImapsRhs     /\s*\S*/   contained nextgroup=VimtexImapsWrapper
+  syntax match VimtexImapsWrapper /.*/       contained
+  highlight link VimtexImapsLhs ModeMsg
+  highlight link VimtexImapsArrow Comment
+  highlight link VimtexImapsRhs ModeMsg
+  highlight link VimtexImapsWrapper Type
+endfunction
+
+" }}}1
+
+"
+" The imap generator
+"
 function! s:create_map(map) " {{{1
-  let l:lhs = a:map.lhs_rhs[0]
-  let l:rhs = a:map.lhs_rhs[1]
   let l:leader = get(a:map, 'leader', g:vimtex_imaps_leader)
-  let l:wrapper = get(a:map, 'wrapper', '')
-
-  " Don't create map if it is disabled
-  if index(g:vimtex_imaps_disabled, l:lhs) >= 0 | return | endif
-
-  " Don't create map if snippet feature is not active/available
-  if !s:test_snippet_requirement(l:wrapper) | return | endif
-
-  " Escape leader if it exists
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
   endif
 
-  " Apply wrapper
-  if l:wrapper !=# '' && exists('*' . l:wrapper)
-    let l:rhs = call(l:wrapper, [l:leader . l:lhs, l:rhs])
+  let l:wrapper = get(a:map, 'wrapper', 'vimtex#imaps#wrap_math')
+  if ! exists('*' . l:wrapper)
+    echoerr 'vimtex error: imaps wrapper does not exist!'
+    echoerr '              ' . l:wrapper
+    return
   endif
 
-  " Add mapping
-  silent execute 'inoremap <silent><buffer>' l:leader . l:lhs l:rhs
-endfunction
+  silent execute 'inoremap <expr><silent><buffer>' l:leader . a:map.lhs
+        \ l:wrapper . '(''' . a:map.lhs . ''', ''' . a:map.rhs . ''')'
 
-" }}}1
-function! s:default_maps() " {{{1
-  " Define snippet maps with neosnippet syntax
-  let snippets = [
-          \ { 'lhs_rhs' : ['__',    '_\{${1}\}${0}'],             'leader' : '',   'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['^^',    '^\{${1}\}${0}'],             'leader' : '',   'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['((',    '\left(${1}\right)${0}'],     'leader' : '',   'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['[[',    '\left[${1}\right]${0}'],     'leader' : '',   'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['{{',    '\left\\{${1}\right\\}${0}'], 'leader' : '',   'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['i',     '\int_{${1}}^{${2}}${0}'],    'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['S',     '\sum_{${1}}^{${2}}${0}'],    'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['/',     '\frac{${1}}{${2}}${0}'],     'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['~',     '\tilde{${1}}${0}'],          'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['^',     '\hat{${1}}${0}'],            'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : [':',     '\dot{${1}}${0}'],            'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['_',     '\bar{${1}}${0}'],            'wrapper' : 's:wrap_math_snippet'},
-          \ { 'lhs_rhs' : ['lim',   '\lim_{${1}}${0}'],           'wrapper' : 's:wrap_math_snippet'},
-          \]
-
-  " Convert to ultisnips syntax if desired
-  if g:vimtex_imaps_snippet_engine ==# 'ultisnips'
-    for snippet in snippets
-      let snippet.lhs_rhs[1]
-            \ = substitute(snippet.lhs_rhs[1], '\${\(\d\)}', '$\1', 'g')
-    endfor
-  endif
-
-  " Return default snippet list including list of simple maps
-  return snippets + [
-        \ { 'lhs_rhs' : ['0',     '\emptyset'],   'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['6',     '\partial'],    'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['8',     '\infty'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['=',     '\equiv'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['\',     '\setminus'],   'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['.',     '\cdot'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['*',     '\times'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['<',     '\leq'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['>',     '\geq'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['[',     '\subseteq'],   'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : [']',     '\supseteq'],   'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['{',     '\subset'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['}',     '\supset'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qj',    '\downarrow'],  'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qJ',    '\Downarrow'],  'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qk',    '\uparrow'],    'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qK',    '\Uparrow'],    'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['ql',    '\leftarrow'],  'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qL',    '\Leftarrow'],  'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qh',    '\rightarrow'], 'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['qH',    '\Rightarrow'], 'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['a',     '\alpha'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['b',     '\beta'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['c',     '\chi'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['d',     '\delta'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['e',     '\epsilon'],    'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['f',     '\varphi'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['g',     '\gamma'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['h',     '\eta'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['i',     '\iota'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['k',     '\kappa'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['l',     '\lambda'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['m',     '\mu'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['n',     '\nu'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['p',     '\pi'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['q',     '\theta'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['r',     '\rho'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['s',     '\sigma'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['t',     '\tau'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['y',     '\psi'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['u',     '\upsilon'],    'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['v',     '\vartheta'],   'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['w',     '\omega'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['z',     '\zeta'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['x',     '\xi'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['A',     '\Alpha'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['B',     '\Beta'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['G',     '\Gamma'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['D',     '\Delta'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['E',     '\varepsilon'], 'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['Z',     '\Zeta'],       'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['Y',     '\Eta'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['F',     '\Phi'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['G',     '\Gamma'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['L',     '\Lambda'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['N',     '\Nabla'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['P',     '\Pi'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['Q',     '\Theta'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['R',     '\varrho'],     'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['W',     '\Omega'],      'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['X',     '\Xi'],         'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['Y',     '\Psi'],        'wrapper' : 's:wrap_math'},
-        \ { 'lhs_rhs' : ['U',     '\Upsilon'],    'wrapper' : 's:wrap_math'},
-        \]
+  let s:created_maps += [a:map]
 endfunction
 
 " }}}1
@@ -162,48 +177,23 @@ endfunction
 "
 " Wrappers
 "
-function! s:wrap_math(lhs, rhs) " {{{1
-  return '<c-r>=<sid>is_math() ? ' . string(a:rhs)
-        \ . ' : ' . string(a:lhs) . '<cr>'
+function! vimtex#imaps#wrap_trivial(lhs, rhs) " {{{1
+  return a:rhs
 endfunction
 
 " }}}1
-function! s:wrap_snippet(lhs, rhs) " {{{1
-  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=neosnippet#anonymous(''' . a:rhs . ''')<cr>'
-  else
-    return a:lhs . '<c-r>=UltiSnips#Anon('''
-          \ . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')<cr>'
-  endif
-endfunction
-
-" }}}1
-function! s:wrap_math_snippet(lhs, rhs) " {{{1
-  if g:vimtex_imaps_snippet_engine ==# 'neosnippet'
-    return '<c-r>=<sid>is_math() ? neosnippet#anonymous(''' . a:rhs . ''')'
-          \ . ' : ' . string(a:lhs) . '<cr>'
-  else
-    return a:lhs . '<c-r>=<sid>is_math() ? '
-          \ . 'UltiSnips#Anon(''' . a:rhs . ''', ''' . a:lhs . ''', '''', ''i'')'
-          \ . ': ''''<cr>'
-  endif
+function! vimtex#imaps#wrap_math(lhs, rhs) " {{{1
+  return s:is_math() ? a:rhs : a:lhs
 endfunction
 
 " }}}1
 
 "
-" Helper functions
+" Helpers
 "
 function! s:is_math() " {{{1
   return match(map(synstack(line('.'), max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]S\?$') >= 0
-endfunction
-
-" }}}1
-function! s:test_snippet_requirement(func_name) " {{{1
-  return (a:func_name !~# 'snippet$')
-        \ || (g:vimtex_imaps_snippet_engine ==# 'neosnippet' && s:has_neosnippet)
-        \ || (g:vimtex_imaps_snippet_engine ==# 'ultisnips'  && s:has_ultisnips)
 endfunction
 
 " }}}1

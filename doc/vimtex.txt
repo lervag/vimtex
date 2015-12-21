@@ -290,6 +290,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lG  |<plug>(vimtex-status-all)|           `n`
    <localleader>lc  |<plug>(vimtex-clean)|                `n`
    <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
+   <localleader>lm  |<plug>(vimtex-imaps-list)|           `n`
    <localleader>lx  |<plug>(vimtex-reload)|               `n`
    dse              |<plug>(vimtex-delete-env)|           `n`
    dsc              |<plug>(vimtex-delete-cmd)|           `n`
@@ -461,7 +462,7 @@ Options~
       \ ]
 <
 *g:vimtex_imaps_enabled*
-  Use this option to disable/enable insert mode mappings.
+  Use this option to disable/enable the insert mode mappings.
 
   Default value: 1
 
@@ -478,16 +479,11 @@ Options~
 
   Default value: []
 
-*g:vimtex_imaps_snippet_engine*
-  Snippet engine for advanced mappings. May be either 'neosnippet' or
-  'ultisnips'.
-
-  Default value: 'ultisnips'
-
 *g:vimtex_imaps_list*
-  The list of mappings to generate on start up.
+  The list of mappings to generate on start up. The list of activated mappings
+  can be viewed with |VimtexImapsList|.
 
-  Default value: Complicated, please see the source file for exact value
+  Default value: Complicated, please see the source file for exact value:
                  `autoload/vimtex/imaps.vim`
 
 *g:vimtex_indent_enabled*
@@ -1041,6 +1037,13 @@ Commands~
 
                             texcount -nosub -sub -inc FILE
 <
+                                             *VimtexImapsList*
+                                             *<plug>(vimtex-imaps-list)*
+:VimtexImapsList          Show the list of insert mode mappings created by the
+                          |vimtex-imaps| feature. The mappings are displayed
+                          in a scratch buffer. Press `q` or `<esc>` to close
+                          the buffer.
+
 ------------------------------------------------------------------------------
 Map definitions~
                                                               *vimtex-mappings*
@@ -1123,26 +1126,14 @@ Map definitions~
 Map definitions~
                                                                  *vimtex-imaps*
 
-The following feature is optional. It is enabled by default, but may be
-disabled with |g:vimtex_imaps_enabled|.
-
 Some LaTeX commands are very common, and so it is both natural and convenient
 to have insert mode mappings/abbreviations for them. |vimtex| therefore
 provides a list of such mappings that are enabled by default, see
-|g:vimtex_imaps_list|. Most of the mappings utilize a map leader defined by
-|g:vimtex_imaps_leader|. Also, many of the mappings are only active inside
-mathematical environments.
-
-Some of the default mappings utilize a snippet engine, either the function
-|UltiSnips#Anon| from |UltiSnips| or the function |neosnippet#anonymous| from
-|neosnippet|, in order to provide a more advanced snippet-like functionality.
-This is meant to be used for very simple things. For instance, the sequence
-`((` expands directly to `\left(|\right)` (though only when inside a math
-environment). Both snippet engines then allow a trigger key to jump out of the
-snippet. Note that only |neosnippet| allows nested snippets. However, the
-|neosnippet#anonymous| function was only very recently added to |neosnippet|,
-and so it requires a recent version in order to work. See also the option
-|g:vimtex_imaps_snippet_engine|.
+|g:vimtex_imaps_list|. The mappings utilize a map leader defined by
+|g:vimtex_imaps_leader|. The default list of maps are all math mode mappings,
+but one may also add mappings that are available and useful outside of math
+mode. To see the list of mappings that are created, one can use the command
+|VimtexImapsList|, which is by default mapped to `<localleader>lm`.
 
 It is of course possible to customize the list of mappings. First, one may
 specifically disable a default mapping through |g:vimtex_imaps_disabled|.
@@ -1151,26 +1142,15 @@ default list. Finally, one may add new maps through calls to the function
 |vimtex#imap#add_map|. The following are some examples of how to customize the
 mappings: >
 
-  " Disable <m-i> mapping
-  let g:vimtex_imaps_disabled = ['<m-i>']
-
-  " Define three of the default mappings
-  let g:vimtex_imaps_list = [
-    \ { 'lhs_rhs' : ['__',    '_\{$1\}'],
-       \'leader' : '',
-       \'wrapper' : 's:wrap_math_snippet'},
-    \ { 'lhs_rhs' : ['^^',    '^\{$1\}'],
-       \'leader' : '',
-       \'wrapper' : 's:wrap_math_snippet'},
-    \ { 'lhs_rhs' : ['((',    '\left($1\right)'],
-        \'leader' : '',
-        \'wrapper' : 's:wrap_math_snippet'},
-    \]
+  " Disable \alpha and \beta mappings
+  let g:vimtex_imaps_disabled = ['a', 'b']
 
   " Add custom mapping through vimtex#imap#add_map
   call vimtex#imaps#add_map({
-    \ 'lhs_rhs' : [ 'v', '\vec{$1}'],
-    \ 'wrapper' : 's:wrap_math_ultisnips'})
+    \ 'lhs' : 'test',
+    \ 'rhs' : '\tested',
+    \ 'wrapper' : 'vimtex#imaps#wrap_trivial'
+    \})
 <
                                                          *vimtex#imaps#add_map*
 
@@ -1178,36 +1158,46 @@ This function is used to add new insert mode mappings. It takes a single
 dictionary argument: >
 
   map = {
-    \ 'lhs_rhs' : [lhs, rhs],
+    \ 'lhs' : lhs,
+    \ 'rhs' : rhs,
     \ 'leader' : leader_key,
     \ 'wrapper' : function_name
     \ }
 
 Explanation of the keys:
 
+  lhs~
+    Mandatory argument. The left-hand side part of the map.
+
   lhs_rhs~
-    The only mandatory argument: It is a list with two elements, `lhs` and
-    `rhs`, respectively. If nothing else is specified, |vimtex#imaps#add_map|
-    simply creates an insert mode mapping from `lhs` to `rhs`.
+    Mandatory argument. The right-hand side part of the map.
 
   leader~
     Custom leader key. If the key is not present, then |g:vimtex_imaps_leader|
     is used as leader key.
 
   wrapper~
-    The name of a wrapper function that is applied to `rhs`. Three functions
-    are available from |vimtex|:
+    The name of a wrapper function that is used to generate the `rhs`. Two
+    functions are available from |vimtex|:
 
-      `s:wrap_math`           Only define `rhs` if inside a math environment.
-      `s:wrap_snippet`        Send `rhs` through the chosen snippet engine in
-                            order to create an anonymous snippet. See
-                            |g:vimtex_imaps_snippet_engine| for more details.
-      `s:wrap_math_snippet`   Same as `s:wrap_snippet`, except it is only
-                            expanded when inside a math environment.
+      `vimtex#imaps#wrap_trivial`  Trivial wrapper: Simply returns `rhs`.
+      `vimtex#imaps#wrap_math`     Only define `rhs` if inside a math environment.
+                                 This is the default wrapper function and will
+                                 be used if no other wrapper is supplied.
 
     Of course, one may use custom wrapper functions. To write a custom wrapper
     function, please see the source for examples on how the |vimtex| wrappers
     are written.
+
+Note: that this feature is not the same as the snippet feature of |UltiSnips|
+or |neosnippet|. The imaps feature of |vimtex| previously supported `automatic`
+snippets, but these have been removed after careful considerations and input
+from |vimtex| users, please see vimtex issue #295:
+https://github.com/lervag/vimtex/issues/295#issuecomment-164262446
+It has been decided that the best approach is to only provide basic mappings,
+and to let users manully create automatic snippets through the anonymous
+snippet functions in |UltiSnips| and |neosnippet|, please see |UltiSnips#Anon|
+and |neosnippet#anonymous|, respectively.
 
 ------------------------------------------------------------------------------
 Events~
