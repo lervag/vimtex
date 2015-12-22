@@ -7,6 +7,8 @@
 function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
+  call vimtex#util#set_default('g:vimtex_latexmk_progname',
+        \ get(v:, 'progpath', get(v:, 'progname')))
   if !g:vimtex_latexmk_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
@@ -14,8 +16,6 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_file_line_error', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
-  call vimtex#util#set_default('g:vimtex_latexmk_progname',
-        \ get(v:, 'progpath', get(v:, 'progname')))
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
@@ -418,7 +418,7 @@ function! s:latexmk_build_cmd() " {{{1
     endif
   endif
 
-  if g:vimtex_latexmk_callback && has('clientserver')
+  if g:vimtex_latexmk_callback && exists('v:servername')
     let success  = '\"' . g:vimtex_latexmk_progname . '\"'
     let success .= ' --servername ' . v:servername
     let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'

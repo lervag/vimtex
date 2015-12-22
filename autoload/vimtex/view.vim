@@ -333,7 +333,7 @@ endfunction
 function! s:zathura.start(outfile) dict " {{{2
   let exe = {}
   let exe.cmd  = 'zathura ' .  g:vimtex_view_zathura_options
-  let exe.cmd .= ' -x "' . exepath(v:progname)
+  let exe.cmd .= ' -x "' . g:vimtex_latexmk_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
   let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
@@ -375,7 +375,7 @@ function! s:zathura.latexmk_append_argument() dict " {{{2
   let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
   let cmd .= vimtex#latexmk#add_option('pdf_previewer',
         \ 'zathura ' . g:vimtex_view_zathura_options
-        \ . ' -x \"' . exepath(v:progname)
+        \ . ' -x \"' . g:vimtex_latexmk_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}\" \%S')
 
