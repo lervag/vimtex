@@ -1662,6 +1662,29 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
    `vimtex`.  Suggested solution is to remove `{,}` from |isfname| by: >
 
   set isfname-={,}
+<
+                                                            *vimtex-faq-neovim*
+Q: Does |vimtex| work with neovim?
+A: Yes, partly. Most features work out of the box, but the `latexmk` coupling
+   and some if the viewer functionality require the |--remote| options from
+   the |clientserver|. For some reason, these options have been removed from
+   neovim, see #1750 [0]. There does remain some hope that the options will be
+   reimplemented sometime in the future, and there is an open issue on vimtex
+   (#262 [1]) that will remain open until neovim is fully supported.
+
+   In the meantime, there exists a workaround: `neovim-remote` [2] is a simple
+   tool that implements the |--remote| options through a python script. If one
+   downloads this tool and sets the option |g:vimtex_latexmk_progname| to
+   `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
+   should work.
+
+   Note: I do not plan to implement a custom solution for neovim in |vimtex|.
+         This means that support for neovim must either come from an update on
+         the neovim issue #1750, or through the mentioned workaround.
+
+   [0]: https://github.com/neovim/neovim/issues/1750
+   [1]: https://github.com/lervag/vimtex/issues/262
+   [2]: https://github.com/mhinz/neovim-remote
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
