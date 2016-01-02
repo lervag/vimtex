@@ -88,6 +88,14 @@ function! VimtexIndent() " {{{1
     endif
   endif
 
+  " Add/Subtract indent on begin/end displayed equation
+  if pline =~# '\\\[\s*$'
+    let ind = ind + &sw
+  endif
+  if pline =~# '\\\]\s*$'
+    let ind = ind - &sw
+  endif
+
   " Indent opening and closing delimiters
   let l:delimiters = match(map(synstack(v:lnum, max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
@@ -144,15 +152,11 @@ let s:delimiters_open_tex = '\(' . join([
         \ '{',
         \ '\[',
         \ '\\(',
-        \ '\\\[',
-        \ '\\\Cbegin\s*{.\{-}}',
       \ ], '\|') . '\)'
 let s:delimiters_close_tex = '\(' . join([
         \ '}',
         \ '\]',
         \ '\\)',
-        \ '\\\]',
-        \ '\\\Cend\s*{.\{-}}',
       \ ], '\|') . '\)'
 let s:delimiters_open_math = '\(' . join([
         \ '\\{',
