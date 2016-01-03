@@ -17,76 +17,7 @@ function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
   let s:completers = [s:bib, s:ref]
-
-  "
-  " Define list for converting stuff like '\IeC{\"u}' to corresponding unicode
-  " symbols (with s:tex2unicode()).
-  "
-  let s:tex2unicode_list = map([
-        \ ['\\''A}'        , 'Á'],
-        \ ['\\`A}'         , 'À'],
-        \ ['\\^A}'         , 'À'],
-        \ ['\\¨A}'         , 'Ä'],
-        \ ['\\"A}'         , 'Ä'],
-        \ ['\\''a}'        , 'á'],
-        \ ['\\`a}'         , 'à'],
-        \ ['\\^a}'         , 'à'],
-        \ ['\\¨a}'         , 'ä'],
-        \ ['\\"a}'         , 'ä'],
-        \ ['\\\~a}'        , 'ã'],
-        \ ['\\''E}'        , 'É'],
-        \ ['\\`E}'         , 'È'],
-        \ ['\\^E}'         , 'Ê'],
-        \ ['\\¨E}'         , 'Ë'],
-        \ ['\\"E}'         , 'Ë'],
-        \ ['\\''e}'        , 'é'],
-        \ ['\\`e}'         , 'è'],
-        \ ['\\^e}'         , 'ê'],
-        \ ['\\¨e}'         , 'ë'],
-        \ ['\\"e}'         , 'ë'],
-        \ ['\\''I}'        , 'Í'],
-        \ ['\\`I}'         , 'Î'],
-        \ ['\\^I}'         , 'Ì'],
-        \ ['\\¨I}'         , 'Ï'],
-        \ ['\\"I}'         , 'Ï'],
-        \ ['\\''i}'        , 'í'],
-        \ ['\\`i}'         , 'î'],
-        \ ['\\^i}'         , 'ì'],
-        \ ['\\¨i}'         , 'ï'],
-        \ ['\\"i}'         , 'ï'],
-        \ ['\\''{\?\\i }'  , 'í'],
-        \ ['\\''O}'        , 'Ó'],
-        \ ['\\`O}'         , 'Ò'],
-        \ ['\\^O}'         , 'Ô'],
-        \ ['\\¨O}'         , 'Ö'],
-        \ ['\\"O}'         , 'Ö'],
-        \ ['\\''o}'        , 'ó'],
-        \ ['\\`o}'         , 'ò'],
-        \ ['\\^o}'         , 'ô'],
-        \ ['\\¨o}'         , 'ö'],
-        \ ['\\"o}'         , 'ö'],
-        \ ['\\o }'         , 'ø'],
-        \ ['\\''U}'        , 'Ú'],
-        \ ['\\`U}'         , 'Ù'],
-        \ ['\\^U}'         , 'Û'],
-        \ ['\\¨U}'         , 'Ü'],
-        \ ['\\"U}'         , 'Ü'],
-        \ ['\\''u}'        , 'ú'],
-        \ ['\\`u}'         , 'ù'],
-        \ ['\\^u}'         , 'û'],
-        \ ['\\¨u}'         , 'ü'],
-        \ ['\\"u}'         , 'ü'],
-        \ ['\\`N}'         , 'Ǹ'],
-        \ ['\\\~N}'        , 'Ñ'],
-        \ ['\\''n}'        , 'ń'],
-        \ ['\\`n}'         , 'ǹ'],
-        \ ['\\\~n}'        , 'ñ'],
-        \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 endfunction
-
-" The variable s:bstfile must be defined in script level in order to expand
-" into the script file name.
-let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
 
 " }}}1
 function! vimtex#complete#init_buffer() " {{{1
@@ -105,9 +36,6 @@ endfunction
 
 function! vimtex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
-    "
-    " First call:  Find start of text to be completed
-    "
     let pos  = col('.') - 1
     let line = getline('.')[:pos-1]
     for l:completer in s:completers
@@ -127,9 +55,6 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     endfor
     return -3
   else
-    "
-    " Second call:  Find list of matches
-    "
     return s:completer.complete(a:base)
   endif
 endfunction
@@ -148,6 +73,7 @@ let s:bib = {
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
       \ 'type_length' : 0,
+      \ 'bstfile' :  expand('<sfile>:p:h') . '/vimcomplete',
       \}
 
 function! s:bib.init() dict " {{{2
@@ -221,7 +147,7 @@ function! s:bib.search(regexp) dict " {{{2
     " Write temporary aux file
     call writefile([
           \ '\citation{*}',
-          \ '\bibstyle{' . s:bstfile . '}',
+          \ '\bibstyle{' . self.bstfile . '}',
           \ '\bibdata{' . bibfiles . '}',
           \ ], tmp.aux)
 
@@ -450,6 +376,70 @@ function! s:tex2unicode(line) " {{{1
   "
   return substitute(line, '\C\(\\IeC\s*{\)\?\\.\(.\)}', '\1', 'g')
 endfunction
+
+"
+" Define list for converting '\IeC{\"u}' to corresponding unicode symbols
+"
+let s:tex2unicode_list = map([
+      \ ['\\''A}'        , 'Á'],
+      \ ['\\`A}'         , 'À'],
+      \ ['\\^A}'         , 'À'],
+      \ ['\\¨A}'         , 'Ä'],
+      \ ['\\"A}'         , 'Ä'],
+      \ ['\\''a}'        , 'á'],
+      \ ['\\`a}'         , 'à'],
+      \ ['\\^a}'         , 'à'],
+      \ ['\\¨a}'         , 'ä'],
+      \ ['\\"a}'         , 'ä'],
+      \ ['\\\~a}'        , 'ã'],
+      \ ['\\''E}'        , 'É'],
+      \ ['\\`E}'         , 'È'],
+      \ ['\\^E}'         , 'Ê'],
+      \ ['\\¨E}'         , 'Ë'],
+      \ ['\\"E}'         , 'Ë'],
+      \ ['\\''e}'        , 'é'],
+      \ ['\\`e}'         , 'è'],
+      \ ['\\^e}'         , 'ê'],
+      \ ['\\¨e}'         , 'ë'],
+      \ ['\\"e}'         , 'ë'],
+      \ ['\\''I}'        , 'Í'],
+      \ ['\\`I}'         , 'Î'],
+      \ ['\\^I}'         , 'Ì'],
+      \ ['\\¨I}'         , 'Ï'],
+      \ ['\\"I}'         , 'Ï'],
+      \ ['\\''i}'        , 'í'],
+      \ ['\\`i}'         , 'î'],
+      \ ['\\^i}'         , 'ì'],
+      \ ['\\¨i}'         , 'ï'],
+      \ ['\\"i}'         , 'ï'],
+      \ ['\\''{\?\\i }'  , 'í'],
+      \ ['\\''O}'        , 'Ó'],
+      \ ['\\`O}'         , 'Ò'],
+      \ ['\\^O}'         , 'Ô'],
+      \ ['\\¨O}'         , 'Ö'],
+      \ ['\\"O}'         , 'Ö'],
+      \ ['\\''o}'        , 'ó'],
+      \ ['\\`o}'         , 'ò'],
+      \ ['\\^o}'         , 'ô'],
+      \ ['\\¨o}'         , 'ö'],
+      \ ['\\"o}'         , 'ö'],
+      \ ['\\o }'         , 'ø'],
+      \ ['\\''U}'        , 'Ú'],
+      \ ['\\`U}'         , 'Ù'],
+      \ ['\\^U}'         , 'Û'],
+      \ ['\\¨U}'         , 'Ü'],
+      \ ['\\"U}'         , 'Ü'],
+      \ ['\\''u}'        , 'ú'],
+      \ ['\\`u}'         , 'ù'],
+      \ ['\\^u}'         , 'û'],
+      \ ['\\¨u}'         , 'ü'],
+      \ ['\\"u}'         , 'ü'],
+      \ ['\\`N}'         , 'Ǹ'],
+      \ ['\\\~N}'        , 'Ñ'],
+      \ ['\\''n}'        , 'ń'],
+      \ ['\\`n}'         , 'ǹ'],
+      \ ['\\\~n}'        , 'ñ'],
+      \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
 " }}}1
 
