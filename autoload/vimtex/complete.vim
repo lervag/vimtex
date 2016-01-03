@@ -10,47 +10,13 @@ function! vimtex#complete#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
-  call vimtex#util#set_default('g:vimtex_complete_patterns',
-        \ {
-        \ 'ref' : '\C\\v\?\(auto\|eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
-        \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
-        \ })
 endfunction
 
 " }}}1
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  " Check if bibtex is available
-  let s:bibtex = 1
-  if !executable('bibtex')
-    call vimtex#echo#warning('vimtex warning')
-    call vimtex#echo#warning('  bibtex completion is not available!',
-          \ 'None')
-    call vimtex#echo#warning('  bibtex is not executable', 'None')
-    let s:bibtex = 0
-  endif
-
-  " Check if kpsewhich is required and available
-  if s:bibtex && g:vimtex_complete_recursive_bib && !executable('kpsewhich')
-    call vimtex#echo#warning('vimtex warning')
-    call vimtex#echo#warning('  bibtex completion is not available!',
-          \ 'None')
-    call vimtex#echo#warning('  recursive bib search requires kpsewhich',
-          \ 'None')
-    call vimtex#echo#warning('  kpsewhich is not executable', 'None')
-    let s:bibtex = 0
-  endif
-
-  " Define auxiliary variable for completion
-  let s:completion_type = ''
-  let s:type_length = 0
-
-  " Define some regular expressions
-  let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-  let s:re_bibs  = '''' . s:nocomment
-  let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-  let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'''
+  let s:completers = [s:bib, s:ref]
 
   "
   " Define list for converting stuff like '\IeC{\"u}' to corresponding unicode
@@ -126,6 +92,12 @@ let s:bstfile = expand('<sfile>:p:h') . '/vimcomplete'
 function! vimtex#complete#init_buffer() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
+  for l:completer in s:completers
+    if has_key(l:completer, 'init')
+      call l:completer.init()
+    endif
+  endfor
+
   setlocal omnifunc=vimtex#complete#omnifunc
 endfunction
 
@@ -136,16 +108,13 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     "
     " First call:  Find start of text to be completed
     "
-    " Note: g:vimtex_complete_patterns is a dictionary where the keys are the
-    " types of completion and the values are the patterns that must match for
-    " the given type.  Currently, it completes labels (e.g. \ref{...), bibtex
-    " entries (e.g. \cite{...) and commands (e.g. \...).
-    "
     let pos  = col('.') - 1
     let line = getline('.')[:pos-1]
-    for [type, pattern] in items(g:vimtex_complete_patterns)
-      if line =~ pattern . '$'
-        let s:completion_type = type
+    for l:completer in s:completers
+      if !get(l:completer, 'enabled', 0) | return -3 | endif
+
+      if line =~# l:completer.pattern . '$'
+        let s:completer = l:completer
         while pos > 0
           if line[pos - 1] =~# '{\|,' || line[pos-2:pos-1] ==# ', '
             return pos
@@ -161,65 +130,57 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     "
     " Second call:  Find list of matches
     "
-    if s:completion_type ==# 'ref'
-      return vimtex#complete#labels(a:base)
-    elseif s:completion_type ==# 'bib' && s:bibtex
-      return vimtex#complete#bibtex(a:base)
-    endif
+    return s:completer.complete(a:base)
   endif
 endfunction
 
 " }}}1
-function! vimtex#complete#labels(regex) " {{{1
-  let labels = s:labels_get(b:vimtex.aux())
-  let matches = filter(copy(labels), 'v:val[0] =~ ''' . a:regex . '''')
 
-  " Try to match label and number
-  if empty(matches)
-    let regex_split = split(a:regex)
-    if len(regex_split) > 1
-      let base = regex_split[0]
-      let number = escape(join(regex_split[1:], ' '), '.')
-      let matches = filter(copy(labels),
-            \ 'v:val[0] =~ ''' . base   . ''' &&' .
-            \ 'v:val[1] =~ ''' . number . '''')
-    endif
+"
+" Completers
+"
+" {{{1 Bibtex completion
+
+let s:bib = {
+      \ 'pattern' : '\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
+      \ 'enabled' : 1,
+      \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+      \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+      \          . '\m\s*{\zs[^}]\+\ze}''',
+      \ 'type_length' : 0,
+      \}
+
+function! s:bib.init() dict " {{{2
+  " Check if bibtex is executable
+  if !executable('bibtex')
+    let self.enabled = 0
+    call vimtex#echo#warning('vimtex warning')
+    call vimtex#echo#warning('  bibtex completion is not available!', 'None')
+    call vimtex#echo#warning('  bibtex is not executable', 'None')
+    return
   endif
 
-  " Try to match number
-  if empty(matches)
-    let matches = filter(copy(labels), 'v:val[1] =~ ''' . a:regex . '''')
+  " Check if kpsewhich is required and available
+  if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
+    let self.enabled = 0
+    call vimtex#echo#warning('vimtex warning')
+    call vimtex#echo#warning('  bibtex completion is not available!', 'None')
+    call vimtex#echo#warning('  recursive bib search requires kpsewhich', 'None')
+    call vimtex#echo#warning('  kpsewhich is not executable', 'None')
   endif
-
-  let suggestions = []
-  for m in matches
-    let entry = {
-          \ 'word': m[0],
-          \ 'menu': printf('%7s [p. %s]', '('.m[1].')', m[2])
-          \ }
-    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
-      let entry = copy(entry)
-      let entry.abbr = entry.word
-      let entry.word = entry.word . '}'
-    endif
-    call add(suggestions, entry)
-  endfor
-
-  return suggestions
 endfunction
 
-" }}}1
-function! vimtex#complete#bibtex(regexp) " {{{1
+function! s:bib.complete(regexp) dict " {{{2
   let res = []
 
-  let s:type_length = 4
-  for m in s:bibtex_search(a:regexp)
+  let self.type_length = 4
+  for m in self.search(a:regexp)
     let type = m['type']   ==# '' ? '[-]' : '[' . m['type']   . '] '
     let auth = m['author'] ==# '' ? ''    :       m['author'][:20] . ' '
     let year = m['year']   ==# '' ? ''    : '(' . m['year']   . ')'
 
     " Align the type entry and fix minor annoyance in author list
-    let type = printf('%-' . s:type_length . 's', type)
+    let type = printf('%-' . self.type_length . 's', type)
     let auth = substitute(auth, '\~', ' ', 'g')
     let auth = substitute(auth, ',.*\ze', ' et al. ', '')
 
@@ -240,12 +201,7 @@ function! vimtex#complete#bibtex(regexp) " {{{1
   return res
 endfunction
 
-" }}}1
-
-"
-" Bibtex completion
-"
-function! s:bibtex_search(regexp) " {{{1
+function! s:bib.search(regexp) dict " {{{2
   let res = []
 
   " The bibtex completion seems to require that we are in the project root
@@ -253,7 +209,7 @@ function! s:bibtex_search(regexp) " {{{1
   execute 'lcd ' . fnameescape(b:vimtex.root)
 
   " Find data from external bib files
-  let bibfiles = join(s:bibtex_find_bibs(), ',')
+  let bibfiles = join(self.find_bibs(), ',')
   if bibfiles !=# ''
     " Define temporary files
     let tmp = {
@@ -285,7 +241,7 @@ function! s:bibtex_search(regexp) " {{{1
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
-        let s:type_length = max([s:type_length, len(matches[2]) + 3])
+        let self.type_length = max([self.type_length, len(matches[2]) + 3])
         call add(res, {
               \ 'key':    matches[1],
               \ 'type':   matches[2],
@@ -324,8 +280,7 @@ function! s:bibtex_search(regexp) " {{{1
   return res
 endfunction
 
-" }}}1
-function! s:bibtex_find_bibs() " {{{1
+function! s:bib.find_bibs() dict " {{{2
   "
   " Search for added bibliographies
   " * Parse commands such as \bibliography{file1,file2.bib,...}
@@ -336,8 +291,8 @@ function! s:bibtex_find_bibs() " {{{1
         \ g:vimtex_complete_recursive_bib)
 
   let l:bibfiles = []
-  for l:entry in map(filter(l:lines, 'v:val =~ ' . s:re_bibs),
-        \            'matchstr(v:val, ' . s:re_bibs . ')')
+  for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
+        \            'matchstr(v:val, ' . self.bibs . ')')
     let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
@@ -345,11 +300,52 @@ function! s:bibtex_find_bibs() " {{{1
 endfunction
 
 " }}}1
+" {{{1 Label completion
 
-"
-" Label completion
-"
-function! s:labels_get(file) " {{{1
+let s:ref = {
+      \ 'pattern' : '\\v\?\(auto\|eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
+      \ 'enabled' : 1,
+      \}
+
+function! s:ref.complete(regex) dict " {{{2
+  call self.parse_labels(b:vimtex.aux())
+  let matches = filter(copy(self.labels), 'v:val[0] =~ ''' . a:regex . '''')
+
+  " Try to match label and number
+  if empty(matches)
+    let regex_split = split(a:regex)
+    if len(regex_split) > 1
+      let base = regex_split[0]
+      let number = escape(join(regex_split[1:], ' '), '.')
+      let matches = filter(copy(labels),
+            \ 'v:val[0] =~ ''' . base   . ''' &&' .
+            \ 'v:val[1] =~ ''' . number . '''')
+    endif
+  endif
+
+  " Try to match number
+  if empty(matches)
+    let matches = filter(copy(labels), 'v:val[1] =~ ''' . a:regex . '''')
+  endif
+
+  let suggestions = []
+  for m in matches
+    let entry = {
+          \ 'word': m[0],
+          \ 'menu': printf('%7s [p. %s]', '('.m[1].')', m[2])
+          \ }
+    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
+      let entry = copy(entry)
+      let entry.abbr = entry.word
+      let entry.word = entry.word . '}'
+    endif
+    call add(suggestions, entry)
+  endfor
+
+  return suggestions
+endfunction
+
+function! s:ref.parse_labels(file) dict " {{{2
   "
   " Searches aux files recursively for commands of the form
   "
@@ -359,12 +355,13 @@ function! s:labels_get(file) " {{{1
   " Returns a list of [name, number, page] tuples.
   "
   if !filereadable(a:file)
-    return []
+    let self.labels = []
+    return
   endif
 
-  if get(s:, 'labels_created', 0) != getftime(a:file)
-    let s:labels_created = getftime(a:file)
-    let s:labels = []
+  if get(self, 'labels_created', 0) != getftime(a:file)
+    let self.labels_created = getftime(a:file)
+    let self.labels = []
     let lines = vimtex#parser#aux(a:file)
     let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
     let lines = filter(lines, 'v:val !~# ''@cref''')
@@ -375,24 +372,21 @@ function! s:labels_get(file) " {{{1
       let tree = s:tex2tree(line)[1:]
       let name = remove(tree, 0)[0]
       if type(tree[0]) == type([]) && !empty(tree[0])
-        let number = s:labels_parse_number(tree[0][0])
+        let number = self.parse_number(tree[0][0])
         let page = tree[0][1][0]
-        call add(s:labels, [name, number, page])
+        call add(self.labels, [name, number, page])
       endif
     endfor
   endif
-
-  return s:labels
 endfunction
 
-" }}}1
-function! s:labels_parse_number(num_tree) " {{{1
+function! s:ref.parse_number(num_tree) dict " {{{2
   if type(a:num_tree) == type([])
     if len(a:num_tree) == 0
       return '-'
     else
       let l:index = len(a:num_tree) == 1 ? 0 : 1
-      return s:labels_parse_number(a:num_tree[l:index])
+      return self.parse_number(a:num_tree[l:index])
     endif
   else
     return str2nr(a:num_tree) > 0 ? a:num_tree : '-'
