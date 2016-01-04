@@ -42,6 +42,7 @@ CONTENTS                                                      *vimtex-contents*
   Completion                                    |vimtex-completion|
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
+    Complete image file names                   |vimtex-complete-images|
     Autocomplete                                |vimtex-complete-auto|
       Neocomplete                               |vimtex-complete-neocomplete|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
@@ -82,7 +83,7 @@ Feature overview~
   - `qpdfview`
   - `SumatraPDF`
   - Other viewers are supported through a general interface
-- Completion of citations and labels
+- Completion of citations, labels, and file names for figures
 - Document navigation through
   - table of content
   - table of labels
@@ -350,16 +351,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_complete_patterns*
-  Define patterns that control when the label and citation completion is
-  triggered.
-
-  Default value: >
-    let g:vimtex_complete_patterns = {
-      \ 'ref' : '\C\\v\?\(eq\|page\|[cC]\)\?ref\*\?\_\s*{[^{}]*',
-      \ 'bib' : '\C\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
-      \ })
-<
 *g:vimtex_change_complete_envs*
   Define a list of environments that will be completed when changing the
   surrounding environments (see |<plug>(vimtex-change-env)|).
@@ -1230,14 +1221,12 @@ If |g:vimtex_complete_enabled| is 1 (default), then |vimtex| sets the
 'omnifunc' to provide omni completion, see |compl-omni|.  Omni completion is
 then accessible with |i_CTRL-X_CTRL-O|.
 
-The omni completion completes both labels and citations.  If desired, one may
-set |g:vimtex_complete_close_braces|, which makes the completion include
-closing braces.
+The omni completion completes labels, citations, and file names for figures.
+If desired, one may set |g:vimtex_complete_close_braces|, which makes the
+completion include closing braces.
 
 Associated settings:
   |g:vimtex_complete_enabled|
-  |g:vimtex_complete_patterns.ref|
-  |g:vimtex_complete_patterns.bib|
   |g:vimtex_complete_close_braces|
   |g:vimtex_complete_recursive_bib|
 
@@ -1245,10 +1234,10 @@ Associated settings:
 Complete labels~
                                                        *vimtex-complete-labels*
 
-Label completion is triggered by '\ref{' commands as defined with
-|g:vimtex_complete_patterns.ref|.  The completion parses every relevant aux
-file to gather the completion candidates.  This is important, because it means
-that the completion only works when the LaTeX document has been compiled.
+Label completion is triggered by '\ref{' commands.  The completion parses every
+relevant aux file to gather the completion candidates.  This is important,
+because it means that the completion only works when the LaTeX document has
+been compiled.
 
 As an example: >
 
@@ -1268,10 +1257,9 @@ number.  The label completion matches:
 Complete citations~
                                                         *vimtex-complete-cites*
 
-Citation completion is triggered by '\cite{' commands as defined with
-|g:vimtex_complete_patterns.bib|.  The completion parses included bibliography
-files (`*.bib`) and `thebibliography` environments to gather the completion
-candidates.
+Citation completion is triggered by '\cite{' commands.  The completion parses
+included bibliography files (`*.bib`) and `thebibliography` environments to
+gather the completion candidates.
 
 As an example, assume that a bibliography file is included with the following
 entry: >
@@ -1290,6 +1278,18 @@ Then the bibliography key `knuth1981` will be completed with e.g.: >
 
 In particular, note that regular expressions (or vim patterns) can be used
 after '\cite{' to search for candidates.
+
+------------------------------------------------------------------------------
+Complete file names for figures~
+                                                       *vimtex-complete-images*
+
+File name completion for figures is triggered by '\includegraphic{' commands.
+
+As an example: >
+
+        \includegraphic{fig<CTRL-X><CTRL-O>
+
+offers a list of all matching file names.
 
 ------------------------------------------------------------------------------
 Autocomplete~
@@ -1311,7 +1311,10 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
     let g:neocomplete#sources#omni#input_patterns = {}
   endif
   let g:neocomplete#sources#omni#input_patterns.tex =
-        \ '\v\\\a*(ref|cite)\a*([^]]*\])?\{([^}]*,)*[^}]*'
+        \ '\v\\%('
+        \ . '\a*%(ref|cite)\a*%(\s*\[[^]]*\])?\s*\{[^{}]*'
+        \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
+        \ . ')'
 <
 YouCompleteMe~
                                                 *vimtex-complete-youcompleteme*
@@ -1334,7 +1337,8 @@ To enable automatic completion with |youcompleteme|, use the following options:
     let g:ycm_semantic_triggers = {}
   endif
   let g:ycm_semantic_triggers.tex = [
-        \ 're!\\[A-Za-z]*(ref|cite)[A-Za-z]*([^]]*])?{([^}]*, ?)*'
+        \ 're!\\[A-Za-z]*(ref|cite)[A-Za-z]*([^]]*])?{([^}]*,?)*',
+        \ 're!\\includegraphics([^]]*])?{[^}]*'
         \ ]
 
 ==============================================================================

@@ -20,7 +20,7 @@ disabled if desired.
   - [qpdfview](https://launchpad.net/qpdfview)
   - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
   - Other viewers are supported through a general interface
-- Completion of citations and labels
+- Completion of citations, labels, and file names for figures
 - Document navigation through
   - table of content
   - table of labels

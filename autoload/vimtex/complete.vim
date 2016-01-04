@@ -16,7 +16,7 @@ endfunction
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  let s:completers = [s:bib, s:ref]
+  let s:completers = [s:bib, s:ref, s:img]
 endfunction
 
 " }}}1
@@ -67,7 +67,7 @@ endfunction
 " {{{1 Bibtex completion
 
 let s:bib = {
-      \ 'pattern' : '\\\a*cite\a*\*\?\(\[[^\]]*\]\)*\_\s*{[^{}]*',
+      \ 'pattern' : '\v\\\a*cite\a*%(\s*\[[^]]*\])?\s*\{[^{}]*',
       \ 'enabled' : 1,
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
@@ -229,7 +229,7 @@ endfunction
 " {{{1 Label completion
 
 let s:ref = {
-      \ 'pattern' : '\\v\?\(auto\|eq\|page\|[cC]\|labelc\)\?ref\*\?\_\s*{[^{}]*',
+      \ 'pattern' : '\v\\v?%(auto|eq|page|[cC]|labelc)?ref\s*\{[^{}]*',
       \ 'enabled' : 1,
       \}
 
@@ -257,8 +257,8 @@ function! s:ref.complete(regex) dict " {{{2
   let suggestions = []
   for m in matches
     let entry = {
-          \ 'word': m[0],
-          \ 'menu': printf('%7s [p. %s]', '('.m[1].')', m[2])
+          \ 'word' : m[0],
+          \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ }
     if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
       let entry = copy(entry)
@@ -317,6 +317,31 @@ function! s:ref.parse_number(num_tree) dict " {{{2
   else
     return str2nr(a:num_tree) > 0 ? a:num_tree : '-'
   endif
+endfunction
+
+" }}}1
+" {{{1 Image filename completion
+
+let s:img = {
+      \ 'pattern' : '\v\\includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*',
+      \ 'enabled' : 1,
+      \}
+
+function! s:img.complete(regex) dict " {{{2
+  let l:candidates = []
+  for l:ext in ['png', 'eps', 'pdf', 'jpg']
+    let l:candidates += globpath(b:vimtex.root, '**/*.' . l:ext, 1, 1)
+  endfor
+
+  let l:output = b:vimtex.out()
+  call filter(l:candidates, 'v:val !=# l:output')
+  call map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+
+  if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
+    call map(l:candidates, '{ ''abbr'' : v:val, ''word'' : v:val . ''}'' }')
+  endif
+
+  return l:candidates
 endfunction
 
 " }}}1
