@@ -10,13 +10,14 @@ function! vimtex#complete#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
+  call vimtex#util#set_default('g:vimtex_complete_img_use_tail', 0)
 endfunction
 
 " }}}1
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  let s:completers = [s:bib, s:ref, s:img]
+  let s:completers = [s:bib, s:ref, s:img, s:inc]
 endfunction
 
 " }}}1
@@ -55,7 +56,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     endfor
     return -3
   else
-    return s:completer.complete(a:base)
+    return s:close_braces(s:completer.complete(a:base))
   endif
 endfunction
 
@@ -97,7 +98,7 @@ function! s:bib.init() dict " {{{2
 endfunction
 
 function! s:bib.complete(regexp) dict " {{{2
-  let res = []
+  let l:res = []
 
   let self.type_length = 4
   for m in self.search(a:regexp)
@@ -110,21 +111,14 @@ function! s:bib.complete(regexp) dict " {{{2
     let auth = substitute(auth, '\~', ' ', 'g')
     let auth = substitute(auth, ',.*\ze', ' et al. ', '')
 
-    let w = {
+    call add(l:res, {
           \ 'word': m['key'],
           \ 'abbr': type . auth . year,
           \ 'menu': m['title']
-          \ }
-
-    " Close braces if desired
-    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
-      let w.word = w.word . '}'
-    endif
-
-    call add(res, w)
+          \ })
   endfor
 
-  return res
+  return l:res
 endfunction
 
 function! s:bib.search(regexp) dict " {{{2
@@ -256,16 +250,11 @@ function! s:ref.complete(regex) dict " {{{2
 
   let suggestions = []
   for m in matches
-    let entry = {
+    call add(suggestions, {
           \ 'word' : m[0],
+          \ 'abbr' : m[0],
           \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
-          \ }
-    if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
-      let entry = copy(entry)
-      let entry.abbr = entry.word
-      let entry.word = entry.word . '}'
-    endif
-    call add(suggestions, entry)
+          \ })
   endfor
 
   return suggestions
@@ -335,13 +324,25 @@ function! s:img.complete(regex) dict " {{{2
 
   let l:output = b:vimtex.out()
   call filter(l:candidates, 'v:val !=# l:output')
-  call map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
 
-  if g:vimtex_complete_close_braces && !s:next_chars_match('^\s*[,}]')
-    call map(l:candidates, '{ ''abbr'' : v:val, ''word'' : v:val . ''}'' }')
+  if g:vimtex_complete_img_use_tail
+    return uniq(sort(map(l:candidates, 'fnamemodify(v:val, '':t'')')))
+  else
+    return map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
   endif
+endfunction
 
-  return l:candidates
+" }}}1
+" {{{1 Include completion
+
+let s:inc = {
+      \ 'pattern' : '\v\\%(include|input)\s*\{[^{}]*',
+      \ 'enabled' : 1,
+      \}
+
+function! s:inc.complete(regex) dict " {{{2
+  let l:candidates = globpath(b:vimtex.root, '**/*.tex', 1, 1)
+  return map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
 endfunction
 
 " }}}1
@@ -349,8 +350,24 @@ endfunction
 "
 " Utility functions
 "
-function! s:next_chars_match(regex) " {{{1
-  return strpart(getline('.'), col('.') - 1) =~ a:regex
+function! s:close_braces(candidates) " {{{1
+  if empty(a:candidates) | return [] | endif
+
+  if !g:vimtex_complete_close_braces
+        \ || strpart(getline('.'), col('.') - 1) =~# '^\s*[,}]'
+    return a:candidates
+  endif
+
+  " Candidates may be either strings or dictionaries
+  if type(a:candidates[0]) == type({})
+    let l:candidates = a:candidates
+    for l:cand in l:candidates
+      let l:cand.word .= '}'
+    endfor
+    return l:candidates
+  else
+    return map(a:candidates, '{ ''abbr'' : v:val, ''word'' : v:val . ''}'' }')
+  endif
 endfunction
 
 " }}}1

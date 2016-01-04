@@ -351,6 +351,12 @@ Options~
 
   Default value: 0
 
+*g:vimtex_complete_img_use_tail*
+  If enabled, only the tail part of file names are completed.  This is useful
+  if one uses the `graphicx` package and the `\graphicspath` command.
+
+  Default value: 0
+
 *g:vimtex_change_complete_envs*
   Define a list of environments that will be completed when changing the
   surrounding environments (see |<plug>(vimtex-change-env)|).
@@ -1285,11 +1291,17 @@ Complete file names for figures~
 
 File name completion for figures is triggered by '\includegraphic{' commands.
 
-As an example: >
+By default, the paths are completed relative to the root path of the main
+file. One can use the option |g:vimtex_complete_img_use_tail| to instead
+complete only the tail part of file names. This is useful if one uses the
+`graphicx` package and the `\graphicspath` command.
 
-        \includegraphic{fig<CTRL-X><CTRL-O>
+------------------------------------------------------------------------------
+Complete input/include files~
+                                                        *vimtex-complete-input*
 
-offers a list of all matching file names.
+File name completion for input/include files is triggered by '\input{' or
+'\include{' commands.
 
 ------------------------------------------------------------------------------
 Autocomplete~
