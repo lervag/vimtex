@@ -237,7 +237,7 @@ function! s:ref.complete(regex) dict " {{{2
     if len(regex_split) > 1
       let base = regex_split[0]
       let number = escape(join(regex_split[1:], ' '), '.')
-      let matches = filter(copy(labels),
+      let matches = filter(copy(self.labels),
             \ 'v:val[0] =~ ''' . base   . ''' &&' .
             \ 'v:val[1] =~ ''' . number . '''')
     endif
@@ -245,7 +245,7 @@ function! s:ref.complete(regex) dict " {{{2
 
   " Try to match number
   if empty(matches)
-    let matches = filter(copy(labels), 'v:val[1] =~ ''' . a:regex . '''')
+    let matches = filter(copy(self.labels), 'v:val[1] =~ ''' . a:regex . '''')
   endif
 
   let suggestions = []
