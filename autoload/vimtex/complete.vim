@@ -17,7 +17,7 @@ endfunction
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  let s:completers = [s:bib, s:ref, s:img, s:inc]
+  let s:completers = [s:bib, s:ref, s:img, s:inc, s:glc]
 endfunction
 
 " }}}1
@@ -368,6 +368,35 @@ function! s:inc.complete(regex) dict " {{{2
         \}')
   return self.candidates
 endfunction
+
+" }}}1
+" {{{1 Glossary
+
+let s:glc = {
+      \ 'pattern' : '\v\\glc\s*\{[^{}]*',
+      \ 'enabled' : 1,
+      \}
+
+function! s:glc.complete(regex) dict " {{{2
+  return self.parse_glossaries()
+endfunction
+
+function! s:glc.parse_glossaries() dict " {{{2
+  let self.candidates = []
+
+  for l:line in filter(vimtex#parser#tex(b:vimtex.tex, 0),
+        \ 'v:val =~# ''\\newglossaryentry''')
+    let l:entries = matchstr(l:line, '\\newglossaryentry\s*{\zs[^{}]*')
+    call add(self.candidates, {
+          \ 'word' : l:entries,
+          \ 'abbr' : l:entries,
+          \ 'menu' : ' [glc]',
+          \})
+  endfor
+
+  return self.candidates
+endfunction
+
 
 " }}}1
 
