@@ -325,11 +325,14 @@ function! s:img.complete(regex) dict " {{{2
   let l:output = b:vimtex.out()
   call filter(l:candidates, 'v:val !=# l:output')
 
+  call map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+
   if g:vimtex_complete_img_use_tail
-    return uniq(sort(map(l:candidates, 'fnamemodify(v:val, '':t'')')))
-  else
-    return map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+    call map(l:candidates,
+          \ '{ ''abbr'' : v:val, ''word'' : fnamemodify(v:val, '':t'') }')
   endif
+
+  return l:candidates
 endfunction
 
 " }}}1
