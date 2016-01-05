@@ -65,7 +65,7 @@ endfunction
 "
 " Completers
 "
-" {{{1 Bibtex completion
+" {{{1 Bibtex
 
 let s:bib = {
       \ 'pattern' : '\v\\\a*cite\a*%(\s*\[[^]]*\])?\s*\{[^{}]*',
@@ -98,7 +98,7 @@ function! s:bib.init() dict " {{{2
 endfunction
 
 function! s:bib.complete(regexp) dict " {{{2
-  let l:res = []
+  let self.candidates = []
 
   let self.type_length = 4
   for m in self.search(a:regexp)
@@ -111,14 +111,14 @@ function! s:bib.complete(regexp) dict " {{{2
     let auth = substitute(auth, '\~', ' ', 'g')
     let auth = substitute(auth, ',.*\ze', ' et al. ', '')
 
-    call add(l:res, {
+    call add(self.candidates, {
           \ 'word': m['key'],
           \ 'abbr': type . auth . year,
           \ 'menu': m['title']
           \ })
   endfor
 
-  return l:res
+  return self.candidates
 endfunction
 
 function! s:bib.search(regexp) dict " {{{2
@@ -220,7 +220,7 @@ function! s:bib.find_bibs() dict " {{{2
 endfunction
 
 " }}}1
-" {{{1 Label completion
+" {{{1 Labels
 
 let s:ref = {
       \ 'pattern' : '\v\\v?%(auto|eq|page|[cC]|labelc)?ref\s*\{[^{}]*',
@@ -228,36 +228,43 @@ let s:ref = {
       \}
 
 function! s:ref.complete(regex) dict " {{{2
-  call self.parse_labels(b:vimtex.aux())
-  let matches = filter(copy(self.labels), 'v:val[0] =~ ''' . a:regex . '''')
+  let self.candidates = []
 
-  " Try to match label and number
-  if empty(matches)
-    let regex_split = split(a:regex)
-    if len(regex_split) > 1
-      let base = regex_split[0]
-      let number = escape(join(regex_split[1:], ' '), '.')
-      let matches = filter(copy(self.labels),
-            \ 'v:val[0] =~ ''' . base   . ''' &&' .
-            \ 'v:val[1] =~ ''' . number . '''')
-    endif
-  endif
-
-  " Try to match number
-  if empty(matches)
-    let matches = filter(copy(self.labels), 'v:val[1] =~ ''' . a:regex . '''')
-  endif
-
-  let suggestions = []
-  for m in matches
-    call add(suggestions, {
+  for m in self.get_matches(a:regex)
+    call add(self.candidates, {
           \ 'word' : m[0],
           \ 'abbr' : m[0],
           \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ })
   endfor
 
-  return suggestions
+  return self.candidates
+endfunction
+
+function! s:ref.get_matches(regex) dict " {{{2
+  call self.parse_labels(b:vimtex.aux())
+
+  " Match label
+  let self.matches = filter(copy(self.labels), 'v:val[0] =~ ''' . a:regex . '''')
+
+  " Match label and number
+  if empty(self.matches)
+    let l:regex_split = split(a:regex)
+    if len(l:regex_split) > 1
+      let l:base = l:regex_split[0]
+      let l:number = escape(join(l:regex_split[1:], ' '), '.')
+      let self.matches = filter(copy(self.labels),
+            \ 'v:val[0] =~ ''' . l:base   . ''' &&' .
+            \ 'v:val[1] =~ ''' . l:number . '''')
+    endif
+  endif
+
+  " Match number
+  if empty(self.matches)
+    let self.matches = filter(copy(self.labels), 'v:val[1] =~ ''' . a:regex . '''')
+  endif
+
+  return self.matches
 endfunction
 
 function! s:ref.parse_labels(file) dict " {{{2
@@ -271,7 +278,7 @@ function! s:ref.parse_labels(file) dict " {{{2
   "
   if !filereadable(a:file)
     let self.labels = []
-    return
+    return []
   endif
 
   if get(self, 'labels_created', 0) != getftime(a:file)
@@ -293,6 +300,8 @@ function! s:ref.parse_labels(file) dict " {{{2
       endif
     endfor
   endif
+
+  return self.labels
 endfunction
 
 function! s:ref.parse_number(num_tree) dict " {{{2
@@ -309,7 +318,7 @@ function! s:ref.parse_number(num_tree) dict " {{{2
 endfunction
 
 " }}}1
-" {{{1 Image filename completion
+" {{{1 Filenames (\includegraphics)
 
 let s:img = {
       \ 'pattern' : '\v\\includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*',
@@ -317,26 +326,32 @@ let s:img = {
       \}
 
 function! s:img.complete(regex) dict " {{{2
-  let l:candidates = []
+  let self.candidates = []
   for l:ext in ['png', 'eps', 'pdf', 'jpg']
-    let l:candidates += globpath(b:vimtex.root, '**/*.' . l:ext, 1, 1)
+    let self.candidates += globpath(b:vimtex.root, '**/*.' . l:ext, 1, 1)
   endfor
 
   let l:output = b:vimtex.out()
-  call filter(l:candidates, 'v:val !=# l:output')
+  call filter(self.candidates, 'v:val !=# l:output')
 
-  call map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+  call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+  call map(self.candidates, '{
+        \ ''abbr'' : v:val,
+        \ ''word'' : fnamemodify(v:val, '':t''),
+        \ ''menu'' : '' [graphics]'',
+        \ }')
 
   if g:vimtex_complete_img_use_tail
-    call map(l:candidates,
-          \ '{ ''abbr'' : v:val, ''word'' : fnamemodify(v:val, '':t'') }')
+    for l:cand in self.candidates
+      let l:cand.word = fnamemodify(l:cand.word, ':t')
+    endfor
   endif
 
-  return l:candidates
+  return self.candidates
 endfunction
 
 " }}}1
-" {{{1 Include completion
+" {{{1 Filenames (\input and \include)
 
 let s:inc = {
       \ 'pattern' : '\v\\%(include|input)\s*\{[^{}]*',
@@ -344,8 +359,14 @@ let s:inc = {
       \}
 
 function! s:inc.complete(regex) dict " {{{2
-  let l:candidates = globpath(b:vimtex.root, '**/*.tex', 1, 1)
-  return map(l:candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+  let self.candidates = globpath(b:vimtex.root, '**/*.tex', 1, 1)
+  let self.candidates = map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+  let self.candidates = map(self.candidates, '{
+        \ ''word'' : v:val,
+        \ ''abbr'' : v:val,
+        \ ''menu'' : '' [input/include]'',
+        \}')
+  return self.candidates
 endfunction
 
 " }}}1
@@ -354,22 +375,15 @@ endfunction
 " Utility functions
 "
 function! s:close_braces(candidates) " {{{1
-  if empty(a:candidates) | return [] | endif
-
-  if !g:vimtex_complete_close_braces
-        \ || strpart(getline('.'), col('.') - 1) =~# '^\s*[,}]'
-    return a:candidates
-  endif
-
-  " Candidates may be either strings or dictionaries
-  if type(a:candidates[0]) == type({})
+  if g:vimtex_complete_close_braces
+        \ && strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
     let l:candidates = a:candidates
     for l:cand in l:candidates
       let l:cand.word .= '}'
     endfor
     return l:candidates
   else
-    return map(a:candidates, '{ ''abbr'' : v:val, ''word'' : v:val . ''}'' }')
+    return a:candidates
   endif
 endfunction
 
