@@ -70,8 +70,10 @@ function! vimtex#change#format() " {{{1
   let i1 = i0
 
   " This is a hack to make undo restore the correct position
-  normal! ix
-  normal! x
+  if mode() !=# 'i'
+    normal! ix
+    normal! x
+  endif
 
   while i0 >= v:lnum
     if getline(i0) =~# '[^\\]%'
