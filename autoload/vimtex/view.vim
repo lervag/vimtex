@@ -31,29 +31,32 @@ function! vimtex#view#init_buffer() " {{{1
   "
   " Add viewer to the data blob
   "
-  let viewer = 's:' . g:vimtex_view_method
-  if !exists(viewer)
-    echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
-    echo "\nPlease see :h g:vimtex_view_method\n\n"
-    let b:vimtex.viewer = {}
-    return
-  endif
-  execute 'let b:vimtex.viewer = deepcopy(' . viewer . ')'
-  call b:vimtex.viewer.init()
-
-  "
-  " Create view and/or callback hooks (if they exist)
-  "
-  for point in ['view', 'callback']
-    execute 'let hook = ''g:vimtex_view_'
-          \ . g:vimtex_view_method . '_hook_' . point . ''''
-    if exists(hook)
-      execute 'let hookfunc = ''*'' . ' . hook
-      if exists(hookfunc)
-        execute 'let b:vimtex.viewer.hook_' . point . ' = function(' . hook . ')'
-      endif
+  if !has_key(b:vimtex, 'viewer')
+    let viewer = 's:' . g:vimtex_view_method
+    if !exists(viewer)
+      echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
+      echo "\nPlease see :h g:vimtex_view_method\n\n"
+      let b:vimtex.viewer = {}
+      return
     endif
-  endfor
+
+    execute 'let b:vimtex.viewer = deepcopy(' . viewer . ')'
+    call b:vimtex.viewer.init()
+
+    "
+    " Create view and/or callback hooks (if they exist)
+    "
+    for point in ['view', 'callback']
+      execute 'let hook = ''g:vimtex_view_'
+            \ . g:vimtex_view_method . '_hook_' . point . ''''
+      if exists(hook)
+        execute 'let hookfunc = ''*'' . ' . hook
+        if exists(hookfunc)
+          execute 'let b:vimtex.viewer.hook_' . point . ' = function(' . hook . ')'
+        endif
+      endif
+    endfor
+  endif
 
   "
   " Define commands
