@@ -11,6 +11,10 @@ elseif b:current_syntax !=# 'tex'
   finish
 endif
 
+" Perform spell checking when there is no syntax
+" - This will enable spell checking e.g. in toplevel of included files
+syntax spell toplevel
+
 " {{{1 Italic font, bold font and conceals
 
 let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
