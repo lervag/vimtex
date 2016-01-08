@@ -88,24 +88,14 @@ function! VimtexIndent() " {{{1
     endif
   endif
 
-  " Add/Subtract indent on begin/end displayed equation
-  if pline =~# '\\\[\s*$'
-    let ind = ind + &sw
-  endif
-  if pline =~# '\\\]\s*$'
-    let ind = ind - &sw
-  endif
-
   " Indent opening and closing delimiters
-  let l:delimiters = match(map(synstack(v:lnum, max([col('.') - 1, 1])),
+  let l:delims = match(map(synstack(v:lnum, max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
         \ ? [s:delimiters_open_math, s:delimiters_close_math]
         \ : [s:delimiters_open_tex,  s:delimiters_close_tex]
-  let popen  = s:count_delimiters(pline, l:delimiters[0])
-  let copen  = s:count_delimiters(cline, l:delimiters[0])
-  let pclose = s:count_delimiters(pline, l:delimiters[1])
-  let cclose = s:count_delimiters(cline, l:delimiters[1])
-  let ind += &sw*(max([popen - pclose, 0]) - max([cclose - copen, 0]))
+  let ind += &sw*(
+        \   max([s:count(pline, l:delims[0]) - s:count(pline, l:delims[1]), 0])
+        \ - max([s:count(cline, l:delims[1]) - s:count(cline, l:delims[0]), 0]))
 
   " Indent list items
   if pline =~# '^\s*\\\(bib\)\?item'
@@ -128,7 +118,7 @@ function! VimtexIndent() " {{{1
   return ind
 endfunction
 "}}}
-function! s:count_delimiters(line, pattern) " {{{1
+function! s:count(line, pattern) " {{{1
   let sum = 0
   let indx = match(a:line, a:pattern)
   while indx >= 0
@@ -159,11 +149,13 @@ let s:delimiters_close_tex = '\(' . join([
         \ '\\)',
       \ ], '\|') . '\)'
 let s:delimiters_open_math = '\(' . join([
+        \ '\\\[\s*$',
         \ '\\{',
         \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\((\|\[\|\\{\)',
       \ ], '\|') . '\)'
 let s:delimiters_close_math = '\(' . join([
+        \ '\\\]\s*$',
         \ '\\}',
         \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
         \ '\\\cbigg\?\()\|\]\|\\}\)',
