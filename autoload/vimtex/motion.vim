@@ -342,32 +342,42 @@ endfunction
 
 " }}}1
 function! vimtex#motion#sel_inline_math(...) " {{{1
-  let inner = a:0 > 0
+  let l:inner = a:0 > 0
 
-  let dollar_pat = '\\\@<!\$'
+  let l:flags = 'bW'
+  let l:dollar = 0
+  let l:dollar_pat = '\\\@<!\$'
 
   if vimtex#util#has_syntax('texMathZoneX')
-    call s:search_and_skip_comments(dollar_pat, 'cbW')
+    let l:dollar = 1
+    let l:pattern = [l:dollar_pat, l:dollar_pat]
+    let l:flags .= 'c'
   elseif getline('.')[col('.') - 1] ==# '$'
-    call s:search_and_skip_comments(dollar_pat, 'bW')
+    let l:dollar = 1
+    let l:pattern = [l:dollar_pat, l:dollar_pat]
+  elseif vimtex#util#has_syntax('texMathZoneV')
+    let l:pattern = ['\\(', '\\)']
+    let l:flags .= 'c'
+  elseif getline('.')[col('.') - 2:col('.') - 1] ==# '\)'
+    let l:pattern = ['\\(', '\\)']
   else
     return
   endif
 
-  if inner
-    normal! l
+  call s:search_and_skip_comments(l:pattern[0], l:flags)
+
+  if l:inner
+    execute 'normal! ' l:dollar ? 'l' : 'll'
   endif
 
-  if visualmode() ==# 'V'
-    normal! V
-  else
-    normal! v
-  endif
+  execute 'normal! ' visualmode() ==# 'V' ? 'V' : 'v'
 
-  call s:search_and_skip_comments(dollar_pat, 'W')
+  call s:search_and_skip_comments(l:pattern[1], 'W')
 
-  if inner
+  if l:inner
     normal! h
+  elseif !l:dollar
+    normal! l
   endif
 endfunction
 " }}}1
