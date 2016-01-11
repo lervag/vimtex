@@ -229,7 +229,12 @@ function! vimtex#motion#next_paragraph(backwards, visual) " {{{1
   else
     let l:search = '\v^\s*($|' . join(s:paragraph_boundaries, '|') . ')'
   endif
-  call search(l:search, l:flags)
+
+  let n = 1
+  while n <= max([v:count, 1])
+    call search(l:search, l:flags)
+    let n += 1
+  endwhile
 
   if a:visual
     if a:backwards
