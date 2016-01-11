@@ -99,8 +99,8 @@ function! vimtex#motion#init_buffer() " {{{1
   xnoremap <silent><buffer>  <sid>(vimtex-{)  :<c-u>call vimtex#motion#next_paragraph(1,1)<cr>
   xmap     <silent><buffer> <plug>(vimtex-})  <sid>(vimtex-})
   xmap     <silent><buffer> <plug>(vimtex-{)  <sid>(vimtex-{)
-  onoremap <silent><buffer> <plug>(vimtex-})  :execute "normal \<sid>(V)\<sid>(vimtex-})"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-{)  :execute "normal \<sid>(V)\<sid>(vimtex-{)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-})  :execute "normal \<sid>(v)\<sid>(vimtex-})"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-{)  :execute "normal \<sid>(v)\<sid>(vimtex-{)"<cr>
   xnoremap <silent><buffer>  <sid>(vimtex-ip) :<c-u>call vimtex#motion#sel_paragraph(1)<cr>
   xnoremap <silent><buffer>  <sid>(vimtex-ap) :<c-u>call vimtex#motion#sel_paragraph()<cr>
   xmap     <silent><buffer> <plug>(vimtex-ip) <sid>(vimtex-ip)
