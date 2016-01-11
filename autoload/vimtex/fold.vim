@@ -182,7 +182,7 @@ function! s:refresh_folded_sections()
   " Parse part commands (frontmatter, appendix, part, etc)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
   for part in g:vimtex_fold_parts
-    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
     for line in lines
       if line =~# partpattern
         call insert(b:vimtex_fold_parts, [partpattern, 1])
@@ -202,7 +202,7 @@ function! s:refresh_folded_sections()
   " Parse section commands (chapter, [sub...]section)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
   for part in g:vimtex_fold_sections
-    let partpattern = '^\s*\(\\\|% Fake\)' . part . ':\?\>'
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
     for line in lines
       if line =~# partpattern
         let level += 1
