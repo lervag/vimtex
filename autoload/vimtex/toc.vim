@@ -61,7 +61,7 @@ function! vimtex#toc#init_script() " {{{1
   let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
   let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
   let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-  let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?$'
+  let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\s*$'
   let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
   let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
   let s:re_structure_match = '\v((front|main|back)matter|appendix)'
