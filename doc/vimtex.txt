@@ -1120,7 +1120,7 @@ Map definitions~
   Paragraph backward.
 
 ------------------------------------------------------------------------------
-Map definitions~
+Insert mode mappings~
                                                                  *vimtex-imaps*
 
 Some LaTeX commands are very common, and so it is both natural and convenient
@@ -1194,7 +1194,16 @@ https://github.com/lervag/vimtex/issues/295#issuecomment-164262446
 It has been decided that the best approach is to only provide basic mappings,
 and to let users manully create automatic snippets through the anonymous
 snippet functions in |UltiSnips| and |neosnippet|, please see |UltiSnips#Anon|
-and |neosnippet#anonymous|, respectively.
+and |neosnippet#anonymous|, respectively. Here are a couple of examples that
+show how to create such mappings: >
+
+    " Using neosnippet#anonymous
+    inoremap <silent><expr> neosnippet#anonymous('_${1}${0}')
+    inoremap <silent><expr> neosnippet#anonymous('^${1}${0}')
+
+    " Using UltiSnips#Anon
+    inoremap <silent> __ __<c-r>=UltiSnips#Anon('_{$1}$0', '__', '', 'i')<cr>
+    inoremap <silent> ^^ ^^<c-r>=UltiSnips#Anon('^{$1}$0', '^^', '', 'i')<cr>
 
 ------------------------------------------------------------------------------
 Events~
