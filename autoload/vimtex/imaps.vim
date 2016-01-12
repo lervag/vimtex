@@ -113,6 +113,10 @@ endfunction
 
 function! vimtex#imaps#add_map(map) " {{{1
   let s:custom_maps = get(s:, 'custom_maps', []) + [a:map]
+
+  if exists('s:created_maps')
+    call s:create_map(a:map)
+  endif
 endfunction
 
 " }}}1
