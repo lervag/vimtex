@@ -106,7 +106,7 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Check for normal lines first (optimization)
   let line = getline(a:lnum)
-  if line !~# '^\s*%\|\\\%(document\|begin\|end\|printbibliography\|'
+  if line !~# '^\s*%\|\\\%(document\|begin\|end\|'
         \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)'
     return '='
   endif
@@ -199,9 +199,6 @@ function! s:refresh_folded_sections()
     let b:vimtex_fold_parts = []
   endif
 
-  " Set bibliography fold level
-  let biblevel = level + 1
-
   " Parse section commands (chapter, [sub...]section)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
   for part in g:vimtex_fold_sections
@@ -214,9 +211,6 @@ function! s:refresh_folded_sections()
       endif
     endfor
   endfor
-
-  " Add bibliography pattern
-  call insert(b:vimtex_fold_parts, ['^\s*\\printbibliography', biblevel])
 endfunction
 
 " }}}1
@@ -241,8 +235,6 @@ function! vimtex#fold#text() " {{{1
     let title = 'Backmatter'
   elseif line =~# '\\appendix'
     let title = 'Appendix'
-  elseif line =~# '\\printbibliography'
-    let title = 'Bibliography'
   elseif line =~# secpat1 . '.*}'
     let title = matchstr(line, secpat1 . '\zs.*\ze}')
   elseif line =~# secpat1
