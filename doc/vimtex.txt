@@ -1212,8 +1212,8 @@ and |neosnippet#anonymous|, respectively. Here are a couple of examples that
 show how to create such mappings: >
 
     " Using neosnippet#anonymous
-    inoremap <silent><expr> neosnippet#anonymous('_${1}${0}')
-    inoremap <silent><expr> neosnippet#anonymous('^${1}${0}')
+    inoremap <silent><expr> __ neosnippet#anonymous('_${1}${0}')
+    inoremap <silent><expr> ^^ neosnippet#anonymous('^${1}${0}')
 
     " Using UltiSnips#Anon
     inoremap <silent> __ __<c-r>=UltiSnips#Anon('_{$1}$0', '__', '', 'i')<cr>
