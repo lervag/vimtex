@@ -468,7 +468,7 @@ function! s:get_main() " {{{1
   endif
 
   "
-  " Search for main file recursively through \input and \include specifiers
+  " Search for main file recursively through include specifiers
   "
   let main = s:get_main_recurse(expand('%:p'))
   if filereadable(main)
@@ -528,15 +528,20 @@ function! s:get_main_recurse(file) " {{{1
   let l:candidates = split(globpath(fnameescape(l:dirs), '*.tex'), '\n')
 
   "
-  " Search through candidates for \include{current file}
+  " Search through candidates
   "
   for l:file in l:candidates
     " Avoid infinite recursion (checking the same file repeatedly)
     if l:file == a:file | continue | endif
 
-    if len(filter(readfile(l:file), 'v:val =~ ''\v\\(input|include)\{'
-          \ . '\s*((.*)\/)?'
-          \ . fnamemodify(a:file, ':t:r') . '(\.tex)?\s*''')) > 0
+    let l:file_re = '\s*((.*)\/)?' . fnamemodify(a:file, ':t:r')
+
+    let l:filter  = 'v:val =~# ''\v'
+    let l:filter .= '\\%(input|include)\{' . l:file_re
+    let l:filter .= '|\\subimport\{[^\}]*\}\{' . l:file_re
+    let l:filter .= ''''
+
+    if len(filter(readfile(l:file), l:filter)) > 0
       return s:get_main_recurse(l:file)
     endif
   endfor

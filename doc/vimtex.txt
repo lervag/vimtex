@@ -112,6 +112,9 @@ Feature overview~
   - Support for `listings` package
   - Support for `minted` package
   - Support for `dot2tex` with nested syntax highlighting
+- Support for multi-file project packages
+  - `import`
+  - `subfiles` (partly)
 
 ------------------------------------------------------------------------------
 Requirements~
@@ -200,6 +203,17 @@ Subfiles~
 <
   Note that this is a special case in that it is only relevant for users who
   use the `subfiles` package.
+
+                                                                 *vimtex-import*
+Import~
+  |vimtex| also supports the `import` package, in that it should correctly
+  recognize the main file from sub files that are included through the
+  `subimport` command, e.g. >
+
+    \subimport{chapters/}{chapter1.tex}
+<
+  The support also extends into correctly parsing the project for table of
+  contents.
 
                                                                  *b:vimtex_main*
 Buffer variable~

@@ -9,7 +9,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#init_script() " {{{1
-  let s:input_line_tex = '\v^\s*\\%(input|include)\s*\{'
+  let s:input_line_tex = '\v^\s*\\%(input|include|subimport)\s*\{'
   let s:input_line_aux = '\\@input{'
 endfunction
 
@@ -83,7 +83,15 @@ endfunction
 " Input line parsers
 "
 function! s:input_line_parser_tex(line, file) " {{{1
+  " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
+
+  " Hande subimport commands
+  if a:line =~# '\\subimport'
+    let l:file = substitute(l:file, '}\s*{', '', 'g')
+  endif
+
+  " Parse file name
   let l:file = matchstr(l:file, s:input_line_tex . '\zs[^\}]+\ze}')
 
   " Trim whitespaces and quotes from beginning/end of string
