@@ -427,52 +427,38 @@ function! s:get_main() " {{{1
   endif
 
   "
-  " Search for main file specifier at the beginning of file.  Recognized
-  " specifiers are:
+  " Search for TEX root specifier at the beginning of file. This is used by
+  " several other plugins and editors.
   "
-  " 1. The TEX root specifier, which is used by by several other plugins and
-  "    editors.
-  " 2. Subfiles package specifier.  This parses the main tex file option in the
-  "    \documentclass line for the subfiles package.
+  let l:candidate = s:get_main_from_specifier(
+        \ '^\c\s*%\s*!\?\s*tex\s\+root\s*=\s*\zs.*\ze\s*$')
+  if l:candidate !=# ''
+    return l:candidate
+  endif
+
   "
-  for regexp in [
-        \ '^\c\s*%\s*!\?\s*tex\s\+root\s*=\s*\zs.*\ze\s*$',
-        \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}',
-        \ ]
-    for line in getline(1, 5)
-      let filename = matchstr(line, regexp)
-      if len(filename) > 0
-        if filename[0] !=# '/'
-          let candidates = [
-                \ expand('%:h') . '/' . filename,
-                \ getcwd() . '/' . filename,
-                \ ]
-        else
-          let candidates = [fnamemodify(filename, ':p')]
-        endif
-        for main in candidates
-          if filereadable(main)
-            return main
-          endif
-        endfor
-      endif
-    endfor
-  endfor
+  " Support for subfiles package
+  "
+  let l:candidate = s:get_main_from_specifier(
+        \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
+  if l:candidate !=# ''
+    return l:candidate
+  endif
 
   "
   " Search for .latexmain-specifier
   "
-  let main = s:get_main_latexmain(expand('%:p'))
-  if filereadable(main)
-    return main
+  let l:candidate = s:get_main_latexmain(expand('%:p'))
+  if l:candidate !=# ''
+    return l:candidate
   endif
 
   "
   " Search for main file recursively through include specifiers
   "
-  let main = s:get_main_recurse(expand('%:p'))
-  if filereadable(main)
-    return main
+  let l:candidate = s:get_main_recurse(expand('%:p'))
+  if l:candidate !=# ''
+    return l:candidate
   endif
 
   "
@@ -482,8 +468,29 @@ function! s:get_main() " {{{1
 endfunction
 
 " }}}1
+function! s:get_main_from_specifier(spec) " {{{1
+  for l:line in getline(1, 5)
+    let l:filename = matchstr(l:line, a:spec)
+    if len(l:filename) > 0
+      if l:filename[0] ==# '/'
+        if filereadable(l:filename) | return l:filename | endif
+      else
+        for l:candidate in [
+              \ expand('%:p:h') . '/' . l:filename,
+              \ getcwd()        . '/' . l:filename
+              \]
+          if filereadable(l:candidate) | return l:candidate | endif
+        endfor
+      endif
+    endif
+  endfor
+
+  return ''
+endfunction
+
+" }}}1
 function! s:get_main_latexmain(file) " {{{1
-  if !filereadable(a:file) | return | endif
+  if !filereadable(a:file) | return '' | endif
 
   "
   " Gather candidate files
@@ -501,12 +508,13 @@ function! s:get_main_latexmain(file) " {{{1
   " closest to the current file in the directory tree)
   "
   if len(l:candidates) > 0
-    return fnamemodify(l:candidates[0], ':p:r')
+    let l:candidate = fnamemodify(l:candidates[0], ':p:r')
+    return filereadable(l:candidate) ? l:candidate : ''
   endif
 endfunction
 
 function! s:get_main_recurse(file) " {{{1
-  if !filereadable(a:file) | return | endif
+  if !filereadable(a:file) | return '' | endif
 
   "
   " Check if current file is a main file
