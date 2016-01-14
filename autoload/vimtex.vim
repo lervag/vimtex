@@ -65,6 +65,29 @@ function! vimtex#init() " {{{1
   let s:initialized = 1
 
   "
+  " Support for subfile package (toggle)
+  "
+  if exists('s:subfile')
+    let l:subfile = deepcopy(b:vimtex)
+    let l:subfile.tex = s:subfile
+    let l:subfile.pid = 0
+    let l:subfile.name = fnamemodify(s:subfile, ':t:r')
+    let l:subfile.root = fnamemodify(s:subfile, ':h')
+    let l:subfile.base = fnamemodify(s:subfile, ':t')
+
+    let s:vimtex_next_id += 1
+    let g:vimtex_data[s:vimtex_next_id] = l:subfile
+
+    let b:subfile = {
+          \ 'active' : 0,
+          \ 'main_id' : b:vimtex_id,
+          \ 'sub_id' : s:vimtex_next_id,
+          \}
+
+    unlet s:subfile
+  endif
+
+  "
   " Allow custom configuration through an event hook
   "
   if exists('#User#VimtexEventInitPost')
@@ -104,7 +127,7 @@ function! vimtex#info(global) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#wordcount(detailed) " {{{1
+function! vimtex#wc(detailed) " {{{1
   " Run texcount, save output to lines variable
   let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
   let cmd .= '; texcount -nosub -sum '
@@ -171,6 +194,22 @@ if !exists('s:reloading_script')
     unlet s:reloading_script
   endfunction
 endif
+
+" }}}1
+function! vimtex#subfile_toggle() " {{{1
+  if exists('b:subfile')
+    let b:subfile.active = !b:subfile.active
+
+    let b:vimtex_id = b:subfile.active ? b:subfile.sub_id : b:subfile.main_id
+    let b:vimtex = g:vimtex_data[b:vimtex_id]
+
+    call vimtex#echo#status(['vimtex: ',
+          \ ['Normal', 'Changed to `'],
+          \ ['VimtexSuccess', b:vimtex.base],
+          \ ['Normal', "' "],
+          \ ['VimtexInfo', b:subfile.active ? '[subfile]' : '[main]' ]])
+  endif
+endfunction
 
 " }}}1
 
@@ -279,14 +318,16 @@ function! s:init_buffer() " {{{1
   "
 
   " Define commands
-  command! -buffer -bang VimtexInfo      call vimtex#info(<q-bang> == "!")
-  command! -buffer -bang VimtexWordCount call vimtex#wordcount(<q-bang> == "!")
-  command! -buffer       VimtexReload    call vimtex#reload()
+  command! -buffer -bang VimtexInfo          call vimtex#info(<q-bang> == "!")
+  command! -buffer -bang VimtexWordCount     call vimtex#wc(<q-bang> == "!")
+  command! -buffer       VimtexReload        call vimtex#reload()
+  command! -buffer       VimtexSubfileToggle call vimtex#subfile_toggle()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info)      :VimtexInfo<cr>
-  nnoremap <buffer> <plug>(vimtex-info-full) :VimtexInfo!<cr>
-  nnoremap <buffer> <plug>(vimtex-reload)    :VimtexReload<cr>
+  nnoremap <buffer> <plug>(vimtex-info)           :VimtexInfo<cr>
+  nnoremap <buffer> <plug>(vimtex-info-full)      :VimtexInfo!<cr>
+  nnoremap <buffer> <plug>(vimtex-reload)         :VimtexReload<cr>
+  nnoremap <buffer> <plug>(vimtex-subfile-toggle) :VimtexSubfileToggle<cr>
 
   "
   " Attach autocommands
@@ -314,6 +355,7 @@ function! s:init_mappings() " {{{1
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
+  call s:map('n', '<localleader>lS', '<plug>(vimtex-subfile-toggle)')
 
   call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
   call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')
@@ -442,6 +484,7 @@ function! s:get_main() " {{{1
   let l:candidate = s:get_main_from_specifier(
         \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
   if l:candidate !=# ''
+    let s:subfile = expand('%:p')
     return l:candidate
   endif
 
