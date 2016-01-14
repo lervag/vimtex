@@ -1,0 +1,17 @@
+set nocompatible
+filetype plugin indent on
+syntax enable
+
+set completeopt=menu,preview
+
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '~/.vim/bundle/vimtex/after,' . &rtp
+let &rtp = '~/.vim/bundle/supertab,' . &rtp
+
+
+au FileType *
+      \ if &omnifunc != '' |
+      \   call SuperTabChain(&omnifunc, "<c-p>") |
+      \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
+      \ endif
+
