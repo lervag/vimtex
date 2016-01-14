@@ -51,7 +51,7 @@ disabled if desired.
   - Support for `dot2tex` with nested syntax highlighting
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
-  - [subfiles](http://ctan.uib.no/macros/latex/contrib/import/import.pdf) (partly)
+  - [subfiles](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
 
 See the documentation for a more thorough introduction of the plugin (e.g. `:h
 vimtex`).

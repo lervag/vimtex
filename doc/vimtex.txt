@@ -114,7 +114,7 @@ Feature overview~
   - Support for `dot2tex` with nested syntax highlighting
 - Support for multi-file project packages
   - `import`
-  - `subfiles` (partly)
+  - `subfiles`
 
 ------------------------------------------------------------------------------
 Requirements~
@@ -203,6 +203,8 @@ Subfiles~
 <
   Note that this is a special case in that it is only relevant for users who
   use the `subfiles` package.
+
+  See also |VimtexSubfileToggle|.
 
                                                                  *vimtex-import*
 Import~
@@ -1054,6 +1056,21 @@ Commands~
                           |vimtex-imaps| feature. The mappings are displayed
                           in a scratch buffer. Press `q` or `<esc>` to close
                           the buffer.
+
+                                             *VimtexSubfileToggle*
+                                             *<plug>(vimtex-subfile-toggle)*
+:VimtexSubfileToggle      Toggle between the current subfile and the main
+                          project file as "current project". This allows one
+                          to work on a subfile directly, disconnected from the
+                          main project. That is, when the subfile is active,
+                          then commands for compiling and similar work on the
+                          subfile.
+
+                          Note also that it is possible to have both projects
+                          active simultaneously. That is, if one starts
+                          latexmk for the main file, then toggles to the
+                          subfile, then the main file will still be available
+                          and under latexmk compilation.
 
 ------------------------------------------------------------------------------
 Map definitions~
