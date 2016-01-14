@@ -36,7 +36,7 @@ function! vimtex#latexmk#init_script() " {{{1
     augroup vimtex_latexmk
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
-      autocmd User VimtexQuit call s:stop_before_leaving()
+      autocmd User VimtexEventQuit call s:stop_before_leaving()
     augroup END
   endif
 
@@ -467,7 +467,7 @@ function! s:latexmk_init_pid() " {{{1
   "
   " If the PID is 0, then search for existing processes
   "
-  if b:vimtex.pid ==# 0
+  if b:vimtex.pid == 0
     if has('win32')
       "
       " PASS - don't know how to do this on Windows yet.
