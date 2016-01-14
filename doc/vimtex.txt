@@ -309,6 +309,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
    <localleader>lm  |<plug>(vimtex-imaps-list)|           `n`
    <localleader>lx  |<plug>(vimtex-reload)|               `n`
+   <localleader>ls  |<plug>(vimtex-subfile-toggle)|       `n`
    dse              |<plug>(vimtex-delete-env)|           `n`
    dsc              |<plug>(vimtex-delete-cmd)|           `n`
    cse              |<plug>(vimtex-change-env)|           `n`

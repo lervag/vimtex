@@ -355,7 +355,7 @@ function! s:init_mappings() " {{{1
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
-  call s:map('n', '<localleader>lS', '<plug>(vimtex-subfile-toggle)')
+  call s:map('n', '<localleader>ls', '<plug>(vimtex-subfile-toggle)')
 
   call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
   call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')
