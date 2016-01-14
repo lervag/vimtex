@@ -58,34 +58,16 @@ function! vimtex#init() " {{{1
   call s:init_modules('buffer')
 
   "
+  " Initialize local blob (if main file is different then current file)
+  "
+  call s:init_local_blob()
+
+  "
   " Finally we create the mappings
   "
   call s:init_mappings()
 
   let s:initialized = 1
-
-  "
-  " Support for subfile package (toggle)
-  "
-  if exists('s:subfile')
-    let l:subfile = deepcopy(b:vimtex)
-    let l:subfile.tex = s:subfile
-    let l:subfile.pid = 0
-    let l:subfile.name = fnamemodify(s:subfile, ':t:r')
-    let l:subfile.root = fnamemodify(s:subfile, ':h')
-    let l:subfile.base = fnamemodify(s:subfile, ':t')
-
-    let s:vimtex_next_id += 1
-    let g:vimtex_data[s:vimtex_next_id] = l:subfile
-
-    let b:subfile = {
-          \ 'active' : 0,
-          \ 'main_id' : b:vimtex_id,
-          \ 'sub_id' : s:vimtex_next_id,
-          \}
-
-    unlet s:subfile
-  endif
 
   "
   " Allow custom configuration through an event hook
@@ -196,18 +178,20 @@ if !exists('s:reloading_script')
 endif
 
 " }}}1
-function! vimtex#subfile_toggle() " {{{1
-  if exists('b:subfile')
-    let b:subfile.active = !b:subfile.active
+function! vimtex#toggle_local() " {{{1
+  if exists('b:vimtex_local')
+    let b:vimtex_local.active = !b:vimtex_local.active
 
-    let b:vimtex_id = b:subfile.active ? b:subfile.sub_id : b:subfile.main_id
+    let b:vimtex_id = b:vimtex_local.active
+          \ ? b:vimtex_local.sub_id
+          \ : b:vimtex_local.main_id
     let b:vimtex = g:vimtex_data[b:vimtex_id]
 
     call vimtex#echo#status(['vimtex: ',
           \ ['Normal', 'Changed to `'],
           \ ['VimtexSuccess', b:vimtex.base],
           \ ['Normal', "' "],
-          \ ['VimtexInfo', b:subfile.active ? '[subfile]' : '[main]' ]])
+          \ ['VimtexInfo', b:vimtex_local.active ? '[local]' : '[main]' ]])
   endif
 endfunction
 
@@ -321,7 +305,7 @@ function! s:init_buffer() " {{{1
   command! -buffer -bang VimtexInfo          call vimtex#info(<q-bang> == "!")
   command! -buffer -bang VimtexWordCount     call vimtex#wc(<q-bang> == "!")
   command! -buffer       VimtexReload        call vimtex#reload()
-  command! -buffer       VimtexSubfileToggle call vimtex#subfile_toggle()
+  command! -buffer       VimtexSubfileToggle call vimtex#toggle_local()
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info)           :VimtexInfo<cr>
@@ -449,6 +433,29 @@ function! s:init_modules(initmode) " {{{1
 endfunction
 
 " }}}1
+function! s:init_local_blob() " {{{1
+  let l:filename = expand('%:p')
+
+  if b:vimtex.tex !=# l:filename
+    let l:local = deepcopy(b:vimtex)
+    let l:local.tex = l:filename
+    let l:local.pid = 0
+    let l:local.name = fnamemodify(l:filename, ':t:r')
+    let l:local.root = fnamemodify(l:filename, ':h')
+    let l:local.base = fnamemodify(l:filename, ':t')
+
+    let s:vimtex_next_id += 1
+    let g:vimtex_data[s:vimtex_next_id] = l:local
+
+    let b:vimtex_local = {
+          \ 'active' : 0,
+          \ 'main_id' : b:vimtex_id,
+          \ 'sub_id' : s:vimtex_next_id,
+          \}
+  endif
+endfunction
+
+" }}}1
 
 function! s:get_id(main) " {{{1
   for [id, data] in items(g:vimtex_data)
@@ -484,7 +491,6 @@ function! s:get_main() " {{{1
   let l:candidate = s:get_main_from_specifier(
         \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
   if l:candidate !=# ''
-    let s:subfile = expand('%:p')
     return l:candidate
   endif
 
