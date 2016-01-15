@@ -328,7 +328,7 @@ let s:img = {
 function! s:img.complete(regex) dict " {{{2
   let self.candidates = []
   for l:ext in ['png', 'eps', 'pdf', 'jpg']
-    let self.candidates += globpath(b:vimtex.root, '**/*.' . l:ext, 1, 1)
+    let self.candidates += split(globpath(b:vimtex.root, '**/*.' . l:ext), '\n')
   endfor
 
   let l:output = b:vimtex.out()
@@ -359,8 +359,9 @@ let s:inc = {
       \}
 
 function! s:inc.complete(regex) dict " {{{2
-  let self.candidates = globpath(b:vimtex.root, '**/*.tex', 1, 1)
-  let self.candidates = map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
+  let self.candidates = split(globpath(b:vimtex.root, '**/*.tex'), '\n')
+  let self.candidates = map(self.candidates,
+        \ 'strpart(v:val, len(b:vimtex.root)+1)')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''abbr'' : v:val,
