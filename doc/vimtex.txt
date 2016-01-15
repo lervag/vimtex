@@ -149,13 +149,22 @@ Support for multi-file projects~
 |vimtex| supports most multi-file documents.  It uses a recursive search
 algorithm that should find the main LaTeX file in most cases.  For special
 cases, there are several alternative methods for specifying the main file, see
-below.  Note that the priority of the following methods are as follows:
+below.  The priority of the methods are as follows:
 
   1. Buffer variable
   2. TeX root specifier
   3. Subfiles package
   4. File `.latexmain` specifier
   5. Recursive search
+
+                                                               *vimtex-subfiles*
+                                                                 *vimtex-import*
+|vimtex| also supports the `import` the `subfiles` packages that can be used to make
+it easier to work with multi-file projects. If one uses the `subfiles` package,
+the |VimtexToggleMain| command is particularly useful.
+
+  - https://www.ctan.org/pkg/import
+  - https://www.ctan.org/pkg/subfiles
 
 Recursive search~
   The recursive search detects the main LaTeX file by searching for a file in
@@ -193,29 +202,6 @@ TeX root specifier~
 <
   Note that this method should work for the case where the recursive search
   does not work.
-
-                                                               *vimtex-subfiles*
-Subfiles~
-  Further, |vimtex| supports the `subfiles` package.  That is, the main file
-  is parsed from the `\documentclass` line whenever it has the following format: >
-
-    \documentclass[main.tex]{subfiles}
-<
-  Note that this is a special case in that it is only relevant for users who
-  use the `subfiles` package.
-
-  See also |VimtexSubfileToggle|.
-
-                                                                 *vimtex-import*
-Import~
-  |vimtex| also supports the `import` package, in that it should correctly
-  recognize the main file from sub files that are included through the
-  `subimport` command, e.g. >
-
-    \subimport{chapters/}{chapter1.tex}
-<
-  The support also extends into correctly parsing the project for table of
-  contents.
 
                                                                  *b:vimtex_main*
 Buffer variable~
@@ -309,7 +295,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
    <localleader>lm  |<plug>(vimtex-imaps-list)|           `n`
    <localleader>lx  |<plug>(vimtex-reload)|               `n`
-   <localleader>ls  |<plug>(vimtex-subfile-toggle)|       `n`
+   <localleader>ls  |<plug>(vimtex-toggle-main)|          `n`
    dse              |<plug>(vimtex-delete-env)|           `n`
    dsc              |<plug>(vimtex-delete-cmd)|           `n`
    cse              |<plug>(vimtex-change-env)|           `n`
@@ -1059,20 +1045,25 @@ Commands~
                           in a scratch buffer. Press `q` or `<esc>` to close
                           the buffer.
 
-                                             *VimtexSubfileToggle*
-                                             *<plug>(vimtex-subfile-toggle)*
-:VimtexSubfileToggle      Toggle between the current subfile and the main
-                          project file as "current project". This allows one
-                          to work on a subfile directly, disconnected from the
-                          main project. That is, when the subfile is active,
-                          then commands for compiling and similar work on the
-                          subfile.
+                                             *VimtexToggleMain*
+                                             *<plug>(vimtex-toggle-main)*
+:VimtexToggleMain         In general, |vimtex| detects the main file for the
+                          current LaTeX project and uses it for compilation
+                          and many other features. However, in some cases it
+                          may be useful to instead focus on the current file,
+                          for instance in large projects. In such cases, one
+                          can use |VimtexToggleMain| to change which file to
+                          use as the "current project". It is easy to toggle
+                          back and forth, and both the "main project" and the
+                          "local project" can be used simultaneously if
+                          desired (e.g. for compilation).
 
-                          Note also that it is possible to have both projects
-                          active simultaneously. That is, if one starts
-                          latexmk for the main file, then toggles to the
-                          subfile, then the main file will still be available
-                          and under latexmk compilation.
+                          Note: To compile the current file when it is part of
+                                a larger project, one must of course include
+                                a preamble and the `\begin/\end{document}`! It is
+                                possible to have a working preamble in every
+                                file in a multi-file project with `subfiles`,
+                                see |vimtex-subfiles|.
 
 ------------------------------------------------------------------------------
 Map definitions~

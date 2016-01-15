@@ -178,7 +178,7 @@ if !exists('s:reloading_script')
 endif
 
 " }}}1
-function! vimtex#toggle_local() " {{{1
+function! vimtex#toggle_main() " {{{1
   if exists('b:vimtex_local')
     let b:vimtex_local.active = !b:vimtex_local.active
 
@@ -302,16 +302,16 @@ function! s:init_buffer() " {{{1
   "
 
   " Define commands
-  command! -buffer -bang VimtexInfo          call vimtex#info(<q-bang> == "!")
-  command! -buffer -bang VimtexWordCount     call vimtex#wc(<q-bang> == "!")
-  command! -buffer       VimtexReload        call vimtex#reload()
-  command! -buffer       VimtexSubfileToggle call vimtex#toggle_local()
+  command! -buffer -bang VimtexInfo       call vimtex#info(<q-bang> == "!")
+  command! -buffer -bang VimtexWordCount  call vimtex#wc(<q-bang> == "!")
+  command! -buffer       VimtexReload     call vimtex#reload()
+  command! -buffer       VimtexToggleMain call vimtex#toggle_main()
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info)           :VimtexInfo<cr>
-  nnoremap <buffer> <plug>(vimtex-info-full)      :VimtexInfo!<cr>
-  nnoremap <buffer> <plug>(vimtex-reload)         :VimtexReload<cr>
-  nnoremap <buffer> <plug>(vimtex-subfile-toggle) :VimtexSubfileToggle<cr>
+  nnoremap <buffer> <plug>(vimtex-info)        :VimtexInfo<cr>
+  nnoremap <buffer> <plug>(vimtex-info-full)   :VimtexInfo!<cr>
+  nnoremap <buffer> <plug>(vimtex-reload)      :VimtexReload<cr>
+  nnoremap <buffer> <plug>(vimtex-toggle-main) :VimtexToggleMain<cr>
 
   "
   " Attach autocommands
@@ -339,7 +339,7 @@ function! s:init_mappings() " {{{1
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
-  call s:map('n', '<localleader>ls', '<plug>(vimtex-subfile-toggle)')
+  call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
 
   call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
   call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')
