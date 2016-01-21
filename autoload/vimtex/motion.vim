@@ -184,7 +184,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
   if delim =~# '^\$'
     let inline = s:notcomment . s:notbslash . '\$'
     let [lnum0, cnum0] = searchpos('.', 'nW')
-    if lnum0 && vimtex#util#has_syntax('texMathZoneX', lnum0, cnum0)
+    if lnum0 && vimtex#util#in_syntax('texMathZoneX', lnum0, cnum0)
       let [lnum2, cnum2] = searchpos(inline, 'nW', 0, 200)
     else
       let [lnum2, cnum2] = searchpos(not_cursor . inline, 'bnW', 0, 200)
@@ -353,14 +353,14 @@ function! vimtex#motion#sel_inline_math(...) " {{{1
   let l:dollar = 0
   let l:dollar_pat = '\\\@<!\$'
 
-  if vimtex#util#has_syntax('texMathZoneX')
+  if vimtex#util#in_syntax('texMathZoneX')
     let l:dollar = 1
     let l:pattern = [l:dollar_pat, l:dollar_pat]
     let l:flags .= 'c'
   elseif getline('.')[col('.') - 1] ==# '$'
     let l:dollar = 1
     let l:pattern = [l:dollar_pat, l:dollar_pat]
-  elseif vimtex#util#has_syntax('texMathZoneV')
+  elseif vimtex#util#in_syntax('texMathZoneV')
     let l:pattern = ['\\(', '\\)']
     let l:flags .= 'c'
   elseif getline('.')[col('.') - 2:col('.') - 1] ==# '\)'
@@ -428,7 +428,7 @@ function! s:highlight_matching_pair(...) " {{{1
     " Match inline math
     "
     let [lnum0, cnum0] = searchpos('.', 'nW')
-    if lnum0 && vimtex#util#has_syntax('texMathZoneX', lnum0, cnum0)
+    if lnum0 && vimtex#util#in_syntax('texMathZoneX', lnum0, cnum0)
       let [lnum2, cnum2] = searchpos(s:notcomment . s:notbslash . '\$',
             \ 'nW', line('w$'), 200)
     else

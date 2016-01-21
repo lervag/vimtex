@@ -282,17 +282,31 @@ function! vimtex#util#get_os() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#has_syntax(name, ...) " {{{1
-  " Usage: vimtex#util#has_syntax(name, [line], [col])
-  let line = a:0 >= 1 ? a:1 : line('.')
-  let col  = a:0 >= 2 ? a:2 : col('.')
-  return 0 <= index(map(synstack(line, col),
-        \ 'synIDattr(v:val, "name") == "' . a:name . '"'), 1)
+function! vimtex#util#in_comment(...) " {{{1
+  return call('vimtex#util#in_syntax', ['texComment'] + a:000)
 endfunction
 
 " }}}1
-function! vimtex#util#in_comment(...) " {{{1
-  return synIDattr(synID(line('.'), col('.'), 0), 'name') =~# '^texComment'
+function! vimtex#util#in_mathzone(...) " {{{1
+  return call('vimtex#util#in_syntax', ['texMathZone'] + a:000)
+endfunction
+
+" }}}1
+function! vimtex#util#in_syntax(name, ...) " {{{1
+
+  " Usage: vimtex#util#in_syntax(name, [line, col])
+
+  " Get position and correct it if necessary
+  let l:pos = a:0 > 0 ? [a:1, a:2] : [line('.'), col('.')]
+  if mode() ==# 'i'
+    let l:pos[1] -= 1
+  endif
+  call map(l:pos, 'max([v:val, 1])')
+
+  " Check syntax at position
+  return match(map(synstack(l:pos[0], l:pos[1]),
+        \          "synIDattr(v:val, 'name')"),
+        \      '^' . a:name) >= 0
 endfunction
 
 " }}}1
