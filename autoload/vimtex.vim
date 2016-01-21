@@ -385,6 +385,9 @@ function! s:init_mappings() " {{{1
     call s:map('o', '][', '<plug>(vimtex-][)')
     call s:map('o', '[]', '<plug>(vimtex-[])')
     call s:map('o', '[[', '<plug>(vimtex-[[)')
+  endif
+
+  if g:vimtex_text_obj_enabled
     call s:map('x', 'ie', '<plug>(vimtex-ie)')
     call s:map('x', 'ae', '<plug>(vimtex-ae)')
     call s:map('o', 'ie', '<plug>(vimtex-ie)')

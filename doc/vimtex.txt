@@ -736,6 +736,11 @@ Options~
 
   Default value: 1
 
+*g:vimtex_text_obj_enabled*
+  Use this option to disable the text object mappings.
+
+  Default value: 1
+
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
 
