@@ -111,7 +111,7 @@ function! vimtex#toc#open() " {{{1
         \ 'name'            : s:name,
         \ 'calling_file'    : expand('%:p'),
         \ 'calling_line'    : line('.'),
-        \ 'entries'         : s:parse_toc(),
+        \ 'entries'         : vimtex#toc#get_entries(),
         \ 'show_numbers'    : g:vimtex_toc_show_numbers,
         \ 'max_level'       : s:max_level,
         \ 'topmatters'      : s:count_matters,
@@ -142,6 +142,96 @@ function! vimtex#toc#toggle() " {{{1
     call vimtex#toc#open()
     silent execute 'wincmd w'
   endif
+endfunction
+
+" }}}1
+
+function! vimtex#toc#get_entries() " {{{1
+  "
+  " Parses tex project for TOC entries
+  "
+  " The function returns a list of entries.  Each entry is a dictionary:
+  "
+  "   entry = {
+  "     title  : "Some title",
+  "     number : "3.1.2",
+  "     file   : /path/to/file.tex,
+  "     line   : 142,
+  "     level  : 2,
+  "   }
+  "
+  let l:parsed = vimtex#parser#tex(b:vimtex.tex)
+
+  let s:max_level = 0
+  let s:count_matters = 0
+  for [l:file, l:lnum, l:line] in l:parsed
+    if l:line =~# s:re_sec
+      let s:max_level = max([s:max_level,
+            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]])
+    elseif l:line =~# s:re_matters
+      let s:count_matters += 1
+    endif
+  endfor
+
+  call s:number_reset('preamble')
+
+  let l:toc = []
+  for [l:file, l:lnum, l:line] in l:parsed
+
+    " Bibliography files
+    if l:line =~# s:re_bibs
+      call add(l:toc, s:parse_bib_input(l:line))
+      continue
+    endif
+
+    " Preamble
+    if s:number.preamble
+      if g:vimtex_toc_show_preamble && l:line =~# '\v^\s*\\documentclass'
+        call add(l:toc, {
+              \ 'title'  : 'Preamble',
+              \ 'number' : '',
+              \ 'file'   : l:file,
+              \ 'line'   : l:lnum,
+              \ 'level'  : s:max_level,
+              \ })
+        continue
+      endif
+
+      if l:line =~# '\v^\s*\\begin\{document\}'
+        let s:number.preamble = 0
+      endif
+
+      continue
+    endif
+
+    " Document structure (front-/main-/backmatter, appendix)
+    if l:line =~# s:re_structure
+      call s:number_reset(matchstr(l:line, s:re_structure_match))
+      continue
+    endif
+
+    " Sections (\parts, \chapters, \sections, and \subsections, ...)
+    if l:line =~# s:re_sec
+      call add(l:toc, s:parse_line_sec(l:file, l:lnum, l:line))
+      continue
+    endif
+
+    " Other stuff
+    for l:other in values(s:re_other)
+      if l:line =~# l:other.re
+        call add(l:toc, {
+              \ 'title'  : l:other.title,
+              \ 'number' : '',
+              \ 'file'   : l:file,
+              \ 'line'   : l:lnum,
+              \ 'level'  : s:max_level,
+              \ })
+        continue
+      endif
+    endfor
+  endfor
+
+  return l:toc
 endfunction
 
 " }}}1
@@ -303,95 +393,6 @@ endfunction
 
 " }}}1
 
-function! s:parse_toc() " {{{1
-  "
-  " Parses tex project for TOC entries
-  "
-  " The function returns a list of entries.  Each entry is a dictionary:
-  "
-  "   entry = {
-  "     title  : "Some title",
-  "     number : "3.1.2",
-  "     file   : /path/to/file.tex,
-  "     line   : 142,
-  "     level  : 2,
-  "   }
-  "
-  let l:parsed = vimtex#parser#tex(b:vimtex.tex)
-
-  let s:max_level = 0
-  let s:count_matters = 0
-  for [l:file, l:lnum, l:line] in l:parsed
-    if l:line =~# s:re_sec
-      let s:max_level = max([s:max_level,
-            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]])
-    elseif l:line =~# s:re_matters
-      let s:count_matters += 1
-    endif
-  endfor
-
-  call s:number_reset('preamble')
-
-  let l:toc = []
-  for [l:file, l:lnum, l:line] in l:parsed
-
-    " Bibliography files
-    if l:line =~# s:re_bibs
-      call add(l:toc, s:parse_bib_input(l:line))
-      continue
-    endif
-
-    " Preamble
-    if s:number.preamble
-      if g:vimtex_toc_show_preamble && l:line =~# '\v^\s*\\documentclass'
-        call add(l:toc, {
-              \ 'title'  : 'Preamble',
-              \ 'number' : '',
-              \ 'file'   : l:file,
-              \ 'line'   : l:lnum,
-              \ 'level'  : s:max_level,
-              \ })
-        continue
-      endif
-
-      if l:line =~# '\v^\s*\\begin\{document\}'
-        let s:number.preamble = 0
-      endif
-
-      continue
-    endif
-
-    " Document structure (front-/main-/backmatter, appendix)
-    if l:line =~# s:re_structure
-      call s:number_reset(matchstr(l:line, s:re_structure_match))
-      continue
-    endif
-
-    " Sections (\parts, \chapters, \sections, and \subsections, ...)
-    if l:line =~# s:re_sec
-      call add(l:toc, s:parse_line_sec(l:file, l:lnum, l:line))
-      continue
-    endif
-
-    " Other stuff
-    for l:other in values(s:re_other)
-      if l:line =~# l:other.re
-        call add(l:toc, {
-              \ 'title'  : l:other.title,
-              \ 'number' : '',
-              \ 'file'   : l:file,
-              \ 'line'   : l:lnum,
-              \ 'level'  : s:max_level,
-              \ })
-        continue
-      endif
-    endfor
-  endfor
-
-  return l:toc
-endfunction
-
-" }}}1
 function! s:parse_line_sec(file, lnum, line) " {{{1
   let title = matchstr(a:line, s:re_sec_title)
   let level = matchstr(a:line, s:re_sec_level)
