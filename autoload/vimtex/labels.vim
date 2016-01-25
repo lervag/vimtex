@@ -35,7 +35,7 @@ function! vimtex#labels#open() " {{{1
 
   let index = {}
   let index.name            = s:name
-  let index.entries         = s:gather_labels(b:vimtex.tex)
+  let index.entries         = vimtex#labels#get_entries()
   let index.all_entries     = deepcopy(index.entries)
   let index.hook_init_post  = function('s:index_hook_init_post')
   let index.help            = [
@@ -57,6 +57,33 @@ function! vimtex#labels#toggle() " {{{1
     call vimtex#labels#open()
     silent execute 'wincmd w'
   endif
+endfunction
+
+" }}}1
+
+function! vimtex#labels#get_entries(...) " {{{1
+  let l:file = a:0 > 0 ? a:1 : b:vimtex.tex
+  let l:tac = []
+  let l:preamble = 1
+  for [l:file, l:lnum, l:line] in vimtex#parser#tex(l:file)
+    if l:line =~# '\v^\s*\\begin\{document\}'
+      let l:preamble = 0
+    endif
+
+    if l:preamble
+      continue
+    endif
+
+    if l:line =~# '\v\\label\{'
+      call add(tac, {
+            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}?\s*$'),
+            \ 'file'  : l:file,
+            \ 'line'  : l:lnum,
+            \ })
+      continue
+    endif
+  endfor
+  return l:tac
 endfunction
 
 " }}}1
@@ -96,32 +123,6 @@ function! s:index_syntax() dict " {{{1
   highlight link VimtexLabelsFig  Identifier
   highlight link VimtexLabelsSec  Type
   highlight link VimtexLabelsTab  String
-endfunction
-
-" }}}1
-
-function! s:gather_labels(file) " {{{1
-  let l:tac = []
-  let l:preamble = 1
-  for [l:file, l:lnum, l:line] in vimtex#parser#tex(a:file)
-    if l:line =~# '\v^\s*\\begin\{document\}'
-      let l:preamble = 0
-    endif
-
-    if l:preamble
-      continue
-    endif
-
-    if l:line =~# '\v\\label\{'
-      call add(tac, {
-            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}?\s*$'),
-            \ 'file'  : l:file,
-            \ 'line'  : l:lnum,
-            \ })
-      continue
-    endif
-  endfor
-  return l:tac
 endfunction
 
 " }}}1
