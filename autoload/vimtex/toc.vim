@@ -369,11 +369,11 @@ endfunction
 function! s:index_syntax() dict "{{{1
   syntax match VimtexTocNum
         \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
-  syntax match VimtexTocSec0 /^.*0$/ contains=TocNum,@Tex
-  syntax match VimtexTocSec1 /^.*1$/ contains=TocNum,@Tex
-  syntax match VimtexTocSec2 /^.*2$/ contains=TocNum,@Tex
-  syntax match VimtexTocSec3 /^.*3$/ contains=TocNum,@Tex
-  syntax match VimtexTocSec4 /^.*4$/ contains=TocNum,@Tex
+  syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,@Tex
+  syntax match VimtexTocSec1 /^.*1$/ contains=VimtexTocNum,@Tex
+  syntax match VimtexTocSec2 /^.*2$/ contains=VimtexTocNum,@Tex
+  syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,@Tex
+  syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,@Tex
   syntax match VimtexTocHelp /^\S.*: .*/
 
   highlight link VimtexTocNum  Number
@@ -400,6 +400,7 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
   " Check if section is starred
   if a:line =~# s:re_sec_starred
     let number = ''
+    let s:number.current_level = s:sec_to_value[level]
   else
     let number = s:number_increment(level)
   endif
