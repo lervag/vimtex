@@ -70,7 +70,14 @@ endfunction
 " }}}1
 
 function! vimtex#labels#get_entries(...) " {{{1
-  let l:file = a:0 > 0 ? a:1 : b:vimtex.tex
+  if a:0 > 0
+    let l:file = a:1
+  elseif exists('b:vimtex')
+    let l:file = b:vimtex.tex
+  else
+    return []
+  endif
+
   let l:tac = []
   let l:preamble = 1
   for [l:file, l:lnum, l:line] in vimtex#parser#tex(l:file)
