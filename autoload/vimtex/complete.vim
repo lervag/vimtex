@@ -463,7 +463,7 @@ function! s:tex2unicode(line) " {{{1
   " There might be some missing conversions, which might be fixed by the last
   " substitution
   "
-  return substitute(line, '\C\(\\IeC\s*{\)\?\\.\(.\)}', '\1', 'g')
+  return substitute(line, '\C\(\\IeC\s*{\)\?\\.\%(\S\)}', '\1', 'g')
 endfunction
 
 "
