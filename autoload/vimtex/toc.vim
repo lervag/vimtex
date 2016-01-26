@@ -18,6 +18,14 @@ endfunction
 
 " }}}1
 function! vimtex#toc#init_script() " {{{1
+  call vimtex#util#set_highlight('VimtexTocNum', 'Number')
+  call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
+  call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
+  call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
+  call vimtex#util#set_highlight('VimtexTocSec3', 'NonText')
+  call vimtex#util#set_highlight('VimtexTocSec4', 'Comment')
+  call vimtex#util#set_highlight('VimtexTocHelp', 'helpVim')
+
   if !g:vimtex_toc_enabled | return | endif
 
   let s:name = 'Table of contents (vimtex)'
@@ -147,6 +155,8 @@ endfunction
 " }}}1
 
 function! vimtex#toc#get_entries() " {{{1
+  if !exists('b:vimtex') | return [] | endif
+
   "
   " Parses tex project for TOC entries
   "
@@ -160,6 +170,7 @@ function! vimtex#toc#get_entries() " {{{1
   "     level  : 2,
   "   }
   "
+
   let l:parsed = vimtex#parser#tex(b:vimtex.tex)
 
   let s:max_level = 0
@@ -375,14 +386,6 @@ function! s:index_syntax() dict "{{{1
   syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,@Tex
   syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,@Tex
   syntax match VimtexTocHelp /^\S.*: .*/
-
-  highlight link VimtexTocNum  Number
-  highlight link VimtexTocSec0 Title
-  highlight link VimtexTocSec1 Normal
-  highlight link VimtexTocSec2 helpVim
-  highlight link VimtexTocSec3 NonText
-  highlight link VimtexTocSec4 Comment
-  highlight link VimtexTocHelp helpVim
 endfunction
 
 " }}}1

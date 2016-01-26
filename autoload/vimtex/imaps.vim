@@ -84,6 +84,11 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#init_script() " {{{1
+  call vimtex#util#set_highlight('VimtexImapsLhs', 'ModeMsg')
+  call vimtex#util#set_highlight('VimtexImapsArrow', 'Comment')
+  call vimtex#util#set_highlight('VimtexImapsRhs', 'ModeMsg')
+  call vimtex#util#set_highlight('VimtexImapsWrapper', 'Type')
+
   let s:created_maps = []
 endfunction
 
@@ -152,10 +157,6 @@ function! vimtex#imaps#list() " {{{1
   syntax match VimtexImapsArrow   /->/       contained nextgroup=VimtexImapsRhs
   syntax match VimtexImapsRhs     /\s*\S*/   contained nextgroup=VimtexImapsWrapper
   syntax match VimtexImapsWrapper /.*/       contained
-  highlight link VimtexImapsLhs ModeMsg
-  highlight link VimtexImapsArrow Comment
-  highlight link VimtexImapsRhs ModeMsg
-  highlight link VimtexImapsWrapper Type
 endfunction
 
 " }}}1

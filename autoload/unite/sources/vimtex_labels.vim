@@ -36,12 +36,6 @@ function! s:source.hooks.on_syntax(args, context) " {{{1
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexLabelsTab  /tab:.*$/ contains=@Tex
         \ contained containedin=uniteSource__vimtex
-
-  highlight link VimtexLabelsChap PreProc
-  highlight link VimtexLabelsEq   Statement
-  highlight link VimtexLabelsFig  Identifier
-  highlight link VimtexLabelsSec  Type
-  highlight link VimtexLabelsTab  String
 endfunction
 
 " }}}1

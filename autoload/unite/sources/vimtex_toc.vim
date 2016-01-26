@@ -53,14 +53,6 @@ function! s:source.hooks.on_syntax(args, context) " {{{1
   syntax match VimtexTocNum
         \ /\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/
         \ contained
-
-  highlight link VimtexTocSec0 Title
-  highlight link VimtexTocSec1 Normal
-  highlight link VimtexTocSec2 helpVim
-  highlight link VimtexTocSec3 NonText
-  highlight link VimtexTocSec4 Comment
-  highlight link VimtexTocSecs VimtexTocSec1
-  highlight link VimtexTocNum  Number
 endfunction
 
 " }}}1

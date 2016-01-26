@@ -14,6 +14,8 @@ endfunction
 
 " }}}1
 function! vimtex#index#init_script() " {{{1
+  call vimtex#util#set_highlight('IndexHelp', 'helpVim')
+  call vimtex#util#set_highlight('IndexLine', 'ModeMsg')
 endfunction
 
 " }}}1
@@ -226,9 +228,6 @@ endfunction
 function! s:syntax() dict " {{{1
   syntax match IndexHelp /^.*: .*/
   syntax match IndexLine /^  .*$/ contains=@Tex
-
-  highlight link IndexHelp helpVim
-  highlight link IndexLine ModeMsg
 endfunction
 
 " }}}1
