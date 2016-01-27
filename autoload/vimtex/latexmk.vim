@@ -170,6 +170,9 @@ function! vimtex#latexmk#compile() " {{{1
     return
   endif
 
+  " Initialize build dir
+  call s:latexmk_init_build_dir()
+
   " Build command line and start latexmk
   let exe = s:latexmk_build_cmd()
   if !g:vimtex_latexmk_continuous && !g:vimtex_latexmk_background
@@ -195,6 +198,9 @@ function! vimtex#latexmk#compile_ss(verbose) " {{{1
           \ ['VimtexWarning', 'already running for `' . b:vimtex.base . "'"]])
     return
   endif
+
+  " Initialize build dir
+  call s:latexmk_init_build_dir()
 
   let l:vimtex_latexmk_continuous = g:vimtex_latexmk_continuous
   let g:vimtex_latexmk_continuous = 0
@@ -487,6 +493,24 @@ function! s:latexmk_init_pid() " {{{1
       endfor
     endif
   endif
+endfunction
+
+function! s:latexmk_init_build_dir() " {{{1
+  if g:vimtex_latexmk_build_dir ==# '' | return | endif
+
+  " First create list of necessary directories
+  let l:dirs = split(glob(b:vimtex.root . '/**/*.tex'), '\n')
+  call map(l:dirs, 'fnamemodify(v:val, '':h'')')
+  call map(l:dirs, 'strpart(v:val, strlen(b:vimtex.root) + 1)')
+  call uniq(sort(filter(l:dirs, "v:val !=# ''")))
+  call map(l:dirs,
+        \ "b:vimtex.root . '/' . g:vimtex_latexmk_build_dir . '/' . v:val")
+  call filter(l:dirs, '!isdirectory(v:val)')
+
+  " Create the non-existing directories
+  for l:dir in l:dirs
+    call mkdir(l:dir, 'p')
+  endfor
 endfunction
 
 function! s:latexmk_set_pid() " {{{1
