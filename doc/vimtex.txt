@@ -54,6 +54,7 @@ CONTENTS                                                      *vimtex-contents*
   Navigation                                    |vimtex-navigation|
     Table of contents                           |vimtex-toc|
     Table of labels                             |vimtex-labels|
+    Unite sources                               |vimtex-unite|
   Latexmk                                       |vimtex-latexmk|
     Latexmk tricks                              |vimtex-latexmk-tricks|
     Lacheck                                     |vimtex-latexmk-lacheck|
@@ -1518,6 +1519,30 @@ keybinding.
 
 Associated settings:
     |g:vimtex_labels_enabled|
+
+------------------------------------------------------------------------------
+Unite sources~
+                                                                 *vimtex-unite*
+                                                                   *vimtex_toc*
+                                                                *vimtex_labels*
+
+                                          https://github.com/Shougo/unite.vim
+The |unite.vim| plugin is a popular interface for many things, including
+outlines. Although |vimtex| includes a simple interface for tables of contents
+and labels, it also makes sense to provide these as sources to |unite.vim|.
+The source names are:
+
+  vimtex_toc       Table of contents
+  vimtex_labels    Table of labels
+
+The sources use similar syntax highlighting to the internal |vimtex|
+interfaces.
+
+If one prefers the |unite.vim| sources to the |vimtex| interface, one may
+override the default mappings, e.g.: >
+
+  nnoremap <localleader>lt :<c-u>Unite vimtex_toc<cr>
+  nnoremap <localleader>ly :<c-u>Unite vimtex_labels<cr>
 
 ==============================================================================
 LATEXMK                                                        *vimtex-latexmk*
