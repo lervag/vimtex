@@ -18,53 +18,51 @@ let s:source = {
 function! s:source.gather_candidates(args, context) " {{{1
   let entries = vimtex#toc#get_entries()
   let maxlevel = max(map(copy(entries), 'v:val.level'))
-
-  return map(entries, '{
-        \ "word" : s:format_word(v:val),
-        \ "abbr" : s:format_abbr(v:val, maxlevel - v:val.level),
-        \ "action__path" : v:val.file,
-        \ "action__line" : v:val.line,
-        \ }')
+  return map(entries, 's:create_candidate(v:val, maxlevel)')
 endfunction
 
 " }}}1
 function! s:source.hooks.on_syntax(args, context) " {{{1
-  syntax match VimtexTocSec0 /0.*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSecs /.* @\d$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocSec1 /1.*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSec0 /.* @0$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocSec2 /2.*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSec1 /.* @1$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocSec3 /3.*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSec2 /.* @2$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocSec4 /4.*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSec3 /.* @3$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocSecs /[5-9].*/
-        \ contains=VimtexTocLevel,@Tex
+  syntax match VimtexTocSec4 /.* @4$/
+        \ contains=VimtexTocNum,@Tex
         \ contained containedin=uniteSource__vimtex
-  syntax match VimtexTocLevel
-        \ /\d/ conceal nextgroup=VimtexTocNum
-        \ contained containedin=VimtexTocSec[0-4]
   syntax match VimtexTocNum
-        \ /\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/
-        \ contained
+        \ /\%69v\%(\%([A-Z]\+\>\|\d\+\)\%(\.\d\+\)*\)\?\s*@\d$/
+        \ contains=VimtexTocLevel
+        \ contained containedin=VimtexTocSec[0-9*]
+  syntax match VimtexTocLevel
+        \ /@\d$/ conceal
+        \ contained containedin=VimtexTocNum
 endfunction
 
 " }}}1
 
-function! s:format_word(entry) " {{{1
-  return printf('%-10s%s', s:print_number(a:entry.number), a:entry.title)
-endfunction
-
-" }}}1
-function! s:format_abbr(entry, level) " {{{1
-  return printf('%1s%-10s%s',
-        \ a:level, s:print_number(a:entry.number), a:entry.title)
+function! s:create_candidate(entry, maxlevel) " {{{1
+  let level = a:maxlevel - a:entry.level
+  let title = printf('%-65s%-10s',
+        \ strpart(repeat(' ', 2*level) . a:entry.title, 0, 60),
+        \ s:print_number(a:entry.number))
+  return {
+        \ "word" : title,
+        \ "abbr" : title . ' @' . level,
+        \ "action__path" : a:entry.file,
+        \ "action__line" : a:entry.line,
+        \ }
 endfunction
 
 " }}}1
