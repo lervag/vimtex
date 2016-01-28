@@ -54,14 +54,14 @@ endfunction
 
 function! s:create_candidate(entry, maxlevel) " {{{1
   let level = a:maxlevel - a:entry.level
-  let title = printf('%-65s%-10s',
+  let title = printf('%-65S%-10s',
         \ strpart(repeat(' ', 2*level) . a:entry.title, 0, 60),
         \ s:print_number(a:entry.number))
   return {
-        \ "word" : title,
-        \ "abbr" : title . ' @' . level,
-        \ "action__path" : a:entry.file,
-        \ "action__line" : a:entry.line,
+        \ 'word' : title,
+        \ 'abbr' : title . ' @' . level,
+        \ 'action__path' : a:entry.file,
+        \ 'action__line' : a:entry.line,
         \ }
 endfunction
 
