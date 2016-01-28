@@ -1101,7 +1101,8 @@ Map definitions~
 
 *<plug>(vimtex-create-cmd)*
   Convert current word into a command.  This works in both normal and insert
-  mode.
+  mode, and is by default mapped to <f7> (see |vimtex-default-mappings| for
+  a list of the default mappings).
 
 *<plug>(vimtex-close-env)*
   Close the current environment (insert mode).
