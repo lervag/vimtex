@@ -1100,9 +1100,11 @@ Map definitions~
   |g:vimtex_change_ignored_delims_pattern|.
 
 *<plug>(vimtex-create-cmd)*
-  Convert current word into a command.  This works in both normal and insert
-  mode, and is by default mapped to <f7> (see |vimtex-default-mappings| for
-  a list of the default mappings).
+  Convert the current word (word under or right before the cursor) into
+  a LaTeX command. That is, it prepends a backslash and adds an opening brace.
+  From normal mode, the mapping will leave you in insert mode. The mapping
+  works both in normal and in insert mode. It is by default mapped to <f7>
+  (see |vimtex-default-mappings| for a list of the default mappings).
 
 *<plug>(vimtex-close-env)*
   Close the current environment (insert mode).
