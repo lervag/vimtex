@@ -22,7 +22,6 @@ function! vimtex#change#init_options() " {{{1
         \ [['\\left', '\\right']])
   call vimtex#util#set_default('g:vimtex_change_ignored_delims_pattern',
         \ '\c\\bigg\?')
-  call vimtex#util#set_default('g:vimtex_change_set_formatexpr', 0)
 endfunction
 
 " }}}1
@@ -31,10 +30,6 @@ endfunction
 
 " }}}1
 function! vimtex#change#init_buffer() " {{{1
-  if g:vimtex_change_set_formatexpr
-    setlocal formatexpr=vimtex#change#format()
-  endif
-
   nnoremap <silent><buffer> <plug>(vimtex-delete-env)
         \ :call vimtex#change#env('')<cr>
 
@@ -65,36 +60,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#change#format() " {{{1
-  let i0 = v:lnum + v:count - 1
-  let i1 = i0
-
-  " This is a hack to make undo restore the correct position
-  if mode() !=# 'i'
-    normal! ix
-    normal! x
-  endif
-
-  while i0 >= v:lnum
-    if getline(i0) =~# '[^\\]%'
-      if i0 < i1
-        execute 'normal!' (i0+1) . 'Ggw' . i1 . 'G'
-      endif
-      let i1 = i0 - 1
-    elseif i0 == v:lnum
-      if v:count > 1
-        execute 'normal!' i0 . 'Ggw' . i1 . 'G'
-      else
-        return 1
-      endif
-    endif
-    let i0 = i0 - 1
-  endwhile
-
-  return 0
-endfunction
-
-" }}}1
 function! vimtex#change#get_command(...) " {{{1
   let l:position = a:0 > 0 ? a:1 : searchpos('\S', 'bcn')
   let l:line = getline(l:position[0])
