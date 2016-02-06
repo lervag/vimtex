@@ -131,9 +131,18 @@ endfunction
 
 " }}}2
 function! s:general.latexmk_append_argument() dict " {{{2
+  let opts = g:vimtex_view_general_options_latexmk
+  let opts = substitute(opts, '@line', line('.'), 'g')
   return vimtex#latexmk#add_option('pdf_previewer',
         \   g:vimtex_view_general_viewer . ' '
-        \ . g:vimtex_view_general_options_latexmk)
+        \ . opts)
+endfunction
+
+" }}}2
+function! s:general.latexmk_callback() dict " {{{2
+  if exists("g:vimtex_view_general_callback")
+    exec "call " . g:vimtex_view_general_callback . "(b:vimtex.out())"
+  endif
 endfunction
 
 " }}}2
