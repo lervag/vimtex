@@ -37,7 +37,7 @@ disabled if desired.
   - Change the surrounding command or environment with `csc`/`cse`
   - Toggle starred environment with `tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
-  - Close the current environment in insert mode with `]]`
+  - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
 - Improved folding (`:h 'foldexpr'`)

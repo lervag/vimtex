@@ -103,7 +103,7 @@ Feature overview~
   - Change the surrounding command or environment with `csc`/`cse`
   - Toggle starred environment with `tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
-  - Close the current environment in insert mode with `]]`
+  - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
 - Folding
@@ -276,53 +276,53 @@ In addition to the mappings listed below, |vimtex| provides convenient insert
 mode mappings to make it easier and faster to type mathematical equations.
 This feature is explained in more detail later, see |vimtex-imaps|.
 
-  -----------------------------------------------------------~
-   LHS              RHS                                 MODE~
-  -----------------------------------------------------------~
-   <localleader>li  |<plug>(vimtex-info)|                 `n`
-   <localleader>lI  |<plug>(vimtex-info-full)|            `n`
-   <localleader>lt  |<plug>(vimtex-toc-open)|             `n`
-   <localleader>lT  |<plug>(vimtex-toc-toggle)|           `n`
-   <localleader>ly  |<plug>(vimtex-labels-open)|          `n`
-   <localleader>lY  |<plug>(vimtex-labels-toggle)|        `n`
-   <localleader>lv  |<plug>(vimtex-view)|                 `n`
-   <localleader>lr  |<plug>(vimtex-reverse-search)|       `n`
-   <localleader>ll  |<plug>(vimtex-compile-toggle)|       `n`
-   <localleader>lk  |<plug>(vimtex-stop)|                 `n`
-   <localleader>lK  |<plug>(vimtex-stop-all)|             `n`
-   <localleader>le  |<plug>(vimtex-errors)|               `n`
-   <localleader>lo  |<plug>(vimtex-compile-output)|       `n`
-   <localleader>lg  |<plug>(vimtex-status)|               `n`
-   <localleader>lG  |<plug>(vimtex-status-all)|           `n`
-   <localleader>lc  |<plug>(vimtex-clean)|                `n`
-   <localleader>lC  |<plug>(vimtex-clean-full)|           `n`
-   <localleader>lm  |<plug>(vimtex-imaps-list)|           `n`
-   <localleader>lx  |<plug>(vimtex-reload)|               `n`
-   <localleader>ls  |<plug>(vimtex-toggle-main)|          `n`
-   dse              |<plug>(vimtex-delete-env)|           `n`
-   dsc              |<plug>(vimtex-delete-cmd)|           `n`
-   cse              |<plug>(vimtex-change-env)|           `n`
-   csc              |<plug>(vimtex-change-cmd)|           `n`
-   tse              |<plug>(vimtex-toggle-star)|          `n`
-   tsd              |<plug>(vimtex-toggle-delim)|         `n`
-   <F7>             |<plug>(vimtex-create-cmd)|           `ni`
-   ]]               |<plug>(vimtex-close-env)|            `i`
-   a$               |<plug>(vimtex-a$)|                   `nxo`
-   i$               |<plug>(vimtex-i$)|                   `nxo`
-   ae               |<plug>(vimtex-ae)|                   `nxo`
-   ie               |<plug>(vimtex-ie)|                   `nxo`
-   ad               |<plug>(vimtex-ad)|                   `nxo`
-   id               |<plug>(vimtex-id)|                   `nxo`
-   ap               |<plug>(vimtex-ap)|                   `nxo`
-   ip               |<plug>(vimtex-ip)|                   `nxo`
-   %                |<plug>(vimtex-%)|                    `nxo`
-   ]]               |<plug>(vimtex-]])|                   `nxo`
-   ][               |<plug>(vimtex-][)|                   `nxo`
-   []               |<plug>(vimtex-[])|                   `nxo`
-   [[               |<plug>(vimtex-[[)|                   `nxo`
-   }                |<plug>(vimtex-})|                    `nxo`
-   {                |<plug>(vimtex-{)|                    `nxo`
-  -----------------------------------------------------------~
+  -------------------------------------------------------------~
+   LHS              RHS                                  MODE~
+  -------------------------------------------------------------~
+   <localleader>li  |<plug>(vimtex-info)|                   `n`
+   <localleader>lI  |<plug>(vimtex-info-full)|              `n`
+   <localleader>lt  |<plug>(vimtex-toc-open)|               `n`
+   <localleader>lT  |<plug>(vimtex-toc-toggle)|             `n`
+   <localleader>ly  |<plug>(vimtex-labels-open)|            `n`
+   <localleader>lY  |<plug>(vimtex-labels-toggle)|          `n`
+   <localleader>lv  |<plug>(vimtex-view)|                   `n`
+   <localleader>lr  |<plug>(vimtex-reverse-search)|         `n`
+   <localleader>ll  |<plug>(vimtex-compile-toggle)|         `n`
+   <localleader>lk  |<plug>(vimtex-stop)|                   `n`
+   <localleader>lK  |<plug>(vimtex-stop-all)|               `n`
+   <localleader>le  |<plug>(vimtex-errors)|                 `n`
+   <localleader>lo  |<plug>(vimtex-compile-output)|         `n`
+   <localleader>lg  |<plug>(vimtex-status)|                 `n`
+   <localleader>lG  |<plug>(vimtex-status-all)|             `n`
+   <localleader>lc  |<plug>(vimtex-clean)|                  `n`
+   <localleader>lC  |<plug>(vimtex-clean-full)|             `n`
+   <localleader>lm  |<plug>(vimtex-imaps-list)|             `n`
+   <localleader>lx  |<plug>(vimtex-reload)|                 `n`
+   <localleader>ls  |<plug>(vimtex-toggle-main)|            `n`
+   dse              |<plug>(vimtex-env-delete)|             `n`
+   dsc              |<plug>(vimtex-cmd-delete)|             `n`
+   cse              |<plug>(vimtex-env-change)|             `n`
+   csc              |<plug>(vimtex-cmd-change)|             `n`
+   tse              |<plug>(vimtex-env-toggle-star)|        `n`
+   tsd              |<plug>(vimtex-delim-toggle-modifier)|  `n`
+   <F7>             |<plug>(vimtex-cmd-create)|             `ni`
+   ]]               |<plug>(vimtex-delim-close)|            `i`
+   a$               |<plug>(vimtex-a$)|                     `nxo`
+   i$               |<plug>(vimtex-i$)|                     `nxo`
+   ae               |<plug>(vimtex-ae)|                     `nxo`
+   ie               |<plug>(vimtex-ie)|                     `nxo`
+   ad               |<plug>(vimtex-ad)|                     `nxo`
+   id               |<plug>(vimtex-id)|                     `nxo`
+   ap               |<plug>(vimtex-ap)|                     `nxo`
+   ip               |<plug>(vimtex-ip)|                     `nxo`
+   %                |<plug>(vimtex-%)|                      `nxo`
+   ]]               |<plug>(vimtex-]])|                     `nxo`
+   ][               |<plug>(vimtex-][)|                     `nxo`
+   []               |<plug>(vimtex-[])|                     `nxo`
+   [[               |<plug>(vimtex-[[)|                     `nxo`
+   }                |<plug>(vimtex-})|                      `nxo`
+   {                |<plug>(vimtex-{)|                      `nxo`
+  -------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
 Options~
@@ -363,12 +363,12 @@ Options~
 
   Default value: 0
 
-*g:vimtex_change_complete_envs*
+*g:vimtex_env_complete_list*
   Define a list of environments that will be completed when changing the
-  surrounding environments (see |<plug>(vimtex-change-env)|).
+  surrounding environments (see |<plug>(vimtex-env-change)|).
 
   Default value: >
-    let g:vimtex_change_complete_envs = [
+    let g:vimtex_env_complete_list = [
       \ 'itemize',
       \ 'enumerate',
       \ 'description',
@@ -382,21 +382,17 @@ Options~
       \ '\[',
       \ ]
 <
-*g:vimtex_change_toggled_delims*
-  Define a list of delimiters to toggle through with
-  |<plug>(vimtex-toggle-delim)|.
+*g:vimtex_delim_toggle_mod_list*
+  Define list of delimiter modifiers to toggle through with
+  |<plug>(vimtex-delim-toggle-modifier)|. If the list is not defined, then it uses
+  a default match list.
 
-
-  Default value: >
-    let g:vimtex_change_toggled_delims = [['\\left', '\\right']]
+  For example, to only toggle between no modifier and the `\left/\right` pair,
+  use: >
+    let g:vimtex_delim_toggle_mod_list = [['\\left', '\\right']]
 <
-*g:vimtex_change_ignored_delims_pattern*
-  A pattern for delimiters that will be ignored when toggling delimiters, see
-  |<plug>(vimtex-toggle-delim)|.
+  Default value: `Undefined`
 
-  Default value: >
-    let g:vimtex_change_ignored_delims_pattern = '\c\\bigg\?'
-<
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
   comments. That is, if it is enabled, then comments at end of lines will not
@@ -1082,32 +1078,31 @@ Map definitions~
   (|g:vimtex_fold_manual|), then |vimtex| remaps |zx| and |zX| in such that
   the folds are refreshed appropriately.
 
-*<plug>(vimtex-delete-env)*
-*<plug>(vimtex-change-env)*
+*<plug>(vimtex-env-delete)*
+*<plug>(vimtex-env-change)*
   Delete/Change surrounding environment.
 
-*<plug>(vimtex-delete-cmd)*
-*<plug>(vimtex-change-cmd)*
-  Delete/Change surrounding command.  Note: <plug>(vimtex-delete-cmd) depends
+*<plug>(vimtex-cmd-delete)*
+*<plug>(vimtex-cmd-change)*
+  Delete/Change surrounding command.  Note: |<plug>(vimtex-cmd-delete)| depends
   on |surround.vim| (https://github.com/tpope/vim-surround).
 
-*<plug>(vimtex-toggle-star)*
+*<plug>(vimtex-env-toggle-star)*
   Toggle starred environment.
 
-*<plug>(vimtex-toggle-delim)*
-  Toggle delimiters, for instance between `(...)` and `\left(...\right)`. The
-  behaviour is controlled through |g:vimtex_change_toggled_delims| and
-  |g:vimtex_change_ignored_delims_pattern|.
+*<plug>(vimtex-delim-toggle-modifier)*
+  Toggle delimiter modifiers, for instance between `(...)` and `\left(...\right)`.
+  See also |g:vimtex_delim_toggle_mod_list|.
 
-*<plug>(vimtex-create-cmd)*
+*<plug>(vimtex-cmd-create)*
   Convert the current word (word under or right before the cursor) into
   a LaTeX command. That is, it prepends a backslash and adds an opening brace.
   From normal mode, the mapping will leave you in insert mode. The mapping
   works both in normal and in insert mode. It is by default mapped to <f7>
   (see |vimtex-default-mappings| for a list of the default mappings).
 
-*<plug>(vimtex-close-env)*
-  Close the current environment (insert mode).
+*<plug>(vimtex-delim-close)*
+  Close the current environment or delimiter (insert mode).
 
 *<plug>(vimtex-a$)*
   Text object for inline math (inclusive).
@@ -1783,6 +1778,34 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2016-02-06: Large refactoring of delimiter parsing~
+I've refactored a lot of the code in order to make the parsing of delimiters
+and features that rely on delimiter detection and similar more consistent.
+This results in some changes in option names and similar, but it should make
+it easier to provide improved and more robust features.
+
+There is one feature change: The delimiter toggle now consistently toggles the
+modifier, not the delimiter itself, and it toggles between a range of
+modifiers by default. For customization, see |g:vimtex_delim_toggle_mod_list|.
+
+The following options have changed names:
+  *g:vimtex_change_set_formatexpr* ---> |g:vimtex_format_enabled|
+  *g:vimtex_change_complete_envs*  ---> |g:vimtex_env_complete_list|
+  *g:vimtex_change_toggled_delims* ---> |g:vimtex_delim_toggle_mod_list|
+
+The following options have been removed:
+  *g:vimtex_change_ignored_delims_pattern* --- It was no longer necessary
+
+The following mappings have been renamed:
+   *<plug>(vimtex-delete-env)*   ---> |<plug>(vimtex-env-delete)|
+   *<plug>(vimtex-delete-cmd)*   ---> |<plug>(vimtex-cmd-delete)|
+   *<plug>(vimtex-change-env)*   ---> |<plug>(vimtex-env-change)|
+   *<plug>(vimtex-change-cmd)*   ---> |<plug>(vimtex-cmd-change)|
+   *<plug>(vimtex-toggle-star)*  ---> |<plug>(vimtex-env-toggle-star)|
+   *<plug>(vimtex-toggle-delim)* ---> |<plug>(vimtex-delim-toggle-modifier)|
+   *<plug>(vimtex-create-cmd)*   ---> |<plug>(vimtex-cmd-create)|
+   *<plug>(vimtex-close-env)*    ---> |<plug>(vimtex-delim-close)|
 
 2015-10-19: Added convenient insert mode mappings~
 I've merged the `math_mappings` branch (see #172 and #251). It adds the

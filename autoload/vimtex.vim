@@ -341,15 +341,17 @@ function! s:init_mappings() " {{{1
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
   call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
 
-  call s:map('n', 'dse', '<plug>(vimtex-delete-env)')
-  call s:map('n', 'dsc', '<plug>(vimtex-delete-cmd)')
-  call s:map('n', 'cse', '<plug>(vimtex-change-env)')
-  call s:map('n', 'csc', '<plug>(vimtex-change-cmd)')
-  call s:map('n', 'tse', '<plug>(vimtex-toggle-star)')
-  call s:map('n', 'tsd', '<plug>(vimtex-toggle-delim)')
-  call s:map('n', '<F7>', '<plug>(vimtex-create-cmd)')
-  call s:map('i', '<F7>', '<plug>(vimtex-create-cmd)')
-  call s:map('i', ']]', '<plug>(vimtex-close-env)')
+  call s:map('n', 'dse', '<plug>(vimtex-env-delete)')
+  call s:map('n', 'cse', '<plug>(vimtex-env-change)')
+  call s:map('n', 'tse', '<plug>(vimtex-env-toggle-star)')
+
+  call s:map('n', 'dsc',  '<plug>(vimtex-cmd-delete)')
+  call s:map('n', 'csc',  '<plug>(vimtex-cmd-change)')
+  call s:map('n', '<F7>', '<plug>(vimtex-cmd-create)')
+  call s:map('i', '<F7>', '<plug>(vimtex-cmd-create)')
+
+  call s:map('n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
   if g:vimtex_latexmk_enabled
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile-toggle)')

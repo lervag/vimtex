@@ -89,13 +89,10 @@ function! VimtexIndent() " {{{1
   endif
 
   " Indent opening and closing delimiters
-  let l:delims = match(map(synstack(v:lnum, max([col('.') - 1, 1])),
-        \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
-        \ ? [s:delimiters_open_math, s:delimiters_close_math]
-        \ : [s:delimiters_open_tex,  s:delimiters_close_tex]
+  let [l:re_open, l:re_close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
   let ind += &sw*(
-        \   max([s:count(pline, l:delims[0]) - s:count(pline, l:delims[1]), 0])
-        \ - max([s:count(cline, l:delims[1]) - s:count(cline, l:delims[0]), 0]))
+        \   max([s:count(pline, l:re_open)  - s:count(pline, l:re_close), 0])
+        \ - max([s:count(cline, l:re_close) - s:count(cline, l:re_open), 0]))
 
   " Indent list items
   if pline =~# '^\s*\\\(bib\)\?item'
@@ -138,28 +135,6 @@ let s:tikz_indented = 0
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:delimiters_open_tex = '\(' . join([
-        \ '{',
-        \ '\[',
-        \ '\\(',
-      \ ], '\|') . '\)'
-let s:delimiters_close_tex = '\(' . join([
-        \ '}',
-        \ '\]',
-        \ '\\)',
-      \ ], '\|') . '\)'
-let s:delimiters_open_math = '\(' . join([
-        \ '\\\[\s*$',
-        \ '\\{',
-        \ '\\\Cleft\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\((\|\[\|\\{\)',
-      \ ], '\|') . '\)'
-let s:delimiters_close_math = '\(' . join([
-        \ '\\\]\s*$',
-        \ '\\}',
-        \ '\\\Cright\s*\%([^\\]\|\\.\|\\\a*\)',
-        \ '\\\cbigg\?\()\|\]\|\\}\)',
-      \ ], '\|') . '\)'
 let s:tikz_commands = '\\\(' . join([
         \ 'draw',
         \ 'fill',

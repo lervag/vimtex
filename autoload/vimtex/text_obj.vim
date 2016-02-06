@@ -56,108 +56,43 @@ endfunction
 " }}}1
 
 function! vimtex#text_obj#delimiters(...) " {{{1
-  let inner = a:0 > 0
-
-  let [d1, l1, c1, d2, l2, c2] = vimtex#delim#get_surrounding()
-
-  if inner
-    let c1 += len(d1)
-    if c1 != len(getline(l1))
-      let l1 += 1
-      let c1 = 1
-    endif
-  endif
-
-  if inner
-    let c2 -= 1
-    if c2 < 1
-      let l2 -= 1
-      let c2 = len(getline(l2))
-    endif
-  else
-    let c2 += len(d2) - 1
-  endif
-
-  if l1 < l2 || (l1 == l2 && c1 < c2)
-    call cursor(l1,c1)
-    if visualmode() ==# 'V'
-      normal! V
-    else
-      normal! v
-    endif
-    call cursor(l2,c2)
-  endif
+  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_all')
+  call s:text_obj_delim(l:open, l:close, a:0 > 0)
 endfunction
 
 " }}}1
 function! vimtex#text_obj#environments(...) " {{{1
-  let inner = a:0 > 0
+  let l:inner = a:0 > 0
 
-  let [env, lnum, cnum, lnum2, cnum2] = vimtex#util#get_env(1)
-  call cursor(lnum, cnum)
-  if inner
-    if env =~# '^\'
-      call search('\\.\_\s*\S', 'eW')
-    else
-      call search('}\(\_\s*\(\[\_[^]]*\]\|{\_\S\{-}}\)\)\?\_\s*\S', 'eW')
-    endif
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  if l:open.type !=# 'env' | return | endif
+
+  if l:inner
+    call cursor(l:open.lnum, l:open.cnum + strlen(l:open.match))
+    call search('}\%(\_\s*\%(\[\_[^]]*\]\)\)\?\_\s*\S', 'eW')
+  else
+    call cursor(l:open.lnum, l:open.cnum)
   endif
+
   if visualmode() ==# 'V'
     normal! V
   else
     normal! v
   endif
-  call cursor(lnum2, cnum2)
-  if inner
+
+  if l:inner
+    call cursor(l:close.lnum, l:close.cnum)
     call search('\S\_\s*', 'bW')
   else
-    if env =~# '^\'
-      normal! l
-    else
-      call search('}', 'eW')
-    endif
+    call cursor(l:close.lnum, l:close.cnum + strlen(l:close.match) - 1)
   endif
 endfunction
 
 " }}}1
 function! vimtex#text_obj#inline_math(...) " {{{1
-  let l:inner = a:0 > 0
-
-  let l:flags = 'bW'
-  let l:dollar = 0
-  let l:dollar_pat = '\\\@<!\$'
-
-  if vimtex#util#in_syntax('texMathZoneX')
-    let l:dollar = 1
-    let l:pattern = [l:dollar_pat, l:dollar_pat]
-    let l:flags .= 'c'
-  elseif getline('.')[col('.') - 1] ==# '$'
-    let l:dollar = 1
-    let l:pattern = [l:dollar_pat, l:dollar_pat]
-  elseif vimtex#util#in_syntax('texMathZoneV')
-    let l:pattern = ['\\(', '\\)']
-    let l:flags .= 'c'
-  elseif getline('.')[col('.') - 2:col('.') - 1] ==# '\)'
-    let l:pattern = ['\\(', '\\)']
-  else
-    return
-  endif
-
-  call s:search_and_skip_comments(l:pattern[0], l:flags)
-
-  if l:inner
-    execute 'normal! ' l:dollar ? 'l' : 'll'
-  endif
-
-  execute 'normal! ' visualmode() ==# 'V' ? 'V' : 'v'
-
-  call s:search_and_skip_comments(l:pattern[1], 'W')
-
-  if l:inner
-    normal! h
-  elseif !l:dollar
-    normal! l
-  endif
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  if empty(l:open) || l:open.type ==# 'env' | return | endif
+  call s:text_obj_delim(l:open, l:close, a:0 > 0)
 endfunction
 " }}}1
 function! vimtex#text_obj#paragraphs(...) " {{{1
@@ -177,34 +112,33 @@ endfunction
 
 " }}}1
 
-function! s:search_and_skip_comments(pat, ...) " {{{1
-  " Usage: s:search_and_skip_comments(pat, [flags, stopline])
-  let flags             = a:0 >= 1 ? a:1 : ''
-  let stopline  = a:0 >= 2 ? a:2 : 0
-  let saved_pos = getpos('.')
+function! s:text_obj_delim(open, close, inner) " {{{1
+  let [l1, c1, l2, c2] = [a:open.lnum, a:open.cnum, a:close.lnum, a:close.cnum]
 
-  " search once
-  let ret = search(a:pat, flags, stopline)
-
-  if ret
-    " do not match at current position if inside comment
-    let flags = substitute(flags, 'c', '', 'g')
-
-    " keep searching while in comment
-    while vimtex#util#in_comment()
-      let ret = search(a:pat, flags, stopline)
-      if !ret
-        break
-      endif
-    endwhile
+  if a:inner
+    let c1 += len(a:open.match)
+    let c2 -= 1
+    if c1 >= len(getline(l1))
+      let l1 += 1
+      let c1 = 1
+    endif
+    if c2 < 1
+      let l2 -= 1
+      let c2 = len(getline(l2))
+    endif
+  else
+    let c2 += len(a:close.match) - 1
   endif
 
-  if !ret
-    " if no match found, restore position
-    call setpos('.', saved_pos)
+  if l1 < l2 || (l1 == l2 && c1 < c2)
+    call cursor(l1, c1)
+    if visualmode() ==# 'V'
+      normal! V
+    else
+      normal! v
+    endif
+    call cursor(l2, c2)
   endif
-
-  return ret
 endfunction
 " }}}1
 
