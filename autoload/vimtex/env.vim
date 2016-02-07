@@ -92,6 +92,7 @@ endfunction
 
 function! vimtex#env#change_prompt() " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  if empty(l:open) | return | endif
   let l:name = l:open.type ==# 'env' ? l:open.name : l:open.type
 
   call vimtex#echo#status(['Change surrounding environment: ',
@@ -109,12 +110,9 @@ endfunction
 
 function! vimtex#env#toggle_star() " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
-  if l:open.type !=# 'env' | return | endif
+  if empty(l:open) || l:open.type !=# 'env' | return | endif
 
-  call vimtex#env#change(l:open.name[-1:] ==# '*'
-        \ ? l:open.name[:-2]
-        \ : l:open.name . '*'
-        \)
+  call vimtex#env#change(l:open.starred ? l:open.name : l:open.name . '*')
 
   silent! call repeat#set("\<plug>(vimtex-env-toggle-star)", v:count)
 endfunction

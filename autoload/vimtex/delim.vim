@@ -302,7 +302,7 @@ endfunction
 " }}}1
 function! vimtex#delim#get_surrounding(type) " {{{1
   let l:save_pos = getpos('.')
-  let l:lnum = l:save_pos[1]
+  let l:lnum = l:save_pos[1] + 1
   let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
 
   while l:lnum > 1
@@ -396,7 +396,8 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
   let result = {}
 
   let result.type = 'env'
-  let result.name = matchstr(a:match, '{\zs.*\ze}')
+  let result.name = matchstr(a:match, '{\zs\k*\ze\*\?}')
+  let result.starred = match(a:match, '\*}$') > 0
   let result.side = a:match =~# '\\begin' ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
   let result.get_matching = function('s:get_matching_env')
@@ -406,8 +407,8 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\\begin\s*{' . result.name . '}',
-        \ 'close' : '\\end\s*{' . result.name . '}',
+        \ 'open' : '\\begin\s*{' . result.name . '\*\?}',
+        \ 'close' : '\\end\s*{' . result.name . '\*\?}',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
