@@ -1,5 +1,6 @@
 \documentclass{memoir}
 \usepackage[demo]{graphicx}
+\usepackage[fleqn]{amsmath}
 \usepackage{siunitx}
 \begin{document}
 
@@ -20,6 +21,13 @@
   \includegraphics[height=\linewidth]{somefig}
   \caption{sdadasda}
   \label{fig:fig2}
+\end{figure}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[height=\linewidth]{somefig}
+  \caption{Blabla \(\text{K\&K}\) }
+  \label{fig:fig3-for-issue-337}
 \end{figure}
 
 Reference here:
