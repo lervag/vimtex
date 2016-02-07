@@ -454,16 +454,12 @@ function! s:tex2unicode(line) " {{{1
   "
   " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
   "
-  let line = a:line
-  for [pat, symbol] in s:tex2unicode_list
-    let line = substitute(line, pat, symbol, 'g')
+  let l:line = a:line
+  for [l:pat, l:symbol] in s:tex2unicode_list
+    let l:line = substitute(l:line, l:pat, l:symbol, 'g')
   endfor
 
-  "
-  " There might be some missing conversions, which might be fixed by the last
-  " substitution
-  "
-  return substitute(line, '\C\(\\IeC\s*{\)\?\\.\%(\S\)}', '\1', 'g')
+  return l:line
 endfunction
 
 "
