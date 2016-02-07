@@ -15,15 +15,6 @@ endfunction
 function! vimtex#motion#init_script() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
-  " Highlight matching delimiters ($, (), ...)
-  if g:vimtex_motion_matchparen
-    augroup vimtex_motion
-      autocmd!
-      autocmd! CursorMoved  *.tex call s:highlight_matching_pair()
-      autocmd! CursorMovedI *.tex call s:highlight_matching_pair()
-    augroup END
-  endif
-
   "
   " Define patterns used by motion.vim
   "
@@ -55,6 +46,15 @@ endfunction
 " }}}1
 function! vimtex#motion#init_buffer() " {{{1
   if !g:vimtex_motion_enabled | return | endif
+
+  " Highlight matching delimiters ($, (), ...)
+  if g:vimtex_motion_matchparen
+    augroup vimtex_motion
+      autocmd!
+      autocmd! CursorMoved  <buffer> call s:highlight_matching_pair()
+      autocmd! CursorMovedI <buffer> call s:highlight_matching_pair()
+    augroup END
+  endif
 
   " Utility map to avoid conflict with "normal" command
   nnoremap <buffer> <sid>(v) v
