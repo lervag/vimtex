@@ -860,10 +860,18 @@ Options~
 
   Default value: '@pdf'
 
+*g:vimtex_view_general_callback*
+  Sets the function that is called within |vimtex#latexmk#callback| after compilation
+  has finished. The function should take one argument, the pdf filename. It
+  will be empty if it could not be compiled.
+
+  Default value: ''
+
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
   viewer, see |vimtex_viewer_general|.  This allows to send options that
-  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|.
+  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|. Only the
+  `@line` escape is expanded.
 
   Default value: ''
 
