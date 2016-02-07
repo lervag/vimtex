@@ -861,9 +861,12 @@ Options~
   Default value: '@pdf'
 
 *g:vimtex_view_general_callback*
-  Sets the function that is called within |vimtex#latexmk#callback| after compilation
-  has finished. The function should take one argument, the pdf filename. It
-  will be empty if it could not be compiled.
+  Sets the name of a function that is called within |vimtex#latexmk#callback|
+  after compilation has finished. The function does not take any arguments,
+  instead it can use the `b:vimtex` variable directly, e.g. the pdf file is
+  available as `b:vimtex.out()`. The function is part of the viewer
+  dictionary, and as such it may be defined with the |func-dict| argument. See
+  the source for the reference of the viewer dictionary.
 
   Default value: ''
 

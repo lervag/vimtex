@@ -98,6 +98,10 @@ function! s:general.init() dict " {{{2
   call vimtex#util#set_default('g:vimtex_view_general_options', '@pdf')
   call vimtex#util#set_default('g:vimtex_view_general_options_latexmk', '')
 
+  if exists('g:vimtex_view_general_callback')
+    let self.latexmk_callback = function(g:vimtex_view_general_callback)
+  endif
+
   if !executable(g:vimtex_view_general_viewer)
     echoerr 'vimtex viewer is not executable!'
     echoerr 'g:vimtex_view_general_viewer = '
@@ -131,18 +135,12 @@ endfunction
 
 " }}}2
 function! s:general.latexmk_append_argument() dict " {{{2
-  let opts = g:vimtex_view_general_options_latexmk
-  let opts = substitute(opts, '@line', line('.'), 'g')
-  return vimtex#latexmk#add_option('pdf_previewer',
-        \   g:vimtex_view_general_viewer . ' '
-        \ . opts)
-endfunction
-
-" }}}2
-function! s:general.latexmk_callback() dict " {{{2
-  if exists("g:vimtex_view_general_callback")
-    exec "call " . g:vimtex_view_general_callback . "(b:vimtex.out())"
+  let l:option = g:vimtex_view_general_viewer
+  if !empty(g:vimtex_view_general_options_latexmk)
+    let l:option .= ' ' . substitute(g:vimtex_view_general_options_latexmk,
+          \                      '@line', line('.'), 'g')
   endif
+  return vimtex#latexmk#add_option('pdf_previewer', l:option)
 endfunction
 
 " }}}2
