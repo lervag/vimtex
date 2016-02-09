@@ -330,8 +330,9 @@ endfunction
 function! s:init_mappings() " {{{1
   if !get(g:,'vimtex_mappings_enabled', 1) | return | endif
 
-  function! s:map(mode, lhs, rhs)
-    if !hasmapto(a:rhs, a:mode) && maparg(a:lhs, 'n') ==# ''
+  function! s:map(mode, lhs, rhs, ...)
+    if !hasmapto(a:rhs, a:mode)
+          \ && (a:0 > 0 || maparg(a:lhs, a:mode) ==# '')
       silent execute a:mode . 'map <silent><buffer>' a:lhs a:rhs
     endif
   endfunction
@@ -366,9 +367,6 @@ function! s:init_mappings() " {{{1
   endif
 
   if g:vimtex_motion_enabled
-    call s:map('n', '%', '<plug>(vimtex-%)')
-    call s:map('x', '%', '<plug>(vimtex-%)')
-    call s:map('o', '%', '<plug>(vimtex-%)')
     call s:map('n', '}', '<plug>(vimtex-})')
     call s:map('n', '{', '<plug>(vimtex-{)')
     call s:map('x', '}', '<plug>(vimtex-})')
@@ -387,6 +385,11 @@ function! s:init_mappings() " {{{1
     call s:map('o', '][', '<plug>(vimtex-][)')
     call s:map('o', '[]', '<plug>(vimtex-[])')
     call s:map('o', '[[', '<plug>(vimtex-[[)')
+
+    " These are forced in order to overwrite matchit mappings
+    call s:map('n', '%', '<plug>(vimtex-%)', 1)
+    call s:map('x', '%', '<plug>(vimtex-%)', 1)
+    call s:map('o', '%', '<plug>(vimtex-%)', 1)
   endif
 
   if g:vimtex_text_obj_enabled
