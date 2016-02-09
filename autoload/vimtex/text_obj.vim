@@ -57,6 +57,7 @@ endfunction
 
 function! vimtex#text_obj#delimiters(...) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('delim_all')
+  if empty(l:open) | return | endif
   call s:text_obj_delim(l:open, l:close, a:0 > 0)
 endfunction
 
@@ -65,7 +66,7 @@ function! vimtex#text_obj#environments(...) " {{{1
   let l:inner = a:0 > 0
 
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
-  if l:open.type !=# 'env' | return | endif
+  if empty(l:open) || l:open.type !=# 'env' | return | endif
 
   if l:inner
     call cursor(l:open.lnum, l:open.cnum + strlen(l:open.match))
