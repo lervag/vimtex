@@ -384,14 +384,17 @@ Options~
 <
 *g:vimtex_delim_toggle_mod_list*
   Define list of delimiter modifiers to toggle through with
-  |<plug>(vimtex-delim-toggle-modifier)|. If the list is not defined, then it uses
-  a default match list.
+  |<plug>(vimtex-delim-toggle-modifier)|.
 
-  For example, to only toggle between no modifier and the `\left/\right` pair,
-  use: >
-    let g:vimtex_delim_toggle_mod_list = [['\\left', '\\right']]
+  For example, to toggle between no modifiers, the `\left/\right` pair, and
+  the `\bigl/\bigr` pair, use: >
+
+    let g:vimtex_delim_toggle_mod_list = [
+      \ ['\left', '\right']
+      \ ['\bigl', '\bigr']
+      \]
 <
-  Default value: `Undefined`
+  Default value: [['\left', '\right']]
 
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline

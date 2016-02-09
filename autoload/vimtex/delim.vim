@@ -5,6 +5,8 @@
 "
 
 function! vimtex#delim#init_options() " {{{1
+  call vimtex#util#set_default('g:vimtex_delim_toggle_mod_list',
+        \ [['\left', '\right']])
 endfunction
 
 " }}}1
@@ -214,9 +216,7 @@ function! vimtex#delim#toggle_modifier() " {{{1
   if empty(l:open) | return | endif
 
   let newmods = []
-  let modlist = [['', '']]
-        \ + get(g:, 'vimtex_delim_toggle_mod_list',
-        \       s:delims.delim_mods.list)
+  let modlist = [['', '']] + g:vimtex_delim_toggle_mod_list
   let n = len(modlist)
   for i in range(n)
     let j = (i + 1) % n
