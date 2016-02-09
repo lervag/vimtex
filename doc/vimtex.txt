@@ -1775,6 +1775,24 @@ A: Yes. Most features work out of the box, but the `latexmk` coupling and some
    [0]: https://github.com/neovim/neovim/issues/1750
    [1]: https://github.com/lervag/vimtex/issues/262
 
+                                                              *vimtex-faq-tags*
+Q: How can I jump from a `\ref{label}` to the corresponding label?
+A: This is not a feature provided by |vimtex| itself, but vim has very good
+   support for tag navigation, see |tags-and-searches|. It is worth mentioning
+   that the |ctags| support for LaTeX is somewhat lacking. This can be amended
+   by adding some lines to your `~/.ctags` configuration file, e.g.: >
+
+    --langdef=tex2
+    --langmap=tex2:.tex
+    --regex-tex2=/\\label[ \t]*\*?\{[ \t]*([^}]*)\}/\1/l,label/
+
+<   See [0,1] for references. I also find |gutentags| [2] to be very convenient
+   for automatically generating and updating tag files.
+
+   [0]: http://stackoverflow.com/q/8119405/51634
+   [1]: https://github.com/lervag/vimtex/issues/348
+   [2]: https://github.com/ludovicchabant/vim-gutentags
+
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
 
