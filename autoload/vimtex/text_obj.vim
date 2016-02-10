@@ -66,7 +66,7 @@ function! vimtex#text_obj#environments(...) " {{{1
   let l:inner = a:0 > 0
 
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
-  if empty(l:open) || l:open.type !=# 'env' | return | endif
+  if empty(l:open) | return | endif
 
   if l:inner
     call cursor(l:open.lnum, l:open.cnum + strlen(l:open.match))
@@ -91,8 +91,8 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#inline_math(...) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
-  if empty(l:open) || l:open.type ==# 'env' | return | endif
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
+  if empty(l:open) | return | endif
   call s:text_obj_delim(l:open, l:close, a:0 > 0)
 endfunction
 " }}}1

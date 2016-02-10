@@ -39,7 +39,7 @@ endfunction
 " }}}1
 
 function! vimtex#env#change(new) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_all')
 
   "
   " Set target environment
@@ -91,7 +91,7 @@ function! vimtex#env#change(new) " {{{1
 endfunction
 
 function! vimtex#env#change_prompt() " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_all')
   if empty(l:open) | return | endif
   let l:name = l:open.type ==# 'env' ? l:open.name : l:open.type
 
@@ -110,7 +110,7 @@ endfunction
 
 function! vimtex#env#toggle_star() " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
-  if empty(l:open) || l:open.type !=# 'env' | return | endif
+  if empty(l:open) | return | endif
 
   call vimtex#env#change(l:open.starred ? l:open.name : l:open.name . '*')
 

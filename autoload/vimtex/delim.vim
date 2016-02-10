@@ -17,13 +17,20 @@ function! vimtex#delim#init_script() " {{{1
   let s:delims.env = {
         \ 'list' : [
         \   ['begin', 'end'],
+        \  ],
+        \ 're' : [
+        \   ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
+        \  ],
+        \}
+
+  let s:delims.env_math = {
+        \ 'list' : [
         \   ['\(', '\)'],
         \   ['\[', '\]'],
         \   ['$$', '$$'],
         \   ['$', '$'],
         \  ],
         \ 're' : [
-        \   ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
         \   ['\\(', '\\)'],
         \   ['\\\[', '\\\]'],
         \   ['\$\$', '\$\$'],
@@ -109,6 +116,19 @@ function! vimtex#delim#init_script() " {{{1
         \   . '\)'
         \}
 
+  let s:re.env_math = {
+        \ 'open' : '\%('
+        \   . join(map(copy(s:delims.env_math.re), 'v:val[0]'), '\|')
+        \   . '\)',
+        \ 'close' : '\%('
+        \   . join(map(copy(s:delims.env_math.re), 'v:val[1]'), '\|')
+        \   . '\)',
+        \ 'both' : '\%('
+        \   . join(map(copy(s:delims.env_math.re), 'v:val[0]'), '\|') . '\|'
+        \   . join(map(copy(s:delims.env_math.re), 'v:val[1]'), '\|')
+        \   . '\)'
+        \}
+
   let s:re.delim_tex = {
         \ 'open' : '\%('
         \   . join(map(copy(s:delims.delim_tex.re), 'v:val[0]'), '\|')
@@ -141,15 +161,19 @@ function! vimtex#delim#init_script() " {{{1
         \   . '\)'
         \}
 
+  let s:delims.env_all = {}
   let s:delims.delim_all = {}
   let s:delims.all = {}
+  let s:re.env_all = {}
   let s:re.delim_all = {}
   let s:re.all = {}
   for k in ['list', 're']
+    let s:delims.env_all[k] = s:delims.env[k] + s:delims.env[k]
     let s:delims.delim_all[k] = s:delims.delim_math[k] + s:delims.delim_tex[k]
     let s:delims.all[k] = s:delims.env[k] + s:delims.delim_all[k]
   endfor
   for k in ['open', 'close', 'both']
+    let s:re.env_all[k] = s:re.env[k] . '\|' . s:re.env_math[k]
     let s:re.delim_all[k] = s:re.delim_math[k] . '\|' . s:re.delim_tex[k]
     let s:re.all[k] = s:re.env[k] . '\|' . s:re.delim_all[k]
   endfor
@@ -333,6 +357,8 @@ function! s:get_delim(direction, type, side) " {{{1
   "                  prev
   "                  current
   "   type           env
+  "                  env_math
+  "                  env_all
   "                  delim_tex
   "                  delim_math
   "                  delim_all
@@ -343,7 +369,7 @@ function! s:get_delim(direction, type, side) " {{{1
   "
   " Returns:
   "   delim = {
-  "     type    : env | delim | $ | $$ | \( | \[
+  "     type    : env | delim
   "     side    : open | close
   "     name    : name of environment [only for type env]
   "     lnum    : number
@@ -381,7 +407,8 @@ function! s:get_delim(direction, type, side) " {{{1
   for l:type in s:types
     if l:match =~# '^' . l:type.re
       let l:result = extend(
-            \ l:type.parser(l:match, l:lnum, l:cnum, a:side, a:type, a:direction),
+            \ l:type.parser(l:match, l:lnum, l:cnum,
+            \               a:side, a:type, a:direction),
             \ l:result, 'keep')
       break
     endif
@@ -430,7 +457,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
   " the side.
   "
   let result = {}
-  let result.type = a:match
+  let result.type = 'env'
   let result.corr = a:match
   let result.get_matching = function('s:get_matching_tex')
   let result.re = {
@@ -473,7 +500,7 @@ endfunction
 function! s:parser_latex(match, lnum, cnum, ...) " {{{1
   let result = {}
 
-  let result.type = a:match =~# '\\(\|\\)' ? '\(' : '\['
+  let result.type = 'env'
   let result.side = a:match =~# '\\(\|\\\[' ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
   let result.get_matching = function('s:get_matching_latex')
@@ -483,8 +510,8 @@ function! s:parser_latex(match, lnum, cnum, ...) " {{{1
         \ : substitute(substitute(a:match, '\]', '[', ''), ')', '(', '')
 
   let result.re = {
-        \ 'open'  : result.type ==# '\(' ? '\\(' : '\\\[',
-        \ 'close' : result.type ==# '\(' ? '\\)' : '\\\]',
+        \ 'open'  : a:match =~# '\\(\|\\)' ? '\\(' : '\\\[',
+        \ 'close' : a:match =~# '\\(\|\\)' ? '\\)' : '\\\]',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
