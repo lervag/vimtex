@@ -93,7 +93,9 @@ endfunction
 function! vimtex#env#change_prompt() " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_all')
   if empty(l:open) | return | endif
-  let l:name = l:open.type ==# 'env' ? l:open.name : l:open.type
+  let l:name = get(l:open, 'name', l:open.is_open
+        \ ? l:open.match . ' ... ' . l:open.corr
+        \ : l:open.match . ' ... ' . l:open.corr)
 
   call vimtex#echo#status(['Change surrounding environment: ',
         \ ['VimtexWarning', l:name]])
