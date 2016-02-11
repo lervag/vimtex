@@ -66,6 +66,7 @@ function! vimtex#cmd#get_command(...) " {{{1
   return ['', 0, 0]
 endfunction
 
+" }}}1
 function! vimtex#cmd#change() " {{{1
   " Get old command
   let [l:old, l:line, l:col] = vimtex#cmd#get_command()
@@ -183,6 +184,122 @@ function! vimtex#cmd#create() " {{{1
   " Restore cursor position
   call setpos('.', pos)
   return ''
+endfunction
+
+" }}}1
+
+function! vimtex#cmd#get_next() " {{{1
+  return s:get_cmd('next')
+endfunction
+
+" }}}1
+function! vimtex#cmd#get_prev() " {{{1
+  return s:get_cmd('prev')
+endfunction
+
+" }}}1
+function! vimtex#cmd#get_current() " {{{1
+  let pos = getpos('.')
+
+  let depth = 3
+  while depth > 0
+    let depth -= 1
+    let cmd = s:get_cmd('prev')
+    if empty(cmd) | break | endif
+
+    if 10000*pos[1] + pos[2] <= 10000*cmd.pos_end.lnum + cmd.pos_end.cnum
+      return cmd
+    endif
+  endwhile
+
+  return {}
+endfunction
+
+" }}}1
+
+function! s:get_cmd(direction) " {{{1
+  let [lnum, cnum, match] = s:get_cmd_name(a:direction ==# 'next')
+  if lnum == 0 | return {} | endif
+
+  let res = {
+        \ 'name' : match,
+        \ 'pos_start' : { 'lnum' : lnum, 'cnum' : cnum },
+        \ 'pos_end' : { 'lnum' : lnum, 'cnum' : cnum + strlen(match) - 1 },
+        \}
+
+  " Get options
+  let res.opt = s:get_cmd_part('[', res.pos_end)
+  if !empty(res.opt)
+    let res.pos_end.lnum = res.opt.close.lnum
+    let res.pos_end.cnum = res.opt.close.cnum
+  endif
+
+  " Get arguments
+  let arg = s:get_cmd_part('{', res.pos_end)
+  let res.args = []
+  while !empty(arg)
+    call add(res.args, arg)
+    let res.pos_end.lnum = arg.close.lnum
+    let res.pos_end.cnum = arg.close.cnum
+    let arg = s:get_cmd_part('{', res.pos_end)
+  endwhile
+
+  " Include entire cmd text
+  let res.text = s:text_between(res.pos_start, res.pos_end, 1)
+
+  return res
+endfunction
+
+" }}}1
+function! s:get_cmd_name(next) " {{{1
+  let [l:lnum, l:cnum] = searchpos('\\\a\+', a:next ? 'nW' : 'cbnW')
+  let l:match = matchstr(getline(l:lnum), '^\\\a*', l:cnum-1)
+  return [l:lnum, l:cnum, l:match]
+endfunction
+
+" }}}1
+function! s:get_cmd_part(part, start_pos) " {{{1
+  let l:save_pos = getpos('.')
+  call setpos('.', [0, a:start_pos.lnum, a:start_pos.cnum, 0])
+  let l:open = vimtex#delim#get_next('delim_tex', 'open')
+  call setpos('.', l:save_pos)
+
+  "
+  " Ensure that the delimiter
+  " 1) exists,
+  " 2) is of the right type,
+  " 3) and is the next non-whitespace character.
+  "
+  if empty(l:open)
+        \ || l:open.match !=# a:part
+        \ || strlen(substitute(
+        \             s:text_between(a:start_pos, l:open), ' ', '', 'g')) != 0
+    return {}
+  endif
+
+  let l:close = vimtex#delim#get_matching(l:open)
+  if empty(l:close)
+    return {}
+  endif
+
+  return {
+        \ 'open' : l:open,
+        \ 'close' : l:close,
+        \ 'text' : s:text_between(l:open, l:close),
+        \}
+endfunction
+
+" }}}1
+
+function! s:text_between(p1, p2, ...) " {{{1
+  let [l1, c1] = [a:p1.lnum, a:p1.cnum - (a:0 > 0)]
+  let [l2, c2] = [a:p2.lnum, a:p2.cnum - (a:0 <= 0)]
+
+  let lines = getline(l1, l2)
+  let lines[0] = strpart(lines[0], c1)
+  let lines[-1] = strpart(lines[-1], 0,
+        \ l1 == l2 ? c2 - c1 : c2)
+  return join(lines, '')
 endfunction
 
 " }}}1
