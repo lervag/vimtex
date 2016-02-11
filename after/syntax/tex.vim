@@ -15,6 +15,11 @@ endif
 " - This will enable spell checking e.g. in toplevel of included files
 syntax spell toplevel
 
+" {{{1 General match improvements
+
+syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
+      \ contains=texStatement,texInputCurlies,texInputFileOpt
+
 " {{{1 Italic font, bold font and conceals
 
 let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
