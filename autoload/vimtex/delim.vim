@@ -384,9 +384,9 @@ function! s:get_delim(direction, type, side) " {{{1
   "
   let l:re = s:re[a:type][a:side]
   let [l:lnum, l:cnum] = a:direction ==# 'next'
-        \ ? searchpos(l:re, 'cnW')
+        \ ? searchpos(l:re, 'cnW', line('w$'))
         \ : a:direction ==# 'prev'
-        \   ? searchpos(l:re, 'bcnW')
+        \   ? searchpos(l:re, 'bcnW', line('w0'))
         \   : searchpos(l:re, 'bcnW', line('.'))
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
@@ -601,11 +601,12 @@ endfunction
 " }}}1
 
 function! s:get_matching_env() dict " {{{1
-  let [re, flags] = self.is_open
-        \ ? [self.re.close,   'nW']
-        \ : [self.re.open, 'bnW']
+  let [re, flags, stopline] = self.is_open
+        \ ? [self.re.close,  'nW', line('w$')]
+        \ : [self.re.open,  'bnW', line('w0')]
 
-  let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close, flags)
+  let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
+        \ flags, '', stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
 
   return [match, lnum, cnum]
@@ -613,11 +614,11 @@ endfunction
 
 " }}}1
 function! s:get_matching_tex() dict " {{{1
-  let [re, flags] = self.is_open
-        \ ? [self.re.open,  'nW']
-        \ : [self.re.open, 'bnW']
+  let [re, flags, stopline] = self.is_open
+        \ ? [self.re.open,  'nW', line('w$')]
+        \ : [self.re.open, 'bnW', line('w0')]
 
-  let [lnum, cnum] = searchpos(re, flags)
+  let [lnum, cnum] = searchpos(re, flags, stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
 
   return [match, lnum, cnum]
@@ -625,11 +626,11 @@ endfunction
 
 " }}}1
 function! s:get_matching_latex() dict " {{{1
-  let [re, flags] = self.is_open
-        \ ? [self.re.close, 'nW']
-        \ : [self.re.open, 'bnW']
+  let [re, flags, stopline] = self.is_open
+        \ ? [self.re.close, 'nW', line('w$')]
+        \ : [self.re.open, 'bnW', line('w0')]
 
-  let [lnum, cnum] = searchpos(re, flags)
+  let [lnum, cnum] = searchpos(re, flags, stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
 
   return [match, lnum, cnum]
@@ -637,12 +638,12 @@ endfunction
 
 " }}}1
 function! s:get_matching_delim() dict " {{{1
-  let [re, flags] = self.is_open
-        \ ? [self.re.close,  'nW']
-        \ : [self.re.open,  'bnW']
+  let [re, flags, stopline] = self.is_open
+        \ ? [self.re.close,  'nW', line('w$')]
+        \ : [self.re.open,  'bnW', line('w0')]
 
-  let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close, flags,
-        \ 'vimtex#util#in_comment()')
+  let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
+        \ flags, '', stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
 
   return [match, lnum, cnum]
