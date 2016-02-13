@@ -90,30 +90,18 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#environments(...) " {{{1
-  let l:inner = a:0 > 0
-
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
   if empty(l:open) | return | endif
 
-  if l:inner
-    call cursor(l:open.lnum, l:open.cnum + strlen(l:open.match))
-    call search('}\%(\_\s*\%(\[\_[^]]*\]\)\)\?\_\s*\S', 'eW')
-  else
-    call cursor(l:open.lnum, l:open.cnum)
-  endif
+  " Fix for options and extra arguments to environments, e.g.
+  "
+  "   \begin{frame}[asd]{title} ...
+  "
+  let l:open.match .= matchstr(join(getline(l:open.lnum, l:close.lnum), ''),
+        \                      '^\v%(\s*\[[^]]*\])?%(\s*\{[^}]*\})*',
+        \                      l:open.cnum + strlen(l:open.match) - 1)
 
-  if visualmode() ==# 'V'
-    normal! V
-  else
-    normal! v
-  endif
-
-  if l:inner
-    call cursor(l:close.lnum, l:close.cnum)
-    call search('\S\_\s*', 'bW')
-  else
-    call cursor(l:close.lnum, l:close.cnum + strlen(l:close.match) - 1)
-  endif
+  call s:text_obj_delim(l:open, l:close, a:0 > 0)
 endfunction
 
 " }}}1
@@ -146,25 +134,31 @@ function! s:text_obj_delim(open, close, inner) " {{{1
   if a:inner
     let c1 += len(a:open.match)
     let c2 -= 1
-    if c1 >= len(getline(l1))
+
+    let l:adjust_c1 = (c1 >= len(getline(l1)))
+    let l:adjust_c2 = (c2 == 0) || (l:adjust_c1 &&
+            \ len(substitute(strpart(getline(l2), 0, c2-1), '^\s*', '', '')) == 0)
+    let l:adjust_both = l:adjust_c1 && l:adjust_c2
+
+    if l:adjust_both
       let l1 += 1
-      let c1 = 1
+      let c1 = strlen(matchstr(getline(l1), '^\s*')) + 1
+    elseif l:adjust_c1
+      let c1 += 1
     endif
-    if c2 < 1
+
+    if l:adjust_c2
       let l2 -= 1
-      let c2 = len(getline(l2))
+      let c2 = len(getline(l2)) + (l:adjust_both ? 0 : 1)
     endif
   else
     let c2 += len(a:close.match) - 1
   endif
 
   if l1 < l2 || (l1 == l2 && c1 < c2)
+    execute 'normal!' visualmode() ==# 'V' ? 'V' : 'v'
     call cursor(l1, c1)
-    if visualmode() ==# 'V'
-      normal! V
-    else
-      normal! v
-    endif
+    normal! o
     call cursor(l2, c2)
   endif
 endfunction
