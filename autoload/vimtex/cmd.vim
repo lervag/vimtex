@@ -28,121 +28,58 @@ endfunction
 
 " }}}1
 
-function! vimtex#cmd#get_command(...) " {{{1
-  let l:position = a:0 > 0 ? a:1 : searchpos('\S', 'bcn')
-  let l:line = getline(l:position[0])
-  let l:char = l:line[l:position[1]-1]
-
-  " Lists of relevant syntax regions
-  let l:commands = [
-        \ 'texStatement',
-        \ 'texTypeSize',
-        \ 'texTypeStyle',
-        \ 'texBeginEnd',
-        \ ]
-  let l:argument = [
-        \ 'texMatcher',
-        \ 'texItalStyle',
-        \ 'texRefZone',
-        \ 'texBeginEndName',
-        \ ]
-
-  for l:syntax in reverse(map(call('synstack', l:position),
-        \ 'synIDattr(v:val, ''name'')'))
-    if index(l:commands, l:syntax) >= 0
-      let l:p = searchpos('\\', 'bcn')
-      let l:c = matchstr(l:line, '\\\zs\w\+', l:p[1]-1)
-      return [l:c] + l:p
-    elseif index(l:argument, l:syntax) >= 0
-          \ || (l:syntax ==# 'Delimiter' && l:char =~# '{\|}')
-      let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
-      keepjumps normal! vaBoh
-      let l:result = vimtex#cmd#get_command()
-      call setpos('.', l:curpos)
-      return l:result
-    endif
-  endfor
-
-  return ['', 0, 0]
-endfunction
-
-" }}}1
 function! vimtex#cmd#change() " {{{1
-  " Get old command
-  let [l:old, l:line, l:col] = vimtex#cmd#get_command()
-  if l:old ==# '' | return | endif
+  let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) | return | endif
 
-  " Get new command
-  let l:new = input('Change ' . old . ' for: ')
-  let l:new = empty(l:new) ? l:old : l:new
+  let l:old_name = l:cmd.name
+  let l:lnum = l:cmd.pos_start.lnum
+  let l:cnum = l:cmd.pos_start.cnum
 
-  " Store current cursor position
-  let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
-  if l:line == l:curpos[1]
-    let l:curpos[2] += len(l:new) - len(l:old)
-  endif
+  " Get new command name
+  call vimtex#echo#status(['Change command: ', ['VimtexWarning', l:old_name]])
+  echohl VimtexMsg
+  let l:new_name = input('> ')
+  echohl None
+  let l:new_name = substitute(l:new_name, '^\\', '', '')
+  if empty(l:new_name) | return | endif
 
-  " This is a hack to make undo restore the correct position
-  normal! ix
-  normal! x
+  " Update current position
+  let l:save_pos = getpos('.')
+  let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
 
   " Perform the change
-  let l:tmppos = copy(l:curpos)
-  let l:tmppos[1:2] = [l:line, l:col+1]
-  cal setpos('.', l:tmppos)
-  let l:savereg = @a
-  let @a = l:new
-  normal! cea
-  let @a = l:savereg
+  let l:line = getline(l:lnum)
+  call setline(l:lnum,
+        \   strpart(l:line, 0, l:cnum)
+        \ . l:new_name
+        \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
   " Restore cursor position and create repeat hook
-  call setpos('.', l:curpos)
-  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . new . '', v:count)
+  cal setpos('.', l:save_pos)
+  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
 
 function! vimtex#cmd#delete() " {{{1
-  " Get old command
-  let [l:old, l:line, l:col] = vimtex#cmd#get_command()
-  if l:old ==# '' | return | endif
+  let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) | return | endif
 
-  " Store current cursor position
-  let l:curpos = exists('*getcurpos') ? getcurpos() : getpos('.')
-  if l:line == l:curpos[1]
-    let l:curpos[2] -= len(l:old)+1
-  endif
+  let l:old_name = l:cmd.name
+  let l:lnum = l:cmd.pos_start.lnum
+  let l:cnum = l:cmd.pos_start.cnum
 
-  " Save selection
-  let l:vstart = [l:curpos[0], line("'<"), col("'<"), l:curpos[3]]
-  let l:vstop = [l:curpos[0], line("'<"), col("'>"), l:curpos[3]]
+  " Update current position
+  let l:save_pos = getpos('.')
+  let l:save_pos[2] += 1 - strlen(l:old_name)
 
-  " This is a hack to make undo restore the correct position
-  normal! ix
-  normal! x
+  " Perform the change
+  let l:line = getline(l:lnum)
+  call setline(l:lnum,
+        \   strpart(l:line, 0, l:cnum - 1)
+        \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
-  " Use temporary cursor position
-  let l:tmppos = copy(l:curpos)
-  let l:tmppos[1:2] = [l:line, l:col]
-  call setpos('.', l:tmppos)
-  normal! de
-
-  " Delete surrounding braces if present
-  if getline('.')[l:col-1 :] =~# '^\s*{'
-    call searchpos('{', 'c')
-    keepjumps normal! vaBomzoxg`zx
-    if l:line == l:curpos[1]
-      let l:curpos[2] -= 1
-      if l:curpos[2] < 0
-        let l:curpos[2] = 0
-      endif
-    endif
-  endif
-
-  " Restore cursor position and visual selection
-  call setpos('.', l:curpos)
-  call setpos("'<", l:vstart)
-  call setpos("'>", l:vstop)
-
-  " Create repeat hook
+  " Restore cursor position and create repeat hook
+  cal setpos('.', l:save_pos)
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
 endfunction
 
