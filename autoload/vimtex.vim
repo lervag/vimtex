@@ -393,6 +393,14 @@ function! s:init_mappings() " {{{1
   endif
 
   if g:vimtex_text_obj_enabled
+    call s:map('x', 'ic', '<plug>(vimtex-ic)')
+    call s:map('x', 'ac', '<plug>(vimtex-ac)')
+    call s:map('o', 'ic', '<plug>(vimtex-ic)')
+    call s:map('o', 'ac', '<plug>(vimtex-ac)')
+    call s:map('x', 'id', '<plug>(vimtex-id)')
+    call s:map('x', 'ad', '<plug>(vimtex-ad)')
+    call s:map('o', 'id', '<plug>(vimtex-id)')
+    call s:map('o', 'ad', '<plug>(vimtex-ad)')
     call s:map('x', 'ie', '<plug>(vimtex-ie)')
     call s:map('x', 'ae', '<plug>(vimtex-ae)')
     call s:map('o', 'ie', '<plug>(vimtex-ie)')
@@ -401,10 +409,6 @@ function! s:init_mappings() " {{{1
     call s:map('x', 'a$', '<plug>(vimtex-a$)')
     call s:map('o', 'i$', '<plug>(vimtex-i$)')
     call s:map('o', 'a$', '<plug>(vimtex-a$)')
-    call s:map('x', 'id', '<plug>(vimtex-id)')
-    call s:map('x', 'ad', '<plug>(vimtex-ad)')
-    call s:map('o', 'id', '<plug>(vimtex-id)')
-    call s:map('o', 'ad', '<plug>(vimtex-ad)')
     call s:map('x', 'ip', '<plug>(vimtex-ip)')
     call s:map('x', 'ap', '<plug>(vimtex-ap)')
     call s:map('o', 'ip', '<plug>(vimtex-ip)')

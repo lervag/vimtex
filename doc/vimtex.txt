@@ -95,9 +95,11 @@ Feature overview~
   - Move between sections with `[[`, `[]`, `][`, `]]`
   - Move between matching delimiters with `%`
 - Text objects
+  - `ic` `ac` Commands
+  - `id` `ad` Delimiters
   - `ie` `ae` LaTeX environments
   - `i$` `a$` Inline math structures
-  - `id` `ad` Delimiters
+  - `ip` `ap` Paragraphs
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`
   - Change the surrounding command or environment with `csc`/`cse`
@@ -307,12 +309,14 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `n`
    <F7>             |<plug>(vimtex-cmd-create)|             `ni`
    ]]               |<plug>(vimtex-delim-close)|            `i`
-   a$               |<plug>(vimtex-a$)|                     `nxo`
-   i$               |<plug>(vimtex-i$)|                     `nxo`
-   ae               |<plug>(vimtex-ae)|                     `nxo`
-   ie               |<plug>(vimtex-ie)|                     `nxo`
+   ac               |<plug>(vimtex-ac)|                     `nxo`
+   ic               |<plug>(vimtex-ic)|                     `nxo`
    ad               |<plug>(vimtex-ad)|                     `nxo`
    id               |<plug>(vimtex-id)|                     `nxo`
+   ae               |<plug>(vimtex-ae)|                     `nxo`
+   ie               |<plug>(vimtex-ie)|                     `nxo`
+   a$               |<plug>(vimtex-a$)|                     `nxo`
+   i$               |<plug>(vimtex-i$)|                     `nxo`
    ap               |<plug>(vimtex-ap)|                     `nxo`
    ip               |<plug>(vimtex-ip)|                     `nxo`
    %                |<plug>(vimtex-%)|                      `nxo`
@@ -1118,11 +1122,17 @@ Map definitions~
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
 
-*<plug>(vimtex-a$)*
-  Text object for inline math (inclusive).
+*<plug>(vimtex-ac)*
+  Text object for commands (inclusive).
 
-*<plug>(vimtex-i$)*
-  Text object for inline math (exclusive).
+*<plug>(vimtex-ic)*
+  Text object for commands (exclusive).
+
+*<plug>(vimtex-ad)*
+  Text object for delimiters (inclusive).
+
+*<plug>(vimtex-id)*
+  Text object for delimiters (exclusive).
 
 *<plug>(vimtex-ae)*
   Text object for environments (inclusive).
@@ -1130,11 +1140,11 @@ Map definitions~
 *<plug>(vimtex-ie)*
   Text object for environments (exclusive).
 
-*<plug>(vimtex-ad)*
-  Text object for delimiters (inclusive).
+*<plug>(vimtex-a$)*
+  Text object for inline math (inclusive).
 
-*<plug>(vimtex-id)*
-  Text object for delimiters (exclusive).
+*<plug>(vimtex-i$)*
+  Text object for inline math (exclusive).
 
 *<plug>(vimtex-ap)*
   Text object for paragraphs (inclusive).

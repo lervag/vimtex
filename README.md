@@ -29,9 +29,11 @@ disabled if desired.
   - Move between sections with `[[`, `[]`, `][`, `]]`
   - Move between matching delimiters with `%`
 - Text objects
+  - `ic ac` Commands
+  - `id ad` Delimiters
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
-  - `id ad` Delimiters
+  - `ip ap` Paragraphs
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`
   - Change the surrounding command or environment with `csc`/`cse`
