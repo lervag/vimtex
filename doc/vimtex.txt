@@ -101,8 +101,8 @@ Feature overview~
   - `i$` `a$` Inline math structures
   - `ip` `ap` Paragraphs
 - Other mappings
-  - Delete the surrounding command or environment with `dsc`/`dse`
-  - Change the surrounding command or environment with `csc`/`cse`
+  - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
+  - Change the surrounding command or environment with `csc`/`cse`/`cs$`
   - Toggle starred environment with `tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
@@ -303,8 +303,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>ls  |<plug>(vimtex-toggle-main)|            `n`
    dse              |<plug>(vimtex-env-delete)|             `n`
    dsc              |<plug>(vimtex-cmd-delete)|             `n`
+   ds$              |<plug>(vimtex-env-delete-math)|        `n`
    cse              |<plug>(vimtex-env-change)|             `n`
    csc              |<plug>(vimtex-cmd-change)|             `n`
+   cs$              |<plug>(vimtex-cmd-change-math)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `n`
    <F7>             |<plug>(vimtex-cmd-create)|             `ni`
@@ -1097,13 +1099,14 @@ Map definitions~
   the folds are refreshed appropriately.
 
 *<plug>(vimtex-env-delete)*
+*<plug>(vimtex-env-delete-math)*
 *<plug>(vimtex-env-change)*
   Delete/Change surrounding environment.
 
 *<plug>(vimtex-cmd-delete)*
+*<plug>(vimtex-cmd-delete-math)*
 *<plug>(vimtex-cmd-change)*
-  Delete/Change surrounding command.  Note: |<plug>(vimtex-cmd-delete)| depends
-  on |surround.vim| (https://github.com/tpope/vim-surround).
+  Delete/Change surrounding command.
 
 *<plug>(vimtex-env-toggle-star)*
   Toggle starred environment.

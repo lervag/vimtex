@@ -35,8 +35,8 @@ disabled if desired.
   - `i$ a$` Inline math structures
   - `ip ap` Paragraphs
 - Other mappings
-  - Delete the surrounding command or environment with `dsc`/`dse`
-  - Change the surrounding command or environment with `csc`/`cse`
+  - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
+  - Change the surrounding command or environment with `csc`/`cse`/`cs$`
   - Toggle starred environment with `tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
