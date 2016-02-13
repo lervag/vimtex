@@ -27,10 +27,16 @@ endfunction
 " }}}1
 function! vimtex#env#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
-        \ :call vimtex#env#change('')<cr>
+        \ :call vimtex#env#delete('env')<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
-        \ :call vimtex#env#change_prompt()<cr>
+        \ :call vimtex#env#change_prompt('env')<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
+        \ :call vimtex#env#delete('env_math')<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-env-change-math)
+        \ :call vimtex#env#change_prompt('env_math')<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
         \ :call vimtex#env#toggle_star()<cr>
@@ -38,9 +44,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#env#change(new) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_all')
-
+function! vimtex#env#change(open, close, new) " {{{1
   "
   " Set target environment
   "
@@ -59,27 +63,27 @@ function! vimtex#env#change(new) " {{{1
     let l:end = '\end{' . a:new . '}'
   endif
 
-  let l:line = getline(l:open.lnum)
-  call setline(l:open.lnum,
-        \   strpart(l:line, 0, l:open.cnum-1)
+  let l:line = getline(a:open.lnum)
+  call setline(a:open.lnum,
+        \   strpart(l:line, 0, a:open.cnum-1)
         \ . l:beg
-        \ . strpart(l:line, l:open.cnum + len(l:open.match) - 1))
+        \ . strpart(l:line, a:open.cnum + len(a:open.match) - 1))
 
-  let l:c1 = l:close.cnum
-  let l:c2 = l:close.cnum + len(l:close.match) - 1
-  if l:open.lnum == l:close.lnum
-    let n = len(l:beg) - len(l:open.match)
+  let l:c1 = a:close.cnum
+  let l:c2 = a:close.cnum + len(a:close.match) - 1
+  if a:open.lnum == a:close.lnum
+    let n = len(l:beg) - len(a:open.match)
     let l:c1 += n
     let l:c2 += n
     let pos = getpos('.')
-    if pos[2] > l:open.cnum + len(l:open.match) - 1
+    if pos[2] > a:open.cnum + len(a:open.match) - 1
       let pos[2] += n
       call setpos('.', pos)
     endif
   endif
 
-  let l:line = getline(l:close.lnum)
-  call setline(l:close.lnum,
+  let l:line = getline(a:close.lnum)
+  call setline(a:close.lnum,
         \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
 
   if a:new ==# ''
@@ -90,24 +94,28 @@ function! vimtex#env#change(new) " {{{1
   endif
 endfunction
 
-function! vimtex#env#change_prompt() " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_all')
+function! vimtex#env#change_prompt(type) " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
+
   let l:name = get(l:open, 'name', l:open.is_open
         \ ? l:open.match . ' ... ' . l:open.corr
         \ : l:open.match . ' ... ' . l:open.corr)
-
   call vimtex#echo#status(['Change surrounding environment: ',
         \ ['VimtexWarning', l:name]])
   echohl VimtexMsg
   let l:new_env = input('> ', '', 'customlist,' . s:sidwrap('input_complete'))
   echohl None
+  if empty(l:new_env) | return | endif
 
-  if empty(l:new_env)
-    return
-  else
-    call vimtex#env#change(l:new_env)
-  endif
+  call vimtex#env#change(l:open, l:close, l:new_env)
+endfunction
+
+function! vimtex#env#delete(type) " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  if empty(l:open) | return | endif
+
+  call vimtex#env#change(l:open, l:close, '')
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1

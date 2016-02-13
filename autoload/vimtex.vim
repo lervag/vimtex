@@ -342,6 +342,8 @@ function! s:init_mappings() " {{{1
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
   call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
 
+  call s:map('n', 'ds$', '<plug>(vimtex-env-delete-math)')
+  call s:map('n', 'cs$', '<plug>(vimtex-env-change-math)')
   call s:map('n', 'dse', '<plug>(vimtex-env-delete)')
   call s:map('n', 'cse', '<plug>(vimtex-env-change)')
   call s:map('n', 'tse', '<plug>(vimtex-env-toggle-star)')
