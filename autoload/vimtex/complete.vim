@@ -68,7 +68,7 @@ endfunction
 " {{{1 Bibtex
 
 let s:bib = {
-      \ 'pattern' : '\v\\\a*cite\a*%(\s*[^\]]*\]?){0,2}\s*\{[^\}]*',
+      \ 'pattern' : '\v\\\a*cite\a*%(\[\s*[^\]\{\}]*\]){0,2}\s*\{[^\}]*',
       \ 'enabled' : 1,
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
@@ -223,7 +223,7 @@ endfunction
 " {{{1 Labels
 
 let s:ref = {
-      \ 'pattern' : '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(range)?\s*\{%([^\}]*%(\}\{)?)',
+      \ 'pattern' : '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?%(ref\{\s*[^\}]*|refrange\{\s*%([^,\}]*%(\}\{)?))',
       \ 'enabled' : 1,
       \}
 
@@ -321,7 +321,7 @@ endfunction
 " {{{1 Filenames (\includegraphics)
 
 let s:img = {
-      \ 'pattern' : '\v\\includegraphics\*?%(\s*[^\]]*\]?){0,2}\s*\{[^\}]*',
+      \ 'pattern' : '\v\\includegraphics\*?%(\[\s*[^\]\{\}]*\]){0,2}\s*\{[^\}]*',
       \ 'enabled' : 1,
       \}
 
