@@ -1387,8 +1387,8 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
   endif
   let g:neocomplete#sources#omni#input_patterns.tex =
         \ '\v\\%('
-        \ . '\a*%(cite)\a*%(\s*\[[^\{\}\]]*\]){0,2}\s*\{[^\{\}]*'
-        \ . '\a*%(ref)%(\s*\{[^\{\}]*|%(range)\s*\{[^,\{\}]*%(\}\{)?)'
+        \ . '\a*%(cite)\a*%(\s*\[[^]]*\]){0,2}\s*\{[^{}]*'
+        \ . '\a*%(ref)%(\s*\{[^{}]*|%(range)\s*\{[^,{}]*%(}\{)?)'
         \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
         \ . '|%(include|input)\s*\{[^{}]*'
         \ . ')'
@@ -1414,8 +1414,8 @@ To enable automatic completion with |youcompleteme|, use the following options:
     let g:ycm_semantic_triggers = {}
   endif
   let g:ycm_semantic_triggers.tex = [
-        \ 're!\\[A-Za-z]*(cite)[A-Za-z]*(\[[^\{\}\]]*\]){0,2}\{[^\{\}]*',
-        \ 're!\\[A-Za-z]*(ref)(\{[^\{\}]*|(range)\{([^,\{\}]*(\}\{)?))',
+        \ 're!\\[A-Za-z]*(cite)[A-Za-z]*(\[[^]]*\]){0,2}\{[^{}]*',
+        \ 're!\\[A-Za-z]*(ref)(\{[^{}]*|(range)\{([^,{}]*(}\{)?))',
         \ 're!\\includegraphics([^]]*])?{[^}]*',
         \ 're!\\(include|input){[^}]*'
         \ ]
