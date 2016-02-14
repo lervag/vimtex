@@ -20,7 +20,7 @@ function! vimtex#cmd#init_buffer() " {{{1
         \ :call vimtex#cmd#change()<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ :call vimtex#cmd#create()<cr>i
+        \ :call vimtex#cmd#create()<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ <c-r>=vimtex#cmd#create()<cr>
@@ -84,42 +84,30 @@ function! vimtex#cmd#delete() " {{{1
 endfunction
 
 function! vimtex#cmd#create() " {{{1
-  " Get current line
-  let line = getline('.')
+  let l:re = '\v%(^|\s)\zs\w+\ze%(\s|$)'
+  let l:c0 = col('.') - (mode() ==# 'i')
 
-  " Get cursor position
-  let pos = getpos('.')
+  let [l:l1, l:c1] = searchpos(l:re, 'bcn', line('.'))
+  let l:c1 -= 1
+  let l:line = getline(l:l1)
+  let l:match = matchstr(l:line, l:re, l:c1)
+  let l:c2 = l:c1 + strlen(l:match)
 
-  " Return if there is no word at cursor
-  if mode() ==# 'n'
-    let column = pos[2] - 1
-  else
-    let column = pos[2] - 2
-  endif
-  if column <= 1 || line[column] =~# '\s'
+  if l:c0 > l:c2
+    call vimtex#echo#status(['vimtex: ',
+          \ ['VimtexWarning', 'Could not create command']])
     return ''
   endif
 
-  " Prepend a backslash to beginning of the current word
-  normal! B
-  let column = getpos('.')[2]
-  if line[column - 1] !=# '\'
-    let line = strpart(line, 0, column - 1) . '\' . strpart(line, column - 1)
-    call setline('.', line)
-  endif
+  let l:strpart1 = strpart(l:line, 0, l:c1)
+  let l:strpart2 = '\' . l:match . '{'
+  let l:strpart3 = strpart(l:line, l:c2)
+  call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
+  call setpos('.', [0, l:l1, l:c2+3, 0])
 
-  " Append opening braces to the end of the current word
-  normal! E
-  let column = getpos('.')[2]
-  let pos[2] = column + 1
-  if line[column - 1] !=# '{'
-    let line = strpart(line, 0, column) . '{' . strpart(line, column)
-    call setline('.', line)
-    let pos[2] += 1
+  if mode() ==# 'n'
+    execute 'startinsert' . (empty(l:strpart3) ? '!' : '')
   endif
-
-  " Restore cursor position
-  call setpos('.', pos)
   return ''
 endfunction
 
