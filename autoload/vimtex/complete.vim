@@ -354,7 +354,7 @@ endfunction
 " {{{1 Filenames (\input and \include)
 
 let s:inc = {
-      \ 'pattern' : '\v\\%(include%(only)?|input)\s*\{[^\{\}]*',
+      \ 'pattern' : '\v\\%(include%(only)?|input)\s*\{[^{}]*',
       \ 'enabled' : 1,
       \}
 

@@ -1392,7 +1392,7 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
         \ '\v\\%('
         \ . '\a*%(ref|cite)\a*%(\s*\[[^]]*\])?\s*\{[^{}]*'
         \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
-        \ . '|%(include%(only)?|input)\s*\{[^\{\}]*'
+        \ . '|%(include%(only)?|input)\s*\{[^{}]*'
         \ . ')'
 <
 YouCompleteMe~
@@ -1418,7 +1418,7 @@ To enable automatic completion with |youcompleteme|, use the following options:
   let g:ycm_semantic_triggers.tex = [
         \ 're!\\[A-Za-z]*(ref|cite)[A-Za-z]*([^]]*])?{([^}]*,?)*',
         \ 're!\\includegraphics([^]]*])?{[^}]*',
-        \ 're!\\(include(only)?|input)\{[^\{\}]*'
+        \ 're!\\(include(only)?|input)\{[^{}]*'
         \ ]
 
 ==============================================================================

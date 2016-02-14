@@ -253,7 +253,7 @@ function! s:init_buffer() " {{{1
   let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
   let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
 
-  let &l:include = '\\\(input\|include\){'
+  let &l:include = '\v\\%(input|include%(only)?)\{'
   let &l:includeexpr  = 'substitute('
   let &l:includeexpr .=   "substitute(v:fname, '\\\\space', '', 'g'),"
   let &l:includeexpr .=   "'^.\\{-}{\"\\?\\|\"\\?}.*', '', 'g')"
