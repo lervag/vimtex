@@ -68,7 +68,7 @@ endfunction
 " {{{1 Bibtex
 
 let s:bib = {
-      \ 'pattern' : '\v\\\a*cite\a*%(\s*\[[^]]*\])?\s*\{[^{}]*',
+      \ 'pattern' : '\v\\\a*cite\a*%(\s*\[[^\{\}\]]*\]){0,2}\s*\{[^\{\}]*',
       \ 'enabled' : 1,
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
