@@ -9,7 +9,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#init_script() " {{{1
-  let s:input_line_tex = '\v^\s*\\%(input|include|subimport|subfile)\s*\{'
+  let s:input_line_tex = '\v^\s*\\%(input|include%(only)?|subimport|subfile)\s*\{'
   let s:input_line_aux = '\\@input{'
 endfunction
 
