@@ -168,14 +168,14 @@ function! vimtex#delim#init_script() " {{{1
   let s:re.delim_all = {}
   let s:re.all = {}
   for k in ['list', 're']
-    let s:delims.env_all[k] = s:delims.env[k] + s:delims.env[k]
+    let s:delims.env_all[k] = s:delims.env[k] + s:delims.env_math[k]
     let s:delims.delim_all[k] = s:delims.delim_math[k] + s:delims.delim_tex[k]
-    let s:delims.all[k] = s:delims.env[k] + s:delims.delim_all[k]
+    let s:delims.all[k] = s:delims.env_all[k] + s:delims.delim_all[k]
   endfor
   for k in ['open', 'close', 'both']
     let s:re.env_all[k] = s:re.env[k] . '\|' . s:re.env_math[k]
     let s:re.delim_all[k] = s:re.delim_math[k] . '\|' . s:re.delim_tex[k]
-    let s:re.all[k] = s:re.env[k] . '\|' . s:re.delim_all[k]
+    let s:re.all[k] = s:re.env_all[k] . '\|' . s:re.delim_all[k]
   endfor
 
   let s:types = [
