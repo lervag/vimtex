@@ -122,7 +122,8 @@ function! vimtex#env#toggle_star() " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
   if empty(l:open) | return | endif
 
-  call vimtex#env#change(l:open.starred ? l:open.name : l:open.name . '*')
+  call vimtex#env#change(l:open, l:close,
+        \ l:open.starred ? l:open.name : l:open.name . '*')
 
   silent! call repeat#set("\<plug>(vimtex-env-toggle-star)", v:count)
 endfunction
