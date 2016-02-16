@@ -117,17 +117,17 @@ let b:current_syntax = 'tex'
 unlet b:current_syntax
 syntax include @LUA syntax/lua.vim
 syntax region texZone
-    \ start='\\begin{luacode\*\?}'rs=s
-    \ end='\\end{luacode\*\?}'re=e
-    \ keepend
-    \ transparent
-    \ contains=texBeginEnd,@LUA
+      \ start='\\begin{luacode\*\?}'rs=s
+      \ end='\\end{luacode\*\?}'re=e
+      \ keepend
+      \ transparent
+      \ contains=texBeginEnd,@LUA
 syntax region texZone
-    \ start='\\\(directlua\|luadirect\){'rs=s
-    \ end='}'re=e
-    \ keepend
-    \ transparent
-    \ contains=texBeginEnd,@LUA
+      \ start='\\\(directlua\|luadirect\){'rs=s
+      \ end='}'re=e
+      \ keepend
+      \ transparent
+      \ contains=texBeginEnd,@LUA
 let b:current_syntax = 'tex'
 
 " }}}1
