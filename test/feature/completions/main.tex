@@ -1,13 +1,17 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{cleveref}
+\usepackage{graphicx}
 
-\usepackage[backend=biber]{biblatex}
+\usepackage[backend=biber,style=authoryear]{biblatex}
 \addbibresource{biblatex-examples.bib}
 \addbibresource{local1.bib}
 \addbibresource{~/.vim/bundle/vim-latex/test/completion/local2.bib}
 
 \usepackage[nonumberlist,acronymlists={gloss,symbolslist}]{glossaries}
 \input{glossary.tex}
+
+\includeonly{sub1,sub2 with spaces}
 
 \begin{document}
 
@@ -82,6 +86,30 @@ To test label completion you need to compile the document first!
     f(x) &= 11b
   \end{align}
 \end{subequations}
+
+
+% Examples of Biblatex citation commands
+\cite{aristotle:physics} \\
+\cite[5--10]{aristotle:physics} \\
+\cite[see][5--10]{aristotle:physics} \\
+\parencite{aristotle:physics} \\
+\parencite[5--10]{aristotle:physics} \\
+\parencite[see][5--10]{aristotle:physics} \\
+\textcite{aristotle:physics} \\
+\textcite[5--10]{aristotle:physics} \\
+\textcite[see][5--10]{aristotle:physics} \\
+
+equation (\ref{eq:main-is-working}) \\
+equation \eqref{eq:sub-is-working} \\
+\cref{eq:test1,eq:test2} \\
+\crefrange{eq:test1}{eq:test10} \\
+\cref{eq:inputted sub with spaces is working} on \cpageref{sec:sub3 with spaces} \\
+\cref{sec:sub1,sec:sub3 with spaces} \\
+\crefrange{sec:sub1}{sec:sub3 with spaces} \\
+
+% \includegraphics{figures/fig12.pdf}
+% \includegraphics[scale=0.5]{figures/fig12.pdf}
+% \includegraphics[100,100][300,300]{figures/fig12.pdf}
 
 \newpage
 \glsaddall
