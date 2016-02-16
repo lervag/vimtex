@@ -253,7 +253,7 @@ function! s:init_buffer() " {{{1
   let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
   let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
 
-  let &l:include = '\v\\%(input|include%(only)?)\{'
+  let &l:include = '\v\\%(input|include)\{'
   let &l:includeexpr  = 'substitute('
   let &l:includeexpr .=   "substitute(v:fname, '\\\\space', '', 'g'),"
   let &l:includeexpr .=   "'^.\\{-}{\"\\?\\|\"\\?}.*', '', 'g')"
@@ -608,7 +608,7 @@ function! s:get_main_recurse(file) " {{{1
     let l:file_re = '\s*((.*)\/)?' . fnamemodify(a:file, ':t:r')
 
     let l:filter  = 'v:val =~# ''\v'
-    let l:filter .= '\\%(input|include%(only)?)\{' . l:file_re
+    let l:filter .= '\\%(input|include)\{' . l:file_re
     let l:filter .= '|\\subimport\{[^\}]*\}\{' . l:file_re
     let l:filter .= ''''
 
