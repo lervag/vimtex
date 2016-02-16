@@ -293,9 +293,10 @@ function! s:ref.parse_labels(file) dict " {{{2
       let line = s:tex2unicode(line)
       let tree = s:tex2tree(line)[1:]
       let name = remove(tree, 0)[0]
-      if type(tree[0]) == type([]) && !empty(tree[0])
-        let number = self.parse_number(tree[0][0])
-        let page = tree[0][1][0]
+      let context = remove(tree, 0)
+      if type(context) == type([]) && len(context) > 1
+        let number = self.parse_number(context[0])
+        let page = context[1][0]
         call add(self.labels, [name, number, page])
       endif
     endfor
