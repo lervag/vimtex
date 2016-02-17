@@ -223,7 +223,7 @@ endfunction
 " {{{1 Labels
 
 let s:ref = {
-      \ 'pattern' : '\v\\v?%(auto|eq|page|[cC]|labelc)?ref\s*\{[^}]*',
+      \ 'pattern' : '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)',
       \ 'enabled' : 1,
       \}
 
