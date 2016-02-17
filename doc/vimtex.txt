@@ -1426,6 +1426,10 @@ To enable automatic completion with |youcompleteme|, use the following options: 
         \ 're!\\(include(only)?|input){[^}]*'
         \ ]
 <
+
+Note: I think the above regexps are not quite correct, and I will be very
+      happy for pull requests or issues that can help fix these regexps.
+
 VimCompletesMe~
                                                           *vimtex-complete-vcm*
 A plugin that maps <tab> to trigger the built-in completion that is most
@@ -1437,14 +1441,12 @@ for LaTeX documents with |VimCompletesMe| and |vimtex|s omni completion function
 
   augroup VimCompletesMeTex
     autocmd!
-    autocmd FileType tex let b:vcm_omni_pattern =
-          \ '\v\\%('
-          \ . '\a*%(ref|cite)\a*%(\s*\[[^]]*\])?\s*\{[^{}]*'
-          \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
-          \ . '|%(include%(only)?|input)\s*\{[^{}]*'
-          \ . ')$'
+    autocmd FileType tex let b:vcm_omni_pattern = <neocomplete-pattern>
   augroup END
 <
+Note: Here `<neocomplete-pattern>` is the same pattern as was defined above
+      for neocomplete.
+
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
 
