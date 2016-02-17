@@ -322,7 +322,7 @@ endfunction
 " {{{1 Filenames (\includegraphics)
 
 let s:img = {
-      \ 'pattern' : '\v\\includegraphics%(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ 'pattern' : '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
       \ 'enabled' : 1,
       \}
 
