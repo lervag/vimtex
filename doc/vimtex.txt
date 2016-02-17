@@ -48,6 +48,7 @@ CONTENTS                                                      *vimtex-contents*
     Autocomplete                                |vimtex-complete-auto|
       Neocomplete                               |vimtex-complete-neocomplete|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
+      VimCompletesMe                            |vimtex-complete-vcm|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -1410,7 +1411,7 @@ It is described as:
 > Vim's omnicomplete system to provide semantic completions for many other
 > languages (Ruby, PHP etc.).
 
-To enable automatic completion with |youcompleteme|, use the following options:
+To enable automatic completion with |youcompleteme|, use the following options: >
 
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
@@ -1420,7 +1421,25 @@ To enable automatic completion with |youcompleteme|, use the following options:
         \ 're!\\includegraphics([^]]*])?{[^}]*',
         \ 're!\\(include(only)?|input)\{[^{}]*'
         \ ]
+<
+VimCompletesMe~
+                                                  *vimtex-complete-vcm*
+A plugin that overrides <tab> to trigger various built-in completions.                
+The plugin is available here: https://github.com/ajh17/VimCompletesMe.
 
+The following options may be used to enable automatic completion for LaTeX
+documents with |neocomplete| and |vimtex|s omni completion function: >
+
+augroup VimCompletesMe
+    autocmd!
+    autocmd FileType tex let b:vcm_omni_pattern = 
+          \ '\v\\%('
+          \ . '\a*%(ref|cite)\a*%(\s*\[[^]]*\])?\s*\{[^{}]*'
+          \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
+          \ . '|%(include%(only)?|input)\s*\{[^{}]*'
+          \ . ')$'
+augroup END
+<
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
 
