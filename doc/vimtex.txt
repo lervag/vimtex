@@ -48,6 +48,7 @@ CONTENTS                                                      *vimtex-contents*
     Autocomplete                                |vimtex-complete-auto|
       Neocomplete                               |vimtex-complete-neocomplete|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
+      VimCompletesMe                            |vimtex-complete-vcm|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -1374,8 +1375,10 @@ Autocomplete~
                                                          *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-two good plugins that provide this: |neocomplete| and |youcompleteme|.  See below
-for descriptions on how to setup these with |vimtex|.
+two good plugins that provide this: |neocomplete| and |youcompleteme|.  
+Moreover, there is |VimCompletesMe| that overrides <tab> to trigger different
+built-in completions, such as the omni-completion by vimtex, depending on the
+context. See below for descriptions on how to setup these with |vimtex|.
 
 neocomplete~
                                                   *vimtex-complete-neocomplete*
@@ -1410,7 +1413,7 @@ It is described as:
 > Vim's omnicomplete system to provide semantic completions for many other
 > languages (Ruby, PHP etc.).
 
-To enable automatic completion with |youcompleteme|, use the following options:
+To enable automatic completion with |youcompleteme|, use the following options: >
 
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
@@ -1420,7 +1423,26 @@ To enable automatic completion with |youcompleteme|, use the following options:
         \ 're!\\includegraphics([^]]*])?{[^}]*',
         \ 're!\\(include(only)?|input)\{[^{}]*'
         \ ]
+<
+VimCompletesMe~
+                                                  *vimtex-complete-vcm*
+A plugin that overrides <tab> to trigger the  built-in completion that is
+most suitable to the current contex. The plugin is available here: 
+https://github.com/ajh17/VimCompletesMe.
 
+The following options may be used to enable automatic completion for LaTeX
+documents with |VimCompletesMe| and |vimtex|s omni completion function: >
+
+augroup VimCompletesMeTex
+    autocmd!
+    autocmd FileType tex let b:vcm_omni_pattern = 
+          \ '\v\\%('
+          \ . '\a*%(ref|cite)\a*%(\s*\[[^]]*\])?\s*\{[^{}]*'
+          \ . '|includegraphics%(\s*\[[^]]*\])?\s*\{[^{}]*'
+          \ . '|%(include%(only)?|input)\s*\{[^{}]*'
+          \ . ')$'
+augroup END
+<
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
 
