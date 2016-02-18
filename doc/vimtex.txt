@@ -1620,7 +1620,7 @@ If vim is compiled with the |+clientserver| option and if
 |g:vimtex_latexmk_callback| is enabled (which it is by default), then
 compilation errors will be parsed automatically.  This is done by utilizing
 the tricks explained in |vimtex-latexmk-tricks|.  Note that this only works
-for continuous compilation mode.  One can always check for compilation erors
+for continuous compilation mode.  One can always check for compilation errors
 with |VimtexErrors|.
 
 Associated settings:
