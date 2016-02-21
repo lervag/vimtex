@@ -226,12 +226,35 @@ endfunction
 
 " }}}1
 function! vimtex#delim#close() " {{{1
-  let l:delim = vimtex#delim#get_prev('all', 'open')
+  let l:save_pos = getpos('.')
+  let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
 
-  return empty(l:delim)
-        \ || get(l:delim, 'name', '') ==# 'document'
-        \ ? ''
-        \ : l:delim.corr
+  let l:lnum = l:save_pos[1] + 1
+  while l:lnum > 1
+    let l:open  = vimtex#delim#get_prev('all', 'open')
+    if empty(l:open) || get(l:open, 'name', '') ==# 'document'
+      break
+    endif
+
+    let l:close = vimtex#delim#get_matching(l:open)
+    if empty(l:close.match)
+      call setpos('.', l:save_pos)
+      return l:open.corr
+    endif
+
+    let l:pos_val_try = 10000*l:close.lnum
+          \ + l:close.cnum + strlen(l:close.match)
+    if l:pos_val_try > l:pos_val_cursor
+      call setpos('.', l:save_pos)
+      return l:open.corr
+    else
+      let l:lnum = l:open.lnum
+      call setpos('.', s:pos_prev(l:open.lnum, l:open.cnum))
+    endif
+  endwhile
+
+  call setpos('.', l:save_pos)
+  return ''
 endfunction
 
 " }}}1
