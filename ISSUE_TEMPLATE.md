@@ -15,7 +15,7 @@ minimal examples and vimrc files might still be relevant.
 Please provide a minimal working LaTeX example, e.g.
 
 ```tex
-documentclass{minimal}
+\documentclass{minimal}
 \begin{document}
 
 Hello World!
