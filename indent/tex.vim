@@ -8,6 +8,7 @@ if exists('b:did_indent')
   finish
 endif
 let b:did_indent = 1
+let b:did_vimtex_indent = 1
 
 call vimtex#util#set_default('g:vimtex_indent_enabled', 1)
 if !g:vimtex_indent_enabled | finish | endif

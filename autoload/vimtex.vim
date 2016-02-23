@@ -170,6 +170,12 @@ if !exists('s:reloading_script')
     let s:initialized = 0
     call vimtex#init()
 
+    " Reload indent file
+    if exists('b:did_vimtex_indent')
+      unlet b:did_indent
+      runtime indent/tex.vim
+    endif
+
     call vimtex#echo#formatted([
           \ 'vimtex: ', ['VimtexWarning', 'reloaded']])
 
