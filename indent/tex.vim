@@ -104,13 +104,10 @@ function! VimtexIndent() " {{{1
   endif
 
   " Indent tikz elements
-  if pline =~ s:tikz_commands
+  if pline =~# s:tikz_commands && pline !~# ';'
     let ind += &sw
-    let s:tikz_indented += 1
-  endif
-  if s:tikz_indented > 0 && pline =~# ';'
+  elseif pline !~# s:tikz_commands && pline =~# ';'
     let ind -= &sw
-    let s:tikz_indented -= 1
   endif
 
   return ind
@@ -131,18 +128,18 @@ endfunction
 " }}}1
 
 " {{{1 Script variables
-let s:tikz_indented = 0
 
 " Define some common patterns
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:tikz_commands = '\\\(' . join([
+let s:tikz_commands = '\v\\%(' . join([
         \ 'draw',
         \ 'fill',
         \ 'path',
         \ 'node',
-        \ 'add\(legendentry\|plot\)',
-      \ ], '\|') . '\)'
+        \ 'coordinate',
+        \ 'add%(legendentry|plot)',
+      \ ], '|') . ')'
 
 " }}}1
 
