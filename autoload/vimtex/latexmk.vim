@@ -13,6 +13,7 @@ function! vimtex#latexmk#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
+  call vimtex#util#set_default('g:vimtex_latexmk_callback_hook', '')
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_file_line_error', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
@@ -104,6 +105,11 @@ function! vimtex#latexmk#callback(status) " {{{1
 
   call vimtex#echo#status(['latexmk compile: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
+
+  try
+    call call(g:vimtex_latexmk_callback_hook, [a:status])
+  catch /.*/
+  endtry
 
   return ''
 endfunction

@@ -630,6 +630,21 @@ Options~
 
   Default value: 1
 
+*g:vimtex_latexmk_callback_hook*
+  If defined and given the name of a function, it will be called from the
+  vimtex latexmk callback with the status as the sole argument. This allows
+  users to add custom callback functionality.
+
+  Example: >
+
+    let g:vimtex_latexmk_callback_hook = 'MyTestHook'
+
+    function! MyTestHook(status)
+      echom a:status
+    endfunction
+
+<  Default value: ''
+
 *g:vimtex_latexmk_continuous*
   If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
   argument.  This means that the document is compiled every time a document
@@ -1626,6 +1641,7 @@ with |VimtexErrors|.
 Associated settings:
     |g:vimtex_latexmk_enabled|
     |g:vimtex_latexmk_callback|
+    |g:vimtex_latexmk_callback_hook|
     |g:vimtex_latexmk_autojump|
     |g:vimtex_latexmk_continuous|
     |g:vimtex_latexmk_background|
