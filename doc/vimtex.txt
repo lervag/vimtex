@@ -797,18 +797,19 @@ Options~
           and backward search.  Backward search must be set up from the
           viewer. >
 
-  let g:vimtex_view_general_viewer = 'okular'
-  let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
-  let g:vimtex_view_general_options_latexmk = '--unique'
+            let g:vimtex_view_general_viewer = 'okular'
+            let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
+            let g:vimtex_view_general_options_latexmk = '--unique'
 <
         *vimtex_viewer_qpdfview*
           https://launchpad.net/qpdfview
           qpdfview is a tabbed document viewer.  It supports forward search.
           Backward search must be set up from the viewer. >
 
-  let g:vimtex_view_general_viewer = 'qpdfview'
-  let g:vimtex_view_general_options = '--unique @pdf\#src:@tex:@line:@col'
-  let g:vimtex_view_general_options_latexmk = '--unique'
+            let g:vimtex_view_general_viewer = 'qpdfview'
+            let g:vimtex_view_general_options
+              \ = '--unique @pdf\#src:@tex:@line:@col'
+            let g:vimtex_view_general_options_latexmk = '--unique'
 <
         *vimtex_viewer_skim*
           http://skim-app.sourceforge.net/
@@ -816,17 +817,17 @@ Options~
           you read and annotate scientific papers in PDF, but is also great
           for viewing any PDF file. >
 
-  let g:vimtex_view_general_viewer
-    \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-  let g:vimtex_view_general_options = '@line @pdf @tex'
+            let g:vimtex_view_general_viewer
+              \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+            let g:vimtex_view_general_options = '@line @pdf @tex'
 
-  " This adds a callback hook that updates Skim after compilation
-  let g:vimtex_latexmk_callback_hook = 'UpdateSkim'
-  function! CallUpdateSkim(status)
-    if a:status
-      call system('updateskim.sh ' . b:vimtex.tex)
-    endif
-  endfunction
+            " This adds a callback hook that updates Skim after compilation
+            let g:vimtex_latexmk_callback_hook = 'UpdateSkim'
+            function! CallUpdateSkim(status)
+              if a:status
+                call system('updateskim.sh ' . b:vimtex.tex)
+              endif
+            endfunction
 <
           Note: In the above example, 'updateskim.sh' is a bash script that
                 uses applescript to force the Skim update, see [0,1].
@@ -842,22 +843,22 @@ Options~
           portable and starts up very fast.  It supports forward search.
           Backward search must be set up from the viewer. >
 
-  let g:vimtex_view_general_viewer = 'SumatraPDF'
-  let g:vimtex_view_general_options
-      \ = '-reuse-instance -forward-search @tex @line @pdf'
-  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+            let g:vimtex_view_general_viewer = 'SumatraPDF'
+            let g:vimtex_view_general_options
+                \ = '-reuse-instance -forward-search @tex @line @pdf'
+            let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
           Note: It is possible to set up inverse search for SumatraPDF through
                 the command line.  This can be utilized to set the correct
                 |servername| for inverse search: >
 
-  let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
-      \ . '-inverse-search "gvim --servername ' . v:servername
-      \ . ' --remote-send \"^<C-\^>^<C-n^>'
-      \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-      \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-      \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-      \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+            let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
+                \ . '-inverse-search "gvim --servername ' . v:servername
+                \ . ' --remote-send \"^<C-\^>^<C-n^>'
+                \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+                \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+                \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+                \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
 <
     *vimtex_viewer_mupdf*
       http://www.mupdf.com/
