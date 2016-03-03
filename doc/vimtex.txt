@@ -867,6 +867,11 @@ Options~
       Note: Forward search requires `xdotool` to work properly, in order to
             not open a new Zathura instance for invocation of |VimtexView|.
 
+      Note: Recent versions of Zathura no longer ensures synctex support. This
+            has resulted in synctex support being dropped on some platforms,
+            e.g. on OpenSUSE, cf. https://github.com/lervag/vimtex/issues/384.
+            A workaround is to build Zathura from source manually.
+
 *g:vimtex_view_general_viewer*
   Use generic viewer application, see |vimtex_viewer_general|.
 
