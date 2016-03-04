@@ -823,7 +823,7 @@ Options~
 
             " This adds a callback hook that updates Skim after compilation
             let g:vimtex_latexmk_callback_hook = 'UpdateSkim'
-            function! CallUpdateSkim(status)
+            function! UpdateSkim(status)
               if a:status
                 call system('updateskim.sh ' . b:vimtex.tex)
               endif
