@@ -403,6 +403,15 @@ Options~
 <
   Default value: [['\left', '\right']]
 
+*g:vimtex_delim_stopline*
+  A tolerance for the number of lines to search for matching delimiters in
+  each direction. It is used in an expression for the {stopline} argument of
+  |search()| function calls. If the option is increased it will make the
+  matching more accurate, at the expense of potential lags. The default value
+  should work well for most people.
+
+  Default value: 500
+
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
   comments. That is, if it is enabled, then comments at end of lines will not
