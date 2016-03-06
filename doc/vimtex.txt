@@ -826,9 +826,8 @@ Options~
           you read and annotate scientific papers in PDF, but is also great
           for viewing any PDF file. >
 
-            let g:vimtex_view_general_viewer
-              \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-            let g:vimtex_view_general_options = '@line @pdf @tex'
+            let g:vimtex_view_general_viewer = 'displayline'
+            let g:vimtex_view_general_options = '-r @line @pdf'
 
             " This adds a callback hook that updates Skim after compilation
             let g:vimtex_latexmk_callback_hook = 'UpdateSkim'
@@ -849,13 +848,9 @@ Options~
               endif
             endfunction
 <
-          Note: In the above example, 'updateskim.sh' is a bash script that
-                uses applescript to force the Skim update, see [0,1].
-
-          Note: See [1] for documentation on how to get backward search to work.
-
-          [0] https://github.com/lervag/vimtex/issues/383
-          [1] https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+          Note: See the Skim wiki for documentation on how to get backward
+                search to work:
+                https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
