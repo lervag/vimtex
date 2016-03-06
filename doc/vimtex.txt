@@ -826,7 +826,8 @@ Options~
           you read and annotate scientific papers in PDF, but is also great
           for viewing any PDF file. >
 
-            let g:vimtex_view_general_viewer = 'displayline'
+            let g:vimtex_view_general_viewer
+                  \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
             let g:vimtex_view_general_options = '-r @line @pdf'
 
             " This adds a callback hook that updates Skim after compilation
