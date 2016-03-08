@@ -372,7 +372,7 @@ endfunction
 function! s:zathura.latexmk_callback() dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
-      sleep 10m
+      sleep 50m
       call self.forward_search(b:vimtex.out())
       if has_key(self, 'hook_callback')
         call self.hook_callback()
