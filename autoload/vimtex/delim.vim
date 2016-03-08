@@ -22,7 +22,7 @@ function! vimtex#delim#init_script() " {{{1
         \   ['begin', 'end'],
         \  ],
         \ 're' : [
-        \   ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
+        \   ['\\begin\s*{[^}]*}\%(\s*\[[^]]*\]\)\?', '\\end\s*{[^}]*}'],
         \  ],
         \}
 
@@ -456,11 +456,13 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
   let result.get_matching = function('s:get_matching_env')
 
   let result.corr = result.is_open
-        \ ? substitute(a:match, 'begin', 'end', '')
+        \ ? substitute(
+        \     substitute(a:match, 'begin', 'end', ''),
+        \     '\%(\s*\[[^]]*\]\)\?$', '', '')
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\\begin\s*{' . result.name . '\*\?}',
+        \ 'open' : '\\begin\s*{' . result.name . '\*\?}\%(\s*\[[^]]*\]\)\?',
         \ 'close' : '\\end\s*{' . result.name . '\*\?}',
         \}
 

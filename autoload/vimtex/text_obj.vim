@@ -66,12 +66,12 @@ function! vimtex#text_obj#environments(is_inner) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env')
   if empty(l:open) | return | endif
 
-  " Fix for options and extra arguments to environments, e.g.
+  " Fix for extra arguments to environments, e.g.
   "
   "   \begin{frame}[asd]{title} ...
   "
   let l:open.match .= matchstr(join(getline(l:open.lnum, l:close.lnum), ''),
-        \                      '^\v%(\s*\[[^]]*\])?%(\s*\{[^}]*\})*',
+        \                      '^\v%(\s*\{[^}]*\})*',
         \                      l:open.cnum + strlen(l:open.match) - 1)
 
   call s:text_obj_delim(l:open, l:close, a:is_inner)
