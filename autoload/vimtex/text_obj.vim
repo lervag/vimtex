@@ -6,6 +6,8 @@
 
 function! vimtex#text_obj#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_text_obj_enabled', 1)
+  call vimtex#util#set_default('g:vimtex_text_obj_linewise_operators',
+        \ ['d', 'y'])
 endfunction
 
 " }}}1
@@ -100,36 +102,48 @@ endfunction
 function! s:text_obj_delim(open, close, is_inner) " {{{1
   let [l1, c1, l2, c2] = [a:open.lnum, a:open.cnum, a:close.lnum, a:close.cnum]
 
+  " Determine if operator is linewise
+  let l:linewise = index(g:vimtex_text_obj_linewise_operators, v:operator) >= 0
+
+  " Adjust the borders
   if a:is_inner
     let c1 += len(a:open.match)
     let c2 -= 1
 
-    let l:adjust_c1 = (c1 >= len(getline(l1)))
-    let l:adjust_c2 = (c2 == 0) || (l:adjust_c1 &&
-            \ len(substitute(strpart(getline(l2), 0, c2-1), '^\s*', '', '')) == 0)
-    let l:adjust_both = l:adjust_c1 && l:adjust_c2
+    let l:is_inline = (l2 - l1) > 1
+          \ && match(strpart(getline(l1),    c1), '^\s*$') >= 0
+          \ && match(strpart(getline(l2), 0, c2), '^\s*$') >= 0
 
-    if l:adjust_both
+    if l:is_inline
       let l1 += 1
       let c1 = strlen(matchstr(getline(l1), '^\s*')) + 1
-    elseif l:adjust_c1
-      let c1 += 1
-    endif
-
-    if l:adjust_c2
       let l2 -= 1
-      let c2 = len(getline(l2)) + (l:adjust_both ? 0 : 1)
+      let c2 = strlen(getline(l2))
+      if c2 == 0 && ! l:linewise
+        let l2 -= 1
+        let c2 = len(getline(l2)) + 1
+      endif
+    elseif c2 == 0
+      let l2 -= 1
+      let c2 = len(getline(l2)) + 1
     endif
   else
     let c2 += len(a:close.match) - 1
+
+    let l:is_inline = (l2 - l1) > 1
+          \ && match(strpart(getline(l1), 0, c1-1), '^\s*$') >= 0
+          \ && match(strpart(getline(l2), 0, c2),   '^\s*$') >= 0
   endif
 
-  if l1 < l2 || (l1 == l2 && c1 < c2)
-    execute 'normal!' visualmode() ==# 'V' ? 'V' : 'v'
-    call cursor(l1, c1)
-    normal! o
-    call cursor(l2, c2)
-  endif
+  " Determine the select mode
+  let l:select_mode = l:is_inline && l:linewise ? 'V'
+        \ : (v:operator ==# ':') ? visualmode() : 'v'
+
+  " Apply selection
+  execute 'normal!' l:select_mode
+  call cursor(l1, c1)
+  normal! o
+  call cursor(l2, c2)
 endfunction
 " }}}1
 

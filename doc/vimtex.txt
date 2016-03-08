@@ -774,6 +774,13 @@ Options~
 
   Default value: 1
 
+*g:vimtex_text_obj_linewise_operators*
+  List of operators that will act linewise on the delimiter text objects (i.e.
+  `ie/ae`, `i$/a$`, and `id/ad`). Note, for inline regions the operators will not
+  act linewise, since that would lead to side effecs.
+
+  Default value: ['d', 'y']
+
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
 
