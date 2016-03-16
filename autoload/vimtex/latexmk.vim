@@ -37,7 +37,7 @@ function! vimtex#latexmk#init_script() " {{{1
     augroup vimtex_latexmk
       autocmd!
       autocmd VimLeave * call vimtex#latexmk#stop_all()
-      autocmd User VimtexEventQuit call s:stop_before_leaving()
+      autocmd User VimtexEventQuit call s:clean_on_quit()
     augroup END
   endif
 
@@ -559,12 +559,16 @@ function! s:fix_quickfix_paths() " {{{1
 endfunction
 
 " }}}1
-function! s:stop_before_leaving() " {{{1
+function! s:clean_on_quit() " {{{1
+  " Kill latexmk process if it exists
   if b:vimtex.pid > 0
     call s:latexmk_kill(b:vimtex)
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'stopped (' . b:vimtex.base . ')']])
   endif
+
+  " Close quickfix window
+  cclose
 endfunction
 
 function! s:log_contains_error(logfile) " {{{1
