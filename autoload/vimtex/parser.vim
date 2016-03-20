@@ -49,6 +49,25 @@ endfunction
 " }}}1
 
 "
+" Get list of externalfile entries
+"
+function! vimtex#parser#get_externalfiles() " {{{1
+  let l:preamble = s:parser(b:vimtex.tex, {
+        \ 're_stop' : '\\begin{document}',
+        \ 'input_re' : s:input_line_tex,
+        \ 'input_parser' : 's:input_line_parser_tex',
+        \ })
+
+  let l:externals = filter(l:preamble, 'v:val =~# ''\\externaldocument''')
+  call map(l:externals, 'substitute(v:val, ''.*{\([^}]*\)}'', ''\1'', '''')')
+  return map(l:externals, '
+        \ { ''tex'' : v:val . ''.tex'',
+        \   ''aux'' : v:val . ''.aux'' }')
+endfunction
+
+" }}}1
+
+"
 " Define the main parser function
 "
 function! s:parser(file, opts) " {{{1
@@ -60,6 +79,11 @@ function! s:parser(file, opts) " {{{1
   let l:lnum = 0
   for l:line in readfile(a:file)
     let l:lnum += 1
+
+    if has_key(a:opts, 're_stop')
+          \ && l:line =~# a:opts.re_stop
+      break
+    endif
 
     if l:line =~# a:opts.input_re
       let l:file = call(a:opts.input_parser, [l:line, a:file])
