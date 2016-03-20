@@ -285,6 +285,9 @@ function! s:ref.parse_labels(file) dict " {{{2
     let self.labels_created = getftime(a:file)
     let self.labels = []
     let lines = vimtex#parser#aux(a:file)
+    for l:ext in vimtex#parser#get_externalfiles()
+      let lines += vimtex#parser#aux(l:ext.aux)
+    endfor
     let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
     let lines = filter(lines, 'v:val !~# ''@cref''')
     let lines = filter(lines, 'v:val !~# ''sub@''')
