@@ -30,18 +30,20 @@ function! vimtex#parser#tex(file, ...) " {{{1
     return []
   endif
 
-  let l:detailed = a:0 > 0 ? a:1 : 1
-  let l:recurse = a:0 > 1 ? a:2 : 1
-
-  return s:parser(a:file, l:detailed, l:recurse, s:input_line_tex,
-        \ 's:input_line_parser_tex')
+  return s:parser(a:file, {
+        \ 'detailed' : a:0 > 0 ? a:1 : 1,
+        \ 'input_re' : s:input_line_tex,
+        \ 'input_parser' : 's:input_line_parser_tex',
+        \ })
 endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
-  let l:detailed = a:0 > 0 ? a:1 : 0
-  return s:parser(a:file, l:detailed, 1, s:input_line_aux,
-        \ 's:input_line_parser_aux')
+  return s:parser(a:file, {
+        \ 'detailed' : a:0 > 0 ? a:1 : 0,
+        \ 'input_re' : s:input_line_aux,
+        \ 'input_parser' : 's:input_line_parser_aux',
+        \ })
 endfunction
 
 " }}}1
@@ -49,25 +51,23 @@ endfunction
 "
 " Define the main parser function
 "
-function! s:parser(file, detailed, recursive, re, re_parser) " {{{1
+function! s:parser(file, opts) " {{{1
   if !filereadable(a:file)
     return []
   endif
 
   let l:parsed = []
-
   let l:lnum = 0
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if l:line =~# a:re
-      let l:file = function(a:re_parser)(l:line, a:file)
-      call extend(l:parsed, s:parser(l:file, a:detailed, a:recursive,
-            \                        a:re, a:re_parser))
+    if l:line =~# a:opts.input_re
+      let l:file = call(a:opts.input_parser, [l:line, a:file])
+      call extend(l:parsed, s:parser(l:file, a:opts))
       continue
     endif
 
-    if a:detailed
+    if get(a:opts, 'detailed', 0)
       call add(l:parsed, [a:file, l:lnum, l:line])
     else
       call add(l:parsed, l:line)
