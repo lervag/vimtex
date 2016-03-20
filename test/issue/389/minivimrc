@@ -1,0 +1,16 @@
+set nocompatible
+
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+
+filetype plugin indent on
+syntax enable
+
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set smarttab
+set expandtab
+set autoindent
+set copyindent
+set preserveindent
