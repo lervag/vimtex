@@ -43,12 +43,10 @@ function! vimtex#delim#init_script() " {{{1
 
   let s:delims.delim_tex = {
         \ 'list' : [
-        \   ['(', ')'],
         \   ['[', ']'],
         \   ['{', '}'],
         \  ],
         \ 're' : [
-        \   ['(', ')'],
         \   ['\[', '\]'],
         \   ['{', '}'],
         \ ],
