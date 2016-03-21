@@ -225,6 +225,7 @@ endfunction
 let s:ref = {
       \ 'pattern' : '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)',
       \ 'enabled' : 1,
+      \ 'cache' : {},
       \}
 
 function! s:ref.complete(regex) dict " {{{2
@@ -242,7 +243,7 @@ function! s:ref.complete(regex) dict " {{{2
 endfunction
 
 function! s:ref.get_matches(regex) dict " {{{2
-  call self.parse_labels(b:vimtex.aux())
+  call self.parse_aux_files()
 
   " Match label
   let self.matches = filter(copy(self.labels), 'v:val[0] =~ ''' . a:regex . '''')
@@ -267,7 +268,28 @@ function! s:ref.get_matches(regex) dict " {{{2
   return self.matches
 endfunction
 
-function! s:ref.parse_labels(file) dict " {{{2
+function! s:ref.parse_aux_files() dict " {{{2
+  let self.labels = []
+
+  for [l:file, l:prefix] in
+        \ filter([[b:vimtex.aux(), '']]
+        \   + map(vimtex#parser#get_externalfiles(), '[v:val.aux, v:val.opt]'),
+        \ 'filereadable(v:val[0])')
+
+    let l:cached = get(self.cache, l:file, {})
+    if get(l:cached, 'ftime', 0) != getftime(l:file)
+      let l:cached.ftime = getftime(l:file)
+      let l:cached.labels = self.parse_labels(l:file, l:prefix)
+      let self.cache[l:file] = l:cached
+    endif
+
+    let self.labels += l:cached.labels
+  endfor
+
+  return self.labels
+endfunction
+
+function! s:ref.parse_labels(file, prefix) dict " {{{2
   "
   " Searches aux files recursively for commands of the form
   "
@@ -276,36 +298,26 @@ function! s:ref.parse_labels(file) dict " {{{2
   "
   " Returns a list of [name, number, page] tuples.
   "
-  if !filereadable(a:file)
-    let self.labels = []
-    return []
-  endif
 
-  if get(self, 'labels_created', 0) != getftime(a:file)
-    let self.labels_created = getftime(a:file)
-    let self.labels = []
-    let lines = vimtex#parser#aux(a:file)
-    for l:ext in vimtex#parser#get_externalfiles()
-      let lines += vimtex#parser#aux(l:ext.aux)
-    endfor
-    let lines = filter(lines, 'v:val =~# ''\\newlabel{''')
-    let lines = filter(lines, 'v:val !~# ''@cref''')
-    let lines = filter(lines, 'v:val !~# ''sub@''')
-    let lines = filter(lines, 'v:val !~# ''tocindent-\?[0-9]''')
-    for line in lines
-      let line = s:tex2unicode(line)
-      let tree = s:tex2tree(line)[1:]
-      let name = remove(tree, 0)[0]
-      let context = remove(tree, 0)
-      if type(context) == type([]) && len(context) > 1
-        let number = self.parse_number(context[0])
-        let page = context[1][0]
-        call add(self.labels, [name, number, page])
-      endif
-    endfor
-  endif
+  let l:labels = []
+  let l:lines = vimtex#parser#aux(a:file)
+  let l:lines = filter(l:lines, 'v:val =~# ''\\newlabel{''')
+  let l:lines = filter(l:lines, 'v:val !~# ''@cref''')
+  let l:lines = filter(l:lines, 'v:val !~# ''sub@''')
+  let l:lines = filter(l:lines, 'v:val !~# ''tocindent-\?[0-9]''')
+  for l:line in l:lines
+    let l:line = s:tex2unicode(l:line)
+    let l:tree = s:tex2tree(l:line)[1:]
+    let l:name = a:prefix . remove(l:tree, 0)[0]
+    let l:context = remove(l:tree, 0)
+    if type(l:context) == type([]) && len(l:context) > 1
+      let l:number = self.parse_number(l:context[0])
+      let l:page = l:context[1][0]
+      call add(l:labels, [l:name, l:number, l:page])
+    endif
+  endfor
 
-  return self.labels
+  return l:labels
 endfunction
 
 function! s:ref.parse_number(num_tree) dict " {{{2

@@ -58,11 +58,17 @@ function! vimtex#parser#get_externalfiles() " {{{1
         \ 'input_parser' : 's:input_line_parser_tex',
         \ })
 
-  let l:externals = filter(l:preamble, 'v:val =~# ''\\externaldocument''')
-  call map(l:externals, 'substitute(v:val, ''.*{\([^}]*\)}'', ''\1'', '''')')
-  return map(l:externals, '
-        \ { ''tex'' : v:val . ''.tex'',
-        \   ''aux'' : v:val . ''.aux'' }')
+  let l:result = []
+  for l:line in filter(l:preamble, 'v:val =~# ''\\externaldocument''')
+    let l:name = matchstr(l:line, '{\zs[^}]*\ze}')
+    call add(l:result, {
+          \ 'tex' : l:name . '.tex',
+          \ 'aux' : l:name . '.aux',
+          \ 'opt' : matchstr(l:line, '\[\zs[^]]*\ze\]'),
+          \ })
+  endfor
+
+  return l:result
 endfunction
 
 " }}}1
