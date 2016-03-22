@@ -309,7 +309,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    csc              |<plug>(vimtex-cmd-change)|             `n`
    cs$              |<plug>(vimtex-cmd-change-math)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
-   tsd              |<plug>(vimtex-delim-toggle-modifier)|  `n`
+   tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|             `ni`
    ]]               |<plug>(vimtex-delim-close)|            `i`
    ac               |<plug>(vimtex-ac)|                     `nxo`
@@ -1171,6 +1171,10 @@ Map definitions~
 
 *<plug>(vimtex-delim-toggle-modifier)*
   Toggle delimiter modifiers, for instance between `(...)` and `\left(...\right)`.
+  The normal mode mapping toggles the closes surrounding delimiter, whereas
+  the visual mode mapping toggles all delimiters that are fully contained in
+  the visual selection. The selection is preserved.
+
   See also |g:vimtex_delim_toggle_mod_list|.
 
 *<plug>(vimtex-cmd-create)*
