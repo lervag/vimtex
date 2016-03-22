@@ -204,6 +204,9 @@ function! vimtex#delim#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
         \ :call vimtex#delim#toggle_modifier()<cr>
 
+  xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
+        \ :<c-u>call vimtex#delim#toggle_modifier_visual()<cr>
+
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
         \ <c-r>=vimtex#delim#close()<cr>
 endfunction
@@ -259,8 +262,10 @@ function! vimtex#delim#close() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#toggle_modifier() " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
+function! vimtex#delim#toggle_modifier(...) " {{{1
+  let [l:open, l:close] = a:0 == 2
+        \ ? [a:1, a:2]
+        \ : vimtex#delim#get_surrounding('delim_math')
   if empty(l:open) | return | endif
 
   let newmods = []
@@ -298,6 +303,62 @@ function! vimtex#delim#toggle_modifier() " {{{1
   call setline(l:close.lnum, line)
 
   silent! call repeat#set("\<plug>(vimtex-delim-toggle-modifier)", v:count)
+
+  return newmods
+endfunction
+
+" }}}1
+function! vimtex#delim#toggle_modifier_visual() " {{{1
+  let l:save_pos = getpos('.')
+
+  "
+  " First we generate a stack of all delimiters that should be toggled
+  "
+  let l:start_pos = getpos("'<")
+  let l:end_pos = getpos("'>")
+  let l:end_pos_val = 10000*l:end_pos[1] + min([l:end_pos[2], 1000])
+  let l:cur_pos = l:start_pos
+  let l:cur_pos_val = 10000*l:cur_pos[1] + l:cur_pos[2]
+  let l:stack = []
+  while l:cur_pos_val < l:end_pos_val
+    call setpos('.', l:cur_pos)
+    let l:open = vimtex#delim#get_next('delim_math', 'open')
+    if empty(l:open) | break | endif
+
+    let l:open_pos_val = 10000*l:open.lnum + l:open.cnum
+    if l:open_pos_val >= l:end_pos_val
+      break
+    endif
+
+    let l:close = vimtex#delim#get_matching(l:open)
+    if !empty(l:close)
+      if l:end_pos_val >= 10000*l:close.lnum + l:close.cnum
+            \ + strlen(l:close.match) - 1
+        let l:newmods = vimtex#delim#toggle_modifier(l:open, l:close)
+
+        let l:col_diff  = (l:open.lnum == l:end_pos[1])
+              \ ? strlen(newmods[0]) - strlen(l:open.mod) : 0
+        let l:col_diff += (l:close.lnum == l:end_pos[1])
+              \ ? strlen(newmods[1]) - strlen(l:close.mod) : 0
+
+        if l:col_diff != 0
+          let l:end_pos[2] += l:col_diff
+          let l:end_pos_val += l:col_diff
+        endif
+      endif
+    endif
+
+    let l:cur_pos = s:pos_next(l:open.lnum, l:open.cnum)
+    let l:cur_pos_val = 10000*l:cur_pos[1] + l:cur_pos[2]
+  endwhile
+
+  "
+  " Finally we return to original position and reselect the region
+  "
+  call setpos("'<", l:start_pos)
+  call setpos("'>", l:end_pos)
+  call setpos('.', l:save_pos)
+  normal! gv
 endfunction
 
 " }}}1
