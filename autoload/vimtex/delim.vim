@@ -310,15 +310,24 @@ endfunction
 " }}}1
 function! vimtex#delim#toggle_modifier_visual() " {{{1
   let l:save_pos = getpos('.')
-
-  "
-  " First we generate a stack of all delimiters that should be toggled
-  "
   let l:start_pos = getpos("'<")
   let l:end_pos = getpos("'>")
   let l:end_pos_val = 10000*l:end_pos[1] + min([l:end_pos[2], 1000])
   let l:cur_pos = l:start_pos
   let l:cur_pos_val = 10000*l:cur_pos[1] + l:cur_pos[2]
+
+  "
+  " Check if selection is swapped
+  "
+  let l:end_pos[1] += 1
+  call setpos("'>", l:end_pos)
+  let l:end_pos[1] -= 1
+  normal! gv
+  let l:swapped = l:start_pos != getpos("'<")
+
+  "
+  " First we generate a stack of all delimiters that should be toggled
+  "
   let l:stack = []
   while l:cur_pos_val < l:end_pos_val
     call setpos('.', l:cur_pos)
@@ -355,8 +364,8 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   "
   " Finally we return to original position and reselect the region
   "
-  call setpos("'<", l:start_pos)
-  call setpos("'>", l:end_pos)
+  call setpos(l:swapped? "'>" : "'<", l:start_pos)
+  call setpos(l:swapped? "'<" : "'>", l:end_pos)
   call setpos('.', l:save_pos)
   normal! gv
 endfunction
