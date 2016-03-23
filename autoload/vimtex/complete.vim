@@ -37,22 +37,25 @@ endfunction
 
 function! vimtex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
-    let pos  = col('.') - 1
-    let line = getline('.')[:pos-1]
+    let l:pos  = col('.') - 1
+    let l:line = getline('.')[:l:pos-1]
     for l:completer in s:completers
       if !get(l:completer, 'enabled', 0) | return -3 | endif
 
-      if line =~# l:completer.pattern . '$'
-        let s:completer = l:completer
-        while pos > 0
-          if line[pos - 1] =~# '{\|,' || line[pos-2:pos-1] ==# ', '
-            return pos
-          else
-            let pos -= 1
-          endif
-        endwhile
-        return -2
-      endif
+      for l:pattern in l:completer.patterns
+        if l:line =~# l:pattern
+          let s:completer = l:completer
+          while l:pos > 0
+            if l:line[l:pos - 1] =~# '{\|,\|\['
+                  \ || l:line[l:pos-2:l:pos-1] ==# ', '
+              return l:pos
+            else
+              let l:pos -= 1
+            endif
+          endwhile
+          return -2
+        endif
+      endfor
     endfor
     return -3
   else
@@ -68,7 +71,7 @@ endfunction
 " {{{1 Bibtex
 
 let s:bib = {
-      \ 'pattern' : '\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+      \ 'patterns' : ['\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
       \ 'enabled' : 1,
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
@@ -223,7 +226,10 @@ endfunction
 " {{{1 Labels
 
 let s:ref = {
-      \ 'pattern' : '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)',
+      \ 'patterns' : [
+      \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
+      \   '\\hyperref\s*\[[^]]*$'
+      \ ],
       \ 'enabled' : 1,
       \ 'cache' : {},
       \}
@@ -337,7 +343,7 @@ endfunction
 " {{{1 Filenames (\includegraphics)
 
 let s:img = {
-      \ 'pattern' : '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+      \ 'patterns' : ['\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
       \ 'enabled' : 1,
       \}
 
@@ -370,7 +376,7 @@ endfunction
 " {{{1 Filenames (\input and \include)
 
 let s:inc = {
-      \ 'pattern' : '\v\\%(include%(only)?|input)\s*\{[^}]*',
+      \ 'patterns' : ['\v\\%(include%(only)?|input)\s*\{[^}]*$'],
       \ 'enabled' : 1,
       \}
 
@@ -390,7 +396,7 @@ endfunction
 " {{{1 Glossary
 
 let s:gls = {
-      \ 'pattern' : '\v\\gls\s*\{[^}]*',
+      \ 'patterns' : ['\v\\gls\s*\{[^}]*$'],
       \ 'enabled' : 1,
       \}
 

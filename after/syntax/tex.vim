@@ -39,7 +39,8 @@ for [style, group, commands] in [
 endfor
 
 " }}}1
-" {{{1 Add syntax highlighting for \url and \href
+" {{{1 Add syntax highlighting for \url, \href, \hyperref
+
 syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
 syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
 syntax match texStatement '\\href' nextgroup=texHref
@@ -53,10 +54,14 @@ syntax region texHref matchgroup=Delimiter start='{' end='}' contained
 syntax region texHrefLinkText matchgroup=Delimiter start='{' end='}' contained
       \ contains=@Spell
 
+syntax match texStatement '\\hyperref' nextgroup=texHyperref
+syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
+
 highlight link texUrl          Function
 highlight link texUrlVerb      texUrl
 highlight link texHref         texUrl
 highlight link texHrefLinkText texSectionZone
+highlight link texHyperref     texRefZone
 
 " }}}1
 " {{{1 Improve support for cite commands
