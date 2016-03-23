@@ -42,13 +42,13 @@ endfor
 " {{{1 Add syntax highlighting for \url, \href, \hyperref
 
 syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
-syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
-syntax match texStatement '\\href' nextgroup=texHref
-
-syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
 syntax region texUrlVerb matchgroup=Delimiter
       \ start='\z([^\ta-zA-Z]\)' end='\z1' contained
 
+syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
+syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
+
+syntax match texStatement '\\href' nextgroup=texHref
 syntax region texHref matchgroup=Delimiter start='{' end='}' contained
       \ nextgroup=texHrefLinkText
 syntax region texHrefLinkText matchgroup=Delimiter start='{' end='}' contained
