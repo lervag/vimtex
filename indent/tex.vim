@@ -70,19 +70,25 @@ endfunction
 function! s:indent_envs(cur, prev) " {{{1
   let l:ind = 0
 
-  if a:prev =~# '\\begin{.*}' && a:prev !~# s:envs_noindent
-    let l:ind += (a:prev =~# s:envs_lists) ? 2*&sw : &sw
-  endif
+  " First for general environments
+  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignore))
+  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignore))
 
-  if a:cur =~# '\\end{.*}' && a:cur !~# s:envs_noindent
-    let l:ind -= (a:cur =~# s:envs_lists) ? 2*&sw : &sw
-  endif
+  " Indentation for prolonged items in lists
+  let l:ind += &sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
+  let l:ind -= &sw*((a:cur  =~# s:envs_item)    && (a:prev !~# s:envs_begitem))
+  let l:ind -= &sw*((a:cur  =~# s:envs_endlist) && (a:prev !~# s:envs_begitem))
 
   return l:ind
 endfunction
 
-let s:envs_noindent = 'document\|verbatim\|lstlisting'
+let s:envs_ignore = 'document\|verbatim\|lstlisting'
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
+let s:envs_item = '^\s*\\item'
+let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'
+let s:envs_endlist =   '\\end{\%(' . s:envs_lists . '\)'
+let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
+let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(cur, prev) " {{{1
