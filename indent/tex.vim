@@ -23,94 +23,86 @@ setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent() " {{{1
   " Find a non-blank non-comment line above the current line
-  let lnum = prevnonblank(v:lnum - 1)
-  while lnum != 0 && getline(lnum) =~# '^\s*%'
-    let lnum = prevnonblank(lnum - 1)
+  let l:nprev = prevnonblank(v:lnum - 1)
+  while l:nprev != 0 && getline(l:nprev) =~# '^\s*%'
+    let l:nprev = prevnonblank(l:nprev - 1)
   endwhile
-
-  " Zero indent for top of file
-  if lnum == 0
+  if l:nprev == 0
     return 0
   endif
 
-  " Get current and previous line, remove comments
-  let cline = substitute(getline(v:lnum), '\\\@<!%.*', '', '')
-  let pline = substitute(getline(lnum),   '\\\@<!%.*', '', '')
+  " Get current and previous line and remove comments
+  let l:cur = substitute(getline(v:lnum), '\\\@<!%.*', '', '')
+  let l:prev = substitute(getline(l:nprev),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
   if synIDattr(synID(v:lnum, indent(v:lnum), 1), 'name') ==# 'texZone'
-    if empty(cline)
-      return indent(lnum)
-    else
-      return indent(v:lnum)
-    end
+    return empty(l:cur) ? indent(l:nprev) : indent(v:lnum)
   endif
 
   " Align on ampersands
-  if cline =~# '^\s*&' && pline =~# '\\\@<!&.*'
-    return indent(v:lnum) + match(pline, '\\\@<!&') - stridx(cline, '&')
-  endif
-
-  " Find previous non-empty non-comment non-ampersand line
-  while lnum != 0 && (match(pline, '\\\@<!&') != -1 || pline =~# '^\s*%')
-    let lnum = prevnonblank(lnum - 1)
-    let pline = getline(lnum)
-  endwhile
-
-  " Zero indent for top of file
-  if lnum == 0
-    return 0
+  if l:cur =~# '^\s*&' && l:prev =~# '\\\@<!&.*'
+    return indent(v:lnum) + match(l:prev, '\\\@<!&') - stridx(l:cur, '&')
   endif
 
   " Use previous indentation for comments
-  if cline =~# '^\s*%'
+  if l:cur =~# '^\s*%'
     return indent(v:lnum)
   endif
 
-  let ind = indent(lnum)
+  " Find previous non-empty non-comment non-ampersand line
+  while l:nprev != 0 && (match(l:prev, '\\\@<!&') != -1 || l:prev =~# '^\s*%')
+    let l:nprev = prevnonblank(l:nprev - 1)
+    let l:prev = getline(l:nprev)
+  endwhile
+  if l:nprev == 0
+    return 0
+  endif
+
+  let l:ind = indent(l:nprev)
 
   " Add indent on begin environment
-  if pline =~# '\\begin{.*}' && pline !~ s:envs_noindent
-    let ind = ind + &sw
+  if l:prev =~# '\\begin{.*}' && l:prev !~ s:envs_noindent
+    let l:ind = l:ind + &sw
 
     " Add extra indent for list environments
-    if pline =~ s:envs_lists
-      let ind = ind + &sw
+    if l:prev =~ s:envs_lists
+      let l:ind = l:ind + &sw
     endif
   endif
 
   " Subtract indent on end environment
-  if cline =~# '\\end{.*}' && cline !~ s:envs_noindent
-    let ind = ind - &sw
+  if l:cur =~# '\\end{.*}' && l:cur !~ s:envs_noindent
+    let l:ind = l:ind - &sw
 
     " Subtract extra indent for list environments
-    if cline =~ s:envs_lists
-      let ind = ind - &sw
+    if l:cur =~ s:envs_lists
+      let l:ind = l:ind - &sw
     endif
   endif
 
   " Indent opening and closing delimiters
   let [l:re_open, l:re_close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
-  let ind += &sw*(
-        \   max([s:count(pline, l:re_open)  - s:count(pline, l:re_close), 0])
-        \ - max([s:count(cline, l:re_close) - s:count(cline, l:re_open), 0]))
+  let l:ind += &sw*(
+        \   max([s:count(l:prev, l:re_open)  - s:count(l:prev, l:re_close), 0])
+        \ - max([s:count(l:cur, l:re_close) - s:count(l:cur, l:re_open), 0]))
 
   " Indent list items
-  if pline =~# '^\s*\\\(bib\)\?item'
-    let ind += &sw
+  if l:prev =~# '^\s*\\\(bib\)\?item'
+    let l:ind += &sw
   endif
-  if cline =~# '^\s*\\\(bib\)\?item'
-    let ind -= &sw
+  if l:cur =~# '^\s*\\\(bib\)\?item'
+    let l:ind -= &sw
   endif
 
   " Indent tikz elements
-  if pline =~# s:tikz_commands && pline !~# ';'
-    let ind += &sw
-  elseif pline !~# s:tikz_commands && pline =~# ';'
-    let ind -= &sw
+  if l:prev =~# s:tikz_commands && l:prev !~# ';'
+    let l:ind += &sw
+  elseif l:prev !~# s:tikz_commands && l:prev =~# ';'
+    let l:ind -= &sw
   endif
 
-  return ind
+  return l:ind
 endfunction
 "}}}
 function! s:count(line, pattern) " {{{1
