@@ -130,6 +130,42 @@ endfunction
 
 " }}}1
 
+function! vimtex#env#is_inside(env) " {{{1
+  let l:pos = getpos('.')
+  let l:pos_val = 10000*l:pos[1] + l:pos[2]
+  let l:tries = 10
+
+  while l:tries > 0
+    let l:tries -= 1
+    let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+    if empty(l:open) | break | endif
+
+    if !empty(l:close) && (l:pos_val >= 10000*l:close.lnum + l:close.cnum)
+      continue
+    endif
+
+    if l:open.name ==# a:env
+      call setpos('.', l:pos)
+      return 1
+    endif
+
+    call setpos('.', s:pos_prev(l:open))
+  endwhile
+
+  call setpos('.', l:pos)
+  return 0
+endfunction
+
+" }}}1
+
+function! s:pos_prev(env) " {{{1
+    return a:env.cnum > 1
+          \ ? [0, a:env.lnum, a:env.cnum-1, 0]
+          \ : [0, max([a:env.lnum-1, 1]), strlen(getline(a:env.lnum-1)), 0]
+endfunction
+
+" }}}1
+
 function! s:sidwrap(func) " {{{1
   return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$') . a:func
 endfunction
