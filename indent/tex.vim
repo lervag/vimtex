@@ -60,51 +60,59 @@ function! VimtexIndent() " {{{1
   endif
 
   let l:ind = indent(l:nprev)
+  let l:ind += s:indent_envs(l:cur, l:prev)
+  let l:ind += s:indent_delims(l:cur, l:prev)
+  let l:ind += s:indent_tikz(l:prev)
+  return l:ind
+endfunction
+"}}}
 
-  " Add indent on begin environment
-  if l:prev =~# '\\begin{.*}' && l:prev !~ s:envs_noindent
-    let l:ind = l:ind + &sw
+function! s:indent_envs(cur, prev) " {{{1
+  let l:ind = 0
 
-    " Add extra indent for list environments
-    if l:prev =~ s:envs_lists
-      let l:ind = l:ind + &sw
-    endif
+  if a:prev =~# '\\begin{.*}' && a:prev !~# s:envs_noindent
+    let l:ind += (a:prev =~# s:envs_lists) ? 2*&sw : &sw
   endif
 
-  " Subtract indent on end environment
-  if l:cur =~# '\\end{.*}' && l:cur !~ s:envs_noindent
-    let l:ind = l:ind - &sw
-
-    " Subtract extra indent for list environments
-    if l:cur =~ s:envs_lists
-      let l:ind = l:ind - &sw
-    endif
+  if a:cur =~# '\\end{.*}' && a:cur !~# s:envs_noindent
+    let l:ind -= (a:cur =~# s:envs_lists) ? 2*&sw : &sw
   endif
 
-  " Indent opening and closing delimiters
-  let [l:re_open, l:re_close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
-  let l:ind += &sw*(
-        \   max([s:count(l:prev, l:re_open)  - s:count(l:prev, l:re_close), 0])
-        \ - max([s:count(l:cur, l:re_close) - s:count(l:cur, l:re_open), 0]))
+  return l:ind
+endfunction
 
-  " Indent list items
-  if l:prev =~# '^\s*\\\(bib\)\?item'
+let s:envs_noindent = 'document\|verbatim\|lstlisting'
+let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
+
+" }}}1
+function! s:indent_delims(cur, prev) " {{{1
+  let [l:open, l:close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
+  return &sw*(  max([s:count(a:prev, l:open) - s:count(a:prev, l:close), 0])
+        \     - max([s:count(a:cur, l:close) - s:count(a:cur, l:open),   0]))
+endfunction
+
+" }}}1
+function! s:indent_tikz(cur, prev) " {{{1
+  if a:prev =~# s:tikz_commands && a:prev !~# ';'
     let l:ind += &sw
-  endif
-  if l:cur =~# '^\s*\\\(bib\)\?item'
-    let l:ind -= &sw
-  endif
-
-  " Indent tikz elements
-  if l:prev =~# s:tikz_commands && l:prev !~# ';'
-    let l:ind += &sw
-  elseif l:prev !~# s:tikz_commands && l:prev =~# ';'
+  elseif a:prev !~# s:tikz_commands && a:prev =~# ';'
     let l:ind -= &sw
   endif
 
   return l:ind
 endfunction
-"}}}
+
+let s:tikz_commands = '\v\\%(' . join([
+        \ 'draw',
+        \ 'fill',
+        \ 'path',
+        \ 'node',
+        \ 'coordinate',
+        \ 'add%(legendentry|plot)',
+      \ ], '|') . ')'
+
+" }}}1
+
 function! s:count(line, pattern) " {{{1
   let sum = 0
   let indx = match(a:line, a:pattern)
@@ -116,22 +124,6 @@ function! s:count(line, pattern) " {{{1
   endwhile
   return sum
 endfunction
-
-" }}}1
-
-" {{{1 Script variables
-
-" Define some common patterns
-let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
-let s:envs_noindent = 'document\|verbatim\|lstlisting'
-let s:tikz_commands = '\v\\%(' . join([
-        \ 'draw',
-        \ 'fill',
-        \ 'path',
-        \ 'node',
-        \ 'coordinate',
-        \ 'add%(legendentry|plot)',
-      \ ], '|') . ')'
 
 " }}}1
 
