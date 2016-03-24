@@ -62,7 +62,7 @@ function! VimtexIndent() " {{{1
   let l:ind = indent(l:nprev)
   let l:ind += s:indent_envs(l:cur, l:prev)
   let l:ind += s:indent_delims(l:cur, l:prev)
-  let l:ind += s:indent_tikz(l:prev)
+  let l:ind += s:indent_tikz(l:nprev, l:prev)
   return l:ind
 endfunction
 "}}}
@@ -98,14 +98,24 @@ function! s:indent_delims(cur, prev) " {{{1
 endfunction
 
 " }}}1
-function! s:indent_tikz(cur, prev) " {{{1
-  if a:prev =~# s:tikz_commands && a:prev !~# ';'
-    let l:ind += &sw
-  elseif a:prev !~# s:tikz_commands && a:prev =~# ';'
-    let l:ind -= &sw
+function! s:indent_tikz(lnum, prev) " {{{1
+  if vimtex#env#is_inside('tikzpicture')
+    let l:prev_starts = a:prev =~# s:tikz_commands
+    let l:prev_stops  = a:prev =~# ';\s*$'
+
+    " Increase indent on tikz command start
+    if l:prev_starts && ! l:prev_stops
+      return &sw
+    endif
+
+    " Decrease indent on tikz command end, i.e. on semicolon
+    if ! l:prev_starts && l:prev_stops
+      let l:context = join(getline(max([1,a:lnum-4]), a:lnum-1), '')
+      return -&sw*(l:context =~# s:tikz_commands)
+    endif
   endif
 
-  return l:ind
+  return 0
 endfunction
 
 let s:tikz_commands = '\v\\%(' . join([
