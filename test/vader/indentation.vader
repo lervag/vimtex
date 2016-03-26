@@ -1,0 +1,159 @@
+Given tex (Indent regular tex):
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \usepackage{tikz}
+  \begin{document}
+
+  {
+      asdasd
+    }
+
+    \end{document}
+
+Do:
+  gg=G
+
+Expect:
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \usepackage{tikz}
+  \begin{document}
+
+  {
+    asdasd
+  }
+
+  \end{document}
+
+Given tex (Indent lists):
+  \begin{itemize}
+  \item item is indented twice
+        and the next line is indented to match
+  \end{itemize}
+
+  \begin{description}
+    \item[One] Ingeniería Electrónica ``first'';
+    a couple of lines.
+  \item[Doctorado] ``Generic title''
+    (Author): commentaries here
+  \end{description}
+
+Do:
+  gg=G
+
+Expect:
+  \begin{itemize}
+    \item item is indented twice
+      and the next line is indented to match
+  \end{itemize}
+
+  \begin{description}
+    \item[One] Ingeniería Electrónica ``first'';
+      a couple of lines.
+    \item[Doctorado] ``Generic title''
+      (Author): commentaries here
+  \end{description}
+
+Given tex (Indent math):
+      \[
+    1+1
+        \]
+
+  \begin{align}
+      2+2=4
+  \end{align}
+
+  \begin{equation}
+     \left(
+       f(x) = 3
+    \right)
+    \left.
+        f(x) = 3
+  \right.
+  \end{equation}
+
+Do:
+  gg=G
+
+Expect:
+  \[
+    1+1
+  \]
+
+  \begin{align}
+    2+2=4
+  \end{align}
+
+  \begin{equation}
+    \left(
+      f(x) = 3
+    \right)
+    \left.
+    f(x) = 3
+    \right.
+  \end{equation}
+
+Given tex (Indent tikz):
+  \tikz \fill[green] rectangle (0.5,0.5); Something
+      about something.
+
+    \begin{tikzpicture}
+       \draw [solid] let \p{I} = (0,0) in (1,1) -|
+          (\x{I}-1cm,-1cm) node [yshift=-.25cm] {(i)};
+       % Just some comment
+       \end{tikzpicture}
+
+       \begin{tikzpicture}
+  % (i) center contact head
+  \draw [solid] let \p{I} = (centerContactHead) in (centerContactHead) -|
+    (\x{I}-.75cm,-2.5)
+    node [yshift=-.25cm] {(i)};
+
+  % (ii) outer conductor of the contact head
+    \coordinate (outerContactHead) at (.8,-1.7);
+    \draw [solid] let \p{O} = (outerContactHead)
+      in (outerContactHead) -- (\x{O},-2.5)
+        node [yshift=-.25cm] {(ii)};
+       \end{tikzpicture}
+
+Do:
+  gg=G
+
+Expect:
+  \tikz \fill[green] rectangle (0.5,0.5); Something
+  about something.
+
+  \begin{tikzpicture}
+    \draw [solid] let \p{I} = (0,0) in (1,1) -|
+      (\x{I}-1cm,-1cm) node [yshift=-.25cm] {(i)};
+    % Just some comment
+  \end{tikzpicture}
+
+  \begin{tikzpicture}
+    % (i) center contact head
+    \draw [solid] let \p{I} = (centerContactHead) in (centerContactHead) -|
+      (\x{I}-.75cm,-2.5)
+      node [yshift=-.25cm] {(i)};
+
+    % (ii) outer conductor of the contact head
+    \coordinate (outerContactHead) at (.8,-1.7);
+    \draw [solid] let \p{O} = (outerContactHead)
+      in (outerContactHead) -- (\x{O},-2.5)
+      node [yshift=-.25cm] {(ii)};
+  \end{tikzpicture}
+
+Given tex (Indent verbatims):
+  \begin{verbatim}
+    #!/bin/bash
+    echo "test"
+    \end{verbatim}
+
+Do (TODO):
+  gg=G
+
+Expect:
+  \begin{verbatim}
+    #!/bin/bash
+    echo "test"
+  \end{verbatim}
+
