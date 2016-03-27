@@ -2,8 +2,16 @@ language: vim
 
 before_script: |
   git clone https://github.com/junegunn/vader.vim.git
+  git clone https://github.com/vim/vim
+  cd vim
+  ./configure --with-features=huge --enable-rubyinterp --enable-pythoninterp
+  make -j4
+  sudo make install
+  cd -
 
 script: |
+  export PATH="/usr/local/bin:$PATH"
+  vim --version
   vim -Nu <(cat << VIMRC
   let &rtp  =  '.,' . &rtp
   let &rtp .= ',after'

@@ -209,9 +209,9 @@ function! s:check_version() " {{{1
     return
   endif
 
-  " if v:version <= 703 && !has('patch544')
-  "   echoerr 'vimtex error: Please use Vim version 7.3.544 or newer!'
-  " endif
+  if v:version <= 703 && !has('patch544')
+    echoerr 'vimtex error: Please use Vim version 7.3.544 or newer!'
+  endif
 endfunction
 
 " }}}1
