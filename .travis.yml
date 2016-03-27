@@ -11,6 +11,7 @@ before_script: |
 
 script: |
   export PATH="/usr/local/bin:$PATH"
+  export LD_LIBRARY_PATH=~/.rvm/rubies/ruby-2.2.3/lib
   vim --version
   vim -Nu <(cat << VIMRC
   let &rtp  =  '.,' . &rtp
