@@ -5,9 +5,9 @@ before_script: |
 
 script: |
   vim -Nu <(cat << VIMRC
-  set rtp+=vader.vim
-  let &rtp  = '.,' . &rtp
-  set rtp+=after
+  let &rtp  =  '.,' . &rtp
+  let &rtp .= ',after'
+  let &rtp .= ',vader.vim'
   filetype plugin indent on
   syntax enable
   VIMRC) -c 'Vader! test/vader/*' > /dev/null
