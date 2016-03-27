@@ -6,7 +6,7 @@ before_script: |
 script: |
   vim -Nu <(cat << VIMRC
   set rtp+=vader.vim
-  set rtp+=.
+  let &rtp  = '.,' . &rtp
   set rtp+=after
   filetype plugin indent on
   syntax enable
