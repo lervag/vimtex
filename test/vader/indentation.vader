@@ -16,7 +16,7 @@ Given tex (Indent regular tex):
 Do:
   gg=G
 
-Expect:
+Expect tex:
   \documentclass{minimal}
   \usepackage{amsmath}
   \usepackage{tikz}
@@ -44,7 +44,7 @@ Given tex (Indent lists):
 Do:
   gg=G
 
-Expect:
+Expect tex:
   \begin{itemize}
     \item item is indented twice
       and the next line is indented to match
@@ -78,7 +78,7 @@ Given tex (Indent math):
 Do:
   gg=G
 
-Expect:
+Expect tex:
   \[
     1+1
   \]
@@ -122,7 +122,7 @@ Given tex (Indent tikz):
 Do:
   gg=G
 
-Expect:
+Expect tex:
   \tikz \fill[green] rectangle (0.5,0.5); Something
   about something.
 
@@ -154,7 +154,7 @@ Given tex (Indent verbatims):
 Do (TODO):
   gg=G
 
-Expect:
+Expect tex:
   \begin{verbatim}
     #!/bin/bash
     echo "test"
