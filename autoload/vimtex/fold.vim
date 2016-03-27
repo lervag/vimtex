@@ -43,6 +43,9 @@ function! vimtex#fold#init_buffer() " {{{1
   if !g:vimtex_fold_enabled | return | endif
   if s:foldmethod_in_modeline() | return | endif
 
+  " Initialize local work vars
+  let b:vimtex_fold = {}
+
   " Set fold options
   setlocal foldmethod=expr
   setlocal foldexpr=vimtex#fold#level(v:lnum)
@@ -121,7 +124,7 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold chapters and sections
-  for [part, level] in b:vimtex_fold_parts
+  for [part, level] in b:vimtex_fold.parts
     if line =~# part
       return '>' . level
     endif
@@ -172,11 +175,11 @@ endfunction
 function! s:refresh_folded_sections()
   " Only refresh if file has been changed
   let l:time = getftime(expand('%'))
-  if l:time == get(s:, 'time', 0) | return | endif
-  let s:time = l:time
+  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
+  let b:vimtex_fold.time = l:time
 
   " Initialize
-  let b:vimtex_fold_parts = []
+  let b:vimtex_fold.parts = []
   let buffer = readfile(expand('%'))
 
   " Parse part commands (frontmatter, appendix, part, etc)
@@ -185,18 +188,18 @@ function! s:refresh_folded_sections()
     let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
     for line in lines
       if line =~# partpattern
-        call insert(b:vimtex_fold_parts, [partpattern, 1])
+        call insert(b:vimtex_fold.parts, [partpattern, 1])
         break
       endif
     endfor
   endfor
 
   " We want a minimum of two top level parts
-  if len(b:vimtex_fold_parts) >= 2
+  if len(b:vimtex_fold.parts) >= 2
     let level = 1
   else
     let level = 0
-    let b:vimtex_fold_parts = []
+    let b:vimtex_fold.parts = []
   endif
 
   " Parse section commands (chapter, [sub...]section)
@@ -206,7 +209,7 @@ function! s:refresh_folded_sections()
     for line in lines
       if line =~# partpattern
         let level += 1
-        call insert(b:vimtex_fold_parts, [partpattern, level])
+        call insert(b:vimtex_fold.parts, [partpattern, level])
         break
       endif
     endfor
