@@ -1,23 +1,23 @@
-language: vim
+language: ruby
 
-before_script: |
-  git clone https://github.com/junegunn/vader.vim.git
-  git clone https://github.com/vim/vim
-  cd vim
-  ./configure --with-features=huge --enable-rubyinterp --enable-pythoninterp
-  make -j4
-  sudo make install
-  cd -
+before_script:
+  - git clone https://github.com/junegunn/vader.vim.git
+  - git clone --depth 1 https://github.com/vim/vim
+    cd vim
+    ./configure --with-features=huge --enable-rubyinterp --enable-pythoninterp
+    make -j4
+    sudo make install
+    cd -
+  - export PATH="/usr/local/bin:$PATH"
+    export LD_LIBRARY_PATH=~/.rvm/rubies/ruby-2.2.3/lib
 
-script: |
-  export PATH="/usr/local/bin:$PATH"
-  export LD_LIBRARY_PATH=~/.rvm/rubies/ruby-2.2.3/lib
-  vim --version
-  vim -Nu <(cat << VIMRC
-  let &rtp  =  '.,' . &rtp
-  let &rtp .= ',after'
-  let &rtp .= ',vader.vim'
-  filetype plugin indent on
-  syntax enable
-  VIMRC) -c 'Vader! test/vader/*' > /dev/null
+script:
+  - vim --version
+  - vim -Nu <(cat << VIMRC
+    let &rtp  =  '.,' . &rtp
+    let &rtp .= ',after'
+    let &rtp .= ',vader.vim'
+    filetype plugin indent on
+    syntax enable
+    VIMRC) -c 'Vader! test/vader/*' > /dev/null
 
