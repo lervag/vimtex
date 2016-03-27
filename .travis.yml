@@ -4,10 +4,10 @@ os:
   - linux
 
 install:
-  - sudo add-apt-repository -y ppa:fcwu-tw/ppa &&
-  - sudo apt-get -qq update &&
-  - sudo apt-get -qq -f install &&
-  - sudo apt-get -qq install vim;
+  - sudo add-apt-repository -y ppa:fcwu-tw/ppa
+  - sudo apt-get -qq update
+  - sudo apt-get -qq -f install
+  - sudo apt-get -qq install vim
 
 before_script:
   - git clone https://github.com/junegunn/vader.vim.git
