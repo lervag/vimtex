@@ -22,21 +22,15 @@ setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent() " {{{1
-  " Find a non-blank non-comment line above the current line
-  let l:nprev = prevnonblank(v:lnum - 1)
-  while l:nprev != 0 && getline(l:nprev) =~# '^\s*%'
-    let l:nprev = prevnonblank(l:nprev - 1)
-  endwhile
-  if l:nprev == 0
-    return 0
-  endif
+  let l:nprev = s:get_prev_line(prevnonblank(v:lnum - 1))
+  if l:nprev == 0 | return 0 | endif
 
   " Get current and previous line and remove comments
   let l:cur = substitute(getline(v:lnum), '\\\@<!%.*', '', '')
   let l:prev = substitute(getline(l:nprev),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
-  if synIDattr(synID(v:lnum, indent(v:lnum), 1), 'name') ==# 'texZone'
+  if s:is_verbatim(l:cur, v:lnum)
     return empty(l:cur) ? indent(l:nprev) : indent(v:lnum)
   endif
 
@@ -50,14 +44,9 @@ function! VimtexIndent() " {{{1
     return indent(v:lnum)
   endif
 
-  " Find previous non-empty non-comment non-ampersand line
-  while l:nprev != 0 && (match(l:prev, '\\\@<!&') != -1 || l:prev =~# '^\s*%')
-    let l:nprev = prevnonblank(l:nprev - 1)
-    let l:prev = getline(l:nprev)
-  endwhile
-  if l:nprev == 0
-    return 0
-  endif
+  let l:nprev = s:get_prev_line(l:nprev, 'ignore-ampersands')
+  if l:nprev == 0 | return 0 | endif
+  let l:prev = getline(l:nprev)
 
   let l:ind = indent(l:nprev)
   let l:ind += s:indent_envs(l:cur, l:prev)
@@ -67,12 +56,38 @@ function! VimtexIndent() " {{{1
 endfunction
 "}}}
 
+function! s:get_prev_line(lnum, ...) " {{{1
+  let l:ignore_amps = a:0 > 0
+
+  let l:lnum = a:lnum
+  let l:prev = getline(l:lnum)
+
+  while l:lnum != 0
+        \ && (l:prev =~# '^\s*%'
+          \ || s:is_verbatim(l:prev, l:lnum)
+          \ || match(l:prev, '\\\@<!&') >= 0)
+    let l:lnum = prevnonblank(l:lnum - 1)
+    let l:prev = getline(l:lnum)
+  endwhile
+
+  return l:lnum
+endfunction
+
+" }}}1
+function! s:is_verbatim(line, lnum) " {{{1
+  let l:env = a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
+  let l:syn = synIDattr(synID(a:lnum, 1, 1), 'name') ==# 'texZone'
+  return l:env && l:syn
+endfunction
+
+" }}}1
+
 function! s:indent_envs(cur, prev) " {{{1
   let l:ind = 0
 
   " First for general environments
-  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignore))
-  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignore))
+  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# 'document'))
+  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# 'document'))
 
   " Indentation for prolonged items in lists
   let l:ind += &sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
@@ -82,7 +97,6 @@ function! s:indent_envs(cur, prev) " {{{1
   return l:ind
 endfunction
 
-let s:envs_ignore = 'document\|verbatim\|lstlisting'
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_item = '^\s*\\item'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'

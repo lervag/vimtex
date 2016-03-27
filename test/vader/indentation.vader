@@ -146,17 +146,29 @@ Expect tex:
   \end{tikzpicture}
 
 Given tex (Indent verbatims):
-  \begin{verbatim}
-    #!/bin/bash
-    echo "test"
-    \end{verbatim}
+    \begin{verbatim}
+  #!/bin/bash
+  echo "test"
+      \end{verbatim}
 
-Do (TODO):
+    \begin{lstlisting}
+  Indent
+    should
+      not affect verbatim environments!
+      \end{lstlisting}
+
+Do:
   gg=G
 
 Expect tex:
   \begin{verbatim}
-    #!/bin/bash
-    echo "test"
+  #!/bin/bash
+  echo "test"
   \end{verbatim}
+
+  \begin{lstlisting}
+  Indent
+    should
+      not affect verbatim environments!
+  \end{lstlisting}
 
