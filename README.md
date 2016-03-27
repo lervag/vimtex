@@ -1,7 +1,9 @@
-# vimtex ![travis-ci](https://travis-ci.org/lervag/vimtex.svg?branch=master)
+# vimtex
 
 A [vim](http://www.vim.org/) plugin that provides support for writing
 LaTeX documents.
+
+[![Build Status](https://travis-ci.org/lervag/vimtex.svg?branch=master)](https://travis-ci.org/lervag/vimtex)
 
 ## Features
 
