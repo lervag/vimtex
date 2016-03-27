@@ -1,4 +1,4 @@
-# vimtex
+# vimtex ![travis-ci](https://travis-ci.org/lervag/vimtex.svg?branch=master)
 
 A [vim](http://www.vim.org/) plugin that provides support for writing
 LaTeX documents.
