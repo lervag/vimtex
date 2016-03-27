@@ -180,7 +180,7 @@ function! s:refresh_folded_sections()
 
   " Initialize
   let b:vimtex_fold.parts = []
-  let buffer = readfile(expand('%'))
+  let buffer = getline(1,'$')
 
   " Parse part commands (frontmatter, appendix, part, etc)
   let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
