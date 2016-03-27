@@ -10,15 +10,9 @@ install:
   - sudo apt-get -qq install vim
 
 before_script:
-  - git clone https://github.com/junegunn/vader.vim.git
+  - git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
 
 script:
   - vim --version
-  - vim -Nu <(cat << VIMRC
-    let &rtp  =  '.,' . &rtp
-    let &rtp .= ',after'
-    let &rtp .= ',vader.vim'
-    filetype plugin indent on
-    syntax enable
-    VIMRC) -c 'Vader! test/vader/*' > /dev/null
+  - ./test/vader/run-tests.sh
 
