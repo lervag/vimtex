@@ -171,6 +171,8 @@ function! s:mupdf.init() dict " {{{2
   let self.xwin_send_keys = function('s:xwin_send_keys')
   let self.focus_vim = function('s:focus_vim')
   let self.focus_viewer = function('s:focus_viewer')
+
+  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
 
 " }}}2
@@ -275,7 +277,7 @@ function! s:mupdf.reverse_search() dict " {{{2
 endfunction
 
 " }}}2
-function! s:mupdf.latexmk_callback() dict " {{{2
+function! s:mupdf.latexmk_callback(status) dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
       call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
@@ -321,6 +323,8 @@ function! s:zathura.init() dict " {{{2
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
+
+  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
 
 " }}}2
@@ -369,10 +373,10 @@ function! s:zathura.forward_search(outfile) dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura.latexmk_callback() dict " {{{2
+function! s:zathura.latexmk_callback(status) dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
-      sleep 50m
+      sleep 500m
       call self.forward_search(b:vimtex.out())
       if has_key(self, 'hook_callback')
         call self.hook_callback()

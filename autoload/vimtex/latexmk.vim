@@ -13,7 +13,7 @@ function! vimtex#latexmk#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_callback_hook', '')
+  call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_file_line_error', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
@@ -23,6 +23,11 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
   call vimtex#util#set_default('g:vimtex_quickfix_fix_paths', '0')
+
+  if exists('g:vimtex_latexmk_callback_hook')
+    echoerr 'Deprecated option: g:vimtex_latexmk_callback_hook!'
+    echoerr 'Please see ":h g:vimtex_latexmk_callback_hooks"'
+  endif
 endfunction
 
 " }}}1
@@ -98,18 +103,12 @@ function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
   redraw!
 
-  if g:vimtex_view_enabled
-        \ && has_key(b:vimtex.viewer, 'latexmk_callback')
-    call b:vimtex.viewer.latexmk_callback()
-  endif
-
   call vimtex#echo#status(['latexmk compile: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
 
-  try
-    call call(g:vimtex_latexmk_callback_hook, [a:status])
-  catch /.*/
-  endtry
+  for l:hook in g:vimtex_latexmk_callback_hooks
+    execute 'call' l:hook . '(' . a:status . ')'
+  endfor
 
   return ''
 endfunction

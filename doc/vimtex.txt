@@ -639,20 +639,24 @@ Options~
 
   Default value: 1
 
-*g:vimtex_latexmk_callback_hook*
-  If defined and given the name of a function, it will be called from the
-  vimtex latexmk callback with the status as the sole argument. This allows
-  users to add custom callback functionality.
+*g:vimtex_latexmk_callback_hooks*
+  A list of functions that will be called from the vimtex latexmk callback.
+  The compilation status must be taken as an argument. This allows users to
+  add custom callback functionality.
+
+  Note: The Zathura and MuPDF viewers, if used, adds a hook to this list in
+        order to store the viewer X window ID in order to prevent multiple
+        viewer windows.
 
   Example: >
 
-    let g:vimtex_latexmk_callback_hook = 'MyTestHook'
+    let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
 
     function! MyTestHook(status)
       echom a:status
     endfunction
 
-<  Default value: ''
+<  Default value: []
 
 *g:vimtex_latexmk_continuous*
   If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
@@ -838,7 +842,7 @@ Options~
             let g:vimtex_view_general_options = '-r @line @pdf'
 
             " This adds a callback hook that updates Skim after compilation
-            let g:vimtex_latexmk_callback_hook = 'UpdateSkim'
+            let g:vimtex_latexmk_callback_hooks = ['UpdateSkim']
             function! UpdateSkim(status)
               if !a:status | return | endif
 
@@ -1689,7 +1693,7 @@ with |VimtexErrors|.
 Associated settings:
     |g:vimtex_latexmk_enabled|
     |g:vimtex_latexmk_callback|
-    |g:vimtex_latexmk_callback_hook|
+    |g:vimtex_latexmk_callback_hooks|
     |g:vimtex_latexmk_autojump|
     |g:vimtex_latexmk_continuous|
     |g:vimtex_latexmk_background|
