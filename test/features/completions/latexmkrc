@@ -1,9 +1,9 @@
-add_cus_dep( 'glc', 'glb', 1, 'makeglc2glb' );
-add_cus_dep( 'syc', 'syb', 1, 'makesyc2syb' );
+add_cus_dep( 'gloss-glo', 'gloss-gls', 0, 'makegloss' );
+add_cus_dep( 'symbols-glo', 'symbols-gls', 0, 'makesymbols' );
 
-sub makeglc2glb {
-        system( "makeindex -s \"$_[0].ist\" -t \"$_[0].gla\" -o \"$_[0].glb\" \"$_[0].glc\"" );
+sub makegloss {
+        system( "makeindex -t \"$_[0].gloss-glg\" -s \"$_[0].ist\" -o \"$_[0].gloss-gls\" \"$_[0].gloss-glo\"" );
 }
-sub makesyc2syb {
-        system( "makeindex -s \"$_[0].ist\" -t \"$_[0].sya\" -o \"$_[0].syb\" \"$_[0].syc\"" );
+sub makesymbols {
+        system( "makeindex -t \"$_[0].symbols-glg\" -s \"$_[0].ist\" -o \"$_[0].symbols-gls\" \"$_[0].symbols-glo\"" );
 }
