@@ -109,8 +109,8 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Check for normal lines first (optimization)
   let line = getline(a:lnum)
-  if line !~# '^\s*%\|\\\%(document\|begin\|end\|'
-        \ . 'front\|main\|back\|app\|sub\|section\|chapter\|part\)'
+  if line !~# '\v^\s*%|\\%(document|begin|end|%(front|main|back)matter'
+        \ '|appendix|part|chapter|%(sub)*(section|paragraph))'
     return '='
   endif
 
@@ -225,9 +225,9 @@ function! vimtex#fold#text() " {{{1
   let nt = 73
 
   " Preamble, parts, sections, fakesections and comments
-  let sections = '\(\(sub\)*section\|part\|chapter\)'
-  let secpat1 = '^\s*\\' . sections . '\*\?\s*{'
-  let secpat2 = '^\s*\\' . sections . '\*\?\s*\['
+  let sections = '(%(sub)*%(section|paragraph)|part|chapter)'
+  let secpat1 = '\v^\s*\\' . sections . '\*?\s*\{'
+  let secpat2 = '\v^\s*\\' . sections . '\*?\s*\['
   if line =~# '\s*\\documentclass'
     let title = 'Preamble'
   elseif line =~# '\\frontmatter'
@@ -238,7 +238,7 @@ function! vimtex#fold#text() " {{{1
     let title = 'Backmatter'
   elseif line =~# '\\appendix'
     let title = 'Appendix'
-  elseif line =~# secpat1 . '.*}'
+  elseif line =~# secpat1 . '.*\}'
     let title = matchstr(line, secpat1 . '\zs.*\ze}')
   elseif line =~# secpat1
     let title = matchstr(line, secpat1 . '\zs.*')
@@ -246,8 +246,8 @@ function! vimtex#fold#text() " {{{1
     let title = matchstr(line, secpat2 . '\zs.*\ze\]')
   elseif line =~# secpat2
     let title = matchstr(line, secpat2 . '\zs.*')
-  elseif line =~# 'Fake' . sections
-    let title = matchstr(line, 'Fake' . sections . '.*')
+  elseif line =~# '\vFake' . sections
+    let title = matchstr(line, '\vFake' . sections . '.*')
   elseif line =~# '^\s*%'
     let title = matchstr(line, '^\s*\zs%.*')
   endif
