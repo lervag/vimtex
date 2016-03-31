@@ -396,7 +396,7 @@ endfunction
 " {{{1 Glossary
 
 let s:gls = {
-      \ 'patterns' : ['\v\\gls\s*\{[^}]*$'],
+      \ 'patterns' : ['\v\\(gls|Gls|GLS)(pl)?\s*\{[^}]*$'],
       \ 'enabled' : 1,
       \}
 
