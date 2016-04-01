@@ -50,7 +50,7 @@ function! vimtex#latexmk#init_script() " {{{1
   if g:vimtex_quickfix_fix_paths
     augroup vimtex_latexmk_fix_dirs
       au!
-      au QuickFixCmdPost c*file call s:fix_quickfix_paths()
+      au QuickFixCmdPre c*file call s:fix_quickfix_paths()
     augroup END
   endif
 endfunction
