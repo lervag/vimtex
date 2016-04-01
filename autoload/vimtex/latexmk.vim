@@ -524,7 +524,7 @@ function! s:latexmk_set_pid() " {{{1
     let pidinfo = split(system(pidcmd), '\n')[-1]
     let b:vimtex.pid = str2nr(split(pidinfo,'\s\+')[1])
   else
-    let b:vimtex.pid = str2nr(system('pgrep -nf "^perl.*latexmk"')[:-2])
+    let b:vimtex.pid = str2nr(system('pgrep -nf "perl.*latexmk"')[:-2])
   endif
 endfunction
 
