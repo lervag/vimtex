@@ -109,8 +109,8 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Check for normal lines first (optimization)
   let line = getline(a:lnum)
-  if line !~# '\v^\s*%|\\%(document|begin|end|%(front|main|back)matter'
-        \ '|appendix|part|chapter|%(sub)*(section|paragraph))'
+  if line !~# '\v^\s*\%|\\%(document|begin|end|%(front|main|back)matter'
+          \ . '|appendix|part|chapter|%(sub)*%(section|paragraph))'
     return '='
   endif
 
