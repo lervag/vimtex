@@ -411,9 +411,7 @@ function! s:latexmk_build_cmd() " {{{1
     endif
   endif
 
-  let cmd .= ' -verbose -pdf'
-  let cmd .= ' -pdflatex="pdflatex --interaction=nonstopmode" '
-  let cmd .= g:vimtex_latexmk_options
+  let cmd .= ' -verbose -pdf ' . g:vimtex_latexmk_options
 
   if g:vimtex_latexmk_file_line_error
     let cmd .= ' -e ' . vimtex#util#shellescape(
