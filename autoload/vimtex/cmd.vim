@@ -159,7 +159,17 @@ function! s:get_cmd(direction) " {{{1
         \ 'name' : match,
         \ 'pos_start' : { 'lnum' : lnum, 'cnum' : cnum },
         \ 'pos_end' : { 'lnum' : lnum, 'cnum' : cnum + strlen(match) - 1 },
+        \ 'args' : [],
         \}
+
+  " Environments always start with environment name and allows option
+  " afterwords
+  if res.name ==# '\begin'
+    let arg = s:get_cmd_part('{', res.pos_end)
+    call add(res.args, arg)
+    let res.pos_end.lnum = arg.close.lnum
+    let res.pos_end.cnum = arg.close.cnum
+  endif
 
   " Get options
   let res.opt = s:get_cmd_part('[', res.pos_end)
@@ -170,7 +180,6 @@ function! s:get_cmd(direction) " {{{1
 
   " Get arguments
   let arg = s:get_cmd_part('{', res.pos_end)
-  let res.args = []
   while !empty(arg)
     call add(res.args, arg)
     let res.pos_end.lnum = arg.close.lnum
