@@ -18,19 +18,20 @@ endfunction
 function! vimtex#text_obj#init_buffer() " {{{1
   if !g:vimtex_text_obj_enabled | return | endif
 
-  for [l:map, l:name] in [
-        \ ['c', 'commands'],
-        \ ['d', 'delimiters'],
-        \ ['e', 'environments'],
-        \ ['$', 'inline_math'],
-        \ ['p', 'paragraphs'],
+  for [l:map, l:name, l:opt] in [
+        \ ['c', 'commands', ''],
+        \ ['d', 'delimited', 'delim_all'],
+        \ ['e', 'delimited', 'env'],
+        \ ['$', 'delimited', 'env_math'],
+        \ ['p', 'paragraphs', ''],
         \]
     let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
     let l:p2 = l:map . ') :<c-u>call vimtex#text_obj#' . l:name
-    execute 'x' . l:p1 . 'i' . l:p2 . '(1)<cr>'
-    execute 'x' . l:p1 . 'a' . l:p2 . '(0)<cr>'
-    execute 'o' . l:p1 . 'i' . l:p2 . '(1)<cr>'
-    execute 'o' . l:p1 . 'a' . l:p2 . '(0)<cr>'
+    let l:p3 = empty(l:opt) ? ')<cr>' : ',''' . l:opt . ''')<cr>'
+    execute 'x' . l:p1 . 'i' . l:p2 . '(1' . l:p3
+    execute 'x' . l:p1 . 'a' . l:p2 . '(0' . l:p3
+    execute 'o' . l:p1 . 'i' . l:p2 . '(1' . l:p3
+    execute 'o' . l:p1 . 'a' . l:p2 . '(0' . l:p3
   endfor
 endfunction
 
@@ -55,59 +56,23 @@ function! vimtex#text_obj#commands(is_inner) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#text_obj#delimiters(is_inner) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_all')
-  if empty(l:open) | return | endif
-  call s:text_obj_delim(l:open, l:close, a:is_inner)
-endfunction
-
-" }}}1
-function! vimtex#text_obj#environments(is_inner) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+function! vimtex#text_obj#delimited(is_inner, type) " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
-  " Fix for extra arguments to environments, e.g.
-  "
-  "   \begin{frame}[asd]{title} ...
-  "
-  let l:open.match .= matchstr(join(getline(l:open.lnum, l:close.lnum), ''),
-        \                      '^\v%(\s*\{[^}]*\})*',
-        \                      l:open.cnum + strlen(l:open.match) - 1)
-
-  call s:text_obj_delim(l:open, l:close, a:is_inner)
-endfunction
-
-" }}}1
-function! vimtex#text_obj#inline_math(is_inner) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
-  if empty(l:open) | return | endif
-  call s:text_obj_delim(l:open, l:close, a:is_inner)
-endfunction
-" }}}1
-function! vimtex#text_obj#paragraphs(is_inner) " {{{1
-  " Define selection
-  normal! 0j
-  call vimtex#motion#next_paragraph(1,0)
-  normal! jV
-  call vimtex#motion#next_paragraph(0,0)
-
-  " Go back one line for inner objects
-  if a:is_inner
-    normal! k
-  endif
-endfunction
-
-" }}}1
-
-function! s:text_obj_delim(open, close, is_inner) " {{{1
-  let [l1, c1, l2, c2] = [a:open.lnum, a:open.cnum, a:close.lnum, a:close.cnum]
+  let [l1, c1, l2, c2] = [l:open.lnum, l:open.cnum, l:close.lnum, l:close.cnum]
 
   " Determine if operator is linewise
   let l:linewise = index(g:vimtex_text_obj_linewise_operators, v:operator) >= 0
 
   " Adjust the borders
   if a:is_inner
-    let c1 += len(a:open.match)
+    if has_key(l:open, 'env_cmd') && !empty(l:open.env_cmd)
+      let l1 = l:open.env_cmd.pos_end.lnum
+      let c1 = l:open.env_cmd.pos_end.cnum+1
+    else
+      let c1 += len(l:open.match)
+    endif
     let c2 -= 1
 
     let l:is_inline = (l2 - l1) > 1
@@ -128,7 +93,7 @@ function! s:text_obj_delim(open, close, is_inner) " {{{1
       let c2 = len(getline(l2)) + 1
     endif
   else
-    let c2 += len(a:close.match) - 1
+    let c2 += len(l:close.match) - 1
 
     let l:is_inline = (l2 - l1) > 1
           \ && match(strpart(getline(l1), 0, c1-1), '^\s*$') >= 0
@@ -145,6 +110,21 @@ function! s:text_obj_delim(open, close, is_inner) " {{{1
   normal! o
   call cursor(l2, c2)
 endfunction
+
+" }}}1
+function! vimtex#text_obj#paragraphs(is_inner) " {{{1
+  " Define selection
+  normal! 0j
+  call vimtex#motion#next_paragraph(1,0)
+  normal! jV
+  call vimtex#motion#next_paragraph(0,0)
+
+  " Go back one line for inner objects
+  if a:is_inner
+    normal! k
+  endif
+endfunction
+
 " }}}1
 
 " vim: fdm=marker sw=2
