@@ -239,9 +239,11 @@ function! s:text_between(p1, p2, ...) " {{{1
   let [l2, c2] = [a:p2.lnum, a:p2.cnum - (a:0 <= 0)]
 
   let lines = getline(l1, l2)
-  let lines[0] = strpart(lines[0], c1)
-  let lines[-1] = strpart(lines[-1], 0,
-        \ l1 == l2 ? c2 - c1 : c2)
+  if !empty(lines)
+    let lines[0] = strpart(lines[0], c1)
+    let lines[-1] = strpart(lines[-1], 0,
+          \ l1 == l2 ? c2 - c1 : c2)
+  endif
   return join(lines, '')
 endfunction
 
