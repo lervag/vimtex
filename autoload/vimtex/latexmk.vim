@@ -430,14 +430,12 @@ function! s:latexmk_build_cmd() " {{{1
   endif
 
   if g:vimtex_latexmk_callback && exists('v:servername')
-    let success  = '\"' . g:vimtex_latexmk_progname . '\"'
-    let success .= ' --servername ' . v:servername
-    let success .= ' --remote-expr \"vimtex\#latexmk\#callback(1)\"'
-    let failed   = '\"' . g:vimtex_latexmk_progname . '\"'
-    let failed  .= ' --servername ' . v:servername
-    let failed  .= ' --remote-expr \"vimtex\#latexmk\#callback(0)\"'
-    let cmd .= vimtex#latexmk#add_option('success_cmd', success)
-    let cmd .= vimtex#latexmk#add_option('failure_cmd', failed)
+    let l:cb = shellescape('""') . g:vimtex_latexmk_progname . shellescape('""')
+          \ . ' --servername ' . v:servername
+    let cmd .= vimtex#latexmk#add_option('success_cmd',
+          \ l:cb . ' --remote-expr \"vimtex\#latexmk\#callback(1)\"')
+    let cmd .= vimtex#latexmk#add_option('failure_cmd',
+          \ l:cb . ' --remote-expr \"vimtex\#latexmk\#callback(0)\"')
     let s:first_callback = 1
   endif
 
