@@ -22,7 +22,7 @@ function! vimtex#delim#init_script() " {{{1
         \   ['begin', 'end'],
         \  ],
         \ 're' : [
-        \   ['\\begin\s*{[^}]*}\%(\s*\[[^]]*\]\)\?', '\\end\s*{[^}]*}'],
+        \   ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
         \  ],
         \}
 
@@ -404,12 +404,20 @@ function! vimtex#delim#get_matching(delim) " {{{1
   let l:matching.corr  = a:delim.match
   let l:matching.side = a:delim.is_open ? 'close' : 'open'
   let l:matching.is_open = !a:delim.is_open
+
   if l:matching.type ==# 'delim'
     let l:matching.corr_delim = a:delim.delim
     let l:matching.corr_mod = a:delim.mod
     let l:matching.delim = a:delim.corr_delim
     let l:matching.mod = a:delim.corr_mod
+  elseif l:matching.type ==# 'env' && has_key(l:matching, 'name')
+    if l:matching.is_open
+      let l:matching.env_cmd = vimtex#cmd#get_at(l:lnum, l:cnum)
+    else
+      unlet l:matching.env_cmd
+    endif
   endif
+
   return l:matching
 endfunction
 
@@ -519,14 +527,16 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
   let result.is_open = result.side ==# 'open'
   let result.get_matching = function('s:get_matching_env')
 
+  if result.is_open
+    let result.env_cmd = vimtex#cmd#get_at(a:lnum, a:cnum)
+  endif
+
   let result.corr = result.is_open
-        \ ? substitute(
-        \     substitute(a:match, 'begin', 'end', ''),
-        \     '\%(\s*\[[^]]*\]\)\?$', '', '')
+        \ ? substitute(a:match, 'begin', 'end', '')
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\\begin\s*{' . result.name . '\*\?}\%(\s*\[[^]]*\]\)\?',
+        \ 'open' : '\\begin\s*{' . result.name . '\*\?}',
         \ 'close' : '\\end\s*{' . result.name . '\*\?}',
         \}
 
