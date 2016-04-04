@@ -141,6 +141,15 @@ function! vimtex#cmd#get_current() " {{{1
 endfunction
 
 " }}}1
+function! vimtex#cmd#get_at(lnum, cnum) " {{{1
+  let l:pos_saved = getpos('.')
+  call setpos('.', [0, a:lnum, a:cnum, 0])
+  let l:cmd = vimtex#cmd#get_current()
+  call setpos('.', l:pos_saved)
+  return l:cmd
+endfunction
+
+" }}}1
 
 function! s:get_cmd(direction) " {{{1
   let [lnum, cnum, match] = s:get_cmd_name(a:direction ==# 'next')
