@@ -210,8 +210,10 @@ function! s:bib.find_bibs() dict " {{{2
   " * This also removes the .bib extensions
   "
   "
-  let l:lines = vimtex#parser#tex(b:vimtex.tex, 0,
-        \ g:vimtex_complete_recursive_bib)
+  let l:lines = vimtex#parser#tex(b:vimtex.tex, {
+        \ 'detailed' : 0,
+        \ 'recursive' : g:vimtex_complete_recursive_bib,
+        \ })
 
   let l:bibfiles = []
   for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
@@ -407,8 +409,11 @@ endfunction
 function! s:gls.parse_glossaries() dict " {{{2
   let self.candidates = []
 
-  for l:line in filter(vimtex#parser#tex(b:vimtex.tex, 0),
-        \ 'v:val =~# ''\\newglossaryentry''')
+  for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
+        \   'detailed' : 0,
+        \   'input_re' :
+        \     '\v^\s*\\%(input|include|subimport|subfile|loadglsentries)\s*\{',
+        \ }), 'v:val =~# ''\\newglossaryentry''')
     let l:entries = matchstr(l:line, '\\newglossaryentry\s*{\zs[^{}]*')
     call add(self.candidates, {
           \ 'word' : l:entries,

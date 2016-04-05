@@ -9,7 +9,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#init_script() " {{{1
-  let s:input_line_tex = '\v^\s*\\%(input|include|subimport|subfile|loadglsentries)\s*\{'
+  let s:input_line_tex = '\v^\s*\\%(input|include|subimport|subfile)\s*\{'
   let s:input_line_aux = '\\@input{'
 endfunction
 
@@ -30,20 +30,22 @@ function! vimtex#parser#tex(file, ...) " {{{1
     return []
   endif
 
-  return s:parser(a:file, {
-        \ 'detailed' : a:0 > 0 ? a:1 : 1,
-        \ 'input_re' : s:input_line_tex,
-        \ 'input_parser' : 's:input_line_parser_tex',
-        \ })
+  return s:parser(a:file, extend({
+        \   'detailed' : 1,
+        \   'input_re' : s:input_line_tex,
+        \   'input_parser' : 's:input_line_parser_tex',
+        \ },
+        \ a:0 > 0 ? a:1 : {}))
 endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
-  return s:parser(a:file, {
-        \ 'detailed' : a:0 > 0 ? a:1 : 0,
-        \ 'input_re' : s:input_line_aux,
-        \ 'input_parser' : 's:input_line_parser_aux',
-        \ })
+  return s:parser(a:file, extend({
+        \   'detailed' : 0,
+        \   'input_re' : s:input_line_aux,
+        \   'input_parser' : 's:input_line_parser_aux',
+        \ },
+        \ a:0 > 0 ? a:1 : {}))
 endfunction
 
 " }}}1
@@ -92,7 +94,7 @@ function! s:parser(file, opts) " {{{1
     endif
 
     if l:line =~# a:opts.input_re
-      let l:file = call(a:opts.input_parser, [l:line, a:file])
+      let l:file = call(a:opts.input_parser, [l:line, a:file, a:opts.input_re])
       call extend(l:parsed, s:parser(l:file, a:opts))
       continue
     endif
@@ -112,7 +114,7 @@ endfunction
 "
 " Input line parsers
 "
-function! s:input_line_parser_tex(line, file) " {{{1
+function! s:input_line_parser_tex(line, file, re) " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
@@ -122,7 +124,7 @@ function! s:input_line_parser_tex(line, file) " {{{1
   endif
 
   " Parse file name
-  let l:file = matchstr(l:file, s:input_line_tex . '\zs[^\}]+\ze}')
+  let l:file = matchstr(l:file, a:re . '\zs[^\}]+\ze}')
 
   " Trim whitespaces and quotes from beginning/end of string
   let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
@@ -143,8 +145,8 @@ function! s:input_line_parser_tex(line, file) " {{{1
 endfunction
 
 " }}}1
-function! s:input_line_parser_aux(line, file) " {{{1
-  let l:file = matchstr(a:line, s:input_line_aux . '\zs[^}]\+\ze}')
+function! s:input_line_parser_aux(line, file, re) " {{{1
+  let l:file = matchstr(a:line, a:re . '\zs[^}]\+\ze}')
 
   " Remove extension to simplify the parsing (e.g. for "my file name".aux)
   let l:file = substitute(l:file, '\.aux', '', '')
