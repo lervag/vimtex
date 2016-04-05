@@ -1,4 +1,4 @@
-Before (Set indent options):
+Execute (Setup):
   set shiftwidth=2
 
 Given tex (Indent regular tex):

@@ -1,5 +1,5 @@
 Execute (Setup):
-  set tw=79
+  set textwidth=79
   let g:vimtex_format_enabled = 1
 
 Given tex (Format inline comment):
