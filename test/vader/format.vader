@@ -1,0 +1,22 @@
+Execute (Setup):
+  set tw=79
+  let g:vimtex_format_enabled = 1
+
+Given tex (Format inline comment):
+  Lorem ipsum dolor sit amet, consetetur sadipscing % a comment
+  elitr, sed diam
+  nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+  sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+  rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+  ipsum dolor sit amet.
+
+Do:
+  gqG
+
+Expect tex:
+  Lorem ipsum dolor sit amet, consetetur sadipscing % a comment
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+  dolor sit amet.
+
