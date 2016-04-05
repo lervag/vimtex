@@ -23,13 +23,6 @@ endfunction
 " Define tex and aux parsers
 "
 function! vimtex#parser#tex(file, ...) " {{{1
-  if a:file ==# ''
-    return []
-  elseif !filereadable(a:file)
-    echoerr 'File not readable: ' . a:file
-    return []
-  endif
-
   return s:parser(a:file, extend({
         \   'detailed' : 1,
         \   'input_re' : s:input_line_tex,
