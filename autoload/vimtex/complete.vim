@@ -17,7 +17,7 @@ endfunction
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  let s:completers = [s:bib, s:ref, s:img, s:inc, s:pdf, s:gls]
+  let s:completers = [s:bib, s:ref, s:img, s:inc, s:pdf, s:sta, s:gls]
 endfunction
 
 " }}}1
@@ -410,6 +410,27 @@ function! s:pdf.complete(regex) dict " {{{2
         \ ''word'' : v:val,
         \ ''abbr'' : v:val,
         \ ''menu'' : '' [includepdf]'',
+        \}')
+  return self.candidates
+endfunction
+
+" }}}1
+" {{{1 Filenames (\includestandalone)
+
+let s:sta = {
+      \ 'patterns' : ['\v\\includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'enabled' : 1,
+      \}
+
+function! s:sta.complete(regex) dict " {{{2
+  let self.candidates = substitute(globpath(b:vimtex.root, '**/*.tex'), '\.tex', '', 'g')
+  let self.candidates = split(self.candidates, '\n')
+  let self.candidates = map(self.candidates,
+        \ 'strpart(v:val, len(b:vimtex.root)+1)')
+  let self.candidates = map(self.candidates, '{
+        \ ''word'' : v:val,
+        \ ''abbr'' : v:val,
+        \ ''menu'' : '' [includestandalone]'',
         \}')
   return self.candidates
 endfunction
