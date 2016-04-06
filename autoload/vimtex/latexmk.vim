@@ -15,7 +15,6 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_file_line_error', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
@@ -411,11 +410,8 @@ function! s:latexmk_build_cmd() " {{{1
     endif
   endif
 
-  let cmd .= ' -verbose -pdf ' . g:vimtex_latexmk_options
-
-  if g:vimtex_latexmk_file_line_error
-    let cmd .= ' -file-line-error '
-  endif
+  let cmd .= ' -verbose -pdf -file-line-error '
+  let cmd .= g:vimtex_latexmk_options
 
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir

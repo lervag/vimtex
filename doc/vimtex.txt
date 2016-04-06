@@ -667,13 +667,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_latexmk_file_line_error*
-  If enabled, |vimtex| will append the `-file-line-error` argument to `latexmk`.
-  This will help when parsing the log for errors and warnings, and should be
-  turned on in most cases.
-
-  Default value: 1
-
 *g:vimtex_latexmk_background*
   If continuous mode is disabled, then this option may be used to set
   whether single shot compilations should be run in the foreground or the
