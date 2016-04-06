@@ -414,8 +414,7 @@ function! s:latexmk_build_cmd() " {{{1
   let cmd .= ' -verbose -pdf ' . g:vimtex_latexmk_options
 
   if g:vimtex_latexmk_file_line_error
-    let cmd .= ' -e ' . vimtex#util#shellescape(
-          \ '$pdflatex =~ s/ / -file-line-error /')
+    let cmd .= ' -file-line-error '
   endif
 
   if g:vimtex_latexmk_build_dir !=# ''
