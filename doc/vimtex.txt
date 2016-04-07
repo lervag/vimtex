@@ -65,6 +65,7 @@ CONTENTS                                                      *vimtex-contents*
     Backward search                             |vimtex-synctex-backward-search|
   Code structure                                |vimtex-code|
   FAQ                                           |vimtex-faq|
+  Troubleshooting                               |vimtex-troubleshooting|
   Credits                                       |vimtex-credits|
   Changelog                                     |vimtex-changelog|
 
@@ -1888,6 +1889,48 @@ A: This is not a feature provided by |vimtex| itself, but vim has very good
    [0]: http://stackoverflow.com/q/8119405/51634
    [1]: https://github.com/lervag/vimtex/issues/348
    [2]: https://github.com/ludovicchabant/vim-gutentags
+
+==============================================================================
+Troubleshooting                                       *vimtex-troubleshooting*
+
+With different operating systems and different plugin configurations, there
+are a few things that must be considered for system interoperability. A number
+of common problems and suggested solutions are included in the following
+troubleshooting section.
+
+Problem: Upon starting continuous compilation the status bar indicates
+   'latexmk compile: started continuous mode' but compilation never terminates
+   and the quickfix window does not load.
+
+Tips:
+1. Ensure that a latexmk process and a Perl process have started. If they have
+   not been started, then these two programs may not accessible given your
+   operating system's PATH environment variable.
+2. On Windows, some releases of Perl have been known to not trigger callbacks
+   upon successful/failed compilation. It is highly suggested to install a
+   dedicated Perl distribution (e.g. Strawberry Perl). See
+   https://github.com/lervag/vimtex/issues/378 for more information.
+
+Problem: In Windows, environment text object commands, like `:vae` and `:vie`, do not
+select the entire body of the environment. As examples: 1) `:dae` and 2) `:die` on
+the following text snippet would result in  :
+
+1) '}'
+
+and
+
+2) '\begin{someenv}
+      t
+   \end{someenv}'
+
+Solution: It seems that vim for Windows comes with some options set by default
+in the vimrc file. One of these has been reported to be `:behave mswin` which,
+among other things, sets the selection option to 'exclusive', i.e. `set
+selection=exclusive'. This can be ameliorated by pursuing one of two options:
+1) Add `:behave xterm` to your vimrc file.
+2) Add `:set selection=inclusive` to your vimrc file.
+
+See https://github.com/lervag/vimtex/issues/408 and |behave| for more options.
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
