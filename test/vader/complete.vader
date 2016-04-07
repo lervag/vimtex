@@ -1,38 +1,30 @@
-Execute (Prepare completion tests):
-  call mkdir('testdir')
-  call system('touch testdir/fig_1.tex')
-  call system('touch testdir/fig_2.tex')
-  call system('touch testdir/fig_1.pdf')
-  call system('touch testdir/fig_2.pdf')
-  call system('touch testdir/fig_3.pdf')
+Execute (Setup):
+  call system('touch fig_1.tex')
+  call system('touch fig_2.tex')
+  call system('touch fig_1.pdf')
+  call system('touch fig_2.pdf')
+  call system('touch fig_3.pdf')
 
-Before:
-  w! testdir/test.tex
-  silent e! testdir/test.tex
-  setf tex
+Given tex (Completion: \includestandalone):
+  \includestandalone{
 
-After:
-  w!
-  bd! testdir/test.tex
+Do (Complete):
+  A\<c-x>\<c-o>\<c-n>}
 
-Do (Completion: \includestandalone):
-  i\includestandalone{\<c-x>\<c-o>\<c-n>}
+Expect tex (Verify):
+  \includestandalone{fig_2}
 
-Then (Assert):
-  AssertEqual
-    \ '\includestandalone{fig_2}',
-    \ readfile('testdir/test.tex')[-1]
+Given tex (Completion: \includepdf):
+  \includepdf{
 
-Do (Completion: \includepdf):
-  i\includepdf{\<c-x>\<c-o>\<c-p>\<c-p>}
+Do (Complete):
+  A\<c-x>\<c-o>\<c-p>\<c-p>}
 
-Then (Assert):
-  AssertEqual
-    \ '\includepdf{fig_3.pdf}',
-    \ readfile('testdir/test.tex')[-1]
+Expect tex (Verify):
+  \includepdf{fig_3.pdf}
 
-Before:
-After:
+Given:
 Execute (Cleanup):
-  call system('rm -rf testdir')
+  call system('rm -f fig*tex')
+  call system('rm -f fig*pdf')
 
