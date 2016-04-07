@@ -1,5 +1,5 @@
 let &rtp = '../../,' . &rtp
 let &rtp .= ',../../after'
-let &rtp .= ',vader.vim'
+let &rtp .= isdirectory('vader.vim') ? ',vader.vim' : ',../../../vader.vim'
 filetype plugin indent on
 syntax enable
