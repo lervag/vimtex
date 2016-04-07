@@ -1,20 +1,51 @@
 Execute (Setup):
+=================================================================================
   call system('touch fig_1.tex')
   call system('touch fig_2.tex')
   call system('touch fig_1.pdf')
   call system('touch fig_2.pdf')
   call system('touch fig_3.pdf')
+  call system('touch fig_a.png')
+  call system('touch fig_b.png')
+  call system('touch fig_c.png')
+  call system('touch preamble.tex')
+  call system('touch chapter.tex')
+  call system('touch section.tex')
 
-Given tex (Completion: \includestandalone):
-  \includestandalone{
+Given tex (Completion: \includegraphics):
+=================================================================================
+  \includegraphics{
+  \includegraphics[scale=0.5]{
+  \includegraphics[100,100][300,300]{
 
 Do (Complete):
-  A\<c-x>\<c-o>\<c-n>}
+  A\<c-x>\<c-o>\<c-n>}\<esc>
+  jA\<c-x>\<c-o>\<c-n>\<c-n>}\<esc>
+  jA\<c-x>\<c-o>\<c-n>\<c-n>\<c-n>}
 
 Expect tex (Verify):
-  \includestandalone{fig_2}
+  \includegraphics{fig_b.png}
+  \includegraphics[scale=0.5]{fig_c.png}
+  \includegraphics[100,100][300,300]{fig_1.pdf}
+
+Given tex (Completion: \include and \input):
+=================================================================================
+  \input {
+  \includeonly{
+  \include{
+
+Do (Complete):
+  A\<c-x>\<c-o>\<c-o>\<c-o>\<c-o>}\<esc>
+  jA\<c-x>\<c-o>,\<c-x>\<c-o>\<c-o>\<c-o>\<c-o>\<c-o>}\<esc>
+  jA\<c-x>\<c-o>\<c-p>\<c-p>}
+
+Expect tex (Verify):
+  \input {preamble.tex}
+  \includeonly{chapter.tex,section.tex}
+  \include{section.tex}
 
 Given tex (Completion: \includepdf):
+=================================================================================
   \includepdf{
 
 Do (Complete):
@@ -23,8 +54,20 @@ Do (Complete):
 Expect tex (Verify):
   \includepdf{fig_3.pdf}
 
+Given tex (Completion: \includestandalone):
+=================================================================================
+  \includestandalone{
+
+Do (Complete):
+  A\<c-x>\<c-o>\<c-n>}
+
+Expect tex (Verify):
+  \includestandalone{fig_1}
+
 Given:
 Execute (Cleanup):
+=================================================================================
   call system('rm -f fig*tex')
   call system('rm -f fig*pdf')
+  call system('rm -f fig*png')
 
