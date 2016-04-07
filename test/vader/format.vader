@@ -3,7 +3,7 @@ Execute (Setup):
   let g:vimtex_format_enabled = 1
   silent! VimtexReload
 
-Given tex (Format inline comment):
+Given tex (Format: Inline comment):
   Lorem ipsum dolor sit amet, consetetur sadipscing % a comment
   elitr, sed diam
   nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
@@ -11,10 +11,10 @@ Given tex (Format inline comment):
   rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
   ipsum dolor sit amet.
 
-Do:
+Do (Format text):
   gqG
 
-Expect tex:
+Expect tex (Verify):
   Lorem ipsum dolor sit amet, consetetur sadipscing % a comment
   elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
   aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores

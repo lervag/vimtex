@@ -1,7 +1,7 @@
 Execute (Setup):
   set shiftwidth=2
 
-Given tex (Indent regular tex):
+Given tex (Indent: regular tex):
   \documentclass{minimal}
   \usepackage{amsmath}
   \usepackage{tikz}
@@ -13,10 +13,10 @@ Given tex (Indent regular tex):
 
     \end{document}
 
-Do:
+Do (Indent):
   gg=G
 
-Expect tex:
+Expect tex (Verify):
   \documentclass{minimal}
   \usepackage{amsmath}
   \usepackage{tikz}
@@ -28,7 +28,7 @@ Expect tex:
 
   \end{document}
 
-Given tex (Indent lists):
+Given tex (Indent: lists):
   \begin{itemize}
   \item item is indented twice
         and the next line is indented to match
@@ -41,10 +41,10 @@ Given tex (Indent lists):
     (Author): commentaries here
   \end{description}
 
-Do:
+Do (Indent):
   gg=G
 
-Expect tex:
+Expect tex (Verify):
   \begin{itemize}
     \item item is indented twice
       and the next line is indented to match
@@ -57,7 +57,7 @@ Expect tex:
       (Author): commentaries here
   \end{description}
 
-Given tex (Indent math):
+Given tex (Indent: math):
       \[
     1+1
         \]
@@ -75,10 +75,10 @@ Given tex (Indent math):
   \right.
   \end{equation}
 
-Do:
+Do (Indent):
   gg=G
 
-Expect tex:
+Expect tex (Verify):
   \[
     1+1
   \]
@@ -96,7 +96,7 @@ Expect tex:
     \right.
   \end{equation}
 
-Given tex (Indent tikz):
+Given tex (Indent: tikz):
   \tikz \fill[green] rectangle (0.5,0.5); Something
       about something.
 
@@ -119,10 +119,10 @@ Given tex (Indent tikz):
         node [yshift=-.25cm] {(ii)};
        \end{tikzpicture}
 
-Do:
+Do (Indent):
   gg=G
 
-Expect tex:
+Expect tex (Verify):
   \tikz \fill[green] rectangle (0.5,0.5); Something
   about something.
 
@@ -145,7 +145,7 @@ Expect tex:
       node [yshift=-.25cm] {(ii)};
   \end{tikzpicture}
 
-Given tex (Indent verbatims):
+Given tex (Indent: verbatims):
     \begin{verbatim}
   #!/bin/bash
   echo "test"
@@ -157,10 +157,10 @@ Given tex (Indent verbatims):
       not affect verbatim environments!
       \end{lstlisting}
 
-Do:
+Do (Indent):
   gg=G
 
-Expect tex:
+Expect tex (Verify):
   \begin{verbatim}
   #!/bin/bash
   echo "test"

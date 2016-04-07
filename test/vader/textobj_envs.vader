@@ -1,4 +1,4 @@
-Given tex (Complex environment):
+Given tex (Define complex environment):
   \begin{complexenvironment}[option1,
     option2]{first extra argument}
     {second extra
@@ -6,19 +6,19 @@ Given tex (Complex environment):
     Hello world!
   \end{complexenvironment}
 
-Do (Delete inner):
+Do (Delete environment (excluding)):
   die
 
-Expect tex (Inner deleted):
+Expect tex (Verify):
   \begin{complexenvironment}[option1,
     option2]{first extra argument}
     {second extra
     argument}
   \end{complexenvironment}
 
-Do (Delete outer):
+Do (Delete environment (including)):
   dae
 
-Expect tex (Outer deleted):
+Expect tex (Verify):
   
 
