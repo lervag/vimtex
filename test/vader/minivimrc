@@ -1,13 +1,5 @@
-set nocompatible
 let &rtp = '../../,' . &rtp
 let &rtp .= ',../../after'
 let &rtp .= ',vader.vim'
 filetype plugin indent on
 syntax enable
-
-if has('gui_running')
-  set lines=56
-  set guioptions=aeci
-endif
-
-inoremap jk <esc>

@@ -1,0 +1,38 @@
+Execute (Prepare completion tests):
+  call mkdir('testdir')
+  call system('touch testdir/fig_1.tex')
+  call system('touch testdir/fig_2.tex')
+  call system('touch testdir/fig_1.pdf')
+  call system('touch testdir/fig_2.pdf')
+  call system('touch testdir/fig_3.pdf')
+
+Before:
+  w testdir/test.tex
+  silent e testdir/test.tex
+  setf tex
+
+After:
+  w
+  bd! testdir/test.tex
+
+Do (Completion: \includestandalone):
+  i\includestandalone{\<c-x>\<c-o>\<c-n>}
+
+Then (Assert):
+  AssertEqual
+    \ '\includestandalone{fig_2}',
+    \ readfile('testdir/test.tex')[-1]
+
+Do (Completion: \includepdf):
+  i\includepdf{\<c-x>\<c-o>\<c-p>\<c-p>}
+
+Then (Assert):
+  AssertEqual
+    \ '\includepdf{fig_3.pdf}',
+    \ readfile('testdir/test.tex')[-1]
+
+Before:
+After:
+Execute (Cleanup):
+  call system('rm -rf testdir')
+

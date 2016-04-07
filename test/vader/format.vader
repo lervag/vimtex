@@ -1,6 +1,7 @@
 Execute (Setup):
   set textwidth=79
   let g:vimtex_format_enabled = 1
+  silent! VimtexReload
 
 Given tex (Format inline comment):
   Lorem ipsum dolor sit amet, consetetur sadipscing % a comment
