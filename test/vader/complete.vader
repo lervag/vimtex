@@ -18,11 +18,6 @@ Given tex (Completion: \includegraphics):
   \includegraphics[scale=0.5]{
   \includegraphics[100,100][300,300]{
 
-Execute (Debug):
-  Log system('ls')
-  Log b:vimtex
-  Log &omnifunc
-
 Do (Complete):
   A\<c-x>\<c-o>\<c-n>}\<esc>
   jA\<c-x>\<c-o>\<c-n>\<c-n>}\<esc>
@@ -72,7 +67,8 @@ Expect tex (Verify):
 Given:
 Execute (Cleanup):
 =================================================================================
-  call system('rm -f fig*tex')
+  call system('rm -f *.tex')
   call system('rm -f fig*pdf')
+  call system('rm -f fig*png')
   call system('rm -f fig*png')
 

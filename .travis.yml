@@ -1,17 +1,9 @@
 language: ruby
 
-env:
-  global:
-    - DEPS=$HOME/deps
-    - PATH=$DEPS/bin:$PATH
-
-install: |
-  git clone --depth 1 https://github.com/vim/vim
-  cd vim
-  ./configure --prefix=$DEPS --with-features=huge
-  make
-  make install
-  cd -
+before_install: |
+  sudo add-apt-repository -y ppa:fcwu-tw/ppa
+  sudo apt-get update
+  sudo apt-get install -y vim
 
 before_script:
   git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
