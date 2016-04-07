@@ -7,12 +7,12 @@ Execute (Prepare completion tests):
   call system('touch testdir/fig_3.pdf')
 
 Before:
-  w testdir/test.tex
-  silent e testdir/test.tex
+  w! testdir/test.tex
+  silent e! testdir/test.tex
   setf tex
 
 After:
-  w
+  w!
   bd! testdir/test.tex
 
 Do (Completion: \includestandalone):
