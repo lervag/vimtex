@@ -18,6 +18,11 @@ Given tex (Completion: \includegraphics):
   \includegraphics[scale=0.5]{
   \includegraphics[100,100][300,300]{
 
+Execute (Debug):
+  Log system('ls')
+  Log b:vimtex
+  Log &omnifunc
+
 Do (Complete):
   A\<c-x>\<c-o>\<c-n>}\<esc>
   jA\<c-x>\<c-o>\<c-n>\<c-n>}\<esc>

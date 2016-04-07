@@ -1,7 +1,5 @@
 language: ruby
 
-sudo: false
-
 env:
   global:
     - DEPS=$HOME/deps
