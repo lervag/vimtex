@@ -264,7 +264,7 @@ function! vimtex#delim#toggle_modifier(...) " {{{1
         \ : vimtex#delim#get_surrounding('delim_math')
   if empty(l:open) | return | endif
 
-  let newmods = []
+  let newmods = ['', '']
   let modlist = [['', '']] + g:vimtex_delim_toggle_mod_list
   let n = len(modlist)
   for i in range(n)

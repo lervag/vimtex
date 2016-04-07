@@ -1,0 +1,15 @@
+Given tex (Some complicated delimited math):
+  $\bigl(\begin{smallmatrix}
+    \Q^* &   \\
+         & 1 \\
+  \end{smallmatrix}\bigr)$
+
+Do (Toggle math delimiters):
+  3jtsd
+
+Expect tex (Toggled math delimiters):
+  $(\begin{smallmatrix}
+    \Q^* &   \\
+         & 1 \\
+  \end{smallmatrix})$
+
