@@ -42,8 +42,8 @@ CONTENTS                                                      *vimtex-contents*
     Insert mode mappings                        |vimtex-imaps|
     Events                                      |vimtex-events|
   Completion                                    |vimtex-completion|
-    Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
+    Complete labels                             |vimtex-complete-labels|
     Complete image file names                   |vimtex-complete-images|
     Complete input file names                   |vimtex-complete-input|
     Complete PDF file names                     |vimtex-complete-pdf|
@@ -1370,37 +1370,14 @@ If |g:vimtex_complete_enabled| is 1 (default), then |vimtex| sets the
 'omnifunc' to provide omni completion, see |compl-omni|.  Omni completion is
 then accessible with |i_CTRL-X_CTRL-O|.
 
-The omni completion completes labels, citations, and file names for figures.
-If desired, one may set |g:vimtex_complete_close_braces|, which makes the
-completion include closing braces.
+The omni completion completes citations, labels, glossary entries and
+filenames. If desired, one may set |g:vimtex_complete_close_braces|, which
+makes the completion include closing braces.
 
 Associated settings:
   |g:vimtex_complete_enabled|
   |g:vimtex_complete_close_braces|
   |g:vimtex_complete_recursive_bib|
-
-------------------------------------------------------------------------------
-Complete labels~
-                                                       *vimtex-complete-labels*
-
-Label completion is triggered by '\ref{' commands.  The completion parses every
-relevant aux file to gather the completion candidates.  This is important,
-because it means that the completion only works when the LaTeX document has
-been compiled.
-
-As an example: >
-
-        \ref{sec:<CTRL-X><CTRL-O>
-
-offers a list of all matching labels, with their associated value and page
-number.  The label completion matches:
-
-    1. labels: >
-        \ref{sec:<CTRL-X><CTRL-O>
-<    2. numbers: >
-        \eqref{2<CTRL-X><CTRL-O>
-<    3. labels and numbers together (separated by whitespace): >
-        \eqref{eq 2<CTRL-X><CTRL-O>
 
 ------------------------------------------------------------------------------
 Complete citations~
@@ -1429,6 +1406,29 @@ In particular, note that regular expressions (or vim patterns) can be used
 after '\cite{' to search for candidates.
 
 ------------------------------------------------------------------------------
+Complete labels~
+                                                       *vimtex-complete-labels*
+
+Label completion is triggered by '\ref{' commands.  The completion parses every
+relevant aux file to gather the completion candidates.  This is important,
+because it means that the completion only works when the LaTeX document has
+been compiled.
+
+As an example: >
+
+        \ref{sec:<CTRL-X><CTRL-O>
+
+offers a list of all matching labels, with their associated value and page
+number.  The label completion matches:
+
+    1. labels: >
+        \ref{sec:<CTRL-X><CTRL-O>
+<    2. numbers: >
+        \eqref{2<CTRL-X><CTRL-O>
+<    3. labels and numbers together (separated by whitespace): >
+        \eqref{eq 2<CTRL-X><CTRL-O>
+
+------------------------------------------------------------------------------
 Complete file names for figures~
                                                        *vimtex-complete-images*
 
@@ -1441,35 +1441,35 @@ complete only the tail part of file names. This is useful if one uses the
 
 ------------------------------------------------------------------------------
 Complete input/include tex files~
-                                                       *vimtex-complete-input*
+                                                        *vimtex-complete-input*
 
-File name completion for input/include files is triggered by '\input{' or
-'\include{' commands.
+File name completion for input/include files is triggered by '\input{',
+'\include{', or '\includeonly{' commands.
 
 ------------------------------------------------------------------------------
 Complete include PDF files~
-                                                         *vimtex-complete-pdf*
+                                                          *vimtex-complete-pdf*
 
 File name completion for PDF files offered by the `pdfpages` package is
 triggered by '\includepdf{' commands.
 
 ------------------------------------------------------------------------------
 Complete include standalone files~
-                                                  *vimtex-complete-standalone*
+                                                   *vimtex-complete-standalone*
 
 File name completion for standalone files offered by the package `standalone`
 is triggered by '\includepdf{' commands.
 
 ------------------------------------------------------------------------------
 Complete include glossary entries~
-                                                  *vimtex-complete-standalone*
+                                                   *vimtex-complete-standalone*
 
 Glossary entry completion from the `glossaries` package are triggered by the
 commands '\gls{', '\glspl{' and their variations.
 
 ------------------------------------------------------------------------------
 Autocomplete~
-                                                        *vimtex-complete-auto*
+                                                         *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
 two good plugins that provide this: |neocomplete| and |youcompleteme|.  Moreover,
@@ -1525,7 +1525,10 @@ To enable automatic completion with |youcompleteme|, use the following options: 
         \ 're!\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
         \ 're!\\hyperref\[[^]]*',
         \ 're!\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
-        \ 're!\\(include(only)?|input){[^}]*'
+        \ 're!\\(include(only)?|input){[^}]*',
+        \ 're!\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+        \ 're!\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
+        \ 're!\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
         \ ]
 <
 VimCompletesMe~
