@@ -40,7 +40,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     let l:pos  = col('.') - 1
     let l:line = getline('.')[:l:pos-1]
     for l:completer in s:completers
-      if !get(l:completer, 'enabled', 0) | return -3 | endif
+      if !get(l:completer, 'enabled', 1) | continue | endif
 
       for l:pattern in l:completer.patterns
         if l:line =~# l:pattern
@@ -72,7 +72,6 @@ endfunction
 
 let s:bib = {
       \ 'patterns' : ['\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
@@ -232,7 +231,6 @@ let s:ref = {
       \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
       \   '\\hyperref\s*\[[^]]*$'
       \ ],
-      \ 'enabled' : 1,
       \ 'cache' : {},
       \}
 
@@ -346,7 +344,6 @@ endfunction
 
 let s:img = {
       \ 'patterns' : ['\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \}
 
 function! s:img.complete(regex) dict " {{{2
@@ -379,7 +376,6 @@ endfunction
 
 let s:inc = {
       \ 'patterns' : ['\v\\%(include%(only)?|input)\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \}
 
 function! s:inc.complete(regex) dict " {{{2
@@ -399,7 +395,6 @@ endfunction
 
 let s:pdf = {
       \ 'patterns' : ['\v\\includepdf%(\s*\[[^]]*\])?\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \}
 
 function! s:pdf.complete(regex) dict " {{{2
@@ -419,7 +414,6 @@ endfunction
 
 let s:sta = {
       \ 'patterns' : ['\v\\includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \}
 
 function! s:sta.complete(regex) dict " {{{2
@@ -440,7 +434,6 @@ endfunction
 
 let s:gls = {
       \ 'patterns' : ['\v\\(gls|Gls|GLS)(pl)?\s*\{[^}]*$'],
-      \ 'enabled' : 1,
       \}
 
 function! s:gls.complete(regex) dict " {{{2
