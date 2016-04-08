@@ -1813,7 +1813,10 @@ the current position in the compiled pdf document (forward search), and also
 to go from a specific position in the pdf file to the corresponding position
 in vim (inverse/backward search).
 
-To make synctex work, one must enable synctex manually by adding the line >
+To make synctex work, it must be enabled. vimtex enables this by default by
+passing `-synctex=1` on the command line, unless the user sets the option
+|g:vimtex_latexmk_options| to a nonempty value. In the latter case, the user
+should ensure that the synctex flag is passed, e.g. by adding the line >
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
@@ -1949,9 +1952,9 @@ are a few things that must be considered for system interoperability. A number
 of common problems and suggested solutions are included in the following
 troubleshooting section.
 
-Problem: Upon starting continuous compilation the status bar indicates
-   'latexmk compile: started continuous mode' but compilation never terminates
-   and the quickfix window does not load.
+Problem: Upon starting continuous compilation the status bar indicates~
+   'latexmk compile: started continuous mode' but compilation never terminates~
+   and the quickfix window does not load.~
 
 Tips:
 1. Ensure that a latexmk process and a Perl process have started. If they have
@@ -1961,27 +1964,39 @@ Tips:
    upon successful/failed compilation. It is highly suggested to install a
    dedicated Perl distribution (e.g. Strawberry Perl). See
    https://github.com/lervag/vimtex/issues/378 for more information.
+3. Ensure that the option `-interaction=nonstopmode` is provided to latexmk.
+   This is done by default by vimtex, unless the user provides custom options
+   through |g:vimtex_latexmk_options|. In the latter case, the user must
+   ensure that the said option is also provided.
 
-Problem: In Windows, environment text object commands, like `:vae` and `:vie`, do not
-select the entire body of the environment. As examples: 1) `:dae` and 2) `:die` on
-the following text snippet would result in  :
+Problem: In Windows, environment text object commands, like `vae` and `vie`, do~
+  not select the entire body of the environment.~
 
-1) '}'
+  More specifically, given: >
 
-and
+    \begin{someenv}
+      some content
+    \end{someenv}
 
-2) '\begin{someenv}
+<  The command `dae` results in: >
+
+    }
+
+<  and `die` results in: >
+
+    \begin{someenv}
       t
-   \end{someenv}'
+    \end{someenv}
 
 Solution: It seems that vim for Windows comes with some options set by default
-in the vimrc file. One of these has been reported to be `:behave mswin` which,
-among other things, sets the selection option to 'exclusive', i.e. `set
-selection=exclusive'. This can be ameliorated by pursuing one of two options:
-1) Add `:behave xterm` to your vimrc file.
-2) Add `:set selection=inclusive` to your vimrc file.
+in the vimrc file. One of these has been reported to be `:behave mswin` (see
+|:behave)| which, among other things, sets the 'selection' option to
+"exclusive". This can be ameliorated by pursuing one of two options:
 
-See https://github.com/lervag/vimtex/issues/408 and |behave| for more options.
+  1) Add `:behave xterm` to your vimrc file.
+  2) Add `:set selection=inclusive` to your vimrc file.
+
+See also: https://github.com/lervag/vimtex/issues/408
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
