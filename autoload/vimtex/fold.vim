@@ -40,11 +40,13 @@ endfunction
 
 " }}}1
 function! vimtex#fold#init_buffer() " {{{1
+  " b:vimtex_fold is a dictionary used to store dynamic fold information
+  " Note: We define this even if folding is disabled, because people might want
+  "       to enable folding manually
+  let b:vimtex_fold = {}
+
   if !g:vimtex_fold_enabled | return | endif
   if s:foldmethod_in_modeline() | return | endif
-
-  " Initialize local work vars
-  let b:vimtex_fold = {}
 
   " Set fold options
   setlocal foldmethod=expr
