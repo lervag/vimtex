@@ -45,6 +45,10 @@ CONTENTS                                                      *vimtex-contents*
     Complete labels                             |vimtex-complete-labels|
     Complete citations                          |vimtex-complete-cites|
     Complete image file names                   |vimtex-complete-images|
+    Complete input file names                   |vimtex-complete-input|
+    Complete PDF file names                     |vimtex-complete-pdf|
+    Complete standalone file names              |vimtex-complete-standalone|
+    Complete glossary entries                   |vimtex-complete-glossary|
     Autocomplete                                |vimtex-complete-auto|
       Neocomplete                               |vimtex-complete-neocomplete|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
@@ -88,7 +92,7 @@ Feature overview~
   - `qpdfview`
   - `SumatraPDF`
   - Other viewers are supported through a general interface
-- Completion of citations, labels, and file names for figures
+- Completion of citations, labels, glossary entries and filenames
 - Document navigation through
   - table of content
   - table of labels
@@ -1436,15 +1440,36 @@ complete only the tail part of file names. This is useful if one uses the
 `graphicx` package and the `\graphicspath` command.
 
 ------------------------------------------------------------------------------
-Complete input/include files~
-                                                        *vimtex-complete-input*
+Complete input/include tex files~
+                                                       *vimtex-complete-input*
 
 File name completion for input/include files is triggered by '\input{' or
 '\include{' commands.
 
 ------------------------------------------------------------------------------
+Complete include PDF files~
+                                                         *vimtex-complete-pdf*
+
+File name completion for PDF files offered by the `pdfpages` package is
+triggered by '\includepdf{' commands.
+
+------------------------------------------------------------------------------
+Complete include standalone files~
+                                                  *vimtex-complete-standalone*
+
+File name completion for standalone files offered by the package `standalone`
+is triggered by '\includepdf{' commands.
+
+------------------------------------------------------------------------------
+Complete include glossary entries~
+                                                  *vimtex-complete-standalone*
+
+Glossary entry completion from the `glossaries` package are triggered by the
+commands '\gls{', '\glspl{' and their variations.
+
+------------------------------------------------------------------------------
 Autocomplete~
-                                                         *vimtex-complete-auto*
+                                                        *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
 two good plugins that provide this: |neocomplete| and |youcompleteme|.  Moreover,
@@ -1470,6 +1495,9 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
         \ . '|hyperref\s*\[[^]]*'
         \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
         \ . '|%(include%(only)?|input)\s*\{[^}]*'
+        \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+        \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
+        \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . ')'
 <
 YouCompleteMe~
