@@ -676,12 +676,25 @@ Options~
   Default value: 0
 
 *g:vimtex_latexmk_options*
-  A string of options that will be passed on to `latexmk`.
+  By default, |vimtex| passes the following options to `latexmk`: >
+
+     -pdf                     -- Compile to pdf documents
+     -verbose                 -- More verbose output
+     -file-line-error         -- Enable file:line:error style messages
+     -synctex=1               -- Generate synctex data
+     -interaction=nonstopmode -- Disable interactive mode
+
+<  However, if `g:vimtex_latexmk_options` is defined and is nonzero, it will
+  override the above with the user supplied options.
 
   Note: Options may also be specified indirectly to `latexmk` through
-        both a global and a project specific `.latexmkrc` file.
+        both a global and a project specific `.latexmkrc` file. One should
+        know, though, that options specified on the command line has priority,
+        and so if one wants to override one of the above default options, then
+        one has to set `g:vimtex_latexmk_options` to a string that contains
+        the desired options.
 
-  Default value: '-pdf'
+  Default value: ''
 
 *g:vimtex_latexmk_progname*
   Path to vim executable.  This is used for the callback functionality, and it
@@ -1677,6 +1690,10 @@ compilation should run in the foreground or the background.
 Regardless of the |g:vimtex_latexmk_continuous| option, single shot
 compilation may always be issued with |VimtexCompileSS|.
 
+|vimtex| passes a "sensible" default set of options to `latexmk`. This may be
+customized with |g:vimtex_latexmk_options|, where the default options are also
+described.
+
 If vim is compiled with the |+clientserver| option and if
 |g:vimtex_latexmk_callback| is enabled (which it is by default), then
 compilation errors will be parsed automatically.  This is done by utilizing
@@ -1697,9 +1714,12 @@ Associated settings:
 Latexmk tricks~
                                                         *vimtex-latexmk-tricks*
 
-One may parse options to `latexmk` through |g:vimtex_latexmk_options|.
+One may customize the `latexmk` options through |g:vimtex_latexmk_options|.
 However, one may also configure `latexmk` explicitly through a global
-`~/.latexmkrc` file, or a project specific `.latexmkrc` file.
+`~/.latexmkrc` file, or a project specific `.latexmkrc` file. It is important
+to know that command line arguments have priority, so one may want to use
+custom options if one wants to specify particular things in a configuration
+file.
 
 A particular set of options are very convenient for a good coupling between
 `latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`.  These options
