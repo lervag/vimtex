@@ -49,7 +49,7 @@ function! vimtex#latexmk#init_script() " {{{1
   if g:vimtex_quickfix_fix_paths
     augroup vimtex_latexmk_fix_dirs
       au!
-      au QuickFixCmdPre c*file call s:fix_quickfix_paths()
+      au QuickFixCmdPost c*file call s:fix_quickfix_paths()
     augroup END
   endif
 endfunction
@@ -242,7 +242,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   endif
 
   " Save root name for fixing quickfix paths
-  let s:vimtex_tmp_path = b:vimtex.root
+  let s:root = b:vimtex.root
 
   if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
@@ -543,16 +543,17 @@ endfunction
 " }}}1
 
 function! s:fix_quickfix_paths() " {{{1
-  let qflist = getqflist()
-  for i in qflist
-    let file = s:vimtex_tmp_path . '/'
-          \ . substitute(bufname(i.bufnr), '^\.\/', '', '')
-    if !bufexists(file) && filereadable(fnameescape(file))
-      execute 'badd' fnamemodify(file, ':~:.')
+  let l:qflist = getqflist()
+  for l:qf in l:qflist
+    let l:file = fnamemodify(simplify(s:root . '/' . bufname(l:qf.bufnr)), ':.')
+    if !filereadable(l:file) | continue | endif
+
+    if !bufexists(l:file)
+      execute 'badd' l:file
     endif
-    let i.bufnr = bufnr(file)
+    let l:qf.bufnr = bufnr(l:file)
   endfor
-  call setqflist(qflist)
+  call setqflist(l:qflist)
 endfunction
 
 " }}}1
