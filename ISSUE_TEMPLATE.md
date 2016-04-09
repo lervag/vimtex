@@ -10,6 +10,9 @@ a minimal working example and a minimal vimrc file (see below), as well as:
 If your issue is instead a feature request or anything else, please consider if
 minimal examples and vimrc files might still be relevant.
 
+Note: If you have any `.latexmkrc` file present, please include the content of
+this as well.
+
 ### Minimal working example
 
 Please provide a minimal working LaTeX example, e.g.
