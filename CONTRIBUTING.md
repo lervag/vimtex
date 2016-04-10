@@ -26,11 +26,17 @@ When submitting code for vimtex, please adhere to the following standards:
     - Line should not be longer than 80 columns
   - Use comments:
     - For complex code that is difficult to understand
-    - Simple code do not need comments
+    - Simple code does not need comments
   - Use (single) empty lines to separate logical blocks of code
   - Use good variable names
     - The name should indicate what the variable is/does
     - Variable names should be lower case
     - Local function variables should be preceded with `l:`
-- Use markers for folding (see code for examples)
+  - Prefer single quoted strings
+  - See also the [Google vimscript style
+    guide](https://google.github.io/styleguide/vimscriptguide.xml)
+- Use markers for folding
+  - I generally only fold functions, and I tend to group similar functions so
+    that when folded, I get a nice structural overview of a file
+  - See some of the files for examples of how I do this
 
