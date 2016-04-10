@@ -721,19 +721,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_quickfix_fix_paths*
-  Some users do not like to use |autochdir|. The file names in LaTeX error
-  messages are relative, thus the current working directory is important. If
-  this option is enabled, then the paths for the quickfix entries are fixed so
-  that they should work with |noautochdir|.
-
-  Note: This option uses a |QuickFixCmdPost| autocommand in order to update
-        the quickfix list through |setqflist|. Thus, the option may have side
-        effects if one edits other file types in the same Vim instance. The
-        option is therefore disabled by default.
-
-  Default value: 0
-
 *g:vimtex_quickfix_ignore_all_warnings*
   This option controls whether or not LaTeX warnings should be included in the
   |quickfix| window.  LaTeX errors will always be included.

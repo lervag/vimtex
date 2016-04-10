@@ -21,7 +21,6 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
-  call vimtex#util#set_default('g:vimtex_quickfix_fix_paths', '0')
 
   if exists('g:vimtex_latexmk_callback_hook')
     echoerr 'Deprecated option: g:vimtex_latexmk_callback_hook!'
@@ -46,12 +45,10 @@ function! vimtex#latexmk#init_script() " {{{1
   endif
 
   " Add autocommand to fix paths in quickfix
-  if g:vimtex_quickfix_fix_paths
-    augroup vimtex_latexmk_fix_dirs
-      au!
-      au QuickFixCmdPost c*file call s:fix_quickfix_paths()
-    augroup END
-  endif
+  augroup vimtex_latexmk_fix_dirs
+    au!
+    au QuickFixCmdPost c*file call s:fix_quickfix_paths()
+  augroup END
 endfunction
 
 " }}}1
