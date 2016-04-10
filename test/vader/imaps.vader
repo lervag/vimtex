@@ -8,7 +8,9 @@ Execute (Setup):
     \ 'leader' : '',
     \ 'wrapper' : 'vimtex#imaps#wrap_trivial',
     \})
+  silent! VimtexReload
 
+Given:
 Given tex (Minimal tex file):
   \documentclass{minimal}
   \begin{document}
