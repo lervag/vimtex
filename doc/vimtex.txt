@@ -1449,7 +1449,7 @@ is triggered by '\includepdf{' commands.
 
 ------------------------------------------------------------------------------
 Complete include glossary entries~
-                                                   *vimtex-complete-standalone*
+                                                     *vimtex-complete-glossary*
 
 Glossary entry completion from the `glossaries` package are triggered by the
 commands '\gls{', '\glspl{' and their variations.
