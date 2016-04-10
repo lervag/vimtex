@@ -1,4 +1,4 @@
-Execute (Assert b:vimtex.tex = latexmain.tex):
+Execute (FIXME Assert b:vimtex.tex = latexmain.tex):
   let g:tex_flavor = 'latex'
   call system('touch latexmain.tex')
   call system('touch latexmain.tex.latexmain')
