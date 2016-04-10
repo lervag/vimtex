@@ -1803,11 +1803,13 @@ in vim (inverse/backward search).
 To make synctex work, it must be enabled. vimtex enables this by default by
 passing `-synctex=1` on the command line, unless the user sets the option
 |g:vimtex_latexmk_options| to a nonempty value. In the latter case, the user
-should ensure that the synctex flag is passed, e.g. by adding the line >
+should ensure that the synctex flag is passed, i.e. with: >
+
+  let g:vimtex_latexmk_options = '... -synctex=1 ...'
+
+Alternatively, one can put this in ones `~/.latexmkrc` file: >
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
-
-to `~/.latexmkrc`.
 
 ------------------------------------------------------------------------------
 Forward search~
