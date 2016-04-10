@@ -1,0 +1,52 @@
+Execute (Setup):
+  let g:vimtex_imaps_leader = ';'
+  let g:vimtex_imaps_disabled = ['a']
+  call vimtex#imaps#add_map({'lhs' : 'vv', 'rhs' : '\vec{'})
+  call vimtex#imaps#add_map({
+    \ 'lhs' : 'test',
+    \ 'rhs' : 'tested',
+    \ 'leader' : '',
+    \ 'wrapper' : 'vimtex#imaps#wrap_trivial',
+    \})
+
+Given tex (Minimal tex file):
+  \documentclass{minimal}
+  \begin{document}
+  \end{document}
+
+Do (imaps: some default maps):
+  jo$;; ;b$
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \begin{document}
+  $; \beta$
+  \end{document}
+
+Do (imaps: imaps_disabled):
+  jo$a = ;a$
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \begin{document}
+  $a = ;a$
+  \end{document}
+
+Do (imaps: imaps#add_map test -> tested):
+  jotest
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \begin{document}
+  tested
+  \end{document}
+
+Do (imaps: imaps#add_map ;vv -> \vec{f}):
+  jo$|f| = ;vvf}\cdot;vvf}$ --- ;vv
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \begin{document}
+  $|f| = \vec{f}\cdot\vec{f}$ --- vv
+  \end{document}
+
