@@ -560,8 +560,6 @@ endfunction
 
 " }}}1
 function! s:get_main_latexmain(file) " {{{1
-  if !filereadable(a:file) | return '' | endif
-
   "
   " Gather candidate files
   "
