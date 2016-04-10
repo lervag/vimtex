@@ -1,12 +1,9 @@
-Execute (Setup):
+Execute (Assert b:vimtex.tex = latexmain.tex):
   let g:tex_flavor = 'latex'
-  call system('touch main.tex')
-  call system('touch main.tex.latexmain')
-
-Execute (Assert root = main.tex):
+  call system('touch latexmain.tex')
+  call system('touch latexmain.tex.latexmain')
   new test.tex
-  AssertEqual 'main.tex', fnamemodify(b:vimtex.tex, ':t')
-
-Execute (Cleanup):
-  call system('rm main.tex*')
+  AssertEqual 'latexmain.tex', fnamemodify(b:vimtex.tex, ':t')
+  bdelete!
+  call system('rm latexmain.tex*')
 
