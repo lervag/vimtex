@@ -20,7 +20,7 @@ function! s:map(mode, lhs, rhs, ...)
   endif
 endfunction
 
-if g:vimtex_toc_enabled
+if get(g:, 'vimtex_toc_enabled', 1)
   command! -buffer VimtexTocOpen   call vimtex#toc#open()
   command! -buffer VimtexTocToggle call vimtex#toc#toggle()
   nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
