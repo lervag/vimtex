@@ -16,7 +16,24 @@ issue description. In short, it should contain the following:
 vimtex is developed mainly through the master branch, and pull requests should
 be [fork based](https://help.github.com/articles/using-pull-requests/).
 
-## Code style used with vimtex
+## Documentation style
+
+Vim help files have their own specific syntax. There is a Vim help section on
+how to write them, see [`:h
+help-writing`](http://vimdoc.sourceforge.net/htmldoc/helphelp.html#help-writing).
+
+The vimtex documentation style should be relatively clear, and it should be
+easy to see from the existing documentation how to write it. Still, here are
+some pointers:
+
+- Max 80 columns per line
+- Use the help tag system for pointers to other parts of the Vim documentation
+- Use line of `=`s to separate sections
+- Use line of `-`s to separate subsections
+- The section tags should be right aligned at the 79th column
+- Sections should be included and linked to from the table of contents
+
+## Code style
 
 When submitting code for vimtex, please adhere to the following standards:
 
