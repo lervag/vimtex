@@ -396,6 +396,8 @@ function! s:latexmk_build_cmd() " {{{1
   if has('win32')
     let cmd  = 'cd /D "' . b:vimtex.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
+    let l:shellslash = &shellslash
+    set noshellslash
   else
     let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
@@ -459,6 +461,10 @@ function! s:latexmk_build_cmd() " {{{1
   let exe.cmd  = cmd
   let b:vimtex.cmd_latexmk_compile = cmd
   let b:vimtex.tmp = tmp
+
+  if has('win32')
+    let &shellslash = l:shellslash
+  endif
 
   return exe
 endfunction
