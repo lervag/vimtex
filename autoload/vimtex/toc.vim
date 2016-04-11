@@ -115,7 +115,14 @@ endfunction
 function! vimtex#toc#open() " {{{1
   if vimtex#index#open(s:name) | return | endif
 
-  let index = {
+  if !exists('b:vimtex')
+    if exists('s:index')
+      call vimtex#index#create(s:index)
+    endif
+    return
+  endif
+
+  let s:index = {
         \ 'name'            : s:name,
         \ 'calling_file'    : expand('%:p'),
         \ 'calling_line'    : line('.'),
@@ -139,7 +146,7 @@ function! vimtex#toc#open() " {{{1
         \ 'toggle_numbers'  : function('s:index_toggle_numbers'),
         \ }
 
-  call vimtex#index#create(index)
+  call vimtex#index#create(s:index)
 endfunction
 
 " }}}1

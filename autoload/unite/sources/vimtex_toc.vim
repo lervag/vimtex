@@ -12,13 +12,18 @@ let s:source = {
       \ 'sorters' : 'sorter_nothing',
       \ 'default_kind' : 'jump_list',
       \ 'syntax' : 'uniteSource__vimtex',
+      \ 'entries' : [],
+      \ 'maxlevel' : 1,
       \ 'hooks' : {},
       \}
 
 function! s:source.gather_candidates(args, context) " {{{1
-  let entries = vimtex#toc#get_entries()
-  let maxlevel = max(map(copy(entries), 'v:val.level'))
-  return map(entries, 's:create_candidate(v:val, maxlevel)')
+  if exists('b:vimtex')
+    let s:source.entries = vimtex#toc#get_entries()
+    let s:source.maxlevel = max(map(copy(s:source.entries), 'v:val.level'))
+  endif
+  return map(copy(s:source.entries),
+        \ 's:create_candidate(v:val, s:source.maxlevel)')
 endfunction
 
 " }}}1
