@@ -502,7 +502,7 @@ function! s:latexmk_init_build_dir() " {{{1
   let l:dirs = split(glob(b:vimtex.root . '/**/*.tex'), '\n')
   call map(l:dirs, 'fnamemodify(v:val, '':h'')')
   call map(l:dirs, 'strpart(v:val, strlen(b:vimtex.root) + 1)')
-  call uniq(sort(filter(l:dirs, "v:val !=# ''")))
+  call s:uniq(sort(filter(l:dirs, "v:val !=# ''")))
   call map(l:dirs,
         \ "b:vimtex.root . '/' . g:vimtex_latexmk_build_dir . '/' . v:val")
   call filter(l:dirs, '!isdirectory(v:val)')
@@ -569,7 +569,7 @@ endfunction
 function! s:log_contains_error(logfile) " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
-  let lines = uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
+  let lines = s:uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
   let lines = map(lines, 'fnamemodify(v:val, '':p'')')
   let lines = filter(lines, 'filereadable(v:val)')
   return len(lines) > 0
@@ -597,6 +597,28 @@ function! s:check_system_compatibility() " {{{1
     endfor
     let g:vimtex_latexmk_enabled = 0
   endif
+endfunction
+
+" }}}1
+function! s:uniq(list) " {{{1
+  if exists('*uniq')
+    return uniq(a:list)
+  elseif len(a:list) == 0
+    return a:list
+  endif
+
+  let l:last = get(a:list, 0)
+  let l:ulist = [l:last]
+
+  for l:i in range(1, len(a:list) - 1)
+    let l:next = get(a:list, l:i)
+    if l:next != l:last
+      let l:last = l:next
+      call add(l:ulist, l:next)
+    endif
+  endfor
+
+  return l:ulist
 endfunction
 
 " }}}1
