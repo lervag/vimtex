@@ -1,4 +1,4 @@
-Execute (FIXME Assert b:vimtex.tex = latexmain.tex):
+Execute (Assert b:vimtex.tex = latexmain.tex):
   call system('touch latexmain.tex')
   call system('touch latexmain.tex.latexmain')
   new test.tex
