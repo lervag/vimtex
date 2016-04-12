@@ -176,43 +176,41 @@ function! vimtex#latexmk#compile() " {{{1
   call s:latexmk_init_build_dir()
 
   " Build command line and start latexmk
-  let exe = s:latexmk_build_cmd()
+  let l:exe = s:latexmk_build_cmd()
   if !g:vimtex_latexmk_continuous && !g:vimtex_latexmk_background
-    let exe.bg = 0
-    let exe.silent = 0
+    let l:exe.bg = 0
+    let l:exe.silent = 0
   endif
-  call vimtex#util#execute(exe)
+  call vimtex#util#execute(l:exe)
 
   if g:vimtex_latexmk_continuous
     call s:latexmk_set_pid()
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'started continuous mode']])
   else
-    call vimtex#echo#status(['latexmk compile: ',
-          \ ['VimtexSuccess', 'compiling ...']])
+    if get(l:exe, 'bg', 1)
+      call vimtex#echo#status(['latexmk compile: ',
+            \ ['VimtexSuccess', 'started in background!']])
+    else
+      call vimtex#echo#status(['latexmk compile: ',
+            \ vimtex#latexmk#errors_inquire()
+            \   ? ['VimtexWarning', 'fail']
+            \   : ['VimtexSuccess', 'success']])
+    endif
   endif
 endfunction
 
 " }}}1
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
-  if b:vimtex.pid
-    call vimtex#echo#status(['latexmk compile: ',
-          \ ['VimtexWarning', 'already running for `' . b:vimtex.base . "'"]])
-    return
-  endif
-
-  " Initialize build dir
-  call s:latexmk_init_build_dir()
-
   let l:vimtex_latexmk_continuous = g:vimtex_latexmk_continuous
+  let l:vimtex_latexmk_background = g:vimtex_latexmk_background
+
   let g:vimtex_latexmk_continuous = 0
-  let exe = s:latexmk_build_cmd()
-  if a:verbose
-    let exe.bg = 0
-    let exe.silent = 0
-  endif
-  call vimtex#util#execute(exe)
+  let g:vimtex_latexmk_background = g:vimtex_latexmk_background && !a:verbose
+  call vimtex#latexmk#compile()
+
   let g:vimtex_latexmk_continuous = l:vimtex_latexmk_continuous
+  let g:vimtex_latexmk_background = l:vimtex_latexmk_background
 endfunction
 
 " }}}1
@@ -276,6 +274,20 @@ function! vimtex#latexmk#errors_open(force) " {{{1
 endfunction
 
 let s:open_quickfix_window = 0
+
+" }}}1
+function! vimtex#latexmk#errors_inquire() " {{{1
+  if !exists('b:vimtex') | return | endif
+
+  let log = b:vimtex.log()
+  if empty(log) | return 0 | endif
+
+  " Save root name for fixing quickfix paths
+  let s:root = b:vimtex.root
+
+  execute 'cgetfile ' . fnameescape(log)
+  return !empty(getqflist())
+endfunction
 
 " }}}1
 function! vimtex#latexmk#output() " {{{1
