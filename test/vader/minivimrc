@@ -3,3 +3,5 @@ let &rtp .= ',../../after'
 let &rtp .= isdirectory('vader.vim') ? ',vader.vim' : ',../../../vader.vim'
 filetype plugin indent on
 syntax enable
+
+let g:tex_flavor = 'latex'
