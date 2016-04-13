@@ -196,6 +196,8 @@ function! s:highlight_matching_pair() " {{{1
   2match none
 
   let l:d1 = vimtex#delim#get_current('all', 'both')
+  if empty(l:d1) | return | endif
+
   let l:d2 = vimtex#delim#get_matching(l:d1)
   if empty(l:d2) | return | endif
 
