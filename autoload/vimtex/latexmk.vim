@@ -402,10 +402,6 @@ function! s:latexmk_build_cmd() " {{{1
   let exe = {}
   let exe.null = 0
 
-  " Note: We don't send output to /dev/null, but rather to a temporary file,
-  "       which allows inspection of latexmk output
-  let tmp = tempname()
-
   if has('win32')
     let cmd  = 'cd /D "' . b:vimtex.root . '"'
     let cmd .= ' && set max_print_line=2000 & latexmk'
@@ -459,6 +455,9 @@ function! s:latexmk_build_cmd() " {{{1
   let cmd .= ' ' . vimtex#util#shellescape(b:vimtex.base)
 
   if g:vimtex_latexmk_continuous || g:vimtex_latexmk_background
+    let tmp = tempname()
+    let b:vimtex.tmp = tmp
+
     if has('win32')
       let cmd .= ' >'  . tmp
       let cmd = 'cmd /s /c "' . cmd . '"'
@@ -473,7 +472,6 @@ function! s:latexmk_build_cmd() " {{{1
 
   let exe.cmd  = cmd
   let b:vimtex.cmd_latexmk_compile = cmd
-  let b:vimtex.tmp = tmp
 
   if has('win32')
     let &shellslash = l:shellslash
