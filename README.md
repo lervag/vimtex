@@ -113,6 +113,14 @@ The following are some alternative LaTeX plugins for Vim:
 - [AutomaticTexPlugin](http://atp-vim.sourceforge.net)
 - [vim-latex-live-preview](https://github.com/xuhdev/vim-latex-live-preview)
 
+For more alternatives and more information and discussions regarding LaTeX
+plugins for Vim, see:
+
+- [What are the differences between LaTeX
+  plugins](http://vi.stackexchange.com/questions/2047/what-are-the-differences-between-latex-plugins)
+- [List of LaTeX editors (not only
+  Vim)](https://tex.stackexchange.com/questions/339/latex-editors-ides)
+
 ## License
 
 The MIT license (MIT)
