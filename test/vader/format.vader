@@ -21,3 +21,26 @@ Expect tex (Verify):
   et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
   dolor sit amet.
 
+Given tex (Format: Line breaking):
+  start a new paragraph \\
+  start a new line but not a new paragraph \\*
+  flush all, start a new (odd numbered) page \cleardoublepage
+  flush all, start a new page \clearpage
+  allow to break the line here \linebreak
+  request a new line \newline
+  request a new page \newpage
+  encourage page break \pagebreak
+
+Do (TODO Format text):
+  gqG
+
+Expect tex (Verify):
+  start a new paragraph \\
+  start a new line but not a new paragraph \\*
+  flush all, start a new (odd numbered) page \cleardoublepage
+  flush all, start a new page \clearpage
+  allow to break the line here \linebreak
+  request a new line \newline
+  request a new page \newpage
+  encourage page break \pagebreak
+
