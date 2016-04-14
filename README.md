@@ -1,7 +1,12 @@
 # vimtex
 
-A [vim](http://www.vim.org/) plugin that provides support for writing
-LaTeX documents.
+vimtex is a [Vim](http://www.vim.org/) plugin that provides support for writing
+LaTeX documents. It is based on
+[LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box) and it shares a
+similar goal: to provide a simple and lightweight LaTeX plugin. It has been
+rewritten from scratch to provide a more modern and modular code base. See
+[here](#alternatives) for some more comments on the difference between vimtex
+and other LaTeX plugins for Vim.
 
 [![Build Status](https://travis-ci.org/lervag/vimtex.svg?branch=master)](https://travis-ci.org/lervag/vimtex)
 
@@ -75,8 +80,36 @@ Or use some other plugin manager:
 
 ## Alternatives
 
+The following are some alternative LaTeX plugins for Vim:
+
 - [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box)
+
+    vimtex currently has most of the features of LaTeX-Box, as well as
+    some additional ones. See [here](#features) for a relatively complete list
+    of features.
+
+    One particular feature that LaTeX-Box has but vimtex misses, is the ability
+    to do single-shot compilation _with callback_. This functionality was
+    removed because it adds a lot of complexity for relatively little gain
+    (IMHO).
+
 - [LaTeX-Suite](http://vim-latex.sourceforge.net)
+
+    The main difference between vimtex and LaTeX-Suite (aka vim-latex) is
+    probably that vimtex does not try to implement a full fledged IDE for LaTeX
+    inside Vim. E.g.:
+
+    - vimtex does not provide a full snippet feature, because this is better
+      handled by [UltiSnips](https://github.com/SirVer/ultisnips) or
+      [neosnippet](https://github.com/Shougo/neosnippet.vim) or similar snippet
+      engines.
+    - vimtex builds upon Vim principles: It provides text objects for
+      environments, inline math, it provides motions for sections and
+      paragraphs
+    - vimtex uses `latexmk` for compilation with a callback feature to get
+      instant feedback on compilation errors
+    - vimtex is very modular: if you don't like a feature, you can turn it off.
+
 - [AutomaticTexPlugin](http://atp-vim.sourceforge.net)
 - [vim-latex-live-preview](https://github.com/xuhdev/vim-latex-live-preview)
 
