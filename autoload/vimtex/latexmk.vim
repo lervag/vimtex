@@ -501,7 +501,7 @@ function! s:latexmk_init_pid() " {{{1
       " Use pgrep combined with /proc/PID/cwd to search for existing process
       "
       for l:pid in split(system(
-            \ 'pgrep -f "^perl.*latexmk.*' . b:vimtex.base . '"'), "\n")
+            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . b:vimtex.base . '"'), "\n")
         let path = resolve('/proc/' . l:pid . '/cwd') . '/' . b:vimtex.base
         if path ==# b:vimtex.tex
           let b:vimtex.pid = str2nr(l:pid)
@@ -536,7 +536,7 @@ function! s:latexmk_set_pid() " {{{1
     let pidinfo = split(system(pidcmd), '\n')[-1]
     let b:vimtex.pid = str2nr(split(pidinfo,'\s\+')[1])
   else
-    let b:vimtex.pid = str2nr(system('pgrep -nf "perl.*latexmk"')[:-2])
+    let b:vimtex.pid = str2nr(system('pgrep -nf "^[^ ]*perl.*latexmk"')[:-2])
   endif
 endfunction
 
