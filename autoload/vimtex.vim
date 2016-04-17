@@ -376,12 +376,6 @@ function! s:init_mappings() " {{{1
   endif
 
   if g:vimtex_motion_enabled
-    call s:map('n', '}', '<plug>(vimtex-})')
-    call s:map('n', '{', '<plug>(vimtex-{)')
-    call s:map('x', '}', '<plug>(vimtex-})')
-    call s:map('x', '{', '<plug>(vimtex-{)')
-    call s:map('o', '}', '<plug>(vimtex-})')
-    call s:map('o', '{', '<plug>(vimtex-{)')
     call s:map('n', ']]', '<plug>(vimtex-]])')
     call s:map('n', '][', '<plug>(vimtex-][)')
     call s:map('n', '[]', '<plug>(vimtex-[])')
@@ -418,10 +412,6 @@ function! s:init_mappings() " {{{1
     call s:map('x', 'a$', '<plug>(vimtex-a$)')
     call s:map('o', 'i$', '<plug>(vimtex-i$)')
     call s:map('o', 'a$', '<plug>(vimtex-a$)')
-    call s:map('x', 'ip', '<plug>(vimtex-ip)')
-    call s:map('x', 'ap', '<plug>(vimtex-ap)')
-    call s:map('o', 'ip', '<plug>(vimtex-ip)')
-    call s:map('o', 'ap', '<plug>(vimtex-ap)')
   endif
 
   if g:vimtex_toc_enabled

@@ -66,16 +66,6 @@ function! vimtex#motion#init_buffer() " {{{1
   xmap     <silent><buffer> <plug>(vimtex-%) <sid>(vimtex-%)
   onoremap <silent><buffer> <plug>(vimtex-%) :execute "normal \<sid>(v)\<sid>(vimtex-%)"<cr>
 
-  " Paragraphs
-  nnoremap <silent><buffer> <plug>(vimtex-})  :call vimtex#motion#next_paragraph(0,0)<cr>
-  nnoremap <silent><buffer> <plug>(vimtex-{)  :call vimtex#motion#next_paragraph(1,0)<cr>
-  xnoremap <silent><buffer>  <sid>(vimtex-})  :<c-u>call vimtex#motion#next_paragraph(0,1)<cr>
-  xnoremap <silent><buffer>  <sid>(vimtex-{)  :<c-u>call vimtex#motion#next_paragraph(1,1)<cr>
-  xmap     <silent><buffer> <plug>(vimtex-})  <sid>(vimtex-})
-  xmap     <silent><buffer> <plug>(vimtex-{)  <sid>(vimtex-{)
-  onoremap <silent><buffer> <plug>(vimtex-})  :execute "normal \<sid>(v)\<sid>(vimtex-})"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-{)  :execute "normal \<sid>(v)\<sid>(vimtex-{)"<cr>
-
   " Sections
   nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-][) :call vimtex#motion#next_section(1,0,0)<cr>

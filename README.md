@@ -40,7 +40,6 @@ disabled if desired.
   - `id ad` Delimiters
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
-  - `ip ap` Paragraphs
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
   - Change the surrounding command or environment with `csc`/`cse`/`cs$`

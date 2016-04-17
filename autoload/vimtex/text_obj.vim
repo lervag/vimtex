@@ -23,7 +23,6 @@ function! vimtex#text_obj#init_buffer() " {{{1
         \ ['d', 'delimited', 'delim_all'],
         \ ['e', 'delimited', 'env'],
         \ ['$', 'delimited', 'env_math'],
-        \ ['p', 'paragraphs', ''],
         \]
     let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
     let l:p2 = l:map . ') :<c-u>call vimtex#text_obj#' . l:name
@@ -109,20 +108,6 @@ function! vimtex#text_obj#delimited(is_inner, type) " {{{1
   call cursor(l1, c1)
   normal! o
   call cursor(l2, c2)
-endfunction
-
-" }}}1
-function! vimtex#text_obj#paragraphs(is_inner) " {{{1
-  " Define selection
-  normal! 0j
-  call vimtex#motion#next_paragraph(1,0)
-  normal! jV
-  call vimtex#motion#next_paragraph(0,0)
-
-  " Go back one line for inner objects
-  if a:is_inner
-    normal! k
-  endif
 endfunction
 
 " }}}1
