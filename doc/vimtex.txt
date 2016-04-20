@@ -1884,7 +1884,7 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
 A: Yes. Most features work out of the box, but the `latexmk` coupling and some
-   if the viewer functionality require the |--remote| options from the
+   of the viewer functionality require the |--remote| options from the
    |clientserver|. For some reason, these options have been removed from
    neovim, see #1750 [0]. There does remain some hope that the options will be
    reimplemented sometime in the future.
