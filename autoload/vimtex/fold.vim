@@ -36,6 +36,21 @@ function! vimtex#fold#init_script() " {{{1
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
   let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
   let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+
+  "
+  " List of identifiers for improving efficiency
+  "
+  let s:folded  = '\v^\s*\%'
+  let s:folded .= '|\\%(' . join([
+        \   'begin',
+        \   'end',
+        \   '%(sub)*%(section|paragraph)',
+        \   'chapter',
+        \   'document',
+        \   '%(front|main|back)matter',
+        \   'appendix',
+        \   'part',
+        \ ], '|') . ')'
 endfunction
 
 " }}}1
@@ -111,10 +126,7 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Check for normal lines first (optimization)
   let line = getline(a:lnum)
-  if line !~# '\v^\s*\%|\\%(document|begin|end|%(front|main|back)matter'
-          \ . '|appendix|part|chapter|%(sub)*%(section|paragraph))'
-    return '='
-  endif
+  if line !~# s:folded | return '=' | endif
 
   " Fold preamble
   if g:vimtex_fold_preamble
