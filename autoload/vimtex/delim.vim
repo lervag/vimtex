@@ -482,9 +482,9 @@ function! s:get_delim(direction, type, side) " {{{1
   "
   let l:re = s:re[a:type][a:side]
   let [l:lnum, l:cnum] = a:direction ==# 'next'
-        \ ? searchpos(l:re, 'cnW', line('w$') + s:stopline)
+        \ ? searchpos(l:re, 'cnW', line('.') + s:stopline)
         \ : a:direction ==# 'prev'
-        \   ? searchpos(l:re, 'bcnW', max([line('w0') - s:stopline, 1]))
+        \   ? searchpos(l:re, 'bcnW', max([line('.') - s:stopline, 1]))
         \   : searchpos(l:re, 'bcnW', line('.'))
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
@@ -704,8 +704,8 @@ endfunction
 
 function! s:get_matching_env() dict " {{{1
   let [re, flags, stopline] = self.is_open
-        \ ? [self.re.close,  'nW', line('w$') + s:stopline]
-        \ : [self.re.open,  'bnW', max([line('w0') - s:stopline, 1])]
+        \ ? [self.re.close,  'nW', line('.') + s:stopline]
+        \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
 
   let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
         \ flags, '', stopline)
@@ -717,8 +717,8 @@ endfunction
 " }}}1
 function! s:get_matching_tex() dict " {{{1
   let [re, flags, stopline] = self.is_open
-        \ ? [self.re.open,  'nW', line('w$') + s:stopline]
-        \ : [self.re.open, 'bnW', max([line('w0') - s:stopline, 1])]
+        \ ? [self.re.open,  'nW', line('.') + s:stopline]
+        \ : [self.re.open, 'bnW', max([line('.') - s:stopline, 1])]
 
   let [lnum, cnum] = searchpos(re, flags, stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
@@ -729,8 +729,8 @@ endfunction
 " }}}1
 function! s:get_matching_latex() dict " {{{1
   let [re, flags, stopline] = self.is_open
-        \ ? [self.re.close, 'nW', line('w$') + s:stopline]
-        \ : [self.re.open, 'bnW', max([line('w0') - s:stopline, 1])]
+        \ ? [self.re.close, 'nW', line('.') + s:stopline]
+        \ : [self.re.open, 'bnW', max([line('.') - s:stopline, 1])]
 
   let [lnum, cnum] = searchpos(re, flags, stopline)
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
@@ -741,8 +741,8 @@ endfunction
 " }}}1
 function! s:get_matching_delim() dict " {{{1
   let [re, flags, stopline] = self.is_open
-        \ ? [self.re.close,  'nW', line('w$') + s:stopline]
-        \ : [self.re.open,  'bnW', max([line('w0') - s:stopline, 1])]
+        \ ? [self.re.close,  'nW', line('.') + s:stopline]
+        \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
 
   let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
         \ flags, '', stopline)
