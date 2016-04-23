@@ -130,7 +130,7 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
 
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
+    let l:file = b:vimtex.root . '/' . l:file
   endif
 
   " Only return filename if it is readable
