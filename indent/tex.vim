@@ -113,11 +113,7 @@ endfunction
 
 " }}}1
 function! s:indent_tikz(lnum, prev) " {{{1
-  let l:winview = winsaveview()
-  let l:inside_tikzpicture = vimtex#env#is_inside('tikzpicture')
-  call winrestview(l:winview)
-
-  if l:inside_tikzpicture
+  if vimtex#env#is_inside('tikzpicture')
     let l:prev_starts = a:prev =~# s:tikz_commands
     let l:prev_stops  = a:prev =~# ';\s*$'
 
