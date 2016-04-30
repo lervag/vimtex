@@ -445,6 +445,19 @@ function! s:xwin_exists() dict " {{{1
     endif
   endif
 
+  "
+  " If xwin_id is unset, check if matching viewer windows exist
+  "
+  if self.xwin_id == 0
+    let cmd = 'xdotool search --all'
+          \ . ' --class ' . self.class
+          \ . ' --name ' . fnamemodify(b:vimtex.out(), ':t')
+    let result = split(system(cmd), '\n')
+    if len(result) > 0
+      let self.xwin_id = result[-1]
+    endif
+  endif
+
   return (self.xwin_id > 0)
 endfunction
 
