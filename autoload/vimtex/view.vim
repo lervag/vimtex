@@ -171,6 +171,7 @@ function! s:mupdf.init() dict " {{{2
   let self.xwin_send_keys = function('s:xwin_send_keys')
   let self.focus_vim = function('s:focus_vim')
   let self.focus_viewer = function('s:focus_viewer')
+  call self.xwin_exists()
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
@@ -321,6 +322,7 @@ function! s:zathura.init() dict " {{{2
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
+  call self.xwin_exists()
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
