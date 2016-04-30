@@ -435,16 +435,17 @@ endfunction
 function! s:xwin_exists() dict " {{{1
   if !executable('xdotool') | return 0 | endif
 
-  let cmd = 'xdotool search --class ' . self.class
-  if index(split(system(cmd), '\n'), self.xwin_id) >= 0
-    return 1
-  endif
-
+  "
+  " If xwin_id is already set, check if it still exists
+  "
   if self.xwin_id > 0
-    let self.xwin_id = 0
+    let cmd = 'xdotool search --class ' . self.class
+    if index(split(system(cmd), '\n'), self.xwin_id) < 0
+      let self.xwin_id = 0
+    endif
   endif
 
-  return 0
+  return (self.xwin_id > 0)
 endfunction
 
 " }}}1
