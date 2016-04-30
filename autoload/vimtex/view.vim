@@ -199,8 +199,6 @@ function! s:mupdf.start(outfile) dict " {{{2
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
-  sleep 300m
-
   call self.xwin_get_id()
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
   call self.forward_search(a:outfile)
@@ -354,8 +352,6 @@ function! s:zathura.start(outfile) dict " {{{2
   call vimtex#util#execute(exe)
   let self.cmd_start = exe.cmd
 
-  sleep 300m
-
   call self.xwin_get_id()
   call self.forward_search(a:outfile)
 endfunction
@@ -376,7 +372,6 @@ endfunction
 function! s:zathura.latexmk_callback(status) dict " {{{2
   if !self.xwin_exists()
     if self.xwin_get_id()
-      sleep 500m
       call self.forward_search(b:vimtex.out())
       if has_key(self, 'hook_callback')
         call self.hook_callback()
@@ -417,6 +412,12 @@ function! s:xwin_get_id() dict " {{{1
   if !executable('xdotool') | return 0 | endif
   if self.xwin_id > 0 | return 0 | endif
 
+  " Allow some time for the viewer to start properly
+  sleep 500m
+
+  "
+  " Get the window ID
+  "
   let cmd = 'xdotool search --class ' . self.class
   let xwin_ids = split(system(cmd), '\n')
   if len(xwin_ids) == 0
