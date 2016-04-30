@@ -432,7 +432,8 @@ function! s:latexmk_build_cmd() " {{{1
 
   if g:vimtex_latexmk_continuous
     let cmd .= ' -pvc'
-    if get(s:, 'silence_next_callback', 0)
+    if get(b:vimtex.viewer, 'xwin_id', 0) > 0
+          \ || get(s:, 'silence_next_callback', 0)
       let cmd .= ' -view=none'
     endif
   endif
