@@ -410,7 +410,7 @@ endfunction
 " }}}1
 function! s:xwin_get_id() dict " {{{1
   if !executable('xdotool') | return 0 | endif
-  if self.xwin_id > 0 | return 0 | endif
+  if self.xwin_id > 0 | return self.xwin_id | endif
 
   " Allow some time for the viewer to start properly
   sleep 500m
