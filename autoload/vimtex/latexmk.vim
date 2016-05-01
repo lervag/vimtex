@@ -237,8 +237,9 @@ function! vimtex#latexmk#errors_open(force) " {{{1
     return
   endif
 
-  " Save root name for fixing quickfix paths
-  let s:root = b:vimtex.root
+  " Save paths for fixing quickfix entries
+  let s:qf_main = b:vimtex.tex
+  let s:qf_root = b:vimtex.root
 
   if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
@@ -282,8 +283,9 @@ function! vimtex#latexmk#errors_inquire() " {{{1
   let log = b:vimtex.log()
   if empty(log) | return 0 | endif
 
-  " Save root name for fixing quickfix paths
-  let s:root = b:vimtex.root
+  " Save paths for fixing quickfix entries
+  let s:qf_main = b:vimtex.tex
+  let s:qf_root = b:vimtex.root
 
   execute 'cgetfile ' . fnameescape(log)
   return !empty(getqflist())
@@ -560,9 +562,18 @@ endfunction
 function! s:fix_quickfix_paths() " {{{1
   let l:qflist = getqflist()
   for l:qf in l:qflist
-    let l:file = fnamemodify(simplify(s:root . '/' . bufname(l:qf.bufnr)), ':.')
-    if !filereadable(l:file) | continue | endif
+    " For errors and warnings that don't supply a file, the basename of the
+    " main file is used. However, if the working directory is not the root of
+    " the LaTeX project, than this results in bufnr = 0.
+    if l:qf.bufnr == 0
+      let l:qf.bufnr = bufnr(s:qf_main)
+      continue
+    endif
 
+    " The buffer names of all file:line type errors are relative to the root of
+    " the main LaTeX file.
+    let l:file = fnamemodify(simplify(s:qf_root . '/' . bufname(l:qf.bufnr)), ':.')
+    if !filereadable(l:file) | continue | endif
     if !bufexists(l:file)
       execute 'badd' l:file
     endif
