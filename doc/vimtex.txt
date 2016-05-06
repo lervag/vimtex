@@ -1596,7 +1596,7 @@ highlighting.  However, |vimtex| does add some minor improvements:
 Before enabling additional syntax highlighting, |vimtex| also checks the
 |g:text_fast| variable (defined by |ft-tex-syntax|) that allows one to
 selectively enable or disable highlighting for specific groups.  If
-|g:tex_fast| is set, additonal syntax highlighting for bold, italic, and
+|g:tex_fast| is set, additional syntax highlighting for bold, italic, and
 reference groups are enabled only if they are explicitly allowed.
 
 ==============================================================================
