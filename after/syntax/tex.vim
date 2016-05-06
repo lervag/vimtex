@@ -22,21 +22,23 @@ syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
 
 " {{{1 Italic font, bold font and conceals
 
-let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
-      \ ? 'concealends' : ''
+if get(g:, 'tex_fast', 'b') =~# 'b'
+  let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
+        \ ? 'concealends' : ''
 
-for [style, group, commands] in [
-      \ ['texItalStyle', 'texItalGroup', ['emph', 'textit']],
-      \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
-      \]
-  for cmd in commands
-    execute 'syntax region' style 'matchgroup=texTypeStyle'
-          \ 'start="\\' . cmd . '\s*{" end="}"'
-          \ 'contains=@' . group
-          \ conceal
+  for [style, group, commands] in [
+        \ ['texItalStyle', 'texItalGroup', ['emph', 'textit']],
+        \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
+        \]
+    for cmd in commands
+      execute 'syntax region' style 'matchgroup=texTypeStyle'
+            \ 'start="\\' . cmd . '\s*{" end="}"'
+            \ 'contains=@' . group
+            \ conceal
+    endfor
+    execute 'syntax cluster texMatchGroup add=' . style
   endfor
-  execute 'syntax cluster texMatchGroup add=' . style
-endfor
+endif
 
 " }}}1
 " {{{1 Add syntax highlighting for \url, \href, \hyperref
@@ -65,33 +67,37 @@ highlight link texHyperref     texRefZone
 
 " }}}1
 " {{{1 Improve support for cite commands
-syntax match texStatement
-      \ "\\\%(auto\|text\)\?cite\%([tp]\*\?\|author\)\?"
-      \ nextgroup=texRefOption,texCite
+if get(g:, 'tex_fast', 'r') =~# 'r'
+  syntax match texStatement
+        \ "\\\%(auto\|text\)\?cite\%([tp]\*\?\|author\)\?"
+        \ nextgroup=texRefOption,texCite
+endif
 
 " }}}1
 " {{{1 Add support for cleveref package
-syntax region texRefZone matchgroup=texStatement
-      \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
-      \ end="}\|%stopzone\>"
-      \ contains=@texRefGroup
+if get(g:, 'tex_fast', 'r') =~# 'r'
+  syntax region texRefZone matchgroup=texStatement
+        \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
+        \ end="}\|%stopzone\>"
+        \ contains=@texRefGroup
 
-" \crefrange, \cpagerefrange (these commands expect two arguments)
-syntax match texStatement
-      \ '\\c\(page\)\?refrange\>'
-      \ nextgroup=texRefRangeStart skipwhite skipnl
-syntax region texRefRangeStart
-      \ start="{"rs=s+1  end="}"
-      \ matchgroup=Delimiter
-      \ contained contains=texRefZone
-      \ nextgroup=texRefRangeEnd skipwhite skipnl
-syntax region texRefRangeEnd
-      \ start="{"rs=s+1 end="}"
-      \ matchgroup=Delimiter
-      \ contained contains=texRefZone
+  " \crefrange, \cpagerefrange (these commands expect two arguments)
+  syntax match texStatement
+        \ '\\c\(page\)\?refrange\>'
+        \ nextgroup=texRefRangeStart skipwhite skipnl
+  syntax region texRefRangeStart
+        \ start="{"rs=s+1  end="}"
+        \ matchgroup=Delimiter
+        \ contained contains=texRefZone
+        \ nextgroup=texRefRangeEnd skipwhite skipnl
+  syntax region texRefRangeEnd
+        \ start="{"rs=s+1 end="}"
+        \ matchgroup=Delimiter
+        \ contained contains=texRefZone
 
-highlight link texRefRangeStart texRefZone
-highlight link texRefRangeEnd   texRefZone
+  highlight link texRefRangeStart texRefZone
+  highlight link texRefRangeEnd   texRefZone
+endif
 
 " }}}1
 " {{{1 Add support for listings package
