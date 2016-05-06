@@ -1594,7 +1594,7 @@ highlighting.  However, |vimtex| does add some minor improvements:
 - Nested syntax highlighting for `minted` (see |g:vimtex_syntax_minted|)
 
 Before enabling additional syntax highlighting, |vimtex| also checks the
-|g:text_fast| variable (defined by |ft-tex-syntax|) that allows one to
+|g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
 selectively enable or disable highlighting for specific groups.  If
 |g:tex_fast| is set, additional syntax highlighting for bold, italic, and
 reference groups are enabled only if they are explicitly allowed.
