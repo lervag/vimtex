@@ -50,7 +50,7 @@ CONTENTS                                                      *vimtex-contents*
     Complete standalone file names              |vimtex-complete-standalone|
     Complete glossary entries                   |vimtex-complete-glossary|
     Autocomplete                                |vimtex-complete-auto|
-      Neocomplete                               |vimtex-complete-neocomplete|
+      Neocomplete and deoplete                  |vimtex-complete-neocomplete|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
       VimCompletesMe                            |vimtex-complete-vcm|
   Folding                                       |vimtex-folding|
@@ -1447,10 +1447,13 @@ there is |VimCompletesMe| that overrides <tab> to trigger different built-in
 completions, such as the omni-completion by vimtex, depending on the context.
 See below for descriptions on how to setup these with |vimtex|.
 
-neocomplete~
+neocomplete and deoplete~
                                                   *vimtex-complete-neocomplete*
+                                                     *vimtex-complete-deoplete*
 |neocomplete| is my preferred choice for an automatic completion engine in vim.
 The plugin is available here: https://github.com/Shougo/neocomplete.vim.
+|deoplete| is a similar plugin by Shougo written specifically for Neovim, see
+here: https://github.com/Shougo/deoplete.nvim.
 
 The following options may be used to enable automatic completion for LaTeX
 documents with |neocomplete| and |vimtex|s omni completion function: >
@@ -1469,6 +1472,17 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
         \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . ')'
+<
+The |deoplete| option is similar to that of |neocomplete|, but we must append |\m|,
+thus: >
+
+  if !exists('g:deoplete#omni_patterns')
+      let g:deoplete#omni_patterns = {}
+  endif
+  let g:deoplete#omni_patterns.tex =
+        \ '\v\\%('
+        \ ...
+        \ . ')\m'
 <
 YouCompleteMe~
                                                 *vimtex-complete-youcompleteme*
