@@ -97,6 +97,13 @@ function! s:bib.init() dict " {{{2
     call vimtex#echo#warning('  recursive bib search requires kpsewhich', 'None')
     call vimtex#echo#warning('  kpsewhich is not executable', 'None')
   endif
+
+  " Check if bstfile contains whitespace (not handled by vimtex)
+  if stridx(self.bstfile, ' ') >= 0
+    let l:oldbst = self.bstfile . '.bst'
+    let self.bstfile = tempname()
+    call writefile(readfile(l:oldbst), self.bstfile . '.bst')
+  endif
 endfunction
 
 function! s:bib.complete(regexp) dict " {{{2
