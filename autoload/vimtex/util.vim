@@ -109,6 +109,20 @@ function! vimtex#util#execute(exe) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#command(cmd) " {{{1
+  let l:a = @a
+  try
+    silent! redir @a
+    silent! execute a:cmd
+    redir END
+  finally
+    let l:res = @a
+    let @a = l:a
+    return split(l:res, "\n")
+  endtry
+endfunction
+
+" }}}1
 function! vimtex#util#shellescape(cmd) " {{{1
   if has('win32')
     "

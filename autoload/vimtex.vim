@@ -439,7 +439,10 @@ endfunction
 " }}}1
 function! s:init_modules(initmode) " {{{1
   for module in s:modules
-    execute 'call vimtex#' . module . '#init_' . a:initmode . '()'
+    try
+      execute 'call vimtex#' . module . '#init_' . a:initmode . '()'
+    catch /E117.*#init_/
+    endtry
   endfor
 endfunction
 
