@@ -1,0 +1,8 @@
+set nocompatible
+
+call plug#begin('~/.vim/bundle/')
+Plug 'lervag/vimtex'
+call plug#end()
+
+let g:latex_view_general_viewer = 'zathura'
+let g:vimtex_view_method = 'zathura'
