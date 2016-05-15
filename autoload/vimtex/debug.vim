@@ -6,6 +6,11 @@
 
 function! vimtex#debug#stacktrace() " {{{1
   "
+  " This function builds on Luc Hermite's answer on Stack Exchange:
+  " http://vi.stackexchange.com/a/6024/21
+  "
+
+  "
   " Get stack and exception
   "
   if empty(v:throwpoint)
