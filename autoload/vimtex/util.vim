@@ -4,19 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#util#init_options() " {{{1
-endfunction
-
-" }}}1
-function! vimtex#util#init_script() " {{{1
-endfunction
-
-" }}}1
-function! vimtex#util#init_buffer() " {{{1
-endfunction
-
-" }}}1
-
 function! vimtex#util#execute(exe) " {{{1
   " Execute the given command on the current system.  Wrapper function to make
   " it easier to run on both windows and unix.

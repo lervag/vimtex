@@ -1,3 +1,9 @@
+" vimtex - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! vimtex#debug#stacktrace() " {{{1
   "
   " Get stack and exception
@@ -61,3 +67,5 @@ function! vimtex#debug#stacktrace() " {{{1
 endfunction
 
 " }}}1
+
+" vim: fdm=marker sw=2
