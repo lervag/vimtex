@@ -169,7 +169,7 @@ below.  The priority of the methods are as follows:
 
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
-|vimtex| also supports the `import` the `subfiles` packages that can be used to make
+|vimtex| also supports the `import` and the `subfiles` packages that can be used to make
 it easier to work with multi-file projects. If one uses the `subfiles` package,
 the |VimtexToggleMain| command is particularly useful.
 
