@@ -151,7 +151,17 @@ endfunction
 
 " }}}1
 function! s:input_complete(lead, cmdline, pos) " {{{1
-  return filter(g:vimtex_env_complete_list, 'v:val =~# ''^' . a:lead . '''')
+  try
+    let l:cands = uniq(sort(
+          \ g:vimtex_env_complete_list
+          \ + map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
+          \            'v:val =~# ''\\begin'''),
+          \     'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
+  catch
+    let l:cands = g:vimtex_env_complete_list
+  endtry
+
+  return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')
 endfunction
 
 " }}}1
