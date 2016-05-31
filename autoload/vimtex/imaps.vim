@@ -164,6 +164,7 @@ function! s:create_map(map) " {{{1
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
   endif
+  let l:lhs = l:leader . a:map.lhs
 
   let l:wrapper = get(a:map, 'wrapper', 'vimtex#imaps#wrap_math')
   if ! exists('*' . l:wrapper)
@@ -172,8 +173,8 @@ function! s:create_map(map) " {{{1
     return
   endif
 
-  silent execute 'inoremap <expr><silent><buffer>' l:leader . a:map.lhs
-        \ l:wrapper . '(''' . a:map.lhs . ''', ''' . a:map.rhs . ''')'
+  silent execute 'inoremap <expr><silent><buffer>' l:lhs
+        \ l:wrapper . '(''' . l:lhs . ''', ''' . a:map.rhs . ''')'
 
   let s:created_maps += [a:map]
 endfunction
