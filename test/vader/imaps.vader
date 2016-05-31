@@ -49,6 +49,6 @@ Do (imaps: imaps#add_map ;vv -> \vec{f}):
 Expect tex (Verify):
   \documentclass{minimal}
   \begin{document}
-  $|f| = \vec{f}\cdot\vec{f}$ --- vv
+  $|f| = \vec{f}\cdot\vec{f}$ --- ;vv
   \end{document}
 
