@@ -64,7 +64,43 @@ Do (Complete):
 Expect tex (Verify):
   \includestandalone{fig_1}
 
+Given tex (Completion: \gls):
+=================================================================================
+  \gls{}
+  \newglossaryentry{foo}{test}
+  \newglossaryentry{bar}{test}
+  \newglossaryentry{baz}{test}
+
+Before:
+  set buftype=
+  silent w!
+
+After:
+  set buftype=nofile
+  silent call delete('[Vader-workbench]')
+
+Do (Complete):
+  $i\<c-x>\<c-o>
+
+Expect tex (Verify):
+  \gls{foo}
+  \newglossaryentry{foo}{test}
+  \newglossaryentry{bar}{test}
+  \newglossaryentry{baz}{test}
+
+Do (Complete):
+  $i\<c-x>\<c-o>\<c-n>
+
+Expect tex (Verify):
+  \gls{bar}
+  \newglossaryentry{foo}{test}
+  \newglossaryentry{bar}{test}
+  \newglossaryentry{baz}{test}
+
+Before:
+After:
 Given:
+
 Execute (Cleanup):
 =================================================================================
   call system('rm -f *.tex')
