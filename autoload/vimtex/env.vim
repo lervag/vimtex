@@ -5,19 +5,6 @@
 "
 
 function! vimtex#env#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_env_complete_list', [
-        \ 'itemize',
-        \ 'enumerate',
-        \ 'description',
-        \ 'center',
-        \ 'figure',
-        \ 'table',
-        \ 'equation',
-        \ 'multline',
-        \ 'align',
-        \ 'split',
-        \ '\[',
-        \ ])
 endfunction
 
 " }}}1
@@ -151,14 +138,18 @@ endfunction
 
 " }}}1
 function! s:input_complete(lead, cmdline, pos) " {{{1
+  " Always include displaymath
+  let l:cands = ['\[']
+
   try
-    let l:cands = uniq(sort(
-          \ g:vimtex_env_complete_list
-          \ + map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
-          \            'v:val =~# ''\\begin'''),
-          \     'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
+    let l:cands += uniq(sort(
+          \ map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
+          \          'v:val =~# ''\\begin'''),
+          \   'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
+
+    " Never include document
+    call remove(l:cands, index(l:cands, 'document'))
   catch
-    let l:cands = g:vimtex_env_complete_list
   endtry
 
   return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')

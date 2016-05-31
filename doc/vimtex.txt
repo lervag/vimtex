@@ -370,25 +370,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_env_complete_list*
-  Define a list of environments that will be completed when changing the
-  surrounding environments (see |<plug>(vimtex-env-change)|).
-
-  Default value: >
-    let g:vimtex_env_complete_list = [
-      \ 'itemize',
-      \ 'enumerate',
-      \ 'description',
-      \ 'center',
-      \ 'figure',
-      \ 'table',
-      \ 'equation',
-      \ 'multline',
-      \ 'align',
-      \ 'split',
-      \ '\[',
-      \ ]
-<
 *g:vimtex_delim_toggle_mod_list*
   Define list of delimiter modifiers to toggle through with
   |<plug>(vimtex-delim-toggle-modifier)|.
@@ -2008,6 +1989,16 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2016-05-31: A lot of things have updated~
+I know that people would like to see a simple list of changes. Unfortunately,
+I am bad at keeping this changelog updated. All details are available in the
+git log, though. The reason I added this entry is to note that I have removed
+an option:
+
+  *g:vimtex_env_complete_list* --- It is no longer necessary. Completion
+                                 candidates are instead parsed from the
+                                 project.
 
 2016-02-06: Large refactoring of delimiter parsing~
 I've refactored a lot of the code in order to make the parsing of delimiters
