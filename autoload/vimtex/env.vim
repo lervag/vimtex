@@ -91,7 +91,7 @@ function! vimtex#env#change_prompt(type) " {{{1
   call vimtex#echo#status(['Change surrounding environment: ',
         \ ['VimtexWarning', l:name]])
   echohl VimtexMsg
-  let l:new_env = input('> ', '', 'customlist,' . s:sidwrap('input_complete'))
+  let l:new_env = input('> ', '', 'customlist,vimtex#env#input_complete')
   echohl None
   if empty(l:new_env) | return | endif
 
@@ -123,21 +123,7 @@ function! vimtex#env#is_inside(env) " {{{1
 endfunction
 
 " }}}1
-
-function! s:pos_prev(env) " {{{1
-    return a:env.cnum > 1
-          \ ? [0, a:env.lnum, a:env.cnum-1, 0]
-          \ : [0, max([a:env.lnum-1, 1]), strlen(getline(a:env.lnum-1)), 0]
-endfunction
-
-" }}}1
-
-function! s:sidwrap(func) " {{{1
-  return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\ze.*$') . a:func
-endfunction
-
-" }}}1
-function! s:input_complete(lead, cmdline, pos) " {{{1
+function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
   " Always include displaymath
   let l:cands = ['\[']
 
@@ -153,6 +139,14 @@ function! s:input_complete(lead, cmdline, pos) " {{{1
   endtry
 
   return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')
+endfunction
+
+" }}}1
+
+function! s:pos_prev(env) " {{{1
+    return a:env.cnum > 1
+          \ ? [0, a:env.lnum, a:env.cnum-1, 0]
+          \ : [0, max([a:env.lnum-1, 1]), strlen(getline(a:env.lnum-1)), 0]
 endfunction
 
 " }}}1
