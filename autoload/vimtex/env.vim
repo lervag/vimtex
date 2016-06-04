@@ -128,7 +128,7 @@ function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
   let l:cands = ['\[']
 
   try
-    let l:cands += uniq(sort(
+    let l:cands += s:uniq(sort(
           \ map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
           \          'v:val =~# ''\\begin'''),
           \   'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
@@ -147,6 +147,26 @@ function! s:pos_prev(env) " {{{1
     return a:env.cnum > 1
           \ ? [0, a:env.lnum, a:env.cnum-1, 0]
           \ : [0, max([a:env.lnum-1, 1]), strlen(getline(a:env.lnum-1)), 0]
+endfunction
+
+" }}}1
+function! s:uniq(list) " {{{1
+  "
+  " Trivial cases (uniq exists or one or fewer list elements)
+  "
+  if exists('*uniq') | return uniq(a:list) | endif
+  if len(a:list) <= 1 | return a:list | endif
+
+  "
+  " Custom uniq implementation
+  "
+  let l:uniq = [a:list[0]]
+  for l:next in a:list[1:]
+    if l:uniq[-1] != l:next
+      call add(l:uniq, l:next)
+    endif
+  endfor
+  return l:uniq
 endfunction
 
 " }}}1
