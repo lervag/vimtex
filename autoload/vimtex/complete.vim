@@ -258,8 +258,12 @@ endfunction
 function! s:ref.get_matches(regex) dict " {{{2
   call self.parse_aux_files()
 
+  " Match number
+  let self.matches = filter(copy(self.labels), 'v:val[1] =~# ''^' . a:regex . '''')
+  if !empty(self.matches) | return self.matches | endif
+
   " Match label
-  let self.matches = filter(copy(self.labels), 'v:val[0] =~ ''' . a:regex . '''')
+  let self.matches = filter(copy(self.labels), 'v:val[0] =~# ''' . a:regex . '''')
 
   " Match label and number
   if empty(self.matches)
@@ -268,14 +272,9 @@ function! s:ref.get_matches(regex) dict " {{{2
       let l:base = l:regex_split[0]
       let l:number = escape(join(l:regex_split[1:], ' '), '.')
       let self.matches = filter(copy(self.labels),
-            \ 'v:val[0] =~ ''' . l:base   . ''' &&' .
-            \ 'v:val[1] =~ ''' . l:number . '''')
+            \ 'v:val[0] =~# ''' . l:base   . ''' &&' .
+            \ 'v:val[1] =~# ''' . l:number . '''')
     endif
-  endif
-
-  " Match number
-  if empty(self.matches)
-    let self.matches = filter(copy(self.labels), 'v:val[1] =~ ''' . a:regex . '''')
   endif
 
   return self.matches
