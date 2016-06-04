@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{cleveref}
 \usepackage{graphicx}
 \usepackage{pdfpages}
@@ -13,6 +14,9 @@
 \usepackage[nonumberlist,acronymlists={gloss,symbolslist}]{glossaries}
 \loadglsentries{glossary}
 
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
 \includeonly{sub1,sub2 with spaces}
 
 \begin{document}
@@ -23,6 +27,26 @@ To test label completion you need to compile the document first!
   f(x) = 42
   \label{eq:main-is-working}
 \end{equation}
+
+\begin{theorem}
+  \label{th:first}
+  test
+\end{theorem}
+
+\begin{theorem}
+  \label{th:second}
+  test
+\end{theorem}
+
+\begin{proposition}
+  \label{prop:first}
+  test
+\end{proposition}
+
+\begin{proposition}
+  \label{prop:second}
+  test
+\end{proposition}
 
 \include{sub1}
 
