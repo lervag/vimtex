@@ -1085,19 +1085,22 @@ Commands~
 :VimtexReload             Reload |vimtex| scripts. This is primarely useful
                           when developing and debugging |vimtex| itself.
 
-                                             *VimtexWordCount*
-:VimtexWordCount          Shows the number of words in the current project.
-                          The count is created with `texcount` through a call
-                          on the main project file similar to: >
+                                             *VimtexCountLetters*
+                                             *VimtexCountWords*
+:VimtexCountLetters       Shows the number of letters/characters or words in
+:VimtexCountWords         the current project. The count is created with
+                          `texcount` through a call on the main project file
+                          similar to: >
 
-                            texcount -nosub -sub -merge FILE
+                            texcount -nosub -sub [-letter] -merge FILE
 <
-                                             *VimtexWordCount!*
-:VimtexWordCount!         Similar to |VimtexWordCount|, but show separate
-                          reports for included files.  I.e. presents the
-                          result of >
+                                             *VimtexCountLetters!*
+                                             *VimtexCountWords!*
+:VimtexCountLetters!      Similar to |VimtexCountLetters|/|VimtexCountWords|, but
+:VimtexCountWords!        show separate reports for included files.  I.e.
+                          presents the result of >
 
-                            texcount -nosub -sub -inc FILE
+                            texcount -nosub -sub [-letter] -inc FILE
 <
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
