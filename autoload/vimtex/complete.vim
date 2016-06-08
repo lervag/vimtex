@@ -364,7 +364,7 @@ function! s:img.complete(regex) dict " {{{2
   call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
   call map(self.candidates, '{
         \ ''abbr'' : v:val,
-        \ ''word'' : fnamemodify(v:val, '':t''),
+        \ ''word'' : v:val,
         \ ''menu'' : '' [graphics]'',
         \ }')
 
