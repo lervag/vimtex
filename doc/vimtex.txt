@@ -427,6 +427,12 @@ Options~
 
   Default value: 0
 
+*g:vimtex_fold_section_character*
+
+  Use custom section symbol for folding.
+
+  Default value: 0
+
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
 
