@@ -427,7 +427,7 @@ Options~
 
   Default value: 0
 
-*g:vimtex_fold_section_character*
+*g:vimtex_fold_levelmarker*
 
   Use custom section symbol for folding.
 

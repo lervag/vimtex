@@ -8,7 +8,7 @@ function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
   call vimtex#util#set_default('g:vimtex_fold_manual', 0)
   call vimtex#util#set_default('g:vimtex_fold_comments', 0)
-  call vimtex#util#set_default('g:vimtex_fold_section_character', '*')
+  call vimtex#util#set_default('g:vimtex_fold_levelmarker', '*')
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
@@ -237,7 +237,7 @@ function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
   let level = v:foldlevel > 1
-        \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_section_character
+        \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
         \ : ''
   let title = 'Not defined'
   let nt = 73
