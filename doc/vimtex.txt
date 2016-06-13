@@ -431,7 +431,7 @@ Options~
 
   Use custom section symbol for folding.
 
-  Default value: ''
+  Default value: '*'
 
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
