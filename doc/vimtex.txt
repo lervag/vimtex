@@ -431,7 +431,7 @@ Options~
 
   Use custom section symbol for folding.
 
-  Default value: ''
+  Default value: '*'
 
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
@@ -761,7 +761,7 @@ Options~
 *g:vimtex_text_obj_linewise_operators*
   List of operators that will act linewise on the delimiter text objects (i.e.
   `ie/ae`, `i$/a$`, and `id/ad`). Note, for inline regions the operators will not
-  act linewise, since that would lead to side effecs.
+  act linewise, since that would lead to side effects.
 
   Default value: ['d', 'y']
 
@@ -1824,7 +1824,7 @@ correctly set up, this allows one to go directly from a selected line in the
 viewer (typically by double clicking with the mouse or something similar) to
 the corresponding line inside the Vim instance.
 
-Backward search is typially set up inside the specific viewer through an
+Backward search is typically set up inside the specific viewer through an
 option named something like "inverse search command-line".  A standard value
 for the option is: >
 
@@ -2063,7 +2063,7 @@ display similar things, such as a list of labels.  I realized I wanted the ToC
 window to be more adaptable, so I implemented the `index` interface for such
 buffers.  The `index` in itself may be used to create ToC-like buffers with
 simple actions.  The |vimtex-toc| uses and expands the `index` in such a way
-that the changes should barely be noticable from the user perspective.  Note
+that the changes should barely be noticeable from the user perspective.  Note
 however the following variable name changes:
 
   *g:vimtex_toc_numbers_width*     ---> |g:vimtex_toc_number_width|
