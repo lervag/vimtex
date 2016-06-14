@@ -360,6 +360,7 @@ function! s:img.complete(regex) dict " {{{2
 
   let l:output = b:vimtex.out()
   call filter(self.candidates, 'v:val !=# l:output')
+  call filter(self.candidates, 'v:val =~# a:regex')
 
   call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
   call map(self.candidates, '{
@@ -388,6 +389,7 @@ function! s:inc.complete(regex) dict " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.tex'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
+  call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''abbr'' : v:val,
@@ -407,6 +409,7 @@ function! s:pdf.complete(regex) dict " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.pdf'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
+  call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''abbr'' : v:val,
@@ -427,6 +430,7 @@ function! s:sta.complete(regex) dict " {{{2
   let self.candidates = split(self.candidates, '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
+  call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''abbr'' : v:val,
