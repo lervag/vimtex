@@ -103,6 +103,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
   let delim = vimtex#delim#get_matching(delim)
   if empty(delim) | return | endif
 
+  normal! m`
   call cursor(delim.lnum,
         \ (delim.is_open
         \   ? delim.cnum
