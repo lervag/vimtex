@@ -544,7 +544,7 @@ function! s:get_main_from_specifier(spec) " {{{1
               \ expand('%:p:h') . '/' . l:filename,
               \ getcwd()        . '/' . l:filename
               \]
-          if filereadable(l:candidate) | return l:candidate | endif
+          if filereadable(l:candidate) | return resolve(l:candidate) | endif
         endfor
       endif
     endif
