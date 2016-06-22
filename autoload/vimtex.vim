@@ -541,8 +541,8 @@ function! s:get_main_from_specifier(spec) " {{{1
         if filereadable(l:filename) | return l:filename | endif
       else
         for l:candidate in [
-              \ expand('%:p:h')             . '/' . l:filename,
-              \ fnamemodify(getcwd(), ':p') . '/' . l:filename
+              \ fnamemodify(expand('%:p:h') . '/' . l:filename, ':p'),
+              \ fnamemodify(getcwd() . '/' . l:filename, ':p')
               \]
           if filereadable(l:candidate) | return l:candidate | endif
         endfor
