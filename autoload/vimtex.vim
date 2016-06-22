@@ -540,10 +540,12 @@ function! s:get_main_from_specifier(spec) " {{{1
       if l:filename[0] ==# '/'
         if filereadable(l:filename) | return l:filename | endif
       else
-        for l:candidate in [
-              \ expand('%:p:h')             . '/' . l:filename,
-              \ fnamemodify(getcwd(), ':p') . '/' . l:filename
-              \]
+        " The candidate may be relative both to the current buffer file and to
+        " the working directory (for subfile package)
+        for l:candidate in map([
+              \   expand('%:p:h'),
+              \   getcwd()],
+              \ 'simplify(v:val . ''/'' . l:filename)')
           if filereadable(l:candidate) | return l:candidate | endif
         endfor
       endif
