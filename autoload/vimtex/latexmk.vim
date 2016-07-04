@@ -56,6 +56,14 @@ endfunction
 function! vimtex#latexmk#init_buffer() " {{{1
   if !g:vimtex_latexmk_enabled | return | endif
 
+  " Check option validity
+  if g:vimtex_latexmk_callback && !has('clientserver')
+    call vimtex#echo#status(['vimtex: ',
+          \ ['VimtexWarning',
+          \  'Can''t use callbacks without +clientserver']])
+    let g:vimtex_latexmk_callback = 0
+  endif
+
   " Set compiler (this defines the errorformat)
   compiler latexmk
 
