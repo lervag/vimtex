@@ -568,6 +568,9 @@ endfunction
 " }}}1
 
 function! s:fix_quickfix_paths() " {{{1
+  " Ensure this is only applied when necessary
+  if !exists('s:qf_main') | return | endif
+
   let l:qflist = getqflist()
   for l:qf in l:qflist
     " For errors and warnings that don't supply a file, the basename of the
@@ -588,6 +591,8 @@ function! s:fix_quickfix_paths() " {{{1
     let l:qf.bufnr = bufnr(l:file)
   endfor
   call setqflist(l:qflist)
+
+  unlet s:qf_main
 endfunction
 
 " }}}1
