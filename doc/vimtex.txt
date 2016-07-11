@@ -1946,6 +1946,16 @@ are a few things that must be considered for system interoperability. A number
 of common problems and suggested solutions are included in the following
 troubleshooting section.
 
+Problem: The user wants to use vim-polyglot~
+
+This is a problem, because vim-polyglot [0] includes and enables LaTeX-Box by
+default. LaTeX-Box will not work well with vimtex, e.g. because of conflicting
+mappings.
+
+Suggested solution: Don't use vim-polyglot.
+
+[0]: https://github.com/sheerun/vim-polyglot
+
 Problem: Upon starting continuous compilation the status bar indicates~
    'latexmk compile: started continuous mode' but compilation never terminates~
    and the quickfix window does not load.~

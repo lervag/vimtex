@@ -92,6 +92,11 @@ The following are some alternative LaTeX plugins for Vim:
     removed because it adds a lot of complexity for relatively little gain
     (IMHO).
 
+    Note: LaTeX-Box is included with
+    [vim-polyglot](https://github.com/sheerun/vim-polyglot). Some users are not
+    quite aware of this and end up trying vimtex with LaTeX-Box enabled. This
+    will not work --- please disable LaTeX-Box first!
+
 - [LaTeX-Suite](http://vim-latex.sourceforge.net)
 
     The main difference between vimtex and LaTeX-Suite (aka vim-latex) is
