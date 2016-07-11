@@ -41,7 +41,7 @@ function! vimtex#fold#init_script() " {{{1
   "
   " List of identifiers for improving efficiency
   "
-  let s:folded  = '\v^\s*\%'
+  let s:folded  = '\v^\s*\%|^\s*\]\{'
   let s:folded .= '|\\%(' . join([
         \   'begin',
         \   'end',
@@ -51,6 +51,7 @@ function! vimtex#fold#init_script() " {{{1
         \   '%(front|main|back)matter',
         \   'appendix',
         \   'part',
+        \   'usepackage',
         \ ], '|') . ')'
 endfunction
 
@@ -136,6 +137,15 @@ function! vimtex#fold#level(lnum) " {{{1
     elseif line =~# '^\s*\\begin\s*{\s*document\s*}'
       return '0'
     endif
+  endif
+
+  " Fold usepackages
+  if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
+    let s:usepackage = 1
+    return 'a1'
+  elseif get(s:, 'start', 0) && line =~# '^\s*\]{'
+    let s:usepackage = 0
+    return 's1'
   endif
 
   " Fold chapters and sections
@@ -235,6 +245,13 @@ endfunction
 function! vimtex#fold#text() " {{{1
   " Initialize
   let line = getline(v:foldstart)
+
+  " Text for usepackage
+  if line =~# '^\s*\\usepackage'
+    return '\usepackage[...]{'
+          \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
+          \ . '}'
+  endif
 
   let level = v:foldlevel > 1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
