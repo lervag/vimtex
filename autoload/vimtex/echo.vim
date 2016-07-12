@@ -5,6 +5,7 @@
 "
 
 function! vimtex#echo#init_options() " {{{1
+  call vimtex#util#set_default('g:vimtex_echo_ignore_wait', 0)
 endfunction
 
 " }}}1
@@ -22,6 +23,8 @@ endfunction
 " }}}1
 
 function! vimtex#echo#wait() " {{{1
+  if g:vimtex_echo_ignore_wait | return | endif
+
   echohl VimtexMsg
   call input('Press any key to continue ...')
   echohl None
