@@ -177,9 +177,7 @@ if !exists('s:reloading_script')
       runtime indent/tex.vim
     endif
 
-    call vimtex#echo#formatted([
-          \ 'vimtex: ', ['VimtexWarning', 'reloaded']])
-
+    call vimtex#echo#info('reloaded')
     unlet s:reloading_script
   endfunction
 endif

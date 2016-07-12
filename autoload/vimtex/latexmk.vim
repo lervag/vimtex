@@ -57,11 +57,11 @@ function! vimtex#latexmk#init_buffer() " {{{1
   if !g:vimtex_latexmk_enabled | return | endif
 
   " Check option validity
-  if g:vimtex_latexmk_callback && !has('clientserver')
-    call vimtex#echo#status(['vimtex: ',
-          \ ['VimtexWarning',
-          \  'Can''t use callbacks without +clientserver']])
+  if g:vimtex_latexmk_callback
+        \ && !(has('clientserver') || has('nvim'))
     let g:vimtex_latexmk_callback = 0
+    call vimtex#echo#warning('Can''t use callbacks without +clientserver')
+    call vimtex#echo#wait()
   endif
 
   " Set compiler (this defines the errorformat)
@@ -632,11 +632,11 @@ function! s:check_system_compatibility() " {{{1
   " Disable latexmk if required programs are missing
   "
   if len(missing) > 0
-    call vimtex#echo#warning('vimtex warning: ')
-    call vimtex#echo#warning('  vimtex#latexmk was not initialized', 'None')
     for cmd in missing
-      call vimtex#echo#warning('  ' . cmd . ' is not executable', 'None')
+      call vimtex#echo#warning(cmd . ' is not executable')
     endfor
+    call vimtex#echo#echo('- vimtex#latexmk was not initialized!')
+    call vimtex#echo#wait()
     let g:vimtex_latexmk_enabled = 0
   endif
 endfunction

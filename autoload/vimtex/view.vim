@@ -161,7 +161,7 @@ function! s:mupdf.init() dict " {{{2
   endif
 
   if !executable('xdotool')
-    call vimtex#echo#warning('vimtex viewer MuPDF requires xdotool!')
+    call vimtex#echo#warning('viewer MuPDF requires xdotool!')
   endif
 
   let self.class = 'MuPDF'
@@ -240,7 +240,7 @@ function! s:mupdf.reverse_search() dict " {{{2
 
   if !self.xwin_exists()
     call vimtex#echo#warning(
-          \ 'vimtex reverse search failed (is MuPDF open?)')
+          \ 'reverse search failed (is MuPDF open?)')
     return
   endif
 
@@ -315,7 +315,7 @@ function! s:zathura.init() dict " {{{2
   endif
 
   if !executable('xdotool')
-    call vimtex#echo#warning('vimtex viewer Zathura requires xdotool!')
+    call vimtex#echo#warning('viewer Zathura requires xdotool!')
   endif
 
   let self.class = 'Zathura'
@@ -402,7 +402,7 @@ endfunction
 "
 function! s:output_not_readable(output) " {{{1
   if !filereadable(a:output)
-    call vimtex#echo#warning('vimtex viewer can not read PDF file!')
+    call vimtex#echo#warning('viewer can not read PDF file!')
     return 1
   else
     return 0
@@ -424,7 +424,7 @@ function! s:xwin_get_id() dict " {{{1
   let xwin_ids = split(system(cmd), '\n')
   if len(xwin_ids) == 0
     call vimtex#echo#warning(
-          \ 'vimtex viewer can not find ' . self.class . ' window ID!')
+          \ 'viewer can not find ' . self.class . ' window ID!')
     let self.xwin_id = 0
   else
     let self.xwin_id = xwin_ids[-1]

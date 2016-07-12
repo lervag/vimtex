@@ -83,19 +83,19 @@ function! s:bib.init() dict " {{{2
   " Check if bibtex is executable
   if !executable('bibtex')
     let self.enabled = 0
-    call vimtex#echo#warning('vimtex warning')
-    call vimtex#echo#warning('  bibtex completion is not available!', 'None')
-    call vimtex#echo#warning('  bibtex is not executable', 'None')
+    call vimtex#echo#warning('bibtex is not executable')
+    call vimtex#echo#echo('- bibtex completion is not available!')
+    call vimtex#echo#wait()
     return
   endif
 
   " Check if kpsewhich is required and available
   if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
     let self.enabled = 0
-    call vimtex#echo#warning('vimtex warning')
-    call vimtex#echo#warning('  bibtex completion is not available!', 'None')
-    call vimtex#echo#warning('  recursive bib search requires kpsewhich', 'None')
-    call vimtex#echo#warning('  kpsewhich is not executable', 'None')
+    call vimtex#echo#warning('kpsewhich is not executable')
+    call vimtex#echo#echo('- recursive bib search requires kpsewhich!')
+    call vimtex#echo#echo('- bibtex completion is not available!')
+    call vimtex#echo#wait()
   endif
 
   " Check if bstfile contains whitespace (not handled by vimtex)

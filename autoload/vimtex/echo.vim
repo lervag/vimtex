@@ -27,18 +27,22 @@ function! vimtex#echo#wait() " {{{1
   echohl None
 endfunction
 
-function! vimtex#echo#echo(message, ...) " {{{1
-  let hl = len(a:000) > 0 ? a:0 : 'VimtexMsg'
-  execute 'echohl' hl
+function! vimtex#echo#echo(message) " {{{1
+  echohl VimtexMsg
   echo a:message
   echohl None
 endfunction
 
-function! vimtex#echo#warning(message, ...) " {{{1
-  let hl = len(a:000) > 0 ? a:0 : 'VimtexWarning'
-  execute 'echohl' hl
-  echomsg a:message
-  echohl None
+function! vimtex#echo#warning(message) " {{{1
+  call vimtex#echo#formatted([
+        \ ['VimtexWarning', 'vimtex warning: '],
+        \ ['VimtexMsg', a:message]])
+endfunction
+
+function! vimtex#echo#info(message) " {{{1
+  call vimtex#echo#formatted([
+        \ ['VimtexInfo', 'vimtex: '],
+        \ ['VimtexMsg', a:message]])
 endfunction
 
 function! vimtex#echo#formatted(parts) " {{{1

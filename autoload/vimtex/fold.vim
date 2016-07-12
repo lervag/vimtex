@@ -69,11 +69,9 @@ function! vimtex#fold#init_buffer() " {{{1
 
   " Sanity check
   if g:vimtex_fold_documentclass && g:vimtex_fold_preamble
-    call vimtex#echo#formatted(['vimtex: ',
-          \ ['VimtexWarning',
-          \  'Can''t fold both preamble and documentclass!']])
-    call vimtex#echo#wait()
     let g:vimtex_fold_documentclass = 0
+    call vimtex#echo#warning('Can''t fold both preamble and documentclass!')
+    call vimtex#echo#wait()
   endif
 
   " Set fold options
