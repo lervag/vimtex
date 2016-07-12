@@ -26,6 +26,7 @@ function! vimtex#fold#init_options() " {{{1
         \   'subsection',
         \   'subsubsection',
         \ ])
+  call vimtex#util#set_default('g:vimtex_fold_documentclass', 0)
   call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
 
   " Disable manual mode in vimdiff
@@ -65,6 +66,15 @@ function! vimtex#fold#init_buffer() " {{{1
 
   if !g:vimtex_fold_enabled | return | endif
   if s:foldmethod_in_modeline() | return | endif
+
+  " Sanity check
+  if g:vimtex_fold_documentclass && g:vimtex_fold_preamble
+    call vimtex#echo#formatted(['vimtex: ',
+          \ ['VimtexWarning',
+          \  'Can''t fold both preamble and documentclass!']])
+    call vimtex#echo#wait()
+    let g:vimtex_fold_documentclass = 0
+  endif
 
   " Set fold options
   setlocal foldmethod=expr
@@ -132,12 +142,24 @@ function! vimtex#fold#level(lnum) " {{{1
   if line !~# s:folded | return '=' | endif
 
   " Fold preamble
-  if g:vimtex_fold_preamble
-    if line =~# '^\s*\\documentclass'
-      return '>1'
-    elseif line =~# '^\s*\\begin\s*{\s*document\s*}'
-      return '0'
+  if g:vimtex_fold_preamble && line =~# '^\s*\\documentclass'
+    return '>1'
+  endif
+
+  " Fold documentclass
+  if g:vimtex_fold_documentclass
+    if line =~# '^\s*\\documentclass\s*\[\s*\%($\|%\)'
+      let s:documentclass = 1
+      return 'a1'
+    elseif get(s:, 'documentclass', 0) && line =~# '^\s*\]{'
+      let s:documentclass = 0
+      return 's1'
     endif
+  endif
+
+  " Never fold \begin{document}
+  if line =~# '^\s*\\begin\s*{\s*document\s*}'
+    return '0'
   endif
 
   " Fold usepackages
@@ -250,8 +272,15 @@ function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
   " Text for usepackage
-  if line =~# '^\s*\\usepackage'
+  if g:vimtex_fold_usepackage && line =~# '^\s*\\usepackage'
     return '\usepackage[...]{'
+          \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
+          \ . '}'
+  endif
+
+  " Text for documentclass
+  if g:vimtex_fold_documentclass && line =~# '^\s*\\documentclass'
+    return '\documentclass[...]{'
           \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
           \ . '}'
   endif

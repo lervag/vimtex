@@ -21,6 +21,12 @@ endfunction
 
 " }}}1
 
+function! vimtex#echo#wait() " {{{1
+  echohl VimtexMsg
+  call input('Press any key to continue ...')
+  echohl None
+endfunction
+
 function! vimtex#echo#echo(message, ...) " {{{1
   let hl = len(a:000) > 0 ? a:0 : 'VimtexMsg'
   execute 'echohl' hl
