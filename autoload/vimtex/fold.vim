@@ -26,6 +26,7 @@ function! vimtex#fold#init_options() " {{{1
         \   'subsection',
         \   'subsubsection',
         \ ])
+  call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
 
   " Disable manual mode in vimdiff
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
@@ -140,12 +141,14 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold usepackages
-  if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
-    let s:usepackage = 1
-    return 'a1'
-  elseif get(s:, 'usepackage', 0) && line =~# '^\s*\]{'
-    let s:usepackage = 0
-    return 's1'
+  if g:vimtex_fold_usepackage
+    if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
+      let s:usepackage = 1
+      return 'a1'
+    elseif get(s:, 'usepackage', 0) && line =~# '^\s*\]{'
+      let s:usepackage = 0
+      return 's1'
+    endif
   endif
 
   " Fold chapters and sections

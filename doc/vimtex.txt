@@ -467,6 +467,18 @@ Options~
         \ "subsubsection",
       \ ]
 <
+*g:vimtex_fold_usepackage*
+  Use this option to disable/enable folding of long `\usepackage` lines. The
+  lines must be formatted like this for folding to work properly: >
+
+    \usepackage[
+      option 1,
+      ...,
+      option n
+      ]{name}
+<
+  Default value: 1
+
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
 
@@ -1584,6 +1596,7 @@ Associated settings:
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|
   |g:vimtex_fold_envs|
+  |g:vimtex_fold_usepackage|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
