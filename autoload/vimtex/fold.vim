@@ -143,7 +143,7 @@ function! vimtex#fold#level(lnum) " {{{1
   if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
     let s:usepackage = 1
     return 'a1'
-  elseif get(s:, 'start', 0) && line =~# '^\s*\]{'
+  elseif get(s:, 'usepackage', 0) && line =~# '^\s*\]{'
     let s:usepackage = 0
     return 's1'
   endif
