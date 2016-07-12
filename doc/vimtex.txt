@@ -453,6 +453,8 @@ Options~
 *g:vimtex_fold_preamble*
   Control whether or not to fold the preamble.
 
+  Note: This option can not be used together with |g:vimtex_fold_documentclass|.
+
   Default value: 1
 
 *g:vimtex_fold_sections*
@@ -478,6 +480,14 @@ Options~
       ]{name}
 <
   Default value: 1
+
+*g:vimtex_fold_documentclass*
+  Use this option to disable/enable folding of long `\documentclass` lines. This
+  works similar to |g:vimtex_fold_usepackage|.
+
+  Note: This option can not be used together with |g:vimtex_fold_preamble|.
+
+  Default value: 0
 
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
