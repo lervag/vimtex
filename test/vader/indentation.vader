@@ -92,7 +92,7 @@ Expect tex (Verify):
       f(x) = 3
     \right)
     \left.
-    f(x) = 3
+      f(x) = 3
     \right.
   \end{equation}
 
