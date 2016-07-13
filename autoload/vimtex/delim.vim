@@ -148,14 +148,14 @@ function! vimtex#delim#init_script() " {{{1
   let s:re.delim_math = {
         \ 'open' : '\%(\%(' . s:re.delim_mods.open . '\)\s*\)\?\%('
         \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|')
-        \   . '\)',
+        \   . '\)\|\\left\s*\.',
         \ 'close' : '\%(\%(' . s:re.delim_mods.close . '\)\s*\)\?\%('
         \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
-        \   . '\)',
+        \   . '\)\|\\right\s*\.',
         \ 'both' : '\%(\%(' . s:re.delim_mods.both . '\)\s*\)\?\%('
         \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|') . '\|'
         \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
-        \   . '\)'
+        \   . '\)\|\\\%(left\|right\)\s*\.',
         \}
 
   let s:delims.env_all = {}
@@ -187,6 +187,10 @@ function! vimtex#delim#init_script() " {{{1
         \ {
         \   're' : '\\\%((\|)\|\[\|\]\)',
         \   'parser' : function('s:parser_latex'),
+        \ },
+        \ {
+        \   're' : '\\\%(left\|right\)\s*\.',
+        \   'parser' : function('s:parser_delim_unmatched'),
         \ },
         \ {
         \   're' : s:re.delim_all.both,
@@ -636,23 +640,25 @@ function! s:parser_delim(match, lnum, cnum, ...) " {{{1
   if a:match =~# '^' . s:re.delim_mods.both
     let m1 = matchstr(a:match, '^' . s:re.delim_mods.both)
     let d1 = substitute(strpart(a:match, len(m1)), '^\s*', '', '')
+    let s1 = !result.is_open
+    let re1 = s:parser_delim_get_regexp(m1, s1, 'delim_mods')
+          \  . '\s*' . s:parser_delim_get_regexp(d1, s1, 'delim_math')
+
     let m2 = s:parser_delim_get_corr(m1, 'delim_mods')
     let d2 = s:parser_delim_get_corr(d1, 'delim_math')
-    let re = [
-          \ s:parser_delim_get_regexp(m1, 'delim_mods')
-          \  . '\s*' . s:parser_delim_get_regexp(d1, 'delim_math'),
-          \ s:parser_delim_get_regexp(m2, 'delim_mods')
-          \  . '\s*' . s:parser_delim_get_regexp(d2, 'delim_math')
-          \]
+    let s2 = result.is_open
+    let re2 = s:parser_delim_get_regexp(m2, s2, 'delim_mods') . '\s*'
+          \ . (m1 =~# '\\\%(left\|right\)'
+          \   ? '\%(' . s:parser_delim_get_regexp(d2, s2, 'delim_math') . '\|\.\)'
+          \   : s:parser_delim_get_regexp(d2, s2, 'delim_math'))
   else
     let d1 = a:match
     let m1 = ''
+    let re1 = s:parser_delim_get_regexp(a:match, !result.is_open)
+
     let d2 = s:parser_delim_get_corr(a:match)
     let m2 = ''
-    let re = [
-          \ s:parser_delim_get_regexp(a:match),
-          \ s:parser_delim_get_regexp(d2)
-          \]
+    let re2 = s:parser_delim_get_regexp(d2, result.is_open)
   endif
 
   let result.delim = d1
@@ -661,30 +667,70 @@ function! s:parser_delim(match, lnum, cnum, ...) " {{{1
   let result.corr_delim = d2
   let result.corr_mod = m2
   let result.re = {
-        \ 'this'  : re[0],
-        \ 'corr'  : re[1],
-        \ 'open'  : result.is_open ? re[0] : re[1],
-        \ 'close' : result.is_open ? re[1] : re[0],
+        \ 'this'  : re1,
+        \ 'corr'  : re2,
+        \ 'open'  : result.is_open ? re1 : re2,
+        \ 'close' : result.is_open ? re2 : re1,
         \}
 
   return result
 endfunction
 
 " }}}1
-function! s:parser_delim_get_regexp(delim, ...) " {{{1
+function! s:parser_delim_unmatched(match, lnum, cnum, ...) " {{{1
+  let result = {}
+  let result.type = 'delim'
+  let result.side = a:match =~# s:re.delim_all.open ? 'open' : 'close'
+  let result.is_open = result.side ==# 'open'
+  let result.get_matching = function('s:get_matching_delim_unmatched')
+  let result.delim = '.'
+  let result.corr_delim = '.'
+
+  "
+  " Find corresponding delimiter and the regexps
+  "
+  if result.is_open
+    let result.mod = '\left'
+    let result.corr_mod = '\right'
+    let result.corr = '\right.'
+    let re1 = '\\left\s*\.'
+    let re2 = s:parser_delim_get_regexp('\right', 1, 'delim_mods')
+          \  . '\s*' . s:parser_delim_get_regexp('.', 1)
+  else
+    let result.mod = '\right'
+    let result.corr_mod = '\left'
+    let result.corr = '\left.'
+    let re1 = '\\right\s*\.'
+    let re2 = s:parser_delim_get_regexp('\left', 0, 'delim_mods')
+          \  . '\s*' . s:parser_delim_get_regexp('.', 0)
+  endif
+
+  let result.re = {
+        \ 'this'  : re1,
+        \ 'corr'  : re2,
+        \ 'open'  : result.is_open ? re1 : re2,
+        \ 'close' : result.is_open ? re2 : re1,
+        \}
+
+  return result
+endfunction
+
+" }}}1
+function! s:parser_delim_get_regexp(delim, side, ...) " {{{1
   let l:type = a:0 > 0 ? a:1 : 'delim_all'
 
-  " Check open delimiters
-  let index = index(map(copy(s:delims[l:type].list), 'v:val[0]'), a:delim)
-  if index >= 0
-    return s:delims[l:type].re[index][0]
+  " First check unmatched
+  if a:delim ==# '.'
+    return '\%(' . join(map(copy(s:delims.delim_math.re),
+          \ 'v:val[' . a:side . ']'), '\|') . '\)'
   endif
 
-  " Check close delimiters
-  let index = index(map(copy(s:delims[l:type].list), 'v:val[1]'), a:delim)
-  if index >= 0
-    return s:delims[l:type].re[index][1]
-  endif
+  " Next check normal delimiters
+  let index = index(map(copy(s:delims[l:type].list),
+        \ 'v:val[' . a:side . ']'), a:delim)
+  return (index >= 0)
+        \ ? s:delims[l:type].re[index][a:side]
+        \ : ''
 endfunction
 
 " }}}1
@@ -749,6 +795,39 @@ function! s:get_matching_delim() dict " {{{1
   let match = matchstr(getline(lnum), '^' . re, cnum-1)
 
   return [match, lnum, cnum]
+endfunction
+
+" }}}1
+function! s:get_matching_delim_unmatched() dict " {{{1
+  let [re, flags, stopline] = self.is_open
+        \ ? [self.re.close,  'nW', line('.') + s:stopline]
+        \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
+
+  let tries = 0
+  let misses = []
+  while 1
+    let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close, flags,
+          \ 'index(misses, [line("."), col(".")]) >= 0', stopline)
+    let match = matchstr(getline(lnum), '^' . re, cnum-1)
+    if lnum == 0 | break | endif
+
+    let cand = vimtex#delim#get_matching(extend({
+          \ 'type' : '',
+          \ 'lnum' : lnum,
+          \ 'cnum' : cnum,
+          \ 'match' : match,
+          \}, s:parser_delim(match, lnum, cnum)))
+
+    if !empty(cand) && [self.lnum, self.cnum] == [cand.lnum, cand.cnum]
+      return [match, lnum, cnum]
+    else
+      let misses += [[lnum, cnum]]
+      let tries += 1
+      if tries == 10 | break | endif
+    endif
+  endwhile
+
+  return ['', 0, 0]
 endfunction
 
 " }}}1
