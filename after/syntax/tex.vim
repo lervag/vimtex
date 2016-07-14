@@ -33,7 +33,7 @@ if get(g:, 'tex_fast', 'b') =~# 'b'
     for cmd in commands
       execute 'syntax region' style 'matchgroup=texTypeStyle'
             \ 'start="\\' . cmd . '\s*{" end="}"'
-            \ 'contains=@' . group
+            \ 'contains=@Spell,@' . group
             \ conceal
     endfor
     execute 'syntax cluster texMatchGroup add=' . style
