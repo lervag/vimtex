@@ -183,6 +183,15 @@ endfunction
 " }}}1
 
 function! s:highlight_matching_pair() " {{{1
+  if exists('*matchaddpos')
+    call s:highlight_matching_pair_new()
+  else
+    call s:highlight_matching_pair_old()
+  endif
+endfunction
+
+" }}}1
+function! s:highlight_matching_pair_new() " {{{1
   if exists('s:match_id')
     call matchdelete(s:match_id)
     unlet s:match_id
@@ -198,6 +207,25 @@ function! s:highlight_matching_pair() " {{{1
   let s:match_id = matchaddpos('MatchParen',
         \ [[l:d1.lnum, l:d1.cnum, strlen(l:d1.match)],
         \  [l:d2.lnum, l:d2.cnum, strlen(l:d2.match)]])
+endfunction
+
+" }}}1
+function! s:highlight_matching_pair_old() " {{{1
+  2match none
+  if vimtex#util#in_comment() | return | endif
+
+  let l:d1 = vimtex#delim#get_current('all', 'both')
+  if empty(l:d1) | return | endif
+
+  let l:d2 = vimtex#delim#get_matching(l:d1)
+  if empty(l:d2) | return | endif
+
+  let [l1, c1, l2, c2] = l:d1.side ==# 'open'
+        \ ? [l:d1.lnum, l:d1.cnum, l:d2.lnum, l:d2.cnum]
+        \ : [l:d2.lnum, l:d2.cnum, l:d1.lnum, l:d1.cnum]
+  execute '2match MatchParen /'
+        \ .   '\%' . l1 . 'l\%' . c1 . 'c' . l:d1.re.open
+        \ . '\|\%' . l2 . 'l\%' . c2 . 'c' . l:d1.re.close . '/'
 endfunction
 
 " }}}1
