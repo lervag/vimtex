@@ -68,9 +68,57 @@ highlight link texHyperref     texRefZone
 " }}}1
 " {{{1 Improve support for cite commands
 if get(g:, 'tex_fast', 'r') =~# 'r'
-  syntax match texStatement
-        \ "\\\%(auto\|text\)\?cite\%([tp]\*\?\|author\)\?"
+  "
+  " natbib
+  "
+  syntax match texStatement '\\cite\%([tp]\*\?\)\?'
         \ nextgroup=texRefOption,texCite
+
+  "
+  " biblatex
+  "
+  execute 'syntax match texStatement /\v\\%(' . join([
+        \   '[Cc]iteauthor\*?',
+        \   'cite%(title|year|date)\*?',
+        \   'citeurl',
+        \   '[Pp]arencite\*?',
+        \   'foot%(full)?cite%(text)?',
+        \   'fullcite',
+        \   '[Tt]extcite',
+        \   '[Ss]martcite',
+        \   'supercite',
+        \   '[Aa]utocite\*?',
+        \   '[Ppf]?[Nn]otecite'], '|') . ')/'
+        \ 'nextgroup=texRefOption,texCite'
+
+  execute 'syntax match texStatement /\v\\%(' . join([
+        \   '[Cc]ites',
+        \   '[Pp]arencites',
+        \   'footcite%(s|texts)',
+        \   '[Tt]extcites',
+        \   '[Ss]martcites',
+        \   'supercites',
+        \   '[Aa]utocites'], '|') . ')/'
+        \ 'nextgroup=texRefOptions,texCites'
+
+  execute 'syntax match texStatement /\\[pPfFsStTaA]\?[Vv]olcites\?/'
+        \ 'nextgroup=texRefOptions,texCites'
+
+  execute 'syntax match texStatement /\\cite\%(field\|list\|name\)/'
+        \ 'nextgroup=texRefOptions,texCites'
+
+  syntax region texRefOptions contained matchgroup=Delimiter
+        \ start='\[' end=']'
+        \ contains=@texRefGroup,texRefZone
+        \ nextgroup=texRefOptions,texCites
+
+  syntax region texCites contained matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contains=@texRefGroup,texRefZone,texCites
+        \ nextgroup=texRefOptions,texCites
+
+  highlight def link texRefOptions texRefOption
+  highlight def link texCites texCite
 endif
 
 " }}}1
