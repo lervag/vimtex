@@ -408,6 +408,8 @@ function! vimtex#delim#get_matching(delim) " {{{1
   let l:matching.corr  = a:delim.match
   let l:matching.side = a:delim.is_open ? 'close' : 'open'
   let l:matching.is_open = !a:delim.is_open
+  let l:matching.re.corr = a:delim.re.this
+  let l:matching.re.this = a:delim.re.corr
 
   if l:matching.type ==# 'delim'
     let l:matching.corr_delim = a:delim.delim
