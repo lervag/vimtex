@@ -25,9 +25,13 @@ endfunction
 function! vimtex#echo#wait() " {{{1
   if g:vimtex_echo_ignore_wait | return | endif
 
-  echohl VimtexMsg
-  call input('Press any key to continue ...')
-  echohl None
+  if filereadable(expand('%'))
+    echohl VimtexMsg
+    call input('Press any key to continue ...')
+    echohl None
+  else
+    sleep 1
+  endif
 endfunction
 
 function! vimtex#echo#echo(message) " {{{1
