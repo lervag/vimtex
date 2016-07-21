@@ -10,6 +10,20 @@ endfunction
 
 " }}}1
 function! vimtex#format#init_script() " {{{1
+  let s:border_beginning = '\v^\s*%(' . join([
+        \ '\\item',
+        \ '\\begin',
+        \ '\\end',
+        \], '|') . ')'
+  let s:border_end = '\v[^\\]\%'
+        \ . '|\\%(' . join([
+        \   '\\\*?',
+        \   'clear%(double)?page',
+        \   'linebreak',
+        \   'new%(line|page)',
+        \   'pagebreak',
+        \   '%(begin|end)\{[^}]*\}',
+        \  ], '|') . ')\s*$'
 endfunction
 
 " }}}1
@@ -22,8 +36,12 @@ endfunction
 " }}}1
 
 function! vimtex#format#formatexpr() " {{{1
-  let i0 = v:lnum + v:count - 1
-  let i1 = i0
+  let l:foldenable = &l:foldenable
+  setlocal nofoldenable
+
+  let l:top = v:lnum
+  let l:bottom = v:lnum + v:count - 1
+  let l:mark = l:bottom
 
   " This is a hack to make undo restore the correct position
   if mode() !=# 'i'
@@ -31,23 +49,29 @@ function! vimtex#format#formatexpr() " {{{1
     normal! x
   endif
 
-  while i0 >= v:lnum
-    if getline(i0) =~# '[^\\]%'
-      if i0 < i1
-        execute 'normal!' (i0+1) . 'Ggw' . i1 . 'G'
+  for l:current in range(l:bottom, l:top+1, -1)
+    let l:line = getline(l:current)
+
+    if l:line =~# s:border_end
+      if l:current < l:mark
+        execute 'normal!' (l:current+1) . 'Ggw' . l:mark . 'G'
       endif
-      let i1 = i0 - 1
-    elseif i0 == v:lnum
-      if v:count > 1
-        execute 'normal!' i0 . 'Ggw' . i1 . 'G'
-      else
-        return 1
-      endif
+      let l:mark = l:current
     endif
-    let i0 = i0 - 1
+
+    if l:line =~# s:border_beginning
+      if l:current < l:mark
+        execute 'normal!' l:current . 'Ggw' . l:mark . 'G'
+      endif
+      let l:mark = l:current-1
+    endif
   endwhile
 
-  return 0
+  if l:top < l:mark
+    execute 'normal!' l:top . 'Ggw' . l:mark . 'G'
+  endif
+
+  let &l:foldenable = l:foldenable
 endfunction
 
 " }}}1
