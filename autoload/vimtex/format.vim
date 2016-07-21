@@ -49,7 +49,7 @@ function! vimtex#format#formatexpr() " {{{1
     normal! x
   endif
 
-  for l:current in range(l:bottom, l:top+1, -1)
+  for l:current in range(l:bottom, l:top, -1)
     let l:line = getline(l:current)
 
     if l:line =~# s:border_end
