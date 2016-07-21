@@ -1,5 +1,7 @@
 Execute (Setup):
   set textwidth=79
+  set nojoinspaces
+  set shiftwidth=2
   let g:vimtex_format_enabled = 1
   silent! VimtexReload
 
