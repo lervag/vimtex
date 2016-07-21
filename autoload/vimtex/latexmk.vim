@@ -9,11 +9,11 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
   call vimtex#util#set_default('g:vimtex_latexmk_progname',
         \ get(v:, 'progpath', get(v:, 'progname')))
+  call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
   if !g:vimtex_latexmk_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_options', '')
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
