@@ -79,7 +79,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
   "
   execute 'syntax match texStatement /\v\\%(' . join([
         \   '[Cc]iteauthor\*?',
-        \   'cite%(title|year|date)\*?',
+        \   '[Cc]ite%(title|year|date)?\*?',
         \   'citeurl',
         \   '[Pp]arencite\*?',
         \   'foot%(full)?cite%(text)?',
