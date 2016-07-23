@@ -86,6 +86,7 @@ Feature overview~
                                                               *vimtex-features*
 
 - Document compilation with `latexmk`
+- Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - `MuPDF`
   - `Zathura`

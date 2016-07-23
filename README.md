@@ -21,6 +21,7 @@ disabled if desired.
 
 - Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/)
+- Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - [MuPDF](http://www.mupdf.com/)
   - [Zathura](https://pwmt.org/projects/zathura/)
