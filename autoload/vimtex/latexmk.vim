@@ -119,8 +119,8 @@ function! vimtex#latexmk#callback(status) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#latexmk#clean(full) " {{{1
-  if b:vimtex.pid
+function! vimtex#latexmk#clean(full, ...) " {{{1
+  if b:vimtex.pid && a:0 == 0
     silent call vimtex#latexmk#stop()
     let l:restart = 1
     let s:silence_next_callback = 1
@@ -139,7 +139,7 @@ function! vimtex#latexmk#clean(full) " {{{1
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
   let cmd .= a:full ? ' -C ' : ' -c '
-  let cmd .= vimtex#util#shellescape(b:vimtex.base)
+  let cmd .= vimtex#util#shellescape(a:0 > 0 ? a:1 : b:vimtex.base)
   call vimtex#util#execute({'cmd' : cmd})
   let b:vimtex.cmd_latexmk_clean = cmd
 
@@ -147,8 +147,10 @@ function! vimtex#latexmk#clean(full) " {{{1
     silent call vimtex#latexmk#compile()
   endif
 
-  call vimtex#echo#status(['latexmk clean: ',
-        \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
+  if !a:0 == 0
+    call vimtex#echo#status(['latexmk clean: ',
+          \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
+  endif
 endfunction
 
 " }}}1
@@ -285,14 +287,14 @@ endfunction
 let s:open_quickfix_window = 0
 
 " }}}1
-function! vimtex#latexmk#errors_inquire() " {{{1
+function! vimtex#latexmk#errors_inquire(...) " {{{1
   if !exists('b:vimtex') | return | endif
 
-  let log = b:vimtex.log()
+  let log = a:0 > 0 ? a:1.log : b:vimtex.log()
   if empty(log) | return 0 | endif
 
   " Save paths for fixing quickfix entries
-  let s:qf_main = b:vimtex.tex
+  let s:qf_main = a:0 > 0 ? a:1.tex : b:vimtex.tex
   let s:qf_root = b:vimtex.root
 
   execute 'cgetfile ' . fnameescape(log)
