@@ -296,6 +296,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lv  |<plug>(vimtex-view)|                   `n`
    <localleader>lr  |<plug>(vimtex-reverse-search)|         `n`
    <localleader>ll  |<plug>(vimtex-compile-toggle)|         `n`
+   <localleader>lL  |<plug>(vimtex-compile-selected)|       `nx`
    <localleader>lk  |<plug>(vimtex-stop)|                   `n`
    <localleader>lK  |<plug>(vimtex-stop-all)|               `n`
    <localleader>le  |<plug>(vimtex-errors)|                 `n`
@@ -1061,6 +1062,20 @@ Commands~
                                              *VimtexCompileSS!*
 :VimtexCompileSS!         Like |VimtexCompileSS|, but in foreground.
 
+                                             *VimtexCompileSelected*
+                                             *<plug>(vimtex-compile-selected)*
+:VimtexCompileSelected    Compile the selected part of the current LaTeX file.
+                          When used as a command, it takes a range, e.g.: >
+
+                            :start,end VimtexCompileSelected
+
+<                          When used as a normal mode mapping, the mapping
+                          will act as an |operator| on the following motion or
+                          text object. Finally, when used as a visual mode
+                          mapping, it will act on the selected lines.
+
+                          Note: This always works linewise!
+
                                              *VimtexOutput*
                                              *<plug>(vimtex-compile-output)*
 :VimtexOutput             Open file where `latexmk` output is redirected.
@@ -1735,6 +1750,14 @@ compilation should run in the foreground or the background.
 
 Regardless of the |g:vimtex_latexmk_continuous| option, single shot
 compilation may always be issued with |VimtexCompileSS|.
+
+It is also possible to compile a selection of the file. To do this, one may
+either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
+|VimtexCompileSelected|. This will compile the selected text by copying it to
+a temporary file with the same preamble as the current file. It will be
+compiled similarly to a single shot compile, and if there are errors, they
+will be shown in the quickfix list. For more info, see
+|VimtexCompileSelected|.
 
 |vimtex| passes a "sensible" default set of options to `latexmk`. This may be
 customized with |g:vimtex_latexmk_options|, where the default options are also

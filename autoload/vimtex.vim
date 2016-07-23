@@ -365,6 +365,8 @@ function! s:init_mappings() " {{{1
   if g:vimtex_latexmk_enabled
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile-toggle)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
+    call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
+    call s:map('x', '<localleader>lL', '<plug>(vimtex-compile-selected)')
     call s:map('n', '<localleader>lk', '<plug>(vimtex-stop)')
     call s:map('n', '<localleader>lK', '<plug>(vimtex-stop-all)')
     call s:map('n', '<localleader>le', '<plug>(vimtex-errors)')

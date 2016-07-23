@@ -81,6 +81,8 @@ function! vimtex#latexmk#init_buffer() " {{{1
   command! -buffer -bang VimtexClean         call vimtex#latexmk#clean(<q-bang> == "!")
   command! -buffer -bang VimtexStatus        call vimtex#latexmk#status(<q-bang> == "!")
   command! -buffer       VimtexLacheck       call vimtex#latexmk#lacheck()
+  command! -buffer -range VimtexCompileSelected
+        \ <line1>,<line2>call vimtex#latexmk#compile_selected('cmd')
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-compile)        :call vimtex#latexmk#compile()<cr>
@@ -95,6 +97,10 @@ function! vimtex#latexmk#init_buffer() " {{{1
   nnoremap <buffer> <plug>(vimtex-status)         :call vimtex#latexmk#status(0)<cr>
   nnoremap <buffer> <plug>(vimtex-status-all)     :call vimtex#latexmk#status(1)<cr>
   nnoremap <buffer> <plug>(vimtex-lacheck)        :call vimtex#latexmk#lacheck()<cr>
+  nnoremap <buffer> <plug>(vimtex-compile-selected)
+        \ :set opfunc=vimtex#latexmk#compile_selected<cr>g@
+  xnoremap <buffer> <plug>(vimtex-compile-selected)
+        \ :<c-u>call vimtex#latexmk#compile_selected('visual')<cr>
 endfunction
 
 " }}}1
@@ -221,6 +227,101 @@ function! vimtex#latexmk#compile_ss(verbose) " {{{1
 
   let g:vimtex_latexmk_continuous = l:vimtex_latexmk_continuous
   let g:vimtex_latexmk_background = l:vimtex_latexmk_background
+endfunction
+
+" }}}1
+function! vimtex#latexmk#compile_selected(type) range " {{{1
+  "
+  " Get selected lines. Method depends on type of selection, which may be
+  " either of
+  "
+  " 1. Command range
+  " 2. Visual mapping
+  " 3. Operator mapping
+  "
+  if a:type == 'cmd'
+    let l:lines = getline(a:firstline, a:lastline)
+  elseif a:type == 'visual'
+    let l:lines = getline(line("'<"), line("'>"))
+  else
+    let l:lines = getline(line("'["), line("']"))
+  endif
+
+  "
+  " Use only the part of the selection that is within the
+  "
+  "   \begin{document} ... \end{document}
+  "
+  " environment.
+  "
+  let l:start = 0
+  let l:end = len(l:lines)
+  for l:n in range(len(l:lines))
+    if l:lines[l:n] =~# '\\begin\s*{document}'
+      let l:start = l:n + 1
+    elseif l:lines[l:n] =~# '\\end\s*{document}'
+      let l:end = l:n - 1
+      break
+    endif
+  endfor
+
+  "
+  " Check if the selection has any real content
+  "
+  if l:start >= len(l:lines)
+        \ || l:end < 0
+        \ || empty(substitute(join(l:lines[l:start : l:end], ''), '\s*', '', ''))
+    return
+  endif
+
+  "
+  " Define the set of lines to compile
+  "
+  let l:lines = vimtex#parser#tex(b:vimtex.tex, {
+        \ 'detailed' : 0,
+        \ 're_stop' : '\\begin\s*{document}',
+        \})
+        \ + ['\begin{document}']
+        \ + l:lines[l:start : l:end]
+        \ + ['\end{document}']
+
+  "
+  " Write content to temporary file
+  "
+  let l:file = {}
+  let l:file.base = b:vimtex.name . '_vimtex_selected.tex'
+  let l:file.tex  = b:vimtex.root . '/' . l:file.base
+  let l:file.pdf = fnamemodify(l:file.tex, ':r') . '.pdf'
+  let l:file.log = fnamemodify(l:file.tex, ':r') . '.log'
+  call writefile(l:lines, l:file.tex)
+
+  "
+  " Compile the temporary file
+  "
+  let l:exe = s:latexmk_build_cmd_selected(l:file.base)
+  let l:exe.bg = 0
+  let l:exe.silent = 1
+  call vimtex#echo#status([
+        \ ['VimtexInfo', 'vimtex: '],
+        \ ['VimtexMsg', 'compiling selected lines ...']])
+  call vimtex#util#execute(l:exe)
+
+  "
+  " Check if successful
+  "
+  if vimtex#latexmk#errors_inquire(l:file)
+    call vimtex#echo#formatted([
+          \ ['VimtexInfo', 'vimtex: '],
+          \ ['VimtexMsg', 'compiling selected lines ...'],
+          \ ['VimtexWarning', ' failed!']])
+    botright cwindow
+  else
+    call vimtex#latexmk#clean(0, l:file.base)
+    call vimtex#echo#status([
+          \ ['VimtexInfo', 'vimtex: '],
+          \ ['VimtexMsg', 'compiling selected lines ... done!']])
+    call b:vimtex.viewer.view(l:file.pdf)
+  endif
 endfunction
 
 " }}}1
@@ -485,6 +586,47 @@ function! s:latexmk_build_cmd() " {{{1
 
   let exe.cmd  = cmd
   let b:vimtex.cmd_latexmk_compile = cmd
+
+  if has('win32')
+    let &shellslash = l:shellslash
+  endif
+
+  return exe
+endfunction
+
+" }}}1
+function! s:latexmk_build_cmd_selected(fname) " {{{1
+  let exe = {}
+  let exe.null = 0
+
+  if has('win32')
+    let cmd  = 'cd /D "' . b:vimtex.root . '"'
+    let cmd .= ' && set max_print_line=2000 & latexmk'
+    let l:shellslash = &shellslash
+    set noshellslash
+  else
+    let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
+    if fnamemodify(&shell, ':t') ==# 'fish'
+      let cmd .= '; and set max_print_line 2000; and latexmk'
+    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
+      let cmd .= ' && set max_print_line=2000 && latexmk'
+    else
+      let cmd .= ' && max_print_line=2000 latexmk'
+    endif
+  endif
+
+  " Add general options for latexmk
+  if !empty(g:vimtex_latexmk_options)
+    let cmd .= ' ' . g:vimtex_latexmk_options
+  else
+    let cmd .= ' -verbose -pdf -file-line-error'
+    let cmd .= ' -synctex=1 -interaction=nonstopmode'
+  endif
+
+  let cmd .= ' ' . vimtex#util#shellescape(a:fname)
+
+  let exe.cmd  = cmd
+  let b:vimtex.cmd_latexmk_compile_selected = cmd
 
   if has('win32')
     let &shellslash = l:shellslash
