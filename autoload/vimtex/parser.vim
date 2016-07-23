@@ -81,8 +81,12 @@ function! s:parser(file, opts) " {{{1
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if has_key(a:opts, 're_stop')
-          \ && l:line =~# a:opts.re_stop
+    if get(a:opts, 'finished', 0)
+      break
+    endif
+
+    if has_key(a:opts, 're_stop') && l:line =~# a:opts.re_stop
+      let a:opts.finished = 1
       break
     endif
 
