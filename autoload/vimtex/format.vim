@@ -14,7 +14,9 @@ function! vimtex#format#init_script() " {{{1
         \ '\\item',
         \ '\\begin',
         \ '\\end',
+        \ '%(\\\[|\$\$)\s*$',
         \], '|') . ')'
+
   let s:border_end = '\v[^\\]\%'
         \ . '|\\%(' . join([
         \   '\\\*?',
@@ -24,6 +26,7 @@ function! vimtex#format#init_script() " {{{1
         \   'pagebreak',
         \   '%(begin|end)\{[^}]*\}',
         \  ], '|') . ')\s*$'
+        \ . '|^\s*%(\\\]|\$\$)\s*$'
 endfunction
 
 " }}}1
@@ -51,6 +54,12 @@ function! vimtex#format#formatexpr() " {{{1
 
   for l:current in range(l:bottom, l:top, -1)
     let l:line = getline(l:current)
+
+    if vimtex#util#in_mathzone(l:current, 1)
+          \ && vimtex#util#in_mathzone(l:current, col([l:current, '$']))
+      let l:mark = l:current - 1
+      continue
+    endif
 
     if l:line =~# s:border_end
       if l:current < l:mark
