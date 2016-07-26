@@ -145,14 +145,12 @@ let s:tikz_commands = '\v\\%(' . join([
 
 function! s:count(line, pattern) " {{{1
   let sum = 0
-  let indx = match(a:line, a:pattern)
-  while indx >= 0
+  while 1
+    if match(a:line, a:pattern, 0, sum + 1) == -1
+      return sum
+    endif
     let sum += 1
-    let match = matchstr(a:line, a:pattern, indx)
-    let indx += len(match)
-    let indx = match(a:line, a:pattern, indx)
   endwhile
-  return sum
 endfunction
 
 " }}}1
