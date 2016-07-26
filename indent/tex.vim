@@ -22,15 +22,6 @@ setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent() " {{{1
-  "
-  " It seems that there is a bug when indenting after formatting text, where
-  " for some reason, "getline(v:lnum)" does NOT get the current line, at least
-  " not as seen in the buffer. I did not find a good way of solving this, and
-  " so for now, I instead insist that the formatting operators, gw and gq, do
-  " not reindent lines.
-  "
-  if v:operator =~# 'g[wq]' | return -1 | endif
-
   let l:nprev = s:get_prev_line(prevnonblank(v:lnum - 1))
   if l:nprev == 0 | return 0 | endif
 
