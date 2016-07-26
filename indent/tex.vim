@@ -107,6 +107,11 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 " }}}1
 function! s:indent_delims(cur, prev) " {{{1
   let [l:open, l:close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
+  echom v:lnum
+        \ s:count(a:prev, l:open)
+        \ s:count(a:prev, l:close)
+        \ s:count(a:cur, l:close)
+        \ s:count(a:cur, l:open)
   return &sw*(  max([s:count(a:prev, l:open) - s:count(a:prev, l:close), 0])
         \     - max([s:count(a:cur, l:close) - s:count(a:cur, l:open),   0]))
 endfunction
@@ -145,12 +150,14 @@ let s:tikz_commands = '\v\\%(' . join([
 
 function! s:count(line, pattern) " {{{1
   let sum = 0
-  while 1
-    if match(a:line, a:pattern, 0, sum + 1) == -1
-      return sum
-    endif
+  let indx = match(a:line, a:pattern)
+  while indx >= 0
     let sum += 1
+    let match = matchstr(a:line, a:pattern, indx)
+    let indx += len(match)
+    let indx = match(a:line, a:pattern, indx)
   endwhile
+  return sum
 endfunction
 
 " }}}1
