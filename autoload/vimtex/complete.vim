@@ -37,6 +37,8 @@ endfunction
 
 function! vimtex#complete#omnifunc(findstart, base) " {{{1
   if a:findstart
+    if exists('s:completer') | unlet s:completer | endif
+
     let l:pos  = col('.') - 1
     let l:line = getline('.')[:l:pos-1]
     for l:completer in s:completers
@@ -59,7 +61,9 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     endfor
     return -3
   else
-    return s:close_braces(s:completer.complete(a:base))
+    return exists('s:completer')
+          \ ? s:close_braces(s:completer.complete(a:base))
+          \ : []
   endif
 endfunction
 
