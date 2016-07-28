@@ -155,10 +155,9 @@ endfunction
 " }}}1
 " {{{1 function! vimtex#reload()
 let s:file = expand('<sfile>')
-
-if !exists('s:reloading_script')
+if get(s:, 'reload_guard', 1)
   function! vimtex#reload()
-    let s:reloading_script = 1
+    let s:reload_guard = 0
 
     let l:scripts = [s:file]
           \ + map(copy(s:modules),
@@ -178,7 +177,7 @@ if !exists('s:reloading_script')
     endif
 
     call vimtex#echo#info('reloaded')
-    unlet s:reloading_script
+    unlet s:reload_guard
   endfunction
 endif
 
