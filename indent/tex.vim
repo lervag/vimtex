@@ -107,11 +107,6 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 " }}}1
 function! s:indent_delims(cur, prev) " {{{1
   let [l:open, l:close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
-  echom v:lnum
-        \ s:count(a:prev, l:open)
-        \ s:count(a:prev, l:close)
-        \ s:count(a:cur, l:close)
-        \ s:count(a:cur, l:open)
   return &sw*(  max([s:count(a:prev, l:open) - s:count(a:prev, l:close), 0])
         \     - max([s:count(a:cur, l:close) - s:count(a:cur, l:open),   0]))
 endfunction
