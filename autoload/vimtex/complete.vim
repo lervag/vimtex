@@ -50,6 +50,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
           while l:pos > 0
             if l:line[l:pos - 1] =~# '{\|,\|\['
                   \ || l:line[l:pos-2:l:pos-1] ==# ', '
+              let s:completer.context = matchstr(l:line, '\S*$')
               return l:pos
             else
               let l:pos -= 1
@@ -255,6 +256,14 @@ function! s:ref.complete(regex) dict " {{{2
           \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ })
   endfor
+
+  "
+  " If context is 'eqref', then only show eq: labels
+  "
+  if self.context =~# '\\eqref'
+        \ && !empty(filter(copy(self.matches), 'v:val[0] =~# ''eq:'''))
+    call filter(self.candidates, 'v:val.word =~# ''eq:''')
+  endif
 
   return self.candidates
 endfunction
