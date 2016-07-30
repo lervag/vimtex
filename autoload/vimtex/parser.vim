@@ -9,7 +9,13 @@ endfunction
 
 " }}}1
 function! vimtex#parser#init_script() " {{{1
-  let s:input_line_tex = '\v^\s*\\%(input|include|subimport|subfile)\s*\{'
+  let s:input_line_tex = '\v^\s*\\%(' . join([
+        \ 'input',
+        \ 'include',
+        \ '%(sub)?import',
+        \ '%(sub)?%(input|include)from',
+        \ 'subfile',
+        \ ], '|') . ')\s*\{'
   let s:input_line_aux = '\\@input{'
 endfunction
 
@@ -115,8 +121,8 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
-  " Hande subimport commands
-  if a:line =~# '\\subimport'
+  " Hande import package commands
+  if a:line =~# '\v\\%(sub)?%(import|%(input|include)from)'
     let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif
 
