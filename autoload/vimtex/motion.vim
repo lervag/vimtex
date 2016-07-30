@@ -183,11 +183,11 @@ endfunction
 " }}}1
 
 function! s:highlight_matching_pair() " {{{1
-  if exists('s:match_id1')
-    call matchdelete(s:match_id1)
-    call matchdelete(s:match_id2)
-    unlet s:match_id1
-    unlet s:match_id2
+  if exists('w:vimtex_match_id1')
+    silent! call matchdelete(w:vimtex_match_id1)
+    silent! call matchdelete(w:vimtex_match_id2)
+    unlet w:vimtex_match_id1
+    unlet w:vimtex_match_id2
   endif
   if vimtex#util#in_comment() | return | endif
 
@@ -201,10 +201,10 @@ function! s:highlight_matching_pair() " {{{1
         \ ? [l:current, l:corresponding]
         \ : [l:corresponding, l:current]
 
-  let s:match_id1 = matchadd('MatchParen',
+  let w:vimtex_match_id1 = matchadd('MatchParen',
         \   '\%' . l:o.lnum . 'l\%' . l:o.cnum . 'c' . l:o.re.this . '\ze\_.*'
         \ . '\%' . l:c.lnum . 'l\%' . l:c.cnum . 'c' . l:c.re.this)
-  let s:match_id2 = matchadd('MatchParen',
+  let w:vimtex_match_id2 = matchadd('MatchParen',
         \   '\%' . l:o.lnum . 'l\%' . l:o.cnum . 'c' . l:o.re.this . '\_.*\zs'
         \ . '\%' . l:c.lnum . 'l\%' . l:c.cnum . 'c' . l:c.re.this)
 endfunction
