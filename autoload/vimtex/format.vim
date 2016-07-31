@@ -76,7 +76,7 @@ function! vimtex#format#formatexpr() " {{{1
     endif
   endwhile
 
-  if l:top < l:mark
+  if l:top <= l:mark
     execute 'normal!' l:top . 'Ggw' . l:mark . 'G'
   endif
 
