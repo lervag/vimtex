@@ -121,8 +121,14 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
-  " Hande import package commands
-  if a:line =~# '\v\\%(sub)?%(import|%(input|include)from)'
+  " Handle import package commands
+  if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
+    let l:candidate = s:input_line_parser_tex(
+          \ substitute(l:file, '\\\w*\s*{[^{}]*}\s*', '', ''),
+          \ a:file,
+          \ '\v^\s*\{')
+    if !empty(l:candidate) | return l:candidate | endif
+
     let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif
 
