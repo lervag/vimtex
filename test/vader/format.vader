@@ -168,9 +168,8 @@ Expect tex (Verify):
   distribution over $x^u$ when sampled at label $\vec x$ some time later; another
   population started around $\vec x_1$ carries a different history when it, too,
   visits $\vec x$ later. Therefore, for instance the effective drift $\vec v(\vec
-    x)$ will be different in the two cases. We conclude that, if unobserved
-    degrees of freedom have dynamics on the time scale of the experiment
-    eq.~\ref{eq:fpe} is an approximation whose coefficients become
-    \emph{non-universal} (dependent on intial conditions) and
-    \emph{time-dependent}.
+  x)$ will be different in the two cases. We conclude that, if unobserved degrees
+  of freedom have dynamics on the time scale of the experiment eq.~\ref{eq:fpe}
+  is an approximation whose coefficients become \emph{non-universal} (dependent
+  on intial conditions) and \emph{time-dependent}.
 

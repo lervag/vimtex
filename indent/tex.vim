@@ -17,31 +17,31 @@ let s:cpo_save = &cpo
 set cpo&vim
 
 setlocal autoindent
-setlocal indentexpr=VimtexIndent()
+setlocal indentexpr=VimtexIndent(v:lnum)
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
-function! VimtexIndent() " {{{1
-  let l:nprev = s:get_prev_line(prevnonblank(v:lnum - 1))
+function! VimtexIndent(lnum) " {{{1
+  let l:nprev = s:get_prev_line(prevnonblank(a:lnum - 1))
   if l:nprev == 0 | return 0 | endif
 
   " Get current and previous line and remove comments
-  let l:cur = substitute(getline(v:lnum), '\\\@<!%.*', '', '')
+  let l:cur = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
   let l:prev = substitute(getline(l:nprev),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
-  if s:is_verbatim(l:cur, v:lnum)
-    return empty(l:cur) ? indent(l:nprev) : indent(v:lnum)
+  if s:is_verbatim(l:cur, a:lnum)
+    return empty(l:cur) ? indent(l:nprev) : indent(a:lnum)
   endif
 
   " Align on ampersands
   if l:cur =~# '^\s*&' && l:prev =~# '\\\@<!&.*'
-    return indent(v:lnum) + match(l:prev, '\\\@<!&') - stridx(l:cur, '&')
+    return indent(a:lnum) + match(l:prev, '\\\@<!&') - stridx(l:cur, '&')
   endif
 
   " Use previous indentation for comments
   if l:cur =~# '^\s*%'
-    return indent(v:lnum)
+    return indent(a:lnum)
   endif
 
   let l:nprev = s:get_prev_line(l:nprev, 'ignore-ampersands')
@@ -50,7 +50,7 @@ function! VimtexIndent() " {{{1
 
   let l:ind = indent(l:nprev)
   let l:ind += s:indent_envs(l:cur, l:prev)
-  let l:ind += s:indent_delims(l:cur, l:prev)
+  let l:ind += s:indent_delims(l:cur, l:prev, a:lnum)
   let l:ind += s:indent_tikz(l:nprev, l:prev)
   return l:ind
 endfunction
@@ -105,8 +105,8 @@ let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
 let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
-function! s:indent_delims(cur, prev) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_valid_regexps(v:lnum, col('.'))
+function! s:indent_delims(cur, prev, lnum) " {{{1
+  let [l:open, l:close] = vimtex#delim#get_valid_regexps(a:lnum, col('.'))
   return &sw*(  max([s:count(a:prev, l:open) - s:count(a:prev, l:close), 0])
         \     - max([s:count(a:cur, l:close) - s:count(a:cur, l:open),   0]))
 endfunction
