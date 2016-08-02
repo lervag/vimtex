@@ -70,8 +70,10 @@ function! vimtex#format#formatexpr() " {{{1
     let l:tries -= 1
   endwhile
 
-  " Move cursor to first non-blank of the last formatted line
-  if mode() !=# 'i'
+  " Set cursor at appropriate position
+  if mode() =~# '[iR]'
+    call cursor(l:bottom, col([l:bottom, '$']))
+  else
     execute 'normal!' l:bottom . 'G^'
   endif
 
@@ -128,10 +130,13 @@ endfunction
 " }}}1
 function! s:format_build_lines(start, end) " {{{1
   "
-  " Get the desired text to format as a list of words
+  " Get the desired text to format as a list of words, but preserve the ending
+  " line spaces
   "
-  let l:words = split(join(map(getline(a:start, a:end),
-        \ 'substitute(v:val, ''^\s*'', '''', '''')'), ' '), ' ')
+  let l:text = join(map(getline(a:start, a:end),
+        \ 'substitute(v:val, ''^\s*'', '''', '''')'), ' ')
+  let l:spaces = matchstr(l:text, '\s*$')
+  let l:words = split(l:text, ' ')
   if empty(l:words) | return 0 | endif
 
   "
@@ -150,6 +155,13 @@ function! s:format_build_lines(start, end) " {{{1
   if l:current !~# '^\s*$'
     call append(l:lnum, substitute(l:current, '\s$', '', ''))
     let l:lnum += 1
+  endif
+
+  "
+  " Append the ending line spaces
+  "
+  if !empty(l:spaces)
+    call setline(l:lnum, getline(l:lnum) . l:spaces)
   endif
 
   "
