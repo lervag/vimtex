@@ -14,6 +14,7 @@ function! vimtex#toc#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
   call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
   call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
+  call vimtex#util#set_default('g:vimtex_toc_show_included_files', 0)
 endfunction
 
 " }}}1
@@ -194,7 +195,24 @@ function! vimtex#toc#get_entries() " {{{1
   call s:number_reset('preamble')
 
   let l:toc = []
+  let l:file_prev = l:parsed[0][0]
+  let l:included = [l:file_prev]
   for [l:file, l:lnum, l:line] in l:parsed
+
+    " Add included files
+    if g:vimtex_toc_show_included_files
+          \ && l:file_prev !=# l:file
+          \ && index(l:included, l:file) < 0
+      call add(l:toc, {
+            \ 'title'  : 'Included: ' . fnamemodify(l:file, ':t'),
+            \ 'number' : '',
+            \ 'file'   : l:file,
+            \ 'line'   : 1,
+            \ 'level'  : s:number.current_level,
+            \ })
+      let l:included += [l:file]
+      let l:file_prev = l:file
+    endif
 
     " Bibliography files
     if l:line =~# s:re_bibs
@@ -449,6 +467,8 @@ function! s:number_reset(part) " {{{1
     let s:number[key] = 0
   endfor
   let s:number[a:part] = 1
+
+  let s:number.current_level = s:max_level
 endfunction
 
 " }}}1
