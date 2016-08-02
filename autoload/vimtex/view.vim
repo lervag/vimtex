@@ -34,8 +34,10 @@ function! vimtex#view#init_buffer() " {{{1
   if !has_key(b:vimtex, 'viewer')
     let viewer = 's:' . g:vimtex_view_method
     if !exists(viewer)
-      echoerr 'vimtex viewer ' . g:vimtex_view_method . ' does not exist!'
-      echo "\nPlease see :h g:vimtex_view_method\n\n"
+      call vimtex#echo#warning('viewer '
+            \ . g:vimtex_view_method . ' does not exist!')
+      call vimtex#echo#echo('- Please see :h g:vimtex_view_method')
+      call vimtex#echo#wait()
       let b:vimtex.viewer = {}
       return
     endif
@@ -103,9 +105,10 @@ function! s:general.init() dict " {{{2
   endif
 
   if !executable(g:vimtex_view_general_viewer)
-    echoerr 'vimtex viewer is not executable!'
-    echoerr 'g:vimtex_view_general_viewer = '
-          \ . g:vimtex_view_general_viewer
+    call vimtex#echo#warning('viewer "'
+          \ . g:vimtex_view_general_viewer . '" is not executable!')
+    call vimtex#echo#echo('- Please see :h g:vimtex_view_general_viewer')
+    call vimtex#echo#wait()
   endif
 endfunction
 
@@ -157,7 +160,9 @@ function! s:mupdf.init() dict " {{{2
   call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
 
   if !executable('mupdf')
-    echoerr 'vimtex viewer MuPDF is not executable!'
+    call vimtex#echo#warning('MuPDF is not executable!')
+    call vimtex#echo#echo('- vimtex viewer will not work!')
+    call vimtex#echo#wait()
   endif
 
   if !executable('xdotool')
@@ -311,7 +316,9 @@ function! s:zathura.init() dict " {{{2
   call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
 
   if !executable('zathura')
-    echoerr 'vimtex viewer Zathura is not executable!'
+    call vimtex#echo#warning('Zathura is not executable!')
+    call vimtex#echo#echo('- vimtex viewer will not work!')
+    call vimtex#echo#wait()
   endif
 
   if !executable('xdotool')
