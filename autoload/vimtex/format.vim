@@ -66,7 +66,7 @@ function! vimtex#format#formatexpr() " {{{1
     let l:index = s:compare_lines(l:lines_new, l:lines_old)
     let l:top += l:index
     if l:top > l:bottom | break | endif
-    let l:lines_old = l:lines_new[l:index:]
+    let l:lines_old = l:lines_new[l:index : -1]
     let l:tries -= 1
   endwhile
 
