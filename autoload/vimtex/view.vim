@@ -8,6 +8,7 @@ let s:viewers = [
       \ 'general',
       \ 'mupdf',
       \ 'zathura',
+      \ 'zathura_alternative',
       \ ]
 for viewer in s:viewers
   execute 'let s:' . viewer . ' = {}'
@@ -148,6 +149,7 @@ endfunction
 
 " }}}2
 
+" }}}1
 " {{{1 MuPDF
 function! s:mupdf.init() dict " {{{2
   " Only initialize once
@@ -303,6 +305,7 @@ endfunction
 
 " }}}2
 
+" }}}1
 " {{{1 Zathura
 function! s:zathura.init() dict " {{{2
   " Only initialize once
@@ -400,6 +403,108 @@ function! s:zathura.latexmk_append_argument() dict " {{{2
 endfunction
 
 " }}}2
+
+" }}}1
+" {{{1 Zathura alternative
+function! s:zathura_alternative.init() dict " {{{2
+  " Only initialize once
+  if has_key(self, 'xwin_id') | return | endif
+
+  "
+  " Default Zathura settings
+  "
+  call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
+
+  if !executable('zathura')
+    call vimtex#echo#warning('Zathura is not executable!')
+    call vimtex#echo#echo('- vimtex viewer will not work!')
+    call vimtex#echo#wait()
+  endif
+
+  if !executable('xdotool')
+    call vimtex#echo#warning('viewer Zathura requires xdotool!')
+  endif
+
+  let self.class = 'Zathura'
+  let self.out = tempname() . '.vimtex.pdf'
+  let self.xwin_id = 0
+  let self.xwin_get_id = function('s:xwin_get_id')
+  let self.xwin_exists = function('s:xwin_exists')
+  call self.xwin_exists()
+
+  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
+endfunction
+
+" }}}2
+function! s:zathura_alternative.view(file) dict " {{{2
+  let outfile = a:file !=# '' ? a:file : self.out
+  if s:output_not_readable(outfile) | return | endif
+
+  if self.xwin_exists()
+    call self.forward_search(outfile)
+  else
+    call self.start(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
+endfunction
+
+" }}}2
+function! s:zathura_alternative.start(outfile) dict " {{{2
+  let exe = {}
+  let exe.cmd  = 'zathura'
+  let exe.cmd .= ' -x "' . g:vimtex_latexmk_progname
+        \ . ' --servername ' . v:servername
+        \ . ' --remote +\%{line} \%{input}"'
+  let exe.cmd .= ' ' . g:vimtex_view_zathura_options
+  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  call vimtex#util#execute(exe)
+  let self.cmd_start = exe.cmd
+
+  call self.xwin_get_id()
+  call self.forward_search(a:outfile)
+endfunction
+
+" }}}2
+function! s:zathura_alternative.forward_search(outfile) dict " {{{2
+  let exe = {}
+  let exe.cmd  = 'zathura --synctex-forward '
+  let exe.cmd .= line('.')
+  let exe.cmd .= ':' . col('.')
+  let exe.cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
+  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  call vimtex#util#execute(exe)
+  let self.cmd_forward_search = exe.cmd
+endfunction
+
+" }}}2
+function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
+  if a:status
+    if filereadable(b:vimtex.out())
+      call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+    endif
+  endif
+
+  sleep 500m
+  if self.xwin_exists()
+    call self.forward_search(self.out)
+    if has_key(self, 'hook_callback')
+      call self.hook_callback()
+    endif
+  else
+    call self.start(self.out)
+  endif
+endfunction
+
+" }}}2
+function! s:zathura_alternative.latexmk_append_argument() dict " {{{2
+  return ' -view=none'
+endfunction
+
+" }}}2
+
 " }}}1
 
 "
