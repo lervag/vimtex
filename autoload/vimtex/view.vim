@@ -186,10 +186,10 @@ function! s:mupdf.view(file) dict " {{{2
   let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
-  if !self.xwin_exists()
-    call self.start(outfile)
-  else
+  if self.xwin_exists()
     call self.forward_search(outfile)
+  else
+    call self.start(outfile)
   endif
 
   if has_key(self, 'hook_view')
@@ -244,8 +244,7 @@ function! s:mupdf.reverse_search() dict " {{{2
   if s:output_not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
-    call vimtex#echo#warning(
-          \ 'reverse search failed (is MuPDF open?)')
+    call vimtex#echo#warning('reverse search failed (is MuPDF open?)')
     return
   endif
 
@@ -339,10 +338,10 @@ function! s:zathura.view(file) dict " {{{2
   let outfile = a:file !=# '' ? a:file : b:vimtex.out()
   if s:output_not_readable(outfile) | return | endif
 
-  if !self.xwin_exists()
-    call self.start(outfile)
-  else
+  if self.xwin_exists()
     call self.forward_search(outfile)
+  else
+    call self.start(outfile)
   endif
 
   if has_key(self, 'hook_view')
@@ -459,8 +458,7 @@ function! s:xwin_exists() dict " {{{1
   " If xwin_id is unset, check if matching viewer windows exist
   "
   if self.xwin_id == 0
-    let cmd = 'xdotool search'
-          \ . ' --name ' . fnamemodify(b:vimtex.out(), ':t')
+    let cmd = 'xdotool search --name ' . fnamemodify(b:vimtex.out(), ':t')
     let result = split(system(cmd), '\n')
     if len(result) > 0
       let self.xwin_id = result[-1]
