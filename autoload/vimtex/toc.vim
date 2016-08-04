@@ -14,7 +14,6 @@ function! vimtex#toc#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
   call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
   call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
-  call vimtex#util#set_default('g:vimtex_toc_show_included_files', 0)
 endfunction
 
 " }}}1
@@ -195,23 +194,38 @@ function! vimtex#toc#get_entries() " {{{1
   call s:number_reset('preamble')
 
   let l:toc = []
-  let l:file_prev = l:parsed[0][0]
-  let l:included = [l:file_prev]
+  let l:included = {
+        \ 'toc_len_prev' : 0,
+        \ 'prev' : l:parsed[0][0],
+        \ 'files' : [l:parsed[0][0]],
+        \ 'current' : { 'entries' : 0 },
+        \}
+
   for [l:file, l:lnum, l:line] in l:parsed
 
-    " Add included files
-    if g:vimtex_toc_show_included_files
-          \ && l:file_prev !=# l:file
-          \ && index(l:included, l:file) < 0
-      call add(l:toc, {
-            \ 'title'  : 'Included: ' . fnamemodify(l:file, ':t'),
-            \ 'number' : '',
-            \ 'file'   : l:file,
-            \ 'line'   : 1,
-            \ 'level'  : s:number.current_level,
-            \ })
-      let l:included += [l:file]
-      let l:file_prev = l:file
+    " Add TOC entry for each included file
+    " Note: We do some "magic" in order to filter out the TOC entries that are
+    "       not necessaries. In other words, we only want to keep TOC entries
+    "       for included files that do not have other TOC entries inside them.
+    if l:file ==# l:included.prev
+      if l:included.toc_len_prev < len(l:toc)
+        let l:included.toc_len_prev += 1
+        let l:included.current.entries += 1
+      endif
+    else
+      if index(l:included.files, l:file) < 0
+        let l:included.files += [l:file]
+        let l:included.prev = l:file
+        let l:included.current = {
+              \ 'title'   : 'Included: ' . fnamemodify(l:file, ':t'),
+              \ 'number'  : '',
+              \ 'file'    : l:file,
+              \ 'line'    : 1,
+              \ 'level'   : s:number.current_level,
+              \ 'entries' : 1,
+              \ }
+        call add(l:toc, l:included.current)
+      endif
     endif
 
     " Bibliography files
@@ -267,7 +281,8 @@ function! vimtex#toc#get_entries() " {{{1
     endfor
   endfor
 
-  return l:toc
+  " Remove the superfluous TOC entries and return
+  return filter(l:toc, 'get(v:val, ''entries'', 1) == 1')
 endfunction
 
 " }}}1
