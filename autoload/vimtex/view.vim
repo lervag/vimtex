@@ -281,14 +281,13 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_callback(status) dict " {{{2
-  if !self.xwin_exists()
-    if self.xwin_get_id()
-      call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-      call self.forward_search(b:vimtex.out())
-      if has_key(self, 'hook_callback')
-        call self.hook_callback()
-      endif
-    endif
+  sleep 500m
+  if !self.xwin_exists() | return | endif
+
+  call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
+  call self.forward_search(b:vimtex.out())
+  if has_key(self, 'hook_callback')
+    call self.hook_callback()
   endif
 endfunction
 
@@ -379,13 +378,12 @@ endfunction
 
 " }}}2
 function! s:zathura.latexmk_callback(status) dict " {{{2
-  if !self.xwin_exists()
-    if self.xwin_get_id()
-      call self.forward_search(b:vimtex.out())
-      if has_key(self, 'hook_callback')
-        call self.hook_callback()
-      endif
-    endif
+  sleep 500m
+  if !self.xwin_exists() | return | endif
+
+  call self.forward_search(b:vimtex.out())
+  if has_key(self, 'hook_callback')
+    call self.hook_callback()
   endif
 endfunction
 
