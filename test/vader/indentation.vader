@@ -58,7 +58,7 @@ Expect tex (Verify):
   \end{description}
 
 Given tex (Indent: math):
-      \[
+  \[
     1+1
         \]
 
@@ -146,7 +146,7 @@ Expect tex (Verify):
   \end{tikzpicture}
 
 Given tex (Indent: verbatims):
-    \begin{verbatim}
+  \begin{verbatim}
   #!/bin/bash
   echo "test"
       \end{verbatim}
