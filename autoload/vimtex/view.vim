@@ -476,6 +476,16 @@ endfunction
 
 " }}}2
 function! s:zathura_alternative.forward_search(outfile) dict " {{{2
+  let l:old = fnamemodify(b:vimtex.out(), ':r') . '.synctex.gz'
+  let l:new = fnamemodify(self.out, ':r') . '.synctex.gz'
+  if !filereadable(l:new)
+    if filereadable(l:old)
+      call rename(l:old, l:new)
+    else
+      return
+    endif
+  endif
+
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
   let exe.cmd .= line('.')
