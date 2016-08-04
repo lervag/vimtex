@@ -487,13 +487,6 @@ function! s:zathura_alternative.forward_search(outfile) dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura_alternative.copy_file() dict " {{{2
-  if filereadable(b:vimtex.out())
-    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
-  endif
-endfunction
-
-" }}}2
 function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
   if !a:status | return | endif
 
@@ -513,6 +506,13 @@ endfunction
 " }}}2
 function! s:zathura_alternative.latexmk_append_argument() dict " {{{2
   return ' -view=none'
+endfunction
+
+" }}}2
+function! s:zathura_alternative.copy_file() dict " {{{2
+  if filereadable(b:vimtex.out())
+    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+  endif
 endfunction
 
 " }}}2
