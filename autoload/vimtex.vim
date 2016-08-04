@@ -286,15 +286,10 @@ function! s:init_buffer() " {{{1
     let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
     let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
     let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
-    function b:vimtex.aux() dict
-      return s:get_main_ext(self, 'aux')
-    endfunction
-    function b:vimtex.log() dict
-      return s:get_main_ext(self, 'log')
-    endfunction
-    function b:vimtex.out() dict
-      return s:get_main_ext(self, 'pdf')
-    endfunction
+    let b:vimtex.aux = function('s:get_aux')
+    let b:vimtex.log = function('s:get_log')
+    let b:vimtex.out = function('s:get_out')
+    let b:vimtex.ext = function('s:get_ext')
 
     let s:vimtex_next_id = get(s:, 'vimtex_next_id', -1) + 1
     let b:vimtex_id = s:vimtex_next_id
@@ -618,12 +613,29 @@ function! s:get_main_recurse(file) " {{{1
   endfor
 endfunction
 
-function! s:get_main_ext(self, ext) " {{{1
+" }}}1
+
+function! s:get_log() dict " {{{1
+  return self.ext('log')
+endfunction
+
+" }}}1
+function! s:get_aux() dict " {{{1
+  return self.ext('aux')
+endfunction
+
+" }}}1
+function! s:get_out() dict " {{{1
+  return self.ext('pdf')
+endfunction
+
+" }}}1
+function! s:get_ext(ext) dict " {{{1
   " First check build dir (latexmk -output_directory option)
   if g:vimtex_latexmk_build_dir !=# ''
-    let cand = g:vimtex_latexmk_build_dir . '/' . a:self.name . '.' . a:ext
+    let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
     if g:vimtex_latexmk_build_dir[0] !=# '/'
-      let cand = a:self.root . '/' . cand
+      let cand = self.root . '/' . cand
     endif
     if filereadable(cand)
       return fnamemodify(cand, ':p')
@@ -631,7 +643,7 @@ function! s:get_main_ext(self, ext) " {{{1
   endif
 
   " Next check for file in project root folder
-  let cand = a:self.root . '/' . a:self.name . '.' . a:ext
+  let cand = self.root . '/' . self.name . '.' . a:ext
   if filereadable(cand)
     return fnamemodify(cand, ':p')
   endif
