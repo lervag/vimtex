@@ -23,7 +23,7 @@ setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent(lnum) " {{{1
   let l:nprev = s:get_prev_line(prevnonblank(a:lnum - 1))
-  if l:nprev == 0 | return 0 | endif
+  if l:nprev == 0 | return indent(a:lnum) | endif
 
   " Get current and previous line and remove comments
   let l:cur = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
