@@ -195,7 +195,7 @@ function! vimtex#toc#get_entries() " {{{1
 
   let l:toc = []
   let l:included = {
-        \ 'toc_len_prev' : 0,
+        \ 'toc_length' : 0,
         \ 'prev' : l:parsed[0][0],
         \ 'files' : [l:parsed[0][0]],
         \ 'current' : { 'entries' : 0 },
@@ -208,8 +208,8 @@ function! vimtex#toc#get_entries() " {{{1
     "       not necessaries. In other words, we only want to keep TOC entries
     "       for included files that do not have other TOC entries inside them.
     if l:file ==# l:included.prev
-      if l:included.toc_len_prev < len(l:toc)
-        let l:included.toc_len_prev += 1
+      if l:included.toc_length < len(l:toc)
+        let l:included.toc_length = len(l:toc)
         let l:included.current.entries += 1
       endif
     else
@@ -222,9 +222,11 @@ function! vimtex#toc#get_entries() " {{{1
               \ 'file'    : l:file,
               \ 'line'    : 1,
               \ 'level'   : s:number.current_level,
-              \ 'entries' : 1,
+              \ 'entries' : 0,
               \ }
         call add(l:toc, l:included.current)
+      else
+        let l:included.current = { 'entries' : 0 }
       endif
     endif
 
