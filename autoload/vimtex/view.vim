@@ -426,21 +426,28 @@ function! s:zathura_alternative.init() dict " {{{2
   endif
 
   let self.class = 'Zathura'
-  let self.out = tempname() . '.vimtex.pdf'
+  let self.out = fnamemodify(b:vimtex.out(), ':r') . '_vimtex.pdf'
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
-  call self.xwin_exists()
+  call self.xwin_exists(1)
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
 
 " }}}2
 function! s:zathura_alternative.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : self.out
+  if empty(a:file)
+    if !filereadable(self.out)
+      call self.copy_file()
+    endif
+    let outfile = self.out
+  else
+    let outfile = a:file
+  endif
   if s:output_not_readable(outfile) | return | endif
 
-  if self.xwin_exists()
+  if self.xwin_exists(1)
     call self.forward_search(outfile)
   else
     call self.start(outfile)
@@ -480,15 +487,20 @@ function! s:zathura_alternative.forward_search(outfile) dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
-  if a:status
-    if filereadable(b:vimtex.out())
-      call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
-    endif
+function! s:zathura_alternative.copy_file() dict " {{{2
+  if filereadable(b:vimtex.out())
+    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
   endif
+endfunction
+
+" }}}2
+function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
+  if !a:status | return | endif
+
+  call self.copy_file()
 
   sleep 500m
-  if self.xwin_exists()
+  if self.xwin_exists(1)
     call self.forward_search(self.out)
     if has_key(self, 'hook_callback')
       call self.hook_callback()
@@ -544,7 +556,7 @@ function! s:xwin_get_id() dict " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_exists() dict " {{{1
+function! s:xwin_exists(...) dict " {{{1
   if !executable('xdotool') | return 0 | endif
 
   "
@@ -561,7 +573,8 @@ function! s:xwin_exists() dict " {{{1
   " If xwin_id is unset, check if matching viewer windows exist
   "
   if self.xwin_id == 0
-    let cmd = 'xdotool search --name ' . fnamemodify(b:vimtex.out(), ':t')
+    let cmd = 'xdotool search --name '
+          \ . fnamemodify(a:0 > 0 ? self.out : b:vimtex.out(), ':t')
     let result = split(system(cmd), '\n')
     if len(result) > 0
       let self.xwin_id = result[-1]
