@@ -425,17 +425,17 @@ function! s:zathura_alternative.init() dict " {{{2
     call vimtex#echo#warning('viewer Zathura requires xdotool!')
   endif
 
-  let self.class = 'Zathura'
-  let self.xwin_id = 0
-  let self.xwin_get_id = function('s:xwin_get_id')
-  let self.xwin_exists = function('s:xwin_exists')
-  call self.xwin_exists(1)
-
   "
   " Define output file names for the viewer
   "
   let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
   let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+
+  let self.class = 'Zathura'
+  let self.xwin_id = 0
+  let self.xwin_get_id = function('s:xwin_get_id')
+  let self.xwin_exists = function('s:xwin_exists')
+  call self.xwin_exists(1)
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
