@@ -426,11 +426,16 @@ function! s:zathura_alternative.init() dict " {{{2
   endif
 
   let self.class = 'Zathura'
-  let self.out = fnamemodify(b:vimtex.out(), ':r') . '_vimtex.pdf'
   let self.xwin_id = 0
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
   call self.xwin_exists(1)
+
+  "
+  " Define output file names for the viewer
+  "
+  let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+  let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
@@ -438,9 +443,7 @@ endfunction
 " }}}2
 function! s:zathura_alternative.view(file) dict " {{{2
   if empty(a:file)
-    if !filereadable(self.out)
-      call self.copy_file()
-    endif
+    call self.copy_files()
     let outfile = self.out
   else
     let outfile = a:file
@@ -476,15 +479,7 @@ endfunction
 
 " }}}2
 function! s:zathura_alternative.forward_search(outfile) dict " {{{2
-  let l:old = fnamemodify(b:vimtex.out(), ':r') . '.synctex.gz'
-  let l:new = fnamemodify(self.out, ':r') . '.synctex.gz'
-  if !filereadable(l:new)
-    if filereadable(l:old)
-      call rename(l:old, l:new)
-    else
-      return
-    endif
-  endif
+  if !filereadable(self.synctex) | return | endif
 
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
@@ -500,11 +495,10 @@ endfunction
 function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
   if !a:status | return | endif
 
-  call self.copy_file()
+  call self.copy_files()
 
   sleep 500m
   if self.xwin_exists(1)
-    call self.forward_search(self.out)
     if has_key(self, 'hook_callback')
       call self.hook_callback()
     endif
@@ -519,9 +513,20 @@ function! s:zathura_alternative.latexmk_append_argument() dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura_alternative.copy_file() dict " {{{2
-  if filereadable(b:vimtex.out())
+function! s:zathura_alternative.copy_files() dict " {{{2
+  "
+  " Copy pdf file
+  "
+  if getftime(b:vimtex.out()) > getftime(self.out)
     call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+  endif
+
+  "
+  " Copy synctex file
+  "
+  let l:old = fnamemodify(b:vimtex.out(), ':r') . '.synctex.gz'
+  if getftime(l:old) > getftime(self.synctex)
+    call rename(l:old, self.synctex)
   endif
 endfunction
 
