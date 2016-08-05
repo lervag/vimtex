@@ -27,6 +27,8 @@ function! vimtex#format#init_script() " {{{1
         \   '%(begin|end)\{[^}]*\}',
         \  ], '|') . ')\s*$'
         \ . '|^\s*%(\\\]|\$\$)\s*$'
+
+  let s:textwidth = &l:textwidth == 0 ? 79 : &l:textwidth
 endfunction
 
 " }}}1
@@ -145,7 +147,7 @@ function! s:format_build_lines(start, end) " {{{1
   let l:lnum = a:start-1
   let l:current = repeat(' ', VimtexIndent(a:start))
   for l:word in l:words
-    if len(l:word) + len(l:current) > &tw
+    if len(l:word) + len(l:current) > s:textwidth
       call append(l:lnum, substitute(l:current, '\s$', '', ''))
       let l:lnum += 1
       let l:current = repeat(' ', VimtexIndent(a:start))
