@@ -49,12 +49,6 @@ function! vimtex#format#formatexpr() " {{{1
   let l:lines_old = getline(l:top, l:bottom)
   let l:tries = 5
 
-  " This is a hack to make undo restore the correct position
-  if mode() !=# 'i'
-    normal! ix
-    normal! x
-  endif
-
   " Main formatting algorithm
   while l:tries > 0
     " Format the range of lines
