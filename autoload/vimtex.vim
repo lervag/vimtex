@@ -37,7 +37,11 @@ function! vimtex#init() " {{{1
   " First initialize buffer options and construct (if necessary) the vimtex
   " data blob.
   "
-  call s:init_buffer()
+  try
+    call s:init_buffer()
+  catch '^vimtex'
+    return
+  endtry
 
   "
   " Then we initialize the modules.  This is done in three steps:
@@ -469,7 +473,7 @@ endfunction
 function! s:get_id(main) " {{{1
   for [id, data] in items(g:vimtex_data)
     if data.tex == a:main
-      return id
+      return str2nr(id)
     endif
   endfor
 
@@ -509,6 +513,18 @@ function! s:get_main() " {{{1
   let l:candidate = s:get_main_latexmain(expand('%:p'))
   if l:candidate !=# ''
     return l:candidate
+  endif
+
+  "
+  " Check if we are class or style file
+  "
+  if index(['cls', 'sty'], expand('%:e')) >= 0
+    let id = getbufvar('#', 'vimtex_id', -1)
+    if id >= 0
+      return g:vimtex_data[id].tex
+    else
+      throw 'vimtex: not valid tex file'
+    endif
   endif
 
   "
