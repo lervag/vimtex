@@ -1858,6 +1858,7 @@ viewer is opened.
 Associated settings:
     |g:vimtex_view_enabled|
     |g:vimtex_view_method|
+    |g:vimtex_view_use_temp_files|
     |g:vimtex_view_general_viewer|
     |g:vimtex_view_<viewer>_options|
 
