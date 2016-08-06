@@ -55,7 +55,9 @@ function! vimtex#format#formatexpr() " {{{1
     let l:bottom = s:format(l:top, l:bottom)
 
     " Ensure proper indentation
-    silent! execute printf('normal! %sG=%sG', l:top, l:bottom)
+    if l:top < l:bottom
+      silent! execute printf('normal! %sG=%sG', l:top+1, l:bottom)
+    endif
 
     " Check if any lines have changed
     let l:lines_new = getline(l:top, l:bottom)
@@ -139,7 +141,7 @@ function! s:format_build_lines(start, end) " {{{1
   " Add the words in properly indented and formatted lines
   "
   let l:lnum = a:start-1
-  let l:current = repeat(' ', VimtexIndent(a:start))
+  let l:current = repeat(' ', indent(a:start))
   for l:word in l:words
     if len(l:word) + len(l:current) > s:textwidth
       call append(l:lnum, substitute(l:current, '\s$', '', ''))
