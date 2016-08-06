@@ -795,6 +795,25 @@ Options~
 
   Default value: 1
 
+*g:vimtex_view_use_temp_files*
+  If enabled, this will copy output files to a corresponding set of files
+  with `_vimtex` prepended to the name. If one combines this with the callback
+  feature, this may provide a very convenient way to avoid that the pdf
+  becomes unavailable during compilation, as it will only update the viewer
+  outut file after a successful compilation.
+
+  Note: This will disable the viewer from the latexmk end. That is, if this
+        option is enabled, opening and updating the pdf viewer will have to be
+        done by the user or by vimtex.
+
+  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
+        these viewers should update automatically after the pdf is updated.
+        For general viewers, one has to create a callback function and connect
+        it through |g:vimtex_view_general_callback|, and then use this
+        callback to update the viewer.
+
+  Default value: 0
+
 *g:vimtex_view_method*
   Set the viewer method.  The general viewer |vimtex_viewer_general| defines
   a generic interface that allows sufficient customization for most viewer

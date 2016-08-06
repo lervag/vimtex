@@ -8,7 +8,6 @@ let s:viewers = [
       \ 'general',
       \ 'mupdf',
       \ 'zathura',
-      \ 'zathura_alternative',
       \ ]
 for viewer in s:viewers
   execute 'let s:' . viewer . ' = {}'
@@ -19,6 +18,7 @@ function! vimtex#view#init_options() " {{{1
   if !g:vimtex_view_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_view_method', 'general')
+  call vimtex#util#set_default('g:vimtex_view_use_temp_files', 0)
 endfunction
 
 " }}}1
@@ -43,7 +43,7 @@ function! vimtex#view#init_buffer() " {{{1
       return
     endif
 
-    execute 'let b:vimtex.viewer = deepcopy(' . viewer . ')'
+    execute 'let b:vimtex.viewer = ' . viewer
     call b:vimtex.viewer.init()
 
     "
@@ -111,11 +111,27 @@ function! s:general.init() dict " {{{2
     call vimtex#echo#echo('- Please see :h g:vimtex_view_general_viewer')
     call vimtex#echo#wait()
   endif
+
+  if g:vimtex_view_use_temp_files
+    let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+    let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+    let self.copy_files = function('s:copy_files')
+  else
+    let self.out = b:vimtex.out()
+    let self.synctex = b:vimtex.ext('synctex.gz')
+  endif
 endfunction
 
 " }}}2
 function! s:general.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
+  if empty(a:file)
+    if g:vimtex_view_use_temp_files
+      call self.copy_files()
+    endif
+    let outfile = self.out
+  else
+    let outfile = a:file
+  endif
   if s:output_not_readable(outfile) | return | endif
 
   " Parse options
@@ -139,12 +155,17 @@ endfunction
 
 " }}}2
 function! s:general.latexmk_append_argument() dict " {{{2
-  let l:option = g:vimtex_view_general_viewer
-  if !empty(g:vimtex_view_general_options_latexmk)
-    let l:option .= ' ' . substitute(g:vimtex_view_general_options_latexmk,
-          \                      '@line', line('.'), 'g')
+  if g:vimtex_view_use_temp_files
+    return ' -view=none'
+  else
+    let l:option = g:vimtex_view_general_viewer
+    if !empty(g:vimtex_view_general_options_latexmk)
+      let l:option .= ' '
+      let l:option .= substitute(g:vimtex_view_general_options_latexmk,
+            \                    '@line', line('.'), 'g')
+    endif
+    return vimtex#latexmk#add_option('pdf_previewer', l:option)
   endif
-  return vimtex#latexmk#add_option('pdf_previewer', l:option)
 endfunction
 
 " }}}2
@@ -171,8 +192,18 @@ function! s:mupdf.init() dict " {{{2
     call vimtex#echo#warning('viewer MuPDF requires xdotool!')
   endif
 
+  if g:vimtex_view_use_temp_files
+    let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+    let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+    let self.copy_files = function('s:copy_files')
+  else
+    let self.out = b:vimtex.out()
+    let self.synctex = b:vimtex.ext('synctex.gz')
+  endif
+
   let self.class = 'MuPDF'
   let self.xwin_id = 0
+  let self.view = function('s:view')
   let self.xwin_exists = function('s:xwin_exists')
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_send_keys = function('s:xwin_send_keys')
@@ -181,22 +212,6 @@ function! s:mupdf.init() dict " {{{2
   call self.xwin_exists()
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
-endfunction
-
-" }}}2
-function! s:mupdf.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  if self.xwin_exists()
-    call self.forward_search(outfile)
-  else
-    call self.start(outfile)
-  endif
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
 endfunction
 
 " }}}2
@@ -283,11 +298,22 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_callback(status) dict " {{{2
+  if !a:status | return | endif
   sleep 500m
-  if !self.xwin_exists() | return | endif
+
+  if g:vimtex_view_use_temp_files
+    call self.copy_files()
+  endif
+
+  if !self.xwin_exists()
+    call self.start(self.out)
+  endif
+
+  if g:vimtex_view_use_temp_files
+    call self.xwin_send_keys('r')
+  endif
 
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-  call self.forward_search(b:vimtex.out())
   if has_key(self, 'hook_callback')
     call self.hook_callback()
   endif
@@ -295,11 +321,15 @@ endfunction
 
 " }}}2
 function! s:mupdf.latexmk_append_argument() dict " {{{2
-  let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
-  let cmd .= vimtex#latexmk#add_option('pdf_update_method', '2')
-  let cmd .= vimtex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
-  let cmd .= vimtex#latexmk#add_option('pdf_previewer',
-        \ 'mupdf ' .  g:vimtex_view_mupdf_options)
+  if g:vimtex_view_use_temp_files
+    let cmd = ' -view=none'
+  else
+    let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
+    let cmd .= vimtex#latexmk#add_option('pdf_update_method', '2')
+    let cmd .= vimtex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
+    let cmd .= vimtex#latexmk#add_option('pdf_previewer',
+          \ 'mupdf ' .  g:vimtex_view_mupdf_options)
+  endif
   return cmd
 endfunction
 
@@ -326,29 +356,23 @@ function! s:zathura.init() dict " {{{2
     call vimtex#echo#warning('viewer Zathura requires xdotool!')
   endif
 
+  if g:vimtex_view_use_temp_files
+    let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+    let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+    let self.copy_files = function('s:copy_files')
+  else
+    let self.out = b:vimtex.out()
+    let self.synctex = b:vimtex.ext('synctex.gz')
+  endif
+
   let self.class = 'Zathura'
   let self.xwin_id = 0
+  let self.view = function('s:view')
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
   call self.xwin_exists()
 
   call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
-endfunction
-
-" }}}2
-function! s:zathura.view(file) dict " {{{2
-  let outfile = a:file !=# '' ? a:file : b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
-
-  if self.xwin_exists()
-    call self.forward_search(outfile)
-  else
-    call self.start(outfile)
-  endif
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
 endfunction
 
 " }}}2
@@ -369,116 +393,6 @@ endfunction
 
 " }}}2
 function! s:zathura.forward_search(outfile) dict " {{{2
-  let exe = {}
-  let exe.cmd  = 'zathura --synctex-forward '
-  let exe.cmd .= line('.')
-  let exe.cmd .= ':' . col('.')
-  let exe.cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
-  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  call vimtex#util#execute(exe)
-  let self.cmd_forward_search = exe.cmd
-endfunction
-
-" }}}2
-function! s:zathura.latexmk_callback(status) dict " {{{2
-  sleep 500m
-  if !self.xwin_exists() | return | endif
-
-  call self.forward_search(b:vimtex.out())
-  if has_key(self, 'hook_callback')
-    call self.hook_callback()
-  endif
-endfunction
-
-" }}}2
-function! s:zathura.latexmk_append_argument() dict " {{{2
-  let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
-  let cmd .= vimtex#latexmk#add_option('pdf_previewer',
-        \ 'zathura ' . g:vimtex_view_zathura_options
-        \ . ' -x \"' . g:vimtex_latexmk_progname
-        \ . ' --servername ' . v:servername
-        \ . ' --remote +\%{line} \%{input}\" \%S')
-
-  return cmd
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Zathura alternative
-function! s:zathura_alternative.init() dict " {{{2
-  " Only initialize once
-  if has_key(self, 'xwin_id') | return | endif
-
-  "
-  " Default Zathura settings
-  "
-  call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
-
-  if !executable('zathura')
-    call vimtex#echo#warning('Zathura is not executable!')
-    call vimtex#echo#echo('- vimtex viewer will not work!')
-    call vimtex#echo#wait()
-  endif
-
-  if !executable('xdotool')
-    call vimtex#echo#warning('viewer Zathura requires xdotool!')
-  endif
-
-  "
-  " Define output file names for the viewer
-  "
-  let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-  let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
-
-  let self.class = 'Zathura'
-  let self.xwin_id = 0
-  let self.xwin_get_id = function('s:xwin_get_id')
-  let self.xwin_exists = function('s:xwin_exists')
-  call self.xwin_exists(1)
-
-  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
-endfunction
-
-" }}}2
-function! s:zathura_alternative.view(file) dict " {{{2
-  if empty(a:file)
-    call self.copy_files()
-    let outfile = self.out
-  else
-    let outfile = a:file
-  endif
-  if s:output_not_readable(outfile) | return | endif
-
-  if self.xwin_exists(1)
-    call self.forward_search(outfile)
-  else
-    call self.start(outfile)
-  endif
-
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
-endfunction
-
-" }}}2
-function! s:zathura_alternative.start(outfile) dict " {{{2
-  let exe = {}
-  let exe.cmd  = 'zathura'
-  let exe.cmd .= ' -x "' . g:vimtex_latexmk_progname
-        \ . ' --servername ' . v:servername
-        \ . ' --remote +\%{line} \%{input}"'
-  let exe.cmd .= ' ' . g:vimtex_view_zathura_options
-  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  call vimtex#util#execute(exe)
-  let self.cmd_start = exe.cmd
-
-  call self.xwin_get_id()
-  call self.forward_search(a:outfile)
-endfunction
-
-" }}}2
-function! s:zathura_alternative.forward_search(outfile) dict " {{{2
   if !filereadable(self.synctex) | return | endif
 
   let exe = {}
@@ -492,42 +406,37 @@ function! s:zathura_alternative.forward_search(outfile) dict " {{{2
 endfunction
 
 " }}}2
-function! s:zathura_alternative.latexmk_callback(status) dict " {{{2
+function! s:zathura.latexmk_callback(status) dict " {{{2
   if !a:status | return | endif
-
-  call self.copy_files()
-
   sleep 500m
-  if self.xwin_exists(1)
-    if has_key(self, 'hook_callback')
-      call self.hook_callback()
-    endif
-  else
+
+  if g:vimtex_view_use_temp_files
+    call self.copy_files()
+  endif
+
+  if !self.xwin_exists()
     call self.start(self.out)
   endif
+
+  if has_key(self, 'hook_callback')
+    call self.hook_callback()
+  endif
 endfunction
 
 " }}}2
-function! s:zathura_alternative.latexmk_append_argument() dict " {{{2
-  return ' -view=none'
-endfunction
-
-" }}}2
-function! s:zathura_alternative.copy_files() dict " {{{2
-  "
-  " Copy pdf file
-  "
-  if getftime(b:vimtex.out()) > getftime(self.out)
-    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+function! s:zathura.latexmk_append_argument() dict " {{{2
+  if g:vimtex_view_use_temp_files
+    let cmd = ' -view=none'
+  else
+    let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
+    let cmd .= vimtex#latexmk#add_option('pdf_previewer',
+          \ 'zathura ' . g:vimtex_view_zathura_options
+          \ . ' -x \"' . g:vimtex_latexmk_progname
+          \ . ' --servername ' . v:servername
+          \ . ' --remote +\%{line} \%{input}\" \%S')
   endif
 
-  "
-  " Copy synctex file
-  "
-  let l:old = fnamemodify(b:vimtex.out(), ':r') . '.synctex.gz'
-  if getftime(l:old) > getftime(self.synctex)
-    call rename(l:old, self.synctex)
-  endif
+  return cmd
 endfunction
 
 " }}}2
@@ -537,6 +446,29 @@ endfunction
 "
 " Common functionality
 "
+function! s:view(file) dict " {{{1
+  if empty(a:file)
+    if g:vimtex_view_use_temp_files
+      call self.copy_files()
+    endif
+    let outfile = self.out
+  else
+    let outfile = a:file
+  endif
+  if s:output_not_readable(outfile) | return | endif
+
+  if self.xwin_exists()
+    call self.forward_search(outfile)
+  else
+    call self.start(outfile)
+  endif
+
+  if has_key(self, 'hook_view')
+    call self.hook_view()
+  endif
+endfunction
+
+" }}}1
 function! s:output_not_readable(output) " {{{1
   if !filereadable(a:output)
     call vimtex#echo#warning('viewer can not read PDF file!')
@@ -571,7 +503,7 @@ function! s:xwin_get_id() dict " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_exists(...) dict " {{{1
+function! s:xwin_exists() dict " {{{1
   if !executable('xdotool') | return 0 | endif
 
   "
@@ -588,8 +520,7 @@ function! s:xwin_exists(...) dict " {{{1
   " If xwin_id is unset, check if matching viewer windows exist
   "
   if self.xwin_id == 0
-    let cmd = 'xdotool search --name '
-          \ . fnamemodify(a:0 > 0 ? self.out : b:vimtex.out(), ':t')
+    let cmd = 'xdotool search --name ' . fnamemodify(self.out, ':t')
     let result = split(system(cmd), '\n')
     if len(result) > 0
       let self.xwin_id = result[-1]
@@ -607,6 +538,24 @@ function! s:xwin_send_keys(keys) dict " {{{1
     let cmd  = 'xdotool key --window ' . self.xwin_id
     let cmd .= ' ' . a:keys
     silent call system(cmd)
+  endif
+endfunction
+
+" }}}1
+function! s:copy_files() dict " {{{1
+  "
+  " Copy pdf file
+  "
+  if getftime(b:vimtex.out()) > getftime(self.out)
+    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+  endif
+
+  "
+  " Copy synctex file
+  "
+  let l:old = b:vimtex.ext('synctex.gz')
+  if getftime(l:old) > getftime(self.synctex)
+    call rename(l:old, self.synctex)
   endif
 endfunction
 
