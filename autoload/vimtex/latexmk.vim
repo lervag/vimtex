@@ -643,6 +643,11 @@ function! s:latexmk_init_pid() " {{{1
   let b:vimtex.pid = get(b:vimtex, 'pid', 0)
 
   "
+  " Only search for PIDs if continuous mode is active
+  "
+  if !g:vimtex_latexmk_continuous | return | endif
+
+  "
   " If the PID is 0, then search for existing processes
   "
   if b:vimtex.pid == 0
@@ -765,10 +770,9 @@ function! s:check_system_compatibility() " {{{1
   "
   " Check for required executables
   "
-  if has('win32')
-    let required = ['latexmk']
-  else
-    let required = ['latexmk', 'pgrep']
+  let required = ['latexmk']
+  if g:vimtex_latexmk_continuous && !has('win32')
+    let required += ['pgrep']
   endif
   let missing = filter(required, '!executable(v:val)')
 
