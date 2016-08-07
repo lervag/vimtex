@@ -194,8 +194,8 @@ let b:current_syntax = 'tex'
 unlet b:current_syntax
 syntax include @GNUPLOT syntax/gnuplot.vim
 syntax region texZone
-      \ start='\\begin{gnuplottex}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
-      \ end='\\end{gnuplottex}'re=e
+      \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
+      \ end='\\end{gnuplot}'re=e
       \ keepend
       \ transparent
       \ contains=texBeginEnd,texBeginEndModifier,@GNUPLOT
