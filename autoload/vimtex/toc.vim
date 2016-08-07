@@ -84,7 +84,7 @@ function! vimtex#toc#init_script() " {{{1
         \   },
         \ 'titlepage' : {
         \   'title' : 'Titlepage',
-        \   're'    : '\v^\s*\\begin{titlepage}',
+        \   're'    : '\v^\s*\\begin\{titlepage\}',
         \   },
         \ 'bib' : {
         \   'title' : 'Bibliography',
