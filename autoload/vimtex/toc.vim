@@ -82,6 +82,10 @@ function! vimtex#toc#init_script() " {{{1
         \   'title' : 'Alphabetical index',
         \   're'    : '\v^\s*\\printindex\[?',
         \   },
+        \ 'titlepage' : {
+        \   'title' : 'Titlepage',
+        \   're'    : '\v^\s*\\begin{titlepage}',
+        \   },
         \ 'bib' : {
         \   'title' : 'Bibliography',
         \   're'    : '\v^\s*\\%('
