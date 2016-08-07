@@ -190,6 +190,18 @@ syntax region texZone
 let b:current_syntax = 'tex'
 
 " }}}1
+" {{{1 Nested syntax highlighting for gnuplottex
+unlet b:current_syntax
+syntax include @GNUPLOT syntax/gnuplot.vim
+syntax region texZone
+      \ start='\\begin{gnuplottex}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
+      \ end='\\end{gnuplottex}'re=e
+      \ keepend
+      \ transparent
+      \ contains=texBeginEnd,texBeginEndModifier,@GNUPLOT
+let b:current_syntax = 'tex'
+
+" }}}1
 " {{{1 Nested syntax highlighting for minted
 
 " First set all minted environments to listings
