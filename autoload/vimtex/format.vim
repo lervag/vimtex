@@ -41,6 +41,8 @@ endfunction
 " }}}1
 
 function! vimtex#format#formatexpr() " {{{1
+  if mode() =~# '[iR]' | return -1 | endif
+
   let l:foldenable = &l:foldenable
   setlocal nofoldenable
 
@@ -69,11 +71,7 @@ function! vimtex#format#formatexpr() " {{{1
   endwhile
 
   " Set cursor at appropriate position
-  if mode() =~# '[iR]'
-    call cursor(l:bottom, col([l:bottom, '$']))
-  else
-    execute 'normal!' l:bottom . 'G^'
-  endif
+  execute 'normal!' l:bottom . 'G^'
 
   " Don't change the text if the formatting algorithm failed
   if l:tries == 0
