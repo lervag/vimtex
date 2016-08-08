@@ -197,16 +197,14 @@ function! s:highlight_matching_pair() " {{{1
   let l:corresponding = vimtex#delim#get_matching(l:current)
   if empty(l:corresponding) | return | endif
 
-  let [l:o, l:c] = l:current.is_open
+  let [l:open, l:close] = l:current.is_open
         \ ? [l:current, l:corresponding]
         \ : [l:corresponding, l:current]
 
   let w:vimtex_match_id1 = matchadd('MatchParen',
-        \   '\%' . l:o.lnum . 'l\%' . l:o.cnum . 'c' . l:o.re.this . '\ze\_.*'
-        \ . '\%' . l:c.lnum . 'l\%' . l:c.cnum . 'c' . l:c.re.this)
+        \ '\%' . l:open.lnum . 'l\%' . l:open.cnum . 'c' . l:open.re.this)
   let w:vimtex_match_id2 = matchadd('MatchParen',
-        \   '\%' . l:o.lnum . 'l\%' . l:o.cnum . 'c' . l:o.re.this . '\_.*\zs'
-        \ . '\%' . l:c.lnum . 'l\%' . l:c.cnum . 'c' . l:c.re.this)
+        \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
 endfunction
 
 " }}}1
