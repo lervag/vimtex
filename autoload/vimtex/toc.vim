@@ -211,15 +211,13 @@ function! vimtex#toc#get_entries() " {{{1
     " Note: We do some "magic" in order to filter out the TOC entries that are
     "       not necessaries. In other words, we only want to keep TOC entries
     "       for included files that do not have other TOC entries inside them.
-    if l:file ==# l:included.prev
-      if l:included.toc_length < len(l:toc)
-        let l:included.toc_length = len(l:toc)
-        let l:included.current.entries += 1
-      endif
-    else
+    if l:file !=# l:included.prev
+      let l:included.prev = l:file
+      let l:included.current.entries = len(l:toc) - l:included.toc_length
+      let l:included.toc_length = len(l:toc)
+
       if index(l:included.files, l:file) < 0
         let l:included.files += [l:file]
-        let l:included.prev = l:file
         let l:included.current = {
               \ 'title'   : 'Included: ' . fnamemodify(l:file, ':t'),
               \ 'number'  : '',
