@@ -170,19 +170,20 @@ endfunction
 
 " }}}1
 function! vimtex#util#kpsewhich(file, ...) " {{{1
+  execute 'lcd' b:vimtex.root
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
   let cmd .= ' "' . a:file . '"'
-  let out = system(cmd)
+  let output = split(system(cmd), '\n')
+  lcd -
 
-  " If kpsewhich has found something, it returns a non-empty string with a
-  " newline at the end; otherwise the string is empty
-  if len(out)
-    " Remove the trailing newline
-    let out = fnamemodify(out[:-2], ':p')
-  endif
+  if empty(output) | return '' | endif
+  let filename = output[0]
 
-  return out
+  " If path is already absolute, return it
+  return filename[0] ==# '/'
+        \ ? filename
+        \ : simplify(b:vimtex.root . '/' . filename)
 endfunction
 
 " }}}1
