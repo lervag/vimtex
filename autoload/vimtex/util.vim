@@ -170,7 +170,7 @@ endfunction
 
 " }}}1
 function! vimtex#util#kpsewhich(file, ...) " {{{1
-  execute 'lcd' b:vimtex.root
+  execute 'lcd' . fnameescape(b:vimtex.root)
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
   let cmd .= ' "' . a:file . '"'
