@@ -37,6 +37,10 @@ function! vimtex#toc#open() " {{{1
   if !exists('b:vimtex')
     if exists('s:index')
       call vimtex#index#create(s:index)
+    elseif expand('%:e') =~# 'bib'
+      call vimtex#echo#warning('Can''t open ToC!')
+      call vimtex#echo#echo('Please open ToC from a relevant tex file first.')
+      call vimtex#echo#wait()
     endif
     return
   endif
