@@ -9,21 +9,13 @@ function! vimtex#echo#init_options() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#echo#init_script() " {{{1
-  highlight link VimtexMsg ModeMsg
-  highlight link VimtexSuccess Statement
-  highlight link VimtexWarning WarningMsg
-  highlight link VimtexInfo Question
-endfunction
-
-" }}}1
 function! vimtex#echo#init_buffer() " {{{1
 endfunction
 
 " }}}1
 
 function! vimtex#echo#wait() " {{{1
-  if g:vimtex_echo_ignore_wait | return | endif
+  if get(g:, 'vimtex_echo_ignore_wait') | return | endif
 
   if filereadable(expand('%'))
     echohl VimtexMsg
@@ -74,6 +66,15 @@ function! vimtex#echo#status(parts) " {{{1
   echon "\r"
   call vimtex#echo#formatted(a:parts)
 endfunction
+
+" }}}1
+
+" {{{1 Script initialization
+
+call vimtex#util#set_highlight('VimtexMsg', 'ModeMsg')
+call vimtex#util#set_highlight('VimtexSuccess', 'Statement')
+call vimtex#util#set_highlight('VimtexWarning', 'WarningMsg')
+call vimtex#util#set_highlight('VimtexInfo', 'Question')
 
 " }}}1
 

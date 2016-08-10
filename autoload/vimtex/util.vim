@@ -203,7 +203,7 @@ endfunction
 " }}}1
 function! vimtex#util#set_highlight(name, target) " {{{1
   if !hlexists(a:name)
-    silent execute 'highlight link' a:name a:target
+    silent execute 'highlight default link' a:name a:target
   endif
 endfunction
 

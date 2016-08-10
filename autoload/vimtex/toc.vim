@@ -17,91 +17,6 @@ function! vimtex#toc#init_options() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#toc#init_script() " {{{1
-  call vimtex#util#set_highlight('VimtexTocNum', 'Number')
-  call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
-  call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
-  call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
-  call vimtex#util#set_highlight('VimtexTocSec3', 'NonText')
-  call vimtex#util#set_highlight('VimtexTocSec4', 'Comment')
-  call vimtex#util#set_highlight('VimtexTocHelp', 'helpVim')
-
-  if !g:vimtex_toc_enabled | return | endif
-
-  let s:name = 'Table of contents (vimtex)'
-
-  "
-  " Define TOC variables
-  "
-
-  " Define counters
-  let s:max_level = 0
-  let s:count_matters = 0
-
-  " Define dictionary to keep track of TOC numbers
-  let s:number = {
-        \ 'part' : 0,
-        \ 'chapter' : 0,
-        \ 'section' : 0,
-        \ 'subsection' : 0,
-        \ 'subsubsection' : 0,
-        \ 'subsubsubsection' : 0,
-        \ 'current_level' : 0,
-        \ 'preamble' : 0,
-        \ 'frontmatter' : 0,
-        \ 'mainmatter' : 0,
-        \ 'appendix' : 0,
-        \ 'backmatter' : 0,
-        \ }
-
-  " Map for section hierarchy
-  let s:sec_to_value = {
-        \ '_' : 0,
-        \ 'subsubsubsection' : 1,
-        \ 'subsubsection' : 2,
-        \ 'subsection' : 3,
-        \ 'section' : 4,
-        \ 'chapter' : 5,
-        \ 'part' : 6,
-        \ }
-
-  " Define regular expressions to match document parts
-  let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
-  let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
-  let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-  let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\%?\s*$'
-  let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
-  let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
-  let s:re_structure_match = '\v((front|main|back)matter|appendix)'
-  let s:re_other = {
-        \ 'toc' : {
-        \   'title' : 'Table of contents',
-        \   're'    : '\v^\s*\\tableofcontents',
-        \   },
-        \ 'index' : {
-        \   'title' : 'Alphabetical index',
-        \   're'    : '\v^\s*\\printindex\[?',
-        \   },
-        \ 'titlepage' : {
-        \   'title' : 'Titlepage',
-        \   're'    : '\v^\s*\\begin\{titlepage\}',
-        \   },
-        \ 'bib' : {
-        \   'title' : 'Bibliography',
-        \   're'    : '\v^\s*\\%('
-        \             .  'printbib%(liography|heading)\s*(\{|\[)?'
-        \             . '|begin\s*\{\s*thebibliography\s*\}'
-        \             . '|bibliography\s*\{)',
-        \   },
-        \ }
-
-  let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-  let s:re_bibs  = s:nocomment
-  let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-  let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
-endfunction
-
-" }}}1
 function! vimtex#toc#init_buffer() " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
@@ -526,6 +441,87 @@ function! s:number_increment(level) " {{{1
 
   return copy(s:number)
 endfunction
+
+" }}}1
+
+" {{{1 Script initialization
+
+let s:name = 'Table of contents (vimtex)'
+
+" Define counters
+let s:max_level = 0
+let s:count_matters = 0
+
+" Define dictionary to keep track of TOC numbers
+let s:number = {
+      \ 'part' : 0,
+      \ 'chapter' : 0,
+      \ 'section' : 0,
+      \ 'subsection' : 0,
+      \ 'subsubsection' : 0,
+      \ 'subsubsubsection' : 0,
+      \ 'current_level' : 0,
+      \ 'preamble' : 0,
+      \ 'frontmatter' : 0,
+      \ 'mainmatter' : 0,
+      \ 'appendix' : 0,
+      \ 'backmatter' : 0,
+      \ }
+
+" Map for section hierarchy
+let s:sec_to_value = {
+      \ '_' : 0,
+      \ 'subsubsubsection' : 1,
+      \ 'subsubsection' : 2,
+      \ 'subsection' : 3,
+      \ 'section' : 4,
+      \ 'chapter' : 5,
+      \ 'part' : 6,
+      \ }
+
+" Define regular expressions to match document parts
+let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
+let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
+let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
+let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\%?\s*$'
+let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
+let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
+let s:re_structure_match = '\v((front|main|back)matter|appendix)'
+let s:re_other = {
+      \ 'toc' : {
+      \   'title' : 'Table of contents',
+      \   're'    : '\v^\s*\\tableofcontents',
+      \   },
+      \ 'index' : {
+      \   'title' : 'Alphabetical index',
+      \   're'    : '\v^\s*\\printindex\[?',
+      \   },
+      \ 'titlepage' : {
+      \   'title' : 'Titlepage',
+      \   're'    : '\v^\s*\\begin\{titlepage\}',
+      \   },
+      \ 'bib' : {
+      \   'title' : 'Bibliography',
+      \   're'    : '\v^\s*\\%('
+      \             .  'printbib%(liography|heading)\s*(\{|\[)?'
+      \             . '|begin\s*\{\s*thebibliography\s*\}'
+      \             . '|bibliography\s*\{)',
+      \   },
+      \ }
+
+let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
+let s:re_bibs  = s:nocomment
+let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
+
+" Define highlight groups
+call vimtex#util#set_highlight('VimtexTocNum', 'Number')
+call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
+call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
+call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
+call vimtex#util#set_highlight('VimtexTocSec3', 'NonText')
+call vimtex#util#set_highlight('VimtexTocSec4', 'Comment')
+call vimtex#util#set_highlight('VimtexTocHelp', 'helpVim')
 
 " }}}1
 
