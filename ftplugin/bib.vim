@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if !get(g:, 'vimtex_enabled', 1)
+if !get(g:, 'vimtex_enabled', 1) || !get(g:, 'vimtex_toc_enabled', 1)
   finish
 endif
 
@@ -20,13 +20,11 @@ function! s:map(mode, lhs, rhs, ...)
   endif
 endfunction
 
-if get(g:, 'vimtex_toc_enabled', 1)
-  command! -buffer VimtexTocOpen   call vimtex#toc#open()
-  command! -buffer VimtexTocToggle call vimtex#toc#toggle()
-  nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
-  nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
-  call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
-  call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
-endif
+command! -buffer VimtexTocOpen   call vimtex#toc#open()
+command! -buffer VimtexTocToggle call vimtex#toc#toggle()
+nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
+nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
+call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
+call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
 
 " vim: fdm=marker sw=2
