@@ -125,10 +125,13 @@ endfunction
 " }}}2
 function! s:general.view(file) dict " {{{2
   if empty(a:file)
+    let outfile = self.out
+
+    " Only copy files if they don't exist
     if g:vimtex_view_use_temp_files
+          \ && s:output_not_readable(outfile)
       call self.copy_files()
     endif
-    let outfile = self.out
   else
     let outfile = a:file
   endif
@@ -448,9 +451,6 @@ endfunction
 "
 function! s:view(file) dict " {{{1
   if empty(a:file)
-    if g:vimtex_view_use_temp_files
-      call self.copy_files()
-    endif
     let outfile = self.out
   else
     let outfile = a:file
@@ -460,6 +460,9 @@ function! s:view(file) dict " {{{1
   if self.xwin_exists()
     call self.forward_search(outfile)
   else
+    if g:vimtex_view_use_temp_files
+      call self.copy_files()
+    endif
     call self.start(outfile)
   endif
 
