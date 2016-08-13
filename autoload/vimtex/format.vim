@@ -17,7 +17,7 @@ function! vimtex#format#init_script() " {{{1
         \ '%(\\\[|\$\$)\s*$',
         \], '|') . ')'
 
-  let s:border_end = '\\%(' . join([
+  let s:border_end = '\v\\%(' . join([
         \   '\\\*?',
         \   'clear%(double)?page',
         \   'linebreak',
@@ -103,6 +103,9 @@ function! s:format(top, bottom) " {{{1
 
     " Skip all lines with comments
     if l:line =~# '\v%(^|[^\\])\%'
+      if l:current < l:mark
+        let l:bottom += s:format_build_lines(l:current+1, l:mark)
+      endif
       let l:mark = l:current - 1
       continue
     endif
