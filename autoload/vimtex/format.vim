@@ -17,8 +17,7 @@ function! vimtex#format#init_script() " {{{1
         \ '%(\\\[|\$\$)\s*$',
         \], '|') . ')'
 
-  let s:border_end = '\v[^\\]\%'
-        \ . '|\\%(' . join([
+  let s:border_end = '\\%(' . join([
         \   '\\\*?',
         \   'clear%(double)?page',
         \   'linebreak',
@@ -98,6 +97,12 @@ function! s:format(top, bottom) " {{{1
 
     if vimtex#util#in_mathzone(l:current, 1)
           \ && vimtex#util#in_mathzone(l:current, col([l:current, '$']))
+      let l:mark = l:current - 1
+      continue
+    endif
+
+    " Skip all lines with comments
+    if l:line =~# '\v%(^|[^\\])\%'
       let l:mark = l:current - 1
       continue
     endif
