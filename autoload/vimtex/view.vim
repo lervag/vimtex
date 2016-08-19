@@ -47,6 +47,14 @@ function! vimtex#view#init_buffer() " {{{1
     call b:vimtex.viewer.init()
 
     "
+    " Add latexmk callback to callback hooks (if it exists)
+    "
+    if exists('*b:vimtex.viewer.latexmk_callback')
+      call add(g:vimtex_latexmk_callback_hooks,
+            \ 'b:vimtex.viewer.latexmk_callback')
+    endif
+
+    "
     " Create view and/or callback hooks (if they exist)
     "
     for point in ['view', 'callback']
@@ -213,8 +221,6 @@ function! s:mupdf.init() dict " {{{2
   let self.focus_vim = function('s:focus_vim')
   let self.focus_viewer = function('s:focus_viewer')
   call self.xwin_exists()
-
-  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
 
 " }}}2
@@ -374,8 +380,6 @@ function! s:zathura.init() dict " {{{2
   let self.xwin_get_id = function('s:xwin_get_id')
   let self.xwin_exists = function('s:xwin_exists')
   call self.xwin_exists()
-
-  call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
 endfunction
 
 " }}}2
