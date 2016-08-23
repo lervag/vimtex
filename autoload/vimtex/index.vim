@@ -62,12 +62,16 @@ function! vimtex#index#create(index) " {{{1
     unlet FnVal
   endfor
 
-  if g:vimtex_index_resize
-    silent exe 'set columns +=' . g:vimtex_index_split_width
+  if g:vimtex_index_split_pos ==# 'full'
+    silent execute 'edit' escape(a:index.name, ' ')
+  else
+    if g:vimtex_index_resize
+      silent exe 'set columns +=' . g:vimtex_index_split_width
+    endif
+    silent execute
+          \ g:vimtex_index_split_pos g:vimtex_index_split_width
+          \ 'new' escape(a:index.name, ' ')
   endif
-  silent execute
-        \ g:vimtex_index_split_pos g:vimtex_index_split_width
-        \ 'new' escape(a:index.name, ' ')
   let b:index = a:index
 
   setlocal bufhidden=wipe
