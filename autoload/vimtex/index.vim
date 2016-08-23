@@ -87,7 +87,9 @@ function! vimtex#index#create(index) " {{{1
     setlocal norelativenumber
   endif
 
-  nnoremap <silent><buffer> gg gg}j
+  if b:index.show_help
+    nnoremap <silent><buffer> gg gg}j
+  endif
   nnoremap <silent><buffer> <esc>OA k
   nnoremap <silent><buffer> <esc>OB j
   nnoremap <silent><buffer> <esc>OC k
