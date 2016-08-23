@@ -415,10 +415,11 @@ endfunction
 " }}}2
 function! s:zathura.latexmk_callback(status) dict " {{{2
   if !a:status | return | endif
-  sleep 500m
 
   if g:vimtex_view_use_temp_files
     call self.copy_files()
+  else
+    sleep 500m
   endif
 
   if !self.xwin_exists()
