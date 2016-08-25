@@ -55,8 +55,8 @@ function! vimtex#toc#open() " {{{1
         \ 'topmatters'      : s:count_matters,
         \ 'secnumdepth'     : g:vimtex_toc_secnumdepth,
         \ 'help'            : [
-        \   '-:       decrease secnumpdeth',
-        \   '+:       increase secnumpdeth',
+        \   '-:       decrease secnumdepth',
+        \   '+:       increase secnumdepth',
         \   's:       hide numbering',
         \ ],
         \ 'hook_init_post'  : function('s:index_hook_init_post'),
