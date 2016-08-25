@@ -198,16 +198,19 @@ function! s:bib.search(regexp) dict " {{{2
   " Find data from 'thebibliography' environments
   let lines = readfile(b:vimtex.tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
-    for line in filter(filter(lines, 'v:val =~# ''\C\\bibitem'''),
+    for line in filter(filter(lines,
+          \   'v:val =~# ''\C\\bibitem'''),
           \ 'v:val =~ a:regexp')
-      let match = matchlist(line, '\\bibitem{\([^}]*\)')[1]
-      call add(res, {
-            \ 'key': match,
-            \ 'type': '',
-            \ 'author': '',
-            \ 'year': '',
-            \ 'title': match,
-            \ })
+      let matches = matchlist(line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
+      if len(matches) > 1
+        call add(res, {
+              \ 'key': matches[2],
+              \ 'type': '',
+              \ 'author': '',
+              \ 'year': '',
+              \ 'title': matches[2],
+              \ })
+      endif
     endfor
   endif
 
