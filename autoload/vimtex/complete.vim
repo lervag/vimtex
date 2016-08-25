@@ -205,7 +205,7 @@ function! s:bib.search(regexp) dict " {{{2
       if len(matches) > 1
         call add(res, {
               \ 'key': matches[2],
-              \ 'type': '',
+              \ 'type': 'thebibliography',
               \ 'author': '',
               \ 'year': '',
               \ 'title': matches[2],
