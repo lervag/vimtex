@@ -341,6 +341,7 @@ endfunction
 
 " }}}1
 function! s:index_syntax() dict "{{{1
+  syntax match VimtexTocHelp /^\S.*: .*/
   syntax match VimtexTocNum
         \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
   syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,@Tex
@@ -348,7 +349,6 @@ function! s:index_syntax() dict "{{{1
   syntax match VimtexTocSec2 /^.*2$/ contains=VimtexTocNum,@Tex
   syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,@Tex
   syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,@Tex
-  syntax match VimtexTocHelp /^\S.*: .*/
 endfunction
 
 " }}}1
