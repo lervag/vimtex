@@ -158,10 +158,15 @@ Requirements~
 Support for multi-file projects~
                                                             *vimtex-multi-file*
 
-|vimtex| supports most multi-file documents.  It uses a recursive search
-algorithm that should find the main LaTeX file in most cases.  For special
-cases, there are several alternative methods for specifying the main file, see
-below.  The methods are tried in the following order:
+|vimtex| supports most multi-file documents.  The main method uses a recursive
+search algorithm that should find the main LaTeX file in most cases.  For
+special cases, there are several alternative methods for specifying the main
+file.  These alternative methods all require some explicit declaration of the
+main file.  Thus, these methods will be tried first, and the recursive search
+is tried last if there are no explicit declarations that yield an appropriate
+main LaTeX file candidate.
+
+The methods are tried in the following order:
 
   1. Buffer variable
   2. TeX root specifier
@@ -171,9 +176,9 @@ below.  The methods are tried in the following order:
 
                                                                  *b:vimtex_main*
 Buffer variable~
-  Finally, the main file may be specified through the buffer variable
-  `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then
-  use an |autocmd| to specify the main file through this buffer variable with >
+  The main file may be specified through the buffer variable `b:vimtex_main`.
+  If one uses project specific |vimrc| files, one may then use an |autocmd| to
+  specify the main file through this buffer variable with >
 
     autocmd FileType tex let b:vimtex_main = 'main.tex'
 
@@ -183,8 +188,6 @@ TeX root specifier~
 
     %! TEX root = /path/to/my-main.tex
 <
-  Note that this method should work for the case where the recursive search
-  does not work.
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
 Subfiles package~
@@ -210,9 +213,10 @@ File .latexmain specifier~
   that `path/file.tex` is the main LaTeX file.
 
 Recursive search~
-  The recursive search detects the main LaTeX file by searching for a file in
-  the current and parent directories that includes the present file and that
-  has the `\documentclass` line.
+  If no other method provides an appropriate candidate, then the recursive
+  search detects the main LaTeX file by searching for a file in the current
+  and parent directories that includes the present file and that has the
+  `\documentclass` line.
 
   This should work in most cases, but it may fail if for instance the project
   structure is something like this: >
@@ -222,6 +226,7 @@ Recursive search~
 <
   That is, the main file detection will not work for the file `chapter.tex`,
   because the main file does not live in the same folder or a parent folder.
+  In this particular case, the TeX root specifier should work.
 
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
