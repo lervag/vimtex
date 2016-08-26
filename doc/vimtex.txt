@@ -161,7 +161,7 @@ Support for multi-file projects~
 |vimtex| supports most multi-file documents.  It uses a recursive search
 algorithm that should find the main LaTeX file in most cases.  For special
 cases, there are several alternative methods for specifying the main file, see
-below.  The priority of the methods are as follows:
+below.  The methods are tried in the following order:
 
   1. Buffer variable
   2. TeX root specifier
@@ -169,28 +169,31 @@ below.  The priority of the methods are as follows:
   4. File `.latexmain` specifier
   5. Recursive search
 
+                                                                 *b:vimtex_main*
+Buffer variable~
+  Finally, the main file may be specified through the buffer variable
+  `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then
+  use an |autocmd| to specify the main file through this buffer variable with >
+
+    autocmd FileType tex let b:vimtex_main = 'main.tex'
+
+TeX root specifier~
+  It is also possible to specify the main TeX file with a comment in one of
+  the first five lines of the current file similar to this: >
+
+    %! TEX root = /path/to/my-main.tex
+<
+  Note that this method should work for the case where the recursive search
+  does not work.
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
-|vimtex| also supports the `import` and the `subfiles` packages that can be used to make
-it easier to work with multi-file projects. If one uses the `subfiles` package,
-the |VimtexToggleMain| command is particularly useful.
+Subfiles package~
+  |vimtex| also supports the `import` and the `subfiles` packages that can be used to
+  make it easier to work with multi-file projects. If one uses the `subfiles`
+  package, the |VimtexToggleMain| command is particularly useful.
 
-  - https://www.ctan.org/pkg/import
-  - https://www.ctan.org/pkg/subfiles
-
-Recursive search~
-  The recursive search detects the main LaTeX file by searching for a file in
-  the current and parent directories that includes the present file and that
-  has the `\documentclass` line.
-
-  This should work in most cases, but it may fail if for instance the project
-  structure is something like this: >
-
-    path1/main.tex
-    path2/chapter.tex
-<
-  That is, the main file detection will not work for the file `chapter.tex`,
-  because the main file does not live in the same folder or a parent folder.
+    - https://www.ctan.org/pkg/import
+    - https://www.ctan.org/pkg/subfiles
 
 File .latexmain specifier~
   In some cases, it might be preferable to specify the main file by creating
@@ -206,22 +209,19 @@ File .latexmain specifier~
   Here `path/file.tex.latexmain` indicates for `file1.tex` and `file2.tex`
   that `path/file.tex` is the main LaTeX file.
 
-TeX root specifier~
-  It is also possible to specify the main TeX file with a comment in one of
-  the first five lines of the current file similar to this: >
+Recursive search~
+  The recursive search detects the main LaTeX file by searching for a file in
+  the current and parent directories that includes the present file and that
+  has the `\documentclass` line.
 
-    %! TEX root = /path/to/my-main.tex
+  This should work in most cases, but it may fail if for instance the project
+  structure is something like this: >
+
+    path1/main.tex
+    path2/chapter.tex
 <
-  Note that this method should work for the case where the recursive search
-  does not work.
-
-                                                                 *b:vimtex_main*
-Buffer variable~
-  Finally, the main file may be specified through the buffer variable
-  `b:vimtex_main`.  If one uses project specific |vimrc| files, one may then
-  use an |autocmd| to specify the main file through this buffer variable with >
-
-    autocmd FileType tex let b:vimtex_main = 'main.tex'
+  That is, the main file detection will not work for the file `chapter.tex`,
+  because the main file does not live in the same folder or a parent folder.
 
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
