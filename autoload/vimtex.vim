@@ -585,13 +585,16 @@ function! s:get_main_latexmain(file) " {{{1
   let l:candidates = split(globpath(fnameescape(l:dirs), '*.latexmain'), '\n')
 
   "
-  " If any candidates found, use the first one (corresponding to the one
-  " closest to the current file in the directory tree)
+  " Use first valid candidate
   "
-  if len(l:candidates) > 0
-    let l:candidate = fnamemodify(l:candidates[0], ':p:r')
-    return filereadable(l:candidate) ? l:candidate : ''
-  endif
+  for l:cand in l:candidates
+    let l:cand = fnamemodify(l:cand, ':p:r')
+    if s:file_reaches_current(l:cand)
+      return l:cand
+    endif
+  endfor
+
+  return ''
 endfunction
 
 function! s:get_main_recurse(...) " {{{1
@@ -650,6 +653,29 @@ function! s:file_is_main(file) " {{{1
   return filereadable(a:file)
         \ && len(filter(readfile(a:file, 0, 50),
         \               'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
+endfunction
+
+" }}}1
+function! s:file_reaches_current(file) " {{{1
+  if !filereadable(a:file) | return 0 | endif
+
+  for l:line in readfile(a:file)
+    let l:file = matchstr(l:line,
+          \ '\v\\%(input|include|subimport\{[^\}]*\})\s*\{\zs'
+          \ . '((.*)\/)?[a-zA-Z._-]+')
+    if empty(l:file) | continue | endif
+
+    if l:file[0] !=# '/'
+      let l:file = fnamemodify(a:file, ':h') . '/' . l:file
+    endif
+
+    if expand('%:p') ==# l:file
+          \ || s:file_reaches_current(l:file)
+      return 1
+    endif
+  endfor
+
+  return 0
 endfunction
 
 " }}}1

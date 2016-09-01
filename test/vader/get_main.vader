@@ -1,5 +1,5 @@
 Execute (Assert b:vimtex.tex = latexmain.tex):
-  call system('touch latexmain.tex')
+  call writefile(['\include{test.tex}'], 'latexmain.tex')
   call system('touch latexmain.tex.latexmain')
   new test.tex
   AssertEqual 'latexmain.tex', fnamemodify(b:vimtex.tex, ':t')
@@ -9,7 +9,7 @@ Execute (Assert b:vimtex.tex = latexmain.tex):
 Execute (Assert b:vimtex.tex = main_texroot.tex):
   call system('touch main_texroot.tex')
   call writefile(['%! TeX Root = main_texroot.tex'], 'test.tex')
-  edit test.tex
+  new test.tex
   AssertEqual 'main_texroot.tex', fnamemodify(b:vimtex.tex, ':t')
   bdelete!
   call system('rm main_texroot.tex')
