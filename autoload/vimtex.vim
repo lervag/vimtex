@@ -482,6 +482,13 @@ endfunction
 
 function! s:get_main() " {{{1
   "
+  " Check if the current file is a main file
+  "
+  if s:file_is_main(expand('%:p'))
+    return expand('%:p')
+  endif
+
+  "
   " Use buffer variable if it exists
   "
   if exists('b:vimtex_main') && filereadable(b:vimtex_main)
@@ -494,7 +501,7 @@ function! s:get_main() " {{{1
   "
   let l:candidate = s:get_main_from_specifier(
         \ '^\c\s*%\s*!\?\s*tex\s\+root\s*=\s*\zs.*\ze\s*$')
-  if l:candidate !=# ''
+  if !empty(l:candidate)
     return l:candidate
   endif
 
@@ -503,7 +510,7 @@ function! s:get_main() " {{{1
   "
   let l:candidate = s:get_main_from_specifier(
         \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
-  if l:candidate !=# ''
+  if !empty(l:candidate)
     return l:candidate
   endif
 
@@ -511,7 +518,7 @@ function! s:get_main() " {{{1
   " Search for .latexmain-specifier
   "
   let l:candidate = s:get_main_latexmain(expand('%:p'))
-  if l:candidate !=# ''
+  if !empty(l:candidate)
     return l:candidate
   endif
 
@@ -530,13 +537,13 @@ function! s:get_main() " {{{1
   "
   " Search for main file recursively through include specifiers
   "
-  let l:candidate = s:get_main_recurse(expand('%:p'))
+  let l:candidate = s:get_main_recurse()
   if l:candidate !=# ''
     return l:candidate
   endif
 
   "
-  " If not found, use current file
+  " Fallback to the current file
   "
   return expand('%:p')
 endfunction
@@ -587,15 +594,21 @@ function! s:get_main_latexmain(file) " {{{1
   endif
 endfunction
 
-function! s:get_main_recurse(file) " {{{1
-  if !filereadable(a:file) | return '' | endif
+function! s:get_main_recurse(...) " {{{1
+  "
+  " Either start the search from the original file, or check if the supplied
+  " file is a main file (or invalid)
+  "
+  if a:0 == 0
+    let l:file = expand('%:p')
+  else
+    let l:file = a:1
 
-  "
-  " Check if current file is a main file
-  "
-  if len(filter(readfile(a:file),
-        \ 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
-    return fnamemodify(a:file, ':p')
+    if s:file_is_main(l:file)
+      return l:file
+    elseif !filereadable(l:file)
+      return ''
+    endif
   endif
 
   "
@@ -612,21 +625,31 @@ function! s:get_main_recurse(file) " {{{1
   "
   " Search through candidates
   "
-  for l:file in l:candidates
+  for l:cand in l:candidates
     " Avoid infinite recursion (checking the same file repeatedly)
-    if l:file == a:file | continue | endif
+    if l:cand == l:file | continue | endif
 
-    let l:file_re = '\s*((.*)\/)?' . fnamemodify(a:file, ':t:r')
+    let l:file_re = '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
 
     let l:filter  = 'v:val =~# ''\v'
     let l:filter .= '\\%(input|include)\{' . l:file_re
     let l:filter .= '|\\subimport\{[^\}]*\}\{' . l:file_re
     let l:filter .= ''''
 
-    if len(filter(readfile(l:file), l:filter)) > 0
-      return s:get_main_recurse(l:file)
+    if len(filter(readfile(l:cand), l:filter)) > 0
+      return s:get_main_recurse(fnameescape(l:cand, ':p'))
     endif
   endfor
+endfunction
+
+" }}}1
+function! s:file_is_main(file) " {{{1
+  "
+  " Check if a:file is a main file
+  "
+  return filereadable(a:file)
+        \ && len(filter(readfile(a:file, 0, 50),
+        \               'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
 endfunction
 
 " }}}1
