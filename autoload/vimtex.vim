@@ -637,7 +637,7 @@ function! s:get_main_recurse(...) " {{{1
     let l:filter .= ''''
 
     if len(filter(readfile(l:cand), l:filter)) > 0
-      return s:get_main_recurse(fnameescape(l:cand, ':p'))
+      return s:get_main_recurse(fnamemodify(l:cand, ':p'))
     endif
   endfor
 endfunction
