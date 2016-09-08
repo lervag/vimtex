@@ -112,7 +112,7 @@ function! vimtex#latexmk#callback(status) " {{{1
   endif
 
   call vimtex#latexmk#errors_open(0)
-  redraw!
+  redraw
 
   call vimtex#echo#status(['latexmk compile: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
@@ -165,7 +165,7 @@ function! vimtex#latexmk#lacheck() " {{{1
 
   silent lmake %
   lwindow
-  silent redraw!
+  silent redraw
   wincmd p
 
   compiler latexmk
@@ -381,7 +381,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
     if g:vimtex_quickfix_mode == 2
       wincmd p
     endif
-    redraw!
+    redraw
   endif
 endfunction
 
