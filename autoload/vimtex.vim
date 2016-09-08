@@ -810,6 +810,7 @@ function! s:buffer_deleted() " {{{1
       let b:vimtex = l:vimtex
       doautocmd User VimtexEventQuit
       if exists('b:vimtex_tmp')
+        let b:vimtex = b:vimtex_tmp
         unlet b:vimtex_tmp
       else
         unlet b:vimtex
