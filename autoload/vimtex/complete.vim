@@ -247,6 +247,7 @@ let s:ref = {
       \   '\\hyperref\s*\[[^]]*$'
       \ ],
       \ 'cache' : {},
+      \ 'labels' : [],
       \}
 
 function! s:ref.complete(regex) dict " {{{2
@@ -297,11 +298,15 @@ function! s:ref.get_matches(regex) dict " {{{2
 endfunction
 
 function! s:ref.parse_aux_files() dict " {{{2
-  let self.labels = []
+  let l:aux = b:vimtex.aux()
+  if empty(l:aux)
+    return self.labels
+  endif
 
-  for [l:file, l:prefix] in
-        \ filter([[b:vimtex.aux(), '']]
-        \   + map(vimtex#parser#get_externalfiles(), '[v:val.aux, v:val.opt]'),
+  let self.labels = []
+  for [l:file, l:prefix] in [[l:aux, '']]
+        \ + filter(map(vimtex#parser#get_externalfiles(),
+        \   '[v:val.aux, v:val.opt]'),
         \ 'filereadable(v:val[0])')
 
     let l:cached = get(self.cache, l:file, {})
