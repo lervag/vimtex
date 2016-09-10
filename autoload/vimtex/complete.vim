@@ -193,7 +193,7 @@ function! s:bib.search(regexp) dict " {{{2
   endif
 
   " Return to previous working directory
-  execute 'lcd ' . fnameescape(l:save_pwd)
+  execute 'lcd' fnameescape(l:save_pwd)
 
   " Find data from 'thebibliography' environments
   let lines = readfile(b:vimtex.tex)

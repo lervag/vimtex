@@ -34,7 +34,7 @@ function! vimtex#util#execute(exe) " {{{1
   " Change directory if wanted
   if has_key(a:exe, 'wd')
     let pwd = getcwd()
-    execute 'lcd ' . fnameescape(a:exe.wd)
+    execute 'lcd' fnameescape(a:exe.wd)
   endif
 
   " Set up command string based on the given system
@@ -91,7 +91,7 @@ function! vimtex#util#execute(exe) " {{{1
 
   " Return to previous working directory
   if has_key(a:exe, 'wd')
-    execute 'lcd ' . fnameescape(pwd)
+    execute 'lcd' fnameescape(pwd)
   endif
 endfunction
 
@@ -170,7 +170,7 @@ endfunction
 
 " }}}1
 function! vimtex#util#kpsewhich(file, ...) " {{{1
-  execute 'lcd' . fnameescape(b:vimtex.root)
+  execute 'lcd' fnameescape(b:vimtex.root)
   let cmd  = 'kpsewhich '
   let cmd .= a:0 > 0 ? a:1 : ''
   let cmd .= ' "' . a:file . '"'
