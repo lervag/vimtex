@@ -56,6 +56,13 @@ if exists('g:vimtex_quickfix_ignore_all_warnings')
 
   " Parse hyperref warnings
   CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
+  CompilerSet errorformat+=%-C(hyperref)%m
+
+  " Parse more warnings
+  CompilerSet errorformat+=%-C(scrreprt)%m
+  CompilerSet errorformat+=%-C(fixltx2e)%m
+  CompilerSet errorformat+=%-C(titlesec)%m
+  CompilerSet errorformat+=%-C(Font)%m
 endif
 
 " Ignore unmatched lines
