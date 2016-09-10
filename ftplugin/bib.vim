@@ -13,6 +13,9 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
+setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
+setlocal commentstring=\%\ %s
+
 function! s:map(mode, lhs, rhs, ...)
   if !hasmapto(a:rhs, a:mode)
         \ && (a:0 > 0 || maparg(a:lhs, a:mode) ==# '')
