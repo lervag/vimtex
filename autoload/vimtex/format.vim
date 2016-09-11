@@ -110,6 +110,12 @@ function! s:format(top, bottom) " {{{1
       continue
     endif
 
+    " Handle long lines
+    if len(l:line) > s:textwidth
+      let l:bottom += s:format_build_lines(l:current, l:mark)
+      let l:mark = l:current-1
+    endif
+
     if l:line =~# s:border_end
       if l:current < l:mark
         let l:bottom += s:format_build_lines(l:current+1, l:mark)
