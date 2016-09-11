@@ -371,16 +371,18 @@ endfunction
 
 let s:img = {
       \ 'patterns' : ['\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
+      \ 'ext_re' : '\v\.%('
+      \   . join(['png', 'jpg', 'eps', 'pdf', 'pgf', 'tikz'], '|')
+      \   . ')$'
       \}
 
 function! s:img.complete(regex) dict " {{{2
   let self.candidates = []
-  for l:ext in ['png', 'eps', 'pdf', 'jpg']
-    let self.candidates += split(globpath(b:vimtex.root, '**/*.' . l:ext), '\n')
-  endfor
+  let self.candidates = split(globpath(b:vimtex.root, '**/*.*'), '\n')
 
   let l:output = b:vimtex.out()
   call filter(self.candidates, 'v:val !=# l:output')
+  call filter(self.candidates, 'v:val =~? self.ext_re')
   call filter(self.candidates, 'v:val =~# a:regex')
 
   call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
