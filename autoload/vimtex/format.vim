@@ -26,8 +26,6 @@ function! vimtex#format#init_script() " {{{1
         \   '%(begin|end)\{[^}]*\}',
         \  ], '|') . ')\s*$'
         \ . '|^\s*%(\\\]|\$\$)\s*$'
-
-  let s:textwidth = &l:textwidth == 0 ? 79 : &l:textwidth
 endfunction
 
 " }}}1
@@ -49,6 +47,7 @@ function! vimtex#format#formatexpr() " {{{1
   let l:bottom = v:lnum + v:count - 1
   let l:lines_old = getline(l:top, l:bottom)
   let l:tries = 5
+  let s:textwidth = &l:textwidth == 0 ? 79 : &l:textwidth
 
   " This is a hack to make undo restore the correct position
   if mode() !=# 'i'
