@@ -167,7 +167,7 @@ function! s:actions_activate(close) dict "{{{1
   endif
 
   " Open file buffer
-  execute cmd bnr
+  execute 'keepalt' cmd bnr
 
   " Go to entry line
   call setpos('.', [0, entry.line, 0, 0])
@@ -177,10 +177,12 @@ function! s:actions_activate(close) dict "{{{1
 
   " Keep or close index window (based on options)
   if a:close
-    if g:vimtex_index_resize
-      silent exe 'set columns -=' . g:vimtex_index_split_width
+    if bufexists(toc_bnr)
+      if g:vimtex_index_resize
+        silent exe 'set columns -=' . g:vimtex_index_split_width
+      endif
+      execute 'bwipeout ' . toc_bnr
     endif
-    execute 'bwipeout ' . toc_bnr
   else
     execute toc_wnr . 'wincmd w'
   endif
