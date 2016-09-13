@@ -52,9 +52,7 @@ syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
 
 syntax match texStatement '\\href' nextgroup=texHref
 syntax region texHref matchgroup=Delimiter start='{' end='}' contained
-      \ nextgroup=texHrefLinkText
-syntax region texHrefLinkText matchgroup=Delimiter start='{' end='}' contained
-      \ contains=@Spell
+      \ nextgroup=texMatcher
 
 syntax match texStatement '\\hyperref' nextgroup=texHyperref
 syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
@@ -62,7 +60,6 @@ syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
 highlight link texUrl          Function
 highlight link texUrlVerb      texUrl
 highlight link texHref         texUrl
-highlight link texHrefLinkText texSectionZone
 highlight link texHyperref     texRefZone
 
 " }}}1
