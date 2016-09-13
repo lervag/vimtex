@@ -157,6 +157,7 @@ function! vimtex#toc#get_entries() " {{{1
       if l:fname[0] !=# '/'
         let l:fname = b:vimtex.root . '/' . l:fname
       endif
+      let l:fname = fnamemodify(l:fname, ':~:.')
       call add(l:toc, {
             \ 'title'  : 'Vimtex include: '
             \            . (strlen(l:fname) < 54
@@ -165,6 +166,7 @@ function! vimtex#toc#get_entries() " {{{1
             \ 'number' : '',
             \ 'file'   : l:fname,
             \ 'level'  : s:number.current_level,
+            \ 'link'   : 1,
             \ })
       continue
     endif

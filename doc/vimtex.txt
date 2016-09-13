@@ -1717,8 +1717,10 @@ following syntax: >
 
 The path may be absolute or relative. In the latter case, it will be relative
 to the current root (as printed by |:VimtexInfo|). This will add an entry in
-the ToC which makes it easy to open any file. Note, though, that the ToC and
-vimtex key mappings may not be available in the target file.
+the ToC which makes it easy to open any file. Any file opened through the ToC
+that was included in this manner will be linked to the current vimtex project,
+and thus the ToC and similar commands will be available, even if the file is
+not a LaTeX file.
 
 Associated settings:
     |g:vimtex_toc_enabled|

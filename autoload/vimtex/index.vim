@@ -62,6 +62,7 @@ function! vimtex#index#create(index) " {{{1
     unlet FnVal
   endfor
 
+  let l:vimtex = b:vimtex
   if g:vimtex_index_split_pos ==# 'full'
     silent execute 'edit' escape(a:index.name, ' ')
   else
@@ -72,6 +73,7 @@ function! vimtex#index#create(index) " {{{1
           \ g:vimtex_index_split_pos g:vimtex_index_split_width
           \ 'new' escape(a:index.name, ' ')
   endif
+  let b:vimtex = l:vimtex
   let b:index = a:index
 
   setlocal bufhidden=wipe
@@ -134,6 +136,7 @@ function! s:actions_activate(close) dict "{{{1
   let n = getpos('.')[1] - 1
   if n < self.help_nlines | return | endif
   let entry = self.entries[n - self.help_nlines]
+  let l:vimtex_main = b:vimtex.tex
 
   " Save index buffer info for later use
   let toc_bnr = bufnr('%')
@@ -172,6 +175,12 @@ function! s:actions_activate(close) dict "{{{1
   " Go to entry line
   if has_key(entry, 'line')
     call setpos('.', [0, entry.line, 0, 0])
+  endif
+
+  " If relevant, enable vimtex stuff
+  if get(entry, 'link', 0)
+    let b:vimtex_main = l:vimtex_main
+    call vimtex#init()
   endif
 
   " Ensure folds are opened
