@@ -66,7 +66,7 @@ function! s:create_candidate(entry, maxlevel) " {{{1
         \ 'word' : title,
         \ 'abbr' : title . ' @' . level,
         \ 'action__path' : a:entry.file,
-        \ 'action__line' : a:entry.line,
+        \ 'action__line' : get(a:entry, 'line', 0),
         \ }
 endfunction
 
