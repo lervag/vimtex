@@ -1710,6 +1710,16 @@ Table of contents~
 The ToC entries may be activated/jumped to with <cr> or <space>.  The local
 keybindings are described if |g:vimtex_index_show_help| is enabled.
 
+One may force entries into the ToC through designated comments with the
+following syntax: >
+
+  % vimtex-include: /path/to/file
+
+The path may be absolute or relative. In the latter case, it will be relative
+to the current root (as printed by |:VimtexInfo|). This will add an entry in
+the ToC which makes it easy to open any file. Note, though, that the ToC and
+vimtex key mappings may not be available in the target file.
+
 Associated settings:
     |g:vimtex_toc_enabled|
     |g:vimtex_toc_fold|

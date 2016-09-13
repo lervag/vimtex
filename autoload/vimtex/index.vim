@@ -170,7 +170,9 @@ function! s:actions_activate(close) dict "{{{1
   execute 'keepalt' cmd bnr
 
   " Go to entry line
-  call setpos('.', [0, entry.line, 0, 0])
+  if has_key(entry, 'line')
+    call setpos('.', [0, entry.line, 0, 0])
+  endif
 
   " Ensure folds are opened
   normal! zv

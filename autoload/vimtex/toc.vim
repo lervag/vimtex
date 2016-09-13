@@ -151,6 +151,24 @@ function! vimtex#toc#get_entries() " {{{1
       endif
     endif
 
+    " Convenience includes
+    let l:fname = matchstr(l:line, s:re_vimtex_include)
+    if !empty(l:fname)
+      if l:fname[0] !=# '/'
+        let l:fname = b:vimtex.root . '/' . l:fname
+      endif
+      call add(l:toc, {
+            \ 'title'  : 'Vimtex include: '
+            \            . (strlen(l:fname) < 54
+            \               ? l:fname
+            \               : l:fname[0:20] . '...' . l:fname[-30:]),
+            \ 'number' : '',
+            \ 'file'   : l:fname,
+            \ 'level'  : s:number.current_level,
+            \ })
+      continue
+    endif
+
     " Bibliography files
     if l:line =~# s:re_bibs
       call add(l:toc, s:parse_bib_input(l:line))
@@ -488,6 +506,7 @@ let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
 let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\%?\s*$'
+let s:re_vimtex_include = '%\s*vimtex-include:\?\s\+\zs\f\+'
 let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
 let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
 let s:re_structure_match = '\v((front|main|back)matter|appendix)'
