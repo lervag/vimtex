@@ -66,12 +66,6 @@ highlight link texHyperref     texRefZone
 " {{{1 Improve support for cite commands
 if get(g:, 'tex_fast', 'r') =~# 'r'
   "
-  " natbib
-  "
-  syntax match texStatement '\\cite\%([tp]\*\?\)\?'
-        \ nextgroup=texRefOption,texCite
-
-  "
   " biblatex
   "
   execute 'syntax match texStatement /\v\\%(' . join([
@@ -104,6 +98,15 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
   execute 'syntax match texStatement /\\cite\%(field\|list\|name\)/'
         \ 'nextgroup=texRefOptions,texCites'
 
+  "
+  " natbib
+  "
+  syntax match texStatement '\\cite\%([tp]\*\?\)\?'
+        \ nextgroup=texRefOption,texCite
+
+  "
+  " Common
+  "
   syntax region texRefOptions contained matchgroup=Delimiter
         \ start='\[' end=']'
         \ contains=@texRefGroup,texRefZone
