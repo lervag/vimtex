@@ -308,14 +308,27 @@ endfunction
 " }}}2
 function! s:mupdf.latexmk_callback(status) dict " {{{2
   if !a:status | return | endif
-  sleep 500m
 
   if g:vimtex_view_use_temp_files
     call self.copy_files()
+  else
+    "
+    " Search for existing window created by latexmk
+    "   It may be necessary to wait some time before it is opened and
+    "   recognized. Sometimes it is very quick, other times it may take
+    "   a second. This way, we don't block longer than necessary.
+    "
+    if !has_key(self, 'started_through_callback')
+      for l:dummy in range(30)
+        sleep 50m
+        if self.xwin_exists() | break | endif
+      endfor
+    endif
   endif
 
-  if !self.xwin_exists()
+  if !self.xwin_exists() && !has_key(self, 'started_through_callback')
     call self.start(self.out)
+    let self.started_through_callback = 1
   endif
 
   if g:vimtex_view_use_temp_files
@@ -419,11 +432,23 @@ function! s:zathura.latexmk_callback(status) dict " {{{2
   if g:vimtex_view_use_temp_files
     call self.copy_files()
   else
-    sleep 500m
+    "
+    " Search for existing window created by latexmk
+    "   It may be necessary to wait some time before it is opened and
+    "   recognized. Sometimes it is very quick, other times it may take
+    "   a second. This way, we don't block longer than necessary.
+    "
+    if !has_key(self, 'started_through_callback')
+      for l:dummy in range(30)
+        sleep 50m
+        if self.xwin_exists() | break | endif
+      endfor
+    endif
   endif
 
-  if !self.xwin_exists()
+  if !self.xwin_exists() && !has_key(self, 'started_through_callback')
     call self.start(self.out)
+    let self.started_through_callback = 1
   endif
 
   if has_key(self, 'hook_callback')
