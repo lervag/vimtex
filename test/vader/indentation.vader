@@ -173,7 +173,7 @@ Expect tex (Verify):
       not affect verbatim environments!
   \end{lstlisting}
 
-Given tex (Indent: With ampersands):
+Given tex (Indent: Ampersands):
   \begin{tabular}{cc}
       \begin{tabular}{c}
           Cell 1
@@ -185,10 +185,10 @@ Given tex (Indent: With ampersands):
 
   \begin{equation}
       \begin{aligned}
-          & \left(
-          \begin{bmatrix}
-              123
-          \end{bmatrix} \right)
+          1 &
+          & 2 \\
+          3 &
+          & 4 \\
       \end{aligned}
   \end{equation}
 
@@ -207,10 +207,10 @@ Expect tex (Verify):
 
   \begin{equation}
     \begin{aligned}
-      & \left(
-        \begin{bmatrix}
-          123
-      \end{bmatrix} \right)
+      1 &
+        & 2 \\
+      3 &
+        & 4 \\
     \end{aligned}
   \end{equation}
 
