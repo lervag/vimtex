@@ -172,3 +172,44 @@ Expect tex (Verify):
       not affect verbatim environments!
   \end{lstlisting}
 
+Given tex (Indent: With ampersands):
+  \begin{tabular}{cc}
+      \begin{tabular}{c}
+          Cell 1
+      \end{tabular} &
+      \begin{tabular}{c}
+          Cell 2
+      \end{tabular}
+  \end{tabular}
+
+  \begin{equation}
+      \begin{aligned}
+          & \left(
+          \begin{bmatrix}
+              123
+          \end{bmatrix} \right)
+      \end{aligned}
+  \end{equation}
+
+Do (Indent):
+  gg=G
+
+Expect tex (Verify):
+  \begin{tabular}{cc}
+    \begin{tabular}{c}
+      Cell 1
+    \end{tabular} &
+    \begin{tabular}{c}
+      Cell 2
+    \end{tabular}
+  \end{tabular}
+
+  \begin{equation}
+    \begin{aligned}
+      & \left(
+        \begin{bmatrix}
+          123
+      \end{bmatrix} \right)
+    \end{aligned}
+  \end{equation}
+

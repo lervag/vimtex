@@ -44,7 +44,7 @@ function! VimtexIndent(lnum) " {{{1
     return indent(a:lnum)
   endif
 
-  let l:nprev = s:get_prev_line(l:nprev, 'ignore-ampersands')
+  let l:nprev = s:get_prev_line(l:nprev)
   if l:nprev == 0 | return 0 | endif
   let l:prev = getline(l:nprev)
 
@@ -56,16 +56,12 @@ function! VimtexIndent(lnum) " {{{1
 endfunction
 "}}}
 
-function! s:get_prev_line(lnum, ...) " {{{1
-  let l:ignore_amps = a:0 > 0
-
+function! s:get_prev_line(lnum) " {{{1
   let l:lnum = a:lnum
   let l:prev = getline(l:lnum)
 
   while l:lnum != 0
-        \ && (l:prev =~# '^\s*%'
-          \ || s:is_verbatim(l:prev, l:lnum)
-          \ || match(l:prev, '\\\@<!&') >= 0)
+        \ && (l:prev =~# '^\s*%' || s:is_verbatim(l:prev, l:lnum))
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:prev = getline(l:lnum)
   endwhile
