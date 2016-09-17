@@ -326,7 +326,7 @@ function! s:init_buffer() " {{{1
     au BufFilePost <buffer> call s:filename_changed_post()
     au BufLeave    <buffer> call s:buffer_left()
     au BufDelete   <buffer> call s:buffer_deleted()
-    au QuitPre     <buffer> silent! doautocmd User VimtexEventQuit
+    au QuitPre     <buffer> call s:buffer_deleted(b:vimtex_id)
   augroup END
 endfunction
 
@@ -790,18 +790,27 @@ function! s:buffer_left() " {{{1
 endfunction
 
 " }}}1
-function! s:buffer_deleted() " {{{1
+function! s:buffer_deleted(...) " {{{1
+  "
+  " Get the relevant blob id
+  "
+  let l:vimtex_id = a:0 > 0 ? a:1 : get(s:, 'vimtex_id', -1)
+  if exists('s:vimtex_id') | unlet s:vimtex_id | endif
+  if !has_key(g:vimtex_data, l:vimtex_id) | return | endif
+
+  "
+  " Count the number of open buffers for the given blob
+  "
+  let l:buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  let l:vimtex_ids = map(l:buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
+  let l:count = count(l:vimtex_ids, l:vimtex_id)
+
   "
   " Check if the deleted buffer was the last remaining buffer of an opened
   " latex project
   "
-  if !exists('s:vimtex_id') | return | endif
-  if !has_key(g:vimtex_data, s:vimtex_id) | return | endif
-
-  let l:listed_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  let l:vimtex_ids = map(l:listed_buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
-  if count(l:vimtex_ids, s:vimtex_id) - 1 <= 0
-    let l:vimtex = remove(g:vimtex_data, s:vimtex_id)
+  if l:count <= 1
+    let l:vimtex = remove(g:vimtex_data, l:vimtex_id)
 
     if exists('#User#VimtexEventQuit')
       if exists('b:vimtex')
