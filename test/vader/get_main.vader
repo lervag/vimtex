@@ -14,3 +14,6 @@ Execute (Assert b:vimtex.tex = main_texroot.tex):
   bdelete!
   call system('rm main_texroot.tex')
 
+Execute (Clean up):
+  call system('rm -f test.tex')
+
