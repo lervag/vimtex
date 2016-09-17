@@ -1,6 +1,3 @@
-Execute (Setup):
-  set shiftwidth=2
-
 Given tex (Indent: regular tex):
   \documentclass{minimal}
   \usepackage{amsmath}
