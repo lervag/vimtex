@@ -1,3 +1,7 @@
+Execute (Setup):
+  set shiftwidth=2
+  set expandtab
+
 Given tex (Indent: regular tex):
   \documentclass{minimal}
   \usepackage{amsmath}

@@ -7,8 +7,6 @@ syntax enable
 " Personal settings to get consistent results
 set wildmode=longest:full,full
 set wildcharm=<c-z>
-set shiftwidth=2
-set expandtab
 
 let g:tex_flavor = 'latex'
 let g:vimtex_echo_ignore_wait = 1
