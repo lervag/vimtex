@@ -174,7 +174,7 @@ function! s:create_map(map) " {{{1
   endif
 
   silent execute 'inoremap <expr><silent><buffer>' l:lhs
-        \ l:wrapper . '("' . l:lhs . '", ' . string(a:map.rhs) . ')'
+        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
 
   let s:created_maps += [a:map]
 endfunction
