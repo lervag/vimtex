@@ -114,6 +114,10 @@ function! vimtex#latexmk#callback(status) " {{{1
   call vimtex#latexmk#errors_open(0)
   redraw
 
+  if exists('s:output')
+    call s:output.update()
+  endif
+
   call vimtex#echo#status(['latexmk compile: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
 
@@ -411,22 +415,58 @@ function! vimtex#latexmk#output() " {{{1
     return
   endif
 
-  " Create latexmk output window
-  if bufnr(tmp) >= 0
-    silent exe 'bwipeout' . bufnr(tmp)
+  " If window already open, then go there
+  if exists('s:output')
+    if bufwinnr(tmp) == s:output.winnr
+      execute s:output.winnr . 'wincmd w'
+      return
+    else
+      call s:output.destroy()
+    endif
   endif
-  silent exe 'split ' . tmp
+
+  " Create latexmk output window
+  silent execute 'split' tmp
+
+  " Create the output object
+  let s:output = {}
+  let s:output.name = tmp
+  let s:output.bufnr = bufnr('%')
+  let s:output.winnr = bufwinnr('%')
+  function! s:output.update() dict
+    if bufwinnr(self.name) != self.winnr
+      return
+    endif
+
+    " Try to enforce a file read
+    execute 'checktime' self.name
+    redraw
+
+    " Go to last line of file if it is not the current window
+    if bufwinnr('%') != self.winnr
+      let l:return = bufwinnr('%')
+      execute 'keepalt' self.winnr . 'wincmd w'
+      normal! Gzb
+      execute 'keepalt' l:return . 'wincmd w'
+    endif
+  endfunction
+  function! s:output.destroy() dict
+    autocmd! vimtex_output_window
+    augroup! vimtex_output_window
+    unlet s:output
+  endfunction
 
   " Better automatic update
-  augroup vimtex_tmp_update
+  augroup vimtex_output_window
     autocmd!
-    autocmd BufEnter        * silent! checktime
-    autocmd CursorHold      * silent! checktime
-    autocmd CursorHoldI     * silent! checktime
-    autocmd CursorMoved     * silent! checktime
-    autocmd CursorMovedI    * silent! checktime
+    autocmd BufDelete <buffer> call s:output.destroy()
+    autocmd BufEnter     *     call s:output.update()
+    autocmd FocusGained  *     call s:output.update()
+    autocmd CursorHold   *     call s:output.update()
+    autocmd CursorHoldI  *     call s:output.update()
+    autocmd CursorMoved  *     call s:output.update()
+    autocmd CursorMovedI *     call s:output.update()
   augroup END
-  silent exe 'autocmd! BufDelete ' . tmp . ' augroup! vimtex_tmp_update'
 
   " Set some mappings
   nnoremap <buffer> <silent> q :bwipeout<cr>
