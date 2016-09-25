@@ -157,7 +157,7 @@ function! vimtex#latexmk#clean(full, ...) " {{{1
     silent call vimtex#latexmk#compile()
   endif
 
-  if !a:0 == 0
+  if a:0 == 0
     call vimtex#echo#status(['latexmk clean: ',
           \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
   endif
