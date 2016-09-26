@@ -680,10 +680,14 @@ Options~
 
 *g:vimtex_latexmk_continuous*
   If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
-  argument.  This means that the document is compiled every time a document
-  file has been changed.
+  argument. This means that the document is compiled automatically by
+  `latexmk` every time a related file has been changed, until the processes is
+  stopped.
 
   If disabled, `latexmk` will run single shot compilations.
+
+  Note: The events |VimtexEventCompileStarted| and |VimtexEventCompileStopped|
+  are only relevant when this option is enabled.
 
   Default value: 1
 
@@ -1382,6 +1386,13 @@ through |autocmd|s, in particular the |User| autocmd.
     This event is triggered after |vimtex| initialization is completed. It may
     be used to automatically start compiling a document.
 
+  *VimtexEventCompileStarted*
+    This event is triggered after compilation with `latexmk` is started in
+    continuous mode (|g:vimtex_latexmk_continuous|).
+
+  *VimtexEventCompileStopped*
+    This event is triggered after compilation with `latexmk` is stopped.
+
 Examples: >
 
   augroup vimtex_config
@@ -1818,6 +1829,10 @@ Associated settings:
     |g:vimtex_latexmk_continuous|
     |g:vimtex_latexmk_background|
     |g:vimtex_latexmk_options|
+
+Associated events:
+    |VimtexEventCompileStarted|
+    |VimtexEventCompileStopped|
 
 ------------------------------------------------------------------------------
 Latexmk tricks~
