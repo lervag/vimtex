@@ -20,7 +20,7 @@ function! vimtex#view#common#use_temp_files_p(viewer) " {{{1
     let a:viewer.copy_files = function('s:copy_files')
   else
     let a:viewer.out = b:vimtex.out()
-    let a:viewer.synctex = b:vimtex.ext('synctex.gz')
+    let a:viewer.synctex = fnamemodify(a:viewer.out, ':r') . '.synctex.gz'
   endif
 
   return a:viewer

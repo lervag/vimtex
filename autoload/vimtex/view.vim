@@ -8,6 +8,7 @@ function! vimtex#view#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_view_enabled', 1)
   if !g:vimtex_view_enabled | return | endif
 
+  call vimtex#util#set_default('g:vimtex_view_automatic', 1)
   call vimtex#util#set_default('g:vimtex_view_method', 'general')
   call vimtex#util#set_default('g:vimtex_view_use_temp_files', 0)
 endfunction

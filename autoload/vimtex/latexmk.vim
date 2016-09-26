@@ -587,9 +587,17 @@ function! s:latexmk_build_cmd() " {{{1
 
   if g:vimtex_latexmk_continuous
     let cmd .= ' -pvc'
-    if get(b:vimtex.viewer, 'xwin_id', 0) > 0
+
+    "
+    " Set viewer options
+    "
+    if !g:vimtex_view_automatic
+          \ || get(b:vimtex.viewer, 'xwin_id', 0) > 0
           \ || get(s:, 'silence_next_callback', 0)
       let cmd .= ' -view=none'
+    elseif g:vimtex_view_enabled
+          \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
+      let cmd .= b:vimtex.viewer.latexmk_append_argument()
     endif
   endif
 
@@ -601,11 +609,6 @@ function! s:latexmk_build_cmd() " {{{1
     let cmd .= vimtex#latexmk#add_option('failure_cmd',
           \ l:cb . ' --remote-expr \"vimtex\#latexmk\#callback(0)\"')
     let s:first_callback = 1
-  endif
-
-  if g:vimtex_view_enabled
-        \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
-    let cmd .= b:vimtex.viewer.latexmk_append_argument()
   endif
 
   let cmd .= ' ' . vimtex#util#shellescape(b:vimtex.base)

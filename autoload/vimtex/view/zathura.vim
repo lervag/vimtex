@@ -74,7 +74,9 @@ function! s:zathura.latexmk_callback(status) dict " {{{1
 
   if g:vimtex_view_use_temp_files
     call self.copy_files()
-  else
+  endif
+
+  if g:vimtex_view_automatic
     "
     " Search for existing window created by latexmk
     "   It may be necessary to wait some time before it is opened and
@@ -87,11 +89,11 @@ function! s:zathura.latexmk_callback(status) dict " {{{1
         if self.xwin_exists() | break | endif
       endfor
     endif
-  endif
 
-  if !self.xwin_exists() && !has_key(self, 'started_through_callback')
-    call self.start(self.out)
-    let self.started_through_callback = 1
+    if !self.xwin_exists() && !has_key(self, 'started_through_callback')
+      call self.start(self.out)
+      let self.started_through_callback = 1
+    endif
   endif
 
   if has_key(self, 'hook_callback')

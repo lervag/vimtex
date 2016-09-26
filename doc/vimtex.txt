@@ -807,6 +807,12 @@ Options~
 
   Default value: 1
 
+*g:vimtex_view_automatic*
+  If enabled, the viewer will open automatically when compilation is started
+  in continuous mode.  This is the default behaviour of `latexmk`.
+
+  Default value: 1
+
 *g:vimtex_view_use_temp_files*
   If enabled, this will copy output files to a corresponding set of files
   with `_vimtex` prepended to the name. If one combines this with the callback
@@ -1892,6 +1898,7 @@ viewer is opened.
 
 Associated settings:
     |g:vimtex_view_enabled|
+    |g:vimtex_view_automatic|
     |g:vimtex_view_method|
     |g:vimtex_view_use_temp_files|
     |g:vimtex_view_general_viewer|
