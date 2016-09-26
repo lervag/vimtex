@@ -37,7 +37,7 @@ function! vimtex#view#init_buffer() " {{{1
     " Add latexmk callback to callback hooks (if it exists)
     "
     if exists('*l:v.latexmk_callback')
-      call add(g:vimtex_latexmk_callback_hooks, 'l:v.latexmk_callback')
+      call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
     endif
 
     "
