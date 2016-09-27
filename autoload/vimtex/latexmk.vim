@@ -207,7 +207,9 @@ function! vimtex#latexmk#compile() " {{{1
     call s:latexmk_set_pid()
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'started continuous mode']])
-    doautocmd User VimtexEventCompileStarted
+    if exists('#User#VimtexEventCompileStarted')
+      doautocmd User VimtexEventCompileStarted
+    endif
   else
     if get(l:exe, 'bg', 1)
       call vimtex#echo#status(['latexmk compile: ',
@@ -523,7 +525,9 @@ function! vimtex#latexmk#stop() " {{{1
     call s:latexmk_kill(b:vimtex)
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'stopped (' . b:vimtex.base . ')']])
-    doautocmd User VimtexEventCompileStopped
+    if exists('#User#VimtexEventCompileStopped')
+      doautocmd User VimtexEventCompileStopped
+    endif
   else
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexWarning', 'no process to stop (' . b:vimtex.base . ')']])
