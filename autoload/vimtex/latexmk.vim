@@ -596,7 +596,7 @@ function! s:latexmk_build_cmd() " {{{1
     " Set viewer options
     "
     if !get(g:, 'vimtex_view_automatic', 1)
-          \ || get(b:vimtex.viewer, 'xwin_id', 0) > 0
+          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id', 0) > 0
           \ || get(s:, 'silence_next_callback', 0)
       let cmd .= ' -view=none'
     elseif g:vimtex_view_enabled
