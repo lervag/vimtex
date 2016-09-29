@@ -79,6 +79,15 @@ Or use some other plugin manager:
 - [neobundle](https://github.com/Shougo/neobundle.vim)
 - [pathogen](https://github.com/tpope/vim-pathogen)
 
+## Quick Start
+
+1. Edit a document: `vim document.tex`
+2. Start compilation with `\ll`
+3. Open preview with `\lv`
+4. Stop the running compilation `\ll`
+5. If you want to checkout any errors, press `\le`
+6. If you want to clean auxiliary files, press `\lc`
+
 ## Alternatives
 
 The following are some alternative LaTeX plugins for Vim:
