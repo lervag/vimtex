@@ -79,6 +79,23 @@ Or use some other plugin manager:
 - [neobundle](https://github.com/Shougo/neobundle.vim)
 - [pathogen](https://github.com/tpope/vim-pathogen)
 
+## Quick Start
+
+The following is a simple guide for how to use vimtex. It only displays the
+most basic features. Users are _strongly_ encouraged to read or at least skim
+through the documentation to learn about the different features and
+possibilities provided by vimtex (see
+[here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
+vimtex`).
+
+1. Edit a document: `vim document.tex`
+2. Start compiling the document with `\ll`
+3. Open pdf viewer and/or do forward searching with `\lv`
+4. Stop the running compilation with `\ll` (or `\lk`)
+5. To parse the log file for errors and warnings, press `\le`
+6. To clean auxiliary files, press `\lc` (or `\lC` to also clean the output
+   file)
+
 ## Alternatives
 
 The following are some alternative LaTeX plugins for Vim:
