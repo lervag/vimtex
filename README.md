@@ -42,6 +42,8 @@ vimtex`).
 6. To clean auxiliary files, press `\lc` (or `\lC` to also clean the output
    file)
 
+![Quick start gif](media/quick_start.gif?raw=true)
+
 ## Features
 
 Below is a list of features offered by vimtex.  The features are accessible as
