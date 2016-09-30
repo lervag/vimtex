@@ -11,6 +11,37 @@ and other LaTeX plugins for Vim.
 [![Build Status](https://travis-ci.org/lervag/vimtex.svg?branch=master)](https://travis-ci.org/lervag/vimtex)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5N4MFVXN7U8NW)
 
+## Installation
+
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
+following line to your `vimrc` file:
+
+```vim
+Plug 'lervag/vimtex'
+```
+
+Or use some other plugin manager:
+- [vundle](https://github.com/gmarik/vundle)
+- [neobundle](https://github.com/Shougo/neobundle.vim)
+- [pathogen](https://github.com/tpope/vim-pathogen)
+
+## Quick Start
+
+The following is a simple guide for how to use vimtex. It only displays the
+most basic features. Users are _strongly_ encouraged to read or at least skim
+through the documentation to learn about the different features and
+possibilities provided by vimtex (see
+[here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
+vimtex`).
+
+1. Edit a document: `vim document.tex`
+2. Start compiling the document with `\ll`
+3. Open pdf viewer and/or do forward searching with `\lv`
+4. Stop the running compilation with `\ll` (or `\lk`)
+5. To parse the log file for errors and warnings, press `\le`
+6. To clean auxiliary files, press `\lc` (or `\lC` to also clean the output
+   file)
+
 ## Features
 
 Below is a list of features offered by vimtex.  The features are accessible as
@@ -64,37 +95,6 @@ disabled if desired.
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
 
 See the documentation for a thorough introduction to vimtex (e.g. `:h vimtex`).
-
-## Installation
-
-If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
-following line to your `vimrc` file:
-
-```vim
-Plug 'lervag/vimtex'
-```
-
-Or use some other plugin manager:
-- [vundle](https://github.com/gmarik/vundle)
-- [neobundle](https://github.com/Shougo/neobundle.vim)
-- [pathogen](https://github.com/tpope/vim-pathogen)
-
-## Quick Start
-
-The following is a simple guide for how to use vimtex. It only displays the
-most basic features. Users are _strongly_ encouraged to read or at least skim
-through the documentation to learn about the different features and
-possibilities provided by vimtex (see
-[here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
-vimtex`).
-
-1. Edit a document: `vim document.tex`
-2. Start compiling the document with `\ll`
-3. Open pdf viewer and/or do forward searching with `\lv`
-4. Stop the running compilation with `\ll` (or `\lk`)
-5. To parse the log file for errors and warnings, press `\le`
-6. To clean auxiliary files, press `\lc` (or `\lC` to also clean the output
-   file)
 
 ## Alternatives
 
