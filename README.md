@@ -34,14 +34,6 @@ possibilities provided by vimtex (see
 [here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
 vimtex`).
 
-1. Edit a document: `vim document.tex`
-2. Start compiling the document with `\ll`
-3. Open pdf viewer and/or do forward searching with `\lv`
-4. Stop the running compilation with `\ll` (or `\lk`)
-5. To parse the log file for errors and warnings, press `\le`
-6. To clean auxiliary files, press `\lc` (or `\lC` to also clean the output
-   file)
-
 ![Quick start gif](media/quick_start.gif?raw=true)
 
 ## Features
