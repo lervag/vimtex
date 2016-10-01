@@ -302,14 +302,10 @@ function! vimtex#fold#text() " {{{1
     let title = 'Backmatter'
   elseif line =~# '\\appendix'
     let title = 'Appendix'
-  elseif line =~# secpat1 . '.*\}'
-    let title = matchstr(line, secpat1 . '\zs.*\ze}')
   elseif line =~# secpat1
-    let title = matchstr(line, secpat1 . '\zs.*')
-  elseif line =~# secpat2 . '.*\]'
-    let title = matchstr(line, secpat2 . '\zs.*\ze\]')
+    let title = s:parse_sec_title(matchstr(line, secpat1 . '\zs.*'), 0)
   elseif line =~# secpat2
-    let title = matchstr(line, secpat2 . '\zs.*')
+    let title = s:parse_sec_title(matchstr(line, secpat2 . '\zs.*'), 1)
   elseif line =~# '\vFake' . sections
     let title = matchstr(line, '\vFake' . sections . '.*')
   elseif line =~# '^\s*%'
@@ -422,6 +418,24 @@ function! s:parse_caption_frame(line) " {{{2
     " If no caption found, check for a caption comment
     return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
+endfunction
+
+" }}}2
+function! s:parse_sec_title(string, type) " {{{2
+  let l:idx = 0
+  let l:length = strlen(a:string)
+  let l:level = 1
+  while l:level >= 1
+    let l:idx += 1
+    if l:idx > l:length
+      break
+    elseif a:string[l:idx] ==# ['}',']'][a:type]
+      let l:level -= 1
+    elseif a:string[l:idx] ==# ['{','['][a:type]
+      let l:level += 1
+    endif
+  endwhile
+  return strpart(a:string, 0, l:idx)
 endfunction
 
 " }}}2
