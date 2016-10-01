@@ -1138,11 +1138,11 @@ Commands~
 
                                              *VimtexClean*
                                              *<plug>(vimtex-clean)*
-:VimtexClean              Clean auxilliary files
+:VimtexClean              Clean auxiliary files
 
                                              *VimtexClean!*
                                              *<plug>(vimtex-clean-full)*
-:VimtexClean!             Clean auxilliary files, include output files
+:VimtexClean!             Clean auxiliary files, include output files
 
                                              *VimtexErrors*
                                              *<plug>(vimtex-errors)*
