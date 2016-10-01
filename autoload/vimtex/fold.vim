@@ -266,7 +266,6 @@ endfunction
 
 " }}}1
 function! vimtex#fold#text() " {{{1
-  " Initialize
   let line = getline(v:foldstart)
 
   " Text for usepackage
@@ -358,7 +357,8 @@ endfunction
 "
 " Functions for setting fold text
 "
-function! s:parse_label()
+
+function! s:parse_label() " {{{2
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\label'
@@ -369,7 +369,8 @@ function! s:parse_label()
   return ''
 endfunction
 
-function! s:parse_caption(line)
+" }}}2
+function! s:parse_caption(line) " {{{2
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\caption'
@@ -383,7 +384,8 @@ function! s:parse_caption(line)
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-function! s:parse_caption_table(line)
+" }}}2
+function! s:parse_caption_table(line) " {{{2
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~# '^\s*\\caption'
@@ -397,7 +399,8 @@ function! s:parse_caption_table(line)
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-function! s:parse_caption_frame(line)
+" }}}2
+function! s:parse_caption_frame(line) " {{{2
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
   let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
@@ -420,6 +423,8 @@ function! s:parse_caption_frame(line)
     return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
 endfunction
+
+" }}}2
 
 " }}}1
 
