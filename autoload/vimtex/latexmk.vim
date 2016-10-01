@@ -769,6 +769,9 @@ function! s:fix_quickfix_paths() " {{{1
   " Ensure this is only applied when necessary
   if !exists('s:qf_main') | return | endif
 
+  " Set quickfix title
+  let w:quickfix_title = 'Vimtex errors'
+
   let l:qflist = getqflist()
   for l:qf in l:qflist
     " For errors and warnings that don't supply a file, the basename of the
