@@ -690,26 +690,26 @@ function! s:get_aux() dict " {{{1
 endfunction
 
 " }}}1
-function! s:get_out() dict " {{{1
-  return self.ext('pdf')
+function! s:get_out(...) dict " {{{1
+  return call(self.ext, ['pdf'] + a:000, self)
 endfunction
 
 " }}}1
-function! s:get_ext(ext) dict " {{{1
+function! s:get_ext(ext, ...) dict " {{{1
   " First check build dir (latexmk -output_directory option)
   if g:vimtex_latexmk_build_dir !=# ''
     let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
     if g:vimtex_latexmk_build_dir[0] !=# '/'
       let cand = self.root . '/' . cand
     endif
-    if filereadable(cand)
+    if a:0 > 0 || filereadable(cand)
       return fnamemodify(cand, ':p')
     endif
   endif
 
   " Next check for file in project root folder
   let cand = self.root . '/' . self.name . '.' . a:ext
-  if filereadable(cand)
+  if a:0 > 0 || filereadable(cand)
     return fnamemodify(cand, ':p')
   endif
 
