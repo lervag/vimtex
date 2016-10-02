@@ -488,6 +488,20 @@ Options~
 <
   Default value: 1
 
+*g:vimtex_fold_newcommands*
+  Use this option to disable/enable folding of long `\[re]newcommand` and
+  `\[re]newenvironment` lines. The lines must be formatted like this for
+  folding to work properly: >
+
+    \[re]newcommand{\command}{
+      ...,
+    }
+<
+  That is, the fold region starts at the command and ends when at the final `}`
+  at the same indent level as the start of the command.
+
+  Default value: 1
+
 *g:vimtex_fold_documentclass*
   Use this option to disable/enable folding of long `\documentclass` lines. This
   works similar to |g:vimtex_fold_usepackage|.
@@ -1667,6 +1681,7 @@ Associated settings:
   |g:vimtex_fold_sections|
   |g:vimtex_fold_envs|
   |g:vimtex_fold_usepackage|
+  |g:vimtex_fold_newcommands|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*

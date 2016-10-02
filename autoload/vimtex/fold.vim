@@ -28,6 +28,7 @@ function! vimtex#fold#init_options() " {{{1
         \ ])
   call vimtex#util#set_default('g:vimtex_fold_documentclass', 0)
   call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
+  call vimtex#util#set_default('g:vimtex_fold_newcommands', 1)
 
   " Disable manual mode in vimdiff
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
@@ -44,6 +45,7 @@ function! vimtex#fold#init_script() " {{{1
   " List of identifiers for improving efficiency
   "
   let s:folded  = '\v^\s*\%|^\s*\]\{'
+  let s:folded .= '|^\s*}\s*$'
   let s:folded .= '|\\%(' . join([
         \   'begin',
         \   'end',
@@ -54,6 +56,7 @@ function! vimtex#fold#init_script() " {{{1
         \   'appendix',
         \   'part',
         \   'usepackage',
+        \   '%(re)?new%(command|environment)',
         \ ], '|') . ')'
 endfunction
 
@@ -171,6 +174,20 @@ function! vimtex#fold#level(lnum) " {{{1
     endif
   endif
 
+  " Fold newcommands (and similar)
+  if g:vimtex_fold_newcommands
+    if line =~# '\v^\s*\\%(re)?new%(command|environment)\*?'
+          \ && indent(a:lnum+1) > indent(a:lnum)
+      let s:newcommand_indent = indent(a:lnum)
+      return 'a1'
+    elseif exists('s:newcommand_indent')
+          \ && indent(a:lnum) == s:newcommand_indent
+          \ && line =~# '^\s*}\s*$'
+      unlet s:newcommand_indent
+      return 's1'
+    endif
+  endif
+
   " Fold chapters and sections
   for [part, level] in b:vimtex_fold.parts
     if line =~# part
@@ -273,6 +290,13 @@ function! vimtex#fold#text() " {{{1
     return '\usepackage[...]{'
           \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
           \ . '}'
+  endif
+
+  " Text for newcommand (and similar)
+  if g:vimtex_fold_newcommands
+        \ && line =~# '\v^\s*\\%(re)?new%(command|environment)'
+    return matchstr(line,
+          \ '\v^\s*\\%(re)?new%(command|environment)\*?\{[^}]*\}') . ' ...'
   endif
 
   " Text for documentclass

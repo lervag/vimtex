@@ -1,0 +1,87 @@
+\documentclass[% Options of scrbook
+  % draft,
+  fontsize=12pt,
+  %smallheadings,
+  headings=big,
+  english,
+  paper=a4,
+  twoside,
+  open=right,
+  DIV=14,
+  BCOR=20mm,
+  headinclude=false,
+  footinclude=false,
+  mpinclude=false,
+  pagesize,
+  titlepage,
+  parskip=half,
+  headsepline,
+  chapterprefix=false,
+  appendixprefix=Appendix,
+  appendixwithprefixline=true,
+  bibliography=totoc,
+  toc=graduated,
+  numbers=noenddot,
+]{scrbook}
+
+%
+% Fold usepackages
+%
+\usepackage[
+  ...
+]{test}
+\usepackage[
+  backend=biber,
+  style=numeric-comp,
+  maxcitenames=99,
+  doi=false,
+  url=false,
+  giveninits=true,
+]{biblatex}
+
+%
+% Fold newcommands and similar
+%
+\renewcommand{\marginpar}{%
+  \marginnote%
+}
+\newcommand*{\StoreCiteField}[3]{%
+  \begingroup
+    \global\let\StoreCiteField@Result\relax
+    \citefield{#2}[StoreCiteField]{#3}%
+  \endgroup
+  \let#1\StoreCiteField@Result
+}
+\newenvironment{theo}[1][]{%
+  \stepcounter{theo}%
+  \ifstrempty{#1}{%
+    \mdfsetup{
+      frametitle={%
+      \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+        \node[anchor=east,rectangle,fill=blue!20] {\strut Theorem~\thetheo};%
+      }
+    }%
+  }%
+  {% else ifstrempty:
+  \mdfsetup{
+    frametitle={
+    \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+      \node[anchor=east,rectangle,fill=blue!20]{\strut Theorem~\thetheo:~#1};}%
+  }
+  }%
+  \mdfsetup{
+    innertopmargin=10pt,
+    linecolor=blue!20,
+    linewidth=2pt,topline=true,
+    frametitleaboveskip=\dimexpr-\ht\strutbox\relax,
+  }
+  \begin{mdframed}[]\relax%
+}{%
+  \end{mdframed}%
+}
+
+\begin{document}
+
+Hello World
+
+\end{document}
