@@ -64,22 +64,43 @@ function! vimtex#cmd#delete() " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
-  let l:old_name = l:cmd.name
+  " Save current position
+  let l:save_pos = getpos('.')
+  let l:lnum_cur = l:save_pos[1]
+  let l:cnum_cur = l:save_pos[2]
+
+  " Remove closing bracket (if exactly one argument)
+  if len(l:cmd.args) == 1
+    let l:lnum = l:cmd.args[0].close.lnum
+    let l:cnum = l:cmd.args[0].close.cnum
+    let l:line = getline(l:lnum)
+    call setline(l:lnum,
+          \   strpart(l:line, 0, l:cnum - 1)
+          \ . strpart(l:line, l:cnum))
+
+    let l:cnum2 = l:cmd.args[0].open.cnum
+  endif
+
+  " Remove command (and possibly the opening bracket)
   let l:lnum = l:cmd.pos_start.lnum
   let l:cnum = l:cmd.pos_start.cnum
-
-  " Update current position
-  let l:save_pos = getpos('.')
-  let l:save_pos[2] += 1 - strlen(l:old_name)
-
-  " Perform the change
+  let l:cnum2 = get(l:, 'cnum2', l:cnum + strlen(l:cmd.name) - 1)
   let l:line = getline(l:lnum)
   call setline(l:lnum,
         \   strpart(l:line, 0, l:cnum - 1)
-        \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
+        \ . strpart(l:line, l:cnum2))
 
-  " Restore cursor position and create repeat hook
+  " Restore appropriate cursor position
+  if l:lnum_cur == l:lnum
+    if l:cnum_cur > l:cnum2
+      let l:save_pos[2] -= l:cnum2 - l:cnum + 1
+    else
+      let l:save_pos[2] -= l:cnum_cur - l:cnum
+    endif
+  endif
   cal setpos('.', l:save_pos)
+
+  " Create repeat hook
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
 endfunction
 

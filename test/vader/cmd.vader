@@ -1,0 +1,15 @@
+Given tex (Cmd: Example text (\emph{foo})):
+  \emph{foo}
+
+Execute (Cmd: csc):
+  execute "normal csctest\<cr>"
+
+Expect tex (Cmd: csc (verify)):
+  \test{foo}
+
+Do (Cmd: dsc):
+  dsc
+
+Expect tex (Cmd: dsc (verify)):
+  foo
+
