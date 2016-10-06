@@ -27,14 +27,40 @@ function! vimtex#fold#init_options() " {{{1
         \   'subsubsection',
         \ ])
   call vimtex#util#set_default('g:vimtex_fold_documentclass', 0)
-  call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
-  call vimtex#util#set_default('g:vimtex_fold_newcommands', 1)
+
+  " Fold command pattern 1: \<command>{<multi-line mandatory arg>}
+  "  folded to '\<command>{...}'
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern1', 1)
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern1_list',
+        \ [
+        \   'hypersetup',
+        \   'tikzset',
+        \ ])
+  " Fold command pattern 2: \<command>[<multi-line optional arg>]{<short mandatory arg>}
+  "  folded to '\<command>[...]{<short mandatory arg>}'
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern2', 1)
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern2_list',
+        \ [
+        \   'usepackage',
+        \   'includepdf',
+        \ ])
+  " Fold command pattern 3: \<command>{short mandatory arg}[]{}{\n}
+  "  folded to '\<command>{<short mandatory arg>} ...'
+  " NOTE: final '}' has to be on its own line!
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern3', 1)
+  call vimtex#util#set_default('g:vimtex_fold_cmd_pattern3_list',
+        \ [
+        \   '%(re)?new%(command|environment)',
+        \   'providecommand',
+        \   'presetkeys',
+        \   'Declare%(Multi|Auto)?CiteCommand',
+        \   'Declare%(Index)?%(Field|List|Name)%(Format|Alias)',
+        \ ])
 
   " Disable manual mode in vimdiff
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
 endfunction
 
-" }}}1
 function! vimtex#fold#init_script() " {{{1
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
@@ -55,12 +81,12 @@ function! vimtex#fold#init_script() " {{{1
         \   '%(front|main|back)matter',
         \   'appendix',
         \   'part',
-        \   'usepackage',
-        \   '%(re)?new%(command|environment)',
-        \ ], '|') . ')'
+        \ ]
+        \ + g:vimtex_fold_cmd_pattern1_list
+        \ + g:vimtex_fold_cmd_pattern2_list
+        \ + g:vimtex_fold_cmd_pattern3_list, '|') . ')'
 endfunction
 
-" }}}1
 function! vimtex#fold#init_buffer() " {{{1
   " b:vimtex_fold is a dictionary used to store dynamic fold information
   " Note: We define this even if folding is disabled, because people might want
@@ -125,15 +151,12 @@ function! s:foldmethod_in_modeline()
   return l:check_top || l:check_btm
 endfunction
 
-" }}}1
-
 function! vimtex#fold#refresh(map) " {{{1
   setlocal foldmethod=expr
   execute 'normal! ' . a:map
   setlocal foldmethod=manual
 endfunction
 
-" }}}1
 function! vimtex#fold#level(lnum) " {{{1
   " Refresh fold levels for section commands
   call s:refresh_folded_sections()
@@ -163,27 +186,38 @@ function! vimtex#fold#level(lnum) " {{{1
     return '0'
   endif
 
-  " Fold usepackages
-  if g:vimtex_fold_usepackage
-    if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
-      let s:usepackage = 1
+  " Fold command pattern 1 (e.g. hypersetup)
+  if g:vimtex_fold_cmd_pattern1
+    if line =~# '^\s*\\\%('.join(g:vimtex_fold_cmd_pattern1_list, '\|').'\)\s*{\s*\%($\|%\)'
+      let s:cmd_pattern1 = 1
       return 'a1'
-    elseif get(s:, 'usepackage', 0) && line =~# '^\s*\]{'
-      let s:usepackage = 0
+    elseif get(s:, 'cmd_pattern1', 0) && line =~# '^\s*}'
+      let s:cmd_pattern1 = 0
       return 's1'
     endif
   endif
 
-  " Fold newcommands (and similar)
-  if g:vimtex_fold_newcommands
-    if line =~# '\v^\s*\\%(re)?new%(command|environment)\*?'
-          \ && indent(a:lnum+1) > indent(a:lnum)
-      let s:newcommand_indent = indent(a:lnum)
+  " Fold command pattern 2 (e.g. usepackages)
+  if g:vimtex_fold_cmd_pattern2
+    if line =~# '^\s*\\\%('.join(g:vimtex_fold_cmd_pattern2_list, '\|').'\)\s*\[\s*\%($\|%\)'
+      let s:cmd_pattern2 = 1
       return 'a1'
-    elseif exists('s:newcommand_indent')
-          \ && indent(a:lnum) == s:newcommand_indent
+    elseif get(s:, 'cmd_pattern2', 0) && line =~# '^\s*\]{'
+      let s:cmd_pattern2 = 0
+      return 's1'
+    endif
+  endif
+
+  " Fold command pattern 3 (e.g. newcommands)
+  if g:vimtex_fold_cmd_pattern3
+    if line =~# '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern3_list, '|').')\*?'
+          \ && indent(a:lnum+1) > indent(a:lnum)
+      let s:cmd_pattern3 = indent(a:lnum)
+      return 'a1'
+    elseif exists('s:cmd_pattern3')
+          \ && indent(a:lnum) == s:cmd_pattern3
           \ && line =~# '^\s*}\s*$'
-      unlet s:newcommand_indent
+      unlet s:cmd_pattern3
       return 's1'
     endif
   endif
@@ -281,22 +315,32 @@ function! s:refresh_folded_sections()
   endfor
 endfunction
 
-" }}}1
+
 function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
-  " Text for usepackage
-  if g:vimtex_fold_usepackage && line =~# '^\s*\\usepackage'
-    return '\usepackage[...]{'
+  " Text for command pattern 1 (e.g. hypersetup)
+  if g:vimtex_fold_cmd_pattern1
+        \ && line =~# '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern1_list, '|').')'
+    return matchstr(line,
+          \ '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern1_list, '|').')\*?') . '{...}'
+  endif
+
+  " Text for command pattern 2 (e.g. usepackage)
+  if g:vimtex_fold_cmd_pattern2
+        \ && line =~# '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern2_list, '|').')'
+    return matchstr(line,
+          \ '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern2_list, '|').')\*?')
+          \ .'[...]{'
           \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
           \ . '}'
   endif
 
-  " Text for newcommand (and similar)
-  if g:vimtex_fold_newcommands
-        \ && line =~# '\v^\s*\\%(re)?new%(command|environment)'
+  " Text for command pattern 3 (e.g. newcommand)
+  if g:vimtex_fold_cmd_pattern3
+        \ && line =~# '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern3_list, '|').')'
     return matchstr(line,
-          \ '\v^\s*\\%(re)?new%(command|environment)\*?\{[^}]*\}') . ' ...'
+          \ '\v^\s*\\%('.join(g:vimtex_fold_cmd_pattern3_list, '|').')\*?\{[^}]*\}') . ' ...'
   endif
 
   " Text for documentclass
@@ -354,7 +398,7 @@ function! vimtex#fold#text() " {{{1
       let caption = s:parse_caption(line)
     endif
 
-    " Add paranthesis to label
+    " Add parenthesis to label
     if label !=# ''
       let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
     endif
@@ -389,7 +433,6 @@ function! s:parse_label() " {{{2
   return ''
 endfunction
 
-" }}}2
 function! s:parse_caption(line) " {{{2
   let i = v:foldend
   while i >= v:foldstart
@@ -404,7 +447,6 @@ function! s:parse_caption(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" }}}2
 function! s:parse_caption_table(line) " {{{2
   let i = v:foldstart
   while i <= v:foldend
@@ -419,7 +461,6 @@ function! s:parse_caption_table(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" }}}2
 function! s:parse_caption_frame(line) " {{{2
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
@@ -444,7 +485,6 @@ function! s:parse_caption_frame(line) " {{{2
   endif
 endfunction
 
-" }}}2
 function! s:parse_sec_title(string, type) " {{{2
   let l:idx = 0
   let l:length = strlen(a:string)
@@ -461,8 +501,6 @@ function! s:parse_sec_title(string, type) " {{{2
   endwhile
   return strpart(a:string, 0, l:idx)
 endfunction
-
-" }}}2
 
 " }}}1
 
