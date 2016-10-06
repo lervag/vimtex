@@ -516,7 +516,11 @@ Options~
   Use this option to specify commands which should be folded according
   to |g:vimtex_fold_cmd_pattern2|.
 
-  Default value: [ 'usepackage', 'includepdf' ]
+  Default value:
+    let *g:vimtex_fold_cmd_pattern2_list* = [
+        \ 'usepackage',
+        \ 'includepdf',
+      \ ]
 
 *g:vimtex_fold_cmd_pattern3*
   Use this option to disable/enable folding of commands with a short
@@ -538,7 +542,7 @@ Options~
   to |g:vimtex_fold_cmd_pattern3|.
 
   Default value:
-    let *g:vimtex_fold_cmd_pattern1_list* = [
+    let *g:vimtex_fold_cmd_pattern3_list* = [
         \ '%(re)?new%(command|environment)',
         \ 'providecommand',
         \ 'presetkeys',
