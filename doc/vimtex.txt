@@ -493,12 +493,12 @@ Options~
   Use this option to specify commands which should be folded according
   to |g:vimtex_fold_cmd_pattern1|.
 
-  Default value:
+  Default value: >
     let *g:vimtex_fold_cmd_pattern1_list* = [
         \ 'hypersetup',
         \ 'tikzset',
       \ ]
-
+<
 *g:vimtex_fold_cmd_pattern2*
   Use this option to disable/enable folding of commands with many
   optional arguments written on separate lines. The lines must be
@@ -516,12 +516,12 @@ Options~
   Use this option to specify commands which should be folded according
   to |g:vimtex_fold_cmd_pattern2|.
 
-  Default value:
+  Default value: >
     let *g:vimtex_fold_cmd_pattern2_list* = [
         \ 'usepackage',
         \ 'includepdf',
       \ ]
-
+<
 *g:vimtex_fold_cmd_pattern3*
   Use this option to disable/enable folding of commands with a short
   first mandatory argument and second or more mandatory arguments
@@ -541,7 +541,7 @@ Options~
   Use this option to specify commands which should be folded according
   to |g:vimtex_fold_cmd_pattern3|.
 
-  Default value:
+  Default value: >
     let *g:vimtex_fold_cmd_pattern3_list* = [
         \ '%(re)?new%(command|environment)',
         \ 'providecommand',
@@ -549,7 +549,7 @@ Options~
         \ 'Declare%(Multi|Auto)?CiteCommand',
         \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)',
       \ ]
-
+<
 *g:vimtex_fold_documentclass*
   Use this option to disable/enable folding of long `\documentclass` lines. This
   works similar to |g:vimtex_fold_usepackage|.
