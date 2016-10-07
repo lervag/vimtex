@@ -61,6 +61,7 @@ function! vimtex#fold#init_options() " {{{1
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
 endfunction
 
+" }}}1
 function! vimtex#fold#init_script() " {{{1
   let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
   let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
@@ -87,6 +88,7 @@ function! vimtex#fold#init_script() " {{{1
         \ + g:vimtex_fold_cmd_pattern3_list, '|') . ')'
 endfunction
 
+" }}}1
 function! vimtex#fold#init_buffer() " {{{1
   " b:vimtex_fold is a dictionary used to store dynamic fold information
   " Note: We define this even if folding is disabled, because people might want
@@ -151,12 +153,14 @@ function! s:foldmethod_in_modeline()
   return l:check_top || l:check_btm
 endfunction
 
+" }}}1
 function! vimtex#fold#refresh(map) " {{{1
   setlocal foldmethod=expr
   execute 'normal! ' . a:map
   setlocal foldmethod=manual
 endfunction
 
+" }}}1
 function! vimtex#fold#level(lnum) " {{{1
   " Refresh fold levels for section commands
   call s:refresh_folded_sections()
@@ -315,7 +319,7 @@ function! s:refresh_folded_sections()
   endfor
 endfunction
 
-
+" }}}1
 function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
@@ -433,6 +437,7 @@ function! s:parse_label() " {{{2
   return ''
 endfunction
 
+" }}}2
 function! s:parse_caption(line) " {{{2
   let i = v:foldend
   while i >= v:foldstart
@@ -447,6 +452,7 @@ function! s:parse_caption(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
+" }}}2
 function! s:parse_caption_table(line) " {{{2
   let i = v:foldstart
   while i <= v:foldend
@@ -461,6 +467,7 @@ function! s:parse_caption_table(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
+" }}}2
 function! s:parse_caption_frame(line) " {{{2
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
@@ -485,6 +492,7 @@ function! s:parse_caption_frame(line) " {{{2
   endif
 endfunction
 
+" }}}2
 function! s:parse_sec_title(string, type) " {{{2
   let l:idx = 0
   let l:length = strlen(a:string)
@@ -501,6 +509,8 @@ function! s:parse_sec_title(string, type) " {{{2
   endwhile
   return strpart(a:string, 0, l:idx)
 endfunction
+
+" }}}2
 
 " }}}1
 
