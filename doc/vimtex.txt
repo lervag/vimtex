@@ -1371,6 +1371,8 @@ Explanation of the keys:
     function, please see the source for examples on how the |vimtex| wrappers
     are written.
 
+                                                            *vimtex-neosnippet*
+                                                             *vimtex-UltiSnips*
 Note: that this feature is not the same as the snippet feature of |UltiSnips|
 or |neosnippet|. The imaps feature of |vimtex| previously supported `automatic`
 snippets, but these have been removed after careful considerations and input
@@ -1389,6 +1391,12 @@ show how to create such mappings: >
     " Using UltiSnips#Anon
     inoremap <silent> __ __<c-r>=UltiSnips#Anon('_{$1}$0', '__', '', 'i')<cr>
     inoremap <silent> ^^ ^^<c-r>=UltiSnips#Anon('^{$1}$0', '^^', '', 'i')<cr>
+
+A drawback with the anonymous UltiSnips snippets is that they do not nest.
+That is, if you did `__` twice in a row, only the second one could be escaped.
+In recent versions of |UltiSnips|, one may set normal snippets to trigger
+automatically, see |UltiSnips-autotrigger|. This allows nesting, and is
+therefore a better approach than using the anonymous snippet function.
 
 ------------------------------------------------------------------------------
 Events~
