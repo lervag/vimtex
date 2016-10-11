@@ -76,6 +76,12 @@ Given tex (Indent: math):
   \right.
   \end{equation}
 
+  Test $[ ... )$ of unmatched brackets in
+  inline math text.
+
+  In R, there is the operator \verb|[<-|...
+  that ...
+
 Do (Indent):
   gg=G
 
@@ -96,6 +102,12 @@ Expect tex (Verify):
       f(x) = 3
     \right.
   \end{equation}
+
+  Test $[ ... )$ of unmatched brackets in
+  inline math text.
+
+  In R, there is the operator \verb|[<-|...
+  that ...
 
 Given tex (Indent: tikz):
   \tikz \fill[green] rectangle (0.5,0.5); Something
