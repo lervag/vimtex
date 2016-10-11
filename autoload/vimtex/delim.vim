@@ -213,19 +213,9 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#get_valid_regexps(...) " {{{1
-  "
-  " Arguments: (Optional)
-  "   line number
-  "   column number
-  "
-  " Returns:
-  "   [regexp_open_delims, regexp_close_delims]
-  "
-
-  return call('vimtex#util#in_mathzone', a:000)
-        \ ? [s:re.delim_math.open, s:re.delim_math.close]
-        \ : [s:re.delim_tex.open,  s:re.delim_tex.close]
+function! vimtex#delim#get_delim_regexes(...) " {{{1
+  return [s:re.delim_math.open, s:re.delim_math.close,
+       \  s:re.delim_tex.open,  s:re.delim_tex.close]
 endfunction
 
 " }}}1
