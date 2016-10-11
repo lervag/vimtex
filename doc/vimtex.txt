@@ -2070,6 +2070,22 @@ A: This is not a feature provided by |vimtex| itself, but vim has very good
    [1]: https://github.com/lervag/vimtex/issues/348
    [2]: https://github.com/ludovicchabant/vim-gutentags
 
+                                                       *vimtex-faq-tags-bibtex*
+Q: How can I jump from a `\cite{key}` to the corresponding bibtex entry?
+A: This is not a feature provided by |vimtex| itself. Similar to
+   |vimtex-faq-tags|, the feature is available through |tags-and-searches|.
+   The following `~/.ctags` configuration will be useful: >
+
+    --langdef=bibtex
+    --langmap=bibtex:.bib
+    --regex-bibtex=/@string\{([^ "#%')(,=}{]+)/\1/s,BibTeX-Strings/i
+    --regex-bibtex=/@(article|book|booklet|inbook|incollection|inproceedings|manual|masterthesis|misc|phdthesis|proceedings|techreport|unpublished)\{([^,]+),/\2/e,BibTeX-Entries/i
+    --regex-bibtex=/[[:space:]]*author[[:space:]]*=[[:space:]]*("([^"]+)"|\{([^\}]+)\})[[:space:]]*,?[[:space:]]*$/\2\3/a,BibTeX-Authors/i
+
+<   See [0] for references.
+
+   [0]: https://github.com/lervag/vimtex/issues/564
+
 ==============================================================================
 Troubleshooting                                       *vimtex-troubleshooting*
 
