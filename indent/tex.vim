@@ -22,36 +22,38 @@ setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent(lnum) " {{{1
-  let l:nprev = s:get_prev_line(prevnonblank(a:lnum - 1))
-  if l:nprev == 0 | return indent(a:lnum) | endif
+  let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1))
+  if l:prev_lnum == 0 | return indent(a:lnum) | endif
 
   " Get current and previous line and remove comments
-  let l:cur = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
-  let l:prev = substitute(getline(l:nprev),   '\\\@<!%.*', '', '')
+  let l:line = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
+  let l:prev_line = substitute(getline(l:prev_lnum),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
-  if s:is_verbatim(l:cur, a:lnum)
-    return empty(l:cur) ? indent(l:nprev) : indent(a:lnum)
+  if s:is_verbatim(l:line, a:lnum)
+    return empty(l:line) ? indent(l:prev_lnum) : indent(a:lnum)
   endif
 
   " Align on ampersands
-  if l:cur =~# '^\s*&' && l:prev =~# '\\\@<!&.*'
-    return indent(a:lnum) + match(l:prev, '\\\@<!&') - stridx(l:cur, '&')
+  if l:line =~# '^\s*&' && l:prev_line =~# '\\\@<!&.*'
+    return indent(a:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
   endif
 
   " Use previous indentation for comments
-  if l:cur =~# '^\s*%'
+  if l:line =~# '^\s*%'
     return indent(a:lnum)
   endif
 
-  let l:nprev = s:get_prev_line(l:nprev, 'ignore-ampersands')
-  if l:nprev == 0 | return 0 | endif
-  let l:prev = substitute(getline(l:nprev), '\\\@<!%.*', '', '')
+  " Ensure previous line does not start with ampersand
+  let l:prev_lnum = s:get_prev_line(l:prev_lnum, 'ignore-ampersands')
+  if l:prev_lnum == 0 | return 0 | endif
+  let l:prev_line = substitute(getline(l:prev_lnum), '\\\@<!%.*', '', '')
 
-  let l:ind = indent(l:nprev)
-  let l:ind += s:indent_envs(l:cur, l:prev)
-  let l:ind += s:indent_delims(l:cur, a:lnum, l:prev, l:nprev)
-  let l:ind += s:indent_tikz(l:nprev, l:prev)
+  " Indent environments, delimiters, and tikz
+  let l:ind = indent(l:prev_lnum)
+  let l:ind += s:indent_envs(l:line, l:prev_line)
+  let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
+  let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
 "}}}
@@ -104,32 +106,43 @@ let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
 let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
-function! s:indent_delims(cur, ncur, prev, nprev) " {{{1
-  let [l:n1, l:dummy, l:m1] = s:split(a:prev, a:nprev)
-  let [l:n2, l:m2, l:dummy] = s:split(a:cur, a:ncur)
+function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
+  let [l:text, l:math] = s:split(a:line, a:lnum)
+  let [l:prev_tex, l:prev_math] = s:split(a:prev_line, a:prev_lnum, 'prev')
 
-  return &sw*(  max([s:count(l:n1, s:to) + s:count(l:m1, s:mo)
-        \          - s:count(l:n1, s:tc) - s:count(l:m1, s:mc), 0])
-        \     - max([s:count(l:n2, s:tc) + s:count(l:m2, s:mc)
-        \          - s:count(l:n2, s:to) - s:count(l:m2, s:mo), 0]))
+  return &sw*(  max([  s:count(l:prev_math, s:re_delims[0])
+        \            - s:count(l:prev_math, s:re_delims[1])
+        \            + s:count(l:prev_tex, s:re_delims[2])
+        \            - s:count(l:prev_tex, s:re_delims[3]), 0])
+        \     - max([  s:count(l:math, s:re_delims[1])
+        \            - s:count(l:math, s:re_delims[0])
+        \            + s:count(l:text, s:re_delims[3])
+        \            - s:count(l:text, s:re_delims[2]), 0]))
 endfunction
 
-let [s:mo, s:mc, s:to, s:tc] = vimtex#delim#get_delim_regexes()
+"
+" This fetches the regexes for delimiters in text and math mode:
+"   s:re_delims[0]  == math open
+"   s:re_delims[1]  == math close
+"   s:re_delims[2]  == text open
+"   s:re_delims[3]  == text close
+"
+let s:re_delims = vimtex#delim#get_delim_regexes()
 
 function! s:count(line, pattern) " {{{2
-  let sum = 0
-  let indx = match(a:line, a:pattern)
-  while indx >= 0
-    let sum += 1
-    let match = matchstr(a:line, a:pattern, indx)
-    let indx += len(match)
-    let indx = match(a:line, a:pattern, indx)
+  let l:sum = 0
+  let l:indx = match(a:line, a:pattern)
+  while l:indx >= 0
+    let l:sum += 1
+    let l:match = matchstr(a:line, a:pattern, l:indx)
+    let l:indx += len(l:match)
+    let l:indx = match(a:line, a:pattern, l:indx)
   endwhile
-  return sum
+  return l:sum
 endfunction
 
 " }}}2
-function! s:split(line, lnum) " {{{2
+function! s:split(line, lnum, ...) " {{{2
   let l:map = map(range(1,col([a:lnum, strlen(a:line)])),
         \ '[v:val, vimtex#util#in_mathzone(a:lnum, v:val)]')
 
@@ -156,23 +169,29 @@ function! s:split(line, lnum) " {{{2
   endfor
   let l:normal = substitute(l:normal, '\\verb\(.\).\{}\1', '', 'g')
 
-  " Extract math text from beginning of line
-  let l:math_pre = ''
-  let l:indx = 0
-  while l:map[l:indx][1] == 1
-    let l:math_pre .= a:line[l:map[l:indx][0] - 1]
-    let l:indx += 1
-  endwhile
+  "
+  " Extract math text (either at beginning or end of line, depending on if we
+  " are looking at the current line or a previous line)
+  "
+  if a:0 == 0
+    " Extract math text from beginning of line
+    let l:math = ''
+    let l:indx = 0
+    while l:map[l:indx][1] == 1
+      let l:math .= a:line[l:map[l:indx][0] - 1]
+      let l:indx += 1
+    endwhile
+  else
+    " Extract math text from end of line
+    let l:math = ''
+    let l:indx = -1
+    while l:map[l:indx][1] == 1
+      let l:math = a:line[l:map[l:indx][0] - 1] . l:math
+      let l:indx -= 1
+    endwhile
+  endif
 
-  " Extract math text from end of line
-  let l:math_end = ''
-  let l:indx = -1
-  while l:map[l:indx][1] == 1
-    let l:math_end = a:line[l:map[l:indx][0] - 1] . l:math_end
-    let l:indx -= 1
-  endwhile
-
-  return [l:normal, l:math_pre, l:math_end]
+  return [l:normal, l:math]
 endfunction
 
 " }}}2
