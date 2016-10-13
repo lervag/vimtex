@@ -476,9 +476,33 @@ Options~
         \ "subsubsection",
       \ ]
 <
-*g:vimtex_fold_usepackage*
-  Use this option to disable/enable folding of long `\usepackage` lines. The
-  lines must be formatted like this for folding to work properly: >
+*g:vimtex_fold_cmd_pattern1*
+  Use this option to disable/enable folding of commands with a single
+  mandatory argument written on separate lines. The lines must be
+  formatted like this for folding to work properly: >
+
+    \hypersetup{
+      option 1,
+      ...,
+      option n
+      }
+<
+  Default value: 1
+
+*g:vimtex_fold_cmd_pattern1_list*
+  Use this option to specify commands which should be folded according
+  to |g:vimtex_fold_cmd_pattern1|.
+
+  Default value: >
+    let *g:vimtex_fold_cmd_pattern1_list* = [
+        \ 'hypersetup',
+        \ 'tikzset',
+      \ ]
+<
+*g:vimtex_fold_cmd_pattern2*
+  Use this option to disable/enable folding of commands with many
+  optional arguments written on separate lines. The lines must be
+  formatted like this for folding to work properly: >
 
     \usepackage[
       option 1,
@@ -488,9 +512,20 @@ Options~
 <
   Default value: 1
 
-*g:vimtex_fold_newcommands*
-  Use this option to disable/enable folding of long `\[re]newcommand` and
-  `\[re]newenvironment` lines. The lines must be formatted like this for
+*g:vimtex_fold_cmd_pattern2_list*
+  Use this option to specify commands which should be folded according
+  to |g:vimtex_fold_cmd_pattern2|.
+
+  Default value: >
+    let *g:vimtex_fold_cmd_pattern2_list* = [
+        \ 'usepackage',
+        \ 'includepdf',
+      \ ]
+<
+*g:vimtex_fold_cmd_pattern3*
+  Use this option to disable/enable folding of commands with a short
+  first mandatory argument and second or more mandatory arguments
+  written on separate lines. The lines must be formatted like this for
   folding to work properly: >
 
     \[re]newcommand{\command}{
@@ -502,6 +537,19 @@ Options~
 
   Default value: 1
 
+*g:vimtex_fold_cmd_pattern3_list*
+  Use this option to specify commands which should be folded according
+  to |g:vimtex_fold_cmd_pattern3|.
+
+  Default value: >
+    let *g:vimtex_fold_cmd_pattern3_list* = [
+        \ '%(re)?new%(command|environment)',
+        \ 'providecommand',
+        \ 'presetkeys',
+        \ 'Declare%(Multi|Auto)?CiteCommand',
+        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)',
+      \ ]
+<
 *g:vimtex_fold_documentclass*
   Use this option to disable/enable folding of long `\documentclass` lines. This
   works similar to |g:vimtex_fold_usepackage|.
