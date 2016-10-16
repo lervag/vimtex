@@ -29,6 +29,7 @@ function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_documentclass', 0)
   call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
   call vimtex#util#set_default('g:vimtex_fold_newcommands', 1)
+  call vimtex#util#set_default('g:vimtex_fold_markers', 1)
 
   " Disable manual mode in vimdiff
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
@@ -44,8 +45,11 @@ function! vimtex#fold#init_script() " {{{1
   "
   " List of identifiers for improving efficiency
   "
-  let s:folded  = '\v^\s*\%|^\s*\]\{'
+  let s:folded  = '\v'
+  let s:folded .= ' ^\s*\%'
+  let s:folded .= '|^\s*\]\{'
   let s:folded .= '|^\s*}\s*$'
+  let s:folded .= '|\%\s*%(\{\{\{|}}})'
   let s:folded .= '|\\%(' . join([
         \   'begin',
         \   'end',
@@ -206,6 +210,13 @@ function! vimtex#fold#level(lnum) " {{{1
         return 's1'
       endif
     endif
+  endif
+
+  " Fold markers
+  if line =~# '%\s*{{{'
+    return 'a1'
+  elseif line =~# '%\s*}}}'
+    return 's1'
   endif
 
   " Never fold \end{document}

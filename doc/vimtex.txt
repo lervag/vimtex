@@ -510,6 +510,12 @@ Options~
 
   Default value: 0
 
+*g:vimtex_fold_markers*
+  Use this option to disable/enable vim-style markers for folding, i.e. pairs
+  of `{{{` and `}}}`.
+
+  Default value: 1
+
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
 
