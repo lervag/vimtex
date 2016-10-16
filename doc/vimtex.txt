@@ -876,12 +876,19 @@ Options~
         *vimtex_viewer_okular*
           https://okular.kde.org/
           Okular is a very feature rich PDF viewer that supports forward
-          and backward search.  Backward search must be set up from the
-          viewer. >
+          and backward search. Recommended settings are: >
 
             let g:vimtex_view_general_viewer = 'okular'
             let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
             let g:vimtex_view_general_options_latexmk = '--unique'
+
+<          Backward search must be set up from the viewer through
+          Settings > Editor > Custom Text Editor. The following settings
+          should work for Vim and neovim (Note: see |vimtex_faq_neovim|),
+          respectively: >
+
+            vim --remote-silent %f -c %l
+            nvr --remote-silent %f -c %l
 <
         *vimtex_viewer_qpdfview*
           https://launchpad.net/qpdfview
