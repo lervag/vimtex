@@ -8,9 +8,15 @@ Execute (Setup):
     \ 'leader' : '',
     \ 'wrapper' : 'vimtex#imaps#wrap_trivial',
     \})
+  call vimtex#imaps#add_map({
+    \ 'lhs' : 'cool',
+    \ 'rhs' : '\item',
+    \ 'leader' : '',
+    \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+    \ 'context' : ["itemize", "enumerate"],
+    \})
   silent! VimtexReload
 
-Given:
 Given tex (Minimal tex file):
   \documentclass{minimal}
   \begin{document}
@@ -50,5 +56,20 @@ Expect tex (Verify):
   \documentclass{minimal}
   \begin{document}
   $|f| = \vec{f}\cdot\vec{f}$ --- ;vv
+  \end{document}
+
+Do (imaps: imaps#add_map cool -> \item):
+  jocool\<cr>
+  \begin{itemize}\<cr>
+  cool\<cr>
+  \end{itemize}
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \begin{document}
+  cool
+  \begin{itemize}
+    \item
+  \end{itemize}
   \end{document}
 

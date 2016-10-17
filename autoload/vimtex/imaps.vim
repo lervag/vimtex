@@ -91,6 +91,9 @@ endfunction
 function! vimtex#imaps#init_buffer() " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
+  " Container for wrapper contexts
+  let b:vimtex_context = {}
+
   "
   " Create imaps
   "
@@ -173,6 +176,13 @@ function! s:create_map(map) " {{{1
     return
   endif
 
+  " Some wrappers use a context which must be made available to the wrapper
+  " function in run time.
+  if has_key(a:map, 'context')
+    execute 'let l:key = "' . escape(l:lhs, '<') . '"'
+    let b:vimtex_context[l:key] = a:map.context
+  endif
+
   silent execute 'inoremap <expr><silent><buffer>' l:lhs
         \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
 
@@ -191,6 +201,16 @@ endfunction
 " }}}1
 function! vimtex#imaps#wrap_math(lhs, rhs) " {{{1
   return s:is_math() ? a:rhs : a:lhs
+endfunction
+
+" }}}1
+function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
+  for l:env in b:vimtex_context[a:lhs]
+    if vimtex#env#is_inside(l:env)
+      return a:rhs
+    endif
+  endfor
+  return a:lhs
 endfunction
 
 " }}}1
