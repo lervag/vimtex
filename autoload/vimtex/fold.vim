@@ -49,7 +49,7 @@ function! vimtex#fold#init_script() " {{{1
   let s:folded .= ' ^\s*\%'
   let s:folded .= '|^\s*\]\{'
   let s:folded .= '|^\s*}\s*$'
-  let s:folded .= '|\%\s*%(\{\{\{|}}})'
+  let s:folded .= '|\%%(.*\{\{\{|\s*}}})'
   let s:folded .= '|\\%(' . join([
         \   'begin',
         \   'end',
@@ -213,7 +213,7 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold markers
-  if line =~# '%\s*{{{'
+  if line =~# '%.*{{{'
     return 'a1'
   elseif line =~# '%\s*}}}'
     return 's1'
@@ -301,6 +301,12 @@ function! vimtex#fold#text() " {{{1
     return '\usepackage[...]{'
           \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
           \ . '}'
+  endif
+
+  if line =~# '%\s*{{{'
+    return ' ' . matchstr(line, '%\s*{{{\s*\zs.*')
+  elseif line =~# '%.*{{{'
+    return ' ' . matchstr(line, '%\s*\zs.*\ze{{{')
   endif
 
   " Text for newcommand (and similar)
