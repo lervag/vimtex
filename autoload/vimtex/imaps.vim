@@ -180,6 +180,7 @@ function! s:create_map(map) " {{{1
   " function in run time.
   if has_key(a:map, 'context')
     execute 'let l:key = "' . escape(l:lhs, '<') . '"'
+    let l:key .= a:map.rhs
     let b:vimtex_context[l:key] = a:map.context
   endif
 
@@ -205,7 +206,7 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
-  for l:env in b:vimtex_context[a:lhs]
+  for l:env in b:vimtex_context[a:lhs . a:rhs]
     if vimtex#env#is_inside(l:env)
       return a:rhs
     endif
