@@ -49,10 +49,10 @@ function! vimtex#motion#init_buffer() " {{{1
 
   " Highlight matching delimiters ($, (), ...)
   if g:vimtex_motion_matchparen
-    augroup vimtex_motion
+    execute 'augroup vimtex_motion' . bufnr('%')
       autocmd!
-      autocmd! CursorMoved  <buffer> call s:highlight_matching_pair()
-      autocmd! CursorMovedI <buffer> call s:highlight_matching_pair()
+      autocmd CursorMoved  <buffer> call s:highlight_matching_pair()
+      autocmd CursorMovedI <buffer> call s:highlight_matching_pair()
     augroup END
   endif
 
