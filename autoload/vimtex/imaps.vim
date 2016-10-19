@@ -91,9 +91,6 @@ endfunction
 function! vimtex#imaps#init_buffer() " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
-  " Container for wrapper contexts
-  let b:vimtex_context = {}
-
   "
   " Create imaps
   "
@@ -181,6 +178,9 @@ function! s:create_map(map) " {{{1
   if has_key(a:map, 'context')
     execute 'let l:key = "' . escape(l:lhs, '<') . '"'
     let l:key .= a:map.rhs
+    if !exists('b:vimtex_context')
+      let b:vimtex_context = {}
+    endif
     let b:vimtex_context[l:key] = a:map.context
   endif
 
