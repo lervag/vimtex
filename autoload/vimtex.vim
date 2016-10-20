@@ -67,6 +67,11 @@ function! vimtex#init() " {{{1
   call s:init_local_blob()
 
   "
+  " Parse the document to set local options
+  "
+  call s:init_local_options()
+
+  "
   " Finally we create the mappings
   "
   call s:init_mappings()
@@ -466,6 +471,20 @@ function! s:init_local_blob() " {{{1
           \ 'sub_id' : s:vimtex_next_id,
           \}
   endif
+endfunction
+
+" }}}1
+function! s:init_local_options() " {{{1
+  let b:vimtex.sources = []
+
+  for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
+    let l:cand = substitute(l:file, '\M' . b:vimtex.root, '', '')
+    if l:cand[0] ==# '/' | let l:cand = l:cand[1:] | endif
+
+    if index(b:vimtex.sources, l:cand) < 0
+      call add(b:vimtex.sources, l:cand)
+    endif
+  endfor
 endfunction
 
 " }}}1
