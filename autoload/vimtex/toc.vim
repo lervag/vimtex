@@ -125,6 +125,20 @@ function! vimtex#toc#get_entries() " {{{1
         \}
 
   for [l:file, l:lnum, l:line] in l:parsed
+    " Handle multi-line sections (and chapter/subsection/etc)
+    if get(s:, 'sec_continue', 0)
+      let [l:end, l:count] = s:find_indx_closing_brace(0, l:line, s:sec_count, 1)
+      if l:count == 0
+        let l:toc[-1].title = s:parse_line_sec_title(
+              \ l:toc[-1].title . strpart(l:line, 0, l:end))
+        unlet s:sec_count
+        unlet s:sec_continue
+      else
+        let l:toc[-1].title .= l:line
+        let s:sec_count = l:count
+      endif
+      continue
+    endif
 
     " Add TOC entry for each included file
     " Note: We do some "magic" in order to filter out the TOC entries that are
@@ -380,11 +394,20 @@ endfunction
 " }}}1
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
+  let level = matchstr(a:line, s:re_sec_level)
   let title = matchlist(a:line, s:re_sec)[1]
   if empty(title)
     let title = matchstr(a:line, s:re_sec_title)
+    let l:count = 1
+          \ + len(substitute(title, '[^{]', '', 'g'))
+          \ - len(substitute(title, '[^}]', '', 'g'))
+    if l:count > 0
+      let s:sec_continue = 1
+      let s:sec_count = l:count
+    else
+      let title = s:parse_line_sec_title(title)
+    endif
   endif
-  let level = matchstr(a:line, s:re_sec_level)
 
   " Check if section is starred
   if a:line =~# s:re_sec_starred
@@ -401,6 +424,12 @@ function! s:parse_line_sec(file, lnum, line) " {{{1
         \ 'line'   : a:lnum,
         \ 'level'  : s:number.current_level,
         \ }
+endfunction
+
+" }}}1
+function! s:parse_line_sec_title(title) " {{{1
+  let l:title = substitute(a:title, '\}\s*$', '', '')
+  return s:clear_texorpdfstring(l:title)
 endfunction
 
 " }}}1
@@ -471,6 +500,48 @@ endfunction
 
 " }}}1
 
+function! s:clear_texorpdfstring(title) " {{{1
+  let l:i1 = match(a:title, '\\texorpdfstring')
+  if l:i1 < 0 | return a:title | endif
+
+  " Find start of included part
+  let l:i2 = s:find_indx_closing_brace(match(a:title, '{', l:i1+1), a:title, 1)
+  let l:i2 = match(a:title, '{', l:i2+1)
+  if l:i2 < 0 | return a:title | endif
+
+  " Find end of included part
+  let l:i3 = s:find_indx_closing_brace(l:i2, a:title, 1)
+  if l:i3 < 0 | return a:title | endif
+
+  return strpart(a:title, 0, l:i1)
+        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
+        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
+endfunction
+
+" }}}1
+function! s:find_indx_closing_brace(start, string, count, ...) " {{{1
+  let l:i2 = a:start
+  let l:count = a:count
+  while l:count > 0
+    let l:i2 = match(a:string, '{\|}', l:i2+1)
+    if l:i2 < 0 | break | endif
+
+    if a:string[l:i2] ==# '{'
+      let l:count += 1
+    else
+      let l:count -= 1
+    endif
+  endwhile
+
+  if a:0 > 0
+    return [l:i2, l:count]
+  else
+    return l:i2
+  endif
+endfunction
+
+" }}}1
+
 " {{{1 Script initialization
 
 let s:name = 'Table of contents (vimtex)'
@@ -510,7 +581,7 @@ let s:sec_to_value = {
 let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[(.{-})\])?\{'
 let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\%?\s*$'
+let s:re_sec_title = s:re_sec . '\zs.{-}\}?\ze\%?\s*$'
 let s:re_vimtex_include = '%\s*vimtex-include:\?\s\+\zs\f\+'
 let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
 let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
