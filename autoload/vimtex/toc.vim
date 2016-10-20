@@ -380,7 +380,10 @@ endfunction
 " }}}1
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
-  let title = matchstr(a:line, s:re_sec_title)
+  let title = matchlist(a:line, s:re_sec)[1]
+  if empty(title)
+    let title = matchstr(a:line, s:re_sec_title)
+  endif
   let level = matchstr(a:line, s:re_sec_level)
 
   " Check if section is starred
@@ -504,7 +507,7 @@ let s:sec_to_value = {
       \ }
 
 " Define regular expressions to match document parts
-let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[.{-}\])?\{'
+let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[(.{-})\])?\{'
 let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
 let s:re_sec_title = s:re_sec . '\zs.{-}\ze\}?\%?\s*$'
