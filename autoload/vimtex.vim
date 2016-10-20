@@ -757,9 +757,10 @@ function! s:print_dict(dict, ...) " {{{1
         \ 's:print_dict_sort_1')
     let title = repeat(' ', 2 + 2*level) . entry[0]
     if type(entry[1]) == type([])
-      call vimtex#echo#echo(title)
+      call vimtex#echo#echo(title . "\n")
       for val in entry[1]
-        call vimtex#echo#echo(repeat(' ', 4 + 2*level) . string(val), 'None')
+        call vimtex#echo#formatted([['None',
+              \ repeat(' ', 4 + 2*level) . string(val) . "\n"]])
       endfor
     elseif type(entry[1]) == type({})
       call vimtex#echo#echo(title . "\n")
