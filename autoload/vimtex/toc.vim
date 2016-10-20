@@ -152,8 +152,8 @@ function! vimtex#toc#get_entries() " {{{1
       if index(l:included.files, l:file) < 0
         let l:included.files += [l:file]
         let l:included.current = {
-              \ 'title'   : 'Included: ' . fnamemodify(l:file, ':t'),
-              \ 'number'  : '',
+              \ 'title'   : fnamemodify(l:file, ':t'),
+              \ 'number'  : '[i]',
               \ 'file'    : l:file,
               \ 'line'    : 1,
               \ 'level'   : s:number.current_level,
@@ -173,11 +173,10 @@ function! vimtex#toc#get_entries() " {{{1
       endif
       let l:fname = fnamemodify(l:fname, ':~:.')
       call add(l:toc, {
-            \ 'title'  : 'Vimtex include: '
-            \            . (strlen(l:fname) < 54
+            \ 'title'  : (strlen(l:fname) < 70
             \               ? l:fname
-            \               : l:fname[0:20] . '...' . l:fname[-30:]),
-            \ 'number' : '',
+            \               : l:fname[0:30] . '...' . l:fname[-36:]),
+            \ 'number' : '[v]',
             \ 'file'   : l:fname,
             \ 'level'  : s:number.current_level,
             \ 'link'   : 1,
@@ -332,6 +331,7 @@ endfunction
 " }}}1
 function! s:index_print_number(number) dict " {{{1
   if empty(a:number) | return '' | endif
+  if type(a:number) == type('') | return a:number | endif
 
   let number = [
         \ a:number.part,
@@ -378,11 +378,13 @@ function! s:index_syntax() dict "{{{1
   syntax match VimtexTocHelp /^\S.*: .*/
   syntax match VimtexTocNum
         \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
-  syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,@Tex
-  syntax match VimtexTocSec1 /^.*1$/ contains=VimtexTocNum,@Tex
-  syntax match VimtexTocSec2 /^.*2$/ contains=VimtexTocNum,@Tex
-  syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,@Tex
-  syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,@Tex
+  syntax match VimtexTocTag
+        \ /^\[.\]/ contained
+  syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,VimtexTocTag,@Tex
+  syntax match VimtexTocSec1 /^.*1$/ contains=VimtexTocNum,VimtexTocTag,@Tex
+  syntax match VimtexTocSec2 /^.*2$/ contains=VimtexTocNum,VimtexTocTag,@Tex
+  syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,VimtexTocTag,@Tex
+  syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,VimtexTocTag,@Tex
 endfunction
 
 " }}}1
@@ -442,8 +444,8 @@ function! s:parse_bib_input(line) " {{{1
   endif
 
   return {
-        \ 'title'  : printf('Included bib file: %-.60s', fnamemodify(l:file, ':t')),
-        \ 'number' : '',
+        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
+        \ 'number' : '[b]',
         \ 'file'   : vimtex#util#kpsewhich(l:file),
         \ 'line'   : 0,
         \ 'level'  : s:max_level,
@@ -615,6 +617,7 @@ let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
 
 " Define highlight groups
 call vimtex#util#set_highlight('VimtexTocNum', 'Number')
+call vimtex#util#set_highlight('VimtexTocTag', 'Directory')
 call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
 call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
 call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
