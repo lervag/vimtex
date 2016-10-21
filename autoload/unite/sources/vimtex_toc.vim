@@ -29,30 +29,34 @@ endfunction
 " }}}1
 function! s:source.hooks.on_syntax(args, context) " {{{1
   syntax match VimtexTocSecs /.* @\d$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocSec0 /.* @0$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocSec1 /.* @1$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocSec2 /.* @2$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocSec3 /.* @3$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocSec4 /.* @4$/
-        \ contains=VimtexTocNum,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
   syntax match VimtexTocNum
         \ /\%69v\%(\%([A-Z]\+\>\|\d\+\)\%(\.\d\+\)*\)\?\s*@\d$/
         \ contains=VimtexTocLevel
         \ contained containedin=VimtexTocSec[0-9*]
+  syntax match VimtexTocTag
+        \ /\[.\]\s*@\d$/
+        \ contains=VimtexTocLevel
+        \ contained containedin=VimtexTocSec[0-9*]
   syntax match VimtexTocLevel
         \ /@\d$/ conceal
-        \ contained containedin=VimtexTocNum
+        \ contained containedin=VimtexTocNum,VimtexTocTag
 endfunction
 
 " }}}1
@@ -74,6 +78,7 @@ endfunction
 
 function! s:print_number(number) " {{{1
   if empty(a:number) | return '' | endif
+  if type(a:number) == type('') | return a:number | endif
 
   let number = [
         \ a:number.part,
