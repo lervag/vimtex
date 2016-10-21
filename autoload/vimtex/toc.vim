@@ -127,10 +127,11 @@ function! vimtex#toc#get_entries() " {{{1
   for [l:file, l:lnum, l:line] in l:parsed
     " Handle multi-line sections (and chapter/subsection/etc)
     if get(s:, 'sec_continue', 0)
-      let [l:end, l:count] = s:find_indx_closing_brace(0, l:line, s:sec_count, 1)
+      let [l:end, l:count] = s:find_closing(0, l:line, s:sec_count, s:sec_type)
       if l:count == 0
         let l:toc[-1].title = s:parse_line_sec_title(
-              \ l:toc[-1].title . strpart(l:line, 0, l:end))
+              \ l:toc[-1].title . strpart(l:line, 0, l:end+1))
+        unlet s:sec_type
         unlet s:sec_count
         unlet s:sec_continue
       else
@@ -397,18 +398,16 @@ endfunction
 
 function! s:parse_line_sec(file, lnum, line) " {{{1
   let level = matchstr(a:line, s:re_sec_level)
-  let title = matchlist(a:line, s:re_sec)[1]
-  if empty(title)
-    let title = matchstr(a:line, s:re_sec_title)
-    let l:count = 1
-          \ + len(substitute(title, '[^{]', '', 'g'))
-          \ - len(substitute(title, '[^}]', '', 'g'))
-    if l:count > 0
-      let s:sec_continue = 1
-      let s:sec_count = l:count
-    else
-      let title = s:parse_line_sec_title(title)
-    endif
+  let type = matchlist(a:line, s:re_sec)[1]
+  let title = matchstr(a:line, s:re_sec_title)
+
+  let [l:end, l:count] = s:find_closing(0, title, 1, type)
+  if l:count == 0
+    let title = s:parse_line_sec_title(strpart(title, 0, l:end+1))
+  else
+    let s:sec_type = type
+    let s:sec_count = l:count
+    let s:sec_continue = 1
   endif
 
   " Check if section is starred
@@ -507,12 +506,13 @@ function! s:clear_texorpdfstring(title) " {{{1
   if l:i1 < 0 | return a:title | endif
 
   " Find start of included part
-  let l:i2 = s:find_indx_closing_brace(match(a:title, '{', l:i1+1), a:title, 1)
+  let [l:i2, l:dummy] = s:find_closing(
+        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
   let l:i2 = match(a:title, '{', l:i2+1)
   if l:i2 < 0 | return a:title | endif
 
   " Find end of included part
-  let l:i3 = s:find_indx_closing_brace(l:i2, a:title, 1)
+  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
   if l:i3 < 0 | return a:title | endif
 
   return strpart(a:title, 0, l:i1)
@@ -521,25 +521,28 @@ function! s:clear_texorpdfstring(title) " {{{1
 endfunction
 
 " }}}1
-function! s:find_indx_closing_brace(start, string, count, ...) " {{{1
+function! s:find_closing(start, string, count, type) " {{{1
+  if a:type ==# '{'
+    let l:re = '{\|}'
+    let l:open = '{'
+  else
+    let l:re = '\[\|\]'
+    let l:open = '['
+  endif
   let l:i2 = a:start
   let l:count = a:count
   while l:count > 0
-    let l:i2 = match(a:string, '{\|}', l:i2+1)
+    let l:i2 = match(a:string, l:re, l:i2+1)
     if l:i2 < 0 | break | endif
 
-    if a:string[l:i2] ==# '{'
+    if a:string[l:i2] ==# l:open
       let l:count += 1
     else
       let l:count -= 1
     endif
   endwhile
 
-  if a:0 > 0
-    return [l:i2, l:count]
-  else
-    return l:i2
-  endif
+  return [l:i2, l:count]
 endfunction
 
 " }}}1
@@ -580,10 +583,10 @@ let s:sec_to_value = {
       \ }
 
 " Define regular expressions to match document parts
-let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*%(\[(.{-})\])?\{'
+let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)'
+let s:re_sec_title = s:re_sec . '\zs.{-}\ze\%?\s*$'
 let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
 let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-let s:re_sec_title = s:re_sec . '\zs.{-}\}?\ze\%?\s*$'
 let s:re_vimtex_include = '%\s*vimtex-include:\?\s\+\zs\f\+'
 let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
 let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
