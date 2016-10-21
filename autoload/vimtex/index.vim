@@ -62,7 +62,7 @@ function! vimtex#index#create(index) " {{{1
     unlet FnVal
   endfor
 
-  let l:vimtex = b:vimtex
+  let l:vimtex = get(b:, 'vimtex', {})
   if g:vimtex_index_split_pos ==# 'full'
     silent execute 'edit' escape(a:index.name, ' ')
   else
@@ -136,7 +136,7 @@ function! s:actions_activate(close) dict "{{{1
   let n = getpos('.')[1] - 1
   if n < self.help_nlines | return | endif
   let entry = self.entries[n - self.help_nlines]
-  let l:vimtex_main = b:vimtex.tex
+  let l:vimtex_main = get(b:vimtex, 'tex', '')
 
   " Save index buffer info for later use
   let toc_bnr = bufnr('%')
@@ -178,7 +178,7 @@ function! s:actions_activate(close) dict "{{{1
   endif
 
   " If relevant, enable vimtex stuff
-  if get(entry, 'link', 0)
+  if get(entry, 'link', 0) && !empty(l:vimtex_main)
     let b:vimtex_main = l:vimtex_main
     call vimtex#init()
   endif
