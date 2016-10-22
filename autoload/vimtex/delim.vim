@@ -214,8 +214,10 @@ endfunction
 " }}}1
 
 function! vimtex#delim#get_delim_regexes(...) " {{{1
-  return [s:re.delim_math.open, s:re.delim_math.close,
-       \  s:re.delim_tex.open,  s:re.delim_tex.close]
+  return exists('s:re')
+        \ ? [s:re.delim_math.open, s:re.delim_math.close,
+        \    s:re.delim_tex.open,  s:re.delim_tex.close]
+        \ : ['', '', '', '']
 endfunction
 
 " }}}1
