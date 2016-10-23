@@ -105,7 +105,7 @@ function! vimtex#cmd#delete() " {{{1
 endfunction
 
 function! vimtex#cmd#create() " {{{1
-  let l:re = '\v%(^|\s)\zs\w+\ze%(\s|$)'
+  let l:re = '\v%(^|\A)\zs\w+\ze%(\s|$)'
   let l:c0 = col('.') - (mode() ==# 'i')
 
   let [l:l1, l:c1] = searchpos(l:re, 'bcn', line('.'))
