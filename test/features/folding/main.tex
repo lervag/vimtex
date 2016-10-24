@@ -1,4 +1,8 @@
 \documentclass[% Options of scrbook
+  %
+  % Preamble fold starts here, unless 'documentclass' is added to the
+  % g:vimtex_fold_commands option.
+  %
   % draft,
   fontsize=12pt,
   %smallheadings,
@@ -25,7 +29,18 @@
 ]{scrbook}
 
 %
-% Fold usepackages
+% Fold commands (single)
+%
+\hypersetup{
+  ...,
+}
+\tikzset{
+  testing,
+  tested,
+}
+
+%
+% Fold commands (single_opt)
 %
 \usepackage[
   ...
@@ -40,7 +55,7 @@
 ]{biblatex}
 
 %
-% Fold newcommands and similar
+% Fold commands (multi)
 %
 \renewcommand{\marginpar}{%
   \marginnote%
