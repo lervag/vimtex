@@ -688,6 +688,10 @@ function! s:file_reaches_current(file) " {{{1
       let l:file = fnamemodify(a:file, ':h') . '/' . l:file
     endif
 
+    if l:file !~# '\.tex$'
+      let l:file .= '.tex'
+    endif
+
     if expand('%:p') ==# l:file
           \ || s:file_reaches_current(l:file)
       return 1
