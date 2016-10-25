@@ -192,4 +192,15 @@ endfunction
 
 " }}}1
 
+function! s:output_not_readable(output) " {{{1
+  if !filereadable(a:output)
+    call vimtex#echo#warning('viewer can not read PDF file!')
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+" }}}1
+
 " vim: fdm=marker sw=2
