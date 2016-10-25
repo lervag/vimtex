@@ -1356,7 +1356,8 @@ dictionary argument: >
     \ 'lhs' : lhs,
     \ 'rhs' : rhs,
     \ 'leader' : leader_key,
-    \ 'wrapper' : function_name
+    \ 'wrapper' : function_name,
+    \ 'context' : value,
     \ }
 
 Explanation of the keys:
@@ -1375,14 +1376,24 @@ Explanation of the keys:
     The name of a wrapper function that is used to generate the `rhs`. Two
     functions are available from |vimtex|:
 
-      `vimtex#imaps#wrap_trivial`  Trivial wrapper: Simply returns `rhs`.
-      `vimtex#imaps#wrap_math`     Only define `rhs` if inside a math environment.
-                                 This is the default wrapper function and will
-                                 be used if no other wrapper is supplied.
+      `vimtex#imaps#wrap_trivial`
+        Trivial wrapper: Simply returns `rhs`.
+
+      `vimtex#imaps#wrap_math`
+        Only define `rhs` if inside a math environment. This is the default
+        wrapper function and will be used if no other wrapper is supplied.
+
+      `vimtex#imaps#wrap_environment`
+        Only define `rhs` if inside one of the environments specified through
+        a list of environment names. The list must be supplied through the
+        `context` key.
 
     Of course, one may use custom wrapper functions. To write a custom wrapper
     function, please see the source for examples on how the |vimtex| wrappers
     are written.
+
+  context~
+    A value that can be used by the chosen wrapper function.
 
                                                             *vimtex-neosnippet*
                                                              *vimtex-UltiSnips*
