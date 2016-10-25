@@ -52,13 +52,13 @@ function! s:general.view(file) dict " {{{1
 
     " Only copy files if they don't exist
     if g:vimtex_view_use_temp_files
-          \ && s:output_not_readable(outfile)
+          \ && vimtex#view#common#not_readable(outfile)
       call self.copy_files()
     endif
   else
     let outfile = a:file
   endif
-  if s:output_not_readable(outfile) | return | endif
+  if vimtex#view#common#not_readable(outfile) | return | endif
 
   " Parse options
   let opts = g:vimtex_view_general_options
@@ -91,17 +91,6 @@ function! s:general.latexmk_append_argument() dict " {{{1
             \                    '@line', line('.'), 'g')
     endif
     return vimtex#latexmk#add_option('pdf_previewer', l:option)
-  endif
-endfunction
-
-" }}}1
-
-function! s:output_not_readable(output) " {{{1
-  if !filereadable(a:output)
-    call vimtex#echo#warning('viewer can not read PDF file!')
-    return 1
-  else
-    return 0
   endif
 endfunction
 

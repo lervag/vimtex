@@ -27,6 +27,16 @@ function! vimtex#view#common#use_temp_files_p(viewer) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#view#common#not_readable(output) " {{{1
+  if !filereadable(a:output)
+    call vimtex#echo#warning('viewer can not read PDF file!')
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+" }}}1
 
 let s:xwin_template = {}
 
