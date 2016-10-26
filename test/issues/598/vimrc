@@ -1,0 +1,26 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+let g:tex_flavor = 'latex'
+" let g:vimtex_motion_matchparen = 1
+" let g:vimtex_indent_enabled = 1
+
+nnoremap <space>s :call Start()<cr>
+nnoremap <space>q :call End()<cr>
+
+function! Start() " {{{1
+  profile start profile.log
+  profile func *
+  profile file *
+endfunction
+
+" }}}1
+function! End() " {{{1
+  profile pause
+  noautocmd qall!
+endfunction
+
+" }}}1
