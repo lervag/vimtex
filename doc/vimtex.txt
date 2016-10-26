@@ -441,8 +441,22 @@ Options~
 
   Default value: '*'
 
+*g:vimtex_fold_preamble*
+  Control whether or not to fold the preamble.
+
+  Note: If |g:vimtex_fold_commands| contains `documentclass`, then this option
+        will be automatically disabled.
+
+  Default value: 1
+
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
+
+  Default value: 1
+
+*g:vimtex_fold_markers*
+  Use this option to disable/enable vim-style markers for folding, i.e. pairs
+  of `{{{` and `}}}`.
 
   Default value: 1
 
@@ -451,70 +465,86 @@ Options~
 
   Default value: >
     let g:vimtex_fold_parts = [
-        \ "appendix",
-        \ "frontmatter",
-        \ "mainmatter",
-        \ "backmatter",
+        \ 'appendix',
+        \ 'frontmatter',
+        \ 'mainmatter',
+        \ 'backmatter',
       \ ]
 <
-*g:vimtex_fold_preamble*
-  Control whether or not to fold the preamble.
-
-  Note: This option can not be used together with |g:vimtex_fold_documentclass|.
-
-  Default value: 1
-
 *g:vimtex_fold_sections*
   List of section constructs that should be folded.
 
   Default value: >
     let g:vimtex_fold_sections = [
-        \ "part",
-        \ "chapter",
-        \ "section",
-        \ "subsection",
-        \ "subsubsection",
+        \ 'part',
+        \ 'chapter',
+        \ 'section',
+        \ 'subsection',
+        \ 'subsubsection',
       \ ]
 <
-*g:vimtex_fold_usepackage*
-  Use this option to disable/enable folding of long `\usepackage` lines. The
-  lines must be formatted like this for folding to work properly: >
+*g:vimtex_fold_commands*
+*g:vimtex_fold_commands_default*
+  Use this option to disable/enable folding of commands. The option is
+  a dictionary of key-value pairs, where the key is a regex in very magic mode
+  (see |\v|) that matches the desired command name(s), and the value is the
+  variant of command folding. There are three variants allowed (see below for
+  a few examples that may be clarifying):
 
-    \usepackage[
-      option 1,
-      ...,
-      option n
-      ]{name}
+  `single`        Useful for commands with a single long argument.
+  `single_opt`    Useful for commands that open with a single long optional
+                argument, then a short "real" argument.
+  `multi`         Useful for commands that start with a short regular argument
+                and continue with long optional and/or regular arguments. In
+                order for the folding to work as expected, this style depends
+                on the indentation to be correct. See the example below for
+                how to properly format the folded regions.
+
+  The option combines the contents of |g:vimtex_fold_commands| and
+  |g:vimtex_fold_commands_default|. Entries in the former will have higher
+  priority than entries in the latter. This way, it is easy to add custom
+  entries without disturbing the defaults. For those who want to ignore the
+  defaults, one may simple set |g:vimtex_fold_commands_default| to an empty
+  dictionary.
+
+  Examples of how command folds work for the different variants: >
+
+    Variant       Not folded                     Folded
+    ----------------------------------------------------------------------
+    'single'      \hypersetup{                   \hypersetup{...}
+                    option 1,
+                    ...,
+                    option n
+                    }
+
+    'single_opt'  \usepackage[                   \usepackage[...]{name}
+                    option 1,
+                    ...,
+                    option n
+                    ]{name}
+
+    'multi'       \newcommand{\command}[3]{      \newcommand{\command} ...
+                    Hello #1, #2, and #3.
+                  }
+    ----------------------------------------------------------------------
 <
-  Default value: 1
+  Note: |g:vimtex_fold_commands| deprecates the old *g:vimtex_fold_documentclass*
+        option. To fold the `\documentclass` command, it may be added with the
+        `single_opt` variant. As before, one must disable |g:vimtex_fold_preamble|.
 
-*g:vimtex_fold_newcommands*
-  Use this option to disable/enable folding of long `\[re]newcommand` and
-  `\[re]newenvironment` lines. The lines must be formatted like this for
-  folding to work properly: >
-
-    \[re]newcommand{\command}{
-      ...,
-    }
-<
-  That is, the fold region starts at the command and ends when at the final `}`
-  at the same indent level as the start of the command.
-
-  Default value: 1
-
-*g:vimtex_fold_documentclass*
-  Use this option to disable/enable folding of long `\documentclass` lines. This
-  works similar to |g:vimtex_fold_usepackage|.
-
-  Note: This option can not be used together with |g:vimtex_fold_preamble|.
-
-  Default value: 0
-
-*g:vimtex_fold_markers*
-  Use this option to disable/enable vim-style markers for folding, i.e. pairs
-  of `{{{` and `}}}`.
-
-  Default value: 1
+  Default value: >
+    let g:vimtex_fold_commands = {}
+    let g:vimtex_fold_commands_default = {
+        \ 'hypersetup' : 'single',
+        \ 'tikzset' : 'single',
+        \ 'usepackage' : 'single_opt',
+        \ 'includepdf' : 'single_opt',
+        \ '%(re)?new%(command|environment)' : 'multi',
+        \ 'providecommand' : 'multi',
+        \ 'presetkeys' : 'multi',
+        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
+        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \}
 
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
@@ -1708,12 +1738,14 @@ Associated settings:
   |g:vimtex_fold_enabled|
   |g:vimtex_fold_manual|
   |g:vimtex_fold_comments|
+  |g:vimtex_fold_levelmarker|
   |g:vimtex_fold_preamble|
+  |g:vimtex_fold_envs|
+  |g:vimtex_fold_markers|
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|
-  |g:vimtex_fold_envs|
-  |g:vimtex_fold_usepackage|
-  |g:vimtex_fold_newcommands|
+  |g:vimtex_fold_commands|
+  |g:vimtex_fold_commands_default|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
