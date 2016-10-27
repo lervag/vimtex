@@ -429,7 +429,7 @@ endfunction
 
 " }}}1
 function! s:parse_line_sec_title(title) " {{{1
-  let l:title = substitute(a:title, '\}\s*$', '', '')
+  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
   return s:clear_texorpdfstring(l:title)
 endfunction
 
