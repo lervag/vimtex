@@ -145,55 +145,81 @@ endfunction
 
 " }}}2
 function! s:split(line, lnum, ...) " {{{2
-  let l:map = map(range(1,col([a:lnum, strlen(a:line)])),
-        \ '[v:val, vimtex#util#in_mathzone(a:lnum, v:val)]')
-
-  " Adjust math mode limits (currently handle only $'s)
-  let l:prev = 1
-  for l:i in range(len(l:map))
-    if l:map[l:i][1] == 1 && l:prev == 0
-      let l:prev = l:map[l:i][1]
-      let l:map[l:i][1] = 0
-    else
-      let l:prev = l:map[l:i][1]
-    endif
-  endfor
-  if l:map[0][1] == 1 && a:line[0] ==# '$'
-    let l:map[0][1] = 0
-  endif
+  let l:map = s:map_math(a:lnum, strlen(a:line))
 
   " Extract normal text
   let l:normal = ''
+  let l:i0 = -1
   for [l:i, l:val] in l:map
     if l:val == 0
-      let l:normal .= a:line[l:i - 1]
+      let l:i0 = l:i
+    elseif l:i > 1
+      let l:normal .= strpart(a:line, l:i0, l:i - l:i0)
+      let l:i0 = -1
     endif
   endfor
+  if l:i0 >= 0
+    let l:normal .= strpart(a:line, l:i0)
+  endif
   let l:normal = substitute(l:normal, '\\verb\(.\).\{}\1', '', 'g')
 
   "
   " Extract math text (either at beginning or end of line, depending on if we
   " are looking at the current line or a previous line)
   "
+  let l:math = ''
   if a:0 == 0
-    " Extract math text from beginning of line
-    let l:math = ''
-    let l:indx = 0
-    while l:map[l:indx][1] == 1
-      let l:math .= a:line[l:map[l:indx][0] - 1]
-      let l:indx += 1
-    endwhile
+    if l:map[0][1] == 1
+      let l:math .= strpart(a:line, 0, get(l:map, 1, [strlen(a:line)])[0])
+    endif
   else
-    " Extract math text from end of line
-    let l:math = ''
-    let l:indx = -1
-    while l:map[l:indx][1] == 1
-      let l:math = a:line[l:map[l:indx][0] - 1] . l:math
-      let l:indx -= 1
-    endwhile
+    if l:map[-1][1] == 1
+      let l:math .= strpart(a:line, l:map[-1][0])
+    endif
   endif
 
+  echom l:normal string(l:map)
   return [l:normal, l:math]
+endfunction
+
+" }}}2
+function! s:map_math(lnum, len) " {{{2
+  call setpos('.', [0, a:lnum, 1, 0])
+  let l:in_math = vimtex#util#in_mathzone()
+  let l:result = [[0, l:in_math]]
+
+  if l:in_math
+    let l:open = vimtex#delim#get_prev('env_math', 'open')
+    if !empty(l:open) && l:open.lnum == a:lnum
+      let l:result = [
+            \ [0, 0],
+            \ [strlen(l:open.match), 1],
+            \]
+    endif
+
+    let l:close = vimtex#delim#get_next('env_math', 'close')
+    if empty(l:close)
+          \ || l:close.lnum > a:lnum
+          \ | return l:result | endif
+    call add(l:result, [l:close.cnum-1, 0])
+    call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
+  endif
+
+  while 1
+    let l:open = vimtex#delim#get_next('env_math', 'open')
+    if empty(l:open)
+          \ || l:open.lnum > a:lnum
+          \ || l:open.cnum+strlen(l:open.match) > a:len
+          \ | return l:result | endif
+    call add(l:result, [l:open.cnum+strlen(l:open.match)-1, 1])
+
+    let l:close = vimtex#delim#get_matching(l:open)
+    if empty(l:close)
+          \ || l:close.lnum > a:lnum
+          \ | return l:result | endif
+    call add(l:result, [l:close.cnum-1, 0])
+    call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
+  endwhile
 endfunction
 
 " }}}2
