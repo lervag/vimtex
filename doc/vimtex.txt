@@ -1231,7 +1231,7 @@ Commands~
                           `texcount` through a call on the main project file
                           similar to: >
 
-                            texcount -nosub -sub [-letter] -merge FILE
+                            texcount -nosub -sum [-letter] -merge FILE
 <
                                              *VimtexCountLetters!*
                                              *VimtexCountWords!*
@@ -1239,7 +1239,7 @@ Commands~
 :VimtexCountWords!        show separate reports for included files.  I.e.
                           presents the result of >
 
-                            texcount -nosub -sub [-letter] -inc FILE
+                            texcount -nosub -sum [-letter] -inc FILE
 <
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
