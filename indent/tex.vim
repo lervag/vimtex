@@ -107,6 +107,8 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
+  if empty(s:re_delims) | return 0 | endif
+
   let [l:text, l:math] = s:split(a:line, a:lnum)
   let [l:prev_tex, l:prev_math] = s:split(a:prev_line, a:prev_lnum, 'prev')
 
