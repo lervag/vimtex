@@ -167,6 +167,16 @@ let s:tikz_commands = '\v\\%(' . join([
 " Utility functions for s:indent_delims
 "
 function! s:split(line, lnum) " {{{1
+  "
+  " This function splits a line into regions:
+  "
+  "   text       is all the normal text in the given line
+  "   math_pre   is the math region at the beginning of the line (if any)
+  "   math_post  is the math region at the end of the line (if any)
+  "
+  " Any math region that is not located at the beginning or end of the line
+  " will be ignored.
+  "
   let l:result = {}
   let l:result.text = ''
   let l:result.math_pre = ''
@@ -176,6 +186,9 @@ function! s:split(line, lnum) " {{{1
   let l:strlen = strlen(a:line)
   let l:cnum = 0
 
+  "
+  " Handles the case where the start of the line is a math region
+  "
   if vimtex#util#in_mathzone()
     let l:open = vimtex#delim#get_prev('env_math', 'open')
     if !empty(l:open) && l:open.lnum == a:lnum
@@ -199,6 +212,9 @@ function! s:split(line, lnum) " {{{1
     call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
   endif
 
+  "
+  " Iterate over all math regions in the line
+  "
   while 1
     let l:open = vimtex#delim#get_next('env_math', 'open')
     if empty(l:open)
@@ -226,8 +242,7 @@ endfunction
 
 " }}}1
 function! s:strip(result) " {{{1
-  let a:result.text
-        \ = substitute(a:result.text, '\\verb\(.\).\{}\1', '', 'g')
+  let a:result.text = substitute(a:result.text, '\\verb\(.\).\{}\1', '', 'g')
   return a:result
 endfunction
 
