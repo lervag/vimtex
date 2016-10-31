@@ -131,20 +131,42 @@ endfunction
 "
 let s:re_delims = vimtex#delim#get_delim_regexes()
 
-function! s:count(line, pattern) " {{{2
-  let l:sum = 0
-  let l:indx = match(a:line, a:pattern)
-  while l:indx >= 0
-    let l:sum += 1
-    let l:match = matchstr(a:line, a:pattern, l:indx)
-    let l:indx += len(l:match)
-    let l:indx = match(a:line, a:pattern, l:indx)
-  endwhile
-  return l:sum
+" }}}1
+function! s:indent_tikz(lnum, prev) " {{{1
+  if vimtex#env#is_inside('tikzpicture')
+    let l:prev_starts = a:prev =~# s:tikz_commands
+    let l:prev_stops  = a:prev =~# ';\s*$'
+
+    " Increase indent on tikz command start
+    if l:prev_starts && ! l:prev_stops
+      return &sw
+    endif
+
+    " Decrease indent on tikz command end, i.e. on semicolon
+    if ! l:prev_starts && l:prev_stops
+      let l:context = join(getline(max([1,a:lnum-4]), a:lnum-1), '')
+      return -&sw*(l:context =~# s:tikz_commands)
+    endif
+  endif
+
+  return 0
 endfunction
 
-" }}}2
-function! s:split(line, lnum, ...) " {{{2
+let s:tikz_commands = '\v\\%(' . join([
+        \ 'draw',
+        \ 'fill',
+        \ 'path',
+        \ 'node',
+        \ 'coordinate',
+        \ 'add%(legendentry|plot)',
+      \ ], '|') . ')'
+
+" }}}1
+
+"
+" Utility functions for s:indent_delims
+"
+function! s:split(line, lnum, ...) " {{{1
   let l:map = s:map_math(a:lnum, strlen(a:line))
 
   " Extract normal text
@@ -178,12 +200,11 @@ function! s:split(line, lnum, ...) " {{{2
     endif
   endif
 
-  echom l:normal string(l:map)
   return [l:normal, l:math]
 endfunction
 
-" }}}2
-function! s:map_math(lnum, len) " {{{2
+" }}}1
+function! s:map_math(lnum, len) " {{{1
   call setpos('.', [0, a:lnum, 1, 0])
   let l:in_math = vimtex#util#in_mathzone()
   let l:result = [[0, l:in_math]]
@@ -222,37 +243,18 @@ function! s:map_math(lnum, len) " {{{2
   endwhile
 endfunction
 
-" }}}2
-
 " }}}1
-function! s:indent_tikz(lnum, prev) " {{{1
-  if vimtex#env#is_inside('tikzpicture')
-    let l:prev_starts = a:prev =~# s:tikz_commands
-    let l:prev_stops  = a:prev =~# ';\s*$'
-
-    " Increase indent on tikz command start
-    if l:prev_starts && ! l:prev_stops
-      return &sw
-    endif
-
-    " Decrease indent on tikz command end, i.e. on semicolon
-    if ! l:prev_starts && l:prev_stops
-      let l:context = join(getline(max([1,a:lnum-4]), a:lnum-1), '')
-      return -&sw*(l:context =~# s:tikz_commands)
-    endif
-  endif
-
-  return 0
+function! s:count(line, pattern) " {{{1
+  let l:sum = 0
+  let l:indx = match(a:line, a:pattern)
+  while l:indx >= 0
+    let l:sum += 1
+    let l:match = matchstr(a:line, a:pattern, l:indx)
+    let l:indx += len(l:match)
+    let l:indx = match(a:line, a:pattern, l:indx)
+  endwhile
+  return l:sum
 endfunction
-
-let s:tikz_commands = '\v\\%(' . join([
-        \ 'draw',
-        \ 'fill',
-        \ 'path',
-        \ 'node',
-        \ 'coordinate',
-        \ 'add%(legendentry|plot)',
-      \ ], '|') . ')'
 
 " }}}1
 
