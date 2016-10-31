@@ -109,17 +109,17 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
   if empty(s:re_delims) | return 0 | endif
 
-  let [l:text, l:math] = s:split(a:line, a:lnum)
-  let [l:prev_tex, l:prev_math] = s:split(a:prev_line, a:prev_lnum, 'prev')
+  let l:pre = s:split(a:prev_line, a:prev_lnum)
+  let l:cur = s:split(a:line, a:lnum)
 
-  return &sw*(  max([  s:count(l:prev_math, s:re_delims[0])
-        \            - s:count(l:prev_math, s:re_delims[1])
-        \            + s:count(l:prev_tex, s:re_delims[2])
-        \            - s:count(l:prev_tex, s:re_delims[3]), 0])
-        \     - max([  s:count(l:math, s:re_delims[1])
-        \            - s:count(l:math, s:re_delims[0])
-        \            + s:count(l:text, s:re_delims[3])
-        \            - s:count(l:text, s:re_delims[2]), 0]))
+  return &sw*(  max([  s:count(l:pre.math_post, s:re_delims[0])
+        \            - s:count(l:pre.math_post, s:re_delims[1])
+        \            + s:count(l:pre.text, s:re_delims[2])
+        \            - s:count(l:pre.text, s:re_delims[3]), 0])
+        \     - max([  s:count(l:cur.math_pre, s:re_delims[1])
+        \            - s:count(l:cur.math_pre, s:re_delims[0])
+        \            + s:count(l:cur.text, s:re_delims[3])
+        \            - s:count(l:cur.text, s:re_delims[2]), 0]))
 endfunction
 
 "
@@ -166,63 +166,36 @@ let s:tikz_commands = '\v\\%(' . join([
 "
 " Utility functions for s:indent_delims
 "
-function! s:split(line, lnum, ...) " {{{1
-  let l:map = s:map_math(a:lnum, strlen(a:line))
+function! s:split(line, lnum) " {{{1
+  let l:result = {}
+  let l:result.text = ''
+  let l:result.math_pre = ''
+  let l:result.math_post = ''
 
-  " Extract normal text
-  let l:normal = ''
-  let l:i0 = -1
-  for [l:i, l:val] in l:map
-    if l:val == 0
-      let l:i0 = l:i
-    elseif l:i > 1
-      let l:normal .= strpart(a:line, l:i0, l:i - l:i0)
-      let l:i0 = -1
-    endif
-  endfor
-  if l:i0 >= 0
-    let l:normal .= strpart(a:line, l:i0)
-  endif
-  let l:normal = substitute(l:normal, '\\verb\(.\).\{}\1', '', 'g')
-
-  "
-  " Extract math text (either at beginning or end of line, depending on if we
-  " are looking at the current line or a previous line)
-  "
-  let l:math = ''
-  if a:0 == 0
-    if l:map[0][1] == 1
-      let l:math .= strpart(a:line, 0, get(l:map, 1, [strlen(a:line)])[0])
-    endif
-  else
-    if l:map[-1][1] == 1
-      let l:math .= strpart(a:line, l:map[-1][0])
-    endif
-  endif
-
-  return [l:normal, l:math]
-endfunction
-
-" }}}1
-function! s:map_math(lnum, len) " {{{1
   call setpos('.', [0, a:lnum, 1, 0])
-  let l:in_math = vimtex#util#in_mathzone()
-  let l:result = [[0, l:in_math]]
+  let l:strlen = strlen(a:line)
+  let l:cnum = 0
 
-  if l:in_math
+  if vimtex#util#in_mathzone()
     let l:open = vimtex#delim#get_prev('env_math', 'open')
     if !empty(l:open) && l:open.lnum == a:lnum
-      let l:result = [
-            \ [0, 0],
-            \ [strlen(l:open.match), 1],
-            \]
+      let l:cnum = strlen(l:open.match)
+      let l:result.text .= strpart(a:line, 0, l:cnum)
     endif
 
     let l:close = vimtex#delim#get_next('env_math', 'close')
-    if empty(l:close)
-          \ || l:close.lnum > a:lnum
-          \ | return l:result | endif
-    call add(l:result, [l:close.cnum-1, 0])
+    if empty(l:close) || l:close.lnum > a:lnum
+      let l:result.math_post = strpart(a:line, l:cnum)
+      if l:cnum == 0
+        let l:result.math_pre = l:result.math_post
+      endif
+      return s:strip(l:result)
+    endif
+
+    if l:cnum == 0
+      let l:result.math_pre = strpart(a:line, l:cnum, l:close.cnum-1)
+    endif
+    let l:cnum = l:close.cnum-1
     call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
   endif
 
@@ -230,17 +203,32 @@ function! s:map_math(lnum, len) " {{{1
     let l:open = vimtex#delim#get_next('env_math', 'open')
     if empty(l:open)
           \ || l:open.lnum > a:lnum
-          \ || l:open.cnum+strlen(l:open.match) > a:len
-          \ | return l:result | endif
-    call add(l:result, [l:open.cnum+strlen(l:open.match)-1, 1])
+          \ || l:open.cnum + strlen(l:open.match) > l:strlen
+      let l:result.text .= strpart(a:line, l:cnum)
+      return s:strip(l:result)
+    else
+      let l:result.text .= strpart(a:line, l:cnum,
+            \ l:open.cnum + strlen(l:open.match) - l:cnum - 1)
+      let l:cnum = l:open.cnum+strlen(l:open.match)-1
+      call setpos('.', [0, a:lnum, l:open.cnum+strlen(l:open.match), 0])
+    endif
 
     let l:close = vimtex#delim#get_matching(l:open)
-    if empty(l:close)
-          \ || l:close.lnum > a:lnum
-          \ | return l:result | endif
-    call add(l:result, [l:close.cnum-1, 0])
-    call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
+    if empty(l:close) || l:close.lnum == 0 || l:close.lnum > a:lnum
+      let l:result.math_post = strpart(a:line, l:cnum)
+      return s:strip(l:result)
+    else
+      let l:cnum = l:close.cnum-1
+      call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
+    endif
   endwhile
+endfunction
+
+" }}}1
+function! s:strip(result) " {{{1
+  let a:result.text
+        \ = substitute(a:result.text, '\\verb\(.\).\{}\1', '', 'g')
+  return a:result
 endfunction
 
 " }}}1
