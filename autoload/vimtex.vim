@@ -37,11 +37,7 @@ function! vimtex#init() " {{{1
   " First initialize buffer options and construct (if necessary) the vimtex
   " data blob.
   "
-  try
-    call s:init_buffer()
-  catch '^vimtex'
-    return
-  endtry
+  call s:init_buffer()
 
   "
   " Then we initialize the modules.  This is done in three steps:
@@ -284,6 +280,8 @@ function! s:init_buffer() " {{{1
   " Get main file number and check if data blob already exists
   let main = s:get_main()
   let id   = s:get_id(main)
+
+  " Create data blob
   if id >= 0
     " Link to existing blob
     let b:vimtex_id = id
@@ -365,7 +363,7 @@ function! s:init_mappings() " {{{1
   call s:map('v', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
-  if g:vimtex_latexmk_enabled
+  if get(g:, 'vimtex_latexmk_enabled', 0)
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile-toggle)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
     call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
@@ -379,7 +377,7 @@ function! s:init_mappings() " {{{1
     call s:map('n', '<localleader>lG', '<plug>(vimtex-status-all)')
   endif
 
-  if g:vimtex_motion_enabled
+  if get(g:, 'vimtex_motion_enabled', 0)
     call s:map('n', ']]', '<plug>(vimtex-]])')
     call s:map('n', '][', '<plug>(vimtex-][)')
     call s:map('n', '[]', '<plug>(vimtex-[])')
@@ -399,7 +397,7 @@ function! s:init_mappings() " {{{1
     call s:map('o', '%', '<plug>(vimtex-%)', 1)
   endif
 
-  if g:vimtex_text_obj_enabled
+  if get(g:, 'vimtex_text_obj_enabled', 0)
     call s:map('x', 'ic', '<plug>(vimtex-ic)')
     call s:map('x', 'ac', '<plug>(vimtex-ac)')
     call s:map('o', 'ic', '<plug>(vimtex-ic)')
@@ -418,24 +416,24 @@ function! s:init_mappings() " {{{1
     call s:map('o', 'a$', '<plug>(vimtex-a$)')
   endif
 
-  if g:vimtex_toc_enabled
+  if get(g:, 'vimtex_toc_enabled', 0)
     call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
     call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
   endif
 
-  if g:vimtex_labels_enabled
+  if get(g:, 'vimtex_labels_enabled', 0)
     call s:map('n', '<localleader>ly', '<plug>(vimtex-labels-open)')
     call s:map('n', '<localleader>lY', '<plug>(vimtex-labels-toggle)')
   endif
 
-  if g:vimtex_view_enabled
+  if get(g:, 'vimtex_view_enabled', 0)
     call s:map('n', '<localleader>lv', '<plug>(vimtex-view)')
     if has_key(b:vimtex.viewer, 'reverse_search')
       call s:map('n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
     endif
   endif
 
-  if g:vimtex_imaps_enabled
+  if get(g:, 'vimtex_imaps_enabled', 0)
     call s:map('n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
   endif
 endfunction
@@ -443,6 +441,8 @@ endfunction
 " }}}1
 function! s:init_modules(initmode) " {{{1
   for module in s:modules
+    if index(get(s:, 'disabled_modules', []), module) >= 0 | continue | endif
+
     try
       execute 'call vimtex#' . module . '#init_' . a:initmode . '()'
     catch /E117.*#init_/
@@ -549,7 +549,8 @@ function! s:get_main() " {{{1
     if id >= 0
       return g:vimtex_data[id].tex
     else
-      throw 'vimtex: not valid tex file'
+      let s:disabled_modules = ['latexmk', 'view']
+      return expand('%:p')
     endif
   endif
 
@@ -720,7 +721,7 @@ endfunction
 " }}}1
 function! s:get_ext(ext, ...) dict " {{{1
   " First check build dir (latexmk -output_directory option)
-  if g:vimtex_latexmk_build_dir !=# ''
+  if get(g:, 'vimtex_latexmk_build_dir', '') !=# ''
     let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
     if g:vimtex_latexmk_build_dir[0] !=# '/'
       let cand = self.root . '/' . cand
