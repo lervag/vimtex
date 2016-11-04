@@ -766,6 +766,11 @@ function! s:filename_changed_post() " {{{1
       call vimtex#latexmk#stop()
     endif
 
+    " Update viewer output file names
+    if exists('b:vimtex.viewer.out')
+      call vimtex#view#common#use_temp_files_p(b:vimtex.viewer)
+    endif
+
     call vimtex#echo#status(message)
   endif
 endfunction
