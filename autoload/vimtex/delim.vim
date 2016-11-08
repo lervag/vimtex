@@ -227,7 +227,8 @@ function! vimtex#delim#close() " {{{1
 
   let l:lnum = l:save_pos[1] + 1
   while l:lnum > 1
-    let l:open  = vimtex#delim#get_prev('all', 'open')
+    let l:open  = vimtex#delim#get_prev('all', 'open',
+          \ { 'syn_exclude' : 'texComment' })
     if empty(l:open) || get(l:open, 'name', '') ==# 'document'
       break
     endif
@@ -364,30 +365,30 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#get_next(type, side) " {{{1
-  return s:get_delim({
+function! vimtex#delim#get_next(type, side, ...) " {{{1
+  return s:get_delim(extend({
         \ 'direction' : 'next',
         \ 'type' : a:type,
         \ 'side' : a:side,
-        \})
+        \}, get(a:, '1', {})))
 endfunction
 
 " }}}1
-function! vimtex#delim#get_prev(type, side) " {{{1
-  return s:get_delim({
+function! vimtex#delim#get_prev(type, side, ...) " {{{1
+  return s:get_delim(extend({
         \ 'direction' : 'prev',
         \ 'type' : a:type,
         \ 'side' : a:side,
-        \})
+        \}, get(a:, '1', {})))
 endfunction
 
 " }}}1
-function! vimtex#delim#get_current(type, side) " {{{1
-  return s:get_delim({
+function! vimtex#delim#get_current(type, side, ...) " {{{1
+  return s:get_delim(extend({
         \ 'direction' : 'current',
         \ 'type' : a:type,
         \ 'side' : a:side,
-        \})
+        \}, get(a:, '1', {})))
 endfunction
 
 " }}}1
@@ -475,6 +476,7 @@ function! s:get_delim(opts) " {{{1
   "     'side'        :  open
   "                      close
   "                      both
+  "     'syn_exclude' :  Don't match in given syntax
   "  }
   "
   " Returns:
@@ -492,12 +494,26 @@ function! s:get_delim(opts) " {{{1
   "     }
   "   }
   "
+  let l:save_pos = getpos('.')
   let l:re = s:re[a:opts.type][a:opts.side]
-  let [l:lnum, l:cnum] = a:opts.direction ==# 'next'
-        \ ? searchpos(l:re, 'cnW', line('.') + s:stopline)
-        \ : a:opts.direction ==# 'prev'
-        \   ? searchpos(l:re, 'bcnW', max([line('.') - s:stopline, 1]))
-        \   : searchpos(l:re, 'bcnW', line('.'))
+  while 1
+    let [l:lnum, l:cnum] = a:opts.direction ==# 'next'
+          \ ? searchpos(l:re, 'cnW', line('.') + s:stopline)
+          \ : a:opts.direction ==# 'prev'
+          \   ? searchpos(l:re, 'bcnW', max([line('.') - s:stopline, 1]))
+          \   : searchpos(l:re, 'bcnW', line('.'))
+    if l:lnum == 0 | break | endif
+
+    if has_key(a:opts, 'syn_exclude')
+          \ && vimtex#util#in_syntax(a:opts.syn_exclude, l:lnum, l:cnum)
+      call setpos('.', s:pos_prev(l:lnum, l:cnum))
+      continue
+    endif
+
+    break
+  endwhile
+  call setpos('.', l:save_pos)
+
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
   if a:opts.direction ==# 'current'
