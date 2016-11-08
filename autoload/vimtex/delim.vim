@@ -365,17 +365,29 @@ endfunction
 " }}}1
 
 function! vimtex#delim#get_next(type, side) " {{{1
-  return s:get_delim('next', a:type, a:side)
+  return s:get_delim({
+        \ 'direction' : 'next',
+        \ 'type' : a:type,
+        \ 'side' : a:side,
+        \})
 endfunction
 
 " }}}1
 function! vimtex#delim#get_prev(type, side) " {{{1
-  return s:get_delim('prev', a:type, a:side)
+  return s:get_delim({
+        \ 'direction' : 'prev',
+        \ 'type' : a:type,
+        \ 'side' : a:side,
+        \})
 endfunction
 
 " }}}1
 function! vimtex#delim#get_current(type, side) " {{{1
-  return s:get_delim('current', a:type, a:side)
+  return s:get_delim({
+        \ 'direction' : 'current',
+        \ 'type' : a:type,
+        \ 'side' : a:side,
+        \})
 endfunction
 
 " }}}1
@@ -446,22 +458,24 @@ endfunction
 
 " }}}1
 
-function! s:get_delim(direction, type, side) " {{{1
+function! s:get_delim(opts) " {{{1
   "
   " Arguments:
-  "   direction      next
-  "                  prev
-  "                  current
-  "   type           env
-  "                  env_math
-  "                  env_all
-  "                  delim_tex
-  "                  delim_math
-  "                  delim_all
-  "                  all
-  "   side           open
-  "                  close
-  "                  both
+  "   opts = {
+  "     'direction'   :  next
+  "                      prev
+  "                      current
+  "     'type'        :  env
+  "                      env_math
+  "                      env_all
+  "                      delim_tex
+  "                      delim_math
+  "                      delim_all
+  "                      all
+  "     'side'        :  open
+  "                      close
+  "                      both
+  "  }
   "
   " Returns:
   "   delim = {
@@ -478,15 +492,15 @@ function! s:get_delim(direction, type, side) " {{{1
   "     }
   "   }
   "
-  let l:re = s:re[a:type][a:side]
-  let [l:lnum, l:cnum] = a:direction ==# 'next'
+  let l:re = s:re[a:opts.type][a:opts.side]
+  let [l:lnum, l:cnum] = a:opts.direction ==# 'next'
         \ ? searchpos(l:re, 'cnW', line('.') + s:stopline)
-        \ : a:direction ==# 'prev'
+        \ : a:opts.direction ==# 'prev'
         \   ? searchpos(l:re, 'bcnW', max([line('.') - s:stopline, 1]))
         \   : searchpos(l:re, 'bcnW', line('.'))
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
-  if a:direction ==# 'current'
+  if a:opts.direction ==# 'current'
         \ && l:cnum + strlen(l:match) + (mode() ==# 'i' ? 1 : 0) <= col('.')
     let l:match = ''
     let l:lnum = 0
@@ -504,7 +518,7 @@ function! s:get_delim(direction, type, side) " {{{1
     if l:match =~# '^' . l:type.re
       let l:result = extend(
             \ l:type.parser(l:match, l:lnum, l:cnum,
-            \               a:side, a:type, a:direction),
+            \               a:opts.side, a:opts.type, a:opts.direction),
             \ l:result, 'keep')
       break
     endif
@@ -587,7 +601,11 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
           \ : s:pos_prev(a:lnum, a:cnum))
 
     " Get new result
-    let result = s:get_delim(a:direction, a:type, a:side)
+    let result = s:get_delim({
+          \ 'direction' : a:direction,
+          \ 'type' : a:type,
+          \ 'side' : a:side,
+          \})
 
     " Restore the cursor
     call setpos('.', l:save_pos)
