@@ -681,8 +681,7 @@ function! s:file_reaches_current(file) " {{{1
 
   for l:line in readfile(a:file)
     let l:file = matchstr(l:line,
-          \ '\v\\%(input|include|subimport\{[^\}]*\})\s*\{\zs'
-          \ . '((.*)\/)?[a-zA-Z._-]+')
+          \ '\v\\%(input|include|subimport\{[^\}]*\})\s*\{\zs\f+')
     if empty(l:file) | continue | endif
 
     if l:file[0] !=# '/'
