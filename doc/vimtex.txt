@@ -132,6 +132,9 @@ Feature overview~
 Requirements~
                                                           *vimtex-requirements*
 
+The following is a list of specific requirements for the key features of
+|vimtex|:
+
   `latexmk`  http://users.phys.psu.edu/~collins/software/latexmk-jcc
     |vimtex| uses `latexmk` to compile the LaTeX document.  `latexmk` is "a perl
     script for running LaTeX the correct number of times to resolve cross
@@ -2143,7 +2146,13 @@ A: This is not a feature provided by |vimtex| itself. Similar to
    [0]: https://github.com/lervag/vimtex/issues/564
 
 ==============================================================================
-Troubleshooting                                       *vimtex-troubleshooting*
+TROUBLESHOOTING                                       *vimtex-troubleshooting*
+
+Here are some pitfalls that one may experience if one of these assumptions are
+broken:
+
+- Completion may not work properly for exotic file encodings, such as for
+  UTF-16LE (see https://github.com/lervag/vimtex/issues/615)
 
 With different operating systems and different plugin configurations, there
 are a few things that must be considered for system interoperability. A number
