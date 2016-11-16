@@ -60,7 +60,7 @@ function! vimtex#fold#init_script() " {{{1
   for l:type in ['single', 'single_opt', 'multi']
     let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
     if !empty(l:cmds)
-      call add(l:cmds_all, l:cmds)
+      call extend(l:cmds_all, l:cmds)
       call add(s:cmd_types, s:cmd_{l:type}(l:cmds))
     endif
   endfor
