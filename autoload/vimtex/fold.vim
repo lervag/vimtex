@@ -72,6 +72,7 @@ function! vimtex#fold#init_script() " {{{1
   let s:folded .= ' ^\s*\%'
   let s:folded .= '|^\s*\]\{'
   let s:folded .= '|^\s*}\s*$'
+  let s:folded .= '|^\s*\% Fake'
   let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
   let s:folded .= '|\\%(' . join([
         \   'begin',
