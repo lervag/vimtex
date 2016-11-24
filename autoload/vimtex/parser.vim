@@ -120,6 +120,7 @@ endfunction
 function! s:input_line_parser_tex(line, file, re) " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
+  let l:subimport = 0
 
   " Handle import package commands
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
@@ -128,8 +129,10 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
           \ a:file,
           \ '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
-
     let l:file = substitute(l:file, '}\s*{', '', 'g')
+
+    " Handle relative paths
+    let l:subimport = l:file =~# '\v\\sub%(import|%(input|include)from)'
   endif
 
   " Parse file name
@@ -146,7 +149,7 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
 
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = b:vimtex.root . '/' . l:file
+    let l:file = (l:subimport ? fnamemodify(a:file, ':h') : b:vimtex.root) . '/' . l:file
   endif
 
   " Only return filename if it is readable
