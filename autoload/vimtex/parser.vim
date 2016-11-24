@@ -120,19 +120,20 @@ endfunction
 function! s:input_line_parser_tex(line, file, re) " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
-  let l:subimport = 0
 
   " Handle import package commands
+  let l:subimport = 0
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
     let l:candidate = s:input_line_parser_tex(
           \ substitute(l:file, '\\\w*\s*{[^{}]*}\s*', '', ''),
           \ a:file,
           \ '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
-    let l:file = substitute(l:file, '}\s*{', '', 'g')
 
     " Handle relative paths
     let l:subimport = l:file =~# '\v\\sub%(import|%(input|include)from)'
+
+    let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif
 
   " Parse file name
