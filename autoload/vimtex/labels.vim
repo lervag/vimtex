@@ -9,21 +9,6 @@ function! vimtex#labels#init_options() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#labels#init_script() " {{{1
-  call vimtex#util#set_highlight('VimtexLabelsHelp', 'helpVim')
-  call vimtex#util#set_highlight('VimtexLabelsLine', 'Todo')
-  call vimtex#util#set_highlight('VimtexLabelsChap', 'PreProc')
-  call vimtex#util#set_highlight('VimtexLabelsEq', 'Statement')
-  call vimtex#util#set_highlight('VimtexLabelsFig', 'Identifier')
-  call vimtex#util#set_highlight('VimtexLabelsSec', 'Type')
-  call vimtex#util#set_highlight('VimtexLabelsTab', 'String')
-
-  if !g:vimtex_labels_enabled | return | endif
-
-  let s:name = 'Table of labels (vimtex)'
-endfunction
-
-" }}}1
 function! vimtex#labels#init_buffer() " {{{1
   if !g:vimtex_labels_enabled | return | endif
 
@@ -131,6 +116,20 @@ function! s:index_syntax() dict " {{{1
   syntax match VimtexLabelsTab  /^tab:.*$/  contains=@Tex
   syntax match VimtexLabelsHelp /^.*: .*/
 endfunction
+
+" }}}1
+
+" {{{1 Script initialization
+
+let s:name = 'Table of labels (vimtex)'
+
+call vimtex#util#set_highlight('VimtexLabelsHelp', 'helpVim')
+call vimtex#util#set_highlight('VimtexLabelsLine', 'Todo')
+call vimtex#util#set_highlight('VimtexLabelsChap', 'PreProc')
+call vimtex#util#set_highlight('VimtexLabelsEq', 'Statement')
+call vimtex#util#set_highlight('VimtexLabelsFig', 'Identifier')
+call vimtex#util#set_highlight('VimtexLabelsSec', 'Type')
+call vimtex#util#set_highlight('VimtexLabelsTab', 'String')
 
 " }}}1
 
