@@ -76,7 +76,7 @@ function! vimtex#labels#get_entries(...) " {{{1
 
     if l:line =~# '\v\\label\{'
       call add(tac, {
-            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}?\s*$'),
+            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}'),
             \ 'file'  : l:file,
             \ 'line'  : l:lnum,
             \ })
