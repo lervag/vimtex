@@ -637,7 +637,7 @@ function! s:get_main_recurse(...) " {{{1
   "
   " Gather candidate files
   "
-  let l:path = expand('%:p:h')
+  let l:path = fnamemodify(l:file, ':p:h')
   let l:dirs = l:path
   while l:path != fnamemodify(l:path, ':h')
     let l:path = fnamemodify(l:path, ':h')
