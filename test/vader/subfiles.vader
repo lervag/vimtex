@@ -1,0 +1,14 @@
+Execute (Find correct main file from subfiles):
+  call system('main.tex')
+  call writefile([
+    \ '\documentclass[main.tex]{subfiles}',
+    \ '\begin{document}',
+    \ '\end{document}',
+    \], 'subfile.tex')
+  edit subfile.tex
+  AssertEqual 'main.tex', fnamemodify(b:vimtex.tex, ':t')
+  bdelete!
+
+Execute (Clean up):
+  call system('rm -f main.tex subfile.tex')
+
