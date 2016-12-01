@@ -1,5 +1,11 @@
 Execute (Find correct main file from subfiles):
-  call system('main.tex')
+  call writefile([
+    \ '\documentclass{article}',
+    \ '\usepackage{subfiles}',
+    \ '\begin{document}',
+    \ '\end{document}',
+    \ '\subfile{test.tex}',
+    \], 'main.tex')
   call writefile([
     \ '\documentclass[main.tex]{subfiles}',
     \ '\begin{document}',
