@@ -667,12 +667,16 @@ endfunction
 
 " }}}1
 function! s:file_is_main(file) " {{{1
+  if !filereadable(a:file) | return 0 | endif
+
   "
-  " Check if a:file is a main file
+  " Check if a:file is a main file by looking for the \documentclass command,
+  " but ignore \documentclass[...]{subfiles}
   "
-  return filereadable(a:file)
-        \ && len(filter(readfile(a:file, 0, 50),
-        \               'v:val =~# ''\C\\documentclass\_\s*[\[{]''')) > 0
+  let l:lines = readfile(a:file, 0, 50)
+  call filter(l:lines, 'v:val !~# ''{subfiles}''')
+  call filter(l:lines, 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')
+  return len(l:lines) > 0
 endfunction
 
 " }}}1
