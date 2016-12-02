@@ -29,6 +29,7 @@ endfunction
 " Define tex and aux parsers
 "
 function! vimtex#parser#tex(file, ...) " {{{1
+  let s:prev_parsed = ''
   return s:parser(a:file, extend({
         \   'detailed' : 1,
         \   'input_re' : s:input_line_tex,
@@ -39,6 +40,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
+  let s:prev_parsed = ''
   return s:parser(a:file, extend({
         \   'detailed' : 0,
         \   'input_re' : s:input_line_aux,
@@ -78,9 +80,10 @@ endfunction
 " Define the main parser function
 "
 function! s:parser(file, opts) " {{{1
-  if !filereadable(a:file)
+  if !filereadable(a:file) || s:prev_parsed ==# a:file
     return []
   endif
+  let s:prev_parsed = a:file
 
   let l:parsed = []
   let l:lnum = 0
