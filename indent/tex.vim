@@ -12,6 +12,11 @@ let b:did_vimtex_indent = 1
 
 call vimtex#util#set_default('g:vimtex_indent_enabled', 1)
 if !g:vimtex_indent_enabled | finish | endif
+call vimtex#util#set_default('g:vimtex_indent_verbatim_envs', [
+      \ 'verbatim',
+      \ 'lstlisting',
+      \ 'minted',
+      \])
 
 let s:cpo_save = &cpo
 set cpo&vim
@@ -76,10 +81,14 @@ endfunction
 
 " }}}1
 function! s:is_verbatim(line, lnum) " {{{1
-  let l:env = a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
+  let l:env = a:line !~# s:is_verbatim_regex
   let l:syn = synIDattr(synID(a:lnum, 1, 1), 'name') ==# 'texZone'
   return l:env && l:syn
 endfunction
+
+let s:is_verbatim_regex = '\v\\%(begin|end)\{%('
+      \ . join(g:vimtex_indent_verbatim_envs, '|')
+      \ . ')'
 
 " }}}1
 

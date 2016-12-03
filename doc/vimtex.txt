@@ -584,6 +584,12 @@ Options~
 
   Default value: 1
 
+*g:vimtex_indent_verbatim_envs*
+  Use this option to set a list of verbatim environments in which there should
+  be no automatic indentation.
+
+  Default value: ['verbatim', 'lstlisting', 'minted']
+
 *g:vimtex_index_hide_line_numbers*
   If enabled, then line numbers will be hidden in the index windows.  That is,
   |nonumber| and |norelativenumber| will be set locally.
