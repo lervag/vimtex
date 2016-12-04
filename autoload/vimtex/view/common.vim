@@ -4,25 +4,18 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#view#common#apply_common_template(viewer) " {{{1
+  call extend(a:viewer, deepcopy(s:common_template))
+  call a:viewer.refresh_paths()
+  return a:viewer
+endfunction
+
+" }}}1
 function! vimtex#view#common#apply_xwin_template(class, viewer) " {{{1
   let a:viewer.class = a:class
   let a:viewer.xwin_id = 0
   call extend(a:viewer, deepcopy(s:xwin_template))
   call a:viewer.xwin_exists()
-  return a:viewer
-endfunction
-
-" }}}1
-function! vimtex#view#common#use_temp_files_p(viewer) " {{{1
-  if g:vimtex_view_use_temp_files
-    let a:viewer.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-    let a:viewer.synctex = fnamemodify(a:viewer.out, ':r') . '.synctex.gz'
-    let a:viewer.copy_files = function('s:copy_files')
-  else
-    let a:viewer.out = b:vimtex.out(1)
-    let a:viewer.synctex = fnamemodify(a:viewer.out, ':r') . '.synctex.gz'
-  endif
-
   return a:viewer
 endfunction
 
@@ -33,6 +26,40 @@ function! vimtex#view#common#not_readable(output) " {{{1
     return 1
   else
     return 0
+  endif
+endfunction
+
+" }}}1
+
+let s:common_template = {}
+
+function! s:common_template.refresh_paths() dict " {{{1
+  if g:vimtex_view_use_temp_files
+    let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+  else
+    let self.out = b:vimtex.out(1)
+  endif
+
+  let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+endfunction
+
+" }}}1
+function! s:common_template.copy_files() dict " {{{1
+  if !g:vimtex_view_use_temp_files | return | endif
+
+  "
+  " Copy pdf file
+  "
+  if getftime(b:vimtex.out()) > getftime(self.out)
+    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+  endif
+
+  "
+  " Copy synctex file
+  "
+  let l:old = b:vimtex.ext('synctex.gz')
+  if getftime(l:old) > getftime(self.synctex)
+    call rename(l:old, self.synctex)
   endif
 endfunction
 
@@ -125,25 +152,6 @@ function! s:xwin_template.xwin_send_keys(keys) dict " {{{1
     let cmd  = 'xdotool key --window ' . self.xwin_id
     let cmd .= ' ' . a:keys
     silent call system(cmd)
-  endif
-endfunction
-
-" }}}1
-
-function! s:copy_files() dict " {{{1
-  "
-  " Copy pdf file
-  "
-  if getftime(b:vimtex.out()) > getftime(self.out)
-    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
-  endif
-
-  "
-  " Copy synctex file
-  "
-  let l:old = b:vimtex.ext('synctex.gz')
-  if getftime(l:old) > getftime(self.synctex)
-    call rename(l:old, self.synctex)
   endif
 endfunction
 

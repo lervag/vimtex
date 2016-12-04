@@ -30,7 +30,7 @@ function! vimtex#view#general#new() " {{{1
   "
   " Start from standard template
   "
-  let l:viewer = vimtex#view#common#use_temp_files_p(deepcopy(s:general))
+  let l:viewer = vimtex#view#common#apply_common_template(deepcopy(s:general))
 
   "
   " Add callback hook

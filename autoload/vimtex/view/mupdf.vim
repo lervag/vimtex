@@ -33,7 +33,7 @@ function! vimtex#view#mupdf#new() " {{{1
   " Use the xwin template
   "
   return vimtex#view#common#apply_xwin_template('MuPDF',
-        \ vimtex#view#common#use_temp_files_p(deepcopy(s:mupdf)))
+        \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
 endfunction
 
 " }}}1
