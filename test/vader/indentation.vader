@@ -185,7 +185,7 @@ Expect tex (Verify):
       not affect verbatim environments!
   \end{lstlisting}
 
-Given tex (Indent: Ampersands):
+Given tex (Indent: ampersands):
   \begin{tabular}{cc}
       \begin{tabular}{c}
           Cell 1
@@ -225,4 +225,34 @@ Expect tex (Verify):
         & 4 \\
     \end{aligned}
   \end{equation}
+
+Given tex (Indent: ignored environments):
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \begin{document}
+
+  \begin{proof}
+    This statement is false.
+  \end{proof}
+  \end{document}
+
+Execute (let g:vimtex_indent_ignored_envs = ...):
+  let g:vimtex_indent_ignored_envs = ['document', 'proof']
+
+Do (Indent):
+  gg=G
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \begin{document}
+
+  \begin{proof}
+  This statement is false.
+  \end{proof}
+  \end{document}
+
+Given:
+Execute (unlet g:vimtex_indent_ignored_envs):
+  unlet g:vimtex_indent_ignored_envs
 

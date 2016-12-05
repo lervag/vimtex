@@ -12,6 +12,9 @@ let b:did_vimtex_indent = 1
 
 call vimtex#util#set_default('g:vimtex_indent_enabled', 1)
 if !g:vimtex_indent_enabled | finish | endif
+call vimtex#util#set_default('g:vimtex_indent_ignored_envs', [
+      \ 'document',
+      \])
 
 let s:cpo_save = &cpo
 set cpo&vim
@@ -87,8 +90,8 @@ function! s:indent_envs(cur, prev) " {{{1
   let l:ind = 0
 
   " First for general environments
-  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# 'document'))
-  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# 'document'))
+  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignored))
+  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignored))
 
   " Indentation for prolonged items in lists
   let l:ind += &sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
@@ -98,6 +101,7 @@ function! s:indent_envs(cur, prev) " {{{1
   return l:ind
 endfunction
 
+let s:envs_ignored = '\v' . join(g:vimtex_indent_ignored_envs, '|')
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_item = '^\s*\\item'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'

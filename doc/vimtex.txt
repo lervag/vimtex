@@ -590,6 +590,11 @@ Options~
 
   Default value: 1
 
+*g:vimtex_indent_ignored_envs*
+  List of environments that should not add/reduce indentation.
+
+  Default value: ['document']
+
 *g:vimtex_index_resize*
   Whether or not to automatically resize vim when index windows are opened.
 
