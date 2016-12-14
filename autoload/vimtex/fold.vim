@@ -443,20 +443,18 @@ function! s:cmd_multi(cmds) " {{{1
 
   let l:fold = {}
   let l:fold.re = {
-        \ 'start' : l:re,
+        \ 'start' : l:re . '.*(\{|\[)\s*(\%.*)?$',
         \ 'end' : '^\s*}\s*$',
         \ 'text' : l:re . '\{[^}]*\}'
         \}
 
   function! l:fold.level(line, lnum) dict
     if a:line =~# self.re.start
-          \ && indent(a:lnum+1) > indent(a:lnum)
-      let self.indent = indent(a:lnum)
+      let self.opened = 1
       return 'a1'
-    elseif has_key(self, 'indent')
+    elseif has_key(self, 'opened')
           \ && a:line =~# self.re.end
-          \ && indent(a:lnum) == self.indent
-      unlet self.indent
+      unlet self.opened
       return 's1'
     endif
     return ''

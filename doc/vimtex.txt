@@ -498,10 +498,7 @@ Options~
   `single_opt`    Useful for commands that open with a single long optional
                 argument, then a short "real" argument.
   `multi`         Useful for commands that start with a short regular argument
-                and continue with long optional and/or regular arguments. In
-                order for the folding to work as expected, this style depends
-                on the indentation to be correct. See the example below for
-                how to properly format the folded regions.
+                and continue with long optional and/or regular arguments.
 
   The option combines the contents of |g:vimtex_fold_commands| and
   |g:vimtex_fold_commands_default|. Entries in the former will have higher
