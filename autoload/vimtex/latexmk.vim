@@ -359,6 +359,9 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   let s:qf_main = b:vimtex.tex
   let s:qf_root = b:vimtex.root
 
+  " Store winnr of current window in order to jump back later
+  let winnr = winnr()
+
   if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
   else
@@ -386,7 +389,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   if s:open_quickfix_window
     botright cwindow
     if g:vimtex_quickfix_mode == 2
-      wincmd p
+      execute winnr . 'wincmd p'
     endif
     redraw
   endif
