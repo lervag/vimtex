@@ -244,7 +244,8 @@ endfunction
 let s:ref = {
       \ 'patterns' : [
       \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
-      \   '\\hyperref\s*\[[^]]*$'
+      \   '\\hyperref\s*\[[^]]*$',
+      \   '\\subref\*\?{[^}]*$',
       \ ],
       \ 'cache' : {},
       \ 'labels' : [],
