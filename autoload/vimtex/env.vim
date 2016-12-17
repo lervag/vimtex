@@ -119,7 +119,7 @@ endfunction
 
 function! vimtex#env#is_inside(env) " {{{1
   return searchpair('\\begin\s*{' . a:env . '\*\?}', '',
-        \ '\\end\s*{' . a:env . '\*\?}', 'bnWm')
+        \ '\\end\s*{' . a:env . '\*\?}', 'bnW')
 endfunction
 
 " }}}1

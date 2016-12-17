@@ -130,6 +130,15 @@ Given tex (Indent: tikz):
     \draw [solid] let \p{O} = (outerContactHead)
       in (outerContactHead) -- (\x{O},-2.5)
         node [yshift=-.25cm] {(ii)};
+
+  \begin{axis}
+    \addplot
+      table[row sep=crcr]{%
+        0       0\\
+        1       1\\
+        2       2\\
+      };
+    \end{axis}
        \end{tikzpicture}
 
 Do (Indent):
@@ -156,6 +165,15 @@ Expect tex (Verify):
     \draw [solid] let \p{O} = (outerContactHead)
       in (outerContactHead) -- (\x{O},-2.5)
       node [yshift=-.25cm] {(ii)};
+
+    \begin{axis}
+      \addplot
+        table[row sep=crcr]{%
+          0       0\\
+          1       1\\
+          2       2\\
+        };
+    \end{axis}
   \end{tikzpicture}
 
 Given tex (Indent: verbatims):

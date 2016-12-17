@@ -137,7 +137,8 @@ let s:re_delims = vimtex#delim#get_delim_regexes()
 
 " }}}1
 function! s:indent_tikz(lnum, prev) " {{{1
-  if vimtex#env#is_inside('tikzpicture')
+  let l:env_lnum = vimtex#env#is_inside('tikzpicture')
+  if l:env_lnum > 0 && l:env_lnum < a:lnum
     let l:prev_starts = a:prev =~# s:tikz_commands
     let l:prev_stops  = a:prev =~# ';\s*$'
 
@@ -148,7 +149,7 @@ function! s:indent_tikz(lnum, prev) " {{{1
 
     " Decrease indent on tikz command end, i.e. on semicolon
     if ! l:prev_starts && l:prev_stops
-      let l:context = join(getline(max([1,a:lnum-4]), a:lnum-1), '')
+      let l:context = join(getline(l:env_lnum, a:lnum-1), '')
       return -&sw*(l:context =~# s:tikz_commands)
     endif
   endif
