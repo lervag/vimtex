@@ -4,12 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if !exists('b:current_syntax')
-  let b:current_syntax = 'tex'
-elseif b:current_syntax !=# 'tex'
-  echoerr 'vimtex syntax error: please report issue!'
-  finish
-endif
+if exists('b:current_syntax') | finish | endif
+let b:current_syntax = 'tex'
 
 " Perform spell checking when there is no syntax
 " - This will enable spell checking e.g. in toplevel of included files
