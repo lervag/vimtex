@@ -9,6 +9,7 @@ function! vimtex#motion#init_options() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
+  call vimtex#util#set_default('g:vimtex_motion_incomments', 0)
 endfunction
 
 " }}}1
@@ -92,7 +93,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
     normal! gv
   endif
 
-  if vimtex#util#in_comment() | return | endif
+  if !g:vimtex_motion_incomments && vimtex#util#in_comment() | return | endif
 
   let delim = vimtex#delim#get_current('all', 'both')
   if empty(delim)
