@@ -22,20 +22,20 @@ syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
 " {{{1 Italic font, bold font and conceals
 
 if get(g:, 'tex_fast', 'b') =~# 'b'
-  let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
+  let s:conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
         \ ? 'concealends' : ''
 
-  for [style, group, commands] in [
+  for [s:style, s:group, s:commands] in [
         \ ['texItalStyle', 'texItalGroup', ['emph', 'textit']],
         \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
         \]
-    for cmd in commands
-      execute 'syntax region' style 'matchgroup=texTypeStyle'
-            \ 'start="\\' . cmd . '\s*{" end="}"'
-            \ 'contains=@Spell,@' . group
-            \ conceal
+    for s:cmd in s:commands
+      execute 'syntax region' s:style 'matchgroup=texTypeStyle'
+            \ 'start="\\' . s:cmd . '\s*{" end="}"'
+            \ 'contains=@Spell,@' . s:group
+            \ s:conceal
     endfor
-    execute 'syntax cluster texMatchGroup add=' . style
+    execute 'syntax cluster texMatchGroup add=' . s:style
   endfor
 endif
 
@@ -205,45 +205,45 @@ syntax region texZone
       \ contains=texMinted
 
 " Next add nested syntax support for desired languages
-for entry in get(g:, 'vimtex_syntax_minted', [])
-  let lang = entry.lang
-  let syntax = get(entry, 'syntax', lang)
+for s:entry in get(g:, 'vimtex_syntax_minted', [])
+  let s:lang = s:entry.lang
+  let s:syntax = get(s:entry, 'syntax', s:lang)
 
   unlet b:current_syntax
-  execute 'syntax include @' . toupper(lang) 'syntax/' . syntax . '.vim'
+  execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
 
-  if has_key(entry, 'ignore')
-    execute 'syntax cluster' toupper(lang)
-          \ 'remove=' . join(entry.ignore, ',')
+  if has_key(s:entry, 'ignore')
+    execute 'syntax cluster' toupper(s:lang)
+          \ 'remove=' . join(s:entry.ignore, ',')
   endif
 
   execute 'syntax region texZone'
-        \ 'start="\\begin{minted}\_[^}]\{-}{' . lang . '}"rs=s'
+        \ 'start="\\begin{minted}\_[^}]\{-}{' . s:lang . '}"rs=s'
         \ 'end="\\end{minted}"re=e'
         \ 'keepend'
         \ 'transparent'
-        \ 'contains=texMinted,@' . toupper(lang)
+        \ 'contains=texMinted,@' . toupper(s:lang)
 
   "
   " Support for custom environment names
   "
-  for env in get(entry, 'environments', [])
+  for s:env in get(s:entry, 'environments', [])
     execute 'syntax region texZone'
-          \ 'start="\\begin{' . env . '}"rs=s'
-          \ 'end="\\end{' . env . '}"re=e'
+          \ 'start="\\begin{' . s:env . '}"rs=s'
+          \ 'end="\\end{' . s:env . '}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texBeginEnd,@' . toupper(lang)
+          \ 'contains=texBeginEnd,@' . toupper(s:lang)
 
     " Match starred environments with options
     execute 'syntax region texZone'
-          \ 'start="\\begin{' . env . '\*}\s*{\_.\{-}}"rs=s'
-          \ 'end="\\end{' . env . '\*}"re=e'
+          \ 'start="\\begin{' . s:env . '\*}\s*{\_.\{-}}"rs=s'
+          \ 'end="\\end{' . s:env . '\*}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(lang)
+          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(s:lang)
     execute 'syntax match texMintedStarred'
-          \ '"\\begin{' . env . '\*}\s*{\_.\{-}}"'
+          \ '"\\begin{' . s:env . '\*}\s*{\_.\{-}}"'
           \ 'contains=texBeginEnd,texDelimiter'
   endfor
 endfor
