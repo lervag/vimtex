@@ -688,6 +688,11 @@ Options~
 
   Default value: 1
 
+*g:vimtex_motion_incomments*
+  Enable the use of % to move between 'matchpairs' inside comments.
+
+  Default value: 1
+
 *g:vimtex_latexmk_enabled*
   Use this option to disable/enable the `latexmk` interface |vimtex-latexmk|.
 
