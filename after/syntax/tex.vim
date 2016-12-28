@@ -64,48 +64,42 @@ highlight link texHyperref     texRefZone
 " }}}1
 " {{{1 Improve support for cite commands
 if get(g:, 'tex_fast', 'r') =~# 'r'
-  "
-  " biblatex
-  "
-  execute 'syntax match texStatement /\v\\%(' . join([
-        \   '[Cc]iteauthor\*?',
-        \   '[Cc]ite%(title|year|date)?\*?',
-        \   'citeurl',
-        \   '[Pp]arencite\*?',
-        \   'foot%(full)?cite%(text)?',
-        \   'fullcite',
-        \   '[Tt]extcite',
-        \   '[Ss]martcite',
-        \   'supercite',
-        \   '[Aa]utocite\*?',
-        \   '[Ppf]?[Nn]otecite'], '|') . ')/'
-        \ 'nextgroup=texRefOption,texCite'
 
-  execute 'syntax match texStatement /\v\\%(' . join([
-        \   '[Cc]ites',
-        \   '[Pp]arencites',
-        \   'footcite%(s|texts)',
-        \   '[Tt]extcites',
-        \   '[Ss]martcites',
-        \   'supercites',
-        \   '[Aa]utocites'], '|') . ')/'
-        \ 'nextgroup=texRefOptions,texCites'
+  for s:pattern in [
+        \ 'cite[pt]\*?',
+        \ 'citeal[tp]\*?',
+        \ 'cite(num|text|url)',
+        \ '[Cc]ite%(title|author|year(par)?|date)\*?',
+        \ '[Pp]arencite\*?',
+        \ 'foot%(full)?cite%(text)?',
+        \ 'fullcite',
+        \ '[Tt]extcite',
+        \ '[Ss]martcite',
+        \ 'supercite',
+        \ '[Aa]utocite\*?',
+        \ '[Ppf]?[Nn]otecite',
+        \]
+    execute 'syntax match texStatement'
+          \ '/\v\\' . s:pattern . '\ze\s*\{/'
+          \ 'nextgroup=texRefOption,texCite'
+  endfor
 
-  execute 'syntax match texStatement /\\[pPfFsStTaA]\?[Vv]olcites\?/'
-        \ 'nextgroup=texRefOptions,texCites'
+  for s:pattern in [
+        \ '[Cc]ites',
+        \ '[Pp]arencites',
+        \ 'footcite%(s|texts)',
+        \ '[Tt]extcites',
+        \ '[Ss]martcites',
+        \ 'supercites',
+        \ '[Aa]utocites',
+        \ '[pPfFsStTaA]?[Vv]olcites?',
+        \ 'cite%(field|list|name)',
+        \]
+    execute 'syntax match texStatement'
+          \ '/\v\\' . s:pattern . '\ze\s*\{/'
+          \ 'nextgroup=texRefOptions,texCites'
+  endfor
 
-  execute 'syntax match texStatement /\\cite\%(field\|list\|name\)/'
-        \ 'nextgroup=texRefOptions,texCites'
-
-  "
-  " natbib
-  "
-  syntax match texStatement '\\cite\%([tp]\*\?\)\?'
-        \ nextgroup=texRefOption,texCite
-
-  "
-  " Common
-  "
   syntax region texRefOptions contained matchgroup=Delimiter
         \ start='\[' end=']'
         \ contains=@texRefGroup,texRefZone
