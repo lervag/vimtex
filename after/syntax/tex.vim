@@ -66,7 +66,8 @@ highlight link texHyperref     texRefZone
 if get(g:, 'tex_fast', 'r') =~# 'r'
 
   for s:pattern in [
-        \ 'cite[pt]\*?',
+        \ 'bibentry',
+        \ 'cite[pt]?\*?',
         \ 'citeal[tp]\*?',
         \ 'cite(num|text|url)',
         \ '[Cc]ite%(title|author|year(par)?|date)\*?',
