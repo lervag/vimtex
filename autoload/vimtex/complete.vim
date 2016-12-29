@@ -76,9 +76,12 @@ endfunction
 " {{{1 Bibtex
 
 let s:bib = {
-      \ 'patterns' : ['\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
+      \ 'patterns' : [
+      \   '\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$',
+      \   '\v\\bibentry\s*\{[^}]*$',
+      \  ],
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-      \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+      \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
       \ 'type_length' : 0,
       \ 'bstfile' :  expand('<sfile>:p:h') . '/vimcomplete',
@@ -231,7 +234,8 @@ function! s:bib.find_bibs() dict " {{{2
 
   let l:bibfiles = []
   for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
-        \            'matchstr(v:val, ' . self.bibs . ')')
+        \ 'matchstr(v:val, ' . self.bibs . ')')
+    let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
     let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
