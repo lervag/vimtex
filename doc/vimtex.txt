@@ -581,16 +581,16 @@ Options~
 
   Default value: 1
 
+*g:vimtex_indent_ignored_envs*
+  List of environments that should not add/reduce indentation.
+
+  Default value: ['document']
+
 *g:vimtex_index_hide_line_numbers*
   If enabled, then line numbers will be hidden in the index windows.  That is,
   |nonumber| and |norelativenumber| will be set locally.
 
   Default value: 1
-
-*g:vimtex_indent_ignored_envs*
-  List of environments that should not add/reduce indentation.
-
-  Default value: ['document']
 
 *g:vimtex_index_resize*
   Whether or not to automatically resize vim when index windows are opened.
@@ -1762,6 +1762,7 @@ for bibliography files (`.bib` files).
 Associated settings:
     |g:vimtex_indent_enabled|
     |g:vimtex_indent_bib_enabled|
+    |g:vimtex_indent_ignored_envs|
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
