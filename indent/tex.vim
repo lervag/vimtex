@@ -38,7 +38,8 @@ function! VimtexIndent(lnum) " {{{1
   endif
 
   " Align on ampersands
-  if l:line =~# '^\s*&' && l:prev_line =~# '\\\@<!&.*'
+  if get(g:, 'vimtex_indent_on_ampersands', 1)
+        \ && l:line =~# '^\s*&' && l:prev_line =~# '\\\@<!&.*'
     return indent(a:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
   endif
 

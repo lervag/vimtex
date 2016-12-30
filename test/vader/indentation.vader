@@ -244,6 +244,34 @@ Expect tex (Verify):
     \end{aligned}
   \end{equation}
 
+Given:
+Execute (let g:vimtex_indent_on_ampersands = 0):
+  let g:vimtex_indent_on_ampersands = 0
+
+Given tex (Indent: ampersands 2):
+  \begin{equation}
+      \begin{aligned}
+          1 &
+          & 2 \\
+          3 &
+          & 4 \\
+      \end{aligned}
+  \end{equation}
+
+
+Do (Indent):
+  gg=G
+
+Expect tex (Verify):
+  \begin{equation}
+    \begin{aligned}
+      1 &
+      & 2 \\
+      3 &
+      & 4 \\
+    \end{aligned}
+  \end{equation}
+
 Given tex (Indent: ignored environments):
   \documentclass{minimal}
   \usepackage{amsmath}
@@ -273,4 +301,5 @@ Expect tex (Verify):
 Given:
 Execute (unlet g:vimtex_indent_ignored_envs):
   unlet g:vimtex_indent_ignored_envs
+  unlet g:vimtex_indent_on_ampersands
 

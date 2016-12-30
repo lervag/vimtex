@@ -586,6 +586,13 @@ Options~
 
   Default value: ['document']
 
+*g:vimtex_indent_on_ampersands*
+  By default, vimtex will align on ampersands e.g. in math aligned
+  environments or in tabular environments. If this feature is not wanted it
+  may be disabled through this option.
+
+  Default value: 1
+
 *g:vimtex_index_hide_line_numbers*
   If enabled, then line numbers will be hidden in the index windows.  That is,
   |nonumber| and |norelativenumber| will be set locally.
@@ -1763,6 +1770,7 @@ Associated settings:
     |g:vimtex_indent_enabled|
     |g:vimtex_indent_bib_enabled|
     |g:vimtex_indent_ignored_envs|
+    |g:vimtex_indent_on_ampersands|
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
