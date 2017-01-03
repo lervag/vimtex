@@ -594,21 +594,7 @@ endfunction
 
 " }}}1
 function! s:get_main_latexmain(file) " {{{1
-  "
-  " Gather candidate files
-  "
-  let l:path = expand('%:p:h')
-  let l:dirs = l:path
-  while l:path != fnamemodify(l:path, ':h')
-    let l:path = fnamemodify(l:path, ':h')
-    let l:dirs .= ',' . l:path
-  endwhile
-  let l:candidates = split(globpath(fnameescape(l:dirs), '*.latexmain'), '\n')
-
-  "
-  " Use first valid candidate
-  "
-  for l:cand in l:candidates
+  for l:cand in s:findfiles_recursive('*.latexmain', expand('%:p:h'))
     let l:cand = fnamemodify(l:cand, ':p:r')
     if s:file_reaches_current(l:cand)
       return l:cand
@@ -636,20 +622,9 @@ function! s:get_main_recurse(...) " {{{1
   endif
 
   "
-  " Gather candidate files
+  " Search through candidates found recursively upwards in the directory tree
   "
-  let l:path = fnamemodify(l:file, ':p:h')
-  let l:dirs = l:path
-  while l:path != fnamemodify(l:path, ':h')
-    let l:path = fnamemodify(l:path, ':h')
-    let l:dirs .= ',' . l:path
-  endwhile
-  let l:candidates = split(globpath(fnameescape(l:dirs), '*.tex'), '\n')
-
-  "
-  " Search through candidates
-  "
-  for l:cand in l:candidates
+  for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
     " Avoid infinite recursion (checking the same file repeatedly)
     if l:cand == l:file | continue | endif
 
@@ -704,6 +679,17 @@ function! s:file_reaches_current(file) " {{{1
   endfor
 
   return 0
+endfunction
+
+" }}}1
+function! s:findfiles_recursive(expr, path) " {{{1
+  let l:path = a:path
+  let l:dirs = l:path
+  while l:path != fnamemodify(l:path, ':h')
+    let l:path = fnamemodify(l:path, ':h')
+    let l:dirs .= ',' . l:path
+  endwhile
+  return split(globpath(fnameescape(l:dirs), a:expr), '\n')
 endfunction
 
 " }}}1
