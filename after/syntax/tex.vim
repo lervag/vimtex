@@ -81,7 +81,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ '[Ppf]?[Nn]otecite',
         \]
     execute 'syntax match texStatement'
-          \ '/\v\\' . s:pattern . '\ze\s*\{/'
+          \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
           \ 'nextgroup=texRefOption,texCite'
   endfor
 
@@ -97,7 +97,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ 'cite%(field|list|name)',
         \]
     execute 'syntax match texStatement'
-          \ '/\v\\' . s:pattern . '\ze\s*\{/'
+          \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
           \ 'nextgroup=texRefOptions,texCites'
   endfor
 
