@@ -375,12 +375,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_complete_img_use_tail*
-  If enabled, only the tail part of file names are completed.  This is useful
-  if one uses the `graphicx` package and the `\graphicspath` command.
-
-  Default value: 0
-
 *g:vimtex_delim_toggle_mod_list*
   Define list of delimiter modifiers to toggle through with
   |<plug>(vimtex-delim-toggle-modifier)|.
