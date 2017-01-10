@@ -118,8 +118,9 @@ endfunction
 " }}}1
 
 function! vimtex#env#is_inside(env) " {{{1
+  let l:stopline = max([line('.') - 50, 1])
   return searchpair('\\begin\s*{' . a:env . '\*\?}', '',
-        \ '\\end\s*{' . a:env . '\*\?}', 'bnW')
+        \ '\\end\s*{' . a:env . '\*\?}', 'bnW', 0, l:stopline)
 endfunction
 
 " }}}1
