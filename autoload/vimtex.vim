@@ -485,8 +485,17 @@ endfunction
 
 " }}}1
 function! s:init_local_options() " {{{1
-  let b:vimtex.sources = []
+  let b:vimtex.packages = {}
+  for l:line in vimtex#parser#tex(b:vimtex.tex, {
+        \ 'detailed' : 0,
+        \ 're_stop' : '\\begin\s*{document}',
+        \})
+    if l:line =~# '\\usepackage.*{tikz}'
+      let b:vimtex.packages.tikz = 1
+    endif
+  endfor
 
+  let b:vimtex.sources = []
   for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
     let l:cand = substitute(l:file, '\M' . b:vimtex.root, '', '')
     if l:cand[0] ==# '/' | let l:cand = l:cand[1:] | endif

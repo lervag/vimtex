@@ -138,6 +138,8 @@ let s:re_delims = vimtex#delim#get_delim_regexes()
 
 " }}}1
 function! s:indent_tikz(lnum, prev) " {{{1
+  if !has_key(b:vimtex.packages, 'tikz') | return 0 | endif
+
   let l:env_lnum = vimtex#env#is_inside('tikzpicture')
   if l:env_lnum > 0 && l:env_lnum < a:lnum
     let l:prev_starts = a:prev =~# s:tikz_commands

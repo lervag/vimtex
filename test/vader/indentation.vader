@@ -141,8 +141,9 @@ Given tex (Indent: tikz):
     \end{axis}
        \end{tikzpicture}
 
-Do (Indent):
-  gg=G
+Execute (Indent):
+  let b:vimtex.packages.tikz = 1
+  normal gg=G
 
 Expect tex (Verify):
   \tikz \fill[green] rectangle (0.5,0.5); Something
