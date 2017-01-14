@@ -104,6 +104,18 @@ const double pi = 3.1415926535
 \citeyearpar{}
 \bibentry{}
 
+\directlua{
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+}
+
+\begin{luacode}
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+\end{luacode}
+
 \end{document}
 
 % vim: fdl=9

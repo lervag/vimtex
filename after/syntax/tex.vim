@@ -175,12 +175,12 @@ syntax region texZone
       \ keepend
       \ transparent
       \ contains=texBeginEnd,@LUA
-syntax region texZone
-      \ start='\\\(directlua\|luadirect\){'rs=s
-      \ end='}'re=e
-      \ keepend
-      \ transparent
-      \ contains=texBeginEnd,@LUA
+syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLua
+syntax region texZoneLua matchgroup=Delimiter
+      \ start='{'
+      \ end='}'
+      \ contained
+      \ contains=@LUA
 let b:current_syntax = 'tex'
 
 " }}}1
