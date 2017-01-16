@@ -391,12 +391,20 @@ function! s:img.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
 
   call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
-  call map(self.candidates, '{
-        \ ''abbr'' : v:val,
-        \ ''word'' : v:val,
-        \ ''menu'' : '' [graphics]'',
-        \ }')
+  let res = []
+  for fp in self.candidates
+    let cand = {
+        \ 'abbr' : fp,
+        \ 'word' : fp,
+        \ 'menu' : '[graphics]',
+        \}
+    if fp =~ a:regex
+      let cand.rank = 99
+    endif
+    call add(res, cand)
+  endfor
 
+  let self.candidates = res
   if g:vimtex_complete_img_use_tail
     for l:cand in self.candidates
       let l:cand.word = fnamemodify(l:cand.word, ':t')
