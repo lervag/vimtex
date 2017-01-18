@@ -10,7 +10,6 @@ function! vimtex#complete#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
-  call vimtex#util#set_default('g:vimtex_complete_img_use_tail', 0)
 endfunction
 
 " }}}1
@@ -378,32 +377,58 @@ let s:img = {
       \ 'patterns' : ['\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
       \ 'ext_re' : '\v\.%('
       \   . join(['png', 'jpg', 'eps', 'pdf', 'pgf', 'tikz'], '|')
-      \   . ')$'
+      \   . ')$',
       \}
 
 function! s:img.complete(regex) dict " {{{2
-  let self.candidates = []
-  let self.candidates = split(globpath(b:vimtex.root, '**/*.*'), '\n')
+  call self.get_graphicspaths()
+  call self.gather_candidates()
 
-  let l:output = b:vimtex.out()
-  call filter(self.candidates, 'v:val !=# l:output')
-  call filter(self.candidates, 'v:val =~? self.ext_re')
   call filter(self.candidates, 'v:val =~# a:regex')
 
-  call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
   call map(self.candidates, '{
         \ ''abbr'' : v:val,
         \ ''word'' : v:val,
         \ ''menu'' : '' [graphics]'',
         \ }')
 
-  if g:vimtex_complete_img_use_tail
+  if !empty(self.graphicspaths)
     for l:cand in self.candidates
       let l:cand.word = fnamemodify(l:cand.word, ':t')
     endfor
   endif
 
   return self.candidates
+endfunction
+
+function! s:img.get_graphicspaths() dict " {{{2
+  " Get preamble text and remove comments
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop': '\\begin{document}',
+        \ 'detailed': 0,
+        \})
+  call map(l:preamble, 'substitute(v:val, ''\\\@<!%.*'', '''', '''')')
+
+  " Parse preamble for graphicspath command
+  let l:graphicspath = matchstr(join(l:preamble, ' '),
+        \ '\\graphicspath{\s*{\s*\zs.*\ze\s*}\s*}')
+  let self.graphicspaths = map(split(l:graphicspath, '}\s*{'),
+        \ 'v:val[0] ==# ''/'' ? v:val : simplify(b:vimtex.root . ''/'' . v:val)')
+endfunction
+
+function! s:img.gather_candidates() dict " {{{2
+  if !empty(self.graphicspaths)
+    let self.candidates = split(globpath(expand('%:p:h'), '*.*'), '\n')
+    for l:path in self.graphicspaths
+      let self.candidates += split(globpath(l:path, '*.*'), '\n')
+    endfor
+  else
+    let self.candidates = split(globpath(b:vimtex.root, '**/*.*'), '\n')
+  endif
+
+  call filter(self.candidates, 'v:val !=# b:vimtex.out()')
+  call filter(self.candidates, 'v:val =~? self.ext_re')
+  call map(self.candidates, 'vimtex#paths#shorten_relative(v:val)')
 endfunction
 
 " }}}1
