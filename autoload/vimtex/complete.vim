@@ -411,7 +411,7 @@ function! s:img.get_graphicspaths() dict " {{{2
 
   " Parse preamble for graphicspath command
   let l:graphicspath = matchstr(join(l:preamble, ' '),
-        \ '\\graphicspath{\s*{\s*\zs.*\ze\s*}\s*}')
+        \ '\\graphicspath{\s*{\s*\zs.\{-}\ze\s*}\s*}')
   let self.graphicspaths = map(split(l:graphicspath, '}\s*{'),
         \ 'v:val[0] ==# ''/'' ? v:val : simplify(b:vimtex.root . ''/'' . v:val)')
 endfunction
