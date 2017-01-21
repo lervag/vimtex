@@ -381,27 +381,14 @@ let s:img = {
       \}
 
 function! s:img.complete(regex) dict " {{{2
-  call self.get_graphicspaths()
   call self.gather_candidates()
 
-  call filter(self.candidates, 'v:val =~# a:regex')
-
-  call map(self.candidates, '{
-        \ ''abbr'' : v:val,
-        \ ''word'' : v:val,
-        \ ''menu'' : '' [graphics]'',
-        \ }')
-
-  if !empty(self.graphicspaths)
-    for l:cand in self.candidates
-      let l:cand.word = fnamemodify(l:cand.word, ':t')
-    endfor
-  endif
+  call filter(self.candidates, 'v:val.word =~# a:regex')
 
   return self.candidates
 endfunction
 
-function! s:img.get_graphicspaths() dict " {{{2
+function! s:img.graphicspaths() dict " {{{2
   " Get preamble text and remove comments
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
         \ 're_stop': '\\begin{document}',
@@ -409,26 +396,42 @@ function! s:img.get_graphicspaths() dict " {{{2
         \})
   call map(l:preamble, 'substitute(v:val, ''\\\@<!%.*'', '''', '''')')
 
-  " Parse preamble for graphicspath command
-  let l:graphicspath = matchstr(join(l:preamble, ' '),
-        \ '\\graphicspath{\s*{\s*\zs.\{-}\ze\s*}\s*}')
-  let self.graphicspaths = map(split(l:graphicspath, '}\s*{'),
-        \ 'v:val[0] ==# ''/'' ? v:val : simplify(b:vimtex.root . ''/'' . v:val)')
+  " Parse preamble for graphicspaths
+  let l:graphicspaths = []
+  for l:path in split(matchstr(join(l:preamble, ' '),
+        \ '\\graphicspath{\s*{\s*\zs.\{-}\ze\s*}\s*}'), '}\s*{')
+    if l:path[0] ==# '/'
+      call add(l:graphicspaths, l:path[:-2])
+    else
+      call add(l:graphicspaths, simplify(b:vimtex.root . '/' . l:path[:-2]))
+    endif
+  endfor
+
+  " Project root is always valid
+  return l:graphicspaths + [b:vimtex.root]
 endfunction
 
+" }}}2
 function! s:img.gather_candidates() dict " {{{2
-  if !empty(self.graphicspaths)
-    let self.candidates = split(globpath(expand('%:p:h'), '*.*'), '\n')
-    for l:path in self.graphicspaths
-      let self.candidates += split(globpath(l:path, '*.*'), '\n')
-    endfor
-  else
-    let self.candidates = split(globpath(b:vimtex.root, '**/*.*'), '\n')
-  endif
+  let l:added_files = []
+  let l:generated_pdf = b:vimtex.out()
 
-  call filter(self.candidates, 'v:val !=# b:vimtex.out()')
-  call filter(self.candidates, 'v:val =~? self.ext_re')
-  call map(self.candidates, 'vimtex#paths#shorten_relative(v:val)')
+  let self.candidates = []
+  for l:path in self.graphicspaths()
+    for l:file in split(globpath(l:path, '**/*.*'), '\n')
+      if l:file !~? self.ext_re
+            \ || l:file ==# l:generated_pdf
+            \ || index(l:added_files, l:file) >= 0 | continue | endif
+
+      call add(l:added_files, l:file)
+
+      call add(self.candidates, {
+            \ 'abbr': vimtex#paths#shorten_relative(l:file),
+            \ 'word': vimtex#paths#relative(l:file, l:path),
+            \ 'menu': '[graphics]',
+            \})
+    endfor
+  endfor
 endfunction
 
 " }}}1
