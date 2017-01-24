@@ -456,21 +456,30 @@ function! s:init_local_blob() " {{{1
   let l:filename = expand('%:p')
 
   if b:vimtex.tex !=# l:filename
-    let l:local = deepcopy(b:vimtex)
-    let l:local.tex = l:filename
-    let l:local.pid = 0
-    let l:local.name = fnamemodify(l:filename, ':t:r')
-    let l:local.root = fnamemodify(l:filename, ':h')
-    let l:local.base = fnamemodify(l:filename, ':t')
+    let l:vimtex_id = s:get_id(l:filename)
+    if l:vimtex_id >= 0
+      let b:vimtex_local = {
+            \ 'active' : 0,
+            \ 'main_id' : b:vimtex_id,
+            \ 'sub_id' : l:vimtex_id,
+            \}
+    else
+      let l:local = deepcopy(b:vimtex)
+      let l:local.tex = l:filename
+      let l:local.pid = 0
+      let l:local.name = fnamemodify(l:filename, ':t:r')
+      let l:local.root = fnamemodify(l:filename, ':h')
+      let l:local.base = fnamemodify(l:filename, ':t')
 
-    let s:vimtex_next_id += 1
-    let g:vimtex_data[s:vimtex_next_id] = l:local
+      let s:vimtex_next_id += 1
+      let g:vimtex_data[s:vimtex_next_id] = l:local
 
-    let b:vimtex_local = {
-          \ 'active' : 0,
-          \ 'main_id' : b:vimtex_id,
-          \ 'sub_id' : s:vimtex_next_id,
-          \}
+      let b:vimtex_local = {
+            \ 'active' : 0,
+            \ 'main_id' : b:vimtex_id,
+            \ 'sub_id' : s:vimtex_next_id,
+            \}
+    endif
   endif
 endfunction
 
@@ -830,7 +839,7 @@ function! s:buffer_deleted(...) " {{{1
   " latex project
   "
   if l:count <= 1
-    let l:vimtex = remove(g:vimtex_data, l:vimtex_id)
+    let l:vimtex = g:vimtex_data[l:vimtex_id]
 
     if exists('#User#VimtexEventQuit')
       if exists('b:vimtex')
