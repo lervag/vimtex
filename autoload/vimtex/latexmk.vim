@@ -584,7 +584,7 @@ function! s:latexmk_build_cmd() " {{{1
   if !empty(g:vimtex_latexmk_options)
     let cmd .= ' ' . g:vimtex_latexmk_options
   else
-    let cmd .= ' -verbose -pdf -file-line-error'
+    let cmd .= ' -verbose -file-line-error'
     let cmd .= ' -synctex=1 -interaction=nonstopmode'
   endif
 

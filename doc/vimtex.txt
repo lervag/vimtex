@@ -757,7 +757,6 @@ Options~
 *g:vimtex_latexmk_options*
   By default, |vimtex| passes the following options to `latexmk`: >
 
-     -pdf                     -- Compile to pdf documents
      -verbose                 -- More verbose output
      -file-line-error         -- Enable file:line:error style messages
      -synctex=1               -- Generate synctex data
