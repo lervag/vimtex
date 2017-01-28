@@ -366,7 +366,8 @@ function! s:ref.parse_number(num_tree) dict " {{{2
       return self.parse_number(a:num_tree[l:index])
     endif
   else
-    return str2nr(a:num_tree) > 0 ? a:num_tree : '-'
+    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*)($|\s.*)')
+    return len(l:matches) > 3 ? l:matches[2] : '-'
   endif
 endfunction
 
@@ -438,7 +439,7 @@ endfunction
 " {{{1 Filenames (\input and \include)
 
 let s:inc = {
-      \ 'patterns' : ['\v\\%(include%(only)?|input)\s*\{[^}]*$'],
+      \ 'patterns' : ['\v\\%(include%(only)?|input|subfile)\s*\{[^}]*$'],
       \}
 
 function! s:inc.complete(regex) dict " {{{2
