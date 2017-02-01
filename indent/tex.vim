@@ -16,8 +16,8 @@ call vimtex#util#set_default('g:vimtex_indent_ignored_envs', [
       \ 'document',
       \])
 
-let s:cpo_save = &cpo
-set cpo&vim
+let s:cpo_save = &cpoptions
+set cpoptions&vim
 
 setlocal autoindent
 setlocal indentexpr=VimtexIndent(v:lnum)
@@ -267,7 +267,7 @@ endfunction
 
 " }}}1
 
-let &cpo = s:cpo_save
+let &cpoptions = s:cpo_save
 unlet s:cpo_save
 
 " vim: fdm=marker sw=2
