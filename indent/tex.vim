@@ -112,29 +112,42 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
-  if empty(s:re_delims) | return 0 | endif
-
-  let l:pre = s:split(a:prev_line, a:prev_lnum)
-  let l:cur = s:split(a:line, a:lnum)
-
-  return &sw*(  max([  s:count(l:pre.math_post, s:re_delims[0])
-        \            - s:count(l:pre.math_post, s:re_delims[1])
-        \            + s:count(l:pre.text, s:re_delims[2])
-        \            - s:count(l:pre.text, s:re_delims[3]), 0])
-        \     - max([  s:count(l:cur.math_pre, s:re_delims[1])
-        \            - s:count(l:cur.math_pre, s:re_delims[0])
-        \            + s:count(l:cur.text, s:re_delims[3])
-        \            - s:count(l:cur.text, s:re_delims[2]), 0]))
+  return &sw*(  max([  s:count(a:prev_line, s:re_open)
+        \            - s:count(a:prev_line, s:re_close), 0])
+        \     - max([  s:count(a:line, s:re_close)
+        \            - s:count(a:line, s:re_open), 0]))
 endfunction
 
-"
-" This fetches the regexes for delimiters in text and math mode:
-"   s:re_delims[0]  == math open
-"   s:re_delims[1]  == math close
-"   s:re_delims[2]  == text open
-"   s:re_delims[3]  == text close
-"
-let s:re_delims = vimtex#delim#get_delim_regexes()
+let s:delims_open = [
+      \ '\(',
+      \ '\[',
+      \ '\\\{',
+      \ '\\langle',
+      \ '\\lvert',
+      \ '\\lfloor',
+      \ '\\lceil',
+      \ '\\ulcorner',
+      \]
+let s:delims_close = [
+      \ '\)',
+      \ '\]',
+      \ '\\\}',
+      \ '\\rangle',
+      \ '\\rvert',
+      \ '\\rfloor',
+      \ '\\rceil',
+      \ '\\urcorner',
+      \]
+let s:re_open = '\v'
+      \ . '%(\\left|\\[bB]igg?l?)\s*%(' . join(s:delims_open, '|') . ')'
+      \ . '|\\left\s*\.'
+      \ . '|\{'
+      \ . '|\\\['
+let s:re_close = '\v'
+      \ . '%(\\right|\\[bB]igg?r?)\s*%(' . join(s:delims_close, '|') . ')'
+      \ . '|\\right\s*\.'
+      \ . '|\}'
+      \ . '|\\\]'
 
 " }}}1
 function! s:indent_tikz(lnum, prev) " {{{1
@@ -171,90 +184,6 @@ let s:tikz_commands = '\v\\%(' . join([
 
 " }}}1
 
-"
-" Utility functions for s:indent_delims
-"
-function! s:split(line, lnum) " {{{1
-  "
-  " This function splits a line into regions:
-  "
-  "   text       is all the normal text in the given line
-  "   math_pre   is the math region at the beginning of the line (if any)
-  "   math_post  is the math region at the end of the line (if any)
-  "
-  " Any math region that is not located at the beginning or end of the line
-  " will be ignored.
-  "
-  let l:result = {}
-  let l:result.text = ''
-  let l:result.math_pre = ''
-  let l:result.math_post = ''
-
-  call setpos('.', [0, a:lnum, 1, 0])
-  let l:strlen = strlen(a:line)
-  let l:cnum = 0
-
-  "
-  " Handles the case where the start of the line is a math region
-  "
-  if vimtex#util#in_mathzone()
-    let l:open = vimtex#delim#get_prev('env_math', 'open')
-    if !empty(l:open) && l:open.lnum == a:lnum
-      let l:cnum = strlen(l:open.match)
-      let l:result.text .= strpart(a:line, 0, l:cnum)
-    endif
-
-    let l:close = vimtex#delim#get_next('env_math', 'close')
-    if empty(l:close) || l:close.lnum > a:lnum
-      let l:result.math_post = strpart(a:line, l:cnum)
-      if l:cnum == 0
-        let l:result.math_pre = l:result.math_post
-      endif
-      return s:strip(l:result)
-    endif
-
-    if l:cnum == 0
-      let l:result.math_pre = strpart(a:line, l:cnum, l:close.cnum-1)
-    endif
-    let l:cnum = l:close.cnum-1
-    call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
-  endif
-
-  "
-  " Iterate over all math regions in the line
-  "
-  while 1
-    let l:open = vimtex#delim#get_next('env_math', 'open')
-    if empty(l:open)
-          \ || l:open.lnum > a:lnum
-          \ || l:open.cnum + strlen(l:open.match) > l:strlen
-      let l:result.text .= strpart(a:line, l:cnum)
-      return s:strip(l:result)
-    else
-      let l:result.text .= strpart(a:line, l:cnum,
-            \ l:open.cnum + strlen(l:open.match) - l:cnum - 1)
-      let l:cnum = l:open.cnum+strlen(l:open.match)-1
-      call setpos('.', [0, a:lnum, l:open.cnum+strlen(l:open.match), 0])
-    endif
-
-    let l:close = vimtex#delim#get_matching(l:open)
-    if empty(l:close) || l:close.lnum == 0 || l:close.lnum > a:lnum
-      let l:result.math_post = strpart(a:line, l:cnum)
-      return s:strip(l:result)
-    else
-      let l:cnum = l:close.cnum-1
-      call setpos('.', [0, a:lnum, l:close.cnum+strlen(l:close.match), 0])
-    endif
-  endwhile
-endfunction
-
-" }}}1
-function! s:strip(result) " {{{1
-  let a:result.text = substitute(a:result.text, '\\verb\(.\).\{}\1', '', 'g')
-  return a:result
-endfunction
-
-" }}}1
 function! s:count(line, pattern) " {{{1
   let l:sum = 0
   let l:indx = match(a:line, a:pattern)
