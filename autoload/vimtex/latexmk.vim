@@ -15,7 +15,8 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
   call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
   call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_options', '')
+  call vimtex#util#set_default('g:vimtex_latexmk_options',
+        \ '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode')
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_ignore_all_warnings', 0)
   call vimtex#util#set_default('g:vimtex_quickfix_ignored_warnings', [])
@@ -580,13 +581,7 @@ function! s:latexmk_build_cmd() " {{{1
     endif
   endif
 
-  " Add general options for latexmk
-  if !empty(g:vimtex_latexmk_options)
-    let cmd .= ' ' . g:vimtex_latexmk_options
-  else
-    let cmd .= ' -verbose -pdf -file-line-error'
-    let cmd .= ' -synctex=1 -interaction=nonstopmode'
-  endif
+  let cmd .= ' ' . g:vimtex_latexmk_options
 
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
@@ -667,13 +662,7 @@ function! s:latexmk_build_cmd_selected(fname) " {{{1
     endif
   endif
 
-  " Add general options for latexmk
-  if !empty(g:vimtex_latexmk_options)
-    let cmd .= ' ' . g:vimtex_latexmk_options
-  else
-    let cmd .= ' -verbose -pdf -file-line-error'
-    let cmd .= ' -synctex=1 -interaction=nonstopmode'
-  endif
+  let cmd .= ' ' . g:vimtex_latexmk_options
 
   let cmd .= ' ' . vimtex#util#shellescape(a:fname)
 

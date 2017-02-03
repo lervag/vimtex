@@ -763,8 +763,8 @@ Options~
      -synctex=1               -- Generate synctex data
      -interaction=nonstopmode -- Disable interactive mode
 
-<  However, if `g:vimtex_latexmk_options` is defined and is nonzero, it will
-  override the above with the user supplied options.
+<  However, if `g:vimtex_latexmk_options` is defined, it will override the
+  above with the user supplied options.
 
   Note: Options may also be specified indirectly to `latexmk` through
         both a global and a project specific `.latexmkrc` file. One should
@@ -773,7 +773,8 @@ Options~
         one has to set `g:vimtex_latexmk_options` to a string that contains
         the desired options.
 
-  Default value: ''
+  Default value:
+    '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode'
 
 *g:vimtex_latexmk_progname*
   Path to vim executable.  This is used for the callback functionality, and it
@@ -2002,9 +2003,9 @@ to go from a specific position in the pdf file to the corresponding position
 in vim (inverse/backward search).
 
 To make synctex work, it must be enabled. vimtex enables this by default by
-passing `-synctex=1` on the command line, unless the user sets the option
-|g:vimtex_latexmk_options| to a nonempty value. In the latter case, the user
-should ensure that the synctex flag is passed, i.e. with: >
+passing `-synctex=1` on the command line, unless the user overrides the option
+|g:vimtex_latexmk_options|. In the latter case, the user should ensure that the
+synctex flag is passed, i.e. with: >
 
   let g:vimtex_latexmk_options = '... -synctex=1 ...'
 
