@@ -986,13 +986,15 @@ Options~
                 the command line.  This can be utilized to set the correct
                 |servername| for inverse search: >
 
-            let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
+            let g:vimtex_view_general_viewer = 'SumatraPDF'
+            let g:vimtex_view_general_options
+                \ = '-reuse-instance -forward-search @tex @line @pdf'
                 \ . '-inverse-search "gvim --servername ' . v:servername
                 \ . ' --remote-send \"^<C-\^>^<C-n^>'
                 \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
                 \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
                 \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+                \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
     *vimtex_viewer_mupdf*
       http://www.mupdf.com/
