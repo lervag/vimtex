@@ -430,8 +430,9 @@ function! s:cmd_single_opt(cmds) " {{{1
   endfunction
 
   function! l:fold.text(line) dict
+    let l:col = strlen(matchstr(a:line, '^\s*')) + 1
     return matchstr(a:line, self.re.text) . '[...]{'
-          \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text . '}'
+          \ . vimtex#cmd#get_at(v:foldstart, l:col).args[0].text . '}'
   endfunction
 
   return l:fold
