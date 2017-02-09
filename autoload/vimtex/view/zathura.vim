@@ -24,8 +24,7 @@ function! vimtex#view#zathura#new() " {{{1
   " Check if the xdotool is available
   "
   if !executable('xdotool')
-    call vimtex#echo#warning('Zathura requires xdotool!')
-    return {}
+    call vimtex#echo#warning('Zathura requires xdotool for forward search!')
   endif
 
   "
