@@ -57,8 +57,7 @@ function! vimtex#cmd#change() " {{{1
 
   " Restore cursor position and create repeat hook
   cal setpos('.', l:save_pos)
-  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . l:new_name . '
-', v:count)
+  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . l:new_name . '^M', v:count)
 endfunction
 
 function! vimtex#cmd#delete() " {{{1
