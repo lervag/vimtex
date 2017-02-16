@@ -121,8 +121,13 @@ function! vimtex#cmd#create() " {{{1
   endif
 
   let l:strpart1 = strpart(l:line, 0, l:c1)
-  let l:strpart2 = '\' . l:match . '{'
-  let l:strpart3 = strpart(l:line, l:c2)
+  if mode() ==# 'i'
+    let l:strpart2 = '\' . strpart(l:match, 0, l:c0 - l:c1) . '{'
+    let l:strpart3 = strpart(l:line, l:c0)
+  else
+    let l:strpart2 = '\' . l:match . '{'
+    let l:strpart3 = strpart(l:line, l:c2)
+  endif
   call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
   call setpos('.', [0, l:l1, l:c2+3, 0])
 
