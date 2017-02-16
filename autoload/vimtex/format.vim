@@ -110,7 +110,7 @@ function! s:format(top, bottom) " {{{1
     endif
 
     " Handle long lines
-    if len(l:line) > s:textwidth
+    if strchars(l:line) > s:textwidth
       let l:bottom += s:format_build_lines(l:current, l:mark)
       let l:mark = l:current-1
     endif
@@ -160,7 +160,7 @@ function! s:format_build_lines(start, end) " {{{1
   let l:lnum = a:start-1
   let l:current = repeat(' ', indent(a:start))
   for l:word in l:words
-    if len(l:word) + len(l:current) > s:textwidth
+    if strchars(l:word) + strchars(l:current) > s:textwidth
       call append(l:lnum, substitute(l:current, '\s$', '', ''))
       let l:lnum += 1
       let l:current = repeat(' ', VimtexIndent(a:start))

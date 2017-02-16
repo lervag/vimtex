@@ -1,0 +1,3 @@
+policies:
+  ProhibitAbbreviationOption:
+    enabled: false

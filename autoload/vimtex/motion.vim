@@ -92,8 +92,6 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
     normal! gv
   endif
 
-  if vimtex#util#in_comment() | return | endif
-
   let delim = vimtex#delim#get_current('all', 'both')
   if empty(delim)
     let delim = vimtex#delim#get_next('all', 'both')

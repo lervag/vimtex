@@ -132,6 +132,9 @@ Feature overview~
 Requirements~
                                                           *vimtex-requirements*
 
+The following is a list of specific requirements for the key features of
+|vimtex|:
+
   `latexmk`  http://users.phys.psu.edu/~collins/software/latexmk-jcc
     |vimtex| uses `latexmk` to compile the LaTeX document.  `latexmk` is "a perl
     script for running LaTeX the correct number of times to resolve cross
@@ -372,12 +375,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_complete_img_use_tail*
-  If enabled, only the tail part of file names are completed.  This is useful
-  if one uses the `graphicx` package and the `\graphicspath` command.
-
-  Default value: 0
-
 *g:vimtex_delim_toggle_mod_list*
   Define list of delimiter modifiers to toggle through with
   |<plug>(vimtex-delim-toggle-modifier)|.
@@ -441,8 +438,22 @@ Options~
 
   Default value: '*'
 
+*g:vimtex_fold_preamble*
+  Control whether or not to fold the preamble.
+
+  Note: If |g:vimtex_fold_commands| contains `documentclass`, then this option
+        will be automatically disabled.
+
+  Default value: 1
+
 *g:vimtex_fold_envs*
   Control whether or not to fold environments.
+
+  Default value: 1
+
+*g:vimtex_fold_markers*
+  Use this option to disable/enable vim-style markers for folding, i.e. pairs
+  of `{{{` and `}}}`.
 
   Default value: 1
 
@@ -451,70 +462,83 @@ Options~
 
   Default value: >
     let g:vimtex_fold_parts = [
-        \ "appendix",
-        \ "frontmatter",
-        \ "mainmatter",
-        \ "backmatter",
+        \ 'appendix',
+        \ 'frontmatter',
+        \ 'mainmatter',
+        \ 'backmatter',
       \ ]
 <
-*g:vimtex_fold_preamble*
-  Control whether or not to fold the preamble.
-
-  Note: This option can not be used together with |g:vimtex_fold_documentclass|.
-
-  Default value: 1
-
 *g:vimtex_fold_sections*
   List of section constructs that should be folded.
 
   Default value: >
     let g:vimtex_fold_sections = [
-        \ "part",
-        \ "chapter",
-        \ "section",
-        \ "subsection",
-        \ "subsubsection",
+        \ 'part',
+        \ 'chapter',
+        \ 'section',
+        \ 'subsection',
+        \ 'subsubsection',
       \ ]
 <
-*g:vimtex_fold_usepackage*
-  Use this option to disable/enable folding of long `\usepackage` lines. The
-  lines must be formatted like this for folding to work properly: >
+*g:vimtex_fold_commands*
+*g:vimtex_fold_commands_default*
+  Use this option to disable/enable folding of commands. The option is
+  a dictionary of key-value pairs, where the key is a regex in very magic mode
+  (see |\v|) that matches the desired command name(s), and the value is the
+  variant of command folding. There are three variants allowed (see below for
+  a few examples that may be clarifying):
 
-    \usepackage[
-      option 1,
-      ...,
-      option n
-      ]{name}
+  `single`        Useful for commands with a single long argument.
+  `single_opt`    Useful for commands that open with a single long optional
+                argument, then a short "real" argument.
+  `multi`         Useful for commands that start with a short regular argument
+                and continue with long optional and/or regular arguments.
+
+  The option combines the contents of |g:vimtex_fold_commands| and
+  |g:vimtex_fold_commands_default|. Entries in the former will have higher
+  priority than entries in the latter. This way, it is easy to add custom
+  entries without disturbing the defaults. For those who want to ignore the
+  defaults, one may simple set |g:vimtex_fold_commands_default| to an empty
+  dictionary.
+
+  Examples of how command folds work for the different variants: >
+
+    Variant       Not folded                     Folded
+    ----------------------------------------------------------------------
+    'single'      \hypersetup{                   \hypersetup{...}
+                    option 1,
+                    ...,
+                    option n
+                    }
+
+    'single_opt'  \usepackage[                   \usepackage[...]{name}
+                    option 1,
+                    ...,
+                    option n
+                    ]{name}
+
+    'multi'       \newcommand{\command}[3]{      \newcommand{\command} ...
+                    Hello #1, #2, and #3.
+                  }
+    ----------------------------------------------------------------------
 <
-  Default value: 1
+  Note: |g:vimtex_fold_commands| deprecates the old *g:vimtex_fold_documentclass*
+        option. To fold the `\documentclass` command, it may be added with the
+        `single_opt` variant. As before, one must disable |g:vimtex_fold_preamble|.
 
-*g:vimtex_fold_newcommands*
-  Use this option to disable/enable folding of long `\[re]newcommand` and
-  `\[re]newenvironment` lines. The lines must be formatted like this for
-  folding to work properly: >
-
-    \[re]newcommand{\command}{
-      ...,
-    }
-<
-  That is, the fold region starts at the command and ends when at the final `}`
-  at the same indent level as the start of the command.
-
-  Default value: 1
-
-*g:vimtex_fold_documentclass*
-  Use this option to disable/enable folding of long `\documentclass` lines. This
-  works similar to |g:vimtex_fold_usepackage|.
-
-  Note: This option can not be used together with |g:vimtex_fold_preamble|.
-
-  Default value: 0
-
-*g:vimtex_fold_markers*
-  Use this option to disable/enable vim-style markers for folding, i.e. pairs
-  of `{{{` and `}}}`.
-
-  Default value: 1
+  Default value: >
+    let g:vimtex_fold_commands = {}
+    let g:vimtex_fold_commands_default = {
+        \ 'hypersetup' : 'single',
+        \ 'tikzset' : 'single',
+        \ 'usepackage' : 'single_opt',
+        \ 'includepdf' : 'single_opt',
+        \ '%(re)?new%(command|environment)' : 'multi',
+        \ 'providecommand' : 'multi',
+        \ 'presetkeys' : 'multi',
+        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
+        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \}
 
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
@@ -548,6 +572,18 @@ Options~
 
 *g:vimtex_indent_bib_enabled*
   Use this option to disable/enable |vimtex| indentation of bibliography files.
+
+  Default value: 1
+
+*g:vimtex_indent_ignored_envs*
+  List of environments that should not add/reduce indentation.
+
+  Default value: ['document']
+
+*g:vimtex_indent_on_ampersands*
+  By default, vimtex will align on ampersands e.g. in math aligned
+  environments or in tabular environments. If this feature is not wanted it
+  may be disabled through this option.
 
   Default value: 1
 
@@ -727,8 +763,8 @@ Options~
      -synctex=1               -- Generate synctex data
      -interaction=nonstopmode -- Disable interactive mode
 
-<  However, if `g:vimtex_latexmk_options` is defined and is nonzero, it will
-  override the above with the user supplied options.
+<  However, if `g:vimtex_latexmk_options` is defined, it will override the
+  above with the user supplied options.
 
   Note: Options may also be specified indirectly to `latexmk` through
         both a global and a project specific `.latexmkrc` file. One should
@@ -737,7 +773,8 @@ Options~
         one has to set `g:vimtex_latexmk_options` to a string that contains
         the desired options.
 
-  Default value: ''
+  Default value:
+    '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode'
 
 *g:vimtex_latexmk_progname*
   Path to vim executable.  This is used for the callback functionality, and it
@@ -879,7 +916,7 @@ Options~
           and backward search. Recommended settings are: >
 
             let g:vimtex_view_general_viewer = 'okular'
-            let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
+            let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
             let g:vimtex_view_general_options_latexmk = '--unique'
 
 <          Backward search must be set up from the viewer through
@@ -949,13 +986,15 @@ Options~
                 the command line.  This can be utilized to set the correct
                 |servername| for inverse search: >
 
-            let g:vimtex_view_general_viewer = 'SumatraPDF -reuse-instance '
+            let g:vimtex_view_general_viewer = 'SumatraPDF'
+            let g:vimtex_view_general_options
+                \ = '-reuse-instance -forward-search @tex @line @pdf'
                 \ . '-inverse-search "gvim --servername ' . v:servername
                 \ . ' --remote-send \"^<C-\^>^<C-n^>'
                 \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
                 \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
                 \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                \ . ':call remote_foreground('''.v:servername.''')^<CR^>\""'
+                \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
     *vimtex_viewer_mupdf*
       http://www.mupdf.com/
@@ -1201,7 +1240,7 @@ Commands~
                           `texcount` through a call on the main project file
                           similar to: >
 
-                            texcount -nosub -sub [-letter] -merge FILE
+                            texcount -nosub -sum [-letter] -merge FILE
 <
                                              *VimtexCountLetters!*
                                              *VimtexCountWords!*
@@ -1209,7 +1248,7 @@ Commands~
 :VimtexCountWords!        show separate reports for included files.  I.e.
                           presents the result of >
 
-                            texcount -nosub -sub [-letter] -inc FILE
+                            texcount -nosub -sum [-letter] -inc FILE
 <
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
@@ -1356,7 +1395,8 @@ dictionary argument: >
     \ 'lhs' : lhs,
     \ 'rhs' : rhs,
     \ 'leader' : leader_key,
-    \ 'wrapper' : function_name
+    \ 'wrapper' : function_name,
+    \ 'context' : value,
     \ }
 
 Explanation of the keys:
@@ -1375,14 +1415,24 @@ Explanation of the keys:
     The name of a wrapper function that is used to generate the `rhs`. Two
     functions are available from |vimtex|:
 
-      `vimtex#imaps#wrap_trivial`  Trivial wrapper: Simply returns `rhs`.
-      `vimtex#imaps#wrap_math`     Only define `rhs` if inside a math environment.
-                                 This is the default wrapper function and will
-                                 be used if no other wrapper is supplied.
+      `vimtex#imaps#wrap_trivial`
+        Trivial wrapper: Simply returns `rhs`.
+
+      `vimtex#imaps#wrap_math`
+        Only define `rhs` if inside a math environment. This is the default
+        wrapper function and will be used if no other wrapper is supplied.
+
+      `vimtex#imaps#wrap_environment`
+        Only define `rhs` if inside one of the environments specified through
+        a list of environment names. The list must be supplied through the
+        `context` key.
 
     Of course, one may use custom wrapper functions. To write a custom wrapper
     function, please see the source for examples on how the |vimtex| wrappers
     are written.
+
+  context~
+    A value that can be used by the chosen wrapper function.
 
                                                             *vimtex-neosnippet*
                                                              *vimtex-UltiSnips*
@@ -1697,12 +1747,14 @@ Associated settings:
   |g:vimtex_fold_enabled|
   |g:vimtex_fold_manual|
   |g:vimtex_fold_comments|
+  |g:vimtex_fold_levelmarker|
   |g:vimtex_fold_preamble|
+  |g:vimtex_fold_envs|
+  |g:vimtex_fold_markers|
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|
-  |g:vimtex_fold_envs|
-  |g:vimtex_fold_usepackage|
-  |g:vimtex_fold_newcommands|
+  |g:vimtex_fold_commands|
+  |g:vimtex_fold_commands_default|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
@@ -1714,6 +1766,8 @@ for bibliography files (`.bib` files).
 Associated settings:
     |g:vimtex_indent_enabled|
     |g:vimtex_indent_bib_enabled|
+    |g:vimtex_indent_ignored_envs|
+    |g:vimtex_indent_on_ampersands|
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
@@ -1951,9 +2005,9 @@ to go from a specific position in the pdf file to the corresponding position
 in vim (inverse/backward search).
 
 To make synctex work, it must be enabled. vimtex enables this by default by
-passing `-synctex=1` on the command line, unless the user sets the option
-|g:vimtex_latexmk_options| to a nonempty value. In the latter case, the user
-should ensure that the synctex flag is passed, i.e. with: >
+passing `-synctex=1` on the command line, unless the user overrides the option
+|g:vimtex_latexmk_options|. In the latter case, the user should ensure that the
+synctex flag is passed, i.e. with: >
 
   let g:vimtex_latexmk_options = '... -synctex=1 ...'
 
@@ -2100,7 +2154,13 @@ A: This is not a feature provided by |vimtex| itself. Similar to
    [0]: https://github.com/lervag/vimtex/issues/564
 
 ==============================================================================
-Troubleshooting                                       *vimtex-troubleshooting*
+TROUBLESHOOTING                                       *vimtex-troubleshooting*
+
+Here are some pitfalls that one may experience if one of these assumptions are
+broken:
+
+- Completion may not work properly for exotic file encodings, such as for
+  UTF-16LE (see https://github.com/lervag/vimtex/issues/615)
 
 With different operating systems and different plugin configurations, there
 are a few things that must be considered for system interoperability. A number

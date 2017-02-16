@@ -7,7 +7,6 @@
 if !exists('b:current_syntax')
   let b:current_syntax = 'tex'
 elseif b:current_syntax !=# 'tex'
-  echoerr 'vimtex syntax error: please report issue!'
   finish
 endif
 
@@ -23,20 +22,20 @@ syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
 " {{{1 Italic font, bold font and conceals
 
 if get(g:, 'tex_fast', 'b') =~# 'b'
-  let conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
+  let s:conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
         \ ? 'concealends' : ''
 
-  for [style, group, commands] in [
+  for [s:style, s:group, s:commands] in [
         \ ['texItalStyle', 'texItalGroup', ['emph', 'textit']],
         \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
         \]
-    for cmd in commands
-      execute 'syntax region' style 'matchgroup=texTypeStyle'
-            \ 'start="\\' . cmd . '\s*{" end="}"'
-            \ 'contains=@Spell,@' . group
-            \ conceal
+    for s:cmd in s:commands
+      execute 'syntax region' s:style 'matchgroup=texTypeStyle'
+            \ 'start="\\' . s:cmd . '\s*{" end="}"'
+            \ 'contains=@Spell,@' . s:group
+            \ s:conceal
     endfor
-    execute 'syntax cluster texMatchGroup add=' . style
+    execute 'syntax cluster texMatchGroup add=' . s:style
   endfor
 endif
 
@@ -65,48 +64,43 @@ highlight link texHyperref     texRefZone
 " }}}1
 " {{{1 Improve support for cite commands
 if get(g:, 'tex_fast', 'r') =~# 'r'
-  "
-  " biblatex
-  "
-  execute 'syntax match texStatement /\v\\%(' . join([
-        \   '[Cc]iteauthor\*?',
-        \   '[Cc]ite%(title|year|date)?\*?',
-        \   'citeurl',
-        \   '[Pp]arencite\*?',
-        \   'foot%(full)?cite%(text)?',
-        \   'fullcite',
-        \   '[Tt]extcite',
-        \   '[Ss]martcite',
-        \   'supercite',
-        \   '[Aa]utocite\*?',
-        \   '[Ppf]?[Nn]otecite'], '|') . ')/'
-        \ 'nextgroup=texRefOption,texCite'
 
-  execute 'syntax match texStatement /\v\\%(' . join([
-        \   '[Cc]ites',
-        \   '[Pp]arencites',
-        \   'footcite%(s|texts)',
-        \   '[Tt]extcites',
-        \   '[Ss]martcites',
-        \   'supercites',
-        \   '[Aa]utocites'], '|') . ')/'
-        \ 'nextgroup=texRefOptions,texCites'
+  for s:pattern in [
+        \ 'bibentry',
+        \ 'cite[pt]?\*?',
+        \ 'citeal[tp]\*?',
+        \ 'cite(num|text|url)',
+        \ '[Cc]ite%(title|author|year(par)?|date)\*?',
+        \ '[Pp]arencite\*?',
+        \ 'foot%(full)?cite%(text)?',
+        \ 'fullcite',
+        \ '[Tt]extcite',
+        \ '[Ss]martcite',
+        \ 'supercite',
+        \ '[Aa]utocite\*?',
+        \ '[Ppf]?[Nn]otecite',
+        \]
+    execute 'syntax match texStatement'
+          \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
+          \ 'nextgroup=texRefOption,texCite'
+  endfor
 
-  execute 'syntax match texStatement /\\[pPfFsStTaA]\?[Vv]olcites\?/'
-        \ 'nextgroup=texRefOptions,texCites'
+  for s:pattern in [
+        \ '[Cc]ites',
+        \ '[Pp]arencites',
+        \ 'footcite%(s|texts)',
+        \ '[Tt]extcites',
+        \ '[Ss]martcites',
+        \ 'supercites',
+        \ '[Aa]utocites',
+        \ '[pPfFsStTaA]?[Vv]olcites?',
+        \ 'cite%(field|list|name)',
+        \]
+    execute 'syntax match texStatement'
+          \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
+          \ 'nextgroup=texRefOptions,texCites'
+  endfor
 
-  execute 'syntax match texStatement /\\cite\%(field\|list\|name\)/'
-        \ 'nextgroup=texRefOptions,texCites'
-
-  "
-  " natbib
-  "
-  syntax match texStatement '\\cite\%([tp]\*\?\)\?'
-        \ nextgroup=texRefOption,texCite
-
-  "
-  " Common
-  "
   syntax region texRefOptions contained matchgroup=Delimiter
         \ start='\[' end=']'
         \ contains=@texRefGroup,texRefZone
@@ -181,12 +175,12 @@ syntax region texZone
       \ keepend
       \ transparent
       \ contains=texBeginEnd,@LUA
-syntax region texZone
-      \ start='\\\(directlua\|luadirect\){'rs=s
-      \ end='}'re=e
-      \ keepend
-      \ transparent
-      \ contains=texBeginEnd,@LUA
+syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLua
+syntax region texZoneLua matchgroup=Delimiter
+      \ start='{'
+      \ end='}'
+      \ contained
+      \ contains=@LUA
 let b:current_syntax = 'tex'
 
 " }}}1
@@ -212,45 +206,45 @@ syntax region texZone
       \ contains=texMinted
 
 " Next add nested syntax support for desired languages
-for entry in get(g:, 'vimtex_syntax_minted', [])
-  let lang = entry.lang
-  let syntax = get(entry, 'syntax', lang)
+for s:entry in get(g:, 'vimtex_syntax_minted', [])
+  let s:lang = s:entry.lang
+  let s:syntax = get(s:entry, 'syntax', s:lang)
 
   unlet b:current_syntax
-  execute 'syntax include @' . toupper(lang) 'syntax/' . syntax . '.vim'
+  execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
 
-  if has_key(entry, 'ignore')
-    execute 'syntax cluster' toupper(lang)
-          \ 'remove=' . join(entry.ignore, ',')
+  if has_key(s:entry, 'ignore')
+    execute 'syntax cluster' toupper(s:lang)
+          \ 'remove=' . join(s:entry.ignore, ',')
   endif
 
   execute 'syntax region texZone'
-        \ 'start="\\begin{minted}\_[^}]\{-}{' . lang . '}"rs=s'
+        \ 'start="\\begin{minted}\_[^}]\{-}{' . s:lang . '}"rs=s'
         \ 'end="\\end{minted}"re=e'
         \ 'keepend'
         \ 'transparent'
-        \ 'contains=texMinted,@' . toupper(lang)
+        \ 'contains=texMinted,@' . toupper(s:lang)
 
   "
   " Support for custom environment names
   "
-  for env in get(entry, 'environments', [])
+  for s:env in get(s:entry, 'environments', [])
     execute 'syntax region texZone'
-          \ 'start="\\begin{' . env . '}"rs=s'
-          \ 'end="\\end{' . env . '}"re=e'
+          \ 'start="\\begin{' . s:env . '}"rs=s'
+          \ 'end="\\end{' . s:env . '}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texBeginEnd,@' . toupper(lang)
+          \ 'contains=texBeginEnd,@' . toupper(s:lang)
 
     " Match starred environments with options
     execute 'syntax region texZone'
-          \ 'start="\\begin{' . env . '\*}\s*{\_.\{-}}"rs=s'
-          \ 'end="\\end{' . env . '\*}"re=e'
+          \ 'start="\\begin{' . s:env . '\*}\s*{\_.\{-}}"rs=s'
+          \ 'end="\\end{' . s:env . '\*}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(lang)
+          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(s:lang)
     execute 'syntax match texMintedStarred'
-          \ '"\\begin{' . env . '\*}\s*{\_.\{-}}"'
+          \ '"\\begin{' . s:env . '\*}\s*{\_.\{-}}"'
           \ 'contains=texBeginEnd,texDelimiter'
   endfor
 endfor

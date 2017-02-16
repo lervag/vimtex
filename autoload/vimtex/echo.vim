@@ -19,7 +19,7 @@ function! vimtex#echo#wait() " {{{1
 
   if filereadable(expand('%'))
     echohl VimtexMsg
-    call input('Press any key to continue ...')
+    call input('Press ENTER to continue')
     echohl None
   else
     sleep 1

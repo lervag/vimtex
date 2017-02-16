@@ -10,7 +10,6 @@ function! vimtex#complete#init_options() " {{{1
 
   call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
   call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
-  call vimtex#util#set_default('g:vimtex_complete_img_use_tail', 0)
 endfunction
 
 " }}}1
@@ -76,9 +75,12 @@ endfunction
 " {{{1 Bibtex
 
 let s:bib = {
-      \ 'patterns' : ['\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
+      \ 'patterns' : [
+      \   '\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$',
+      \   '\v\\bibentry\s*\{[^}]*$',
+      \  ],
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-      \          . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+      \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
       \ 'type_length' : 0,
       \ 'bstfile' :  expand('<sfile>:p:h') . '/vimcomplete',
@@ -231,7 +233,8 @@ function! s:bib.find_bibs() dict " {{{2
 
   let l:bibfiles = []
   for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
-        \            'matchstr(v:val, ' . self.bibs . ')')
+        \ 'matchstr(v:val, ' . self.bibs . ')')
+    let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
     let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
@@ -244,7 +247,8 @@ endfunction
 let s:ref = {
       \ 'patterns' : [
       \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
-      \   '\\hyperref\s*\[[^]]*$'
+      \   '\\hyperref\s*\[[^]]*$',
+      \   '\\subref\*\?{[^}]*$',
       \ ],
       \ 'cache' : {},
       \ 'labels' : [],
@@ -362,7 +366,8 @@ function! s:ref.parse_number(num_tree) dict " {{{2
       return self.parse_number(a:num_tree[l:index])
     endif
   else
-    return str2nr(a:num_tree) > 0 ? a:num_tree : '-'
+    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*)($|\s.*)')
+    return len(l:matches) > 3 ? l:matches[2] : '-'
   endif
 endfunction
 
@@ -373,39 +378,68 @@ let s:img = {
       \ 'patterns' : ['\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$'],
       \ 'ext_re' : '\v\.%('
       \   . join(['png', 'jpg', 'eps', 'pdf', 'pgf', 'tikz'], '|')
-      \   . ')$'
+      \   . ')$',
       \}
 
 function! s:img.complete(regex) dict " {{{2
-  let self.candidates = []
-  let self.candidates = split(globpath(b:vimtex.root, '**/*.*'), '\n')
+  call self.gather_candidates()
 
-  let l:output = b:vimtex.out()
-  call filter(self.candidates, 'v:val !=# l:output')
-  call filter(self.candidates, 'v:val =~? self.ext_re')
-  call filter(self.candidates, 'v:val =~# a:regex')
-
-  call map(self.candidates, 'strpart(v:val, len(b:vimtex.root)+1)')
-  call map(self.candidates, '{
-        \ ''abbr'' : v:val,
-        \ ''word'' : v:val,
-        \ ''menu'' : '' [graphics]'',
-        \ }')
-
-  if g:vimtex_complete_img_use_tail
-    for l:cand in self.candidates
-      let l:cand.word = fnamemodify(l:cand.word, ':t')
-    endfor
-  endif
+  call filter(self.candidates, 'v:val.word =~# a:regex')
 
   return self.candidates
+endfunction
+
+function! s:img.graphicspaths() dict " {{{2
+  " Get preamble text and remove comments
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop': '\\begin{document}',
+        \ 'detailed': 0,
+        \})
+  call map(l:preamble, 'substitute(v:val, ''\\\@<!%.*'', '''', '''')')
+
+  " Parse preamble for graphicspaths
+  let l:graphicspaths = []
+  for l:path in split(matchstr(join(l:preamble, ' '),
+        \ '\\graphicspath{\s*{\s*\zs.\{-}\ze\s*}\s*}'), '}\s*{')
+    if l:path[0] ==# '/'
+      call add(l:graphicspaths, l:path[:-2])
+    else
+      call add(l:graphicspaths, simplify(b:vimtex.root . '/' . l:path[:-2]))
+    endif
+  endfor
+
+  " Project root is always valid
+  return l:graphicspaths + [b:vimtex.root]
+endfunction
+
+" }}}2
+function! s:img.gather_candidates() dict " {{{2
+  let l:added_files = []
+  let l:generated_pdf = b:vimtex.out()
+
+  let self.candidates = []
+  for l:path in self.graphicspaths()
+    for l:file in split(globpath(l:path, '**/*.*'), '\n')
+      if l:file !~? self.ext_re
+            \ || l:file ==# l:generated_pdf
+            \ || index(l:added_files, l:file) >= 0 | continue | endif
+
+      call add(l:added_files, l:file)
+
+      call add(self.candidates, {
+            \ 'abbr': vimtex#paths#shorten_relative(l:file),
+            \ 'word': vimtex#paths#relative(l:file, l:path),
+            \ 'menu': '[graphics]',
+            \})
+    endfor
+  endfor
 endfunction
 
 " }}}1
 " {{{1 Filenames (\input and \include)
 
 let s:inc = {
-      \ 'patterns' : ['\v\\%(include%(only)?|input)\s*\{[^}]*$'],
+      \ 'patterns' : ['\v\\%(include%(only)?|input|subfile)\s*\{[^}]*$'],
       \}
 
 function! s:inc.complete(regex) dict " {{{2

@@ -11,6 +11,7 @@ function! vimtex#fold#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_fold_levelmarker', '*')
   call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
   call vimtex#util#set_default('g:vimtex_fold_envs', 1)
+  call vimtex#util#set_default('g:vimtex_fold_markers', 1)
   call vimtex#util#set_default('g:vimtex_fold_parts',
         \ [
         \   'part',
@@ -26,10 +27,17 @@ function! vimtex#fold#init_options() " {{{1
         \   'subsection',
         \   'subsubsection',
         \ ])
-  call vimtex#util#set_default('g:vimtex_fold_documentclass', 0)
-  call vimtex#util#set_default('g:vimtex_fold_usepackage', 1)
-  call vimtex#util#set_default('g:vimtex_fold_newcommands', 1)
-  call vimtex#util#set_default('g:vimtex_fold_markers', 1)
+  call vimtex#util#set_default('g:vimtex_fold_commands_default', {
+        \ 'hypersetup' : 'single',
+        \ 'tikzset' : 'single',
+        \ 'usepackage' : 'single_opt',
+        \ 'includepdf' : 'single_opt',
+        \ '%(re)?new%(command|environment)' : 'multi',
+        \ 'providecommand' : 'multi',
+        \ 'presetkeys' : 'multi',
+        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
+        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \})
 
   " Disable manual mode in vimdiff
   let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
@@ -43,25 +51,39 @@ function! vimtex#fold#init_script() " {{{1
   let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
 
   "
+  " Set up command fold structure
+  "
+  let s:cmds = extend(g:vimtex_fold_commands_default,
+        \ get(g:, 'vimtex_fold_commands', {}))
+  let s:cmd_types = []
+  let l:cmds_all = []
+  for l:type in ['single', 'single_opt', 'multi']
+    let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
+    if !empty(l:cmds)
+      call extend(l:cmds_all, l:cmds)
+      call add(s:cmd_types, s:cmd_{l:type}(l:cmds))
+    endif
+  endfor
+
+  "
   " List of identifiers for improving efficiency
   "
   let s:folded  = '\v'
   let s:folded .= ' ^\s*\%'
   let s:folded .= '|^\s*\]\{'
   let s:folded .= '|^\s*}\s*$'
-  let s:folded .= '|\%%(.*\{\{\{|\s*}}})'
+  let s:folded .= '|^\s*\% Fake'
+  let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
   let s:folded .= '|\\%(' . join([
         \   'begin',
         \   'end',
         \   '%(sub)*%(section|paragraph)',
         \   'chapter',
-        \   'document',
+        \   'documentclass',
         \   '%(front|main|back)matter',
         \   'appendix',
         \   'part',
-        \   'usepackage',
-        \   '%(re)?new%(command|environment)',
-        \ ], '|') . ')'
+        \ ] + l:cmds_all, '|') . ')'
 endfunction
 
 " }}}1
@@ -75,8 +97,9 @@ function! vimtex#fold#init_buffer() " {{{1
   if s:foldmethod_in_modeline() | return | endif
 
   " Sanity check
-  if g:vimtex_fold_documentclass && g:vimtex_fold_preamble
-    let g:vimtex_fold_documentclass = 0
+  if g:vimtex_fold_preamble
+        \ && has_key(s:cmds, 'documentclass')
+    let g:vimtex_fold_preamble = 0
     call vimtex#echo#warning('Can''t fold both preamble and documentclass!')
     call vimtex#echo#wait()
   endif
@@ -115,20 +138,6 @@ function! vimtex#fold#init_buffer() " {{{1
   endif
 endfunction
 
-function! s:foldmethod_in_modeline()
-  let l:cursor_pos = getpos('.')
-  let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
-
-  call cursor(1, 1)
-  let l:check_top = search(l:fdm_modeline, 'cn', &modelines)
-
-  normal! G$
-  let l:check_btm = search(l:fdm_modeline, 'b', line('$') + 1 - &modelines)
-
-  call setpos('.', l:cursor_pos)
-  return l:check_top || l:check_btm
-endfunction
-
 " }}}1
 
 function! vimtex#fold#refresh(map) " {{{1
@@ -151,46 +160,16 @@ function! vimtex#fold#level(lnum) " {{{1
     return '>1'
   endif
 
-  " Fold documentclass
-  if g:vimtex_fold_documentclass
-    if line =~# '^\s*\\documentclass\s*\[\s*\%($\|%\)'
-      let s:documentclass = 1
-      return 'a1'
-    elseif get(s:, 'documentclass', 0) && line =~# '^\s*\]{'
-      let s:documentclass = 0
-      return 's1'
-    endif
-  endif
-
   " Never fold \begin{document}
   if line =~# '^\s*\\begin\s*{\s*document\s*}'
     return '0'
   endif
 
-  " Fold usepackages
-  if g:vimtex_fold_usepackage
-    if line =~# '^\s*\\usepackage\s*\[\s*\%($\|%\)'
-      let s:usepackage = 1
-      return 'a1'
-    elseif get(s:, 'usepackage', 0) && line =~# '^\s*\]{'
-      let s:usepackage = 0
-      return 's1'
-    endif
-  endif
-
-  " Fold newcommands (and similar)
-  if g:vimtex_fold_newcommands
-    if line =~# '\v^\s*\\%(re)?new%(command|environment)\*?'
-          \ && indent(a:lnum+1) > indent(a:lnum)
-      let s:newcommand_indent = indent(a:lnum)
-      return 'a1'
-    elseif exists('s:newcommand_indent')
-          \ && indent(a:lnum) == s:newcommand_indent
-          \ && line =~# '^\s*}\s*$'
-      unlet s:newcommand_indent
-      return 's1'
-    endif
-  endif
+  " Fold commands
+  for l:cmd in s:cmd_types
+    let l:value = l:cmd.level(line, a:lnum)
+    if !empty(l:value) | return l:value | endif
+  endfor
 
   " Fold chapters and sections
   for [part, level] in b:vimtex_fold.parts
@@ -213,9 +192,9 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold markers
-  if line =~# '%.*{{{'
+  if line =~# '\v\%.*\{\{\{'
     return 'a1'
-  elseif line =~# '%\s*}}}'
+  elseif line =~# '\v\%\s*\}\}\}'
     return 's1'
   endif
 
@@ -241,87 +220,23 @@ function! vimtex#fold#level(lnum) " {{{1
   return '='
 endfunction
 
-"
-" Parse current buffer to find which sections to fold and their levels.  The
-" patterns are predefined to optimize the folding.
-"
-" We ignore top level parts such as \frontmatter, \appendix, \part, and
-" similar, unless there are at least two such commands in a document.
-"
-function! s:refresh_folded_sections()
-  " Only refresh if file has been changed
-  let l:time = getftime(expand('%'))
-  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
-  let b:vimtex_fold.time = l:time
-
-  " Initialize
-  let b:vimtex_fold.parts = []
-  let buffer = getline(1,'$')
-
-  " Parse part commands (frontmatter, appendix, part, etc)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
-  for part in g:vimtex_fold_parts
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        call insert(b:vimtex_fold.parts, [partpattern, 1])
-        break
-      endif
-    endfor
-  endfor
-
-  " We want a minimum of two top level parts
-  if len(b:vimtex_fold.parts) >= 2
-    let level = 1
-  else
-    let level = 0
-    let b:vimtex_fold.parts = []
-  endif
-
-  " Parse section commands (chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
-  for part in g:vimtex_fold_sections
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        let level += 1
-        call insert(b:vimtex_fold.parts, [partpattern, level])
-        break
-      endif
-    endfor
-  endfor
-endfunction
-
 " }}}1
 function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
-  " Text for usepackage
-  if g:vimtex_fold_usepackage && line =~# '^\s*\\usepackage'
-    return '\usepackage[...]{'
-          \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
-          \ . '}'
+  " Text for marker folding
+  if line =~# '\v\%\s*\{\{\{'
+    return ' ' . matchstr(line, '\v\%\s*\{\{\{\s*\zs.*')
+  elseif line =~# '\v\%.*\{\{\{'
+    return ' ' . matchstr(line, '\v\%\s*\zs.*\ze\{\{\{')
   endif
 
-  if line =~# '%\s*{{{'
-    return ' ' . matchstr(line, '%\s*{{{\s*\zs.*')
-  elseif line =~# '%.*{{{'
-    return ' ' . matchstr(line, '%\s*\zs.*\ze{{{')
-  endif
-
-  " Text for newcommand (and similar)
-  if g:vimtex_fold_newcommands
-        \ && line =~# '\v^\s*\\%(re)?new%(command|environment)'
-    return matchstr(line,
-          \ '\v^\s*\\%(re)?new%(command|environment)\*?\{[^}]*\}') . ' ...'
-  endif
-
-  " Text for documentclass
-  if g:vimtex_fold_documentclass && line =~# '^\s*\\documentclass'
-    return '\documentclass[...]{'
-          \ . vimtex#cmd#get_at(v:foldstart, 1).args[0].text
-          \ . '}'
-  endif
+  " Text for various folded commands
+  for l:cmd in s:cmd_types
+    if line =~# l:cmd.re.start
+      return l:cmd.text(line)
+    endif
+  endfor
 
   let level = v:foldlevel > 1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
@@ -371,7 +286,7 @@ function! vimtex#fold#text() " {{{1
       let caption = s:parse_caption(line)
     endif
 
-    " Add paranthesis to label
+    " Add parenthesis to label
     if label !=# ''
       let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
     endif
@@ -391,11 +306,171 @@ function! vimtex#fold#text() " {{{1
   return substitute(text, '\s\+$', '', '') . ' '
 endfunction
 
-"
-" Functions for setting fold text
-"
+" }}}1
 
-function! s:parse_label() " {{{2
+function! s:foldmethod_in_modeline() " {{{1
+  let l:cursor_pos = getpos('.')
+  let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
+
+  call cursor(1, 1)
+  let l:check_top = search(l:fdm_modeline, 'cn', &modelines)
+
+  normal! G$
+  let l:check_btm = search(l:fdm_modeline, 'b', line('$') + 1 - &modelines)
+
+  call setpos('.', l:cursor_pos)
+  return l:check_top || l:check_btm
+endfunction
+
+" }}}1
+function! s:refresh_folded_sections() " {{{1
+  "
+  " Parse current buffer to find which sections to fold and their levels.  The
+  " patterns are predefined to optimize the folding.
+  "
+  " We ignore top level parts such as \frontmatter, \appendix, \part, and
+  " similar, unless there are at least two such commands in a document.
+  "
+
+  " Only refresh if file has been changed
+  let l:time = getftime(expand('%'))
+  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
+  let b:vimtex_fold.time = l:time
+
+  " Initialize
+  let b:vimtex_fold.parts = []
+  let buffer = getline(1,'$')
+
+  " Parse part commands (frontmatter, appendix, part, etc)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
+  for part in g:vimtex_fold_parts
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        call insert(b:vimtex_fold.parts, [partpattern, 1])
+        break
+      endif
+    endfor
+  endfor
+
+  " We want a minimum of two top level parts
+  if len(b:vimtex_fold.parts) >= 2
+    let level = 1
+  else
+    let level = 0
+    let b:vimtex_fold.parts = []
+  endif
+
+  " Parse section commands (chapter, [sub...]section)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
+  for part in g:vimtex_fold_sections
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        let level += 1
+        call insert(b:vimtex_fold.parts, [partpattern, level])
+        break
+      endif
+    endfor
+  endfor
+endfunction
+
+" }}}1
+
+function! s:cmd_single(cmds) " {{{1
+  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
+
+  let l:fold = {}
+  let l:fold.re = {
+        \ 'start' : l:re . '\s*\{\s*%($|\%)',
+        \ 'end' : '^\s*}',
+        \ 'text' : l:re,
+        \}
+
+  function! l:fold.level(line, lnum) dict
+    if a:line =~# self.re.start
+      let self.opened = 1
+      return 'a1'
+    elseif has_key(self, 'opened')
+          \ && a:line =~# self.re.end
+      unlet self.opened
+      return 's1'
+    endif
+    return ''
+  endfunction
+
+  function! l:fold.text(line) dict
+    return matchstr(a:line, self.re.text) . '{...}'
+  endfunction
+
+  return l:fold
+endfunction
+
+" }}}1
+function! s:cmd_single_opt(cmds) " {{{1
+  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
+
+  let l:fold = {}
+  let l:fold.re = {
+        \ 'start' : l:re . '\s*\[\s*%($|\%)',
+        \ 'end' : '^\s*\]{',
+        \ 'text' : l:re,
+        \}
+
+  function! l:fold.level(line, lnum) dict
+    if a:line =~# self.re.start
+      let self.opened = 1
+      return 'a1'
+    elseif has_key(self, 'opened')
+          \ && a:line =~# self.re.end
+      unlet self.opened
+      return 's1'
+    endif
+    return ''
+  endfunction
+
+  function! l:fold.text(line) dict
+    let l:col = strlen(matchstr(a:line, '^\s*')) + 1
+    return matchstr(a:line, self.re.text) . '[...]{'
+          \ . vimtex#cmd#get_at(v:foldstart, l:col).args[0].text . '}'
+  endfunction
+
+  return l:fold
+endfunction
+
+" }}}1
+function! s:cmd_multi(cmds) " {{{1
+  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
+
+  let l:fold = {}
+  let l:fold.re = {
+        \ 'start' : l:re . '.*(\{|\[)\s*(\%.*)?$',
+        \ 'end' : '^\s*}\s*$',
+        \ 'text' : l:re . '\{[^}]*\}'
+        \}
+
+  function! l:fold.level(line, lnum) dict
+    if a:line =~# self.re.start
+      let self.opened = 1
+      return 'a1'
+    elseif has_key(self, 'opened')
+          \ && a:line =~# self.re.end
+      unlet self.opened
+      return 's1'
+    endif
+    return ''
+  endfunction
+
+  function! l:fold.text(line) dict
+    return matchstr(a:line, self.re.text) . ' ...'
+  endfunction
+
+  return l:fold
+endfunction
+
+" }}}1
+
+function! s:parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\label'
@@ -406,8 +481,8 @@ function! s:parse_label() " {{{2
   return ''
 endfunction
 
-" }}}2
-function! s:parse_caption(line) " {{{2
+" }}}1
+function! s:parse_caption(line) " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\caption'
@@ -421,8 +496,8 @@ function! s:parse_caption(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" }}}2
-function! s:parse_caption_table(line) " {{{2
+" }}}1
+function! s:parse_caption_table(line) " {{{1
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~# '^\s*\\caption'
@@ -436,8 +511,8 @@ function! s:parse_caption_table(line) " {{{2
   return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
-" }}}2
-function! s:parse_caption_frame(line) " {{{2
+" }}}1
+function! s:parse_caption_frame(line) " {{{1
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
   let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
@@ -461,8 +536,8 @@ function! s:parse_caption_frame(line) " {{{2
   endif
 endfunction
 
-" }}}2
-function! s:parse_sec_title(string, type) " {{{2
+" }}}1
+function! s:parse_sec_title(string, type) " {{{1
   let l:idx = 0
   let l:length = strlen(a:string)
   let l:level = 1
@@ -478,8 +553,6 @@ function! s:parse_sec_title(string, type) " {{{2
   endwhile
   return strpart(a:string, 0, l:idx)
 endfunction
-
-" }}}2
 
 " }}}1
 

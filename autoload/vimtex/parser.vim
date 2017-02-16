@@ -29,6 +29,7 @@ endfunction
 " Define tex and aux parsers
 "
 function! vimtex#parser#tex(file, ...) " {{{1
+  let s:prev_parsed = ''
   return s:parser(a:file, extend({
         \   'detailed' : 1,
         \   'input_re' : s:input_line_tex,
@@ -39,6 +40,7 @@ endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
+  let s:prev_parsed = ''
   return s:parser(a:file, extend({
         \   'detailed' : 0,
         \   'input_re' : s:input_line_aux,
@@ -78,9 +80,10 @@ endfunction
 " Define the main parser function
 "
 function! s:parser(file, opts) " {{{1
-  if !filereadable(a:file)
+  if !filereadable(a:file) || s:prev_parsed ==# a:file
     return []
   endif
+  let s:prev_parsed = a:file
 
   let l:parsed = []
   let l:lnum = 0
@@ -122,12 +125,16 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
   " Handle import package commands
+  let l:subimport = 0
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
     let l:candidate = s:input_line_parser_tex(
           \ substitute(l:file, '\\\w*\s*{[^{}]*}\s*', '', ''),
           \ a:file,
           \ '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
+
+    " Handle relative paths
+    let l:subimport = l:file =~# '\v\\sub%(import|%(input|include)from)'
 
     let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif
@@ -146,7 +153,7 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
 
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = b:vimtex.root . '/' . l:file
+    let l:file = (l:subimport ? fnamemodify(a:file, ':h') : b:vimtex.root) . '/' . l:file
   endif
 
   " Only return filename if it is readable

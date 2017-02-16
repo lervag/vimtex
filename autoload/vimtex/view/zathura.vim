@@ -24,15 +24,14 @@ function! vimtex#view#zathura#new() " {{{1
   " Check if the xdotool is available
   "
   if !executable('xdotool')
-    call vimtex#echo#warning('Zathura requires xdotool!')
-    return {}
+    call vimtex#echo#warning('Zathura requires xdotool for forward search!')
   endif
 
   "
   " Use the xwin template
   "
   return vimtex#view#common#apply_xwin_template('Zathura',
-        \ vimtex#view#common#use_temp_files_p(deepcopy(s:zathura)))
+        \ vimtex#view#common#apply_common_template(deepcopy(s:zathura)))
 endfunction
 
 " }}}1

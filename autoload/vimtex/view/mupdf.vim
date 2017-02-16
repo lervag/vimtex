@@ -33,7 +33,7 @@ function! vimtex#view#mupdf#new() " {{{1
   " Use the xwin template
   "
   return vimtex#view#common#apply_xwin_template('MuPDF',
-        \ vimtex#view#common#use_temp_files_p(deepcopy(s:mupdf)))
+        \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
 endfunction
 
 " }}}1
@@ -83,7 +83,7 @@ function! s:mupdf.reverse_search() dict " {{{1
   if !executable('synctex') | return | endif
 
   let outfile = b:vimtex.out()
-  if s:output_not_readable(outfile) | return | endif
+  if vimtex#view#common#not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
     call vimtex#echo#warning('reverse search failed (is MuPDF open?)')

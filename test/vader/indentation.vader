@@ -130,10 +130,20 @@ Given tex (Indent: tikz):
     \draw [solid] let \p{O} = (outerContactHead)
       in (outerContactHead) -- (\x{O},-2.5)
         node [yshift=-.25cm] {(ii)};
+
+  \begin{axis}
+    \addplot
+      table[row sep=crcr]{%
+        0       0\\
+        1       1\\
+        2       2\\
+      };
+    \end{axis}
        \end{tikzpicture}
 
-Do (Indent):
-  gg=G
+Execute (Indent):
+  let b:vimtex.packages.tikz = 1
+  normal gg=G
 
 Expect tex (Verify):
   \tikz \fill[green] rectangle (0.5,0.5); Something
@@ -156,6 +166,15 @@ Expect tex (Verify):
     \draw [solid] let \p{O} = (outerContactHead)
       in (outerContactHead) -- (\x{O},-2.5)
       node [yshift=-.25cm] {(ii)};
+
+    \begin{axis}
+      \addplot
+        table[row sep=crcr]{%
+          0       0\\
+          1       1\\
+          2       2\\
+        };
+    \end{axis}
   \end{tikzpicture}
 
 Given tex (Indent: verbatims):
@@ -185,7 +204,7 @@ Expect tex (Verify):
       not affect verbatim environments!
   \end{lstlisting}
 
-Given tex (Indent: Ampersands):
+Given tex (Indent: ampersands):
   \begin{tabular}{cc}
       \begin{tabular}{c}
           Cell 1
@@ -225,4 +244,63 @@ Expect tex (Verify):
         & 4 \\
     \end{aligned}
   \end{equation}
+
+Given:
+Execute (let g:vimtex_indent_on_ampersands = 0):
+  let g:vimtex_indent_on_ampersands = 0
+
+Given tex (Indent: ampersands 2):
+  \begin{equation}
+      \begin{aligned}
+          1 &
+          & 2 \\
+          3 &
+          & 4 \\
+      \end{aligned}
+  \end{equation}
+
+
+Do (Indent):
+  gg=G
+
+Expect tex (Verify):
+  \begin{equation}
+    \begin{aligned}
+      1 &
+      & 2 \\
+      3 &
+      & 4 \\
+    \end{aligned}
+  \end{equation}
+
+Given tex (Indent: ignored environments):
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \begin{document}
+
+  \begin{proof}
+    This statement is false.
+  \end{proof}
+  \end{document}
+
+Execute (let g:vimtex_indent_ignored_envs = ...):
+  let g:vimtex_indent_ignored_envs = ['document', 'proof']
+
+Do (Indent):
+  gg=G
+
+Expect tex (Verify):
+  \documentclass{minimal}
+  \usepackage{amsmath}
+  \begin{document}
+
+  \begin{proof}
+  This statement is false.
+  \end{proof}
+  \end{document}
+
+Given:
+Execute (unlet g:vimtex_indent_ignored_envs):
+  unlet g:vimtex_indent_ignored_envs
+  unlet g:vimtex_indent_on_ampersands
 

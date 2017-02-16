@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{bibentry}
+
+\bibliographystyle{apalike}
+\nobibliography{\jobname}
+
+% This is the sample bib file
+\begin{filecontents}{\jobname.bib}
+  @book{Saussure1995,
+    Author = {Ferdinand de Saussure},
+    Origyear = {1916},
+    Publisher = {Payot},
+    Title = {Cours de Linguistique G{\'e}n{\'e}rale},
+    Year = {1995}
+  }
+\end{filecontents}
+\begin{document}
+
+This is a complete citation in the middle of the text:
+
+\bibentry{
+
+\end{document}
