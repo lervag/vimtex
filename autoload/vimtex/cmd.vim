@@ -24,6 +24,12 @@ function! vimtex#cmd#init_buffer() " {{{1
 
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ <c-r>=vimtex#cmd#create()<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-create-ask)
+        \ :call vimtex#cmd#create_ask(0)<cr>
+
+  xnoremap <silent><buffer> <plug>(vimtex-cmd-create-ask)
+        \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
 endfunction
 
 " }}}1
@@ -57,7 +63,8 @@ function! vimtex#cmd#change() " {{{1
 
   " Restore cursor position and create repeat hook
   cal setpos('.', l:save_pos)
-  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
+  silent! call repeat#set(
+        \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
 
 function! vimtex#cmd#delete() " {{{1
@@ -135,6 +142,27 @@ function! vimtex#cmd#create() " {{{1
     execute 'startinsert' . (empty(l:strpart3) ? '!' : '')
   endif
   return ''
+endfunction
+
+" }}}1
+function! vimtex#cmd#create_ask(visualmode) " {{{1
+  let l:cmd = input('Command name (empty to cancel): ')
+  if empty(l:cmd) | return | endif
+
+  let l:save_reg = getreg('"')
+  let l:pos = getpos('.')
+
+  if a:visualmode
+    execute 'normal! gvdi\' . l:cmd . '}""Pi{'
+  else
+    let l:pos[2] += strlen(l:cmd) + 2
+    execute 'normal! ciw\' . l:cmd . '{"}'
+    silent! call repeat#set(
+          \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
+  endif
+
+  call setreg('"', l:save_reg)
+  call setpos('.', l:pos)
 endfunction
 
 " }}}1
