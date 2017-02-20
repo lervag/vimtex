@@ -357,6 +357,7 @@ function! s:init_mappings() " {{{1
 
   call s:map('n', 'dsc',  '<plug>(vimtex-cmd-delete)')
   call s:map('n', 'csc',  '<plug>(vimtex-cmd-change)')
+  call s:map('n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
   call s:map('n', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map('i', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map('n', '<F8>', '<plug>(vimtex-cmd-create-ask)')

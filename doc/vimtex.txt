@@ -110,7 +110,7 @@ Feature overview~
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
   - Change the surrounding command or environment with `csc`/`cse`/`cs$`
-  - Toggle starred environment with `tse`
+  - Toggle starred command or environment with `tsc`/`tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
@@ -323,6 +323,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    cse              |<plug>(vimtex-env-change)|             `n`
    csc              |<plug>(vimtex-cmd-change)|             `n`
    cs$              |<plug>(vimtex-cmd-change-math)|        `n`
+   tsc              |<plug>(vimtex-cmd-toggle-star)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|             `ni`
@@ -1296,8 +1297,9 @@ Map definitions~
 *<plug>(vimtex-cmd-change)*
   Delete/Change surrounding command.
 
+*<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
-  Toggle starred environment.
+  Toggle starred command/environment.
 
 *<plug>(vimtex-delim-toggle-modifier)*
   Toggle delimiter modifiers, for instance between `(...)` and `\left(...\right)`.
