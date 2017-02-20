@@ -30,6 +30,9 @@ function! vimtex#cmd#init_buffer() " {{{1
 
   xnoremap <silent><buffer> <plug>(vimtex-cmd-create-ask)
         \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
+        \ :call vimtex#cmd#toggle_star()<cr>
 endfunction
 
 " }}}1
@@ -163,6 +166,40 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
 
   call setreg('"', l:save_reg)
   call setpos('.', l:pos)
+endfunction
+
+" }}}1
+function! vimtex#cmd#toggle_star() " {{{1
+  let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) | return | endif
+
+  let l:old_name = l:cmd.name
+  let l:lnum = l:cmd.pos_start.lnum
+  let l:cnum = l:cmd.pos_start.cnum
+
+  " Set new command name
+  if match(l:old_name, '\*$') == -1
+    let l:new_name = l:old_name.'*'
+  else
+    let l:new_name = strpart(l:old_name, 0, strlen(l:old_name)-1)
+  endif
+  let l:new_name = substitute(l:new_name, '^\\', '', '')
+  if empty(l:new_name) | return | endif
+
+  " Update current position
+  let l:save_pos = getpos('.')
+  let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
+
+  " Perform the change
+  let l:line = getline(l:lnum)
+  call setline(l:lnum,
+        \   strpart(l:line, 0, l:cnum)
+        \ . l:new_name
+        \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
+
+  " Restore cursor position and create repeat hook
+  cal setpos('.', l:save_pos)
+  silent! call repeat#set("\<plug>(vimtex-cmd-toggle-star)", v:count)
 endfunction
 
 " }}}1

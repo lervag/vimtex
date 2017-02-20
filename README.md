@@ -70,7 +70,7 @@ disabled if desired.
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
   - Change the surrounding command or environment with `csc`/`cse`/`cs$`
-  - Toggle starred environment with `tse`
+  - Toggle starred command or environment with `tsc`/`tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
