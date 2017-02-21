@@ -239,69 +239,8 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#compile_selected(type) range " {{{1
-  "
-  " Get selected lines. Method depends on type of selection, which may be
-  " either of
-  "
-  " 1. Command range
-  " 2. Visual mapping
-  " 3. Operator mapping
-  "
-  if a:type == 'cmd'
-    let l:lines = getline(a:firstline, a:lastline)
-  elseif a:type == 'visual'
-    let l:lines = getline(line("'<"), line("'>"))
-  else
-    let l:lines = getline(line("'["), line("']"))
-  endif
-
-  "
-  " Use only the part of the selection that is within the
-  "
-  "   \begin{document} ... \end{document}
-  "
-  " environment.
-  "
-  let l:start = 0
-  let l:end = len(l:lines)
-  for l:n in range(len(l:lines))
-    if l:lines[l:n] =~# '\\begin\s*{document}'
-      let l:start = l:n + 1
-    elseif l:lines[l:n] =~# '\\end\s*{document}'
-      let l:end = l:n - 1
-      break
-    endif
-  endfor
-
-  "
-  " Check if the selection has any real content
-  "
-  if l:start >= len(l:lines)
-        \ || l:end < 0
-        \ || empty(substitute(join(l:lines[l:start : l:end], ''), '\s*', '', ''))
-    return
-  endif
-
-  "
-  " Define the set of lines to compile
-  "
-  let l:lines = vimtex#parser#tex(b:vimtex.tex, {
-        \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
-        \})
-        \ + ['\begin{document}']
-        \ + l:lines[l:start : l:end]
-        \ + ['\end{document}']
-
-  "
-  " Write content to temporary file
-  "
-  let l:file = {}
-  let l:file.base = b:vimtex.name . '_vimtex_selected.tex'
-  let l:file.tex  = b:vimtex.root . '/' . l:file.base
-  let l:file.pdf = fnamemodify(l:file.tex, ':r') . '.pdf'
-  let l:file.log = fnamemodify(l:file.tex, ':r') . '.log'
-  call writefile(l:lines, l:file.tex)
+  let l:file = vimtex#parser#selection_to_texfile(a:type)
+  if empty(l:file) | return | endif
 
   "
   " Compile the temporary file
