@@ -114,13 +114,19 @@ function! vimtex#info(global) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#wc(detailed, ...) " {{{1
+function! vimtex#wc(type, detailed, ...) range " {{{1
+  if empty(a:type)
+    let l:file = b:vimtex
+  else
+    let l:file = vimtex#parser#selection_to_texfile(a:type)
+  endif
+
   " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#shellescape(b:vimtex.root)
+  let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
   let cmd .= '; texcount -nosub -sum '
   let cmd .= a:0 > 0 ? '-letter ' : ''
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#shellescape(b:vimtex.base)
+  let cmd .= vimtex#util#shellescape(l:file.base)
   let lines = split(system(cmd), '\n')
 
   " Create wordcount window
@@ -309,11 +315,15 @@ function! s:init_buffer() " {{{1
   "
 
   " Define commands
-  command! -buffer -bang VimtexInfo         call vimtex#info(<q-bang> == "!")
-  command! -buffer -bang VimtexCountWords   call vimtex#wc(<q-bang> == "!")
-  command! -buffer -bang VimtexCountLetters call vimtex#wc(<q-bang> == "!", 1)
+  command! -buffer -bang VimtexInfo         call vimtex#info(<q-bang> == '!')
   command! -buffer       VimtexReload       call vimtex#reload()
   command! -buffer       VimtexToggleMain   call vimtex#toggle_main()
+  command! -buffer -bang VimtexCountWords   call vimtex#wc('', <q-bang> == '!')
+  command! -buffer -bang VimtexCountLetters call vimtex#wc('', <q-bang> == '!', 1)
+  command! -buffer -bang -range VimtexCountSelectedWords
+        \ <line1>,<line2>call vimtex#wc('cmd', <q-bang> == '!')
+  command! -buffer -range -bang VimtexCountSelectedLetters
+        \ <line1>,<line2>call vimtex#wc('cmd', <q-bang> == '!', 1)
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-info)        :VimtexInfo<cr>

@@ -1251,6 +1251,13 @@ Commands~
 
                             texcount -nosub -sum [-letter] -inc FILE
 <
+                                             *VimtexCountSelectedWords*
+                                             *VimtexCountSelectedWords!*
+                                             *VimtexCountSelectedLetters*
+                                             *VimtexCountSelectedLetters!*
+                          These commands are the same as the above, but they
+                          work on selections.
+
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
 :VimtexImapsList          Show the list of insert mode mappings created by the
