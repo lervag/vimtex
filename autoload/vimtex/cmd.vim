@@ -19,16 +19,13 @@ function! vimtex#cmd#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-change)
         \ :call vimtex#cmd#change()<cr>
 
-  nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ :call vimtex#cmd#create()<cr>
-
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ <c-r>=vimtex#cmd#create()<cr>
+        \ <c-r>=vimtex#cmd#create_insert()<cr>
 
-  nnoremap <silent><buffer> <plug>(vimtex-cmd-create-ask)
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ :call vimtex#cmd#create_ask(0)<cr>
 
-  xnoremap <silent><buffer> <plug>(vimtex-cmd-create-ask)
+  xnoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
@@ -114,9 +111,11 @@ function! vimtex#cmd#delete() " {{{1
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
 endfunction
 
-function! vimtex#cmd#create() " {{{1
+function! vimtex#cmd#create_insert() " {{{1
+  if mode() !=# 'i' | return | endif
+
   let l:re = '\v%(^|\A)\zs\w+\ze%(\A|$)'
-  let l:c0 = col('.') - (mode() ==# 'i')
+  let l:c0 = col('.') - 1
 
   let [l:l1, l:c1] = searchpos(l:re, 'bcn', line('.'))
   let l:c1 -= 1
@@ -131,19 +130,11 @@ function! vimtex#cmd#create() " {{{1
   endif
 
   let l:strpart1 = strpart(l:line, 0, l:c1)
-  if mode() ==# 'i'
-    let l:strpart2 = '\' . strpart(l:match, 0, l:c0 - l:c1) . '{'
-    let l:strpart3 = strpart(l:line, l:c0)
-  else
-    let l:strpart2 = '\' . l:match . '{'
-    let l:strpart3 = strpart(l:line, l:c2)
-  endif
+  let l:strpart2 = '\' . strpart(l:match, 0, l:c0 - l:c1) . '{'
+  let l:strpart3 = strpart(l:line, l:c0)
   call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
-  call setpos('.', [0, l:l1, l:c2+3, 0])
 
-  if mode() ==# 'n'
-    execute 'startinsert' . (empty(l:strpart3) ? '!' : '')
-  endif
+  call setpos('.', [0, l:l1, l:c2+3, 0])
   return ''
 endfunction
 
