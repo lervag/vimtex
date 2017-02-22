@@ -149,7 +149,12 @@ endfunction
 
 " }}}1
 function! vimtex#cmd#create_ask(visualmode) " {{{1
-  let l:cmd = input('Command name (empty to cancel): ')
+  call vimtex#echo#status(['Command command: ',
+        \ ['VimtexWarning', '(empty to cancel)']])
+  echohl VimtexMsg
+  let l:cmd = input('> ')
+  echohl None
+  let l:cmd = substitute(l:cmd, '^\\', '', '')
   if empty(l:cmd) | return | endif
 
   if a:visualmode
