@@ -152,20 +152,30 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
   let l:cmd = input('Command name (empty to cancel): ')
   if empty(l:cmd) | return | endif
 
-  let l:save_reg = getreg('"')
-  let l:pos = getpos('.')
-
   if a:visualmode
-    execute 'normal! gvdi\' . l:cmd . '}""Pi{'
+    let l:pos_start = getpos("'<")
+    let l:pos_end = getpos("'>")
+
+    normal! `>a}
+    normal! `<
+    execute 'normal! i\' . l:cmd . '{'
+
+    let l:pos_end[2] += 1
+    if l:pos_end[1] == l:pos_start[1]
+      let l:pos_end[2] += strlen(l:cmd) + 2
+    endif
+
+    call setpos('.', l:pos_end)
   else
+    let l:pos = getpos('.')
+    let l:save_reg = getreg('"')
     let l:pos[2] += strlen(l:cmd) + 2
     execute 'normal! ciw\' . l:cmd . '{"}'
     silent! call repeat#set(
           \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
+    call setreg('"', l:save_reg)
+    call setpos('.', l:pos)
   endif
-
-  call setreg('"', l:save_reg)
-  call setpos('.', l:pos)
 endfunction
 
 " }}}1
