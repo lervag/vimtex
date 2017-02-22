@@ -326,7 +326,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsc              |<plug>(vimtex-cmd-toggle-star)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
-   <F7>             |<plug>(vimtex-cmd-create)|             `ni`
+   <F7>             |<plug>(vimtex-cmd-create)|             `nxi`
    ]]               |<plug>(vimtex-delim-close)|            `i`
    ac               |<plug>(vimtex-ac)|                     `nxo`
    ic               |<plug>(vimtex-ic)|                     `nxo`
@@ -1317,11 +1317,18 @@ Map definitions~
   See also |g:vimtex_delim_toggle_mod_list|.
 
 *<plug>(vimtex-cmd-create)*
-  Convert the current word (word under or right before the cursor) into
-  a LaTeX command. That is, it prepends a backslash and adds an opening brace.
-  From normal mode, the mapping will leave you in insert mode. The mapping
-  works both in normal and in insert mode. It is by default mapped to <f7>
-  (see |vimtex-default-mappings| for a list of the default mappings).
+  This mapping works in both insert mode, normal mode and visual mode. It is
+  mapped by default to <f7>. See below for the behaviour in the different
+  modes.
+
+  Insert mode:
+    Convert the preceding text into a LaTeX command. That is, it prepends
+    a backslash and adds an opening brace. It also moves the cursor to the end
+    of the word.
+
+  Normal/Visual mode:
+    Surrounds the word under the cursor/visual selection by the command
+    provided in an input prompt.
 
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
