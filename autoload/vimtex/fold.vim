@@ -71,7 +71,7 @@ function! vimtex#fold#init_script() " {{{1
   let s:folded  = '\v'
   let s:folded .= ' ^\s*\%'
   let s:folded .= '|^\s*\]\{'
-  let s:folded .= '|^\s*}\s*$'
+  let s:folded .= '|^\s*}\s*(\%|$)'
   let s:folded .= '|^\s*\% Fake'
   let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
   let s:folded .= '|\\%(' . join([
@@ -445,17 +445,17 @@ function! s:cmd_multi(cmds) " {{{1
   let l:fold = {}
   let l:fold.re = {
         \ 'start' : l:re . '.*(\{|\[)\s*(\%.*)?$',
-        \ 'end' : '^\s*}\s*$',
-        \ 'text' : l:re . '\{[^}]*\}'
+        \ 'end' : '^\s*}\s*\(%\|$\)',
+        \ 'text' : l:re . '\{[^}]*\}',
         \}
+  let l:fold.opened = 0
 
   function! l:fold.level(line, lnum) dict
     if a:line =~# self.re.start
-      let self.opened = 1
+      let self.opened += 1
       return 'a1'
-    elseif has_key(self, 'opened')
-          \ && a:line =~# self.re.end
-      unlet self.opened
+    elseif self.opened > 0 && a:line =~# self.re.end
+      let self.opened -= 1
       return 's1'
     endif
     return ''
