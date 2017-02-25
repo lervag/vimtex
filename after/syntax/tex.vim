@@ -14,6 +14,31 @@ endif
 " - This will enable spell checking e.g. in toplevel of included files
 syntax spell toplevel
 
+" {{{1 Improve handling of newcommand and newenvironment commands
+
+" Allow arguments in newenvironments
+syntax region texEnvName contained matchgroup=Delimiter
+      \ start="{"rs=s+1  end="}"
+      \ nextgroup=texEnvBgn,texEnvArgs contained skipwhite skipnl
+syntax region texEnvArgs contained matchgroup=Delimiter
+      \ start="\["rs=s+1 end="]"
+      \ nextgroup=texEnvBgn,texEnvArgs
+      \ skipwhite skipnl
+syntax cluster texEnvGroup add=texDefParm,texNewEnv,texComment
+
+" Add support for \renewcommand and \renewenvironment
+syntax match texNewCmd "\\renewcommand\>"
+      \ nextgroup=texCmdName skipwhite skipnl
+syntax match texNewEnv "\\renewenvironment\>"
+      \ nextgroup=texEnvName skipwhite skipnl
+
+" Match nested DefParms
+syntax match texDefParmNested contained "##\+\d\+"
+highlight def link texDefParmNested Identifier
+syntax cluster texEnvGroup add=texDefParmNested
+syntax cluster texCmdGroup add=texDefParmNested
+
+" }}}1
 " {{{1 General match improvements
 
 syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
