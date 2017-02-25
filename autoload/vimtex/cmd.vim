@@ -228,7 +228,7 @@ function! vimtex#cmd#get_current() " {{{1
   while depth > 0
     let depth -= 1
     let cmd = s:get_cmd('prev')
-    if empty(cmd) | break | endif
+    if empty(cmd) | continue | endif
 
     if 10000*pos[1] + pos[2] <= 10000*cmd.pos_end.lnum + cmd.pos_end.cnum
       return cmd
