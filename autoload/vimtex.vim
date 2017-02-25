@@ -261,6 +261,9 @@ function! s:init_buffer() " {{{1
   setlocal suffixesadd=.tex
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
   setlocal commentstring=%%s
+  setlocal includeexpr=vimtex#include#expr()
+
+  let &l:include = '\v\\%(input|include)\{'
 
   let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
   let &l:define .= '\|toks\)\=def\|\\font\|\\\(future\)\=let'
@@ -270,11 +273,6 @@ function! s:init_buffer() " {{{1
   let &l:define .= '\|font\|if\|length\|savebox'
   let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
   let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
-
-  let &l:include = '\v\\%(input|include)\{'
-  let &l:includeexpr  = 'substitute('
-  let &l:includeexpr .=   "substitute(v:fname, '\\\\space', '', 'g'),"
-  let &l:includeexpr .=   "'^.\\{-}{\"\\?\\|\"\\?}.*', '', 'g')"
 
   let &cpo = s:save_cpo
   unlet s:save_cpo
