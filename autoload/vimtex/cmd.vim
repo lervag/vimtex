@@ -19,11 +19,17 @@ function! vimtex#cmd#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-change)
         \ :call vimtex#cmd#change()<cr>
 
-  nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ :call vimtex#cmd#create()<cr>
-
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ <c-r>=vimtex#cmd#create()<cr>
+        \ <c-r>=vimtex#cmd#create_insert()<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
+        \ :call vimtex#cmd#create_ask(0)<cr>
+
+  xnoremap <silent><buffer> <plug>(vimtex-cmd-create)
+        \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
+        \ :call vimtex#cmd#toggle_star()<cr>
 endfunction
 
 " }}}1
@@ -57,7 +63,8 @@ function! vimtex#cmd#change() " {{{1
 
   " Restore cursor position and create repeat hook
   cal setpos('.', l:save_pos)
-  silent! call repeat#set("\<plug>(vimtex-cmd-change)" . l:new_name . '^M', v:count)
+  silent! call repeat#set(
+        \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
 
 function! vimtex#cmd#delete() " {{{1
@@ -104,9 +111,11 @@ function! vimtex#cmd#delete() " {{{1
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
 endfunction
 
-function! vimtex#cmd#create() " {{{1
+function! vimtex#cmd#create_insert() " {{{1
+  if mode() !=# 'i' | return | endif
+
   let l:re = '\v%(^|\A)\zs\w+\ze%(\A|$)'
-  let l:c0 = col('.') - (mode() ==# 'i')
+  let l:c0 = col('.') - 1
 
   let [l:l1, l:c1] = searchpos(l:re, 'bcn', line('.'))
   let l:c1 -= 1
@@ -121,15 +130,82 @@ function! vimtex#cmd#create() " {{{1
   endif
 
   let l:strpart1 = strpart(l:line, 0, l:c1)
-  let l:strpart2 = '\' . strpart(l:match, 0, l:c0- l:c1) . '{'
+  let l:strpart2 = '\' . strpart(l:match, 0, l:c0 - l:c1) . '{'
   let l:strpart3 = strpart(l:line, l:c0)
   call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
-  call setpos('.', [0, l:l1, l:c2+3, 0])
 
-  if mode() ==# 'n'
-    execute 'startinsert' . (empty(l:strpart3) ? '!' : '')
-  endif
+  call setpos('.', [0, l:l1, l:c2+3, 0])
   return ''
+endfunction
+
+" }}}1
+function! vimtex#cmd#create_ask(visualmode) " {{{1
+  call vimtex#echo#status(['Command command: ',
+        \ ['VimtexWarning', '(empty to cancel)']])
+  echohl VimtexMsg
+  let l:cmd = input('> ')
+  echohl None
+  let l:cmd = substitute(l:cmd, '^\\', '', '')
+  if empty(l:cmd) | return | endif
+
+  if a:visualmode
+    let l:pos_start = getpos("'<")
+    let l:pos_end = getpos("'>")
+
+    normal! `>a}
+    normal! `<
+    execute 'normal! i\' . l:cmd . '{'
+
+    let l:pos_end[2] += 1
+    if l:pos_end[1] == l:pos_start[1]
+      let l:pos_end[2] += strlen(l:cmd) + 2
+    endif
+
+    call setpos('.', l:pos_end)
+  else
+    let l:pos = getpos('.')
+    let l:save_reg = getreg('"')
+    let l:pos[2] += strlen(l:cmd) + 2
+    execute 'normal! ciw\' . l:cmd . '{"}'
+    silent! call repeat#set(
+          \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
+    call setreg('"', l:save_reg)
+    call setpos('.', l:pos)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#cmd#toggle_star() " {{{1
+  let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) | return | endif
+
+  let l:old_name = l:cmd.name
+  let l:lnum = l:cmd.pos_start.lnum
+  let l:cnum = l:cmd.pos_start.cnum
+
+  " Set new command name
+  if match(l:old_name, '\*$') == -1
+    let l:new_name = l:old_name.'*'
+  else
+    let l:new_name = strpart(l:old_name, 0, strlen(l:old_name)-1)
+  endif
+  let l:new_name = substitute(l:new_name, '^\\', '', '')
+  if empty(l:new_name) | return | endif
+
+  " Update current position
+  let l:save_pos = getpos('.')
+  let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
+
+  " Perform the change
+  let l:line = getline(l:lnum)
+  call setline(l:lnum,
+        \   strpart(l:line, 0, l:cnum)
+        \ . l:new_name
+        \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
+
+  " Restore cursor position and create repeat hook
+  cal setpos('.', l:save_pos)
+  silent! call repeat#set("\<plug>(vimtex-cmd-toggle-star)", v:count)
 endfunction
 
 " }}}1
@@ -216,8 +292,8 @@ endfunction
 
 " }}}1
 function! s:get_cmd_name(next) " {{{1
-  let [l:lnum, l:cnum] = searchpos('\\\a\+', a:next ? 'nW' : 'cbnW')
-  let l:match = matchstr(getline(l:lnum), '^\\\a*', l:cnum-1)
+  let [l:lnum, l:cnum] = searchpos('\\\a\+\*\?', a:next ? 'nW' : 'cbnW')
+  let l:match = matchstr(getline(l:lnum), '^\\\a*\*\?', l:cnum-1)
   return [l:lnum, l:cnum, l:match]
 endfunction
 

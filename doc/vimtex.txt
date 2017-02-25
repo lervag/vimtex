@@ -110,7 +110,7 @@ Feature overview~
 - Other mappings
   - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
   - Change the surrounding command or environment with `csc`/`cse`/`cs$`
-  - Toggle starred environment with `tse`
+  - Toggle starred command or environment with `tsc`/`tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
@@ -323,9 +323,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    cse              |<plug>(vimtex-env-change)|             `n`
    csc              |<plug>(vimtex-cmd-change)|             `n`
    cs$              |<plug>(vimtex-cmd-change-math)|        `n`
+   tsc              |<plug>(vimtex-cmd-toggle-star)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
-   <F7>             |<plug>(vimtex-cmd-create)|             `ni`
+   <F7>             |<plug>(vimtex-cmd-create)|             `nxi`
    ]]               |<plug>(vimtex-delim-close)|            `i`
    ac               |<plug>(vimtex-ac)|                     `nxo`
    ic               |<plug>(vimtex-ic)|                     `nxo`
@@ -1250,6 +1251,13 @@ Commands~
 
                             texcount -nosub -sum [-letter] -inc FILE
 <
+                                             *VimtexCountSelectedWords*
+                                             *VimtexCountSelectedWords!*
+                                             *VimtexCountSelectedLetters*
+                                             *VimtexCountSelectedLetters!*
+                          These commands are the same as the above, but they
+                          work on selections.
+
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
 :VimtexImapsList          Show the list of insert mode mappings created by the
@@ -1296,8 +1304,9 @@ Map definitions~
 *<plug>(vimtex-cmd-change)*
   Delete/Change surrounding command.
 
+*<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
-  Toggle starred environment.
+  Toggle starred command/environment.
 
 *<plug>(vimtex-delim-toggle-modifier)*
   Toggle delimiter modifiers, for instance between `(...)` and `\left(...\right)`.
@@ -1308,11 +1317,18 @@ Map definitions~
   See also |g:vimtex_delim_toggle_mod_list|.
 
 *<plug>(vimtex-cmd-create)*
-  Convert the current word (word under or right before the cursor) into
-  a LaTeX command. That is, it prepends a backslash and adds an opening brace.
-  From normal mode, the mapping will leave you in insert mode. The mapping
-  works both in normal and in insert mode. It is by default mapped to <f7>
-  (see |vimtex-default-mappings| for a list of the default mappings).
+  This mapping works in both insert mode, normal mode and visual mode. It is
+  mapped by default to <f7>. See below for the behaviour in the different
+  modes.
+
+  Insert mode:
+    Convert the preceding text into a LaTeX command. That is, it prepends
+    a backslash and adds an opening brace. It also moves the cursor to the end
+    of the word.
+
+  Normal/Visual mode:
+    Surrounds the word under the cursor/visual selection by the command
+    provided in an input prompt.
 
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
