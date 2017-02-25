@@ -152,9 +152,10 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     let l:pos_start = getpos("'<")
     let l:pos_end = getpos("'>")
 
-    normal! `>a}
     normal! `<
     execute 'normal! i\' . l:cmd . '{'
+    normal! `>
+    execute 'normal! ' . (strlen(l:cmd) + 2) . 'la}'
 
     let l:pos_end[2] += 1
     if l:pos_end[1] == l:pos_start[1]
