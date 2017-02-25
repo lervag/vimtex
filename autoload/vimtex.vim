@@ -235,6 +235,8 @@ function! s:init_buffer() " {{{1
 
   " Ensure tex files are prioritized when listing files
   for suf in [
+        \ '.sty',
+        \ '.cls',
         \ '.log',
         \ '.aux',
         \ '.bbl',
