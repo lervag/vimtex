@@ -1,5 +1,32 @@
 \documentclass{article}
 \usepackage{minted}
+
+%
+% Test (re)newcommand and (re)newenvironment
+%
+\newcommand{\testA}[1]{Test #1}
+\renewcommand{\testA}[1]{Test #1}
+\newenvironment{example}[1][]{Start #1}{Stop}
+\renewenvironment{example}[1][]{Start #1}{Stop}
+
+%
+% Test nested (re)newcommand and (re)newenvironment
+%
+\newcommand{\mycommand}[1]{%
+  \renewcommand{\myothercommand}[1]{%
+    \dosomethingwithouterarg{#1}%
+    \dosomethingwithinnerarg{##1}%
+  }%
+}
+\newenvironment{nestedexample}[1][]{%
+  \renewenvironment{nested}[1][0]{%
+    Outerarg #1}{%
+    Innerarg ##1
+  }%
+  \begin{nested}{title}}{%
+  \end{nested}%
+}
+
 \begin{document}
 
 \begin{lstlisting}
