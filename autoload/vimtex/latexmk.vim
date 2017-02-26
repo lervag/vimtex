@@ -10,6 +10,18 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_latexmk_progname',
         \ get(v:, 'progpath', get(v:, 'progname')))
   call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
+
+  " Check if .latexmkrc sets the build_dir - if so this should be respected
+  let l:build_dir = s:latexmk_get_build_dir()
+  if !empty(l:build_dir)
+    if !empty(g:vimtex_latexmk_build_dir)
+      call vimtex#echo#warning(
+            \ 'g:vimtex_latexmk_build_dir changed to: ' . l:build_dir)
+      call vimtex#echo#wait()
+    endif
+    let g:vimtex_latexmk_build_dir = l:build_dir
+  endif
+
   if !g:vimtex_latexmk_enabled | return | endif
 
   call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
@@ -692,6 +704,28 @@ function! s:latexmk_kill(data) " {{{1
 
   call vimtex#util#execute(exe)
   let a:data.pid = 0
+endfunction
+
+" }}}1
+function! s:latexmk_get_build_dir() " {{{1
+  let l:pattern = '^\s*\$out_dir\s*=\s*[''"]\(.\+\)[''"]\s*;\?\s*$'
+  let l:files = [
+        \ b:vimtex.root . '/latexmkrc',
+        \ b:vimtex.root . '/.latexmkrc',
+        \ fnamemodify('~/.latexmkrc', ':p'),
+        \]
+
+  for l:file in l:files
+    if filereadable(l:file)
+      let l:out_dir = matchlist(readfile(l:file), l:pattern)
+      if len(l:out_dir) > 1
+        echon ' ' . l:out_dir[1]
+        return l:out_dir[1]
+      endif
+    endif
+  endfor
+
+  return ''
 endfunction
 
 " }}}1

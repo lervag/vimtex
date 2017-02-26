@@ -700,7 +700,10 @@ Options~
   `-output-directory` option in `latexmk`.  If the path is a relative path,
   then it will be considered relative to the main project file.
 
-  Note that this option only works with `latexmk` version 4.27 and later.
+  Note 1: This option only works with `latexmk` version 4.27 and later.
+
+  Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
+          will have priority.
 
   Default value: ''
 
