@@ -719,7 +719,6 @@ function! s:latexmk_get_build_dir() " {{{1
     if filereadable(l:file)
       let l:out_dir = matchlist(readfile(l:file), l:pattern)
       if len(l:out_dir) > 1
-        echon ' ' . l:out_dir[1]
         return l:out_dir[1]
       endif
     endif
