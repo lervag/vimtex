@@ -5,9 +5,22 @@
 "
 
 function! vimtex#include#expr() " {{{1
+  "
+  " First try \include or \input
+  "
   let l:file = s:include()
   for l:suffix in split(&l:suffixesadd, ',')
     let l:candidate = l:file . l:suffix
+    if filereadable(l:candidate)
+      return l:candidate
+    endif
+  endfor
+
+  "
+  " Next search for file with kpsewhich
+  "
+  for l:suffix in  [''] + reverse(split(&l:suffixesadd, ','))
+    let l:candidate = vimtex#util#kpsewhich(v:fname . l:suffix)
     if filereadable(l:candidate)
       return l:candidate
     endif
