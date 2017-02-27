@@ -258,7 +258,7 @@ function! s:init_buffer() " {{{1
     execute 'set suffixes+=' . suf
   endfor
 
-  setlocal suffixesadd=.tex
+  setlocal suffixesadd=.tex,.sty,.cls
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
   setlocal commentstring=%%s
   setlocal includeexpr=vimtex#include#expr()
