@@ -29,65 +29,66 @@ CompilerSet errorformat+=%Z<argument>\ %m
 " More info for some errors
 CompilerSet errorformat+=%Cl.%l\ %m
 
+"
+" Show warnings
+"
+
 let s:warnings = get(g:, 'vimtex_quickfix_warnings', {})
 let s:packages = get(s:warnings, 'packages', {})
+let s:wdefault = get(s:warnings, 'default', 1)
+let s:pdefault = get(s:packages, 'default', 1)
 
-" Show warnings (enabled by default)
-if !get(s:warnings, 'disable', 0)
-  if get(s:warnings, 'general', 1)
-    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
+if get(s:warnings, 'general', s:wdefault)
+  CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
+  CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
 
-    CompilerSet errorformat+=%-C(Font)%m
-  endif
+  CompilerSet errorformat+=%-C(Font)%m
+endif
 
-  if get(s:warnings, 'overfull', 1)
-    CompilerSet errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
-  endif
+if get(s:warnings, 'overfull', s:wdefault)
+  CompilerSet errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+endif
 
-  if get(s:warnings, 'underfull', 1)
-    CompilerSet errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
-  endif
+if get(s:warnings, 'underfull', s:wdefault)
+  CompilerSet errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+endif
 
-  if !get(s:packages, 'disable', 0)
-    if get(s:packages, 'natbib', 1)
-      CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
-    endif
+if get(s:packages, 'natbib', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+endif
 
-    if get(s:packages, 'biblatex', 1)
-      CompilerSet errorformat+=%+WPackage\ biblatex\ Warning:\ %m
-      CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
-      CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
-      CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
-      CompilerSet errorformat+=%-Z(biblatex)%m
-    endif
+if get(s:packages, 'biblatex', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ biblatex\ Warning:\ %m
+  CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
+  CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
+  CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
+  CompilerSet errorformat+=%-Z(biblatex)%m
+endif
 
-    if get(s:packages, 'babel', 1)
-      CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
-      CompilerSet errorformat+=%-C(babel)%m
-    endif
+if get(s:packages, 'babel', s:pdefault)
+  CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
+  CompilerSet errorformat+=%-C(babel)%m
+endif
 
-    if get(s:packages, 'hyperref', 1)
-      CompilerSet errorformat+=%+WPackage\ hyperref\ Warning:\ %m
-      CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
-      CompilerSet errorformat+=%-C(hyperref)%m
-    endif
+if get(s:packages, 'hyperref', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ hyperref\ Warning:\ %m
+  CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
+  CompilerSet errorformat+=%-C(hyperref)%m
+endif
 
-    if get(s:packages, 'scrreprt', 1)
-      CompilerSet errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
-      CompilerSet errorformat+=%-C(scrreprt)%m
-    endif
+if get(s:packages, 'scrreprt', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
+  CompilerSet errorformat+=%-C(scrreprt)%m
+endif
 
-    if get(s:packages, 'fixltx2e', 1)
-      CompilerSet errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
-      CompilerSet errorformat+=%-C(fixltx2e)%m
-    endif
+if get(s:packages, 'fixltx2e', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
+  CompilerSet errorformat+=%-C(fixltx2e)%m
+endif
 
-    if get(s:packages, 'titlesec', 1)
-      CompilerSet errorformat+=%+WPackage\ titlesec\ Warning:\ %m
-      CompilerSet errorformat+=%-C(titlesec)%m
-    endif
-  endif
+if get(s:packages, 'titlesec', s:pdefault)
+  CompilerSet errorformat+=%+WPackage\ titlesec\ Warning:\ %m
+  CompilerSet errorformat+=%-C(titlesec)%m
 endif
 
 " Ignore unmatched lines

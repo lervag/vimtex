@@ -810,26 +810,26 @@ Options~
   Some examples may be helpful: >
 
     " Disable all warnings
-    let g:vimtex_quickfix_warnings = {'disable' : 1}
+    let g:vimtex_quickfix_warnings = {'default' : 0}
 
     " Disable overfull/underfull \hbox and all package warnings
     let g:vimtex_quickfix_warnings = {
           \ 'overfull' : 0,
           \ 'underfull' : 0,
           \ 'packages' : {
-          \   'disable' : 1,
+          \   'default' : 0,
           \ },
           \}
 <
   Default value: >
 
     let g:vimtex_quickfix_warnings = {
-          \ 'disable' : 0,
+          \ 'default' : 1,
           \ 'general' : 1,
           \ 'overfull' : 1,
           \ 'underfull' : 1,
           \ 'packages' : {
-          \   'disable' : 0,
+          \   'default' : 1,
           \   'natbib' : 1,
           \   'biblatex' : 1,
           \   'babel' : 1,
