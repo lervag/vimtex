@@ -801,29 +801,45 @@ Options~
 
   Default value: 0
 
-*g:vimtex_quickfix_ignore_all_warnings*
-  This option controls whether or not LaTeX warnings should be included in the
-  |quickfix| window.  LaTeX errors will always be included.
+*g:vimtex_quickfix_warnings*
+  A dictionary that specifies which warnings to include. By default, all
+  warnings are enabled and have to be specifically disabled. However, it is
+  possible to use the entry `disable` to disable either all warnings, or all
+  package warnings, if so desired.
 
-  Default value: 0
+  Some examples may be helpful: >
 
-*g:vimtex_quickfix_ignored_warnings*
-  A list of warning messages that should be ignored.  The list is a list of
-  strings.  Any LaTeX warning that contains a string in the list will be
-  ignored.
+    " Disable all warnings
+    let g:vimtex_quickfix_warnings = {'disable' : 1}
 
-  To ignore some common LaTeX warnings, try the following setting: >
-    let g:vimtex_quickfix_ignored_warnings = [
-        \ 'Underfull',
-        \ 'Overfull',
-        \ 'specifier changed to',
-      \ ]
+    " Disable overfull/underfull \hbox and all package warnings
+    let g:vimtex_quickfix_warnings = {
+          \ 'overfull' : 0,
+          \ 'underfull' : 0,
+          \ 'packages' : {
+          \   'disable' : 1,
+          \ },
+          \}
 <
-  Note: This option is only relevant if |g:vimtex_quickfix_ignore_all_warnings|
-        is disabled.
+  Default value: >
 
-  Default value: []
-
+    let g:vimtex_quickfix_warnings = {
+          \ 'disable' : 0,
+          \ 'general' : 1,
+          \ 'overfull' : 1,
+          \ 'underfull' : 1,
+          \ 'packages' : {
+          \   'disable' : 0,
+          \   'natbib' : 1,
+          \   'biblatex' : 1,
+          \   'babel' : 1,
+          \   'hyperref' : 1,
+          \   'scrreprt' : 1,
+          \   'fixltx2e' : 1,
+          \   'titlesec' : 1,
+          \ },
+          \}
+<
 *g:vimtex_quickfix_mode*
   This option controls the behaviour of the |quickfix| window in case errors
   and/or warnings are found.  The recognized options are:
@@ -2259,6 +2275,16 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2017-03-02: Changed how to set ignored warnings~
+I'm updating the changelog to notify of a change to the quickfix settings.
+
+Deprecated options:
+  *g:vimtex_quickfix_ignore_all_warnings*
+  *g:vimtex_quickfix_ignored_warnings*
+
+See instead:
+  |g:vimtex_quickfix_warnings|
 
 2016-05-31: A lot of things have updated~
 I know that people would like to see a simple list of changes. Unfortunately,

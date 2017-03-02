@@ -29,40 +29,65 @@ CompilerSet errorformat+=%Z<argument>\ %m
 " More info for some errors
 CompilerSet errorformat+=%Cl.%l\ %m
 
-" Show warnings
-if exists('g:vimtex_quickfix_ignore_all_warnings')
-      \ && exists('g:vimtex_quickfix_ignored_warnings')
-      \ && !g:vimtex_quickfix_ignore_all_warnings
-  " Ignore some warnings
-  for w in g:vimtex_quickfix_ignored_warnings
-    let warning = escape(substitute(w, '[\,]', '%\\\\&', 'g'), ' ')
-    exe 'CompilerSet errorformat+=%-G%.%#'. warning .'%.%#'
-  endfor
-  CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-  CompilerSet errorformat+=%+W%.%#\ at\ lines\ %l--%*\\d
-  CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
-  CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
-  CompilerSet errorformat+=%+W%.%#%.%#Warning:\ %m
+let s:warnings = get(g:, 'vimtex_quickfix_warnings', {})
+let s:packages = get(s:warnings, 'packages', {})
 
-  " Parse biblatex warnings
-  CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
-  CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
-  CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
-  CompilerSet errorformat+=%-Z(biblatex)%m
+" Show warnings (enabled by default)
+if !get(s:warnings, 'disable', 0)
+  if get(s:warnings, 'general', 1)
+    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
+    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
 
-  " Parse babel warnings
-  CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
-  CompilerSet errorformat+=%-C(babel)%m
+    CompilerSet errorformat+=%-C(Font)%m
+  endif
 
-  " Parse hyperref warnings
-  CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
-  CompilerSet errorformat+=%-C(hyperref)%m
+  if get(s:warnings, 'overfull', 1)
+    CompilerSet errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+  endif
 
-  " Parse more warnings
-  CompilerSet errorformat+=%-C(scrreprt)%m
-  CompilerSet errorformat+=%-C(fixltx2e)%m
-  CompilerSet errorformat+=%-C(titlesec)%m
-  CompilerSet errorformat+=%-C(Font)%m
+  if get(s:warnings, 'underfull', 1)
+    CompilerSet errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+  endif
+
+  if !get(s:packages, 'disable', 0)
+    if get(s:packages, 'natbib', 1)
+      CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+    endif
+
+    if get(s:packages, 'biblatex', 1)
+      CompilerSet errorformat+=%+WPackage\ biblatex\ Warning:\ %m
+      CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
+      CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
+      CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
+      CompilerSet errorformat+=%-Z(biblatex)%m
+    endif
+
+    if get(s:packages, 'babel', 1)
+      CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
+      CompilerSet errorformat+=%-C(babel)%m
+    endif
+
+    if get(s:packages, 'hyperref', 1)
+      CompilerSet errorformat+=%+WPackage\ hyperref\ Warning:\ %m
+      CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
+      CompilerSet errorformat+=%-C(hyperref)%m
+    endif
+
+    if get(s:packages, 'scrreprt', 1)
+      CompilerSet errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
+      CompilerSet errorformat+=%-C(scrreprt)%m
+    endif
+
+    if get(s:packages, 'fixltx2e', 1)
+      CompilerSet errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
+      CompilerSet errorformat+=%-C(fixltx2e)%m
+    endif
+
+    if get(s:packages, 'titlesec', 1)
+      CompilerSet errorformat+=%+WPackage\ titlesec\ Warning:\ %m
+      CompilerSet errorformat+=%-C(titlesec)%m
+    endif
+  endif
 endif
 
 " Ignore unmatched lines
