@@ -102,7 +102,16 @@ function! vimtex#env#delete(type) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
+  " Remove opening and closing environment commands
   call vimtex#env#change(l:open, l:close, '')
+
+  " If the lines are empty afterwords, then we also delete the lines
+  if getline(l:close.lnum) =~# '^\s*$'
+    execute l:close.lnum . 'd'
+  endif
+  if getline(l:open.lnum) =~# '^\s*$'
+    execute l:open.lnum . 'd'
+  endif
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1
