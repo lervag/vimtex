@@ -103,6 +103,12 @@ function! vimtex#env#delete(type) " {{{1
   if empty(l:open) | return | endif
 
   call vimtex#env#change(l:open, l:close, '')
+  if (getline(l:close.lnum) =~ "^ *$")
+    execute l:close.lnum . 'd'
+  endif
+  if (getline(l:open.lnum) =~ "^ *$")
+    execute l:open.lnum . 'd'
+  endif
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1
