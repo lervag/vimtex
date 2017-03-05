@@ -93,3 +93,5 @@ endif
 
 " Ignore unmatched lines
 CompilerSet errorformat+=%-G%.%#
+
+" vim: fdm=marker sw=2
