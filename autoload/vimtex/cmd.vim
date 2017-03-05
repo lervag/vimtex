@@ -148,6 +148,10 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
   let l:cmd = substitute(l:cmd, '^\\', '', '')
   if empty(l:cmd) | return | endif
 
+  " Avoid autoindent (disable indentkeys)
+  let l:save_indentkeys = &l:indentkeys
+  setlocal indentkeys=
+
   if a:visualmode
     let l:pos_start = getpos("'<")
     let l:pos_end = getpos("'>")
@@ -173,6 +177,9 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     call setreg('"', l:save_reg)
     call setpos('.', l:pos)
   endif
+
+  " Restore indentkeys setting
+  let &l:indentkeys = l:save_indentkeys
 endfunction
 
 " }}}1
