@@ -158,12 +158,12 @@ function! s:format_build_lines(start, end) " {{{1
   " Add the words in properly indented and formatted lines
   "
   let l:lnum = a:start-1
-  let l:current = repeat(' ', indent(a:start))
+  let l:current = s:get_indents(indent(a:start))
   for l:word in l:words
     if strchars(l:word) + strchars(l:current) > s:textwidth
       call append(l:lnum, substitute(l:current, '\s$', '', ''))
       let l:lnum += 1
-      let l:current = repeat(' ', VimtexIndent(a:start))
+      let l:current = s:get_indents(VimtexIndent(a:start))
     endif
     let l:current .= l:word . ' '
   endfor
@@ -200,6 +200,15 @@ function! s:compare_lines(new, old) " {{{1
     endif
   endfor
   return l:min_length
+endfunction
+
+" }}}1
+function! s:get_indents(number) " {{{1
+  if &l:expandtab
+    return repeat(' ', a:number)
+  else
+    return repeat("\t", a:number/&l:tabstop)
+  endif
 endfunction
 
 " }}}1
