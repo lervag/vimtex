@@ -1,0 +1,17 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+set nojoinspaces
+set tw=80
+set noet
+set ci
+set pi
+set sts=0
+set sw=4
+set ts=4
+set list
+
+let g:vimtex_format_enabled = 1
