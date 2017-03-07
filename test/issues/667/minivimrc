@@ -7,11 +7,21 @@ syntax enable
 set nojoinspaces
 set tw=80
 set noet
-set ci
-set pi
-set sts=0
-set sw=4
-set ts=4
-set list
+set sw=8
+set ts=8
+
+nnoremap q :q!<cr>
 
 let g:vimtex_format_enabled = 1
+
+"
+" Open file and perform the format operation
+"
+silent edit mwe.tex
+normal gg}gq}%j$
+
+"
+" Visualize tabs
+"
+highlight Tabs ctermbg=gray guibg=gray
+match Tabs /^\t\+/
