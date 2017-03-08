@@ -495,7 +495,7 @@ endfunction
 " }}}1
 function! vimtex#latexmk#stop_all() " {{{1
   for data in values(g:vimtex_data)
-    if data.pid
+    if get(data, 'pid', 0)
       call s:latexmk_kill(data)
     endif
   endfor
@@ -766,7 +766,7 @@ endfunction
 " }}}1
 function! s:clean_on_quit() " {{{1
   " Kill latexmk process if it exists
-  if b:vimtex.pid > 0
+  if get(b:vimtex, 'pid', 0)
     call s:latexmk_kill(b:vimtex)
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'stopped (' . b:vimtex.base . ')']])
