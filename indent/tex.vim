@@ -25,7 +25,7 @@ setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
 function! VimtexIndent(lnum) " {{{1
-  let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1))
+  let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
   if l:prev_lnum == 0 | return indent(a:lnum) | endif
 
   " Get current and previous line and remove comments
@@ -39,7 +39,8 @@ function! VimtexIndent(lnum) " {{{1
 
   " Align on ampersands
   if get(g:, 'vimtex_indent_on_ampersands', 1)
-        \ && l:line =~# '^\s*&' && l:prev_line =~# '\\\@<!&.*'
+        \ && l:line =~# '^\s*&'
+        \ && l:prev_line =~# '\\\@<!&.*'
     return indent(a:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
   endif
 
@@ -49,7 +50,8 @@ function! VimtexIndent(lnum) " {{{1
   endif
 
   " Ensure previous line does not start with ampersand
-  let l:prev_lnum = s:get_prev_line(l:prev_lnum, 'ignore-ampersands')
+  let l:prev_lnum = s:get_prev_line(l:prev_lnum,
+        \ get(g:, 'vimtex_indent_on_ampersands', 1))
   if l:prev_lnum == 0 | return 0 | endif
   let l:prev_line = substitute(getline(l:prev_lnum), '\\\@<!%.*', '', '')
 
@@ -62,15 +64,14 @@ function! VimtexIndent(lnum) " {{{1
 endfunction
 "}}}
 
-function! s:get_prev_line(lnum, ...) " {{{1
-  let l:ignore_amps = a:0 > 0
+function! s:get_prev_line(lnum, ignore_amps) " {{{1
   let l:lnum = a:lnum
   let l:prev = getline(l:lnum)
 
   while l:lnum != 0
         \ && (l:prev =~# '^\s*%'
         \     || s:is_verbatim(l:prev, l:lnum)
-        \     || !l:ignore_amps && match(l:prev, '^\s*&') >= 0)
+        \     || a:ignore_amps && match(l:prev, '^\s*&') >= 0)
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:prev = getline(l:lnum)
   endwhile
