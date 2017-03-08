@@ -14,10 +14,10 @@ Given tex (Indent: regular tex):
 
     \end{document}
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \documentclass{minimal}
   \usepackage{amsmath}
   \usepackage{tikz}
@@ -42,10 +42,10 @@ Given tex (Indent: lists):
     (Author): commentaries here
   \end{description}
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \begin{itemize}
     \item item is indented twice
       and the next line is indented to match
@@ -82,10 +82,10 @@ Given tex (Indent: math):
   In R, there is the operator \verb|[<-|...
   that ...
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \[
     1+1
   \]
@@ -141,11 +141,11 @@ Given tex (Indent: tikz):
     \end{axis}
        \end{tikzpicture}
 
-Execute (Indent):
+Execute:
   let b:vimtex.packages.tikz = 1
   normal gg=G
 
-Expect tex (Verify):
+Expect tex:
   \tikz \fill[green] rectangle (0.5,0.5); Something
   about something.
 
@@ -189,10 +189,10 @@ Given tex (Indent: verbatims):
       not affect verbatim environments!
       \end{lstlisting}
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \begin{verbatim}
   #!/bin/bash
   echo "test"
@@ -223,10 +223,10 @@ Given tex (Indent: ampersands):
       \end{aligned}
   \end{equation}
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \begin{tabular}{cc}
     \begin{tabular}{c}
       Cell 1
@@ -260,10 +260,10 @@ Given tex (Indent: ampersands 2):
   \end{equation}
 
 
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \begin{equation}
     \begin{aligned}
       1 &
@@ -272,6 +272,10 @@ Expect tex (Verify):
       & 4 \\
     \end{aligned}
   \end{equation}
+
+Given:
+Execute (let g:vimtex_indent_ignored_envs = ...):
+  let g:vimtex_indent_ignored_envs = ['document', 'proof']
 
 Given tex (Indent: ignored environments):
   \documentclass{minimal}
@@ -283,13 +287,10 @@ Given tex (Indent: ignored environments):
   \end{proof}
   \end{document}
 
-Execute (let g:vimtex_indent_ignored_envs = ...):
-  let g:vimtex_indent_ignored_envs = ['document', 'proof']
-
-Do (Indent):
+Do:
   gg=G
 
-Expect tex (Verify):
+Expect tex:
   \documentclass{minimal}
   \usepackage{amsmath}
   \begin{document}
@@ -300,7 +301,7 @@ Expect tex (Verify):
   \end{document}
 
 Given:
-Execute (unlet g:vimtex_indent_ignored_envs):
+Execute (unlet g:vimtex_indent_...):
   unlet g:vimtex_indent_ignored_envs
   unlet g:vimtex_indent_on_ampersands
 
