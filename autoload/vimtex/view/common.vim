@@ -5,9 +5,7 @@
 "
 
 function! vimtex#view#common#apply_common_template(viewer) " {{{1
-  call extend(a:viewer, deepcopy(s:common_template))
-  call a:viewer.refresh_paths()
-  return a:viewer
+  return extend(a:viewer, deepcopy(s:common_template))
 endfunction
 
 " }}}1
@@ -22,7 +20,7 @@ endfunction
 " }}}1
 function! vimtex#view#common#not_readable(output) " {{{1
   if !filereadable(a:output)
-    call vimtex#echo#warning('viewer can not read PDF file!')
+    call vimtex#echo#warning("viewer can not read PDF file!\n" . a:output)
     return 1
   else
     return 0
@@ -33,14 +31,15 @@ endfunction
 
 let s:common_template = {}
 
-function! s:common_template.refresh_paths() dict " {{{1
-  if g:vimtex_view_use_temp_files
-    let self.out = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-  else
-    let self.out = b:vimtex.out(1)
-  endif
+function! s:common_template.out() dict " {{{1
+  return g:vimtex_view_use_temp_files
+        \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+        \ : b:vimtex.out(1)
+endfunction
 
-  let self.synctex = fnamemodify(self.out, ':r') . '.synctex.gz'
+" }}}1
+function! s:common_template.synctex() dict " {{{1
+  return fnamemodify(self.out(), ':r') . '.synctex.gz'
 endfunction
 
 " }}}1
@@ -50,16 +49,18 @@ function! s:common_template.copy_files() dict " {{{1
   "
   " Copy pdf file
   "
-  if getftime(b:vimtex.out()) > getftime(self.out)
-    call writefile(readfile(b:vimtex.out(), 'b'), self.out, 'b')
+  let l:out = self.out()
+  if getftime(b:vimtex.out()) > getftime(l:out)
+    call writefile(readfile(b:vimtex.out(), 'b'), l:out, 'b')
   endif
 
   "
   " Copy synctex file
   "
   let l:old = b:vimtex.ext('synctex.gz')
-  if getftime(l:old) > getftime(self.synctex)
-    call rename(l:old, self.synctex)
+  let l:new = self.synctex()
+  if getftime(l:old) > getftime(l:new)
+    call rename(l:old, l:new)
   endif
 endfunction
 
@@ -69,12 +70,11 @@ let s:xwin_template = {}
 
 function! s:xwin_template.view(file) dict " {{{1
   if empty(a:file)
-    let outfile = self.out
+    let outfile = self.out()
   else
     let outfile = a:file
   endif
-  if !filereadable(outfile)
-    call vimtex#echo#warning('viewer can not read PDF file!')
+  if vimtex#view#common#not_readable(outfile)
     return
   endif
 
@@ -134,7 +134,7 @@ function! s:xwin_template.xwin_exists() dict " {{{1
   " If xwin_id is unset, check if matching viewer windows exist
   "
   if self.xwin_id == 0
-    let cmd = 'xdotool search --name ' . fnamemodify(self.out, ':t')
+    let cmd = 'xdotool search --name ' . fnamemodify(self.out(), ':t')
     let result = split(system(cmd), '\n')
     if len(result) > 0
       let self.xwin_id = result[-1]

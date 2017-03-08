@@ -48,7 +48,7 @@ let s:general = {}
 
 function! s:general.view(file) dict " {{{1
   if empty(a:file)
-    let outfile = self.out
+    let outfile = self.out()
 
     " Only copy files if they don't exist
     if g:vimtex_view_use_temp_files

@@ -55,7 +55,7 @@ endfunction
 
 " }}}1
 function! s:zathura.forward_search(outfile) dict " {{{1
-  if !filereadable(self.synctex) | return | endif
+  if !filereadable(self.synctex()) | return | endif
 
   let exe = {}
   let exe.cmd  = 'zathura --synctex-forward '
@@ -90,7 +90,7 @@ function! s:zathura.latexmk_callback(status) dict " {{{1
     endif
 
     if !self.xwin_exists() && !has_key(self, 'started_through_callback')
-      call self.start(self.out)
+      call self.start(self.out())
       let self.started_through_callback = 1
     endif
   endif
