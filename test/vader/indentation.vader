@@ -273,6 +273,21 @@ Expect tex:
     \end{aligned}
   \end{equation}
 
+Given tex (Format: ampersands 3):
+  \begin{align}
+    &x(
+  y)
+  \end{align}
+
+Do:
+  gg=G
+
+Expect tex:
+  \begin{align}
+    &x(
+    y)
+  \end{align}
+
 Given:
 Execute (let g:vimtex_indent_ignored_envs = ...):
   let g:vimtex_indent_ignored_envs = ['document', 'proof']
