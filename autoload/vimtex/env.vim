@@ -107,10 +107,10 @@ function! vimtex#env#delete(type) " {{{1
 
   " If the lines are empty afterwords, then we also delete the lines
   if getline(l:close.lnum) =~# '^\s*$'
-    execute l:close.lnum . 'd'
+    execute l:close.lnum . 'd _'
   endif
   if getline(l:open.lnum) =~# '^\s*$'
-    execute l:open.lnum . 'd'
+    execute l:open.lnum . 'd _'
   endif
 endfunction
 
