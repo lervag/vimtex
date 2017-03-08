@@ -204,11 +204,9 @@ endfunction
 
 " }}}1
 function! s:get_indents(number) " {{{1
-  if &l:expandtab
-    return repeat(' ', a:number)
-  else
-    return repeat("\t", a:number/&l:tabstop)
-  endif
+  return !&l:expandtab && &l:shiftwidth == &l:tabstop
+        \ ? repeat("\t", a:number/&l:tabstop)
+        \ : repeat(' ', a:number)
 endfunction
 
 " }}}1
