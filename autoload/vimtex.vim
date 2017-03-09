@@ -588,9 +588,11 @@ function! s:get_main() " {{{1
   "
   " Search for main file recursively through include specifiers
   "
-  let l:candidate = s:get_main_recurse()
-  if l:candidate !=# ''
-    return l:candidate
+  if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
+    let l:candidate = s:get_main_recurse()
+    if l:candidate !=# ''
+      return l:candidate
+    endif
   endif
 
   "

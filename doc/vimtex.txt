@@ -231,6 +231,10 @@ Recursive search~
   because the main file does not live in the same folder or a parent folder.
   In this particular case, the TeX root specifier should work.
 
+  Note: In rare cases, such as if there are _very_ many tex files in the
+        directory tree, this method may be slow. One may therefore disable it
+        through the option |g:vimtex_disable_recursive_main_file_detection|.
+
 ------------------------------------------------------------------------------
 Comment on internal tex plugin~
                                                       *vimtex-comment-internal*
@@ -351,6 +355,15 @@ Options~
   Set to 0 to disable |vimtex|.
 
   Default value: Undefined.
+
+*g:vimtex_disable_recursive_main_file_detection*
+  In rare cases, the recursive method of finding the main file in multi file
+  projects may be slow. This might happen for instance when there are _very_
+  many tex files in the directory tree that is searched. In such cases, one
+  may disable the recursive method by setting this variable to a nonzero
+  value.
+
+  Default value: 0
 
 *g:vimtex_disable_version_warning*
   |vimtex| will warn you if you are using an unsupported version of Vim. This
