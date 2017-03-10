@@ -16,7 +16,9 @@ endfunction
 function! vimtex#complete#init_script() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  let s:completers = [s:bib, s:ref, s:img, s:inc, s:pdf, s:sta, s:gls]
+  let s:completers = [
+        \ s:bib, s:ref, s:img, s:inc, s:pdf, s:sta, s:gls, s:pck, s:doc,
+        \]
 endfunction
 
 " }}}1
@@ -528,10 +530,75 @@ endfunction
 
 
 " }}}1
+" {{{1 Packages (\usepackage)
+
+let s:pck = {
+      \ 'patterns' : ['\v\\usepackage%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'candidates' : [],
+      \}
+
+function! s:pck.complete(regex) dict " {{{2
+  return filter(copy(self.gather_candidates()),
+        \ 'v:val.word =~# a:regex')
+endfunction
+
+function! s:pck.gather_candidates() dict " {{{2
+  if empty(self.candidates)
+    let self.candidates = map(s:get_texmf_candidates('sty'), '{
+          \ ''word'' : v:val,
+          \ ''menu'' : '' [package]'',
+          \}')
+  endif
+
+  return self.candidates
+endfunction
+
+" }}}1
+" {{{1 Documentclasses (\documentclass)
+
+let s:doc = {
+      \ 'patterns' : ['\v\\documentclass%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'candidates' : [],
+      \}
+
+function! s:doc.complete(regex) dict " {{{2
+  return filter(copy(self.gather_candidates()),
+        \ 'v:val.word =~# a:regex')
+endfunction
+
+function! s:doc.gather_candidates() dict " {{{2
+  if empty(self.candidates)
+    let self.candidates = map(s:get_texmf_candidates('cls'), '{
+          \ ''word'' : v:val,
+          \ ''menu'' : '' [documentclass]'',
+          \}')
+  endif
+
+  return self.candidates
+endfunction
+
+" }}}1
 
 "
 " Utility functions
 "
+function! s:get_texmf_candidates(filetype) " {{{1
+  " First add the locally installed candidates
+  let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, 'XX')
+  let l:candidates = glob(l:texmfhome . '/**/*.' . a:filetype, 0, 1)
+  call map(l:candidates, 'fnamemodify(v:val, '':t:r'')')
+
+  " Then add the globally available candidates (based on ls-R files)
+  for l:file in vimtex#kpsewhich#run('--all ls-R')
+    let l:candidates += map(filter(readfile(l:file),
+          \   'v:val =~# ''\.' . a:filetype . ''''),
+          \ 'fnamemodify(v:val, '':r'')')
+  endfor
+
+  return l:candidates
+endfunction
+
+" }}}1
 function! s:close_braces(candidates) " {{{1
   if g:vimtex_complete_close_braces
         \ && strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
