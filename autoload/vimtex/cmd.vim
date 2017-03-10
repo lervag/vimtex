@@ -114,7 +114,7 @@ endfunction
 function! vimtex#cmd#create_insert() " {{{1
   if mode() !=# 'i' | return | endif
 
-  let l:re = '\v%(^|\A)\zs\w+\ze%(\A|$)'
+  let l:re = '\v%(^|\A)\zs\a+\ze%(\A|$)'
   let l:c0 = col('.') - 1
 
   let [l:l1, l:c1] = searchpos(l:re, 'bcn', line('.'))
