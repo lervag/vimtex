@@ -445,7 +445,7 @@ function! s:parse_bib_input(line) " {{{1
   return {
         \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
         \ 'number' : '[b]',
-        \ 'file'   : vimtex#util#kpsewhich(l:file),
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
         \ 'line'   : 0,
         \ 'level'  : s:max_level,
         \ }
