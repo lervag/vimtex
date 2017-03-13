@@ -497,11 +497,23 @@ endfunction
 
 " }}}1
 function! s:init_local_options() " {{{1
+  let l:engine_regex =
+        \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'
+  let l:engine_list = {
+        \ 'pdflatex'         : '',
+        \ 'lualatex'         : '-lualatex',
+        \ 'xelatex'          : '-xelatex',
+        \ 'context (pdftex)' : '-pdflatex=''texexec --xtx''',
+        \ 'context (luatex)' : '-pdflatex=context',
+        \ 'context (xetex)'  : '-pdflatex=texexec',
+        \}
+
   "
   " Initialize local configuration
   "
   let b:vimtex.packages = {}
   let b:vimtex.sources = []
+  let b:vimtex.engine = ''
 
   "
   " Parse the preamble for packages and other configuration
@@ -512,6 +524,13 @@ function! s:init_local_options() " {{{1
         \})
     if l:line =~# '\\usepackage.*{tikz}'
       let b:vimtex.packages.tikz = 1
+      continue
+    endif
+
+    let l:engine = matchstr(l:line, l:engine_regex)
+    if !empty(l:engine)
+      let b:vimtex.engine = get(l:engine_list, tolower(l:engine), '')
+      continue
     endif
   endfor
 

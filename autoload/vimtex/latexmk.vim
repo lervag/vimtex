@@ -537,6 +537,8 @@ function! s:latexmk_build_cmd() " {{{1
 
   let cmd .= ' ' . g:vimtex_latexmk_options
 
+  let cmd .= b:vimtex.engine
+
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
   endif
@@ -617,6 +619,12 @@ function! s:latexmk_build_cmd_selected(fname) " {{{1
   endif
 
   let cmd .= ' ' . g:vimtex_latexmk_options
+
+  let cmd .= b:vimtex.engine
+
+  if g:vimtex_latexmk_build_dir !=# ''
+    let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
+  endif
 
   let cmd .= ' ' . vimtex#util#shellescape(a:fname)
 
