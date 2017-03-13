@@ -263,10 +263,31 @@ suffix as a |plaintex|.  To prevent this, one may set the option
 Support for TeX directives~
                                                         *vimtex-tex-directives*
 
-|vimtex| supports one of the commonly used TeX directives [0]: the TeX root
-directive, which was already described above, see |vimtex-tex-root|.
+|vimtex| supports two of the commonly used TeX directives [0]: the TeX root and
+the TeX program directive. The TeX root directive was already described above,
+see |vimtex-tex-root|.
+
+                                                           *vimtex-tex-program*
+The TeX program directive works by specifying the TeX compiler program in
+a comment in one of the first lines of the main project file. The syntax is
+best explained with an example: >
+
+    %! TEX program = program
+
+Here `program` may be one of the following: >
+
+  pdflatex  [default]
+  lualatex
+  xelatex
+  context (pdftex)
+  context (luatex)
+  context (xetex)
+
+The implementation was inspired by @andymass [1]. See also [2].
 
 [0]: http://tex.stackexchange.com/q/78101/34697
+[1]: https://gist.github.com/andymass/ea7e381d51387e205f44c0c43aca7225
+[2]: https://github.com/lervag/vimtex/issues/713
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
@@ -1967,7 +1988,7 @@ will be shown in the quickfix list. For more info, see
 
 |vimtex| passes a "sensible" default set of options to `latexmk`. This may be
 customized with |g:vimtex_latexmk_options|, where the default options are also
-described.
+described. The TeX program directive is respected, see |vimtex-tex-program|.
 
 If vim is compiled with the |+clientserver| option and if
 |g:vimtex_latexmk_callback| is enabled (which it is by default), then
