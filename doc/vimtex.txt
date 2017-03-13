@@ -34,6 +34,7 @@ CONTENTS                                                      *vimtex-contents*
     Requirements                                |vimtex-requirements|
     Support for multi-file projects             |vimtex-multi-file|
     Comment on internal tex plugin              |vimtex-comment-internal|
+    Support for TeX specifiers                  |vimtex-tex-directives|
   Usage                                         |vimtex-usage|
     Default mappings                            |vimtex-default-mappings|
     Options                                     |vimtex-options|
@@ -172,7 +173,7 @@ main LaTeX file candidate.
 The methods are tried in the following order:
 
   1. Buffer variable
-  2. TeX root specifier
+  2. TeX root directive
   3. Subfiles package
   4. File `.latexmain` specifier
   5. Recursive search
@@ -184,8 +185,9 @@ Buffer variable~
   specify the main file through this buffer variable with >
 
     autocmd FileType tex let b:vimtex_main = 'main.tex'
-
-TeX root specifier~
+<
+                                                              *vimtex-tex-root*
+TeX root directive~
   It is also possible to specify the main TeX file with a comment in one of
   the first five lines of the current file similar to this: >
 
@@ -229,7 +231,7 @@ Recursive search~
 <
   That is, the main file detection will not work for the file `chapter.tex`,
   because the main file does not live in the same folder or a parent folder.
-  In this particular case, the TeX root specifier should work.
+  In this particular case, the TeX root directive should work.
 
   Note: In rare cases, such as if there are _very_ many tex files in the
         directory tree, this method may be slow. One may therefore disable it
@@ -256,6 +258,15 @@ suffix as a |plaintex|.  To prevent this, one may set the option
 |g:tex_flavor| in ones `vimrc` file, that is: >
 
   let g:tex_flavor = 'latex'
+
+------------------------------------------------------------------------------
+Support for TeX directives~
+                                                        *vimtex-tex-directives*
+
+|vimtex| supports one of the commonly used TeX directives [0]: the TeX root
+directive, which was already described above, see |vimtex-tex-root|.
+
+[0]: http://tex.stackexchange.com/q/78101/34697
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
