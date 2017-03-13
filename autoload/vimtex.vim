@@ -78,7 +78,7 @@ function! vimtex#init() " {{{1
   " Allow custom configuration through an event hook
   "
   if exists('#User#VimtexEventInitPost')
-    doautocmd User VimtexEventInitPost
+    silent doautocmd User VimtexEventInitPost
   endif
 endfunction
 
@@ -869,7 +869,7 @@ function! s:buffer_deleted(...) " {{{1
         let b:vimtex_tmp = b:vimtex
       endif
       let b:vimtex = l:vimtex
-      doautocmd User VimtexEventQuit
+      silent doautocmd User VimtexEventQuit
       if exists('b:vimtex_tmp')
         let b:vimtex = b:vimtex_tmp
         unlet b:vimtex_tmp
