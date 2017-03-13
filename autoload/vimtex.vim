@@ -497,7 +497,15 @@ endfunction
 
 " }}}1
 function! s:init_local_options() " {{{1
+  "
+  " Initialize local configuration
+  "
   let b:vimtex.packages = {}
+  let b:vimtex.sources = []
+
+  "
+  " Parse the preamble for packages and other configuration
+  "
   for l:line in vimtex#parser#tex(b:vimtex.tex, {
         \ 'detailed' : 0,
         \ 're_stop' : '\\begin\s*{document}',
@@ -507,7 +515,9 @@ function! s:init_local_options() " {{{1
     endif
   endfor
 
-  let b:vimtex.sources = []
+  "
+  " Create list of TeX source files
+  "
   for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
     let l:cand = substitute(l:file, '\M' . b:vimtex.root, '', '')
     if l:cand[0] ==# '/' | let l:cand = l:cand[1:] | endif
