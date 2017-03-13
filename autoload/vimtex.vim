@@ -503,9 +503,9 @@ function! s:init_local_options() " {{{1
         \ 'pdflatex'         : '',
         \ 'lualatex'         : '-lualatex',
         \ 'xelatex'          : '-xelatex',
-        \ 'context (pdftex)' : '-pdflatex=''texexec --xtx''',
+        \ 'context (pdftex)' : '-pdflatex=texexec',
         \ 'context (luatex)' : '-pdflatex=context',
-        \ 'context (xetex)'  : '-pdflatex=texexec',
+        \ 'context (xetex)'  : '-pdflatex=''texexec --xtx''',
         \}
 
   "
