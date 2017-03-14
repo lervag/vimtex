@@ -169,24 +169,6 @@ function! vimtex#util#in_syntax(name, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#kpsewhich(file, ...) " {{{1
-  execute 'lcd' fnameescape(b:vimtex.root)
-  let cmd  = 'kpsewhich '
-  let cmd .= a:0 > 0 ? a:1 : ''
-  let cmd .= ' "' . a:file . '"'
-  let output = split(system(cmd), '\n')
-  lcd -
-
-  if empty(output) | return '' | endif
-  let filename = output[0]
-
-  " If path is already absolute, return it
-  return filename[0] ==# '/'
-        \ ? filename
-        \ : simplify(b:vimtex.root . '/' . filename)
-endfunction
-
-" }}}1
 function! vimtex#util#set_default(variable, default) " {{{1
   if !exists(a:variable)
     let {a:variable} = a:default

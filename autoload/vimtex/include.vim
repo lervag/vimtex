@@ -20,7 +20,7 @@ function! vimtex#include#expr() " {{{1
   " Next search for file with kpsewhich
   "
   for l:suffix in  [''] + reverse(split(&l:suffixesadd, ','))
-    let l:candidate = vimtex#util#kpsewhich(v:fname . l:suffix)
+    let l:candidate = vimtex#kpsewhich#find(v:fname . l:suffix)
     if filereadable(l:candidate)
       return l:candidate
     endif
