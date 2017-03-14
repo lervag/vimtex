@@ -1696,8 +1696,8 @@ The default value can be found with: >
   kpsewhich --var-value TEXMFHOME
 
 Note: If you want to change the default value of `TEXMFHOME` in your shell
-      startup file and use `gvim` started from the desktop environment,
-      please read |vimtex-faq-texmfhome|.
+      startup file and use `gvim` started from the desktop environment, please
+      read |vimtex-faq-texmfhome|.
 
 ------------------------------------------------------------------------------
 Autocomplete~
@@ -2264,19 +2264,17 @@ A: This is not a feature provided by |vimtex| itself. Similar to
 
                                                          *vimtex-faq-texmfhome*
 Q: How can I change `TEXMFHOME`?
-A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and
-   use `gvim` invoked from the desktop environment (from menus, hotkeys,
-   etc.), gvim does not know about the new value of `TEXMFHOME`. The
-   reason for this is that `vim` invokes shells (e.g. with `!` or
-   `system()`) as non-interactive and non-login shell, which means
-   `.bashrc` or `.zshrc` are not read.  If you start `gvim` from an
-   interactive shell which has read `.bashrc` or `.zshrc, `gvim`
-   inherits these values and therefore they are consistent.
+A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `gvim`
+   invoked from the desktop environment (from menus, hotkeys, etc.), gvim does
+   not know about the new value of `TEXMFHOME`. The reason for this is that
+   `vim` invokes shells (e.g. with `!` or `system()`) as non-interactive and
+   non-login shell, which means `.bashrc` or `.zshrc` are not read.  If you
+   start `gvim` from an interactive shell which has read `.bashrc` or `.zshrc,
+   `gvim` inherits these values and therefore they are consistent.
 
-   One can make the invoked shells interactive by setting |shellcmdflag|
-   to "-ic".  If you want to keep them non-interactive, you can create
-   an additional shell startup file where you keep your environment
-   variables:
+   One can make the invoked shells interactive by setting |shellcmdflag| to
+   "-ic".  If you want to keep them non-interactive, you can create an
+   additional shell startup file where you keep your environment variables:
 
    1. If bash is your default shell, create e.g. the file `.bashenv` containing
       your customized `TEXMFHOME` variable and add `$BASH_ENV=$HOME/.bashenv` to
