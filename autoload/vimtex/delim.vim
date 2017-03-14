@@ -215,14 +215,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#get_delim_regexes(...) " {{{1
-  return exists('s:re')
-        \ ? [s:re.delim_math.open, s:re.delim_math.close,
-        \    s:re.delim_tex.open,  s:re.delim_tex.close]
-        \ : []
-endfunction
-
-" }}}1
 function! vimtex#delim#close() " {{{1
   let l:save_pos = getpos('.')
   let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
