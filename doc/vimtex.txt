@@ -1691,34 +1691,13 @@ The completion relies on the contents of `ls-R` files that are found with: >
   kpsewhich --all ls-R
 
 Packages and documentclasses installed at `TEXMFHOME` will also be searched.
-This variable has a default value that depends on the system. The value that
-is used can be found with: >
+The default value can be found with: >
 
   kpsewhich --var-value TEXMFHOME
 
-However, one should be aware that Vim invokes shells as non-interactive and
-non-login shell, which means it inherits environment variables defined in
-`.bashrc` or `.zshrc` only if it is invoked from an interactive shell. This is
-typically not the case if you use a desktop environment launcher.
-
-One can make the invoked shells interactive by setting |shellcmdflag| to "-ic".
-If you want to keep them non-interactive, you can create an additional shell
-startup file where you keep your environment variables:
-
-  1. If bash is your default shell, create e.g. the file `.bashenv` containing
-     your customized `TEXMFHOME` variable and add `$BASH_ENV=$HOME/.bashenv` to
-     `$MYVIMRC` and source `$HOME/.bashenv` to `.bashrc` [0].
-
-  2. If zsh is the default shell, use `.zshenv` for customizing `TEXMFHOME`.
-     This file is always read by zsh. Nothing has to be added to the
-     `$MYVIMRC` [1].
-
-For more information on how to correctly set environment variables, see e.g.
-the SO answer by @Rmano [2].
-
-[0]: https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
-[1]: http://zsh.sourceforge.net/Intro/intro_3.html
-[2]: http://askubuntu.com/a/356973/16395
+Note: If you want to change the default value of `TEXMFHOME` in your shell
+      startup file and use `gvim` started from the desktop environment,
+      please read |vimtex-faq-texmfhome|.
 
 ------------------------------------------------------------------------------
 Autocomplete~
@@ -2282,6 +2261,36 @@ A: This is not a feature provided by |vimtex| itself. Similar to
 <   See [0] for references.
 
    [0]: https://github.com/lervag/vimtex/issues/564
+
+                                                         *vimtex-faq-texmfhome*
+Q: How can I change `TEXMFHOME`?
+A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and
+   use `gvim` invoked from the desktop environment (from menus, hotkeys,
+   etc.), gvim does not know about the new value of `TEXMFHOME`. The
+   reason for this is that `vim` invokes shells (e.g. with `!` or
+   `system()`) as non-interactive and non-login shell, which means
+   `.bashrc` or `.zshrc` are not read.  If you start `gvim` from an
+   interactive shell which has read `.bashrc` or `.zshrc, `gvim`
+   inherits these values and therefore they are consistent.
+
+   One can make the invoked shells interactive by setting |shellcmdflag|
+   to "-ic".  If you want to keep them non-interactive, you can create
+   an additional shell startup file where you keep your environment
+   variables:
+
+   1. If bash is your default shell, create e.g. the file `.bashenv` containing
+      your customized `TEXMFHOME` variable and add `$BASH_ENV=$HOME/.bashenv` to
+      `$MYVIMRC` and `source $HOME/.bashenv` to `.bashrc` [0].
+
+   2. If zsh is your default shell, use `.zshenv` for customizing `TEXMFHOME`.
+      This file is always read by zsh. Nothing has to be added to `$MYVIMRC` [1].
+
+   For more information on how to correctly set environment variables, see e.g.
+   the SO answer by @Rmano [2].
+
+   [0]: https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
+   [1]: http://zsh.sourceforge.net/Intro/intro_3.html
+   [2]: http://askubuntu.com/a/356973/16395
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
