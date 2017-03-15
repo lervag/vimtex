@@ -121,7 +121,7 @@ endfunction
 let s:re_open = join([
       \ g:vimtex#delim#re.delim_mod_math.open,
       \ '{',
-      \ '\\\[',
+      \ '\\\@<!\\\[',
       \], '\|')
 let s:re_close = join([
       \ g:vimtex#delim#re.delim_mod_math.close,

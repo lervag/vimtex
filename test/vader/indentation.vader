@@ -64,8 +64,9 @@ Given tex (Indent: math):
         \]
 
   \begin{align}
-      2+2=4
-  \end{align}
+      2+2 = 4\\[1ex]
+          3+3 = 6
+      \end{align}
 
   \begin{equation}
      \left(
@@ -91,7 +92,8 @@ Expect tex:
   \]
 
   \begin{align}
-    2+2=4
+    2+2 = 4\\[1ex]
+    3+3 = 6
   \end{align}
 
   \begin{equation}
