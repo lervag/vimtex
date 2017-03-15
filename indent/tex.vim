@@ -118,36 +118,16 @@ function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
         \            - s:count(a:line, s:re_open), 0]))
 endfunction
 
-let s:delims_open = [
-      \ '\(',
-      \ '\[',
-      \ '\\\{',
-      \ '\\langle',
-      \ '\\lvert',
-      \ '\\lfloor',
-      \ '\\lceil',
-      \ '\\ulcorner',
-      \]
-let s:delims_close = [
-      \ '\)',
-      \ '\]',
-      \ '\\\}',
-      \ '\\rangle',
-      \ '\\rvert',
-      \ '\\rfloor',
-      \ '\\rceil',
-      \ '\\urcorner',
-      \]
-let s:re_open = '\v'
-      \ . '%(\\left|\\[bB]igg?l?)\s*%(' . join(s:delims_open, '|') . ')'
-      \ . '|\\left\s*\.'
-      \ . '|\{'
-      \ . '|\\\['
-let s:re_close = '\v'
-      \ . '%(\\right|\\[bB]igg?r?)\s*%(' . join(s:delims_close, '|') . ')'
-      \ . '|\\right\s*\.'
-      \ . '|\}'
-      \ . '|\\\]'
+let s:re_open = join([
+      \ g:vimtex#delim#re.delim_mod_math.open,
+      \ '{',
+      \ '\\\[',
+      \], '\|')
+let s:re_close = join([
+      \ g:vimtex#delim#re.delim_mod_math.close,
+      \ '}',
+      \ '\\\]',
+      \], '\|')
 
 " }}}1
 function! s:indent_tikz(lnum, prev) " {{{1
