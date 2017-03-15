@@ -201,7 +201,6 @@ function! vimtex#toggle_main() " {{{1
           \ ? b:vimtex_local.sub_id
           \ : b:vimtex_local.main_id
     let b:vimtex = g:vimtex_data[b:vimtex_id]
-    call b:vimtex.viewer.refresh_paths()
 
     call vimtex#echo#status(['vimtex: ',
           \ ['Normal', 'Changed to `'],
