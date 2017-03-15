@@ -58,14 +58,14 @@ function! vimtex#init() " {{{1
   call s:init_modules('buffer')
 
   "
-  " Initialize local blob (if main file is different then current file)
-  "
-  call s:init_local_blob()
-
-  "
   " Parse the document to set local options
   "
   call s:init_local_options()
+
+  "
+  " Initialize local blob (if main file is different then current file)
+  "
+  call s:init_local_blob()
 
   "
   " Finally we create the mappings
