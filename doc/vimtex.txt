@@ -914,6 +914,12 @@ Options~
 
   Default value: 1
 
+*g:vimtex_quickfix_height*
+  This option controls the height of the |quickfix| window in case errors
+  and/or warnings are found.
+
+  Default value: ''
+
 *g:vimtex_text_obj_enabled*
   Use this option to disable the text object mappings.
 

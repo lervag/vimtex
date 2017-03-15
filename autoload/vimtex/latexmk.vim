@@ -32,6 +32,7 @@ function! vimtex#latexmk#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
   call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
   call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
+  call vimtex#util#set_default('g:vimtex_quickfix_height', '')
 
   if exists('g:vimtex_quickfix_ignore_all_warnings')
     echoerr 'Deprecated option: g:vimtex_quickfix_ignore_all_warnings'
@@ -342,7 +343,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
         \         || s:log_contains_error(log)))
 
   if s:open_quickfix_window
-    botright cwindow
+    execute 'botright cwindow ' . g:vimtex_quickfix_height
     if g:vimtex_quickfix_mode == 2
       execute winnr . 'wincmd p'
     endif
