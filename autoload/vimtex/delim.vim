@@ -8,174 +8,17 @@ function! vimtex#delim#init_options() " {{{1
   call vimtex#util#set_default('g:vimtex_delim_toggle_mod_list',
         \ [['\left', '\right']])
   call vimtex#util#set_default('g:vimtex_delim_stopline', 500)
+
+  "
+  " Initialize lists of delimiters with corresponding regexes
+  "
+  call s:init_delim_lists()
+  call s:init_delim_regexes()
 endfunction
 
 " }}}1
 function! vimtex#delim#init_script() " {{{1
   let s:stopline = g:vimtex_delim_stopline
-
-  let s:delims = {}
-  let s:re = {}
-
-  let s:delims.env = {
-        \ 'list' : [
-        \   ['begin', 'end'],
-        \  ],
-        \ 're' : [
-        \   ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
-        \  ],
-        \}
-
-  let s:delims.env_math = {
-        \ 'list' : [
-        \   ['\(', '\)'],
-        \   ['\[', '\]'],
-        \   ['$$', '$$'],
-        \   ['$', '$'],
-        \  ],
-        \ 're' : [
-        \   ['\\(', '\\)'],
-        \   ['\\\[', '\\\]'],
-        \   ['\$\$', '\$\$'],
-        \   ['\$', '\$'],
-        \  ],
-        \}
-
-  let s:delims.delim_tex = {
-        \ 'list' : [
-        \   ['[', ']'],
-        \   ['{', '}'],
-        \  ],
-        \ 're' : [
-        \   ['\[', '\]'],
-        \   ['{', '}'],
-        \ ],
-        \}
-
-  let s:delims.delim_mods = {
-        \ 'list' : [
-        \   ['\left', '\right'],
-        \   ['\bigl', '\bigr'],
-        \   ['\Bigl', '\Bigr'],
-        \   ['\biggl', '\biggr'],
-        \   ['\Biggl', '\Biggr'],
-        \   ['\big', '\big'],
-        \   ['\Big', '\Big'],
-        \   ['\bigg', '\bigg'],
-        \   ['\Bigg', '\Bigg'],
-        \ ],
-        \ 're' : [
-        \   ['\\left', '\\right'],
-        \   ['\\bigl', '\\bigr'],
-        \   ['\\Bigl', '\\Bigr'],
-        \   ['\\biggl', '\\biggr'],
-        \   ['\\Biggl', '\\Biggr'],
-        \   ['\\big', '\\big'],
-        \   ['\\Big', '\\Big'],
-        \   ['\\bigg', '\\bigg'],
-        \   ['\\Bigg', '\\Bigg'],
-        \ ],
-        \}
-
-  let s:delims.delim_math = {
-        \ 'list' : [
-        \   ['(', ')'],
-        \   ['[', ']'],
-        \   ['\{', '\}'],
-        \   ['\langle', '\rangle'],
-        \   ['\lvert', '\rvert'],
-        \   ['\lVert', '\rVert'],
-        \   ['\lfloor', '\rfloor'],
-        \   ['\lceil', '\rceil'],
-        \   ['\ulcorner', '\urcorner'],
-        \  ],
-        \ 're' : [
-        \   ['(', ')'],
-        \   ['\[', '\]'],
-        \   ['\\{', '\\}'],
-        \   ['\\langle', '\\rangle'],
-        \   ['\\lvert', '\\rvert'],
-        \   ['\\lVert', '\\rVert'],
-        \   ['\\lfloor', '\\rfloor'],
-        \   ['\\lceil', '\\rceil'],
-        \   ['\\ulcorner', '\\urcorner'],
-        \  ],
-        \}
-
-  let s:re.env = {
-        \ 'open' : '\%('
-        \   . join(map(copy(s:delims.env.re), 'v:val[0]'), '\|')
-        \   . '\)',
-        \ 'close' : '\%('
-        \   . join(map(copy(s:delims.env.re), 'v:val[1]'), '\|')
-        \   . '\)',
-        \ 'both' : '\%('
-        \   . join(map(copy(s:delims.env.re), 'v:val[0]'), '\|') . '\|'
-        \   . join(map(copy(s:delims.env.re), 'v:val[1]'), '\|')
-        \   . '\)'
-        \}
-
-  let s:re.env_math = {
-        \ 'open' : '\%('
-        \   . join(map(copy(s:delims.env_math.re), 'v:val[0]'), '\|')
-        \   . '\)',
-        \ 'close' : '\%('
-        \   . join(map(copy(s:delims.env_math.re), 'v:val[1]'), '\|')
-        \   . '\)',
-        \ 'both' : '\%('
-        \   . join(map(copy(s:delims.env_math.re), 'v:val[0]'), '\|') . '\|'
-        \   . join(map(copy(s:delims.env_math.re), 'v:val[1]'), '\|')
-        \   . '\)'
-        \}
-
-  let s:re.delim_tex = {
-        \ 'open' : '\%('
-        \   . join(map(copy(s:delims.delim_tex.re), 'v:val[0]'), '\|')
-        \   . '\)',
-        \ 'close' : '\%('
-        \   . join(map(copy(s:delims.delim_tex.re), 'v:val[1]'), '\|')
-        \   . '\)',
-        \ 'both' : '\%('
-        \   . join(map(copy(s:delims.delim_tex.re), 'v:val[0]'), '\|') . '\|'
-        \   . join(map(copy(s:delims.delim_tex.re), 'v:val[1]'), '\|')
-        \   . '\)'
-        \}
-
-  let s:re.delim_mods = {
-        \ 'open' : '\\left\|\\[bB]igg\?l\?',
-        \ 'close' : '\\right\|\\[bB]igg\?r\?',
-        \ 'both' : '\\left\|\\right\|\\[bB]igg\?[lr]\?',
-        \}
-
-  let s:re.delim_math = {
-        \ 'open' : '\%(\%(' . s:re.delim_mods.open . '\)\s*\)\?\%('
-        \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|')
-        \   . '\)\|\\left\s*\.',
-        \ 'close' : '\%(\%(' . s:re.delim_mods.close . '\)\s*\)\?\%('
-        \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
-        \   . '\)\|\\right\s*\.',
-        \ 'both' : '\%(\%(' . s:re.delim_mods.both . '\)\s*\)\?\%('
-        \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|') . '\|'
-        \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
-        \   . '\)\|\\\%(left\|right\)\s*\.',
-        \}
-
-  let s:delims.env_all = {}
-  let s:delims.delim_all = {}
-  let s:delims.all = {}
-  let s:re.env_all = {}
-  let s:re.delim_all = {}
-  let s:re.all = {}
-  for k in ['list', 're']
-    let s:delims.env_all[k] = s:delims.env[k] + s:delims.env_math[k]
-    let s:delims.delim_all[k] = s:delims.delim_math[k] + s:delims.delim_tex[k]
-    let s:delims.all[k] = s:delims.env_all[k] + s:delims.delim_all[k]
-  endfor
-  for k in ['open', 'close', 'both']
-    let s:re.env_all[k] = s:re.env[k] . '\|' . s:re.env_math[k]
-    let s:re.delim_all[k] = s:re.delim_math[k] . '\|' . s:re.delim_tex[k]
-    let s:re.all[k] = s:re.env_all[k] . '\|' . s:re.delim_all[k]
-  endfor
 
   let s:types = [
         \ {
@@ -195,7 +38,7 @@ function! vimtex#delim#init_script() " {{{1
         \   'parser' : function('s:parser_delim_unmatched'),
         \ },
         \ {
-        \   're' : s:re.delim_all.both,
+        \   're' : g:vimtex#delim#re.delim_all.both,
         \   'parser' : function('s:parser_delim'),
         \ },
         \]
@@ -214,6 +57,170 @@ function! vimtex#delim#init_buffer() " {{{1
 endfunction
 
 " }}}1
+
+function! s:init_delim_lists() " {{{1
+  let l:lists = {}
+  let l:lists.env_tex = {}
+  let l:lists.env_math = {}
+  let l:lists.env_all = {}
+  let l:lists.delim_tex = {}
+  let l:lists.mods = {}
+  let l:lists.delim_math = {}
+  let l:lists.delim_all = {}
+  let l:lists.all = {}
+
+  let l:lists.env_tex.name = [
+        \ ['begin', 'end'],
+        \]
+  let l:lists.env_tex.re = [
+        \ ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
+        \]
+
+  let l:lists.env_math.name = [
+        \ ['\(', '\)'],
+        \ ['\[', '\]'],
+        \ ['$$', '$$'],
+        \ ['$', '$'],
+        \]
+  let l:lists.env_math.re = [
+        \ ['\\(', '\\)'],
+        \ ['\\\[', '\\\]'],
+        \ ['\$\$', '\$\$'],
+        \ ['\$', '\$'],
+        \]
+
+  let l:lists.delim_tex.name = [
+        \ ['[', ']'],
+        \ ['{', '}'],
+        \]
+  let l:lists.delim_tex.re = [
+        \ ['\[', '\]'],
+        \ ['{', '}'],
+        \]
+
+  let l:lists.mods.name = [
+        \ ['\left', '\right'],
+        \ ['\bigl', '\bigr'],
+        \ ['\Bigl', '\Bigr'],
+        \ ['\biggl', '\biggr'],
+        \ ['\Biggl', '\Biggr'],
+        \ ['\big', '\big'],
+        \ ['\Big', '\Big'],
+        \ ['\bigg', '\bigg'],
+        \ ['\Bigg', '\Bigg'],
+        \]
+  let l:lists.mods.re = [
+        \ ['\\left', '\\right'],
+        \ ['\\bigl', '\\bigr'],
+        \ ['\\Bigl', '\\Bigr'],
+        \ ['\\biggl', '\\biggr'],
+        \ ['\\Biggl', '\\Biggr'],
+        \ ['\\big', '\\big'],
+        \ ['\\Big', '\\Big'],
+        \ ['\\bigg', '\\bigg'],
+        \ ['\\Bigg', '\\Bigg'],
+        \]
+
+  let l:lists.delim_math.name = [
+        \ ['(', ')'],
+        \ ['[', ']'],
+        \ ['\{', '\}'],
+        \ ['\langle', '\rangle'],
+        \ ['\lvert', '\rvert'],
+        \ ['\lVert', '\rVert'],
+        \ ['\lfloor', '\rfloor'],
+        \ ['\lceil', '\rceil'],
+        \ ['\ulcorner', '\urcorner'],
+        \]
+  let l:lists.delim_math.re = [
+        \ ['(', ')'],
+        \ ['\[', '\]'],
+        \ ['\\{', '\\}'],
+        \ ['\\langle', '\\rangle'],
+        \ ['\\lvert', '\\rvert'],
+        \ ['\\lVert', '\\rVert'],
+        \ ['\\lfloor', '\\rfloor'],
+        \ ['\\lceil', '\\rceil'],
+        \ ['\\ulcorner', '\\urcorner'],
+        \]
+
+  for k in ['name', 're']
+    let l:lists.env_all[k] = l:lists.env_tex[k] + l:lists.env_math[k]
+    let l:lists.delim_all[k] = l:lists.delim_math[k] + l:lists.delim_tex[k]
+    let l:lists.all[k] = l:lists.env_all[k] + l:lists.delim_all[k]
+  endfor
+
+  let g:vimtex#delim#lists = l:lists
+endfunction
+
+" }}}1
+function! s:init_delim_regexes() " {{{1
+  let l:re = {}
+  let l:re.env_all = {}
+  let l:re.delim_all = {}
+  let l:re.all = {}
+
+  let l:re.env_tex = s:init_delim_regexes_generator('env_tex')
+  let l:re.env_math = s:init_delim_regexes_generator('env_math')
+  let l:re.delim_tex = s:init_delim_regexes_generator('delim_tex')
+  let l:re.delim_math = s:init_delim_regexes_generator('delim_math')
+
+  let l:re.mods = {
+        \ 'open' : '\\left\|\\[bB]igg\?l\?',
+        \ 'close' : '\\right\|\\[bB]igg\?r\?',
+        \ 'both' : '\\left\|\\right\|\\[bB]igg\?[lr]\?',
+        \}
+
+  let l:o = join(map(copy(g:vimtex#delim#lists.delim_math.re), 'v:val[0]'), '\|')
+  let l:c = join(map(copy(g:vimtex#delim#lists.delim_math.re), 'v:val[1]'), '\|')
+
+  "
+  " Matches modified math delimiters
+  "
+  let l:re.delim_mod_math = {
+        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\)\s*\%('
+        \   . l:o . '\)\|\\left\s*\.',
+        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\)\s*\%('
+        \   . l:c . '\)\|\\right\s*\.',
+        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\)\s*\%('
+        \   . l:o . '\|' . l:c . '\)\|\\\%(left\|right\)\s*\.',
+        \}
+
+  "
+  " Matches possibly modified math delimiters
+  "
+  let l:re.delim_modq_math = {
+        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\)\?\s*\%('
+        \   . l:o . '\)\|\\left\s*\.',
+        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\)\?\s*\%('
+        \   . l:c . '\)\|\\right\s*\.',
+        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\)\?\s*\%('
+        \   . l:o . '\|' . l:c . '\)\|\\\%(left\|right\)\s*\.',
+        \}
+
+  for k in ['open', 'close', 'both']
+    let l:re.env_all[k] = l:re.env_tex[k] . '\|' . l:re.env_math[k]
+    let l:re.delim_all[k] = l:re.delim_modq_math[k] . '\|' . l:re.delim_tex[k]
+    let l:re.all[k] = l:re.env_all[k] . '\|' . l:re.delim_all[k]
+  endfor
+
+  let g:vimtex#delim#re = l:re
+endfunction
+
+" }}}1
+function! s:init_delim_regexes_generator(list_name) " {{{1
+  let l:list = g:vimtex#delim#lists[a:list_name]
+  let l:open = join(map(copy(l:list.re), 'v:val[0]'), '\|')
+  let l:close = join(map(copy(l:list.re), 'v:val[1]'), '\|')
+
+  return {
+        \ 'open' : '\%(' . l:open . '\)',
+        \ 'close' : '\%(' . l:close . '\)',
+        \ 'both' : '\%(' . l:open . '\|' . l:close . '\)'
+        \}
+endfunction
+
+  " }}}1
 
 function! vimtex#delim#close() " {{{1
   let l:save_pos = getpos('.')
@@ -252,7 +259,7 @@ endfunction
 function! vimtex#delim#toggle_modifier(...) " {{{1
   let [l:open, l:close] = a:0 == 2
         \ ? [a:1, a:2]
-        \ : vimtex#delim#get_surrounding('delim_math')
+        \ : vimtex#delim#get_surrounding('delim_modq_math')
   if empty(l:open) | return | endif
 
   let newmods = ['', '']
@@ -318,7 +325,7 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   let l:stack = []
   while l:cur_pos_val < l:end_pos_val
     call setpos('.', l:cur_pos)
-    let l:open = vimtex#delim#get_next('delim_math', 'open')
+    let l:open = vimtex#delim#get_next('delim_modq_math', 'open')
     if empty(l:open) | break | endif
 
     let l:open_pos_val = 10000*l:open.lnum + l:open.cnum
@@ -460,11 +467,13 @@ function! s:get_delim(opts) " {{{1
   "     'direction'   :  next
   "                      prev
   "                      current
-  "     'type'        :  env
+  "     'type'        :  env_tex
   "                      env_math
   "                      env_all
   "                      delim_tex
   "                      delim_math
+  "                      delim_modq_math (possibly modified math delimiter)
+  "                      delim_mod_math  (modified math delimiter)
   "                      delim_all
   "                      all
   "     'side'        :  open
@@ -489,7 +498,7 @@ function! s:get_delim(opts) " {{{1
   "   }
   "
   let l:save_pos = getpos('.')
-  let l:re = s:re[a:opts.type][a:opts.side]
+  let l:re = g:vimtex#delim#re[a:opts.type][a:opts.side]
   while 1
     let [l:lnum, l:cnum] = a:opts.direction ==# 'next'
           \ ? searchpos(l:re, 'cnW', line('.') + s:stopline)
@@ -652,24 +661,25 @@ endfunction
 function! s:parser_delim(match, lnum, cnum, ...) " {{{1
   let result = {}
   let result.type = 'delim'
-  let result.side = a:match =~# s:re.delim_all.open ? 'open' : 'close'
+  let result.side =
+        \ a:match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
   let result.get_matching = function('s:get_matching_delim')
 
   "
   " Find corresponding delimiter and the regexps
   "
-  if a:match =~# '^' . s:re.delim_mods.both
-    let m1 = matchstr(a:match, '^' . s:re.delim_mods.both)
+  if a:match =~# '^' . g:vimtex#delim#re.mods.both
+    let m1 = matchstr(a:match, '^' . g:vimtex#delim#re.mods.both)
     let d1 = substitute(strpart(a:match, len(m1)), '^\s*', '', '')
     let s1 = !result.is_open
-    let re1 = s:parser_delim_get_regexp(m1, s1, 'delim_mods')
+    let re1 = s:parser_delim_get_regexp(m1, s1, 'mods')
           \  . '\s*' . s:parser_delim_get_regexp(d1, s1, 'delim_math')
 
-    let m2 = s:parser_delim_get_corr(m1, 'delim_mods')
+    let m2 = s:parser_delim_get_corr(m1, 'mods')
     let d2 = s:parser_delim_get_corr(d1, 'delim_math')
     let s2 = result.is_open
-    let re2 = s:parser_delim_get_regexp(m2, s2, 'delim_mods') . '\s*'
+    let re2 = s:parser_delim_get_regexp(m2, s2, 'mods') . '\s*'
           \ . (m1 =~# '\\\%(left\|right\)'
           \   ? '\%(' . s:parser_delim_get_regexp(d2, s2, 'delim_math') . '\|\.\)'
           \   : s:parser_delim_get_regexp(d2, s2, 'delim_math'))
@@ -702,7 +712,8 @@ endfunction
 function! s:parser_delim_unmatched(match, lnum, cnum, ...) " {{{1
   let result = {}
   let result.type = 'delim'
-  let result.side = a:match =~# s:re.delim_all.open ? 'open' : 'close'
+  let result.side =
+        \ a:match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
   let result.get_matching = function('s:get_matching_delim_unmatched')
   let result.delim = '.'
@@ -716,14 +727,14 @@ function! s:parser_delim_unmatched(match, lnum, cnum, ...) " {{{1
     let result.corr_mod = '\right'
     let result.corr = '\right.'
     let re1 = '\\left\s*\.'
-    let re2 = s:parser_delim_get_regexp('\right', 1, 'delim_mods')
+    let re2 = s:parser_delim_get_regexp('\right', 1, 'mods')
           \  . '\s*' . s:parser_delim_get_regexp('.', 1)
   else
     let result.mod = '\right'
     let result.corr_mod = '\left'
     let result.corr = '\left.'
     let re1 = '\\right\s*\.'
-    let re2 = s:parser_delim_get_regexp('\left', 0, 'delim_mods')
+    let re2 = s:parser_delim_get_regexp('\left', 0, 'mods')
           \  . '\s*' . s:parser_delim_get_regexp('.', 0)
   endif
 
@@ -741,17 +752,17 @@ endfunction
 function! s:parser_delim_get_regexp(delim, side, ...) " {{{1
   let l:type = a:0 > 0 ? a:1 : 'delim_all'
 
-  " First check unmatched
+  " First check for unmatched math delimiter
   if a:delim ==# '.'
-    return '\%(' . join(map(copy(s:delims.delim_math.re),
-          \ 'v:val[' . a:side . ']'), '\|') . '\)'
+    return g:vimtex#delim#re.delim_math[a:side ? 'open' : 'close']
   endif
 
   " Next check normal delimiters
-  let index = index(map(copy(s:delims[l:type].list),
-        \ 'v:val[' . a:side . ']'), a:delim)
-  return (index >= 0)
-        \ ? s:delims[l:type].re[index][a:side]
+  let l:index = index(map(copy(g:vimtex#delim#lists[l:type].name),
+        \   'v:val[' . a:side . ']'),
+        \ a:delim)
+  return l:index >= 0
+        \ ? g:vimtex#delim#lists[l:type].re[index][a:side]
         \ : ''
 endfunction
 
@@ -759,7 +770,7 @@ endfunction
 function! s:parser_delim_get_corr(delim, ...) " {{{1
   let l:type = a:0 > 0 ? a:1 : 'delim_all'
 
-  for l:pair in s:delims[l:type].list
+  for l:pair in g:vimtex#delim#lists[l:type].name
     if a:delim ==# l:pair[0]
       return l:pair[1]
     elseif a:delim ==# l:pair[1]

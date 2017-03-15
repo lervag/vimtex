@@ -14,10 +14,10 @@ endfunction
 " }}}1
 function! vimtex#env#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
-        \ :call vimtex#env#delete('env')<cr>
+        \ :call vimtex#env#delete('env_tex')<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
-        \ :call vimtex#env#change_prompt('env')<cr>
+        \ :call vimtex#env#change_prompt('env_tex')<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
         \ :call vimtex#env#delete('env_math')<cr>

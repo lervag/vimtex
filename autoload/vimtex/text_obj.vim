@@ -21,7 +21,7 @@ function! vimtex#text_obj#init_buffer() " {{{1
   for [l:map, l:name, l:opt] in [
         \ ['c', 'commands', ''],
         \ ['d', 'delimited', 'delim_all'],
-        \ ['e', 'delimited', 'env'],
+        \ ['e', 'delimited', 'env_tex'],
         \ ['$', 'delimited', 'env_math'],
         \]
     let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
