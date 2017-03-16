@@ -4,16 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_view_enabled', 1)
-  if !g:vimtex_view_enabled | return | endif
-
-  call vimtex#util#set_default('g:vimtex_view_automatic', 1)
-  call vimtex#util#set_default('g:vimtex_view_method', 'general')
-  call vimtex#util#set_default('g:vimtex_view_use_temp_files', 0)
-endfunction
-
-" }}}1
 function! vimtex#view#init_buffer() " {{{1
   if !g:vimtex_view_enabled | return | endif
 
@@ -76,6 +66,16 @@ function! vimtex#view#init_buffer() " {{{1
           \ :call b:vimtex.viewer.reverse_search()<cr>
   endif
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_view_enabled', 1)
+call vimtex#util#set_default('g:vimtex_view_automatic', 1)
+call vimtex#util#set_default('g:vimtex_view_method', 'general')
+call vimtex#util#set_default('g:vimtex_view_use_temp_files', 0)
 
 " }}}1
 

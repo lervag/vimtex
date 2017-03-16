@@ -4,46 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#motion#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_motion_enabled', 1)
-  if !g:vimtex_motion_enabled | return | endif
-
-  call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
-endfunction
-
-" }}}1
-function! vimtex#motion#init_script() " {{{1
-  if !g:vimtex_motion_enabled | return | endif
-
-  "
-  " Define patterns used by motion.vim
-  "
-
-  " No preceding backslash
-  let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-
-  " Not in a comment
-  let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
-
-  " Pattern to match section/chapter/...
-  let s:section  = s:notcomment . '\v\s*\\'
-  let s:section .= '((sub)*section|chapter|part|'
-  let s:section .= 'appendix|(front|back|main)matter)>'
-
-  " List of paragraph boundaries
-  let s:paragraph_boundaries = [
-        \ '\%',
-        \ '\\part',
-        \ '\\chapter',
-        \ '\\(sub)*section',
-        \ '\\paragraph',
-        \ '\\label',
-        \ '\\begin',
-        \ '\\end',
-        \ ]
-endfunction
-
-" }}}1
 function! vimtex#motion#init_buffer() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
@@ -204,6 +164,34 @@ function! s:highlight_matching_pair() " {{{1
   let w:vimtex_match_id2 = matchadd('MatchParen',
         \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_motion_enabled', 1)
+call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
+
+" }}}1
+" {{{1 Initialize module
+
+" Pattern to match section/chapter/...
+let s:section = '\v%(%(\\<!%(\\\\)*)@<=\%.*)@<!'
+      \ . '\s*\\((sub)*section|chapter|part|'
+      \ .        'appendix|(front|back|main)matter)>'
+
+" List of paragraph boundaries
+let s:paragraph_boundaries = [
+      \ '\%',
+      \ '\\part',
+      \ '\\chapter',
+      \ '\\(sub)*section',
+      \ '\\paragraph',
+      \ '\\label',
+      \ '\\begin',
+      \ '\\end',
+      \ ]
 
 " }}}1
 

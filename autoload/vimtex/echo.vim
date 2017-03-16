@@ -4,11 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#echo#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_echo_ignore_wait', 0)
-endfunction
-
-" }}}1
 function! vimtex#echo#init_buffer() " {{{1
 endfunction
 
@@ -69,7 +64,13 @@ endfunction
 
 " }}}1
 
-" {{{1 Script initialization
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_echo_ignore_wait', 0)
+
+" }}}1
+" {{{1 Initialize module
 
 call vimtex#util#set_highlight('VimtexMsg', 'ModeMsg')
 call vimtex#util#set_highlight('VimtexSuccess', 'Statement')

@@ -4,30 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#parser#init_options() " {{{1
-endfunction
-
-" }}}1
-function! vimtex#parser#init_script() " {{{1
-  let s:input_line_tex = '\v^\s*\\%(' . join([
-        \ 'input',
-        \ 'include',
-        \ '%(sub)?import',
-        \ '%(sub)?%(input|include)from',
-        \ 'subfile',
-        \ ], '|') . ')\s*\{'
-  let s:input_line_aux = '\\@input{'
-endfunction
-
-" }}}1
-function! vimtex#parser#init_buffer() " {{{1
-endfunction
-
-" }}}1
-
-"
-" Define tex and aux parsers
-"
 function! vimtex#parser#tex(file, ...) " {{{1
   let s:prev_parsed = ''
   return s:parser(a:file, extend({
@@ -50,10 +26,6 @@ function! vimtex#parser#aux(file, ...) " {{{1
 endfunction
 
 " }}}1
-
-"
-" Get list of externalfile entries
-"
 function! vimtex#parser#get_externalfiles() " {{{1
   let l:preamble = s:parser(b:vimtex.tex, {
         \ 're_stop' : '\\begin{document}',
@@ -75,10 +47,6 @@ function! vimtex#parser#get_externalfiles() " {{{1
 endfunction
 
 " }}}1
-
-"
-" Extract part of a tex file and save to new file with the same preamble
-"
 function! vimtex#parser#selection_to_texfile(type) range " {{{1
   "
   " Get selected lines. Method depends on type of selection, which may be
@@ -254,6 +222,21 @@ function! s:input_line_parser_aux(line, file, re) " {{{1
   " Only return filename if it is readable
   return filereadable(l:file) ? l:file : ''
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize module
+
+let s:input_line_tex = '\v^\s*\\%(' . join([
+      \ 'input',
+      \ 'include',
+      \ '%(sub)?import',
+      \ '%(sub)?%(input|include)from',
+      \ 'subfile',
+      \ ], '|') . ')\s*\{'
+
+let s:input_line_aux = '\\@input{'
 
 " }}}1
 

@@ -4,14 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#env#init_options() " {{{1
-endfunction
-
-" }}}1
-function! vimtex#env#init_script() " {{{1
-endfunction
-
-" }}}1
 function! vimtex#env#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
         \ :call vimtex#env#delete('env_tex')<cr>

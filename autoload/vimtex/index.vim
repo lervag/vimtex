@@ -4,21 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#index#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_index_hide_line_numbers', 1)
-  call vimtex#util#set_default('g:vimtex_index_resize', 0)
-  call vimtex#util#set_default('g:vimtex_index_show_help', 1)
-  call vimtex#util#set_default('g:vimtex_index_split_pos', 'vert leftabove')
-  call vimtex#util#set_default('g:vimtex_index_split_width', 30)
-endfunction
-
-" }}}1
-function! vimtex#index#init_script() " {{{1
-  call vimtex#util#set_highlight('IndexHelp', 'helpVim')
-  call vimtex#util#set_highlight('IndexLine', 'ModeMsg')
-endfunction
-
-" }}}1
 function! vimtex#index#init_buffer() " {{{1
 endfunction
 
@@ -248,6 +233,23 @@ function! s:syntax() dict " {{{1
   syntax match IndexHelp /^.*: .*/
   syntax match IndexLine /^  .*$/ contains=@Tex
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_index_hide_line_numbers', 1)
+call vimtex#util#set_default('g:vimtex_index_resize', 0)
+call vimtex#util#set_default('g:vimtex_index_show_help', 1)
+call vimtex#util#set_default('g:vimtex_index_split_pos', 'vert leftabove')
+call vimtex#util#set_default('g:vimtex_index_split_width', 30)
+
+" }}}1
+" {{{1 Initialize module
+
+call vimtex#util#set_highlight('IndexHelp', 'helpVim')
+call vimtex#util#set_highlight('IndexLine', 'ModeMsg')
 
 " }}}1
 

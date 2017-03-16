@@ -4,71 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#latexmk#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
-  call vimtex#util#set_default('g:vimtex_latexmk_progname',
-        \ get(v:, 'progpath', get(v:, 'progname')))
-  call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
-
-  " Check if .latexmkrc sets the build_dir - if so this should be respected
-  let l:build_dir = s:latexmk_get_build_dir()
-  if !empty(l:build_dir)
-    if !empty(g:vimtex_latexmk_build_dir)
-      call vimtex#echo#warning(
-            \ 'g:vimtex_latexmk_build_dir changed to: ' . l:build_dir)
-      call vimtex#echo#wait()
-    endif
-    let g:vimtex_latexmk_build_dir = l:build_dir
-  endif
-
-  if !g:vimtex_latexmk_enabled | return | endif
-
-  call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
-  call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
-  call vimtex#util#set_default('g:vimtex_latexmk_options',
-        \ '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode')
-  call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
-  call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
-  call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
-
-  if exists('g:vimtex_quickfix_ignore_all_warnings')
-    echoerr 'Deprecated option: g:vimtex_quickfix_ignore_all_warnings'
-    echoerr 'Please see ":h g:vimtex_quickfix_ignore_all_warnings"'
-  endif
-
-  if exists('g:vimtex_quickfix_ignored_warnings')
-    echoerr 'Deprecated option: g:vimtex_quickfix_ignored_warnings'
-    echoerr 'Please see ":h g:vimtex_quickfix_ignored_warnings"'
-  endif
-endfunction
-
-" }}}1
-function! vimtex#latexmk#init_script() " {{{1
-  if !g:vimtex_latexmk_enabled | return | endif
-
-  call s:check_system_compatibility()
-  if !g:vimtex_latexmk_enabled | return | endif
-
-  " Ensure that all latexmk processes are stopped when a latex project is
-  " closed and when vim exits
-  if g:vimtex_latexmk_continuous
-    augroup vimtex_latexmk
-      autocmd!
-      autocmd VimLeave * call vimtex#latexmk#stop_all()
-      autocmd User VimtexEventQuit call s:clean_on_quit()
-    augroup END
-  endif
-
-  " Add autocommand to fix paths in quickfix
-  augroup vimtex_latexmk_fix_dirs
-    au!
-    au QuickFixCmdPost c*file call s:fix_quickfix_paths()
-  augroup END
-endfunction
-
-" }}}1
 function! vimtex#latexmk#init_buffer() " {{{1
   if !g:vimtex_latexmk_enabled | return | endif
 
@@ -718,7 +653,7 @@ function! s:latexmk_kill(data) " {{{1
 endfunction
 
 " }}}1
-function! s:latexmk_get_build_dir() " {{{1
+function! s:latexmk_set_build_dir() " {{{1
   let l:pattern = '^\s*\$out_dir\s*=\s*[''"]\(.\+\)[''"]\s*;\?\s*$'
   let l:files = [
         \ b:vimtex.root . '/latexmkrc',
@@ -726,16 +661,25 @@ function! s:latexmk_get_build_dir() " {{{1
         \ fnamemodify('~/.latexmkrc', ':p'),
         \]
 
+  let l:build_dir = ''
   for l:file in l:files
     if filereadable(l:file)
       let l:out_dir = matchlist(readfile(l:file), l:pattern)
       if len(l:out_dir) > 1
-        return l:out_dir[1]
+        let l:build_dir = l:out_dir[1]
+        break
       endif
     endif
   endfor
 
-  return ''
+  if !empty(l:build_dir)
+    if !empty(g:vimtex_latexmk_build_dir)
+      call vimtex#echo#warning(
+            \ 'g:vimtex_latexmk_build_dir changed to: ' . l:build_dir)
+      call vimtex#echo#wait()
+    endif
+    let g:vimtex_latexmk_build_dir = l:build_dir
+  endif
 endfunction
 
 " }}}1
@@ -794,6 +738,8 @@ function! s:log_contains_error(logfile) " {{{1
 endfunction
 
 function! s:check_system_compatibility() " {{{1
+  if !g:vimtex_latexmk_enabled | return | endif
+
   "
   " Check for required executables
   "
@@ -837,6 +783,64 @@ function! s:uniq(list) " {{{1
 
   return l:ulist
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_latexmk_enabled', 1)
+call vimtex#util#set_default('g:vimtex_latexmk_build_dir', '')
+call vimtex#util#set_default('g:vimtex_latexmk_progname',
+      \ get(v:, 'progpath', get(v:, 'progname')))
+call vimtex#util#set_default('g:vimtex_latexmk_callback_hooks', [])
+call vimtex#util#set_default('g:vimtex_latexmk_background', 0)
+call vimtex#util#set_default('g:vimtex_latexmk_callback', 1)
+call vimtex#util#set_default('g:vimtex_latexmk_continuous', 1)
+call vimtex#util#set_default('g:vimtex_latexmk_options',
+      \ '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode')
+
+call vimtex#util#set_default('g:vimtex_quickfix_autojump', '0')
+call vimtex#util#set_default('g:vimtex_quickfix_mode', '2')
+call vimtex#util#set_default('g:vimtex_quickfix_open_on_warning', '1')
+
+" Check if .latexmkrc sets the build_dir - if so this should be respected
+call s:latexmk_set_build_dir()
+
+call s:check_system_compatibility()
+
+if g:vimtex_latexmk_enabled
+  if exists('g:vimtex_quickfix_ignore_all_warnings')
+    echoerr 'Deprecated option: g:vimtex_quickfix_ignore_all_warnings'
+    echoerr 'Please see ":h g:vimtex_quickfix_ignore_all_warnings"'
+  endif
+
+  if exists('g:vimtex_quickfix_ignored_warnings')
+    echoerr 'Deprecated option: g:vimtex_quickfix_ignored_warnings'
+    echoerr 'Please see ":h g:vimtex_quickfix_ignored_warnings"'
+  endif
+endif
+
+" }}}1
+" {{{1 Initialize module
+
+if !g:vimtex_latexmk_enabled | finish | endif
+
+" Ensure that all latexmk processes are stopped when a latex project is
+" closed and when vim exits
+if g:vimtex_latexmk_continuous
+  augroup vimtex_latexmk
+    autocmd!
+    autocmd VimLeave * call vimtex#latexmk#stop_all()
+    autocmd User VimtexEventQuit call s:clean_on_quit()
+  augroup END
+endif
+
+" Add autocommand to fix paths in quickfix
+augroup vimtex_latexmk_fix_dirs
+  au!
+  au QuickFixCmdPost c*file call s:fix_quickfix_paths()
+augroup END
 
 " }}}1
 

@@ -4,11 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#labels#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
-endfunction
-
-" }}}1
 function! vimtex#labels#init_buffer() " {{{1
   if !g:vimtex_labels_enabled | return | endif
 
@@ -119,7 +114,12 @@ endfunction
 
 " }}}1
 
-" {{{1 Script initialization
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
+
+" }}}1
+" {{{1 Initialize module
 
 let s:name = 'Table of labels (vimtex)'
 

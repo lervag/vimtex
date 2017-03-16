@@ -4,19 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#toc#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_toc_enabled', 1)
-  if !g:vimtex_toc_enabled | return | endif
-
-  call vimtex#util#set_default('g:vimtex_toc_fold', 0)
-  call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
-  call vimtex#util#set_default('g:vimtex_toc_number_width', 0)
-  call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
-  call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
-  call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
-endfunction
-
-" }}}1
 function! vimtex#toc#init_buffer() " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
@@ -547,7 +534,29 @@ endfunction
 
 " }}}1
 
-" {{{1 Script initialization
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_toc_enabled', 1)
+call vimtex#util#set_default('g:vimtex_toc_fold', 0)
+call vimtex#util#set_default('g:vimtex_toc_fold_levels', 10)
+call vimtex#util#set_default('g:vimtex_toc_number_width', 0)
+call vimtex#util#set_default('g:vimtex_toc_secnumdepth', 3)
+call vimtex#util#set_default('g:vimtex_toc_show_numbers', 1)
+call vimtex#util#set_default('g:vimtex_toc_show_preamble', 1)
+
+" Define highlight groups
+call vimtex#util#set_highlight('VimtexTocNum', 'Number')
+call vimtex#util#set_highlight('VimtexTocTag', 'Directory')
+call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
+call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
+call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
+call vimtex#util#set_highlight('VimtexTocSec3', 'NonText')
+call vimtex#util#set_highlight('VimtexTocSec4', 'Comment')
+call vimtex#util#set_highlight('VimtexTocHelp', 'helpVim')
+
+" }}}1
+" {{{1 Initialize module
 
 let s:name = 'Table of contents (vimtex)'
 
@@ -617,16 +626,6 @@ let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
 let s:re_bibs  = s:nocomment
 let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
 let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
-
-" Define highlight groups
-call vimtex#util#set_highlight('VimtexTocNum', 'Number')
-call vimtex#util#set_highlight('VimtexTocTag', 'Directory')
-call vimtex#util#set_highlight('VimtexTocSec0', 'Title')
-call vimtex#util#set_highlight('VimtexTocSec1', 'Normal')
-call vimtex#util#set_highlight('VimtexTocSec2', 'helpVim')
-call vimtex#util#set_highlight('VimtexTocSec3', 'NonText')
-call vimtex#util#set_highlight('VimtexTocSec4', 'Comment')
-call vimtex#util#set_highlight('VimtexTocHelp', 'helpVim')
 
 " }}}1
 

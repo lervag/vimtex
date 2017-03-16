@@ -4,89 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#fold#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
-  call vimtex#util#set_default('g:vimtex_fold_manual', 0)
-  call vimtex#util#set_default('g:vimtex_fold_comments', 0)
-  call vimtex#util#set_default('g:vimtex_fold_levelmarker', '*')
-  call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
-  call vimtex#util#set_default('g:vimtex_fold_envs', 1)
-  call vimtex#util#set_default('g:vimtex_fold_markers', 1)
-  call vimtex#util#set_default('g:vimtex_fold_parts',
-        \ [
-        \   'part',
-        \   'appendix',
-        \   'frontmatter',
-        \   'mainmatter',
-        \   'backmatter',
-        \ ])
-  call vimtex#util#set_default('g:vimtex_fold_sections',
-        \ [
-        \   'chapter',
-        \   'section',
-        \   'subsection',
-        \   'subsubsection',
-        \ ])
-  call vimtex#util#set_default('g:vimtex_fold_commands_default', {
-        \ 'hypersetup' : 'single',
-        \ 'tikzset' : 'single',
-        \ 'usepackage' : 'single_opt',
-        \ 'includepdf' : 'single_opt',
-        \ '%(re)?new%(command|environment)' : 'multi',
-        \ 'providecommand' : 'multi',
-        \ 'presetkeys' : 'multi',
-        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
-        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
-        \})
-
-  " Disable manual mode in vimdiff
-  let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
-endfunction
-
-" }}}1
-function! vimtex#fold#init_script() " {{{1
-  let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
-  let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-  let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-  let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
-
-  "
-  " Set up command fold structure
-  "
-  let s:cmds = extend(g:vimtex_fold_commands_default,
-        \ get(g:, 'vimtex_fold_commands', {}))
-  let s:cmd_types = []
-  let l:cmds_all = []
-  for l:type in ['single', 'single_opt', 'multi']
-    let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
-    if !empty(l:cmds)
-      call extend(l:cmds_all, l:cmds)
-      call add(s:cmd_types, s:cmd_{l:type}(l:cmds))
-    endif
-  endfor
-
-  "
-  " List of identifiers for improving efficiency
-  "
-  let s:folded  = '\v'
-  let s:folded .= ' ^\s*\%'
-  let s:folded .= '|^\s*\]\{'
-  let s:folded .= '|^\s*}\s*(\%|$)'
-  let s:folded .= '|^\s*\% Fake'
-  let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
-  let s:folded .= '|\\%(' . join([
-        \   'begin',
-        \   'end',
-        \   '%(sub)*%(section|paragraph)',
-        \   'chapter',
-        \   'documentclass',
-        \   '%(front|main|back)matter',
-        \   'appendix',
-        \   'part',
-        \ ] + l:cmds_all, '|') . ')'
-endfunction
-
-" }}}1
 function! vimtex#fold#init_buffer() " {{{1
   " b:vimtex_fold is a dictionary used to store dynamic fold information
   " Note: We define this even if folding is disabled, because people might want
@@ -166,7 +83,7 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold commands
-  for l:cmd in s:cmd_types
+  for l:cmd in s:cmds_types
     let l:value = l:cmd.level(line, a:lnum)
     if !empty(l:value) | return l:value | endif
   endfor
@@ -232,7 +149,7 @@ function! vimtex#fold#text() " {{{1
   endif
 
   " Text for various folded commands
-  for l:cmd in s:cmd_types
+  for l:cmd in s:cmds_types
     if line =~# l:cmd.re.start
       return l:cmd.text(line)
     endif
@@ -553,6 +470,98 @@ function! s:parse_sec_title(string, type) " {{{1
   endwhile
   return strpart(a:string, 0, l:idx)
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
+call vimtex#util#set_default('g:vimtex_fold_manual', 0)
+call vimtex#util#set_default('g:vimtex_fold_comments', 0)
+call vimtex#util#set_default('g:vimtex_fold_levelmarker', '*')
+call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
+call vimtex#util#set_default('g:vimtex_fold_envs', 1)
+call vimtex#util#set_default('g:vimtex_fold_markers', 1)
+call vimtex#util#set_default('g:vimtex_fold_parts',
+      \ [
+      \   'part',
+      \   'appendix',
+      \   'frontmatter',
+      \   'mainmatter',
+      \   'backmatter',
+      \ ])
+call vimtex#util#set_default('g:vimtex_fold_sections',
+      \ [
+      \   'chapter',
+      \   'section',
+      \   'subsection',
+      \   'subsubsection',
+      \ ])
+call vimtex#util#set_default('g:vimtex_fold_commands_default', {
+      \ 'hypersetup' : 'single',
+      \ 'tikzset' : 'single',
+      \ 'usepackage' : 'single_opt',
+      \ 'includepdf' : 'single_opt',
+      \ '%(re)?new%(command|environment)' : 'multi',
+      \ 'providecommand' : 'multi',
+      \ 'presetkeys' : 'multi',
+      \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
+      \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+      \})
+
+" Disable manual mode in vimdiff
+let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
+
+" }}}1
+" {{{1 Initialize module
+
+let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
+let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
+let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+
+"
+" Set up command fold structure
+"
+function! s:init_cmds() " {{{2
+  let s:cmds = extend(g:vimtex_fold_commands_default,
+        \ get(g:, 'vimtex_fold_commands', {}))
+  let s:cmds_types = []
+  let s:cmds_all = []
+
+  for l:type in ['single', 'single_opt', 'multi']
+    let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
+    if !empty(l:cmds)
+      call extend(s:cmds_all, l:cmds)
+      call add(s:cmds_types, s:cmd_{l:type}(l:cmds))
+    endif
+  endfor
+endfunction
+
+" }}}2
+
+call s:init_cmds()
+
+"
+" List of identifiers for improving efficiency
+"
+let s:folded  = '\v'
+let s:folded .= ' ^\s*\%'
+let s:folded .= '|^\s*\]\{'
+let s:folded .= '|^\s*}\s*(\%|$)'
+let s:folded .= '|^\s*\% Fake'
+let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
+let s:folded .= '|\\%(' . join([
+      \   'begin',
+      \   'end',
+      \   '%(sub)*%(section|paragraph)',
+      \   'chapter',
+      \   'documentclass',
+      \   '%(front|main|back)matter',
+      \   'appendix',
+      \   'part',
+      \ ] + s:cmds_all, '|') . ')'
 
 " }}}1
 

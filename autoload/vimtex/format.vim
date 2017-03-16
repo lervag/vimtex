@@ -4,31 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#format#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_format_enabled', 0)
-endfunction
-
-" }}}1
-function! vimtex#format#init_script() " {{{1
-  let s:border_beginning = '\v^\s*%(' . join([
-        \ '\\item',
-        \ '\\begin',
-        \ '\\end',
-        \ '%(\\\[|\$\$)\s*$',
-        \], '|') . ')'
-
-  let s:border_end = '\v\\%(' . join([
-        \   '\\\*?',
-        \   'clear%(double)?page',
-        \   'linebreak',
-        \   'new%(line|page)',
-        \   'pagebreak',
-        \   '%(begin|end)\{[^}]*\}',
-        \  ], '|') . ')\s*$'
-        \ . '|^\s*%(\\\]|\$\$)\s*$'
-endfunction
-
-" }}}1
 function! vimtex#format#init_buffer() " {{{1
   if !g:vimtex_format_enabled | return | endif
 
@@ -208,6 +183,33 @@ function! s:get_indents(number) " {{{1
         \ ? repeat("\t", a:number/&l:tabstop)
         \ : repeat(' ', a:number)
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_format_enabled', 0)
+
+" }}}1
+" {{{1 Initialize module
+
+let s:border_beginning = '\v^\s*%(' . join([
+      \ '\\item',
+      \ '\\begin',
+      \ '\\end',
+      \ '%(\\\[|\$\$)\s*$',
+      \], '|') . ')'
+
+let s:border_end = '\v\\%(' . join([
+      \   '\\\*?',
+      \   'clear%(double)?page',
+      \   'linebreak',
+      \   'new%(line|page)',
+      \   'pagebreak',
+      \   '%(begin|end)\{[^}]*\}',
+      \  ], '|') . ')\s*$'
+      \ . '|^\s*%(\\\]|\$\$)\s*$'
 
 " }}}1
 

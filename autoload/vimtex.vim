@@ -40,21 +40,8 @@ function! vimtex#init() " {{{1
   call s:init_buffer()
 
   "
-  " Then we initialize the modules.  This is done in three steps:
+  " Then we initialize the modules for the current buffer
   "
-  " 1. Initialize options (load default options if not otherwise set).  This is
-  "    only done once for each vim session.
-  "
-  " 2. Initialize module scripts (set script variables and similar).  This is
-  "    also only done once for each vim session.
-  "
-  " 3. Initialize module for current buffer.  This is done for each new LaTeX
-  "    buffer.
-  "
-  if !s:initialized
-    call s:init_modules('options')
-    call s:init_modules('script')
-  endif
   call s:init_modules('buffer')
 
   "

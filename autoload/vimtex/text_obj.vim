@@ -4,17 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#text_obj#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_text_obj_enabled', 1)
-  call vimtex#util#set_default('g:vimtex_text_obj_linewise_operators',
-        \ ['d', 'y'])
-endfunction
-
-" }}}1
-function! vimtex#text_obj#init_script() " {{{1
-endfunction
-
-" }}}1
 function! vimtex#text_obj#init_buffer() " {{{1
   if !g:vimtex_text_obj_enabled | return | endif
 
@@ -109,6 +98,15 @@ function! vimtex#text_obj#delimited(is_inner, type) " {{{1
   normal! o
   call cursor(l2, c2)
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_text_obj_enabled', 1)
+call vimtex#util#set_default('g:vimtex_text_obj_linewise_operators',
+      \ ['d', 'y'])
 
 " }}}1
 

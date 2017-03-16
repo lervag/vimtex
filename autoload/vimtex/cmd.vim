@@ -4,14 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#cmd#init_options() " {{{1
-endfunction
-
-" }}}1
-function! vimtex#cmd#init_script() " {{{1
-endfunction
-
-" }}}1
 function! vimtex#cmd#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-delete)
         \ :call vimtex#cmd#delete()<cr>

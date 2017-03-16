@@ -4,24 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#complete#init_options() " {{{1
-  call vimtex#util#set_default('g:vimtex_complete_enabled', 1)
-  if !g:vimtex_complete_enabled | return | endif
-
-  call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
-  call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
-endfunction
-
-" }}}1
-function! vimtex#complete#init_script() " {{{1
-  if !g:vimtex_complete_enabled | return | endif
-
-  let s:completers = [
-        \ s:bib, s:ref, s:img, s:inc, s:pdf, s:sta, s:gls, s:pck, s:doc,
-        \]
-endfunction
-
-" }}}1
 function! vimtex#complete#init_buffer() " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
@@ -720,6 +702,22 @@ let s:tex2unicode_list = map([
       \ ['\\`n}'         , 'ǹ'],
       \ ['\\\~n}'        , 'ñ'],
       \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
+
+" }}}1
+
+
+" {{{1 Initialize options
+
+call vimtex#util#set_default('g:vimtex_complete_enabled', 1)
+call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
+call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
+
+" }}}1
+" {{{1 Initialize module
+
+let s:completers = [
+      \ s:bib, s:ref, s:img, s:inc, s:pdf, s:sta, s:gls, s:pck, s:doc,
+      \]
 
 " }}}1
 
