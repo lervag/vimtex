@@ -537,7 +537,7 @@ function! s:latexmk_build_cmd() " {{{1
 
   let cmd .= ' ' . g:vimtex_latexmk_options
 
-  let cmd .= b:vimtex.engine
+  let cmd .= ' ' . b:vimtex.engine
 
   if g:vimtex_latexmk_build_dir !=# ''
     let cmd .= ' -outdir=' . g:vimtex_latexmk_build_dir
