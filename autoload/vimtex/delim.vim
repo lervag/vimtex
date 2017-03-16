@@ -190,11 +190,11 @@ function! s:init_delim_regexes() " {{{1
   " Matches possibly modified math delimiters
   "
   let l:re.delim_modq_math = {
-        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\)\?\s*\%('
+        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\s*\)\?\%('
         \   . l:o . '\)\|\\left\s*\.',
-        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\)\?\s*\%('
+        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\s*\)\?\%('
         \   . l:c . '\)\|\\right\s*\.',
-        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\)\?\s*\%('
+        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\s*\)\?\%('
         \   . l:o . '\|' . l:c . '\)\|\\\%(left\|right\)\s*\.',
         \}
 

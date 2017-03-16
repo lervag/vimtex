@@ -115,7 +115,7 @@ function! vimtex#env#delete(type) " {{{1
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env')
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
   if empty(l:open) | return | endif
 
   call vimtex#env#change(l:open, l:close,
