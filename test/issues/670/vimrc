@@ -1,0 +1,35 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+let &rtp .= ',~/.vim/bundle/vim-colors-solarized'
+filetype plugin indent on
+syntax enable
+
+set cursorline
+
+augroup mathmode_toggler
+  autocmd!
+  autocmd CursorMoved  *.tex call ToggleLangMap()
+augroup END
+
+function! ToggleLangMap()
+  let l:mathmode = vimtex#util#in_mathzone()
+
+  echom 'Mathmode = ' . l:mathmode
+        \ string(map(synstack(line('.'), col('.')),
+        \            "synIDattr(v:val, 'name')"))
+
+  if l:mathmode == 1
+    hi CursorLine gui=underline cterm=underline
+  else
+    hi clear CursorLine
+    hi clear CursorLineNR
+  endif
+endfunction
+
+map ,v :sp vimrc<CR>
+map ,V :source vimrc<CR>
+
+if !get(g:, 'colors_name') ==# 'solarized'
+  colorscheme solarized
+endif
