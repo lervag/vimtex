@@ -360,7 +360,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ds$              |<plug>(vimtex-env-delete-math)|        `n`
    cse              |<plug>(vimtex-env-change)|             `n`
    csc              |<plug>(vimtex-cmd-change)|             `n`
-   cs$              |<plug>(vimtex-cmd-change-math)|        `n`
+   cs$              |<plug>(vimtex-env-change-math)|        `n`
    tsc              |<plug>(vimtex-cmd-toggle-star)|        `n`
    tse              |<plug>(vimtex-env-toggle-star)|        `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
@@ -1363,6 +1363,7 @@ Map definitions~
 *<plug>(vimtex-env-delete)*
 *<plug>(vimtex-env-delete-math)*
 *<plug>(vimtex-env-change)*
+*<plug>(vimtex-env-change-math)*
   Delete/Change surrounding environment.
 
 *<plug>(vimtex-cmd-delete)*
