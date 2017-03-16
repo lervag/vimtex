@@ -19,11 +19,13 @@ function! vimtex#include#expr() " {{{1
   "
   " Next search for file with kpsewhich
   "
-  for l:suffix in  [''] + reverse(split(&l:suffixesadd, ','))
-    let l:candidate = vimtex#kpsewhich#find(v:fname . l:suffix)
-    if filereadable(l:candidate)
-      return l:candidate
-    endif
+  for l:file in s:vfname_split()
+    for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
+      let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
+      if filereadable(l:candidate)
+        return l:candidate
+      endif
+    endfor
   endfor
 
   return v:fname
@@ -42,6 +44,18 @@ function! s:include() " {{{1
   let l:file = substitute(l:file, '\\space', '', 'g')
 
   return l:file
+endfunction
+
+" }}}1
+function! s:vfname_split() " {{{1
+  let l:files = []
+
+  let l:current = expand('<cword>')
+  if index(split(v:fname, ','), l:current) >= 0
+    call add(l:files, l:current)
+  endif
+
+  return l:files + [v:fname]
 endfunction
 
 " }}}1
