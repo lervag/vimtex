@@ -366,14 +366,14 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|             `nxi`
    ]]               |<plug>(vimtex-delim-close)|            `i`
-   ac               |<plug>(vimtex-ac)|                     `nxo`
-   ic               |<plug>(vimtex-ic)|                     `nxo`
-   ad               |<plug>(vimtex-ad)|                     `nxo`
-   id               |<plug>(vimtex-id)|                     `nxo`
-   ae               |<plug>(vimtex-ae)|                     `nxo`
-   ie               |<plug>(vimtex-ie)|                     `nxo`
-   a$               |<plug>(vimtex-a$)|                     `nxo`
-   i$               |<plug>(vimtex-i$)|                     `nxo`
+   ac               |<plug>(vimtex-ac)|                     `xo`
+   ic               |<plug>(vimtex-ic)|                     `xo`
+   ad               |<plug>(vimtex-ad)|                     `xo`
+   id               |<plug>(vimtex-id)|                     `xo`
+   ae               |<plug>(vimtex-ae)|                     `xo`
+   ie               |<plug>(vimtex-ie)|                     `xo`
+   a$               |<plug>(vimtex-a$)|                     `xo`
+   i$               |<plug>(vimtex-i$)|                     `xo`
    %                |<plug>(vimtex-%)|                      `nxo`
    ]]               |<plug>(vimtex-]])|                     `nxo`
    ][               |<plug>(vimtex-][)|                     `nxo`
