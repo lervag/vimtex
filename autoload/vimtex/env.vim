@@ -104,6 +104,12 @@ function! vimtex#env#delete(type) " {{{1
   if getline(l:open.lnum) =~# '^\s*$'
     execute l:open.lnum . 'd _'
   endif
+
+  if a:type ==# 'env_tex'
+    silent! call repeat#set("\<plug>(vimtex-env-delete)", v:count)
+  elseif a:type ==# 'env_math'
+    silent! call repeat#set("\<plug>(vimtex-env-delete-math)", v:count)
+  endif
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1
