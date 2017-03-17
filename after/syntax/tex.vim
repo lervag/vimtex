@@ -182,7 +182,8 @@ syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 " {{{1 Nested syntax highlighting for dot
 unlet b:current_syntax
 syntax include @DOT syntax/dot.vim
-syntax region texZone
+syntax cluster texDocGroup add=texZoneDot
+syntax region texZoneDot
       \ start="\\begin{dot2tex}"rs=s
       \ end="\\end{dot2tex}"re=e
       \ keepend
@@ -194,7 +195,8 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for lualatex
 unlet b:current_syntax
 syntax include @LUA syntax/lua.vim
-syntax region texZone
+syntax cluster texDocGroup add=texZoneLua
+syntax region texZoneLua
       \ start='\\begin{luacode\*\?}'rs=s
       \ end='\\end{luacode\*\?}'re=e
       \ keepend
@@ -212,7 +214,8 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for gnuplottex
 unlet b:current_syntax
 syntax include @GNUPLOT syntax/gnuplot.vim
-syntax region texZone
+syntax cluster texDocGroup add=texZoneGnuplot
+syntax region texZoneGnuplot
       \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
       \ end='\\end{gnuplot}'re=e
       \ keepend
@@ -224,7 +227,8 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for minted
 
 " First set all minted environments to listings
-syntax region texZone
+syntax cluster texDocGroup add=texZoneMinted
+syntax region texZoneMinted
       \ start="\\begin{minted}\_[^}]\{-}{\w\+}"rs=s
       \ end="\\end{minted}"re=e
       \ keepend
@@ -235,6 +239,9 @@ for s:entry in get(g:, 'vimtex_syntax_minted', [])
   let s:lang = s:entry.lang
   let s:syntax = get(s:entry, 'syntax', s:lang)
 
+  let s:group_name = 'texZoneMinted' . toupper(s:lang[0]) . s:lang[1:]
+  execute 'syntax cluster texDocGroup add=' . s:group_name
+
   unlet b:current_syntax
   execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
 
@@ -243,7 +250,7 @@ for s:entry in get(g:, 'vimtex_syntax_minted', [])
           \ 'remove=' . join(s:entry.ignore, ',')
   endif
 
-  execute 'syntax region texZone'
+  execute 'syntax region' s:group_name
         \ 'start="\\begin{minted}\_[^}]\{-}{' . s:lang . '}"rs=s'
         \ 'end="\\end{minted}"re=e'
         \ 'keepend'
@@ -254,7 +261,7 @@ for s:entry in get(g:, 'vimtex_syntax_minted', [])
   " Support for custom environment names
   "
   for s:env in get(s:entry, 'environments', [])
-    execute 'syntax region texZone'
+    execute 'syntax region' s:group_name
           \ 'start="\\begin{' . s:env . '}"rs=s'
           \ 'end="\\end{' . s:env . '}"re=e'
           \ 'keepend'
@@ -262,7 +269,7 @@ for s:entry in get(g:, 'vimtex_syntax_minted', [])
           \ 'contains=texBeginEnd,@' . toupper(s:lang)
 
     " Match starred environments with options
-    execute 'syntax region texZone'
+    execute 'syntax region' s:group_name
           \ 'start="\\begin{' . s:env . '\*}\s*{\_.\{-}}"rs=s'
           \ 'end="\\end{' . s:env . '\*}"re=e'
           \ 'keepend'
