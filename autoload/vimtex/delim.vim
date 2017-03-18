@@ -711,10 +711,6 @@ function! s:init_delim_lists() " {{{1
         \ ['[', ']'],
         \ ['{', '}'],
         \]
-  let l:lists.delim_tex.re = [
-        \ ['\[', '\]'],
-        \ ['{', '}'],
-        \]
 
   let l:lists.mods.name = [
         \ ['\left', '\right'],
@@ -726,17 +722,6 @@ function! s:init_delim_lists() " {{{1
         \ ['\Big', '\Big'],
         \ ['\bigg', '\bigg'],
         \ ['\Bigg', '\Bigg'],
-        \]
-  let l:lists.mods.re = [
-        \ ['\\left', '\\right'],
-        \ ['\\bigl', '\\bigr'],
-        \ ['\\Bigl', '\\Bigr'],
-        \ ['\\biggl', '\\biggr'],
-        \ ['\\Biggl', '\\Biggr'],
-        \ ['\\big', '\\big'],
-        \ ['\\Big', '\\Big'],
-        \ ['\\bigg', '\\bigg'],
-        \ ['\\Bigg', '\\Bigg'],
         \]
 
   let l:lists.delim_math.name = [
@@ -750,17 +735,14 @@ function! s:init_delim_lists() " {{{1
         \ ['\lceil', '\rceil'],
         \ ['\ulcorner', '\urcorner'],
         \]
-  let l:lists.delim_math.re = [
-        \ ['(', ')'],
-        \ ['\[', '\]'],
-        \ ['\\{', '\\}'],
-        \ ['\\langle', '\\rangle'],
-        \ ['\\lvert', '\\rvert'],
-        \ ['\\lVert', '\\rVert'],
-        \ ['\\lfloor', '\\rfloor'],
-        \ ['\\lceil', '\\rceil'],
-        \ ['\\ulcorner', '\\urcorner'],
-        \]
+
+  " Generate corresponding regexes if necessary
+  for l:type in values(l:lists)
+    if !has_key(l:type, 're') && has_key(l:type, 'name')
+      let l:type.re = map(deepcopy(l:type.name),
+            \ 'map(v:val, ''escape(v:val, ''''\$[]'''')'')')
+    endif
+  endfor
 
   for k in ['name', 're']
     let l:lists.env_all[k] = l:lists.env_tex[k] + l:lists.env_math[k]
@@ -782,12 +764,7 @@ function! s:init_delim_regexes() " {{{1
   let l:re.env_math = s:init_delim_regexes_generator('env_math')
   let l:re.delim_tex = s:init_delim_regexes_generator('delim_tex')
   let l:re.delim_math = s:init_delim_regexes_generator('delim_math')
-
-  let l:re.mods = {
-        \ 'open' : '\\left\|\\[bB]igg\?l\?',
-        \ 'close' : '\\right\|\\[bB]igg\?r\?',
-        \ 'both' : '\\left\|\\right\|\\[bB]igg\?[lr]\?',
-        \}
+  let l:re.mods = s:init_delim_regexes_generator('mods')
 
   let l:o = join(map(copy(g:vimtex#delim#lists.delim_math.re), 'v:val[0]'), '\|')
   let l:c = join(map(copy(g:vimtex#delim#lists.delim_math.re), 'v:val[1]'), '\|')
