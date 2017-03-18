@@ -736,6 +736,9 @@ function! s:init_delim_lists() " {{{1
         \ ['\ulcorner', '\urcorner'],
         \]
 
+  " Get user defined lists
+  call extend(l:lists, get(g:, 'vimtex_delim_list', {}))
+
   " Generate corresponding regexes if necessary
   for l:type in values(l:lists)
     if !has_key(l:type, 're') && has_key(l:type, 'name')
