@@ -423,19 +423,90 @@ Options~
 
   Default value: 0
 
+*g:vimtex_delim_list*
+  A dictionary that defines the pairs of delimiters that are recognized by
+  |vimtex| for various commands and functions. The dictionary contains 5 sub
+  dictionaries:
+
+    `env_tex`     Pairs of environment delimiters in normal TeX mode
+    `env_math`    Pairs of special math environment delimiters
+    `delim_tex`   Pairs of delimiters in normal TeX mode
+    `delim_math`  Pairs of delimiters in math mode
+    `mods`        Pairs of modifiers for math mode delimiters
+
+  Each entry is a dictionary with the following format: >
+
+    {
+    \ 'name' : [
+    \   ['\(', '\)'],
+    \   ['\[', '\]'],
+    \   ['$$', '$$'],
+    \   ['$', '$'],
+    \ ],
+    \ 're' : [
+    \   ['\\(', '\\)'],
+    \   ['\\\@<!\\\[', '\\\]'],
+    \   ['\$\$', '\$\$'],
+    \   ['\$', '\$'],
+    \ ],
+    \}
+<
+  Here the `name` entry is a list of delimiter pairs as they are typed, and the
+  `re` entry is a corresponding list of regexes that matches the delimiters.
+
+  The default value should generally suffice for most people. If one wants to
+  overwrite one of the main entries, e.g. the `mods` entry, one can do: >
+
+    let g:vimtex_delim_list = {
+          \ 'mods' : {
+          \   'name' : [ ... ],
+          \ }
+          \}
+<
+  Here the `re` entry was not provided, in which case it will be automatically
+  generated based on the `name` entry. The remaining four entries will remain
+  the default value.
+
+                                                         *g:vimtex#delim#lists*
+                                                         *g:vimtex#delim#re*
+  Note: This option is parsed on plugin initialization into a new variable,
+        |g:vimtex#delim#lists| where the `re` entries are added and that also
+        contains some combinations such as `tex_all`, `delim_all`, and `all`.
+        Further, the option is also used as a basis for the variable
+        |g:vimtex#delim#re|, which contains full regexes for matching opening
+        and/or closing delimiters of the desired type.
+
+  Default value: See `s:init_delim_lists()` in `autoload/vimtex/delim.vim`.
+
 *g:vimtex_delim_toggle_mod_list*
   Define list of delimiter modifiers to toggle through with
-  |<plug>(vimtex-delim-toggle-modifier)|.
+  |<plug>(vimtex-delim-toggle-modifier)|. The list must be a subset of the
+  `mods` entry of |g:vimtex_delim_list|, else the toggle will not work
+  properly. Thus, if one wants to toggle non standard delimiters, then one
+  must also update the above option.
 
   For example, to toggle between no modifiers, the `\left/\right` pair, and
-  the `\bigl/\bigr` pair, use: >
+  the `\mleft/\mright` pair, one may use the following options: >
 
+    let g:vimtex_delim_list = {'mods' : {}}
+    let g:vimtex_delim_list.mods.name = [
+          \ ['\left', '\right'],
+          \ ['\mleft', '\mright'],
+          \ ['\bigl', '\bigr'],
+          \ ['\Bigl', '\Bigr'],
+          \ ['\biggl', '\biggr'],
+          \ ['\Biggl', '\Biggr'],
+          \ ['\big', '\big'],
+          \ ['\Big', '\Big'],
+          \ ['\bigg', '\bigg'],
+          \ ['\Bigg', '\Bigg'],
+          \]}
     let g:vimtex_delim_toggle_mod_list = [
-      \ ['\left', '\right']
-      \ ['\bigl', '\bigr']
+      \ ['\left', '\right'],
+      \ ['\mleft', '\mright'],
       \]
 <
-  Default value: [['\left', '\right']]
+  Default value: `[['\left', '\right']]`
 
 *g:vimtex_delim_stopline*
   A tolerance for the number of lines to search for matching delimiters in
@@ -1381,7 +1452,7 @@ Map definitions~
   the visual mode mapping toggles all delimiters that are fully contained in
   the visual selection. The selection is preserved.
 
-  See also |g:vimtex_delim_toggle_mod_list|.
+  See also |g:vimtex_delim_toggle_mod_list| and |g:vimtex_delim_list|.
 
 *<plug>(vimtex-cmd-create)*
   This mapping works in both insert mode, normal mode and visual mode. It is
