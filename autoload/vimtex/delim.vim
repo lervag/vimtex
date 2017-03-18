@@ -677,64 +677,59 @@ endfunction
 " }}}1
 
 function! s:init_delim_lists() " {{{1
-  let l:lists = {}
-  let l:lists.env_tex = {}
-  let l:lists.env_math = {}
-  let l:lists.env_all = {}
-  let l:lists.delim_tex = {}
-  let l:lists.mods = {}
-  let l:lists.delim_math = {}
-  let l:lists.delim_all = {}
-  let l:lists.all = {}
-
-  let l:lists.env_tex.name = [
-        \ ['begin', 'end'],
-        \]
-  let l:lists.env_tex.re = [
-        \ ['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}'],
-        \]
-
-  let l:lists.env_math.name = [
-        \ ['\(', '\)'],
-        \ ['\[', '\]'],
-        \ ['$$', '$$'],
-        \ ['$', '$'],
-        \]
-  let l:lists.env_math.re = [
-        \ ['\\(', '\\)'],
-        \ ['\\\@<!\\\[', '\\\]'],
-        \ ['\$\$', '\$\$'],
-        \ ['\$', '\$'],
-        \]
-
-  let l:lists.delim_tex.name = [
-        \ ['[', ']'],
-        \ ['{', '}'],
-        \]
-
-  let l:lists.mods.name = [
-        \ ['\left', '\right'],
-        \ ['\bigl', '\bigr'],
-        \ ['\Bigl', '\Bigr'],
-        \ ['\biggl', '\biggr'],
-        \ ['\Biggl', '\Biggr'],
-        \ ['\big', '\big'],
-        \ ['\Big', '\Big'],
-        \ ['\bigg', '\bigg'],
-        \ ['\Bigg', '\Bigg'],
-        \]
-
-  let l:lists.delim_math.name = [
-        \ ['(', ')'],
-        \ ['[', ']'],
-        \ ['\{', '\}'],
-        \ ['\langle', '\rangle'],
-        \ ['\lvert', '\rvert'],
-        \ ['\lVert', '\rVert'],
-        \ ['\lfloor', '\rfloor'],
-        \ ['\lceil', '\rceil'],
-        \ ['\ulcorner', '\urcorner'],
-        \]
+  " Define the default value
+  let l:lists = {
+        \ 'env_tex' : {
+        \   'name' : [['begin', 'end']],
+        \   're' : [['\\begin\s*{[^}]*}', '\\end\s*{[^}]*}']],
+        \ },
+        \ 'env_math' : {
+        \   'name' : [
+        \     ['\(', '\)'],
+        \     ['\[', '\]'],
+        \     ['$$', '$$'],
+        \     ['$', '$'],
+        \   ],
+        \   're' : [
+        \     ['\\(', '\\)'],
+        \     ['\\\@<!\\\[', '\\\]'],
+        \     ['\$\$', '\$\$'],
+        \     ['\$', '\$'],
+        \   ],
+        \ },
+        \ 'delim_tex' : {
+        \   'name' : [
+        \     ['[', ']'],
+        \     ['{', '}'],
+        \   ]
+        \ },
+        \ 'delim_math' : {
+        \   'name' : [
+        \     ['(', ')'],
+        \     ['[', ']'],
+        \     ['\{', '\}'],
+        \     ['\langle', '\rangle'],
+        \     ['\lvert', '\rvert'],
+        \     ['\lVert', '\rVert'],
+        \     ['\lfloor', '\rfloor'],
+        \     ['\lceil', '\rceil'],
+        \     ['\ulcorner', '\urcorner'],
+        \   ]
+        \ },
+        \ 'mods' : {
+        \   'name' : [
+        \     ['\left', '\right'],
+        \     ['\bigl', '\bigr'],
+        \     ['\Bigl', '\Bigr'],
+        \     ['\biggl', '\biggr'],
+        \     ['\Biggl', '\Biggr'],
+        \     ['\big', '\big'],
+        \     ['\Big', '\Big'],
+        \     ['\bigg', '\bigg'],
+        \     ['\Bigg', '\Bigg'],
+        \   ]
+        \ },
+        \}
 
   " Get user defined lists
   call extend(l:lists, get(g:, 'vimtex_delim_list', {}))
@@ -747,6 +742,10 @@ function! s:init_delim_lists() " {{{1
     endif
   endfor
 
+  " Generate combined lists
+  let l:lists.env_all = {}
+  let l:lists.delim_all = {}
+  let l:lists.all = {}
   for k in ['name', 're']
     let l:lists.env_all[k] = l:lists.env_tex[k] + l:lists.env_math[k]
     let l:lists.delim_all[k] = l:lists.delim_math[k] + l:lists.delim_tex[k]
