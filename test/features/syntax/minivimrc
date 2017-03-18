@@ -1,0 +1,41 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '~/.vim/bundle/vimtex/test/features/syntax,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+function! SynNames()
+  return join(map(synstack(line('.'), col('.')),
+        \ 'synIDattr(v:val, ''name'')'), ' -> ')
+endfunction
+
+augroup Testing
+  autocmd!
+  autocmd CursorMoved * echo SynNames()
+augroup END
+
+nnoremap q :qa!<cr>
+
+let g:vimtex_syntax_minted = [
+      \ {
+      \   'lang' : 'c',
+      \ },
+      \ {
+      \   'lang' : 'cpp',
+      \   'environments' : ['cppcode', 'cppcode_test'],
+      \ },
+      \ {
+      \   'lang' : 'csharp',
+      \   'syntax' : 'cs'
+      \ },
+      \ {
+      \   'lang' : 'python',
+      \   'ignore' : [
+      \     'pythonEscape',
+      \     'pythonBEscape',
+      \   ],
+      \ }
+      \]
+
+silent edit test-syntax.tex
