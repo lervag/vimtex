@@ -224,6 +224,28 @@ syntax region texZoneGnuplot
 let b:current_syntax = 'tex'
 
 " }}}1
+" {{{1 Nested syntax highlighting for asymptote
+unlet b:current_syntax
+try
+  syntax include @ASYMPTOTE syntax/asy.vim
+  syntax cluster texDocGroup add=texZoneAsymptote
+  syntax region texZoneAsymptote
+        \ start='\\begin{asy}'rs=s
+        \ end='\\end{asy}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,texBeginEndModifier,@ASYMPTOTE
+  syntax region texZoneAsymptote
+        \ start='\\begin{asydef}'rs=s
+        \ end='\\end{asydef}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,texBeginEndModifier,@ASYMPTOTE
+catch /^Vim.*E484/
+endtry
+let b:current_syntax = 'tex'
+
+" }}}1
 " {{{1 Nested syntax highlighting for minted
 
 " First set all minted environments to listings
