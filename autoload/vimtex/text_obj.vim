@@ -16,16 +16,20 @@ function! vimtex#text_obj#init_buffer() " {{{1
     let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
     let l:p2 = l:map . ') :<c-u>call vimtex#text_obj#' . l:name
     let l:p3 = empty(l:opt) ? ')<cr>' : ',''' . l:opt . ''')<cr>'
-    execute 'x' . l:p1 . 'i' . l:p2 . '(1' . l:p3
-    execute 'x' . l:p1 . 'a' . l:p2 . '(0' . l:p3
-    execute 'o' . l:p1 . 'i' . l:p2 . '(1' . l:p3
-    execute 'o' . l:p1 . 'a' . l:p2 . '(0' . l:p3
+    execute 'x' . l:p1 . 'i' . l:p2 . '(1, 1,' . l:p3
+    execute 'x' . l:p1 . 'a' . l:p2 . '(0, 1,' . l:p3
+    execute 'o' . l:p1 . 'i' . l:p2 . '(1, 0,' . l:p3
+    execute 'o' . l:p1 . 'a' . l:p2 . '(0, 0,' . l:p3
   endfor
 endfunction
 
 " }}}1
 
-function! vimtex#text_obj#commands(is_inner) " {{{1
+function! vimtex#text_obj#commands(is_inner, mode) " {{{1
+  if a:mode
+    call cursor(getpos("'>")[1:])
+  endif
+
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
@@ -44,7 +48,7 @@ function! vimtex#text_obj#commands(is_inner) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#text_obj#delimited(is_inner, type) " {{{1
+function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
