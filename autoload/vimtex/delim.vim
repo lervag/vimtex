@@ -240,7 +240,7 @@ function! vimtex#delim#get_surrounding(type) " {{{1
     if empty(l:open) | break | endif
     let l:close = vimtex#delim#get_matching(l:open)
     let l:pos_val_try = 10000*l:close.lnum
-          \ + l:close.cnum + strlen(l:close.match)
+          \ + l:close.cnum + strlen(l:close.match) - 1
     if l:pos_val_try > l:pos_val_cursor
       call setpos('.', l:save_pos)
       return [l:open, l:close]
