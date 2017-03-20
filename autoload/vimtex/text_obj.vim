@@ -12,6 +12,7 @@ function! vimtex#text_obj#init_buffer() " {{{1
         \ ['d', 'delimited', 'delim_all'],
         \ ['e', 'delimited', 'env_tex'],
         \ ['$', 'delimited', 'env_math'],
+        \ ['P', 'sections', ''],
         \]
     let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
     let l:p2 = l:map . ') :<c-u>call vimtex#text_obj#' . l:name
@@ -111,6 +112,127 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   normal! o
   call vimtex#pos#cursor(l2, c2)
 endfunction
+
+" }}}1
+function! vimtex#text_obj#sections(is_inner, mode) " {{{1
+  let l:pos_save = getpos('.')
+  call vimtex#pos#cursor(vimtex#pos#next(l:pos_save))
+
+  " Get section border positions
+  let [l:pos_start, l:pos_end, l:type]
+        \ = s:get_sections_positions(a:is_inner, '')
+  if empty(l:pos_start)
+    call vimtex#pos#cursor(l:pos_save)
+    return
+  endif
+
+  " Increase visual area
+  if a:mode
+        \ && visualmode() ==# 'V'
+        \ && getpos("'<")[1] == l:pos_start[0]
+        \ && getpos("'>")[1] == l:pos_end[0]
+    let [l:pos_start_new, l:pos_end_new, l:type]
+          \ = s:get_sections_positions(a:is_inner, l:type)
+    if !empty(l:pos_start_new)
+      let l:pos_start = l:pos_start_new
+      let l:pos_end = l:pos_end_new
+    endif
+  endif
+
+  " Apply selection
+  call vimtex#pos#cursor(l:pos_start)
+  normal! V
+  call vimtex#pos#cursor(l:pos_end)
+endfunction
+
+" }}}1
+
+function! s:get_sections_positions(is_inner, type) " {{{1
+  let l:pos_save = getpos('.')
+  let l:min_val = get(s:section_to_val, a:type)
+
+  " Get the position of the section start
+  while 1
+    let l:pos_start = searchpos(s:section_search, 'bcnW')
+    if l:pos_start == [0, 0] | return [[], [], ''] | endif
+
+    let l:sec_type = matchstr(getline(l:pos_start[0]), s:section_search)
+    let l:sec_val = s:section_to_val[l:sec_type]
+
+    if !empty(a:type)
+      if l:sec_val >= l:min_val
+        call vimtex#pos#cursor(vimtex#pos#prev(l:pos_start))
+      else
+        call vimtex#pos#cursor(l:pos_save)
+        break
+      endif
+    else
+      break
+    endif
+  endwhile
+
+  " Get the position of the section end
+  while 1
+    let l:pos_end = searchpos(s:section_search, 'nW')
+    if l:pos_end == [0, 0]
+      let l:pos_end = [line('$')+1, 1]
+      break
+    endif
+
+    let l:cur_val = s:section_to_val[
+          \ matchstr(getline(l:pos_end[0]), s:section_search)]
+    if l:cur_val <= l:sec_val
+      let l:pos_end[0] -= 1
+      break
+    endif
+
+    call vimtex#pos#cursor(l:pos_end)
+  endwhile
+
+  " Adjust for inner text object
+  if a:is_inner
+    call vimtex#pos#cursor(l:pos_start[0]+1, l:pos_start[1])
+    let l:pos_start = searchpos('\S', 'cnW')
+  elseif l:sec_val ==# 'document'
+    let l:pos_start = [l:pos_start[0]+1, l:pos_start[1]]
+  endif
+
+  return [l:pos_start, l:pos_end, l:sec_type]
+endfunction
+
+" }}}1
+
+
+" {{{1 Initialize module
+
+" Pattern to match section/chapter/...
+let s:section_search = '\v%(%(\\<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
+      \ . join([
+      \   '%(sub)?paragraph',
+      \   '%(sub)*section',
+      \   'chapter',
+      \   'part',
+      \   'appendix',
+      \   '%(front|back|main)matter',
+      \   '%(begin|end)\{\zsdocument\ze\}'
+      \  ], '|')
+      \ .')'
+
+" Dictionary to give values to sections in order to compare them
+let s:section_to_val = {
+      \ 'document':        0,
+      \ 'frontmatter':     1,
+      \ 'mainmatter':      1,
+      \ 'appendix':        1,
+      \ 'backmatter':      1,
+      \ 'part':            1,
+      \ 'chapter':         2,
+      \ 'section':         3,
+      \ 'subsection':      4,
+      \ 'subsubsection':   5,
+      \ 'paragraph':       6,
+      \ 'subparagraph':    7,
+      \}
 
 " }}}1
 

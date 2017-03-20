@@ -34,6 +34,11 @@ function! vimtex#pos#prev(...) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#pos#larger(pos1, pos2) " {{{1
+  return vimtex#pos#val(a:pos1) > vimtex#pos#val(a:pos2)
+endfunction
+
+" }}}1
 
 function! s:parse_args(args) " {{{1
   "
