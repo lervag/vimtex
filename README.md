@@ -58,6 +58,7 @@ disabled if desired.
 - Document navigation through
   - table of content
   - table of labels
+  - enhanced `gf` command
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`

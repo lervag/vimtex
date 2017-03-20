@@ -64,6 +64,7 @@ CONTENTS                                                      *vimtex-contents*
     Table of contents                           |vimtex-toc|
     Table of labels                             |vimtex-labels|
     Unite sources                               |vimtex-unite|
+    Include expression (|gf| command)             |vimtex-includeexpr|
   Latexmk                                       |vimtex-latexmk|
     Latexmk tricks                              |vimtex-latexmk-tricks|
     Lacheck                                     |vimtex-latexmk-lacheck|
@@ -101,6 +102,7 @@ Feature overview~
 - Document navigation through
   - table of content
   - table of labels
+  - enhanced `gf` command
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
@@ -2052,6 +2054,24 @@ override the default mappings, e.g.: >
 
   nnoremap <localleader>lt :<c-u>Unite vimtex_toc<cr>
   nnoremap <localleader>ly :<c-u>Unite vimtex_labels<cr>
+
+------------------------------------------------------------------------------
+Include expression~
+                                                           *vimtex-includeexpr*
+
+|vimtex| provides an advanced |includeexpr| that makes it possible to open
+source files for e.g. packages and documentclasses with the |gf| command. The
+implementation relies on `kpsewhich` to find the source files. Consider the
+following example: >
+
+  \documentclass{article}
+  \usepackage{MyLocalPackage}
+  \usepackage{SomeOtherPackage,YetAnotherPackage}
+  ...
+
+With the cursor on the documentclass name `article` or one of the package
+names, |gf| will take you to the TeX source files (typically `.cls` file for
+documentclass and `.sty` files for packages).
 
 ==============================================================================
 LATEXMK                                                        *vimtex-latexmk*
