@@ -11,6 +11,9 @@ function! vimtex#delim#init_buffer() " {{{1
   xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
         \ :<c-u>call vimtex#delim#toggle_modifier_visual()<cr>
 
+  nnoremap <silent><buffer> <plug>(vimtex-delim-change-math)
+        \ :call vimtex#delim#change_prompt()<cr>
+
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
         \ <c-r>=vimtex#delim#close()<cr>
 endfunction
@@ -158,6 +161,87 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   call setpos(l:swapped? "'<" : "'>", l:end_pos)
   call setpos('.', l:save_pos)
   normal! gv
+endfunction
+
+" }}}1
+
+function! vimtex#delim#change(open, close, new) " {{{1
+  "
+  " Set target environment
+  "
+  if a:new ==# ''
+    let [l:beg, l:end] = ['', '']
+  else
+    let l:side = a:new =~# g:vimtex#delim#re.delim_math.close
+    let l:index = index(map(copy(g:vimtex#delim#lists.delim_math.name),
+          \   'v:val[' . l:side . ']'),
+          \ a:new)
+    echo "\n" l:index
+    if l:index >= 0
+      let [l:beg, l:end] = g:vimtex#delim#lists.delim_math.name[l:index]
+    else
+      let [l:beg, l:end] = [a:new, a:new]
+    endif
+  endif
+
+  let l:line = getline(a:open.lnum)
+  call setline(a:open.lnum,
+        \   strpart(l:line, 0, a:open.cnum-1)
+        \ . l:beg
+        \ . strpart(l:line, a:open.cnum + len(a:open.match) - 1))
+
+  let l:c1 = a:close.cnum
+  let l:c2 = a:close.cnum + len(a:close.match) - 1
+  if a:open.lnum == a:close.lnum
+    let n = len(l:beg) - len(a:open.match)
+    let l:c1 += n
+    let l:c2 += n
+    let pos = getpos('.')
+    if pos[2] > a:open.cnum + len(a:open.match) - 1
+      let pos[2] += n
+      call setpos('.', pos)
+    endif
+  endif
+
+  let l:line = getline(a:close.lnum)
+  call setline(a:close.lnum,
+        \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
+
+  if a:new ==# ''
+    silent! call repeat#set("\<plug>(vimtex-delim-delete)", v:count)
+  else
+    silent! call repeat#set(
+          \ "\<plug>(vimtex-delim-change-math)" . a:new . '', v:count)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#delim#change_prompt() " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
+  if empty(l:open) | return | endif
+
+  let l:name = get(l:open, 'name', l:open.is_open
+        \ ? l:open.match . ' ... ' . l:open.corr
+        \ : l:open.match . ' ... ' . l:open.corr)
+  call vimtex#echo#status(['Change surrounding delimiter: ',
+        \ ['VimtexWarning', l:name]])
+  echohl VimtexMsg
+  let l:new_delim = input('> ', '',
+        \ 'customlist,vimtex#delim#change_input_complete')
+  echohl None
+  if empty(l:new_delim) | return | endif
+
+  call vimtex#delim#change(l:open, l:close, l:new_delim)
+endfunction
+
+" }}}1
+function! vimtex#delim#change_input_complete(lead, cmdline, pos) " {{{1
+  let l:all = deepcopy(g:vimtex#delim#lists.delim_math.name)
+  let l:open = map(copy(l:all), 'v:val[0]')
+  let l:close = map(copy(l:all), 'v:val[1]')
+
+  let l:lead_re = escape(a:lead, '\$[]')
+  return filter(l:open + l:close, 'v:val =~# ''^' . l:lead_re . '''')
 endfunction
 
 " }}}1
@@ -558,7 +642,7 @@ function! s:parser_delim_get_regexp(delim, side, ...) " {{{1
         \   'v:val[' . a:side . ']'),
         \ a:delim)
   return l:index >= 0
-        \ ? g:vimtex#delim#lists[l:type].re[index][a:side]
+        \ ? g:vimtex#delim#lists[l:type].re[l:index][a:side]
         \ : ''
 endfunction
 

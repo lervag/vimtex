@@ -360,6 +360,7 @@ function! s:init_mappings() " {{{1
 
   call s:map('n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
   call s:map('x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map('n', 'csd', '<plug>(vimtex-delim-change-math)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
   if get(g:, 'vimtex_latexmk_enabled', 0)
