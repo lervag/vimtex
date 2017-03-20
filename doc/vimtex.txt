@@ -112,6 +112,7 @@ Feature overview~
   - `id` `ad` Delimiters
   - `ie` `ae` LaTeX environments
   - `i$` `a$` Inline math structures
+  - `iP` `aP` Sections
 - Other mappings
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
@@ -384,6 +385,8 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ie               |<plug>(vimtex-ie)|                     `xo`
    a$               |<plug>(vimtex-a$)|                     `xo`
    i$               |<plug>(vimtex-i$)|                     `xo`
+   aP               |<plug>(vimtex-aP)|                     `xo`
+   iP               |<plug>(vimtex-iP)|                     `xo`
    %                |<plug>(vimtex-%)|                      `nxo`
    ]]               |<plug>(vimtex-]])|                     `nxo`
    ][               |<plug>(vimtex-][)|                     `nxo`
@@ -1512,6 +1515,12 @@ Map definitions~
 
 *<plug>(vimtex-i$)*
   Text object for inline math (exclusive).
+
+*<plug>(vimtex-aP)*
+  Text object for sections (inclusive).
+
+*<plug>(vimtex-iP)*
+  Text object for sections (exclusive).
 
 *<plug>(vimtex-%)*
   Find matching pair.
