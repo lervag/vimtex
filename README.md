@@ -82,8 +82,8 @@ disabled if desired.
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package
   - Support for `listings` package
-  - Support for `minted` package
-  - Support for `dot2tex` with nested syntax highlighting
+  - Nested syntax highlighting (`minted`, `dot2tex`, `lualatex`,
+    `gnuplottex`, `asymptote`)
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
