@@ -500,7 +500,7 @@ Options~
           \ ['\Big', '\Big'],
           \ ['\bigg', '\bigg'],
           \ ['\Bigg', '\Bigg'],
-          \]}
+          \]
     let g:vimtex_delim_toggle_mod_list = [
       \ ['\left', '\right'],
       \ ['\mleft', '\mright'],
