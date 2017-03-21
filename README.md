@@ -69,8 +69,10 @@ disabled if desired.
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
 - Other mappings
-  - Delete the surrounding command or environment with `dsc`/`dse`/`ds$`
-  - Change the surrounding command or environment with `csc`/`cse`/`cs$`
+  - Delete the surrounding command, environment or delimiter with
+    `dsc`/`dse`/`ds$`/`dsd`
+  - Change the surrounding command, environment or delimiter with
+    `csc`/`cse`/`cs$`/`csd`
   - Toggle starred command or environment with `tsc`/`tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Close the current environment/delimiter in insert mode with `]]`
