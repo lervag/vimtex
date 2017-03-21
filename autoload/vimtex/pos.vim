@@ -9,6 +9,31 @@ function! vimtex#pos#cursor(...) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#pos#val(...) " {{{1
+  let [l:lnum, l:cnum] = s:parse_args(a:000)
+
+  return 10000*l:lnum + l:cnum
+endfunction
+
+" }}}1
+function! vimtex#pos#next(...) " {{{1
+  let [l:lnum, l:cnum] = s:parse_args(a:000)
+
+  return l:cnum < strlen(getline(l:lnum))
+        \ ? [0, l:lnum, l:cnum+1, 0]
+        \ : [0, l:lnum+1, 1, 0]
+endfunction
+
+" }}}1
+function! vimtex#pos#prev(...) " {{{1
+  let [l:lnum, l:cnum] = s:parse_args(a:000)
+
+  return l:cnum > 1
+        \ ? [0, l:lnum, l:cnum-1, 0]
+        \ : [0, max([l:lnum-1, 1]), strlen(getline(l:lnum-1)), 0]
+endfunction
+
+" }}}1
 
 function! s:parse_args(args) " {{{1
   "

@@ -222,7 +222,7 @@ endfunction
 " }}}1
 function! vimtex#cmd#get_current() " {{{1
   let l:save_pos = getpos('.')
-  let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
+  let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
   let l:depth = 3
   while l:depth > 0
@@ -230,13 +230,12 @@ function! vimtex#cmd#get_current() " {{{1
     let l:cmd = s:get_cmd('prev')
     if empty(l:cmd) | break | endif
 
-    let l:pos_val = 10000*l:cmd.pos_end.lnum + l:cmd.pos_end.cnum
+    let l:pos_val = vimtex#pos#val(l:cmd.pos_end)
     if l:pos_val > l:pos_val_cursor
       call vimtex#pos#cursor(l:save_pos)
       return l:cmd
     else
-      call vimtex#pos#cursor(s:pos_prev(l:cmd.pos_start.lnum,
-            \ l:cmd.pos_start.cnum))
+      call vimtex#pos#cursor(vimtex#pos#prev(l:cmd.pos_start))
     endif
   endwhile
 
@@ -334,14 +333,6 @@ function! s:get_cmd_part(part, start_pos) " {{{1
         \ 'close' : l:close,
         \ 'text' : s:text_between(l:open, l:close),
         \}
-endfunction
-
-" }}}1
-
-function! s:pos_prev(lnum, cnum) " {{{1
-    return a:cnum > 1
-          \ ? [0, a:lnum, a:cnum-1, 0]
-          \ : [0, max([a:lnum-1, 1]), strlen(getline(a:lnum-1)), 0]
 endfunction
 
 " }}}1

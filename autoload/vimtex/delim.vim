@@ -22,7 +22,7 @@ endfunction
 
 function! vimtex#delim#close() " {{{1
   let l:save_pos = getpos('.')
-  let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
+  let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
   let l:lnum = l:save_pos[1] + 1
   while l:lnum > 1
@@ -38,14 +38,13 @@ function! vimtex#delim#close() " {{{1
       return l:open.corr
     endif
 
-    let l:pos_val_try = 10000*l:close.lnum
-          \ + l:close.cnum + strlen(l:close.match)
+    let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
     if l:pos_val_try > l:pos_val_cursor
       call vimtex#pos#cursor(l:save_pos)
       return l:open.corr
     else
       let l:lnum = l:open.lnum
-      call vimtex#pos#cursor(s:pos_prev(l:open.lnum, l:open.cnum))
+      call vimtex#pos#cursor(vimtex#pos#prev(l:open))
     endif
   endwhile
 
@@ -105,9 +104,8 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   let l:save_pos = getpos('.')
   let l:start_pos = getpos("'<")
   let l:end_pos = getpos("'>")
-  let l:end_pos_val = 10000*l:end_pos[1] + min([l:end_pos[2], 1000])
+  let l:end_pos_val = vimtex#pos#val(l:end_pos) + 1000
   let l:cur_pos = l:start_pos
-  let l:cur_pos_val = 10000*l:cur_pos[1] + l:cur_pos[2]
 
   "
   " Check if selection is swapped
@@ -122,20 +120,19 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   " First we generate a stack of all delimiters that should be toggled
   "
   let l:stack = []
-  while l:cur_pos_val < l:end_pos_val
+  while vimtex#pos#val(l:cur_pos) < l:end_pos_val
     call vimtex#pos#cursor(l:cur_pos)
     let l:open = vimtex#delim#get_next('delim_modq_math', 'open')
     if empty(l:open) | break | endif
 
-    let l:open_pos_val = 10000*l:open.lnum + l:open.cnum
-    if l:open_pos_val >= l:end_pos_val
+    if vimtex#pos#val(l:open) >= l:end_pos_val
       break
     endif
 
     let l:close = vimtex#delim#get_matching(l:open)
     if !empty(l:close)
-      if l:end_pos_val >= 10000*l:close.lnum + l:close.cnum
-            \ + strlen(l:close.match) - 1
+
+      if l:end_pos_val >= vimtex#pos#val(l:close) + strlen(l:close.match) - 1
         let l:newmods = vimtex#delim#toggle_modifier(l:open, l:close)
 
         let l:col_diff  = (l:open.lnum == l:end_pos[1])
@@ -150,8 +147,7 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
       endif
     endif
 
-    let l:cur_pos = s:pos_next(l:open.lnum, l:open.cnum)
-    let l:cur_pos_val = 10000*l:cur_pos[1] + l:cur_pos[2]
+    let l:cur_pos = vimtex#pos#next(l:open)
   endwhile
 
   "
@@ -317,20 +313,19 @@ endfunction
 function! vimtex#delim#get_surrounding(type) " {{{1
   let l:save_pos = getpos('.')
   let l:lnum = l:save_pos[1] + 1
-  let l:pos_val_cursor = 10000*l:save_pos[1] + l:save_pos[2]
+  let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
   while l:lnum > 1
     let l:open  = vimtex#delim#get_prev(a:type, 'open')
     if empty(l:open) | break | endif
     let l:close = vimtex#delim#get_matching(l:open)
-    let l:pos_val_try = 10000*l:close.lnum
-          \ + l:close.cnum + strlen(l:close.match) - 1
+    let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match) - 1
     if l:pos_val_try > l:pos_val_cursor
       call vimtex#pos#cursor(l:save_pos)
       return [l:open, l:close]
     else
       let l:lnum = l:open.lnum
-      call vimtex#pos#cursor(s:pos_prev(l:open.lnum, l:open.cnum))
+      call vimtex#pos#cursor(vimtex#pos#prev(l:open))
     endif
   endwhile
 
@@ -389,7 +384,7 @@ function! s:get_delim(opts) " {{{1
 
     if has_key(a:opts, 'syn_exclude')
           \ && vimtex#util#in_syntax(a:opts.syn_exclude, l:lnum, l:cnum)
-      call vimtex#pos#cursor(s:pos_prev(l:lnum, l:cnum))
+      call vimtex#pos#cursor(vimtex#pos#prev(l:lnum, l:cnum))
       continue
     endif
 
@@ -496,8 +491,8 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
 
     " Move the cursor
     call vimtex#pos#cursor(a:direction ==# 'next'
-          \ ? s:pos_next(a:lnum, a:cnum)
-          \ : s:pos_prev(a:lnum, a:cnum))
+          \ ? vimtex#pos#next(a:lnum, a:cnum)
+          \ : vimtex#pos#prev(a:lnum, a:cnum))
 
     " Get new result
     let result = s:get_delim({
@@ -745,20 +740,6 @@ endfunction
 
 " }}}1
 
-function! s:pos_next(lnum, cnum) " {{{1
-    return a:cnum < strlen(getline(a:lnum))
-          \ ? [0, a:lnum, a:cnum+1, 0]
-          \ : [0, a:lnum+1, 1, 0]
-endfunction
-
-" }}}1
-function! s:pos_prev(lnum, cnum) " {{{1
-    return a:cnum > 1
-          \ ? [0, a:lnum, a:cnum-1, 0]
-          \ : [0, max([a:lnum-1, 1]), strlen(getline(a:lnum-1)), 0]
-endfunction
-
-" }}}1
 
 function! s:init_delim_lists() " {{{1
   " Define the default value
