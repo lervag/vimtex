@@ -14,6 +14,9 @@ function! vimtex#delim#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-change-math)
         \ :call vimtex#delim#change_prompt()<cr>
 
+  nnoremap <silent><buffer> <plug>(vimtex-delim-delete)
+        \ :call vimtex#delim#delete()<cr>
+
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
         \ <c-r>=vimtex#delim#close()<cr>
 endfunction
@@ -238,6 +241,14 @@ function! vimtex#delim#change_input_complete(lead, cmdline, pos) " {{{1
 
   let l:lead_re = escape(a:lead, '\$[]')
   return filter(l:open + l:close, 'v:val =~# ''^' . l:lead_re . '''')
+endfunction
+
+" }}}1
+function! vimtex#delim#delete() " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_modq_math')
+  if empty(l:open) | return | endif
+
+  call vimtex#delim#change(l:open, l:close, '')
 endfunction
 
 " }}}1
