@@ -62,7 +62,7 @@ if get(s:packages, 'biblatex', s:pdefault)
   CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
   CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
   CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
-  CompilerSet errorformat+=%-Z(biblatex)%m
+  CompilerSet errorformat+=%-C(biblatex)%m
 endif
 
 if get(s:packages, 'babel', s:pdefault)
