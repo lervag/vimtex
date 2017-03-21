@@ -275,8 +275,12 @@ see |vimtex-tex-root|.
 
                                                            *vimtex-tex-program*
 The TeX program directive works by specifying the TeX compiler program in
-a comment in one of the first lines of the main project file. The syntax is
-best explained with an example: >
+a comment in one of the first lines of the main project file. It is parsed
+during initialization, but if desired one may manually reload vimtex in order
+to reset the program during an editing session. See |VimtexReload| and
+|<plug>(vimtex-reload)| (by default mapped to `<localleader>lx`).
+
+The syntax is best explained with an example: >
 
     %! TEX program = program
 
