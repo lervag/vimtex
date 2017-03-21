@@ -202,8 +202,8 @@ syntax region texZoneLua
       \ keepend
       \ transparent
       \ contains=texBeginEnd,@LUA
-syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLua
-syntax region texZoneLua matchgroup=Delimiter
+syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLuaArg
+syntax region texZoneLuaArg matchgroup=Delimiter
       \ start='{'
       \ end='}'
       \ contained
