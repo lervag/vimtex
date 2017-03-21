@@ -27,7 +27,7 @@ endfunction
 
 function! vimtex#text_obj#commands(is_inner, mode) " {{{1
   if a:mode
-    call cursor(getpos("'>")[1:])
+    call vimtex#pos#cursor(getpos("'>"))
   endif
 
   let l:cmd = vimtex#cmd#get_current()
@@ -42,15 +42,15 @@ function! vimtex#text_obj#commands(is_inner, mode) " {{{1
     let c1 += 1
   endif
 
-  call cursor(l1, c1)
+  call vimtex#pos#cursor(l1, c1)
   normal! v
-  call cursor(l2, c2)
+  call vimtex#pos#cursor(l2, c2)
 endfunction
 
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   if a:mode
-    call cursor(getpos("'>")[1:])
+    call vimtex#pos#cursor(getpos("'>"))
   endif
 
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
@@ -107,9 +107,9 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
 
   " Apply selection
   execute 'normal!' l:select_mode
-  call cursor(l1, c1)
+  call vimtex#pos#cursor(l1, c1)
   normal! o
-  call cursor(l2, c2)
+  call vimtex#pos#cursor(l2, c2)
 endfunction
 
 " }}}1

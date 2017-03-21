@@ -57,7 +57,7 @@ function! vimtex#env#change(open, close, new) " {{{1
     let pos = getpos('.')
     if pos[2] > a:open.cnum + len(a:open.match) - 1
       let pos[2] += n
-      call setpos('.', pos)
+      call vimtex#pos#cursor(pos)
     endif
   endif
 
@@ -151,13 +151,6 @@ endfunction
 
 " }}}1
 
-function! s:pos_prev(env) " {{{1
-    return a:env.cnum > 1
-          \ ? [0, a:env.lnum, a:env.cnum-1, 0]
-          \ : [0, max([a:env.lnum-1, 1]), strlen(getline(a:env.lnum-1)), 0]
-endfunction
-
-" }}}1
 function! s:uniq(list) " {{{1
   "
   " Trivial cases (uniq exists or one or fewer list elements)

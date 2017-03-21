@@ -275,7 +275,7 @@ function! s:index_hook_init_post() dict " {{{1
   nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
 
   " Jump to closest index
-  call setpos('.', self.pos_closest)
+  call vimtex#pos#cursor(self.pos_closest)
 endfunction
 
 " }}}1

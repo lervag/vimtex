@@ -62,7 +62,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
   if empty(delim) | return | endif
 
   normal! m`
-  call cursor(delim.lnum,
+  call vimtex#pos#cursor(delim.lnum,
         \ (delim.is_open
         \   ? delim.cnum
         \   : delim.cnum + strlen(delim.match) - 1))

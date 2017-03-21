@@ -159,7 +159,7 @@ function! s:actions_activate(close) dict "{{{1
 
   " Go to entry line
   if has_key(entry, 'line')
-    call setpos('.', [0, entry.line, 0, 0])
+    call vimtex#pos#cursor(entry.line, 0)
   endif
 
   " If relevant, enable vimtex stuff
@@ -200,7 +200,7 @@ function! s:position_restore() dict " {{{1
   if self.position[1] <= self.help_nlines
     let self.position[1] = self.help_nlines + 1
   endif
-  call setpos('.', self.position)
+  call vimtex#pos#cursor(self.position)
 endfunction
 
 " }}}1

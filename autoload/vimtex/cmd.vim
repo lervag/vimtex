@@ -54,7 +54,7 @@ function! vimtex#cmd#change() " {{{1
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
   " Restore cursor position and create repeat hook
-  cal setpos('.', l:save_pos)
+  cal vimtex#pos#cursor(l:save_pos)
   silent! call repeat#set(
         \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
@@ -97,7 +97,7 @@ function! vimtex#cmd#delete() " {{{1
       let l:save_pos[2] -= l:cnum_cur - l:cnum
     endif
   endif
-  cal setpos('.', l:save_pos)
+  cal vimtex#pos#cursor(l:save_pos)
 
   " Create repeat hook
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
@@ -126,7 +126,7 @@ function! vimtex#cmd#create_insert() " {{{1
   let l:strpart3 = strpart(l:line, l:c0)
   call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
 
-  call setpos('.', [0, l:l1, l:c2+3, 0])
+  call vimtex#pos#cursor(l:l1, l:c2+3)
   return ''
 endfunction
 
@@ -158,7 +158,7 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
       let l:pos_end[2] += strlen(l:cmd) + 2
     endif
 
-    call setpos('.', l:pos_end)
+    call vimtex#pos#cursor(l:pos_end)
   else
     let l:pos = getpos('.')
     let l:save_reg = getreg('"')
@@ -167,7 +167,7 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     silent! call repeat#set(
           \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
     call setreg('"', l:save_reg)
-    call setpos('.', l:pos)
+    call vimtex#pos#cursor(l:pos)
   endif
 
   " Restore indentkeys setting
@@ -204,7 +204,7 @@ function! vimtex#cmd#toggle_star() " {{{1
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
   " Restore cursor position and create repeat hook
-  cal setpos('.', l:save_pos)
+  cal vimtex#pos#cursor(l:save_pos)
   silent! call repeat#set("\<plug>(vimtex-cmd-toggle-star)", v:count)
 endfunction
 
@@ -232,23 +232,24 @@ function! vimtex#cmd#get_current() " {{{1
 
     let l:pos_val = 10000*l:cmd.pos_end.lnum + l:cmd.pos_end.cnum
     if l:pos_val > l:pos_val_cursor
-      call setpos('.', l:save_pos)
+      call vimtex#pos#cursor(l:save_pos)
       return l:cmd
     else
-      call setpos('.', s:pos_prev(l:cmd.pos_start.lnum, l:cmd.pos_start.cnum))
+      call vimtex#pos#cursor(s:pos_prev(l:cmd.pos_start.lnum,
+            \ l:cmd.pos_start.cnum))
     endif
   endwhile
 
-  call setpos('.', l:save_pos)
+  call vimtex#pos#cursor(l:save_pos)
   return {}
 endfunction
 
 " }}}1
 function! vimtex#cmd#get_at(lnum, cnum) " {{{1
   let l:pos_saved = getpos('.')
-  call setpos('.', [0, a:lnum, a:cnum, 0])
+  call vimtex#pos#cursor(a:lnum, a:cnum)
   let l:cmd = vimtex#cmd#get_current()
-  call setpos('.', l:pos_saved)
+  call vimtex#pos#cursor(l:pos_saved)
   return l:cmd
 endfunction
 
@@ -306,9 +307,9 @@ endfunction
 " }}}1
 function! s:get_cmd_part(part, start_pos) " {{{1
   let l:save_pos = getpos('.')
-  call setpos('.', [0, a:start_pos.lnum, a:start_pos.cnum, 0])
+  call vimtex#pos#cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
-  call setpos('.', l:save_pos)
+  call vimtex#pos#cursor(l:save_pos)
 
   "
   " Ensure that the delimiter
