@@ -1,0 +1,25 @@
+set nocompatible
+
+call plug#begin('~/.vim/bundle')
+Plug 'lervag/vimtex'
+call plug#end()
+
+function! SynNames()
+  return join(map(synstack(line('.'), col('.')),
+        \ 'synIDattr(v:val, ''name'')'), ' -> ')
+endfunction
+
+augroup Testing
+  autocmd!
+  autocmd CursorMoved * echo SynNames()
+augroup END
+
+let g:vimtex_imaps_enabled = 0
+let g:vimtex_view_enabled = 0
+let g:vimtex_view_automatic = 0
+let g:vimtex_quickfix_open_on_warning = 0
+let g:vimtex_indent_ignored_envs = ['document', 'proof']
+
+nnoremap q :qa!<cr>
+
+silent edit test.tex
