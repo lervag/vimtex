@@ -250,11 +250,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   let s:qf_root = b:vimtex.root
 
   " Store winnr of current window in order to jump back later
-  if exists('*win_gotoid')
-    let previous_window = win_getid()
-  else
-    let previous_window = winnr()
-  endif
+  call s:window_save()
 
   if g:vimtex_quickfix_autojump
     execute 'cfile ' . fnameescape(log)
@@ -283,11 +279,7 @@ function! vimtex#latexmk#errors_open(force) " {{{1
   if s:open_quickfix_window
     botright cwindow
     if g:vimtex_quickfix_mode == 2
-      if exists('*win_gotoid')
-        call win_gotoid(previous_window)
-      else
-        execute previous_window . 'wincmd p'
-      endif
+      call s:window_restore()
     endif
     redraw
   endif
@@ -794,6 +786,28 @@ endfunction
 
 " }}}1
 
+function! s:window_save() " {{{1
+  if exists('*win_gotoid')
+    let s:previous_window = win_getid()
+  else
+    let w:vimtex_remember_window = 1
+  endif
+endfunction
+
+" }}}1
+function! s:window_restore() " {{{1
+  if exists('*win_gotoid')
+    call win_gotoid(s:previous_window)
+  else
+    for l:winnr in range(1, winnr('$'))
+      if getwinvar(l:winnr, 'vimtex_remember_window')
+        execute l:winnr . 'wincmd p'
+      endif
+    endfor
+  endif
+endfunction
+
+" }}}1
 
 " {{{1 Initialize options
 
