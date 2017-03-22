@@ -758,11 +758,35 @@ function! s:get_out(...) dict " {{{1
 endfunction
 
 " }}}1
+
+function! s:get_latexmkrc_out_dir(dir) " {{{1
+  " check if local latexmkrc exists
+  if filereadable(a:dir.'/.latexmkrc')
+    let l:pattern = '\%(^\s*\$out_dir\s*=\s*[''"]\(.\+\)[''"]\s*;\)'
+    let l:out_dir = matchlist(readfile(a:dir.'/.latexmkrc'), pattern)
+    if len(l:out_dir) > 1
+      return l:out_dir[1]
+    else
+      return ''
+    endif
+  else
+    return ''
+  endif
+endfunction
+
+" }}}1
+
 function! s:get_ext(ext, ...) dict " {{{1
-  " First check build dir (latexmk -output_directory option)
-  if get(g:, 'vimtex_latexmk_build_dir', '') !=# ''
-    let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
-    if g:vimtex_latexmk_build_dir[0] !=# '/'
+  " check if local latexmkrc has a $out_dir
+  let l:local_build_dir = s:get_latexmkrc_out_dir(self.root)
+  if l:local_build_dir ==# ''
+    " if blank, get global variable
+    let l:local_build_dir = get(g:, 'vimtex_latexmk_build_dir', '')
+  endif
+
+  if l:local_build_dir !=# ''
+    let cand = l:local_build_dir . '/' . self.name . '.' . a:ext
+    if l:local_build_dir[0] !=# '/'
       let cand = self.root . '/' . cand
     endif
     if a:0 > 0 || filereadable(cand)
