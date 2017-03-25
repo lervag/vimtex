@@ -46,18 +46,18 @@ function! s:general.view(file) dict " {{{1
   if vimtex#view#common#not_readable(outfile) | return | endif
 
   " Parse options
-  let opts = g:vimtex_view_general_options
-  let opts = substitute(opts, '@line', line('.'), 'g')
-  let opts = substitute(opts, '@col', col('.'), 'g')
-  let opts = substitute(opts, '@tex',
-        \ vimtex#util#shellescape(expand('%:p')), 'g')
-  let opts = substitute(opts, '@pdf', vimtex#util#shellescape(outfile), 'g')
+  let l:cmd  = g:vimtex_view_general_viewer
+  let l:cmd .= ' ' . g:vimtex_view_general_options
 
-  " Construct the command
-  let exe = {}
-  let exe.cmd = g:vimtex_view_general_viewer . ' ' . opts
-  call vimtex#util#execute(exe)
-  let self.cmd_view = exe.cmd
+  " Substitute magic patterns
+  let l:cmd = substitute(l:cmd, '@line', line('.'), 'g')
+  let l:cmd = substitute(l:cmd, '@col', col('.'), 'g')
+  let l:cmd = substitute(l:cmd, '@tex',
+        \ vimtex#util#shellescape(expand('%:p')), 'g')
+  let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
+
+  " Start the view process
+  let self.process = vimtex#process#start(l:cmd)
 
   if has_key(self, 'hook_view')
     call self.hook_view()

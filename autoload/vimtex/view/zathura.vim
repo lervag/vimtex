@@ -32,15 +32,13 @@ let s:zathura = {
       \}
 
 function! s:zathura.start(outfile) dict " {{{1
-  let exe = {}
-  let exe.cmd  = 'zathura'
-  let exe.cmd .= ' -x "' . g:vimtex_latexmk_progname
+  let l:cmd  = 'zathura'
+  let l:cmd .= ' -x "' . g:vimtex_latexmk_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
-  let exe.cmd .= ' ' . g:vimtex_view_zathura_options
-  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  call vimtex#util#execute(exe)
-  let self.cmd_start = exe.cmd
+  let l:cmd .= ' ' . g:vimtex_view_zathura_options
+  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  let self.process = vimtex#process#start(l:cmd)
 
   call self.xwin_get_id()
   call self.forward_search(a:outfile)
@@ -50,14 +48,13 @@ endfunction
 function! s:zathura.forward_search(outfile) dict " {{{1
   if !filereadable(self.synctex()) | return | endif
 
-  let exe = {}
-  let exe.cmd  = 'zathura --synctex-forward '
-  let exe.cmd .= line('.')
-  let exe.cmd .= ':' . col('.')
-  let exe.cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
-  let exe.cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  call vimtex#util#execute(exe)
-  let self.cmd_forward_search = exe.cmd
+  let l:cmd  = 'zathura --synctex-forward '
+  let l:cmd .= line('.')
+  let l:cmd .= ':' . col('.')
+  let l:cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
+  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  call vimtex#process#run(l:cmd)
+  let self.cmd_forward_search = l:cmd
 endfunction
 
 " }}}1
