@@ -45,4 +45,3 @@ function! unite#sources#vimtex_labels#define()
 endfunction
 
 let &cpo = s:save_cpo
-unlet s:save_cpo

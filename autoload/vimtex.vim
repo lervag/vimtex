@@ -124,14 +124,11 @@ if get(s:, 'reload_guard', 1)
   function! vimtex#reload()
     let s:reload_guard = 0
 
-    let l:scripts = [s:file]
-          \ + map(copy(s:modules),
-          \ 'fnamemodify(s:file, '':h'') . ''/vimtex/'' . v:val . ''.vim''')
-
-    for l:file in l:scripts
+    for l:file in glob(fnamemodify(s:file, ':h') . '/**/*.vim', 0, 1)
       execute 'source' l:file
     endfor
 
+    let g:vimtex_data[b:vimtex_id] = s:vimtex.init(b:vimtex.tex)
     call vimtex#init()
 
     " Reload indent file
