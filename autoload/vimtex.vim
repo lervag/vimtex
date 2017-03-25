@@ -247,16 +247,7 @@ function! s:init_buffer() " {{{1
     let b:vimtex = g:vimtex_data[id]
   else
     " Create new blob
-    let b:vimtex = {}
-    let b:vimtex.tex  = main
-    let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
-    let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
-    let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
-    let b:vimtex.aux = function('s:get_aux')
-    let b:vimtex.log = function('s:get_log')
-    let b:vimtex.out = function('s:get_out')
-    let b:vimtex.ext = function('s:get_ext')
-
+    let b:vimtex = s:vimtex.init(main)
     let s:vimtex_next_id = get(s:, 'vimtex_next_id', -1) + 1
     let b:vimtex_id = s:vimtex_next_id
     let g:vimtex_data[b:vimtex_id] = b:vimtex
@@ -709,45 +700,6 @@ endfunction
 
 " }}}1
 
-function! s:get_log() dict " {{{1
-  return self.ext('log')
-endfunction
-
-" }}}1
-function! s:get_aux() dict " {{{1
-  return self.ext('aux')
-endfunction
-
-" }}}1
-function! s:get_out(...) dict " {{{1
-  return call(self.ext, ['pdf'] + a:000, self)
-endfunction
-
-" }}}1
-function! s:get_ext(ext, ...) dict " {{{1
-  " First check build dir (latexmk -output_directory option)
-  if get(g:, 'vimtex_latexmk_build_dir', '') !=# ''
-    let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
-    if g:vimtex_latexmk_build_dir[0] !=# '/'
-      let cand = self.root . '/' . cand
-    endif
-    if a:0 > 0 || filereadable(cand)
-      return fnamemodify(cand, ':p')
-    endif
-  endif
-
-  " Next check for file in project root folder
-  let cand = self.root . '/' . self.name . '.' . a:ext
-  if a:0 > 0 || filereadable(cand)
-    return fnamemodify(cand, ':p')
-  endif
-
-  " Finally return empty string if no entry is found
-  return ''
-endfunction
-
-" }}}1
-
 function! s:filename_changed_pre() " {{{1
   let thisfile = fnamemodify(expand('%'), ':p')
   let s:filename_changed = thisfile ==# b:vimtex.tex
@@ -783,6 +735,56 @@ endfunction
 
 " }}}1
 
+let s:vimtex = {}
+
+function! s:vimtex.init(main_path) abort dict " {{{1
+  let l:new = deepcopy(self)
+  let l:new.tex  = a:main_path
+  let l:new.root = fnamemodify(l:new.tex, ':h')
+  let l:new.base = fnamemodify(l:new.tex, ':t')
+  let l:new.name = fnamemodify(l:new.tex, ':t:r')
+  return l:new
+endfunction
+
+" }}}1
+function! s:vimtex.log() abort dict " {{{1
+  return self.ext('log')
+endfunction
+
+" }}}1
+function! s:vimtex.aux() abort dict " {{{1
+  return self.ext('aux')
+endfunction
+
+" }}}1
+function! s:vimtex.out(...) abort dict " {{{1
+  return call(self.ext, ['pdf'] + a:000, self)
+endfunction
+
+" }}}1
+function! s:vimtex.ext(ext, ...) abort dict " {{{1
+  " First check build dir (latexmk -output_directory option)
+  if get(g:, 'vimtex_compiler_build_dir', '') !=# ''
+    let cand = g:vimtex_compiler_build_dir . '/' . self.name . '.' . a:ext
+    if g:vimtex_compiler_build_dir[0] !=# '/'
+      let cand = self.root . '/' . cand
+    endif
+    if a:0 > 0 || filereadable(cand)
+      return fnamemodify(cand, ':p')
+    endif
+  endif
+
+  " Next check for file in project root folder
+  let cand = self.root . '/' . self.name . '.' . a:ext
+  if a:0 > 0 || filereadable(cand)
+    return fnamemodify(cand, ':p')
+  endif
+
+  " Finally return empty string if no entry is found
+  return ''
+endfunction
+
+" }}}1
 function! s:print_dict(dict, ...) " {{{1
   let level = a:0 > 0 ? a:1 : 0
 
