@@ -26,7 +26,9 @@ endfunction
 
 " }}}1
 
-let s:mupdf = {}
+let s:mupdf = {
+      \ 'name': 'MuPDF',
+      \}
 
 function! s:mupdf.start(outfile) dict " {{{1
   let exe = {}

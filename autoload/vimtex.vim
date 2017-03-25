@@ -44,26 +44,11 @@ endfunction
 " }}}1
 function! vimtex#info(global) " {{{1
   if a:global
-    for [id, data] in items(g:vimtex_data)
-      let d = deepcopy(data)
-      for f in ['aux', 'out', 'log']
-        silent execute 'let d.' . f . ' = data.' . f . '()'
-      endfor
-
-      call vimtex#echo#formatted([
-            \ "\ng:vimtex_data[", ['VimtexSuccess', id], '] : ',
-            \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-      call s:print_dict(d)
+    for l:data in values(g:vimtex_data)
+      call vimtex#echo#pprint(l:data)
     endfor
   else
-    let d = deepcopy(b:vimtex)
-    for f in ['aux', 'out', 'log']
-      silent execute 'let d.' . f . ' = b:vimtex.' . f . '()'
-    endfor
-    call vimtex#echo#formatted([
-          \ 'b:vimtex : ',
-          \ ['VimtexSuccess', remove(d, 'name') . "\n"]])
-    call s:print_dict(d)
+    call vimtex#echo#pprint(b:vimtex)
   endif
 endfunction
 
@@ -782,39 +767,33 @@ function! s:vimtex.ext(ext, ...) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:print_dict(dict, ...) " {{{1
-  let level = a:0 > 0 ? a:1 : 0
+function! s:vimtex.pprint_items() abort dict " {{{1
+  let l:items = [
+        \ ['name', self.name],
+        \ ['base', self.base],
+        \ ['root', self.root],
+        \ ['tex', self.tex],
+        \ ['out', self.out()],
+        \ ['log', self.log()],
+        \ ['aux', self.aux()],
+        \]
 
-  for entry in sort(sort(items(a:dict),
-        \ 's:print_dict_sort_2'),
-        \ 's:print_dict_sort_1')
-    let title = repeat(' ', 2 + 2*level) . entry[0]
-    if type(entry[1]) == type([])
-      call vimtex#echo#echo(title . "\n")
-      for val in entry[1]
-        call vimtex#echo#formatted([['None',
-              \ repeat(' ', 4 + 2*level) . string(val) . "\n"]])
-      endfor
-    elseif type(entry[1]) == type({})
-      call vimtex#echo#echo(title . "\n")
-      call s:print_dict(entry[1], level + 1)
-    else
-      call vimtex#echo#formatted([title . ' : ',
-            \ ['None', string(entry[1]) . "\n"]])
-    endif
-  endfor
-endfunction
+  if !empty(self.engine)
+    call add(l:items, ['engine', self.engine])
+  endif
 
-" }}}1
-function! s:print_dict_sort_1(i1, i2) " {{{1
-  return type(a:i1[1]) - type(a:i2[1])
-endfunction
+  if len(self.sources) >= 2
+    call add(l:items, ['source files', self.sources])
+  endif
 
-" }}}1
-function! s:print_dict_sort_2(i1, i2) " {{{1
-  return string(a:i1[1]) == string(a:i2[1]) ? 0
-        \ : string(a:i1[1]) > string(a:i2[1]) ? 1
-        \ : -1
+  if !empty(self.packages)
+    call add(l:items, ['packages', self.packages])
+  endif
+
+  call add(l:items, ['compiler', get(self, 'compiler', {})])
+  call add(l:items, ['viewer', get(self, 'viewer', {})])
+
+  return [['vimtex project', l:items]]
 endfunction
 
 " }}}1

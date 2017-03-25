@@ -65,6 +65,25 @@ function! s:common_template.copy_files() dict " {{{1
 endfunction
 
 " }}}1
+function! s:common_template.pprint_items() abort dict " {{{1
+  let l:list = []
+
+  if has_key(self, 'xwin_id')
+    call add(l:list, ['xwin id', self.xwin_id])
+  endif
+
+  if has_key(self, 'process')
+    call add(l:list, ['cmd', self.process.cmd])
+  endif
+
+  for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
+    call add(l:list, [l:key, self[l:key]])
+  endfor
+
+  return l:list
+endfunction
+
+" }}}1
 
 let s:xwin_template = {}
 

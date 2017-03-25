@@ -27,7 +27,9 @@ endfunction
 
 " }}}1
 
-let s:general = {}
+let s:general = {
+      \ 'name' : 'General'
+      \}
 
 function! s:general.view(file) dict " {{{1
   if empty(a:file)

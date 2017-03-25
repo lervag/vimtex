@@ -27,7 +27,9 @@ endfunction
 
 " }}}1
 
-let s:zathura = {}
+let s:zathura = {
+      \ 'name' : 'Zathura',
+      \}
 
 function! s:zathura.start(outfile) dict " {{{1
   let exe = {}
