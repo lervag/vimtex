@@ -5,20 +5,7 @@
 "
 
 function! vimtex#view#general#new() " {{{1
-  "
-  " Set default options
-  "
-  call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
-        \ {
-        \   'linux' : 'xdg-open',
-        \   'mac'   : 'open',
-        \ })
-  call vimtex#util#set_default('g:vimtex_view_general_options', '@pdf')
-  call vimtex#util#set_default('g:vimtex_view_general_options_latexmk', '')
-
-  "
   " Check if the viewer is executable
-  "
   if !executable(g:vimtex_view_general_viewer)
     call vimtex#echo#warning('viewer "'
           \ . g:vimtex_view_general_viewer . '" is not executable!')
@@ -27,14 +14,10 @@ function! vimtex#view#general#new() " {{{1
     return {}
   endif
 
-  "
   " Start from standard template
-  "
   let l:viewer = vimtex#view#common#apply_common_template(deepcopy(s:general))
 
-  "
   " Add callback hook
-  "
   if exists('g:vimtex_view_general_callback')
     let l:viewer.latexmk_callback = function(g:vimtex_view_general_callback)
   endif
@@ -93,6 +76,19 @@ function! s:general.latexmk_append_argument() dict " {{{1
     return vimtex#latexmk#add_option('pdf_previewer', l:option)
   endif
 endfunction
+
+" }}}1
+
+
+" {{{1 Module options
+
+call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
+      \ {
+      \   'linux' : 'xdg-open',
+      \   'mac'   : 'open',
+      \ })
+call vimtex#util#set_default('g:vimtex_view_general_options', '@pdf')
+call vimtex#util#set_default('g:vimtex_view_general_options_latexmk', '')
 
 " }}}1
 

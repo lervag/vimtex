@@ -5,15 +5,7 @@
 "
 
 function! vimtex#view#mupdf#new() " {{{1
-  "
-  " Set default options
-  "
-  call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
-  call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
-
-  "
   " Check if the viewer is executable
-  "
   if !executable('mupdf')
     call vimtex#echo#warning('MuPDF is not executable!')
     call vimtex#echo#echo('- vimtex viewer will not work!')
@@ -21,17 +13,13 @@ function! vimtex#view#mupdf#new() " {{{1
     return {}
   endif
 
-  "
   " Check if the xdotool is available
-  "
   if !executable('xdotool')
     call vimtex#echo#warning('MuPDF requires xdotool!')
     return {}
   endif
 
-  "
   " Use the xwin template
-  "
   return vimtex#view#common#apply_xwin_template('MuPDF',
         \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
 endfunction
@@ -189,6 +177,14 @@ function! s:mupdf.focus_vim() dict " {{{1
   silent call system('xdotool windowfocus ' . v:windowid . ' --sync')
   silent call system('xdotool windowraise ' . v:windowid)
 endfunction
+
+" }}}1
+
+
+" {{{1 Module options
+
+call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
+call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
 
 " }}}1
 

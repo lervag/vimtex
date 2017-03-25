@@ -4,33 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-" {{{1 Script Initialization
-
-"
-" The flag s:initialized is set to 1 after vimtex has been initialized to
-" prevent errors if the scripts are loaded more than once (e.g. when opening
-" more than one LaTeX buffer in one vim instance).  Thus it allows us to
-" distinguish between global initialization and buffer initialization.
-"
-if !exists('s:initialized')
-  let s:initialized = 0
-endif
-
-"
-" Define list of vimtex modules
-"
-if !exists('s:modules')
-  let s:modules = map(
-        \ split(
-        \   globpath(
-        \     fnamemodify(expand('<sfile>'), ':r'),
-        \     '*.vim'),
-        \   '\n'),
-        \ 'fnamemodify(v:val, '':t:r'')')
-endif
-
-" }}}1
-
 function! vimtex#init() " {{{1
   call s:check_version()
   "
@@ -40,14 +13,15 @@ function! vimtex#init() " {{{1
   call s:init_buffer()
 
   "
-  " Then we initialize the modules for the current buffer
-  "
-  call s:init_modules('buffer')
-
-  "
   " Parse the document to set local options
   "
   call s:init_local_options()
+
+  "
+  " Then we initialize the modules for the current buffer
+  "
+  call s:init_modules()
+
 
   "
   " Initialize local blob (if main file is different then current file)
@@ -59,8 +33,6 @@ function! vimtex#init() " {{{1
   "
   call s:init_mappings()
 
-  let s:initialized = 1
-
   "
   " Allow custom configuration through an event hook
   "
@@ -71,11 +43,6 @@ endfunction
 
 " }}}1
 function! vimtex#info(global) " {{{1
-  if !s:initialized
-    echoerr 'Error: vimtex has not been initialized!'
-    return
-  endif
-
   if a:global
     for [id, data] in items(g:vimtex_data)
       let d = deepcopy(data)
@@ -165,7 +132,6 @@ if get(s:, 'reload_guard', 1)
       execute 'source' l:file
     endfor
 
-    let s:initialized = 0
     call vimtex#init()
 
     " Reload indent file
@@ -201,7 +167,7 @@ endfunction
 
 
 function! s:check_version() " {{{1
-  if s:initialized || get(g:, 'vimtex_disable_version_warning', 0)
+  if get(g:, 'vimtex_disable_version_warning', 0)
     return
   endif
 
@@ -440,12 +406,12 @@ function! s:init_mappings() " {{{1
 endfunction
 
 " }}}1
-function! s:init_modules(initmode) " {{{1
+function! s:init_modules() " {{{1
   for module in s:modules
     if index(get(s:, 'disabled_modules', []), module) >= 0 | continue | endif
 
     try
-      execute 'call vimtex#' . module . '#init_' . a:initmode . '()'
+      call vimtex#{module}#init_buffer()
     catch /E117.*#init_/
     endtry
   endfor
@@ -896,6 +862,22 @@ function! s:buffer_deleted(...) " {{{1
     endif
   endif
 endfunction
+
+" }}}1
+
+
+" {{{1 Initialize module
+
+" Define list of vimtex modules
+if !exists('s:modules')
+  let s:modules = map(
+        \ split(
+        \   globpath(
+        \     fnamemodify(expand('<sfile>'), ':r'),
+        \     '*.vim'),
+        \   '\n'),
+        \ 'fnamemodify(v:val, '':t:r'')')
+endif
 
 " }}}1
 

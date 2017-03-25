@@ -5,14 +5,7 @@
 "
 
 function! vimtex#view#zathura#new() " {{{1
-  "
-  " Set default options
-  "
-  call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
-
-  "
   " Check if the viewer is executable
-  "
   if !executable('zathura')
     call vimtex#echo#warning('Zathura is not executable!')
     call vimtex#echo#echo('- vimtex viewer will not work!')
@@ -20,9 +13,7 @@ function! vimtex#view#zathura#new() " {{{1
     return {}
   endif
 
-  "
   " Check if the xdotool is available
-  "
   if !executable('xdotool')
     call vimtex#echo#warning('Zathura requires xdotool for forward search!')
   endif
@@ -115,6 +106,13 @@ function! s:zathura.latexmk_append_argument() dict " {{{1
 
   return cmd
 endfunction
+
+" }}}1
+
+
+" {{{1 Module options
+
+call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
 
 " }}}1
 
