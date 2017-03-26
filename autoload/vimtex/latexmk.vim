@@ -18,9 +18,6 @@ function! vimtex#latexmk#init_buffer() " {{{1
   " Set compiler (this defines the errorformat)
   compiler latexmk
 
-  " Initialize system PID
-  call s:latexmk_init_pid()
-
   " Define commands
   command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
   command! -buffer -bang VimtexCompileSS     call vimtex#latexmk#compile_ss(<q-bang> == "!")
@@ -52,6 +49,14 @@ function! vimtex#latexmk#init_buffer() " {{{1
         \ :set opfunc=vimtex#latexmk#compile_selected<cr>g@
   xnoremap <buffer> <plug>(vimtex-compile-selected)
         \ :<c-u>call vimtex#latexmk#compile_selected('visual')<cr>
+endfunction
+
+" }}}1
+function! vimtex#latexmk#init_state() " {{{1
+  if !g:vimtex_latexmk_enabled | return | endif
+
+  " Initialize system PID
+  call s:latexmk_init_pid()
 endfunction
 
 " }}}1
@@ -376,7 +381,7 @@ endfunction
 function! vimtex#latexmk#status(detailed) " {{{1
   if a:detailed
     let running = 0
-    for data in values(g:vimtex_data)
+    for data in vimtex#state#list_all()
       if data.pid
         if !running
           call vimtex#echo#status(['latexmk status: ',
@@ -429,7 +434,7 @@ endfunction
 
 " }}}1
 function! vimtex#latexmk#stop_all() " {{{1
-  for data in values(g:vimtex_data)
+  for data in vimtex#state#list_all()
     if get(data, 'pid', 0)
       call s:latexmk_kill(data)
     endif

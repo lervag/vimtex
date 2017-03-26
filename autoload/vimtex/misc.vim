@@ -21,7 +21,7 @@ endfunction
 
 function! vimtex#misc#info(global) abort " {{{1
   if a:global
-    for l:data in values(g:vimtex_data)
+    for l:data in vimtex#state#list_all()
       call vimtex#echo#pprint(l:data)
     endfor
   else
@@ -89,7 +89,6 @@ if get(s:, 'reload_guard', 1)
       execute 'source' l:file
     endfor
 
-    call remove(g:vimtex_data, b:vimtex_id)
     call vimtex#init()
 
     " Reload indent file

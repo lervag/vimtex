@@ -7,48 +7,6 @@
 function! vimtex#view#init_buffer() " {{{1
   if !g:vimtex_view_enabled | return | endif
 
-  "
-  " Add viewer to the data blob (if it does not already exist)
-  "
-  if !has_key(b:vimtex, 'viewer')
-    try
-      let b:vimtex.viewer = vimtex#view#{g:vimtex_view_method}#new()
-    catch /E117/
-      call vimtex#echo#warning('viewer '
-            \ . g:vimtex_view_method . ' does not exist!')
-      call vimtex#echo#echo('- Please see :h g:vimtex_view_method')
-      call vimtex#echo#wait()
-      return
-    endtry
-
-    " Make the following code more concise
-    let l:v = b:vimtex.viewer
-
-    "
-    " Add latexmk callback to callback hooks (if it exists)
-    "
-    if exists('*l:v.latexmk_callback')
-      call add(g:vimtex_latexmk_callback_hooks, 'b:vimtex.viewer.latexmk_callback')
-    endif
-
-    "
-    " Create view and/or callback hooks (if they exist)
-    "
-    for point in ['view', 'callback']
-      execute 'let hook = ''g:vimtex_view_'
-            \ . g:vimtex_view_method . '_hook_' . point . ''''
-      if exists(hook)
-        execute 'let hookfunc = ''*'' . ' . hook
-        if exists(hookfunc)
-          execute 'let l:v.hook_' . point . ' = function(' . hook . ')'
-        endif
-      endif
-    endfor
-  endif
-
-  "
-  " Define commands
-  "
   command! -buffer -nargs=? -complete=file VimtexView
         \ call b:vimtex.viewer.view(<q-args>)
   if has_key(b:vimtex.viewer, 'reverse_search')
@@ -56,15 +14,53 @@ function! vimtex#view#init_buffer() " {{{1
           \ call b:vimtex.viewer.reverse_search()
   endif
 
-  "
-  " Define mappings
-  "
   nnoremap <buffer> <plug>(vimtex-view)
         \ :call b:vimtex.viewer.view('')<cr>
   if has_key(b:vimtex.viewer, 'reverse_search')
     nnoremap <buffer> <plug>(vimtex-reverse-search)
           \ :call b:vimtex.viewer.reverse_search()<cr>
   endif
+endfunction
+
+" }}}1
+function! vimtex#view#init_state() " {{{1
+  if !g:vimtex_view_enabled | return | endif
+  if has_key(b:vimtex, 'viewer') | return | endif
+
+  try
+    let b:vimtex.viewer = vimtex#view#{g:vimtex_view_method}#new()
+  catch /E117/
+    call vimtex#echo#warning('viewer '
+          \ . g:vimtex_view_method . ' does not exist!')
+    call vimtex#echo#echo('- Please see :h g:vimtex_view_method')
+    call vimtex#echo#wait()
+    return
+  endtry
+
+  " Make the following code more concise
+  let l:v = b:vimtex.viewer
+
+  "
+  " Add latexmk callback to callback hooks (if it exists)
+  "
+  if exists('*l:v.compiler_callback')
+    call add(g:vimtex_latexmk_callback_hooks,
+          \ 'b:vimtex.viewer.latexmk_callback')
+  endif
+
+  "
+  " Create view and/or callback hooks (if they exist)
+  "
+  for l:point in ['view', 'callback']
+    execute 'let l:hook = ''g:vimtex_view_'
+          \ . g:vimtex_view_method . '_hook_' . l:point . ''''
+    if exists(l:hook)
+      execute 'let hookfunc = ''*'' . ' . l:hook
+      if exists(hookfunc)
+        execute 'let l:v.hook_' . l:point . ' = function(' . l:hook . ')'
+      endif
+    endif
+  endfor
 endfunction
 
 " }}}1
