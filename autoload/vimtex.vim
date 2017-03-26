@@ -42,92 +42,6 @@ function! vimtex#init() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#info(global) " {{{1
-  if a:global
-    for l:data in values(g:vimtex_data)
-      call vimtex#echo#pprint(l:data)
-    endfor
-  else
-    call vimtex#echo#pprint(b:vimtex)
-  endif
-endfunction
-
-" }}}1
-function! vimtex#wc(type, detailed, ...) range " {{{1
-  if empty(a:type)
-    let l:file = b:vimtex
-  else
-    let l:file = vimtex#parser#selection_to_texfile(a:type)
-  endif
-
-  " Run texcount, save output to lines variable
-  let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
-  let cmd .= '; texcount -nosub -sum '
-  let cmd .= a:0 > 0 ? '-letter ' : ''
-  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
-  let cmd .= vimtex#util#shellescape(l:file.base)
-  let lines = split(system(cmd), '\n')
-
-  " Create wordcount window
-  if bufnr('TeXcount') >= 0
-    bwipeout TeXcount
-  endif
-  split TeXcount
-
-  " Add lines to buffer
-  for line in lines
-    call append('$', printf('%s', line))
-  endfor
-  0delete _
-
-  " Set mappings
-  nnoremap <buffer> <silent> q :bwipeout<cr>
-
-  " Set buffer options
-  setlocal bufhidden=wipe
-  setlocal buftype=nofile
-  setlocal cursorline
-  setlocal nobuflisted
-  setlocal nolist
-  setlocal nospell
-  setlocal noswapfile
-  setlocal nowrap
-  setlocal tabstop=8
-  setlocal nomodifiable
-
-  " Set highlighting
-  syntax match TexcountText  /^.*:.*/ contains=TexcountValue
-  syntax match TexcountValue /.*:\zs.*/
-  highlight link TexcountText  VimtexMsg
-  highlight link TexcountValue Constant
-endfunction
-
-" }}}1
-" {{{1 function! vimtex#reload()
-let s:file = expand('<sfile>')
-if get(s:, 'reload_guard', 1)
-  function! vimtex#reload()
-    let s:reload_guard = 0
-
-    for l:file in glob(fnamemodify(s:file, ':h') . '/**/*.vim', 0, 1)
-      execute 'source' l:file
-    endfor
-
-    let g:vimtex_data[b:vimtex_id] = s:vimtex.init(b:vimtex.tex)
-    call vimtex#init()
-
-    " Reload indent file
-    if exists('b:did_vimtex_indent')
-      unlet b:did_indent
-      runtime indent/tex.vim
-    endif
-
-    call vimtex#echo#info('reloaded')
-    unlet s:reload_guard
-  endfunction
-endif
-
-" }}}1
 function! vimtex#toggle_main() " {{{1
   if exists('b:vimtex_local')
     let b:vimtex_local.active = !b:vimtex_local.active
@@ -240,20 +154,9 @@ function! s:init_buffer() " {{{1
   "
 
   " Define commands
-  command! -buffer -bang VimtexInfo         call vimtex#info(<q-bang> == '!')
-  command! -buffer       VimtexReload       call vimtex#reload()
   command! -buffer       VimtexToggleMain   call vimtex#toggle_main()
-  command! -buffer -bang VimtexCountWords   call vimtex#wc('', <q-bang> == '!')
-  command! -buffer -bang VimtexCountLetters call vimtex#wc('', <q-bang> == '!', 1)
-  command! -buffer -bang -range VimtexCountSelectedWords
-        \ <line1>,<line2>call vimtex#wc('cmd', <q-bang> == '!')
-  command! -buffer -range -bang VimtexCountSelectedLetters
-        \ <line1>,<line2>call vimtex#wc('cmd', <q-bang> == '!', 1)
 
   " Define mappings
-  nnoremap <buffer> <plug>(vimtex-info)        :VimtexInfo<cr>
-  nnoremap <buffer> <plug>(vimtex-info-full)   :VimtexInfo!<cr>
-  nnoremap <buffer> <plug>(vimtex-reload)      :VimtexReload<cr>
   nnoremap <buffer> <plug>(vimtex-toggle-main) :VimtexToggleMain<cr>
 
   "
