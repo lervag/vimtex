@@ -33,7 +33,7 @@ let s:zathura = {
 
 function! s:zathura.start(outfile) dict " {{{1
   let l:cmd  = 'zathura'
-  let l:cmd .= ' -x "' . g:vimtex_latexmk_progname
+  let l:cmd .= ' -x "' . g:vimtex_compiler_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
@@ -95,10 +95,10 @@ function! s:zathura.latexmk_append_argument() dict " {{{1
   if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
-    let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
-    let cmd .= vimtex#latexmk#add_option('pdf_previewer',
+    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
           \ 'zathura ' . g:vimtex_view_zathura_options
-          \ . ' -x \"' . g:vimtex_latexmk_progname
+          \ . ' -x \"' . g:vimtex_compiler_progname
           \ . ' --servername ' . v:servername
           \ . ' --remote +\%{line} \%{input}\" \%S')
   endif

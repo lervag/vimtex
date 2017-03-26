@@ -65,9 +65,9 @@ CONTENTS                                                      *vimtex-contents*
     Table of labels                             |vimtex-labels|
     Unite sources                               |vimtex-unite|
     Include expression (|gf| command)             |vimtex-includeexpr|
-  Latexmk                                       |vimtex-latexmk|
-    Latexmk tricks                              |vimtex-latexmk-tricks|
-    Lacheck                                     |vimtex-latexmk-lacheck|
+  Compilation                                   |vimtex-compiler|
+    Latexmk                                     |vimtex-latexmk|
+    Lacheck                                     |vimtex-lacheck|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
@@ -399,6 +399,113 @@ Options~
   Set to 0 to disable |vimtex|.
 
   Default value: Undefined.
+
+*g:vimtex_compiler_enabled*
+  Use this option to disable/enable the `compiler` interface, see |vimtex-compiler|.
+
+  Default value: 1
+
+*g:vimtex_compiler_method*
+  Set the compiler method. There is currently only a single available method,
+  so don't change this option!
+
+  Default value: 'latexmk'
+
+*g:vimtex_compiler_progname*
+  Path to vim executable.  This is used for the callback functionality, and it
+  must be set correctly in order for the callback function to work.  The
+  default value should work correctly in most cases, but in some cases, e.g.
+  for MacVim, one might need to set it manually to get the callbacks to work
+  as expected.
+
+  Default value: |v:progpath| if it exists, else |v:progname|.
+
+*g:vimtex_compiler_callback_hooks*
+  A list of functions that will be called from the vimtex compiler callback.
+  The compilation status must be taken as an argument. This allows users to
+  add custom callback functionality.
+
+  Note: The Zathura and MuPDF viewers, if used, adds a hook to this list in
+        order to store the viewer X window ID in order to prevent multiple
+        viewer windows.
+
+  Example: >
+
+    let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
+
+    function! MyTestHook(status)
+      echom a:status
+    endfunction
+
+<  Default value: []
+
+*g:vimtex_compiler_latexmk*
+  This is a dictionary that allows customization of the |vimtex-latexmk|
+  compiler. The values set by the user will take precedense over the default
+  values.
+
+  Default value: >
+
+    let g:vimtex_compiler_latexmk = {
+    \ 'background' : 0,
+    \ 'build_dir' : '',
+    \ 'callback' : 1,
+    \ 'continuous' : 1,
+    \ 'options' : [
+    \   '-pdf',
+    \   '-verbose',
+    \   '-file-line-error',
+    \   '-synctex=1',
+    \   '-interaction=nonstopmode',
+    \ ],
+    \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  background~
+    This option sets whether single shot compilations should be run in the
+    foreground or the background.
+
+  build_dir~
+    This option sets the compilation build directory.  It corresponds to the
+    `-output-directory` option in `latexmk`.  If the path is a relative path,
+    then it will be considered relative to the main project file.
+
+    Note 1: This option only works with `latexmk` version 4.27 and later.
+    Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
+            will have priority.
+
+  callback~
+    If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
+    after compilation is finished.
+
+    Note 1: This feature requires |clientserver|.
+    Note 2: Callbacks are only possible when `continuous` is also activated.
+    Note 3: The callback is run with the vim executable defined by
+            |g:vimtex_compiler_progname|.
+
+  continuous~
+    If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
+    argument. This means that the document is compiled automatically by
+    `latexmk` every time a related file has been changed, until the processes
+    is stopped.
+
+    If disabled, `latexmk` will run single shot compilations.
+
+    Note: The events |VimtexEventCompileStarted| and |VimtexEventCompileStopped|
+          are only relevant when this option is enabled.
+
+  options~
+    This is a list of options that are passed to `latexmk`. The default
+    options should work well for most people.
+
+    Note: Options may also be specified indirectly to `latexmk` through both
+          a global and a project specific `.latexmkrc` file. One should know,
+          though, that options specified on the command line has priority, and
+          so if one wants to override one of the above default options, then
+          one has to set `g:vimtex_latexmk_options` to a string that contains
+          the desired options.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
@@ -779,105 +886,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_latexmk_enabled*
-  Use this option to disable/enable the `latexmk` interface |vimtex-latexmk|.
-
-  Default value: 1
-
-*g:vimtex_latexmk_build_dir*
-  This option sets the compilation build directory.  It corresponds to the
-  `-output-directory` option in `latexmk`.  If the path is a relative path,
-  then it will be considered relative to the main project file.
-
-  Note 1: This option only works with `latexmk` version 4.27 and later.
-
-  Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
-          will have priority.
-
-  Default value: ''
-
-*g:vimtex_latexmk_callback*
-  If enabled, this option tells `latexmk` to run |vimtex#latexmk#callback| after
-  compilation is finished.
-
-  Note 1: This feature requires |clientserver|.
-  Note 2: Callbacks are only possible when continuous mode is active, see
-          |g:vimtex_latexmk_continuous|.
-  Note 3: The callback is run with the vim executable defined by
-          |g:vimtex_latexmk_progname|.
-
-  Default value: 1
-
-*g:vimtex_latexmk_callback_hooks*
-  A list of functions that will be called from the vimtex latexmk callback.
-  The compilation status must be taken as an argument. This allows users to
-  add custom callback functionality.
-
-  Note: The Zathura and MuPDF viewers, if used, adds a hook to this list in
-        order to store the viewer X window ID in order to prevent multiple
-        viewer windows.
-
-  Example: >
-
-    let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
-
-    function! MyTestHook(status)
-      echom a:status
-    endfunction
-
-<  Default value: []
-
-*g:vimtex_latexmk_continuous*
-  If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
-  argument. This means that the document is compiled automatically by
-  `latexmk` every time a related file has been changed, until the processes is
-  stopped.
-
-  If disabled, `latexmk` will run single shot compilations.
-
-  Note: The events |VimtexEventCompileStarted| and |VimtexEventCompileStopped|
-  are only relevant when this option is enabled.
-
-  Default value: 1
-
-*g:vimtex_latexmk_background*
-  If continuous mode is disabled, then this option may be used to set
-  whether single shot compilations should be run in the foreground or the
-  background.
-
-  Default value: 0
-
-*g:vimtex_latexmk_options*
-  By default, |vimtex| passes the following options to `latexmk`: >
-
-     -pdf                     -- Compile to pdf documents
-     -verbose                 -- More verbose output
-     -file-line-error         -- Enable file:line:error style messages
-     -synctex=1               -- Generate synctex data
-     -interaction=nonstopmode -- Disable interactive mode
-
-<  However, if `g:vimtex_latexmk_options` is defined, it will override the
-  above with the user supplied options.
-
-  Note: Options may also be specified indirectly to `latexmk` through
-        both a global and a project specific `.latexmkrc` file. One should
-        know, though, that options specified on the command line has priority,
-        and so if one wants to override one of the above default options, then
-        one has to set `g:vimtex_latexmk_options` to a string that contains
-        the desired options.
-
-  Default value:
-    '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode'
-
-*g:vimtex_latexmk_progname*
-  Path to vim executable.  This is used for the callback functionality, and it
-  must be set correctly in order for the callback function to work.  The
-  default value should work correctly in most cases, but in some cases, e.g.
-  for MacVim, one might need to set it manually to get the callbacks to work
-  as expected.
-
-  Default value: |v:progpath| if it exists, else |v:progname|.
-
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
   whenever the |quickfix| window is opened.
@@ -941,19 +949,14 @@ Options~
   2      The quickfix window is opened automatically when there are errors,
          but it does not become the active window.
 
-  Note: The quickfix window will only be opened automatically if both the
-        continuous mode and the callbacks are active, see
-        |g:vimtex_latexmk_continuous| and |g:vimtex_latexmk_callback|.
+  Note: The quickfix window will only be opened automatically if the compiler
+        is both continuous and has callbacks activated.
 
   Default value: 2
 
 *g:vimtex_quickfix_open_on_warning*
   Control whether or not to automatically open the |quickfix| window in case
   there are warning messages and no error messages.
-
-  Note: The quickfix window will only be opened automatically if both the
-        continuous mode and the callbacks are active, see
-        |g:vimtex_latexmk_continuous| and |g:vimtex_latexmk_callback|.
 
   Default value: 1
 
@@ -1243,7 +1246,7 @@ Options~
   Default value: ''
 
 *g:vimtex_view_general_callback*
-  Sets the name of a function that is called within |vimtex#latexmk#callback|
+  Sets the name of a function that is called within |vimtex#compiler#callback|
   after compilation has finished. The function does not take any arguments,
   instead it can use the `b:vimtex` variable directly, e.g. the pdf file is
   available as `b:vimtex.out()`. The function is part of the viewer
@@ -1305,14 +1308,13 @@ Commands~
 
                                              *VimtexCompile*
                                              *<plug>(vimtex-compile)*
-:VimtexCompile            Starts compilation, either in continuous mode or in
-                          single shot mode, depending on the value of
-                          |g:vimtex_latexmk_continuous|.
+:VimtexCompile            Start compilation.
 
                                              *VimtexCompileToggle*
                                              *<plug>(vimtex-compile-toggle)*
-:VimtexCompileToggle      Toggles compilation.  Only useful when continuous
-                          mode is enabled (|g:vimtex_latexmk_continuous|).
+:VimtexCompileToggle      Toggle compilation.  This is only useful if the
+                          compiler is set to continuous compilation.  See e.g.
+                          |g:vimtex_compiler_latexmk| and |vimtex-compiler|.
 
                                              *VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*
@@ -1334,7 +1336,7 @@ Commands~
 
                                              *VimtexOutput*
                                              *<plug>(vimtex-compile-output)*
-:VimtexOutput             Open file where `latexmk` output is redirected.
+:VimtexOutput             Open file where compiler output is redirected.
 
                                              *VimtexStop*
                                              *<plug>(vimtex-stop)*
@@ -1650,11 +1652,10 @@ through |autocmd|s, in particular the |User| autocmd.
     be used to automatically start compiling a document.
 
   *VimtexEventCompileStarted*
-    This event is triggered after compilation with `latexmk` is started in
-    continuous mode (|g:vimtex_latexmk_continuous|).
+    This event is triggered after compilation is started (in continuous mode).
 
   *VimtexEventCompileStopped*
-    This event is triggered after compilation with `latexmk` is stopped.
+    This event is triggered after compilation is stopped.
 
 Examples: >
 
@@ -2091,7 +2092,60 @@ names, |gf| will take you to the TeX source files (typically `.cls` file for
 documentclass and `.sty` files for packages).
 
 ==============================================================================
-LATEXMK                                                        *vimtex-latexmk*
+COMPILER                                                      *vimtex-compiler*
+
+|vimtex| provides an interface to LaTeX compilers/compiler backends such as
+`latexmk`. The interface is implemented in a general way, which makes it
+relatively easy to add new compilers. At the moment, only one compiler is
+supported: |vimtex-latexmk|.
+
+Compilation is started and stopped with |VimtexCompile| and |VimtexStop|,
+or with |VimtexCompileToggle|.  Although, stopping is only relevant for
+continuous compilations.  Single short compilation is always available through
+|VimtexCompileSS|.  The default mappings for these commands are listed here:
+|vimtex-default-mappings|.
+
+It is also possible to compile a selection of the file. To do this, one may
+either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
+|VimtexCompileSelected|. This will compile the selected text by copying it to
+a temporary file with the same preamble as the current file. It will be
+compiled similarly to a single shot compile, and if there are errors, they
+will be shown in the quickfix list.
+
+The compilers should respect the TeX program directive as described here:
+|vimtex-tex-program|.
+
+Associated commands:
+    |VimtexCompile|
+    |VimtexCompileToggle|
+    |VimtexCompileSS|
+    |VimtexCompileSS!|
+    |VimtexCompileSelected|
+    |VimtexOutput|
+    |VimtexStatus|
+    |VimtexStatus!|
+    |VimtexStop|
+    |VimtexStopAll|
+    |VimtexErrors|
+    |VimtexErrors|
+    |VimtexClean|
+    |VimtexClean!|
+    |VimtexErrors|
+    |VimtexLacheck|
+
+Associated settings:
+    |g:vimtex_compiler_enabled|
+    |g:vimtex_compiler_method|
+    |g:vimtex_compiler_callback_hooks|
+    |g:vimtex_compiler_autojump|
+
+Associated events:
+    |VimtexEventCompileStarted|
+    |VimtexEventCompileStopped|
+
+------------------------------------------------------------------------------
+Latexmk~
+                                                               *vimtex-latexmk*
 
                       http://users.phys.psu.edu/~collins/software/latexmk-jcc
 > latexmk is a perl script for running LaTeX the correct number of times to
@@ -2102,61 +2156,22 @@ LATEXMK                                                        *vimtex-latexmk*
 > gives an up-to-date view of the document. The script runs on both UNIX and
 > MS-WINDOWS (XP, etc).
 
-|vimtex| uses `latexmk` to compile the LaTeX document.  It utilizes by default
-the preview continuous mode.  This means that after the compilation is turned
-on, `latexmk` will automatically recompile when any LaTeX project file is
-changed.
+`latexmk` is a compiler backend that handles recompilation of LaTeX documents
+when source files have been changed.  |vimtex| uses the continuous mode by
+default, but `latexmk` also allows single shot compilations.  The compiler may
+be configured through the |g:vimtex_compiler_latexmk| option.
 
-If one prefers to have single shot compilations, one may disable the
-continuous mode with |g:vimtex_latexmk_continuous|.  If it is disabled, then
-the option |g:vimtex_latexmk_background| may be used to decide if single shot
-compilation should run in the foreground or the background.
+If vim is compiled with the |+clientserver| option and if the `callback` key
+is enabled (which it is by default), then compilation errors will be parsed
+automatically.  This is done by utilizing the tricks explained below.  Note
+that this only works for continuous compilation mode.
 
-Regardless of the |g:vimtex_latexmk_continuous| option, single shot
-compilation may always be issued with |VimtexCompileSS|.
-
-It is also possible to compile a selection of the file. To do this, one may
-either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
-|VimtexCompileSelected|. This will compile the selected text by copying it to
-a temporary file with the same preamble as the current file. It will be
-compiled similarly to a single shot compile, and if there are errors, they
-will be shown in the quickfix list. For more info, see
-|VimtexCompileSelected|.
-
-|vimtex| passes a "sensible" default set of options to `latexmk`. This may be
-customized with |g:vimtex_latexmk_options|, where the default options are also
-described. The TeX program directive is respected, see |vimtex-tex-program|.
-
-If vim is compiled with the |+clientserver| option and if
-|g:vimtex_latexmk_callback| is enabled (which it is by default), then
-compilation errors will be parsed automatically.  This is done by utilizing
-the tricks explained in |vimtex-latexmk-tricks|.  Note that this only works
-for continuous compilation mode.  One can always check for compilation errors
-with |VimtexErrors|.
-
-Associated settings:
-    |g:vimtex_latexmk_enabled|
-    |g:vimtex_latexmk_callback|
-    |g:vimtex_latexmk_callback_hooks|
-    |g:vimtex_latexmk_autojump|
-    |g:vimtex_latexmk_continuous|
-    |g:vimtex_latexmk_background|
-    |g:vimtex_latexmk_options|
-
-Associated events:
-    |VimtexEventCompileStarted|
-    |VimtexEventCompileStopped|
-
-------------------------------------------------------------------------------
-Latexmk tricks~
-                                                        *vimtex-latexmk-tricks*
-
-One may customize the `latexmk` options through |g:vimtex_latexmk_options|.
-However, one may also configure `latexmk` explicitly through a global
-`~/.latexmkrc` file, or a project specific `.latexmkrc` file. It is important
-to know that command line arguments have priority, so one may want to use
-custom options if one wants to specify particular things in a configuration
-file.
+As stated, one may customize the `latexmk` options through
+|g:vimtex_compiler_latexmk|.  However, one may also configure `latexmk`
+explicitly through a global `~/.latexmkrc` file, or a project specific
+`.latexmkrc` file. It is important to know that command line arguments have
+priority, so one may want to use custom options if one wants to specify
+particular things in a configuration file.
 
 A particular set of options are very convenient for a good coupling between
 `latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`.  These options
@@ -2164,8 +2179,8 @@ can be used to specify commands that are run by `latexmk` before and after
 compilation.  This is used by |vimtex| to achieve callbacks after compilation
 has finished with something like this: >
 
-  $success_cmd = "gvim --remote-expr 'vimtex#latexmk#callback(1)'";
-  $failure_cmd = "gvim --remote-expr 'vimtex#latexmk#callback(0)'";
+  $success_cmd = "gvim --remote-expr 'vimtex#compiler#callback(1)'";
+  $failure_cmd = "gvim --remote-expr 'vimtex#compiler#callback(0)'";
 
 Another neat way to use this is to use `xdotool` to change the window title of
 the viewer to indicate the compilation status: >
@@ -2186,7 +2201,7 @@ Note: More info on `xdotool` here: http://www.semicomplete.com/projects/xdotool.
 
 ------------------------------------------------------------------------------
 Lacheck~
-                                                       *vimtex-latexmk-lacheck*
+                                                               *vimtex-lacheck*
 
 After compilation of a LaTeX document, the log file will contain errors that
 are parsed by |vimtex| as explained above.  However, there are syntax checkers

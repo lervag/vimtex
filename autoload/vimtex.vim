@@ -20,7 +20,6 @@ endfunction
 
 " }}}1
 
-
 function! s:check_version() " {{{1
   if get(g:, 'vimtex_disable_version_warning', 0)
     return
@@ -34,6 +33,12 @@ endfunction
 " }}}1
 
 function! s:init_options() " {{{1
+  call s:init_option('vimtex_compiler_enabled', 1)
+  call s:init_option('vimtex_compiler_method', 'latexmk')
+  call s:init_option('vimtex_compiler_progname',
+        \ get(v:, 'progpath', get(v:, 'progname')))
+  call s:init_option('vimtex_compiler_callback_hooks', [])
+
   call s:init_option('vimtex_complete_enabled', 1)
   call s:init_option('vimtex_complete_close_braces', 0)
   call s:init_option('vimtex_complete_recursive_bib', 0)
@@ -161,17 +166,6 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_motion_enabled', 1)
 
   call s:init_option('vimtex_labels_enabled', 1)
-
-  call s:init_option('vimtex_latexmk_enabled', 1)
-  call s:init_option('vimtex_latexmk_build_dir', '')
-  call s:init_option('vimtex_latexmk_progname',
-        \ get(v:, 'progpath', get(v:, 'progname')))
-  call s:init_option('vimtex_latexmk_callback_hooks', [])
-  call s:init_option('vimtex_latexmk_background', 0)
-  call s:init_option('vimtex_latexmk_callback', 1)
-  call s:init_option('vimtex_latexmk_continuous', 1)
-  call s:init_option('vimtex_latexmk_options',
-        \ '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode')
 
   call s:init_option('vimtex_quickfix_autojump', '0')
   call s:init_option('vimtex_quickfix_mode', '2')
@@ -346,7 +340,7 @@ function! s:init_default_mappings() " {{{1
   call s:map('x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
-  if get(g:, 'vimtex_latexmk_enabled', 0)
+  if get(g:, 'vimtex_compiler_enabled', 0)
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile-toggle)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
     call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
@@ -440,11 +434,12 @@ function! s:filename_changed_post() " {{{1
           \ "\n  Old filename: ", ['VimtexInfo', s:filename_old],
           \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base]]
 
-    if b:vimtex.pid
+    if has_key(b:vimtex, 'compiler')
+          \ && b:vimtex.compiler.is_running()
       let message += ["\n  latexmk process: ",
             \ ['VimtexInfo', b:vimtex.pid],
             \ ['VimtexWarning', ' killed!']]
-      call vimtex#latexmk#stop()
+      call vimtex#compiler#stop()
     endif
 
     " Update viewer output file names

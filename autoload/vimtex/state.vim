@@ -24,7 +24,7 @@ function! vimtex#state#init() " {{{1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
 
     call vimtex#view#init_state(b:vimtex)
-    call vimtex#latexmk#init_state(b:vimtex)
+    call vimtex#compiler#init_state(b:vimtex)
   endif
 endfunction
 
@@ -42,7 +42,7 @@ function! vimtex#state#init_local() " {{{1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
 
     call vimtex#view#init_state(l:vimtex)
-    call vimtex#latexmk#init_state(l:vimtex)
+    call vimtex#compiler#init_state(l:vimtex)
   endif
 
   let b:vimtex_local = {
@@ -428,9 +428,9 @@ endfunction
 " }}}1
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
   " First check build dir (latexmk -output_directory option)
-  if get(g:, 'vimtex_latexmk_build_dir', '') !=# ''
-    let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
-    if g:vimtex_latexmk_build_dir[0] !=# '/'
+  if !empty(get(get(self, 'compiler', {}), 'build_dir', ''))
+    let cand = self.compiler.build_dir . '/' . self.name . '.' . a:ext
+    if self.compiler.build_dir[0] !=# '/'
       let cand = self.root . '/' . cand
     endif
     if a:0 > 0 || filereadable(cand)

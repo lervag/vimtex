@@ -68,13 +68,13 @@ function! s:process.run() abort dict " {{{1
 
   " Run the command
   if self.use_system
-    if self.silent
+    if self.silent && self.background
       silent call system(l:cmd)
     else
       call system(l:cmd)
     endif
   else
-    if self.silent
+    if self.silent && self.background
       silent execute '!' . l:cmd
     else
       execute '!' . l:cmd

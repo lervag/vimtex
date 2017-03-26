@@ -75,7 +75,7 @@ function! s:general.latexmk_append_argument() dict " {{{1
       let l:option .= substitute(g:vimtex_view_general_options_latexmk,
             \                    '@line', line('.'), 'g')
     endif
-    return vimtex#latexmk#add_option('pdf_previewer', l:option)
+    return vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:option)
   endif
 endfunction
 

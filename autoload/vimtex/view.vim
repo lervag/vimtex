@@ -41,11 +41,11 @@ function! vimtex#view#init_state(state) " {{{1
   let l:v = a:state.viewer
 
   "
-  " Add latexmk callback to callback hooks (if it exists)
+  " Add compiler callback to callback hooks (if it exists)
   "
   if exists('*l:v.compiler_callback')
-    call add(g:vimtex_latexmk_callback_hooks,
-          \ 'b:vimtex.viewer.latexmk_callback')
+    call add(g:vimtex_compiler_callback_hooks,
+          \ 'b:vimtex.viewer.compiler_callback')
   endif
 
   "
