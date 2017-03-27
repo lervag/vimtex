@@ -5,33 +5,25 @@
 "
 
 function! vimtex#parser#tex(file, ...) " {{{1
-  let s:prev_parsed = ''
-  return s:parser(a:file, extend({
-        \   'detailed' : 1,
-        \   'input_re' : s:input_line_tex,
-        \   'input_parser' : 's:input_line_parser_tex',
-        \ },
-        \ a:0 > 0 ? a:1 : {}))
+  let l:parser = s:parser.new(a:0 > 0 ? a:1 : {})
+  return l:parser.parse(a:file)
 endfunction
 
 " }}}1
 function! vimtex#parser#aux(file, ...) " {{{1
-  let s:prev_parsed = ''
-  return s:parser(a:file, extend({
-        \   'detailed' : 0,
-        \   'input_re' : s:input_line_aux,
-        \   'input_parser' : 's:input_line_parser_aux',
-        \ },
-        \ a:0 > 0 ? a:1 : {}))
+  let l:options = a:0 > 0 ? a:1 : {}
+  call extend(l:options, {
+        \ 'detailed' : 0,
+        \ 'type' : 'aux',
+        \}, 'keep')
+  let l:parser = s:parser.new(l:options)
+  return l:parser.parse(a:file)
 endfunction
 
 " }}}1
 function! vimtex#parser#get_externalfiles() " {{{1
-  let l:preamble = s:parser(b:vimtex.tex, {
-        \ 're_stop' : '\\begin{document}',
-        \ 'input_re' : s:input_line_tex,
-        \ 'input_parser' : 's:input_line_parser_tex',
-        \ })
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex,
+        \ {'re_stop' : '\\begin{document}'})
 
   let l:result = []
   for l:line in filter(l:preamble, 'v:val =~# ''\\externaldocument''')
@@ -118,36 +110,64 @@ endfunction
 
 " }}}1
 
-"
-" Define the main parser function
-"
-function! s:parser(file, opts) " {{{1
-  if !filereadable(a:file) || s:prev_parsed ==# a:file
+let s:parser = {
+      \ 'detailed' : 1,
+      \ 'prev_parsed' : '',
+      \ 'root' : '',
+      \ 'finished' : 0,
+      \ 'type' : 'tex',
+      \ 'input_re_tex' : '\v^\s*\\%(' . join([
+      \   'input',
+      \   'include',
+      \   '%(sub)?import',
+      \   '%(sub)?%(input|include)from',
+      \   'subfile',
+      \ ], '|') . ')\s*\{',
+      \ 'input_re_aux' : '\\@input{',
+      \}
+
+function! s:parser.new(opts) abort dict " {{{1
+  let l:parser = extend(deepcopy(self), a:opts)
+
+  if empty(l:parser.root) && exists('b:vimtex.root')
+    let l:parser.root = b:vimtex.root
+  endif
+
+  let l:parser.input_re = get(l:parser, 'input_re_' . l:parser.type)
+  let l:parser.input_parser = get(l:parser, 'input_line_parser_' . l:parser.type)
+
+  unlet l:parser.new
+  return l:parser
+endfunction
+
+" }}}1
+function! s:parser.parse(file) abort dict " {{{1
+  if !filereadable(a:file) || self.prev_parsed ==# a:file
     return []
   endif
-  let s:prev_parsed = a:file
+  let self.prev_parsed = a:file
 
   let l:parsed = []
   let l:lnum = 0
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if get(a:opts, 'finished', 0)
+    if self.finished
       break
     endif
 
-    if has_key(a:opts, 're_stop') && l:line =~# a:opts.re_stop
-      let a:opts.finished = 1
+    if has_key(self, 're_stop') && l:line =~# self.re_stop
+      let self.finished = 1
       break
     endif
 
-    if l:line =~# a:opts.input_re
-      let l:file = call(a:opts.input_parser, [l:line, a:file, a:opts.input_re])
-      call extend(l:parsed, s:parser(l:file, a:opts))
+    if l:line =~# self.input_re
+      let l:file = self.input_parser(l:line, a:file, self.input_re)
+      call extend(l:parsed, self.parse(l:file))
       continue
     endif
 
-    if get(a:opts, 'detailed', 0)
+    if self.detailed
       call add(l:parsed, [a:file, l:lnum, l:line])
     else
       call add(l:parsed, l:line)
@@ -162,17 +182,16 @@ endfunction
 "
 " Input line parsers
 "
-function! s:input_line_parser_tex(line, file, re) " {{{1
+function! s:parser.input_line_parser_tex(line, file, re) abort dict " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
   " Handle import package commands
   let l:subimport = 0
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
-    let l:candidate = s:input_line_parser_tex(
+    let l:candidate = self.input_parser(
           \ substitute(l:file, '\\\w*\s*{[^{}]*}\s*', '', ''),
-          \ a:file,
-          \ '\v^\s*\{')
+          \ a:file, '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
 
     " Handle relative paths
@@ -195,7 +214,8 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
 
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = (l:subimport ? fnamemodify(a:file, ':h') : b:vimtex.root) . '/' . l:file
+    let l:file = (l:subimport ? fnamemodify(a:file, ':h') : self.root)
+          \ . '/' . l:file
   endif
 
   " Only return filename if it is readable
@@ -203,7 +223,7 @@ function! s:input_line_parser_tex(line, file, re) " {{{1
 endfunction
 
 " }}}1
-function! s:input_line_parser_aux(line, file, re) " {{{1
+function! s:parser.input_line_parser_aux(line, file, re) abort dict " {{{1
   let l:file = matchstr(a:line, a:re . '\zs[^}]\+\ze}')
 
   " Remove extension to simplify the parsing (e.g. for "my file name".aux)
@@ -222,21 +242,6 @@ function! s:input_line_parser_aux(line, file, re) " {{{1
   " Only return filename if it is readable
   return filereadable(l:file) ? l:file : ''
 endfunction
-
-" }}}1
-
-
-" {{{1 Initialize module
-
-let s:input_line_tex = '\v^\s*\\%(' . join([
-      \ 'input',
-      \ 'include',
-      \ '%(sub)?import',
-      \ '%(sub)?%(input|include)from',
-      \ 'subfile',
-      \ ], '|') . ')\s*\{'
-
-let s:input_line_aux = '\\@input{'
 
 " }}}1
 
