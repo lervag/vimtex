@@ -400,21 +400,6 @@ Options~
 
   Default value: Undefined.
 
-*g:vimtex_disable_recursive_main_file_detection*
-  In rare cases, the recursive method of finding the main file in multi file
-  projects may be slow. This might happen for instance when there are _very_
-  many tex files in the directory tree that is searched. In such cases, one
-  may disable the recursive method by setting this variable to a nonzero
-  value.
-
-  Default value: 0
-
-*g:vimtex_disable_version_warning*
-  |vimtex| will warn you if you are using an unsupported version of Vim. This
-  warning may be disabled by setting this option to a nonzero value.
-
-  Default value: Undefined.
-
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
 
@@ -527,10 +512,25 @@ Options~
 
   Default value: 500
 
-*g:vimtex_format_enabled*
-  If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
-  comments. That is, if it is enabled, then comments at end of lines will not
-  be joined with the |gq| command.
+*g:vimtex_disable_recursive_main_file_detection*
+  In rare cases, the recursive method of finding the main file in multi file
+  projects may be slow. This might happen for instance when there are _very_
+  many tex files in the directory tree that is searched. In such cases, one
+  may disable the recursive method by setting this variable to a nonzero
+  value.
+
+  Default value: 0
+
+*g:vimtex_disable_version_warning*
+  |vimtex| will warn you if you are using an unsupported version of Vim. This
+  warning may be disabled by setting this option to a nonzero value.
+
+  Default value: Undefined.
+
+*g:vimtex_echo_ignore_wait*
+  If enabled, then |vimtex| will remove warning messages faster. This is not
+  recommended, since the messages are intended to help fix problems one may
+  have with vimtex configuration.
 
   Default value: 0
 
@@ -669,6 +669,13 @@ Options~
         \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
         \}
 
+*g:vimtex_format_enabled*
+  If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
+  comments. That is, if it is enabled, then comments at end of lines will not
+  be joined with the |gq| command.
+
+  Default value: 0
+
 *g:vimtex_imaps_enabled*
   Use this option to disable/enable the insert mode mappings.
 
@@ -691,8 +698,7 @@ Options~
   The list of mappings to generate on start up. The list of activated mappings
   can be viewed with |VimtexImapsList|.
 
-  Default value: Complicated, please see the source file for exact value:
-                 `autoload/vimtex/imaps.vim`
+  Default value: See `autoload/vimtex.vim` (it's a long list)
 
 *g:vimtex_indent_enabled*
   Use this option to disable/enable |vimtex| indentation.
@@ -747,56 +753,6 @@ Options~
 
   Default value: 30
 
-*g:vimtex_labels_enabled*
-  Use this option to disable/enable table of labels.
-
-  Default value: 1
-
-*g:vimtex_toc_enabled*
-  Use this option to disable/enable table of contents (ToC).
-
-  Default value: 1
-
-*g:vimtex_toc_fold*
-  Turn on folding of ToC entries.
-
-  Default value: 0
-
-*g:vimtex_toc_fold_levels*
-  This option controls the number of fold levels that will be used if the
-  folding of the ToC is enabled.
-
-  Default value: 1
-
-*g:vimtex_toc_show_preamble*
-  Whether to include the preamble in the ToC.
-
-  Default value: 1
-
-*g:vimtex_toc_show_numbers*
-  Set whether or not to show section numbers in ToC.
-
-  Note: The numbers may also be toggled inside the ToC window with the `s`
-        keybinding.
-
-  Default value: 1
-
-*g:vimtex_toc_number_width*
-  Set the display width of numbers in the ToC.  If it is set to 0, then the
-  width is set based on the section depth, see |g:vimtex_toc_secnumdepth|.
-
-  Default value: 0
-
-*g:vimtex_toc_secnumdepth*
-  Define the number of section levels to display.  Set level corresponding to
-  the desired latex variable `secnumdepth`.  For more info on `secnumdepth`,
-  see http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure.
-
-  Note: The variable may be updated inside the ToC window with the mappings
-        `+` and `-`.
-
-  Default value: 3
-
 *g:vimtex_mappings_enabled*
   Control whether or not to load the default mappings.
 
@@ -815,6 +771,11 @@ Options~
         keep |matchparen| activated, which matches delimiters listed in
         'matchpairs'. The |vimtex| specific version will also match LaTeX
         specific delimiters, which is not possible with |matchparen|.
+
+  Default value: 1
+
+*g:vimtex_labels_enabled*
+  Use this option to disable/enable table of labels.
 
   Default value: 1
 
@@ -995,6 +956,45 @@ Options~
 
   Default value: 1
 
+*g:vimtex_syntax_minted*
+  A list that contains dictionaries for each supported language.  A language
+  dictionary should be something similar to the following: >
+
+    {
+      'lang'    : NAME,
+      'syntax'  : SYNTAX-FILE-NAME,
+      'ignored' : IGNORED-GROUPS
+    }
+<
+  If the `syntax` entry is not present, then the `lang` entry is used as name of
+  the syntax file.  The `ignored` entry is also optional, and is used to name
+  syntax groups to ignore in the minted region.
+
+  Default value: []
+
+  Example for some languages: >
+
+    let g:vimtex_syntax_minted = [
+          \ {
+          \   'lang' : 'c',
+          \ },
+          \ {
+          \   'lang' : 'cpp',
+          \   'environments' : ['cppcode', 'cppcode_test'],
+          \ },
+          \ {
+          \   'lang' : 'csharp',
+          \   'syntax' : 'cs'
+          \ },
+          \ {
+          \   'lang' : 'python',
+          \   'ignore' : [
+          \     'pythonEscape',
+          \     'pythonBEscape',
+          \     ],
+          \ }
+          \]
+
 *g:vimtex_text_obj_enabled*
   Use this option to disable the text object mappings.
 
@@ -1007,6 +1007,51 @@ Options~
 
   Default value: ['d', 'y']
 
+*g:vimtex_toc_enabled*
+  Use this option to disable/enable table of contents (ToC).
+
+  Default value: 1
+
+*g:vimtex_toc_fold*
+  Turn on folding of ToC entries.
+
+  Default value: 0
+
+*g:vimtex_toc_fold_levels*
+  This option controls the number of fold levels that will be used if the
+  folding of the ToC is enabled.
+
+  Default value: 1
+
+*g:vimtex_toc_show_preamble*
+  Whether to include the preamble in the ToC.
+
+  Default value: 1
+
+*g:vimtex_toc_show_numbers*
+  Set whether or not to show section numbers in ToC.
+
+  Note: The numbers may also be toggled inside the ToC window with the `s`
+        keybinding.
+
+  Default value: 1
+
+*g:vimtex_toc_number_width*
+  Set the display width of numbers in the ToC.  If it is set to 0, then the
+  width is set based on the section depth, see |g:vimtex_toc_secnumdepth|.
+
+  Default value: 0
+
+*g:vimtex_toc_secnumdepth*
+  Define the number of section levels to display.  Set level corresponding to
+  the desired latex variable `secnumdepth`.  For more info on `secnumdepth`,
+  see http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure.
+
+  Note: The variable may be updated inside the ToC window with the mappings
+        `+` and `-`.
+
+  Default value: 3
+
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
 
@@ -1017,25 +1062,6 @@ Options~
   in continuous mode.  This is the default behaviour of `latexmk`.
 
   Default value: 1
-
-*g:vimtex_view_use_temp_files*
-  If enabled, this will copy output files to a corresponding set of files
-  with `_vimtex` prepended to the name. If one combines this with the callback
-  feature, this may provide a very convenient way to avoid that the pdf
-  becomes unavailable during compilation, as it will only update the viewer
-  outut file after a successful compilation.
-
-  Note: This will disable the viewer from the latexmk end. That is, if this
-        option is enabled, opening and updating the pdf viewer will have to be
-        done by the user or by vimtex.
-
-  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
-        these viewers should update automatically after the pdf is updated.
-        For general viewers, one has to create a callback function and connect
-        it through |g:vimtex_view_general_callback|, and then use this
-        callback to update the viewer.
-
-  Default value: 0
 
 *g:vimtex_view_method*
   Set the viewer method.  The general viewer |vimtex_viewer_general| defines
@@ -1170,6 +1196,25 @@ Options~
             e.g. on OpenSUSE, cf. https://github.com/lervag/vimtex/issues/384.
             A workaround is to build Zathura from source manually.
 
+*g:vimtex_view_use_temp_files*
+  If enabled, this will copy output files to a corresponding set of files
+  with `_vimtex` prepended to the name. If one combines this with the callback
+  feature, this may provide a very convenient way to avoid that the pdf
+  becomes unavailable during compilation, as it will only update the viewer
+  outut file after a successful compilation.
+
+  Note: This will disable the viewer from the latexmk end. That is, if this
+        option is enabled, opening and updating the pdf viewer will have to be
+        done by the user or by vimtex.
+
+  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
+        these viewers should update automatically after the pdf is updated.
+        For general viewers, one has to create a callback function and connect
+        it through |g:vimtex_view_general_callback|, and then use this
+        callback to update the viewer.
+
+  Default value: 0
+
 *g:vimtex_view_general_viewer*
   Use generic viewer application, see |vimtex_viewer_general|.
 
@@ -1188,6 +1233,14 @@ Options~
 
   Default value: '@pdf'
 
+*g:vimtex_view_general_options_latexmk*
+  Set options that are passed on to `latexmk` for the specified general
+  viewer, see |vimtex_viewer_general|.  This allows to send options that
+  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|. Only the
+  `@line` escape is expanded.
+
+  Default value: ''
+
 *g:vimtex_view_general_callback*
   Sets the name of a function that is called within |vimtex#latexmk#callback|
   after compilation has finished. The function does not take any arguments,
@@ -1198,21 +1251,8 @@ Options~
 
   Default value: ''
 
-*g:vimtex_view_general_options_latexmk*
-  Set options that are passed on to `latexmk` for the specified general
-  viewer, see |vimtex_viewer_general|.  This allows to send options that
-  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|. Only the
-  `@line` escape is expanded.
-
-  Default value: ''
-
 *g:vimtex_view_mupdf_options*
   Set options for mupdf (|vimtex_viewer_mupdf|).
-
-  Default value: ''
-
-*g:vimtex_view_zathura_options*
-  Set options for zathura (|vimtex_viewer_zathura|).
 
   Default value: ''
 
@@ -1222,44 +1262,10 @@ Options~
 
   Default value: ''
 
-*g:vimtex_syntax_minted*
-  A list that contains dictionaries for each supported language.  A language
-  dictionary should be something similar to the following: >
+*g:vimtex_view_zathura_options*
+  Set options for zathura (|vimtex_viewer_zathura|).
 
-    {
-      'lang'    : NAME,
-      'syntax'  : SYNTAX-FILE-NAME,
-      'ignored' : IGNORED-GROUPS
-    }
-<
-  If the `syntax` entry is not present, then the `lang` entry is used as name of
-  the syntax file.  The `ignored` entry is also optional, and is used to name
-  syntax groups to ignore in the minted region.
-
-  Default value: []
-
-  Example for some languages: >
-
-    let g:vimtex_syntax_minted = [
-          \ {
-          \   'lang' : 'c',
-          \ },
-          \ {
-          \   'lang' : 'cpp',
-          \   'environments' : ['cppcode', 'cppcode_test'],
-          \ },
-          \ {
-          \   'lang' : 'csharp',
-          \   'syntax' : 'cs'
-          \ },
-          \ {
-          \   'lang' : 'python',
-          \   'ignore' : [
-          \     'pythonEscape',
-          \     'pythonBEscape',
-          \     ],
-          \ }
-          \]
+  Default value: ''
 
 ------------------------------------------------------------------------------
 Commands~
