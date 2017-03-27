@@ -66,17 +66,17 @@ function! vimtex#util#execute(exe) " {{{1
     set shellquote& shellpipe& shellredir& shellslash&
   endif
 
-  if system
-    if silent
+  if exists('*system')
+    if exists(':silent')
       silent call system(cmd)
     else
       call system(cmd)
     endif
   else
-    if silent
-      silent execute '!' . cmd
+    if exists(':silent')
+      silent execute '! sh -c ' . shellescape(cmd, 1)
     else
-      execute '!' . cmd
+      execute '! sh -c ' . shellescape(cmd, 1)
     endif
 
     if !has('gui_running')
