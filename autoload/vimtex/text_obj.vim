@@ -114,13 +114,4 @@ endfunction
 
 " }}}1
 
-
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_text_obj_enabled', 1)
-call vimtex#util#set_default('g:vimtex_text_obj_linewise_operators',
-      \ ['d', 'y'])
-
-" }}}1
-
 " vim: fdm=marker sw=2

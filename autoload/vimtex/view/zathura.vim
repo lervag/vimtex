@@ -111,11 +111,4 @@ endfunction
 
 " }}}1
 
-
-" {{{1 Module options
-
-call vimtex#util#set_default('g:vimtex_view_zathura_options', '')
-
-" }}}1
-
 " vim: fdm=marker sw=2

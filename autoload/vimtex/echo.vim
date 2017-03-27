@@ -4,11 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#echo#init_buffer() " {{{1
-endfunction
-
-" }}}1
-
 function! vimtex#echo#wait() " {{{1
   if get(g:, 'vimtex_echo_ignore_wait') | return | endif
 
@@ -166,21 +161,6 @@ function! s:pprint_list(list, indent, title) abort " {{{1
     endfor
   endif
 endfunction
-
-" }}}1
-
-
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_echo_ignore_wait', 0)
-
-" }}}1
-" {{{1 Initialize module
-
-call vimtex#util#set_highlight('VimtexMsg', 'ModeMsg')
-call vimtex#util#set_highlight('VimtexSuccess', 'Statement')
-call vimtex#util#set_highlight('VimtexWarning', 'WarningMsg')
-call vimtex#util#set_highlight('VimtexInfo', 'Question')
 
 " }}}1
 

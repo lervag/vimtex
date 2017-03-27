@@ -182,12 +182,4 @@ endfunction
 
 " }}}1
 
-
-" {{{1 Module options
-
-call vimtex#util#set_default('g:vimtex_view_mupdf_options', '')
-call vimtex#util#set_default('g:vimtex_view_mupdf_send_keys', '')
-
-" }}}1
-
 " vim: fdm=marker sw=2

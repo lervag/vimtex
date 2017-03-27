@@ -474,46 +474,6 @@ endfunction
 " }}}1
 
 
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_fold_enabled', 0)
-call vimtex#util#set_default('g:vimtex_fold_manual', 0)
-call vimtex#util#set_default('g:vimtex_fold_comments', 0)
-call vimtex#util#set_default('g:vimtex_fold_levelmarker', '*')
-call vimtex#util#set_default('g:vimtex_fold_preamble', 1)
-call vimtex#util#set_default('g:vimtex_fold_envs', 1)
-call vimtex#util#set_default('g:vimtex_fold_markers', 1)
-call vimtex#util#set_default('g:vimtex_fold_parts',
-      \ [
-      \   'part',
-      \   'appendix',
-      \   'frontmatter',
-      \   'mainmatter',
-      \   'backmatter',
-      \ ])
-call vimtex#util#set_default('g:vimtex_fold_sections',
-      \ [
-      \   'chapter',
-      \   'section',
-      \   'subsection',
-      \   'subsubsection',
-      \ ])
-call vimtex#util#set_default('g:vimtex_fold_commands_default', {
-      \ 'hypersetup' : 'single',
-      \ 'tikzset' : 'single',
-      \ 'usepackage' : 'single_opt',
-      \ 'includepdf' : 'single_opt',
-      \ '%(re)?new%(command|environment)' : 'multi',
-      \ 'providecommand' : 'multi',
-      \ 'presetkeys' : 'multi',
-      \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
-      \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
-      \})
-
-" Disable manual mode in vimdiff
-let g:vimtex_fold_manual = &diff ? 0 : g:vimtex_fold_manual
-
-" }}}1
 " {{{1 Initialize module
 
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'

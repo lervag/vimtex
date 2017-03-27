@@ -10,11 +10,7 @@ endif
 let b:did_indent = 1
 let b:did_vimtex_indent = 1
 
-call vimtex#util#set_default('g:vimtex_indent_enabled', 1)
-if !g:vimtex_indent_enabled | finish | endif
-call vimtex#util#set_default('g:vimtex_indent_ignored_envs', [
-      \ 'document',
-      \])
+if !get(g:, 'vimtex_indent_enabled', 1) | finish | endif
 
 let s:cpo_save = &cpoptions
 set cpoptions&vim
@@ -102,7 +98,8 @@ function! s:indent_envs(cur, prev) " {{{1
   return l:ind
 endfunction
 
-let s:envs_ignored = '\v' . join(g:vimtex_indent_ignored_envs, '|')
+let s:envs_ignored = '\v'
+      \ . join(get(g:, 'vimtex_indent_ignored_envs', ['document']), '|')
 let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
 let s:envs_item = '^\s*\\item'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'

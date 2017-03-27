@@ -168,12 +168,6 @@ endfunction
 " }}}1
 
 
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_motion_enabled', 1)
-call vimtex#util#set_default('g:vimtex_motion_matchparen', 1)
-
-" }}}1
 " {{{1 Initialize module
 
 " Pattern to match section/chapter/...

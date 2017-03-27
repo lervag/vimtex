@@ -706,13 +706,6 @@ let s:tex2unicode_list = map([
 " }}}1
 
 
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_complete_enabled', 1)
-call vimtex#util#set_default('g:vimtex_complete_close_braces', 0)
-call vimtex#util#set_default('g:vimtex_complete_recursive_bib', 0)
-
-" }}}1
 " {{{1 Initialize module
 
 let s:completers = map(

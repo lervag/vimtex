@@ -114,22 +114,10 @@ endfunction
 
 " }}}1
 
-" {{{1 Initialize options
 
-call vimtex#util#set_default('g:vimtex_labels_enabled', 1)
-
-" }}}1
 " {{{1 Initialize module
 
 let s:name = 'Table of labels (vimtex)'
-
-call vimtex#util#set_highlight('VimtexLabelsHelp', 'helpVim')
-call vimtex#util#set_highlight('VimtexLabelsLine', 'Todo')
-call vimtex#util#set_highlight('VimtexLabelsChap', 'PreProc')
-call vimtex#util#set_highlight('VimtexLabelsEq', 'Statement')
-call vimtex#util#set_highlight('VimtexLabelsFig', 'Identifier')
-call vimtex#util#set_highlight('VimtexLabelsSec', 'Type')
-call vimtex#util#set_highlight('VimtexLabelsTab', 'String')
 
 " }}}1
 

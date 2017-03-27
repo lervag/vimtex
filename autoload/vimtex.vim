@@ -6,6 +6,10 @@
 
 function! vimtex#init() " {{{1
   call s:check_version()
+
+  call s:init_options()
+  call s:init_highlights()
+
   "
   " First initialize buffer options and construct (if necessary) the vimtex
   " data blob.
@@ -73,6 +77,219 @@ function! s:check_version() " {{{1
 endfunction
 
 " }}}1
+
+function! s:init_options() " {{{1
+  call s:init_option('vimtex_complete_enabled', 1)
+  call s:init_option('vimtex_complete_close_braces', 0)
+  call s:init_option('vimtex_complete_recursive_bib', 0)
+
+  call s:init_option('vimtex_echo_ignore_wait', 0)
+
+  call s:init_option('vimtex_fold_enabled', 0)
+  if &diff
+    let g:vimtex_fold_manual = 0
+  else
+    call s:init_option('vimtex_fold_manual', 0)
+  endif
+  call s:init_option('vimtex_fold_comments', 0)
+  call s:init_option('vimtex_fold_levelmarker', '*')
+  call s:init_option('vimtex_fold_preamble', 1)
+  call s:init_option('vimtex_fold_envs', 1)
+  call s:init_option('vimtex_fold_markers', 1)
+  call s:init_option('vimtex_fold_parts',
+        \ [
+        \   'part',
+        \   'appendix',
+        \   'frontmatter',
+        \   'mainmatter',
+        \   'backmatter',
+        \ ])
+  call s:init_option('vimtex_fold_sections',
+        \ [
+        \   'chapter',
+        \   'section',
+        \   'subsection',
+        \   'subsubsection',
+        \ ])
+  call s:init_option('vimtex_fold_commands_default', {
+        \ 'hypersetup' : 'single',
+        \ 'tikzset' : 'single',
+        \ 'usepackage' : 'single_opt',
+        \ 'includepdf' : 'single_opt',
+        \ '%(re)?new%(command|environment)' : 'multi',
+        \ 'providecommand' : 'multi',
+        \ 'presetkeys' : 'multi',
+        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
+        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \})
+
+  call s:init_option('vimtex_format_enabled', 0)
+
+  call s:init_option('vimtex_imaps_enabled', 1)
+  call s:init_option('vimtex_imaps_leader', '`')
+  call s:init_option('vimtex_imaps_disabled', [])
+  call s:init_option('vimtex_imaps_list', [
+        \ { 'lhs' : '0',  'rhs' : '\emptyset' },
+        \ { 'lhs' : '6',  'rhs' : '\partial' },
+        \ { 'lhs' : '8',  'rhs' : '\infty' },
+        \ { 'lhs' : '=',  'rhs' : '\equiv' },
+        \ { 'lhs' : '\',  'rhs' : '\setminus' },
+        \ { 'lhs' : '.',  'rhs' : '\cdot' },
+        \ { 'lhs' : '*',  'rhs' : '\times' },
+        \ { 'lhs' : '<',  'rhs' : '\langle' },
+        \ { 'lhs' : '>',  'rhs' : '\rangle' },
+        \ { 'lhs' : '<=', 'rhs' : '\leq' },
+        \ { 'lhs' : '>=', 'rhs' : '\geq' },
+        \ { 'lhs' : '[',  'rhs' : '\subseteq' },
+        \ { 'lhs' : ']',  'rhs' : '\supseteq' },
+        \ { 'lhs' : '(',  'rhs' : '\subset' },
+        \ { 'lhs' : ')',  'rhs' : '\supset' },
+        \ { 'lhs' : 'A',  'rhs' : '\forall' },
+        \ { 'lhs' : 'E',  'rhs' : '\exists' },
+        \ { 'lhs' : 'qj', 'rhs' : '\downarrow' },
+        \ { 'lhs' : 'qJ', 'rhs' : '\Downarrow' },
+        \ { 'lhs' : 'qk', 'rhs' : '\uparrow' },
+        \ { 'lhs' : 'qK', 'rhs' : '\Uparrow' },
+        \ { 'lhs' : 'qh', 'rhs' : '\leftarrow' },
+        \ { 'lhs' : 'qH', 'rhs' : '\Leftarrow' },
+        \ { 'lhs' : 'ql', 'rhs' : '\rightarrow' },
+        \ { 'lhs' : 'qL', 'rhs' : '\Rightarrow' },
+        \ { 'lhs' : 'a',  'rhs' : '\alpha' },
+        \ { 'lhs' : 'b',  'rhs' : '\beta' },
+        \ { 'lhs' : 'c',  'rhs' : '\chi' },
+        \ { 'lhs' : 'd',  'rhs' : '\delta' },
+        \ { 'lhs' : 'e',  'rhs' : '\epsilon' },
+        \ { 'lhs' : 'f',  'rhs' : '\phi' },
+        \ { 'lhs' : 'g',  'rhs' : '\gamma' },
+        \ { 'lhs' : 'h',  'rhs' : '\eta' },
+        \ { 'lhs' : 'i',  'rhs' : '\iota' },
+        \ { 'lhs' : 'k',  'rhs' : '\kappa' },
+        \ { 'lhs' : 'l',  'rhs' : '\lambda' },
+        \ { 'lhs' : 'm',  'rhs' : '\mu' },
+        \ { 'lhs' : 'n',  'rhs' : '\nu' },
+        \ { 'lhs' : 'p',  'rhs' : '\pi' },
+        \ { 'lhs' : 'q',  'rhs' : '\theta' },
+        \ { 'lhs' : 'r',  'rhs' : '\rho' },
+        \ { 'lhs' : 's',  'rhs' : '\sigma' },
+        \ { 'lhs' : 't',  'rhs' : '\tau' },
+        \ { 'lhs' : 'y',  'rhs' : '\psi' },
+        \ { 'lhs' : 'u',  'rhs' : '\upsilon' },
+        \ { 'lhs' : 'w',  'rhs' : '\omega' },
+        \ { 'lhs' : 'z',  'rhs' : '\zeta' },
+        \ { 'lhs' : 'x',  'rhs' : '\xi' },
+        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
+        \ { 'lhs' : 'D',  'rhs' : '\Delta' },
+        \ { 'lhs' : 'F',  'rhs' : '\Phi' },
+        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
+        \ { 'lhs' : 'L',  'rhs' : '\Lambda' },
+        \ { 'lhs' : 'P',  'rhs' : '\Pi' },
+        \ { 'lhs' : 'Q',  'rhs' : '\Theta' },
+        \ { 'lhs' : 'S',  'rhs' : '\Sigma' },
+        \ { 'lhs' : 'U',  'rhs' : '\Upsilon' },
+        \ { 'lhs' : 'W',  'rhs' : '\Omega' },
+        \ { 'lhs' : 'X',  'rhs' : '\Xi' },
+        \ { 'lhs' : 'Y',  'rhs' : '\Psi' },
+        \ { 'lhs' : 've', 'rhs' : '\varepsilon' },
+        \ { 'lhs' : 'vf', 'rhs' : '\varphi' },
+        \ { 'lhs' : 'vk', 'rhs' : '\varkappa' },
+        \ { 'lhs' : 'vq', 'rhs' : '\vartheta' },
+        \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
+        \])
+
+  call s:init_option('vimtex_index_hide_line_numbers', 1)
+  call s:init_option('vimtex_index_resize', 0)
+  call s:init_option('vimtex_index_show_help', 1)
+  call s:init_option('vimtex_index_split_pos', 'vert leftabove')
+  call s:init_option('vimtex_index_split_width', 30)
+
+  call s:init_option('vimtex_motion_enabled', 1)
+  call s:init_option('vimtex_motion_matchparen', 1)
+
+  call s:init_option('vimtex_labels_enabled', 1)
+
+  call s:init_option('vimtex_latexmk_enabled', 1)
+  call s:init_option('vimtex_latexmk_build_dir', '')
+  call s:init_option('vimtex_latexmk_progname',
+        \ get(v:, 'progpath', get(v:, 'progname')))
+  call s:init_option('vimtex_latexmk_callback_hooks', [])
+  call s:init_option('vimtex_latexmk_background', 0)
+  call s:init_option('vimtex_latexmk_callback', 1)
+  call s:init_option('vimtex_latexmk_continuous', 1)
+  call s:init_option('vimtex_latexmk_options',
+        \ '-verbose -pdf -file-line-error -synctex=1 -interaction=nonstopmode')
+
+  call s:init_option('vimtex_quickfix_autojump', '0')
+  call s:init_option('vimtex_quickfix_mode', '2')
+  call s:init_option('vimtex_quickfix_open_on_warning', '1')
+
+  call s:init_option('vimtex_text_obj_enabled', 1)
+  call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])
+
+  call s:init_option('vimtex_toc_enabled', 1)
+  call s:init_option('vimtex_toc_fold', 0)
+  call s:init_option('vimtex_toc_fold_levels', 10)
+  call s:init_option('vimtex_toc_number_width', 0)
+  call s:init_option('vimtex_toc_secnumdepth', 3)
+  call s:init_option('vimtex_toc_show_numbers', 1)
+  call s:init_option('vimtex_toc_show_preamble', 1)
+
+  call s:init_option('vimtex_view_enabled', 1)
+  call s:init_option('vimtex_view_automatic', 1)
+  call s:init_option('vimtex_view_method', 'general')
+  call s:init_option('vimtex_view_use_temp_files', 0)
+  call s:init_option('vimtex_view_general_viewer', get({
+        \ 'linux' : 'xdg-open',
+        \ 'mac'   : 'open',
+        \}, vimtex#util#get_os(), ''))
+  call s:init_option('vimtex_view_general_options', '@pdf')
+  call s:init_option('vimtex_view_general_options_latexmk', '')
+  call s:init_option('vimtex_view_mupdf_options', '')
+  call s:init_option('vimtex_view_mupdf_send_keys', '')
+  call s:init_option('vimtex_view_zathura_options', '')
+endfunction
+
+" }}}1
+function! s:init_option(option, default) " {{{1
+  let l:option = 'g:' . a:option
+  if !exists(l:option)
+    let {l:option} = a:default
+  endif
+endfunction
+
+" }}}1
+function! s:init_highlights() " {{{1
+  for [l:name, l:target] in [
+        \ ['VimtexImapsArrow', 'Comment'],
+        \ ['VimtexImapsLhs', 'ModeMsg'],
+        \ ['VimtexImapsRhs', 'ModeMsg'],
+        \ ['VimtexImapsWrapper', 'Type'],
+        \ ['VimtexIndexHelp', 'helpVim'],
+        \ ['VimtexIndexLine', 'ModeMsg'],
+        \ ['VimtexInfo', 'Question'],
+        \ ['VimtexLabelsChap', 'PreProc'],
+        \ ['VimtexLabelsEq', 'Statement'],
+        \ ['VimtexLabelsFig', 'Identifier'],
+        \ ['VimtexLabelsHelp', 'helpVim'],
+        \ ['VimtexLabelsLine', 'Todo'],
+        \ ['VimtexLabelsSec', 'Type'],
+        \ ['VimtexLabelsTab', 'String'],
+        \ ['VimtexMsg', 'ModeMsg'],
+        \ ['VimtexSuccess', 'Statement'],
+        \ ['VimtexTocHelp', 'helpVim'],
+        \ ['VimtexTocNum', 'Number'],
+        \ ['VimtexTocSec0', 'Title'],
+        \ ['VimtexTocSec1', 'Normal'],
+        \ ['VimtexTocSec2', 'helpVim'],
+        \ ['VimtexTocSec3', 'NonText'],
+        \ ['VimtexTocSec4', 'Comment'],
+        \ ['VimtexTocTag', 'Directory'],
+        \ ['VimtexWarning', 'WarningMsg'],
+        \]
+    if !hlexists(l:name)
+      silent execute 'highlight default link' l:name l:target
+    endif
+  endfor
+endfunction
 
 function! s:init_buffer() " {{{1
   "

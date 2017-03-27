@@ -81,17 +81,4 @@ endfunction
 
 " }}}1
 
-
-" {{{1 Module options
-
-call vimtex#util#set_default_os_specific('g:vimtex_view_general_viewer',
-      \ {
-      \   'linux' : 'xdg-open',
-      \   'mac'   : 'open',
-      \ })
-call vimtex#util#set_default('g:vimtex_view_general_options', '@pdf')
-call vimtex#util#set_default('g:vimtex_view_general_options_latexmk', '')
-
-" }}}1
-
 " vim: fdm=marker sw=2

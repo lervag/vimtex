@@ -69,14 +69,4 @@ endfunction
 
 " }}}1
 
-
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_view_enabled', 1)
-call vimtex#util#set_default('g:vimtex_view_automatic', 1)
-call vimtex#util#set_default('g:vimtex_view_method', 'general')
-call vimtex#util#set_default('g:vimtex_view_use_temp_files', 0)
-
-" }}}1
-
 " vim: fdm=marker sw=2

@@ -169,26 +169,5 @@ function! vimtex#util#in_syntax(name, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#set_default(variable, default) " {{{1
-  if !exists(a:variable)
-    let {a:variable} = a:default
-  endif
-endfunction
-
-" }}}1
-function! vimtex#util#set_default_os_specific(variable, default) " {{{1
-  if !exists(a:variable)
-    let {a:variable} = get(a:default, vimtex#util#get_os(), '')
-  endif
-endfunction
-
-" }}}1
-function! vimtex#util#set_highlight(name, target) " {{{1
-  if !hlexists(a:name)
-    silent execute 'highlight default link' a:name a:target
-  endif
-endfunction
-
-" }}}1
 
 " vim: fdm=marker sw=2

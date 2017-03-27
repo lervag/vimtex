@@ -187,11 +187,6 @@ endfunction
 " }}}1
 
 
-" {{{1 Initialize options
-
-call vimtex#util#set_default('g:vimtex_format_enabled', 0)
-
-" }}}1
 " {{{1 Initialize module
 
 let s:border_beginning = '\v^\s*%(' . join([
