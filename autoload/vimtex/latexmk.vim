@@ -52,11 +52,11 @@ function! vimtex#latexmk#init_buffer() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#latexmk#init_state() " {{{1
+function! vimtex#latexmk#init_state(state) " {{{1
   if !g:vimtex_latexmk_enabled | return | endif
 
   " Initialize system PID
-  call s:latexmk_init_pid()
+  call s:latexmk_init_pid(a:state)
 endfunction
 
 " }}}1
@@ -579,11 +579,11 @@ function! s:latexmk_build_cmd_selected(fname) " {{{1
 endfunction
 
 " }}}1
-function! s:latexmk_init_pid() " {{{1
+function! s:latexmk_init_pid(state) " {{{1
   "
   " First see if the PID is already defined
   "
-  let b:vimtex.pid = get(b:vimtex, 'pid', 0)
+  let a:state.pid = get(a:state, 'pid', 0)
 
   "
   " Only search for PIDs if continuous mode is active
@@ -593,7 +593,7 @@ function! s:latexmk_init_pid() " {{{1
   "
   " If the PID is 0, then search for existing processes
   "
-  if b:vimtex.pid == 0
+  if a:state.pid == 0
     if has('win32')
       "
       " PASS - don't know how to do this on Windows yet.
@@ -604,10 +604,10 @@ function! s:latexmk_init_pid() " {{{1
       " Use pgrep combined with /proc/PID/cwd to search for existing process
       "
       for l:pid in split(system(
-            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . b:vimtex.base . '"'), "\n")
-        let path = resolve('/proc/' . l:pid . '/cwd') . '/' . b:vimtex.base
-        if path ==# b:vimtex.tex
-          let b:vimtex.pid = str2nr(l:pid)
+            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . a:state.base . '"'), "\n")
+        let path = resolve('/proc/' . l:pid . '/cwd') . '/' . a:state.base
+        if path ==# a:state.tex
+          let a:state.pid = str2nr(l:pid)
           return
         endif
       endfor

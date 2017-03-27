@@ -19,7 +19,7 @@ function! vimtex#state#toggle_main() " {{{1
     let b:vimtex_id = b:vimtex_local.active
           \ ? b:vimtex_local.sub_id
           \ : b:vimtex_local.main_id
-    let b:vimtex = g:vimtex_data[b:vimtex_id]
+    let b:vimtex = vimtex#state#get(b:vimtex_id)
 
     call vimtex#echo#status(['vimtex: ',
           \ ['Normal', 'Changed to `'],
@@ -59,9 +59,33 @@ function! vimtex#state#init() " {{{1
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
 
-    call vimtex#view#init_state()
-    call vimtex#latexmk#init_state()
+    call vimtex#view#init_state(b:vimtex)
+    call vimtex#latexmk#init_state(b:vimtex)
   endif
+endfunction
+
+" }}}1
+function! vimtex#state#init_local() " {{{1
+  let l:filename = expand('%:p')
+  if b:vimtex.tex ==# l:filename | return | endif
+
+  let l:vimtex_id = s:get_main_id(l:filename)
+
+  if l:vimtex_id < 0
+    let l:vimtex_id = s:vimtex_next_id
+    let l:vimtex = s:vimtex.new(l:filename)
+    let s:vimtex_next_id += 1
+    let s:vimtex_states[l:vimtex_id] = l:vimtex
+
+    call vimtex#view#init_state(l:vimtex)
+    call vimtex#latexmk#init_state(l:vimtex)
+  endif
+
+  let b:vimtex_local = {
+        \ 'active' : 0,
+        \ 'main_id' : b:vimtex_id,
+        \ 'sub_id' : l:vimtex_id,
+        \}
 endfunction
 
 " }}}1
@@ -293,37 +317,12 @@ function! s:vimtex.new(main) abort dict " {{{1
   call l:new.parse_preamble()
   call l:new.gather_sources()
 
-  let l:filename = expand('%:p')
-  if l:new.tex !=# l:filename
-    call l:new.new_local(l:filename)
-  endif
-
   unlet l:new.new
-  unlet l:new.new_local
-
   return l:new
 endfunction
 
 " }}}1
-function! s:vimtex.new_local(main) abort dict " {{{1
-  let l:vimtex_id = s:get_main_id(a:main)
 
-  if l:vimtex_id < 0
-    let l:vimtex_id = s:vimtex_next_id
-    let l:vimtex = s:vimtex.new(a:main)
-    let s:vimtex_next_id += 1
-    let s:vimtex_states[l:vimtex_id] = l:vimtex
-  endif
-
-  let b:vimtex_local = {
-        \ 'active' : 0,
-        \ 'main_id' : b:vimtex_id,
-        \ 'sub_id' : l:vimtex_id,
-        \}
-endfunction
-
-" }}}1
-"
 function! s:vimtex.parse_engine() abort dict " {{{1
   let l:engine_regex =
         \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'

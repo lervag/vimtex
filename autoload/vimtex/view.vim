@@ -23,12 +23,12 @@ function! vimtex#view#init_buffer() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#init_state() " {{{1
+function! vimtex#view#init_state(state) " {{{1
   if !g:vimtex_view_enabled | return | endif
-  if has_key(b:vimtex, 'viewer') | return | endif
+  if has_key(a:state, 'viewer') | return | endif
 
   try
-    let b:vimtex.viewer = vimtex#view#{g:vimtex_view_method}#new()
+    let a:state.viewer = vimtex#view#{g:vimtex_view_method}#new()
   catch /E117/
     call vimtex#echo#warning('viewer '
           \ . g:vimtex_view_method . ' does not exist!')
@@ -38,7 +38,7 @@ function! vimtex#view#init_state() " {{{1
   endtry
 
   " Make the following code more concise
-  let l:v = b:vimtex.viewer
+  let l:v = a:state.viewer
 
   "
   " Add latexmk callback to callback hooks (if it exists)

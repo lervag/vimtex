@@ -249,6 +249,7 @@ endfunction
 " }}}1
 function! s:init_state() " {{{1
   call vimtex#state#init()
+  call vimtex#state#init_local()
 endfunction
 
 " }}}1
