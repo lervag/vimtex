@@ -147,6 +147,13 @@ function! s:compiler.init_process() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.cleanup() abort dict " {{{1
+  if self.is_running()
+    call self.stop()
+  endif
+endfunction
+
+" }}}1
 function! s:compiler.start() abort dict " {{{1
   if self.is_running()
     call vimtex#echo#status(['latexmk compile: ',

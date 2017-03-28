@@ -87,6 +87,12 @@ function! vimtex#state#get(id) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#state#cleanup(id) " {{{1
+  let l:vimtex = s:vimtex_states[a:id]
+  call l:vimtex.cleanup()
+endfunction
+
+" }}}1
 
 function! s:get_main_id(main) " {{{1
   for [l:id, l:state] in items(s:vimtex_states)
@@ -321,6 +327,30 @@ function! s:vimtex.new(main) abort dict " {{{1
 
   unlet l:new.new
   return l:new
+endfunction
+
+" }}}1
+function! s:vimtex.cleanup() abort dict " {{{1
+  if exists('self.compiler.cleanup')
+    call self.compiler.cleanup()
+  endif
+
+  if exists('#User#VimtexEventQuit')
+    if exists('b:vimtex')
+      let b:vimtex_tmp = b:vimtex
+    endif
+    let b:vimtex = l:vimtex
+    doautocmd User VimtexEventQuit
+    if exists('b:vimtex_tmp')
+      let b:vimtex = b:vimtex_tmp
+      unlet b:vimtex_tmp
+    else
+      unlet b:vimtex
+    endif
+  endif
+
+  " Close quickfix window
+  cclose
 endfunction
 
 " }}}1

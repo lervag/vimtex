@@ -477,21 +477,7 @@ function! s:buffer_deleted(...) " {{{1
   " latex project
   "
   if l:count <= 1
-    let l:vimtex = vimtex#state#get(l:vimtex_id)
-
-    if exists('#User#VimtexEventQuit')
-      if exists('b:vimtex')
-        let b:vimtex_tmp = b:vimtex
-      endif
-      let b:vimtex = l:vimtex
-      doautocmd User VimtexEventQuit
-      if exists('b:vimtex_tmp')
-        let b:vimtex = b:vimtex_tmp
-        unlet b:vimtex_tmp
-      else
-        unlet b:vimtex
-      endif
-    endif
+    call vimtex#state#cleanup(l:vimtex_id)
   endif
 endfunction
 

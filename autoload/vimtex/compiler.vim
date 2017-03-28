@@ -399,28 +399,9 @@ endfunction
 
 if !g:vimtex_compiler_enabled | finish | endif
 
-"
-" Define functions/autocmds to clean up on exit
-"
-
-function! s:clean_on_quit() " {{{2
-  " Kill latexmk process if it exists
-  if b:vimtex.compiler.is_running()
-    call b:vimtex.compiler.stop()
-    call vimtex#echo#status(['latexmk compile: ',
-          \ ['VimtexSuccess', 'stopped (' . b:vimtex.base . ')']])
-  endif
-
-  " Close quickfix window
-  cclose
-endfunction
-
-" }}}2
-
 augroup vimtex_compiler
   autocmd!
   autocmd VimLeave * call vimtex#compiler#stop_all()
-  autocmd User VimtexEventQuit call s:clean_on_quit()
 augroup END
 
 "
