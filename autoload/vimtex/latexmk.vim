@@ -299,12 +299,13 @@ function! vimtex#latexmk#errors_inquire(...) " {{{1
   let log = a:0 > 0 ? a:1.log : b:vimtex.log()
   if empty(log) | return 0 | endif
 
-  " Save paths for fixing quickfix entries
+  " Save paths for fixing quickfix entries, then read the error file
   let s:qf_main = a:0 > 0 ? a:1.tex : b:vimtex.tex
   let s:qf_root = b:vimtex.root
-
   execute 'cgetfile ' . fnameescape(log)
-  return !empty(getqflist())
+
+  let l:qflist = filter(getqflist(), 'v:val.type =~# ''E''')
+  return !empty(l:qflist)
 endfunction
 
 " }}}1
