@@ -4,48 +4,12 @@
 " Email:      karl.yngve@gmail.com
 "
 
-
 function! vimtex#state#init_buffer() " {{{1
   command! -buffer VimtexToggleMain call vimtex#state#toggle_main()
   nnoremap <buffer> <plug>(vimtex-toggle-main) :VimtexToggleMain<cr>
 endfunction
 
 " }}}1
-
-function! vimtex#state#toggle_main() " {{{1
-  if exists('b:vimtex_local')
-    let b:vimtex_local.active = !b:vimtex_local.active
-
-    let b:vimtex_id = b:vimtex_local.active
-          \ ? b:vimtex_local.sub_id
-          \ : b:vimtex_local.main_id
-    let b:vimtex = vimtex#state#get(b:vimtex_id)
-
-    call vimtex#echo#status(['vimtex: ',
-          \ ['Normal', 'Changed to `'],
-          \ ['VimtexSuccess', b:vimtex.base],
-          \ ['Normal', "' "],
-          \ ['VimtexInfo', b:vimtex_local.active ? '[local]' : '[main]' ]])
-  endif
-endfunction
-
-" }}}1
-function! vimtex#state#list_all() " {{{1
-  return values(s:vimtex_states)
-endfunction
-
-" }}}1
-function! vimtex#state#exists(id) " {{{1
-  return has_key(s:vimtex_states, a:id)
-endfunction
-
-" }}}1
-function! vimtex#state#get(id) " {{{1
-  return s:vimtex_states[a:id]
-endfunction
-
-" }}}1
-
 function! vimtex#state#init() " {{{1
   let l:main = s:get_main()
   let l:id   = s:get_main_id(l:main)
@@ -86,6 +50,40 @@ function! vimtex#state#init_local() " {{{1
         \ 'main_id' : b:vimtex_id,
         \ 'sub_id' : l:vimtex_id,
         \}
+endfunction
+
+" }}}1
+
+function! vimtex#state#toggle_main() " {{{1
+  if exists('b:vimtex_local')
+    let b:vimtex_local.active = !b:vimtex_local.active
+
+    let b:vimtex_id = b:vimtex_local.active
+          \ ? b:vimtex_local.sub_id
+          \ : b:vimtex_local.main_id
+    let b:vimtex = vimtex#state#get(b:vimtex_id)
+
+    call vimtex#echo#status(['vimtex: ',
+          \ ['Normal', 'Changed to `'],
+          \ ['VimtexSuccess', b:vimtex.base],
+          \ ['Normal', "' "],
+          \ ['VimtexInfo', b:vimtex_local.active ? '[local]' : '[main]' ]])
+  endif
+endfunction
+
+" }}}1
+function! vimtex#state#list_all() " {{{1
+  return values(s:vimtex_states)
+endfunction
+
+" }}}1
+function! vimtex#state#exists(id) " {{{1
+  return has_key(s:vimtex_states, a:id)
+endfunction
+
+" }}}1
+function! vimtex#state#get(id) " {{{1
+  return s:vimtex_states[a:id]
 endfunction
 
 " }}}1
@@ -322,7 +320,6 @@ function! s:vimtex.new(main) abort dict " {{{1
 endfunction
 
 " }}}1
-
 function! s:vimtex.parse_engine() abort dict " {{{1
   let l:engine_regex =
         \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'
@@ -410,7 +407,6 @@ function! s:vimtex.pprint_items() abort dict " {{{1
 endfunction
 
 " }}}1
-
 function! s:vimtex.log() abort dict " {{{1
   return self.ext('log')
 endfunction
