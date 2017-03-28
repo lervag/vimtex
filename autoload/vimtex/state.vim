@@ -424,9 +424,9 @@ endfunction
 " }}}1
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
   " First check build dir (latexmk -output_directory option)
-  if get(g:, 'vimtex_compiler_build_dir', '') !=# ''
-    let cand = g:vimtex_compiler_build_dir . '/' . self.name . '.' . a:ext
-    if g:vimtex_compiler_build_dir[0] !=# '/'
+  if get(g:, 'vimtex_latexmk_build_dir', '') !=# ''
+    let cand = g:vimtex_latexmk_build_dir . '/' . self.name . '.' . a:ext
+    if g:vimtex_latexmk_build_dir[0] !=# '/'
       let cand = self.root . '/' . cand
     endif
     if a:0 > 0 || filereadable(cand)
