@@ -251,11 +251,15 @@ function! s:file_is_main(file) " {{{1
 
   "
   " Check if a:file is a main file by looking for the \documentclass command,
-  " but ignore \documentclass[...]{subfiles}
+  " but ignore the following:
+  "
+  "   \documentclass[...]{subfiles}
+  "   \documentclass[...]{standalone}
   "
   let l:lines = readfile(a:file, 0, 50)
-  call filter(l:lines, 'v:val !~# ''{subfiles}''')
   call filter(l:lines, 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')
+  call filter(l:lines, 'v:val !~# ''{subfiles}''')
+  call filter(l:lines, 'v:val !~# ''{standalone}''')
   return len(l:lines) > 0
 endfunction
 
