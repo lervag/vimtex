@@ -1,9 +1,10 @@
 set nocompatible
-let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-nnoremap q :qall!<cr>
+let g:vimtex_latexmk_continuous=0
 
-edit main.tex
+edit test.tex
+VimtexCompile
