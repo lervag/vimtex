@@ -2500,6 +2500,19 @@ changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
 2017-03-28: Major refactoring of initialization~
+Added a general compiler interface, see |vimtex-compiler|.  To configure the
+`latexmk` compiler, see |g:vimtex_compiler_latexmk|.
+
+Deprecated options:
+    *g:vimtex_latexmk_enabled*
+    *g:vimtex_latexmk_callback*
+    *g:vimtex_latexmk_callback_hooks*
+    *g:vimtex_latexmk_autojump*
+    *g:vimtex_latexmk_continuous*
+    *g:vimtex_latexmk_background*
+    *g:vimtex_latexmk_options*
+
+2017-03-28: Major refactoring of initialization~
 The initialization has been refactored in order to provide a more consistent
 separation of buffer initialization and state initialization. This has no
 major consequence for users, but it makes maintenance and further development
