@@ -917,6 +917,7 @@ Options~
           \ 'general' : 1,
           \ 'overfull' : 1,
           \ 'underfull' : 1,
+          \ 'font' : 1,
           \ 'packages' : {
           \   'default' : 1,
           \   'natbib' : 1,

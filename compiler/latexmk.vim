@@ -38,11 +38,17 @@ let s:packages = get(s:warnings, 'packages', {})
 let s:wdefault = get(s:warnings, 'default', 1)
 let s:pdefault = get(s:packages, 'default', 1)
 
+if get(s:warnings, 'font', s:wdefault)
+  CompilerSet errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
+  CompilerSet errorformat+=%-CLaTeX\ Font\ Warning:\ %m
+  CompilerSet errorformat+=%-C(Font)%m
+else
+  CompilerSet errorformat+=%-WLaTeX\ Font\ Warning:\ %m
+endif
+
 if get(s:warnings, 'general', s:wdefault)
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
   CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
-
-  CompilerSet errorformat+=%-C(Font)%m
 endif
 
 if get(s:warnings, 'overfull', s:wdefault)
