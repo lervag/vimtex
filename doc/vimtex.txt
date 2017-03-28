@@ -2270,26 +2270,24 @@ Note: For backward search to work on windows, one must ensure that the folder
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
 
-The |vimtex| code is based on the |autoload| feature of vim.  For each new
-latex buffer, the function *vimtex#init* initializes the variables and
-functionalities based on the desired options |vimtex-options|.  The first run
-performs some global initialization, which is mainly to define autocommands.
-Other functionality is provided by additional autoloaded scripts.  Every
-additional script should have an initialization script that sets default
-commands and mappings, creates autocommands and performs other necessary
-initialization.  This initialization script is then called from 'vimtex#init'.
+The |vimtex| code is based on the |autoload| feature of vim. For each new
+latex buffer, the function *vimtex#init* initializes a state variable as well
+as buffer local mappings and commands, all based on the desired options (see
+|vimtex-options|).
 
-For each LaTeX project that is opened, a |Dictionary| is created and added to
-the list 'g:vimtex_data'.  The dictionary is initialized with data tied to the
-current project.  The dictionary is also linked to the buffer variable
-'b:vimtex'.  Note that a project might consist of several files, so for
-a multi-file project one may have several buffers that are linked to the same
-data blob.  This is by design, and enabled vimtex |vimtex| to work properly
-for multi-file latex projects.  It also allows the editing of different latex
-projects simultaneously in different buffers.
+The main init function calls `vimtex#mymodule#init_buffer` for each submodule,
+if it exists. This function should take care of defining buffer local
+mappings, commands, and autocommands.
+
+The state variable is a |Dictionary| that contains data that is specific to
+a single LaTeX project. Such a project may consist of several buffers for
+different files if the project is a multi-file project (see
+|vimtex-multi-file|). A submodule may add to the state during initialization
+with `vimtex#mymodule#init_state`, which takes the state object as a single
+argument.
 
 The command |VimtexInfo| (mapped to <localleader>li by default) will show the
-contents of the local data blob.
+(relevant) contents of the local state.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
@@ -2487,6 +2485,12 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2017-03-28: Major refactoring of initialization~
+The initialization has been refactored in order to provide a more consistent
+separation of buffer initialization and state initialization. This has no
+major consequence for users, but it makes maintenance and further development
+easier.
 
 2017-03-02: Changed how to set ignored warnings~
 I'm updating the changelog to notify of a change to the quickfix settings.
