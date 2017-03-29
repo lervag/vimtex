@@ -12,7 +12,6 @@ function! vimtex#compiler#latexmk#init(...) abort " {{{1
   let l:compiler = extend(deepcopy(s:compiler), l:options)
   call l:compiler.init_check_requirements()
   call l:compiler.init_build_dir_option()
-  call l:compiler.init_process()
   return l:compiler
 endfunction
 
@@ -31,11 +30,13 @@ let s:compiler = {
       \ 'name' : 'latexmk',
       \ 'root' : b:vimtex.root,
       \ 'target' : b:vimtex.base,
-      \ 'target_full_path' : b:vimtex.tex,
+      \ 'target_path' : b:vimtex.tex,
       \ 'background' : 0,
       \ 'build_dir' : '',
       \ 'callback' : 1,
       \ 'continuous' : 1,
+      \ 'engine' : b:vimtex.engine,
+      \ 'output' : tempname(),
       \ 'options' : [
       \   '-verbose',
       \   '-pdf',
@@ -48,10 +49,15 @@ let s:compiler = {
 function! s:compiler.init_check_requirements() abort dict " {{{1
   " Check option validity
   if self.callback
-        \ && !(has('clientserver') || has('nvim'))
-    let self.callback = 0
-    call vimtex#echo#warning('Can''t use callbacks without +clientserver')
-    call vimtex#echo#wait()
+    if !(has('clientserver') || has('nvim'))
+      let self.callback = 0
+      call vimtex#echo#warning('Can''t use callbacks without +clientserver')
+      call vimtex#echo#wait()
+    elseif empty(v:servername)
+      let self.callback = 0
+      call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
+      call vimtex#echo#wait()
+    endif
   endif
 
   " Check for required executables
@@ -100,53 +106,6 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.init_process() abort dict " {{{1
-  let l:process = vimtex#process#new()
-  let l:process.continuous = self.continuous
-  let l:process.name = 'latexmk'
-
-  if !self.continuous && !self.background
-    let l:process.background = 0
-    let l:process.silent = 0
-  endif
-
-  function! l:process.set_pid() abort dict " {{{2
-    if has('win32')
-      let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
-      let pidinfo = split(system(pidcmd), '\n')[-1]
-      let self.pid = str2nr(split(pidinfo,'\s\+')[1])
-    else
-      let self.pid = str2nr(system('pgrep -nf "^[^ ]*perl.*latexmk"')[:-2])
-    endif
-
-    return self.pid
-  endfunction
-
-  " }}}2
-
-  let l:process.cmd = self.build_cmd()
-
-  if self.continuous
-    if has('win32')
-      " Not implemented
-      return
-    else
-      for l:pid in split(system(
-            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . self.target . '"'), "\n")
-        let l:path = resolve('/proc/' . l:pid . '/cwd') . '/' . self.target
-        if l:path ==# self.target_full_path
-          let l:process.pid = str2nr(l:pid)
-          let l:process.is_running = 1
-          break
-        endif
-      endfor
-    endif
-  endif
-
-  let self.process = l:process
-endfunction
-
-" }}}1
 function! s:compiler.cleanup() abort dict " {{{1
   if self.is_running()
     call self.stop()
@@ -161,7 +120,7 @@ function! s:compiler.start() abort dict " {{{1
     return
   endif
 
-  call self.create_build_dir()
+  let self.process = s:init_process(self.get_default_opts())
   call self.process.run()
 
   if self.continuous
@@ -184,31 +143,26 @@ function! s:compiler.start() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.start_single(verbose) abort dict " {{{1
-  if self.is_running() | return | endif
+function! s:compiler.start_single() abort dict " {{{1
+  if self.is_running()
+    call vimtex#echo#status(['latexmk compile: ',
+          \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
+    return
+  endif
 
-  if exists('v:servername')
-    let l:opts = {
-          \ 'continuous' : 1,
-          \ 'background' : 1,
-          \ 'callback' : 1,
-          \}
-    let g:vimtex_compiler_callback_hooks = ['VimtexSSCallback']
-    function! VimtexSingleShotWithCallback(status)
+  let l:opts = self.get_default_opts()
+  let l:opts.continuous = l:opts.callback
+
+  if l:opts.continuous
+    let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
+    function! VimtexSSCallback(status)
       silent call vimtex#compiler#stop()
       call remove(g:vimtex_compiler_callback_hooks, 'VimtexSSCallback')
     endfunction
-  else
-    let l:opts = {
-          \ 'continuous' : 0,
-          \ 'background' : self.background,
-          \ 'callback' : 0,
-          \}
   endif
 
-  let l:process = extend(vimtex#process#new(), l:opts)
-  let l:process.cmd = self.build_cmd(l:opts)
-  call l:process.run()
+  let self.process = s:init_process(l:opts)
+  call self.process.run()
 endfunction
 
 " }}}1
@@ -255,109 +209,23 @@ endfunction
 
 " }}}1
 function! s:compiler.is_running() abort dict " {{{1
-  return self.process.pid > 0
+  return exists('self.process.pid') && self.process.pid > 0
 endfunction
 
 " }}}1
-function! s:compiler.build_cmd(...) abort dict " {{{1
-  let l:opts = a:0 > 0 ? a:1 : {}
-
-  if has('win32')
-    let l:cmd  = 'cd /D "' . self.root . '"'
-    let l:cmd .= ' && set max_print_line=2000 & latexmk'
-    let l:shellslash = &shellslash
-    set noshellslash
-  else
-    let l:cmd  = 'cd ' . vimtex#util#shellescape(self.root)
-    if fnamemodify(&shell, ':t') ==# 'fish'
-      let l:cmd .= '; and set max_print_line 2000; and latexmk'
-    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
-      let l:cmd .= ' && set max_print_line=2000 && latexmk'
-    else
-      let l:cmd .= ' && max_print_line=2000 latexmk'
-    endif
-  endif
-
-  for l:opt in get(l:opts, 'options', self.options)
-    let l:cmd .= ' ' . l:opt
-  endfor
-
-  if !empty(b:vimtex.engine)
-    let l:cmd .= ' ' . b:vimtex.engine
-  endif
-
-  let l:build_dir = get(l:opts, 'build_dir', self.build_dir)
-  if !empty(l:build_dir)
-    let l:cmd .= ' -outdir=' . l:build_dir
-  endif
-
-  if get(l:opts, 'continuous', self.continuous)
-    let l:cmd .= ' -pvc'
-
-    " Set viewer options
-    if !get(g:, 'vimtex_view_automatic', 1)
-          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id', 0) > 0
-          \ || get(s:, 'silence_next_callback', 0)
-      let l:cmd .= ' -view=none'
-    elseif g:vimtex_view_enabled
-          \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
-      let l:cmd .= b:vimtex.viewer.latexmk_append_argument()
-    endif
-  endif
-
-  if get(l:opts, 'callback', self.callback) && exists('v:servername')
-    let l:cb = shellescape('""') . g:vimtex_compiler_progname . shellescape('""')
-          \ . ' --servername ' . v:servername
-    let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
-          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
-    let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
-          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
-  endif
-
-  let l:cmd .= ' ' . vimtex#util#shellescape(self.target)
-
-  if get(l:opts, 'continuous', self.continuous)
-        \ || get(l:opts, 'background', self.background)
-    let l:tmp = tempname()
-
-    if has('win32')
-      let l:cmd .= ' >'  . l:tmp
-      let l:cmd = 'cmd /s /c "' . l:cmd . '"'
-    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
-      let l:cmd .= ' >' . l:tmp . ' |& cat'
-    else
-      let l:cmd .= ' >' . l:tmp . ' 2>&1'
-    endif
-
-    let self.output = l:tmp
-  elseif has('win32')
-    let l:cmd = 'cmd /c "' . l:cmd . '"'
-  endif
-
-  if has('win32')
-    let &shellslash = l:shellslash
-  endif
-
-  return l:cmd
-endfunction
-
-" }}}1
-function! s:compiler.create_build_dir() abort dict " {{{1
-  if empty(self.build_dir) | return | endif
-
-  " First create list of necessary directories
-  let l:dirs = split(glob(self.root . '/**/*.tex'), '\n')
-  call map(l:dirs, 'fnamemodify(v:val, '':h'')')
-  call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
-  call vimtex#util#uniq(sort(filter(l:dirs, "v:val !=# ''")))
-  call map(l:dirs,
-        \ "self.root . '/' . self.build_dir . '/' . v:val")
-  call filter(l:dirs, '!isdirectory(v:val)')
-
-  " Create the non-existing directories
-  for l:dir in l:dirs
-    call mkdir(l:dir, 'p')
-  endfor
+function! s:compiler.get_default_opts() abort dict " {{{1
+  return {
+        \ 'root' : self.root,
+        \ 'target' : self.target,
+        \ 'target_path' : self.target_path,
+        \ 'background' : self.background,
+        \ 'build_dir' : self.build_dir,
+        \ 'callback' : self.callback,
+        \ 'continuous' : self.continuous,
+        \ 'engine' : self.engine,
+        \ 'output' : self.output,
+        \ 'options' : self.options,
+        \}
 endfunction
 
 " }}}1
@@ -376,19 +244,181 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   let l:list = [['configuration', l:configuration]]
 
-  if self.target_full_path !=# b:vimtex.tex
+  if self.target_path !=# b:vimtex.tex
     call add(l:list, ['root', self.root])
-    call add(l:list, ['target', self.target_full_path])
+    call add(l:list, ['target', self.target_path])
   endif
 
-  if self.is_running()
+  if has_key(self, 'process')
     call add(l:list, ['process', self.process])
-    if has_key(self, 'output')
-      call add(l:list, ['output', self.output])
-    endif
+    call add(l:list, ['output', self.output])
   endif
 
   return l:list
+endfunction
+
+" }}}1
+
+function! s:init_process(opts) abort " {{{1
+  "
+  " a:opts is a Dict with the following entries:
+  "
+  "       'root'
+  "       'target'
+  "       'target_path'
+  "       'background'
+  "       'build_dir'
+  "       'callback'
+  "       'continuous'
+  "       'engine'
+  "       'output'
+  "       'options'
+  "
+
+  " Ensure args are consistent
+  if a:opts.continuous
+    let a:opts.background = 1
+  endif
+
+  let l:process = vimtex#process#new()
+  let l:process.name = 'latexmk'
+  let l:process.continuous = a:opts.continuous
+  let l:process.background = a:opts.background
+  if !l:process.background
+    let l:process.silent = 0
+  endif
+  let l:process.cmd = s:build_cmd(a:opts)
+
+  if l:process.continuous
+    if has('win32')
+      " Not implemented
+      return
+    else
+      for l:pid in split(system(
+            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . a:opts.target . '"'), "\n")
+        let l:path = resolve('/proc/' . l:pid . '/cwd') . '/' . a:opts.target
+        if l:path ==# a:opts.target_path
+          let l:process.pid = str2nr(l:pid)
+          let l:process.is_running = 1
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  function! l:process.set_pid() abort dict " {{{2
+    if has('win32')
+      let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
+      let pidinfo = split(system(pidcmd), '\n')[-1]
+      let self.pid = str2nr(split(pidinfo,'\s\+')[1])
+    else
+      let self.pid = str2nr(system('pgrep -nf "^[^ ]*perl.*latexmk"')[:-2])
+    endif
+
+    return self.pid
+  endfunction
+
+  " }}}2
+
+  call s:create_build_dir(a:opts)
+
+  return l:process
+endfunction
+
+" }}}1
+function! s:build_cmd(opts) abort " {{{1
+  if has('win32')
+    let l:cmd  = 'cd /D "' . a:opts.root . '"'
+    let l:cmd .= ' && set max_print_line=2000 & latexmk'
+    let l:shellslash = &shellslash
+    set noshellslash
+  else
+    let l:cmd  = 'cd ' . vimtex#util#shellescape(a:opts.root)
+    if fnamemodify(&shell, ':t') ==# 'fish'
+      let l:cmd .= '; and set max_print_line 2000; and latexmk'
+    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
+      let l:cmd .= ' && set max_print_line=2000 && latexmk'
+    else
+      let l:cmd .= ' && max_print_line=2000 latexmk'
+    endif
+  endif
+
+  for l:opt in a:opts.options
+    let l:cmd .= ' ' . l:opt
+  endfor
+
+  if !empty(a:opts.engine)
+    let l:cmd .= ' ' . a:opts.engine
+  endif
+
+  if !empty(a:opts.build_dir)
+    let l:cmd .= ' -outdir=' . a:opts.build_dir
+  endif
+
+  if a:opts.continuous
+    let l:cmd .= ' -pvc'
+
+    " Set viewer options
+    if !get(g:, 'vimtex_view_automatic', 1)
+          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id', 0) > 0
+          \ || get(s:, 'silence_next_callback', 0)
+      let l:cmd .= ' -view=none'
+    elseif g:vimtex_view_enabled
+          \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
+      let l:cmd .= b:vimtex.viewer.latexmk_append_argument()
+    endif
+  endif
+
+  if a:opts.callback
+    let l:cb = shellescape('""') . g:vimtex_compiler_progname . shellescape('""')
+          \ . ' --servername ' . v:servername
+    let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
+          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
+    let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
+          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+  endif
+
+  let l:cmd .= ' ' . vimtex#util#shellescape(a:opts.target)
+
+  if a:opts.background
+    let l:tmp = a:opts.output
+
+    if has('win32')
+      let l:cmd .= ' >'  . l:tmp
+      let l:cmd = 'cmd /s /c "' . l:cmd . '"'
+    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
+      let l:cmd .= ' >' . l:tmp . ' |& cat'
+    else
+      let l:cmd .= ' >' . l:tmp . ' 2>&1'
+    endif
+  elseif has('win32')
+    let l:cmd = 'cmd /c "' . l:cmd . '"'
+  endif
+
+  if has('win32')
+    let &shellslash = l:shellslash
+  endif
+
+  return l:cmd
+endfunction
+
+" }}}1
+function! s:create_build_dir(opts) abort " {{{1
+  if empty(a:opts.build_dir) | return | endif
+
+  " First create list of necessary directories
+  let l:dirs = split(glob(a:opts.root . '/**/*.tex'), '\n')
+  call map(l:dirs, 'fnamemodify(v:val, '':h'')')
+  call map(l:dirs, 'strpart(v:val, strlen(a:opts.root) + 1)')
+  call vimtex#util#uniq(sort(filter(l:dirs, "v:val !=# ''")))
+  call map(l:dirs,
+        \ "a:opts.root . '/' . a:opts.build_dir . '/' . v:val")
+  call filter(l:dirs, '!isdirectory(v:val)')
+
+  " Create the non-existing directories
+  for l:dir in l:dirs
+    call mkdir(l:dir, 'p')
+  endfor
 endfunction
 
 " }}}1

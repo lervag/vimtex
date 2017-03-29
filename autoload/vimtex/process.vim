@@ -108,7 +108,7 @@ function! s:process.kill() abort dict " {{{1
   let l:cmd = has('win32')
         \ ? 'taskkill /PID ' . self.pid . ' /T /F'
         \ : 'kill ' . self.pid
-  silent execute '!' . l:cmd
+  silent call system(l:cmd)
 
   let self.pid = 0
 endfunction
@@ -203,6 +203,8 @@ function! s:process.pprint_items() abort dict " {{{1
   call add(l:list, ['configuration', {
         \ 'background': self.background,
         \ 'continuous': self.continuous,
+        \ 'silent': self.silent,
+        \ 'null': self.null,
         \}])
 
   return l:list
