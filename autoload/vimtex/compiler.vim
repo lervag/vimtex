@@ -14,7 +14,6 @@ function! vimtex#compiler#init_buffer() abort " {{{1
   command! -buffer        VimtexCompile                        call vimtex#compiler#compile()
   command! -buffer -bang  VimtexCompileSS                      call vimtex#compiler#compile_ss()
   command! -buffer -range VimtexCompileSelected <line1>,<line2>call vimtex#compiler#compile_selected('cmd')
-  command! -buffer        VimtexCompileToggle                  call vimtex#compiler#toggle()
   command! -buffer        VimtexCompileOutput                  call vimtex#compiler#output()
   command! -buffer        VimtexStop                           call vimtex#compiler#stop()
   command! -buffer        VimtexStopAll                        call vimtex#compiler#stop_all()
@@ -28,7 +27,6 @@ function! vimtex#compiler#init_buffer() abort " {{{1
   nnoremap <buffer> <plug>(vimtex-compile-ss)       :call vimtex#compiler#compile_ss()<cr>
   nnoremap <buffer> <plug>(vimtex-compile-selected) :set opfunc=vimtex#compiler#compile_selected<cr>g@
   xnoremap <buffer> <plug>(vimtex-compile-selected) :<c-u>call vimtex#compiler#compile_selected('visual')<cr>
-  nnoremap <buffer> <plug>(vimtex-compile-toggle)   :call vimtex#compiler#toggle()<cr>
   nnoremap <buffer> <plug>(vimtex-compile-output)   :call vimtex#compiler#output()<cr>
   nnoremap <buffer> <plug>(vimtex-stop)             :call vimtex#compiler#stop()<cr>
   nnoremap <buffer> <plug>(vimtex-stop-all)         :call vimtex#compiler#stop_all()<cr>
@@ -85,7 +83,15 @@ endfunction
 " }}}1
 
 function! vimtex#compiler#compile() abort " {{{1
-  call b:vimtex.compiler.start()
+  if get(b:vimtex.compiler, 'continuous')
+    if b:vimtex.compiler.is_running()
+      call b:vimtex.compiler.stop()
+    else
+      call b:vimtex.compiler.start()
+    endif
+  else
+    call b:vimtex.compiler.start_single()
+  endif
 endfunction
 
 " }}}1
@@ -127,15 +133,6 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
     call vimtex#echo#status([
           \ ['VimtexInfo', 'vimtex: '],
           \ ['VimtexMsg', 'compiling selected lines ... done!']])
-  endif
-endfunction
-
-" }}}1
-function! vimtex#compiler#toggle() " {{{1
-  if b:vimtex.compiler.is_running()
-    call b:vimtex.compiler.stop()
-  else
-    call b:vimtex.compiler.start()
   endif
 endfunction
 

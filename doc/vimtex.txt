@@ -350,7 +350,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lY  |<plug>(vimtex-labels-toggle)|          `n`
    <localleader>lv  |<plug>(vimtex-view)|                   `n`
    <localleader>lr  |<plug>(vimtex-reverse-search)|         `n`
-   <localleader>ll  |<plug>(vimtex-compile-toggle)|         `n`
+   <localleader>ll  |<plug>(vimtex-compile)|                `n`
    <localleader>lL  |<plug>(vimtex-compile-selected)|       `nx`
    <localleader>lk  |<plug>(vimtex-stop)|                   `n`
    <localleader>lK  |<plug>(vimtex-stop-all)|               `n`
@@ -1308,13 +1308,10 @@ Commands~
 
                                              *VimtexCompile*
                                              *<plug>(vimtex-compile)*
-:VimtexCompile            Start compilation.
-
-                                             *VimtexCompileToggle*
-                                             *<plug>(vimtex-compile-toggle)*
-:VimtexCompileToggle      Toggle compilation.  This is only useful if the
-                          compiler is set to continuous compilation.  See e.g.
-                          |g:vimtex_compiler_latexmk| and |vimtex-compiler|.
+:VimtexCompile            If the compiler supports and is set to run in
+                          continuouos mode, then this command works as
+                          a compiler toggle. If not, this command will run
+                          a single shot compilation.
 
                                              *VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*

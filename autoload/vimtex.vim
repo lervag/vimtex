@@ -341,7 +341,7 @@ function! s:init_default_mappings() " {{{1
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
   if get(g:, 'vimtex_compiler_enabled', 0)
-    call s:map('n', '<localleader>ll', '<plug>(vimtex-compile-toggle)')
+    call s:map('n', '<localleader>ll', '<plug>(vimtex-compile)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
     call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
     call s:map('x', '<localleader>lL', '<plug>(vimtex-compile-selected)')
