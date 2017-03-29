@@ -1316,10 +1316,7 @@ Commands~
 
                                              *VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*
-:VimtexCompileSS          Start single shot compilation in background.
-
-                                             *VimtexCompileSS!*
-:VimtexCompileSS!         Like |VimtexCompileSS|, but in foreground.
+:VimtexCompileSS          Start single shot compilation.
 
                                              *VimtexCompileSelected*
                                              *<plug>(vimtex-compile-selected)*

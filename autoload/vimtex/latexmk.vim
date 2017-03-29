@@ -20,7 +20,7 @@ function! vimtex#latexmk#init_buffer() " {{{1
 
   " Define commands
   command! -buffer       VimtexCompile       call vimtex#latexmk#compile()
-  command! -buffer -bang VimtexCompileSS     call vimtex#latexmk#compile_ss(<q-bang> == "!")
+  command! -buffer -bang VimtexCompileSS     call vimtex#latexmk#compile_ss()
   command! -buffer       VimtexCompileToggle call vimtex#latexmk#toggle()
   command! -buffer       VimtexCompileOutput call vimtex#latexmk#output()
   command! -buffer       VimtexStop          call vimtex#latexmk#stop()
@@ -34,7 +34,7 @@ function! vimtex#latexmk#init_buffer() " {{{1
 
   " Define mappings
   nnoremap <buffer> <plug>(vimtex-compile)        :call vimtex#latexmk#compile()<cr>
-  nnoremap <buffer> <plug>(vimtex-compile-ss)     :call vimtex#latexmk#compile_ss(0)<cr>
+  nnoremap <buffer> <plug>(vimtex-compile-ss)     :call vimtex#latexmk#compile_ss()<cr>
   nnoremap <buffer> <plug>(vimtex-compile-toggle) :call vimtex#latexmk#toggle()<cr>
   nnoremap <buffer> <plug>(vimtex-compile-output) :call vimtex#latexmk#output()<cr>
   nnoremap <buffer> <plug>(vimtex-stop)           :call vimtex#latexmk#stop()<cr>
@@ -182,14 +182,24 @@ endfunction
 " }}}1
 function! vimtex#latexmk#compile_ss(verbose) " {{{1
   let l:vimtex_latexmk_continuous = g:vimtex_latexmk_continuous
-  let l:vimtex_latexmk_background = g:vimtex_latexmk_background
+  let l:vimtex_latexmk_callback = g:vimtex_latexmk_callback
 
-  let g:vimtex_latexmk_continuous = 0
-  let g:vimtex_latexmk_background = g:vimtex_latexmk_background && !a:verbose
+  if exists('v:servername')
+    let g:vimtex_latexmk_callback = 1
+    let g:vimtex_latexmk_continuous = 1
+    let g:vimtex_latexmk_callback_hooks = ['VimtexSSCallback']
+    function! VimtexSingleShotWithCallback(status)
+      silent call vimtex#latexmk#stop()
+      call remove(g:vimtex_latexmk_callback_hooks, 'VimtexSSCallback')
+    endfunction
+  else
+    let g:vimtex_latexmk_continuous = 0
+  endif
+
   call vimtex#latexmk#compile()
 
   let g:vimtex_latexmk_continuous = l:vimtex_latexmk_continuous
-  let g:vimtex_latexmk_background = l:vimtex_latexmk_background
+  let g:vimtex_latexmk_callback = l:vimtex_latexmk_callback
 endfunction
 
 " }}}1
