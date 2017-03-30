@@ -157,8 +157,8 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_index_split_pos', 'vert leftabove')
   call s:init_option('vimtex_index_split_width', 30)
 
+  call s:init_option('vimtex_matchparen_enabled', 1)
   call s:init_option('vimtex_motion_enabled', 1)
-  call s:init_option('vimtex_motion_matchparen', 1)
 
   call s:init_option('vimtex_labels_enabled', 1)
 

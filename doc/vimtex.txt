@@ -758,19 +758,19 @@ Options~
 
   Default value: 1
 
-*g:vimtex_motion_enabled*
-  This option enables the motion mappings `%`, `[[`, `[]`, `][`, and `]]`. It
-  also enables the highlighting of matching delimiters.
-
-  Default value: 1
-
-*g:vimtex_motion_matchparen*
+*g:vimtex_matchparen_enabled*
   Enable highlighting of matching delimiters.
 
   Note: This is an improved version of |matchparen|. It should be possible to
         keep |matchparen| activated, which matches delimiters listed in
         'matchpairs'. The |vimtex| specific version will also match LaTeX
         specific delimiters, which is not possible with |matchparen|.
+
+  Default value: 1
+
+*g:vimtex_motion_enabled*
+  This option enables the motion mappings `%`, `[[`, `[]`, `][`, and `]]`. It
+  also enables the highlighting of matching delimiters.
 
   Default value: 1
 

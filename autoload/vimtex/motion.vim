@@ -7,15 +7,6 @@
 function! vimtex#motion#init_buffer() " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
-  " Highlight matching delimiters ($, (), ...)
-  if g:vimtex_motion_matchparen
-    execute 'augroup vimtex_motion' . bufnr('%')
-      autocmd!
-      autocmd CursorMoved  <buffer> call s:highlight_matching_pair()
-      autocmd CursorMovedI <buffer> call s:highlight_matching_pair()
-    augroup END
-  endif
-
   " Utility map to avoid conflict with "normal" command
   nnoremap <buffer> <sid>(v) v
   nnoremap <buffer> <sid>(V) V
@@ -136,33 +127,6 @@ function! vimtex#motion#next_section(type, backwards, visual) " {{{1
       normal! k
     endif
   endif
-endfunction
-
-" }}}1
-
-function! s:highlight_matching_pair() " {{{1
-  if exists('w:vimtex_match_id1')
-    silent! call matchdelete(w:vimtex_match_id1)
-    silent! call matchdelete(w:vimtex_match_id2)
-    unlet w:vimtex_match_id1
-    unlet w:vimtex_match_id2
-  endif
-  if vimtex#util#in_comment() | return | endif
-
-  let l:current = vimtex#delim#get_current('all', 'both')
-  if empty(l:current) | return | endif
-
-  let l:corresponding = vimtex#delim#get_matching(l:current)
-  if empty(l:corresponding) | return | endif
-
-  let [l:open, l:close] = l:current.is_open
-        \ ? [l:current, l:corresponding]
-        \ : [l:corresponding, l:current]
-
-  let w:vimtex_match_id1 = matchadd('MatchParen',
-        \ '\%' . l:open.lnum . 'l\%' . l:open.cnum . 'c' . l:open.re.this)
-  let w:vimtex_match_id2 = matchadd('MatchParen',
-        \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
 endfunction
 
 " }}}1
