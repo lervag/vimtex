@@ -7,12 +7,12 @@
 function! vimtex#matchparen#init_buffer() " {{{1
   if !g:vimtex_matchparen_enabled | return | endif
 
-  call vimtex#matchparen#enable_matchparen()
+  call vimtex#matchparen#enable()
 endfunction
 
 " }}}1
 
-function! vimtex#matchparen#enable_matchparen() " {{{1
+function! vimtex#matchparen#enable() " {{{1
   " vint: -ProhibitAutocmdWithNoGroup
 
   execute 'augroup vimtex_matchparen' . bufnr('%')
@@ -27,7 +27,7 @@ function! vimtex#matchparen#enable_matchparen() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#matchparen#disable_matchparen() " {{{1
+function! vimtex#matchparen#disable() " {{{1
   call s:matchparen.clear()
   execute 'autocmd! vimtex_matchparen' . bufnr('%')
 endfunction
