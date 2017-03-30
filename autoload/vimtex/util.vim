@@ -4,98 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#util#execute(exe) " {{{1
-  " Execute the given command on the current system.  Wrapper function to make
-  " it easier to run on both windows and unix.
-  "
-  " The command is given in the argument exe, which should be a dictionary with
-  " the following entries:
-  "
-  "   exe.cmd     String          String that contains the command to run
-  "   exe.bg      0 or 1          Run in background or not
-  "   exe.silent  0 or 1          Show output or not
-  "   exe.null    0 or 1          Send output to /dev/null
-  "   exe.wd      String          Run command in provided working directory
-  "
-  " Only exe.cmd is required.
-  "
-
-  " Check and parse arguments
-  if !has_key(a:exe, 'cmd')
-    echoerr 'Error in vimtex#util#execute!'
-    echoerr 'Argument error, exe.cmd does not exist!'
-    return
-  endif
-  let bg     = has_key(a:exe, 'bg')     ? a:exe.bg     : 1
-  let silent = has_key(a:exe, 'silent') ? a:exe.silent : 1
-  let null   = has_key(a:exe, 'null')   ? a:exe.null   : 1
-  let system = has_key(a:exe, 'system') ? a:exe.system : 0
-
-  " Change directory if wanted
-  if has_key(a:exe, 'wd')
-    let pwd = getcwd()
-    execute 'lcd' fnameescape(a:exe.wd)
-  endif
-
-  " Set up command string based on the given system
-  let cmd = a:exe.cmd
-  if has('win32')
-    if null
-      let cmd .= ' >nul'
-    endif
-    if bg
-      let cmd = 'start /b "' . cmd . '"'
-    endif
-  else
-    if null
-      if fnamemodify(&shell, ':t') ==# 'tcsh'
-        let cmd .= ' >/dev/null |& cat'
-      else
-        let cmd .= ' >/dev/null 2>&1'
-      endif
-    endif
-    if bg
-      let cmd .= ' &'
-    endif
-  endif
-
-  if has('win32') && &shell !~? 'cmd'
-    let savedShell=[&shell, &shellcmdflag, &shellxquote, &shellxescape,
-          \ &shellquote, &shellpipe, &shellredir, &shellslash]
-    set shell& shellcmdflag& shellxquote& shellxescape&
-    set shellquote& shellpipe& shellredir& shellslash&
-  endif
-
-  if system
-    if silent
-      silent call system(cmd)
-    else
-      call system(cmd)
-    endif
-  else
-    if silent
-      silent execute '!' . cmd
-    else
-      execute '!' . cmd
-    endif
-
-    if !has('gui_running')
-      redraw!
-    endif
-  endif
-
-  if has('win32') && exists('savedShell')
-    let [&shell, &shellcmdflag, &shellxquote, &shellxescape,
-          \ &shellquote, &shellpipe, &shellredir, &shellslash] = savedShell
-  endif
-
-  " Return to previous working directory
-  if has_key(a:exe, 'wd')
-    execute 'lcd' fnameescape(pwd)
-  endif
-endfunction
-
-" }}}1
 function! vimtex#util#command(cmd) " {{{1
   let l:a = @a
   try
@@ -166,6 +74,28 @@ function! vimtex#util#in_syntax(name, ...) " {{{1
   return match(map(synstack(l:pos[0], l:pos[1]),
         \          "synIDattr(v:val, 'name')"),
         \      '^' . a:name) >= 0
+endfunction
+
+" }}}1
+function! vimtex#util#uniq(list) " {{{1
+  if exists('*uniq')
+    return uniq(a:list)
+  elseif len(a:list) == 0
+    return a:list
+  endif
+
+  let l:last = get(a:list, 0)
+  let l:ulist = [l:last]
+
+  for l:i in range(1, len(a:list) - 1)
+    let l:next = get(a:list, l:i)
+    if l:next != l:last
+      let l:last = l:next
+      call add(l:ulist, l:next)
+    endif
+  endfor
+
+  return l:ulist
 endfunction
 
 " }}}1

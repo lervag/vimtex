@@ -150,10 +150,10 @@ function! s:mupdf.latexmk_append_argument() dict " {{{1
   if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
-    let cmd  = vimtex#latexmk#add_option('new_viewer_always', '0')
-    let cmd .= vimtex#latexmk#add_option('pdf_update_method', '2')
-    let cmd .= vimtex#latexmk#add_option('pdf_update_signal', 'SIGHUP')
-    let cmd .= vimtex#latexmk#add_option('pdf_previewer',
+    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
           \ 'mupdf ' .  g:vimtex_view_mupdf_options)
   endif
   return cmd
