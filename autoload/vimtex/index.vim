@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#index#open(bufname) " {{{1
+function! vimtex#index#open(bufname) abort " {{{1
   let winnr = bufwinnr(bufnr(a:bufname))
   if winnr >= 0
     silent execute winnr . 'wincmd w'
@@ -15,7 +15,7 @@ function! vimtex#index#open(bufname) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#index#close(bufname) " {{{1
+function! vimtex#index#close(bufname) abort " {{{1
   if g:vimtex_index_resize
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
@@ -23,38 +23,22 @@ function! vimtex#index#close(bufname) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#index#create(index) " {{{1
-  let default = {
-        \ 'refresh'          : function('s:actions_refresh'),
-        \ 'activate'         : function('s:actions_activate'),
-        \ 'close'            : function('s:actions_close'),
-        \ 'position_save'    : function('s:position_save'),
-        \ 'position_restore' : function('s:position_restore'),
-        \ 'print_entries'    : function('s:print_entries'),
-        \ 'print_help'       : function('s:print_help'),
-        \ 'syntax'           : function('s:syntax'),
-        \ 'show_help'        : g:vimtex_index_show_help,
-        \ }
-  for [key, FnVal] in items(default)
-    if !has_key(a:index, key)
-      let a:index[key] = FnVal
-    endif
-    unlet FnVal
-  endfor
+function! vimtex#index#create(index) abort " {{{1
+  let l:index = extend(deepcopy(s:index), a:index)
 
   let l:vimtex = get(b:, 'vimtex', {})
   if g:vimtex_index_split_pos ==# 'full'
-    silent execute 'edit' escape(a:index.name, ' ')
+    silent execute 'edit' escape(l:index.name, ' ')
   else
     if g:vimtex_index_resize
       silent exe 'set columns +=' . g:vimtex_index_split_width
     endif
     silent execute
           \ g:vimtex_index_split_pos g:vimtex_index_split_width
-          \ 'new' escape(a:index.name, ' ')
+          \ 'new' escape(l:index.name, ' ')
   endif
   let b:vimtex = l:vimtex
-  let b:index = a:index
+  let b:index = l:index
 
   setlocal bufhidden=wipe
   setlocal buftype=nofile
@@ -98,7 +82,11 @@ endfunction
 
 " }}}1
 
-function! s:actions_refresh() dict " {{{1
+let s:index = {
+      \ 'show_help' : g:vimtex_index_show_help,
+      \}
+
+function! s:index.refresh() abort dict " {{{1
   call self.position_save()
   setlocal modifiable
   %delete
@@ -112,7 +100,7 @@ function! s:actions_refresh() dict " {{{1
 endfunction
 
 " }}}1
-function! s:actions_activate(close) dict "{{{1
+function! s:index.activate(close) abort dict "{{{1
   let n = getpos('.')[1] - 1
   if n < self.help_nlines | return | endif
   let entry = self.entries[n - self.help_nlines]
@@ -179,19 +167,19 @@ function! s:actions_activate(close) dict "{{{1
   endif
 endfunction
 
-function! s:actions_close() dict "{{{1
+function! s:index.close() abort dict "{{{1
   if g:vimtex_index_resize
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
   bwipeout
 endfunction
 
-function! s:position_save() dict " {{{1
+function! s:index.position_save() abort dict " {{{1
   let self.position = getpos('.')
 endfunction
 
 " }}}1
-function! s:position_restore() dict " {{{1
+function! s:index.position_restore() abort dict " {{{1
   if self.position[1] <= self.help_nlines
     let self.position[1] = self.help_nlines + 1
   endif
@@ -199,14 +187,14 @@ function! s:position_restore() dict " {{{1
 endfunction
 
 " }}}1
-function! s:print_entries() dict " {{{1
+function! s:index.print_entries() abort dict " {{{1
   for entry in self.entries
     call append('$', printf('%s', entry.title))
   endfor
 endfunction
 
 " }}}1
-function! s:print_help() dict " {{{1
+function! s:index.print_help() abort dict " {{{1
   let self.help_nlines = 0
   if self.show_help
     call append('$', '<Esc>/q: close')
@@ -224,7 +212,7 @@ function! s:print_help() dict " {{{1
 endfunction
 
 " }}}1
-function! s:syntax() dict " {{{1
+function! s:index.syntax() abort dict " {{{1
   syntax match VimtexIndexHelp /^.*: .*/
   syntax match VimtexIndexLine /^  .*$/ contains=@Tex
 endfunction
