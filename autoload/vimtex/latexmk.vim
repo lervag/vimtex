@@ -188,7 +188,7 @@ function! vimtex#latexmk#compile_ss(verbose) " {{{1
     let g:vimtex_latexmk_callback = 1
     let g:vimtex_latexmk_continuous = 1
     let g:vimtex_latexmk_callback_hooks = ['VimtexSSCallback']
-    function! VimtexSingleShotWithCallback(status)
+    function! VimtexSSCallback(status)
       silent call vimtex#latexmk#stop()
       call remove(g:vimtex_latexmk_callback_hooks, 'VimtexSSCallback')
     endfunction
