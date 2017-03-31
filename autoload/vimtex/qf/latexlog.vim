@@ -123,5 +123,79 @@ function! s:qf.set_errorformat() abort dict "{{{1
 endfunction
 
 " }}}1
+function! s:qf.setqflist(base, jump) abort dict "{{{1
+  if empty(a:base)
+    let l:log = b:vimtex.log()
+    let l:tex = b:vimtex.tex
+  else
+    let l:log = a:base . '.log'
+    let l:tex = a:base . '.tex'
+  endif
+
+  if empty(l:log)
+    call setqflist([])
+    throw 'Vimtex: No log file found'
+  endif
+
+  "
+  " We use a temporary autocmd to fix some paths in the quickfix entry
+  "
+  let s:main = l:tex
+  let s:title = 'Vimtex errors (' . self.name . ')'
+  augroup vimtex_qf_tmp
+    autocmd!
+    autocmd QuickFixCmdPost [cl]*file call s:fix_paths()
+  augroup END
+
+  execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(l:log)
+
+  autocmd! vimtex_qf_tmp
+endfunction
+
+" }}}1
+function! s:qf.pprint_items() abort dict " {{{1
+  return [[ 'config', self.config ]]
+endfunction
+
+" }}}1
+
+function! s:log_contains_error(logfile) " {{{1
+  let lines = readfile(a:logfile)
+  let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
+  let lines = vimtex#util#uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
+  let lines = map(lines, 'fnamemodify(v:val, '':p'')')
+  let lines = filter(lines, 'filereadable(v:val)')
+  return len(lines) > 0
+endfunction
+
+" }}}1
+
+function! s:fix_paths() abort " {{{1
+  let w:quickfix_title = s:title
+
+  let l:qflist = getqflist()
+  for l:qf in l:qflist
+    " For errors and warnings that don't supply a file, the basename of the
+    " main file is used. However, if the working directory is not the root of
+    " the LaTeX project, than this results in bufnr = 0.
+    if l:qf.bufnr == 0
+      let l:qf.bufnr = bufnr(s:main)
+      continue
+    endif
+
+    " The buffer names of all file:line type errors are relative to the root of
+    " the main LaTeX file.
+    let l:file = fnamemodify(
+          \ simplify(b:vimtex.root . '/' . bufname(l:qf.bufnr)), ':.')
+    if !filereadable(l:file) | continue | endif
+    if !bufexists(l:file)
+      execute 'badd' l:file
+    endif
+    let l:qf.bufnr = bufnr(l:file)
+  endfor
+  call setqflist(l:qflist, 'r', {'title': s:title})
+endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2

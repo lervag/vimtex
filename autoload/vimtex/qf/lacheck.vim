@@ -23,5 +23,10 @@ function! s:qf.init() abort dict "{{{1
 endfunction
 
 " }}}1
+function! s:qf.pprint_items() abort dict " {{{1
+  return []
+endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2

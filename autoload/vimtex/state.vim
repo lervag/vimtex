@@ -436,6 +436,7 @@ function! s:vimtex.pprint_items() abort dict " {{{1
 
   call add(l:items, ['compiler', get(self, 'compiler', {})])
   call add(l:items, ['viewer', get(self, 'viewer', {})])
+  call add(l:items, ['qf', get(self, 'qf', {})])
 
   return [['vimtex project', l:items]]
 endfunction
