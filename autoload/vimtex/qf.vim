@@ -24,6 +24,15 @@ function! vimtex#qf#set(compiler) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#qf#lacheck() " {{{1
+  compiler lacheck
+
+  call vimtex#qf#open(0)
+
+  compiler latexlog
+endfunction
+
+" }}}1
 
 function! vimtex#qf#toggle() " {{{1
   if s:qf_is_open()
@@ -86,18 +95,6 @@ function! vimtex#qf#inquire(...) " {{{1
   endtry
 
   return !empty(getqflist())
-endfunction
-
-" }}}1
-function! vimtex#qf#lacheck() " {{{1
-  compiler lacheck
-
-  silent lmake %
-  lwindow
-  silent redraw
-  wincmd p
-
-  compiler latexlog
 endfunction
 
 " }}}1

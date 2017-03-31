@@ -23,6 +23,11 @@ function! s:qf.init() abort dict "{{{1
 endfunction
 
 " }}}1
+function! s:qf.setqflist(...) abort dict "{{{1
+  silent make %
+endfunction
+
+" }}}1
 function! s:qf.pprint_items() abort dict " {{{1
   return []
 endfunction
