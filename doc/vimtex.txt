@@ -898,19 +898,20 @@ Options~
 
   Default value: 0
 
-*g:vimtex_quickfix_warnings*
-  A dictionary that specifies which warnings to include. By default, all
-  warnings are enabled and have to be specifically disabled. However, it is
-  possible to use the entry `disable` to disable either all warnings, or all
-  package warnings, if so desired.
+*g:vimtex_quickfix_latexlog*
+  This option configures the `latexlog` error parser. It is a dictionary that
+  specifies which warnings to include. By default, all warnings are enabled
+  and have to be specifically disabled. However, it is possible to use the
+  entry `disable` to disable either all warnings, or all package warnings, if
+  so desired.
 
   Some examples may be helpful: >
 
     " Disable all warnings
-    let g:vimtex_quickfix_warnings = {'default' : 0}
+    let g:vimtex_quickfix_latexlog = {'default' : 0}
 
     " Disable overfull/underfull \hbox and all package warnings
-    let g:vimtex_quickfix_warnings = {
+    let g:vimtex_quickfix_latexlog = {
           \ 'overfull' : 0,
           \ 'underfull' : 0,
           \ 'packages' : {
@@ -920,7 +921,7 @@ Options~
 <
   Default value: >
 
-    let g:vimtex_quickfix_warnings = {
+    let g:vimtex_quickfix_latexlog = {
           \ 'default' : 1,
           \ 'general' : 1,
           \ 'overfull' : 1,
@@ -2495,6 +2496,15 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2017-03-31: Refactored quickfix related features~
+I've added a more general layer for handling different error parsers.
+Currently there are few or now changes from the user point of view, but this
+should make it possible to add other methods for showing errors in a LaTeX
+project than the current one that parses the `.log` file directly.
+
+Deprecated options:
+    *g:vimtex_quickfix_warnings*  (see |g:vimtex_quickfix_latexlog|)
 
 2017-03-28: Major refactoring of initialization~
 Added a general compiler interface, see |vimtex-compiler|.  To configure the
