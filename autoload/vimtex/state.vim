@@ -339,7 +339,7 @@ function! s:vimtex.cleanup() abort dict " {{{1
     if exists('b:vimtex')
       let b:vimtex_tmp = b:vimtex
     endif
-    let b:vimtex = l:vimtex
+    let b:vimtex = self
     doautocmd User VimtexEventQuit
     if exists('b:vimtex_tmp')
       let b:vimtex = b:vimtex_tmp
