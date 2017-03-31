@@ -18,13 +18,14 @@ let s:qf = {
 function! s:qf.init() abort dict "{{{1
   let g:current_compiler = 'lacheck'
 
-  CompilerSet makeprg=lacheck\ %
-  CompilerSet errorformat="%f",\ line\ %l:\ %m
+  CompilerSet makeprg=lacheck
+  CompilerSet errorformat=\"%f\"\\,\ line\ %l:\ %m
+  CompilerSet errorformat+=%-G%.%#
 endfunction
 
 " }}}1
 function! s:qf.setqflist(...) abort dict "{{{1
-  silent make %
+  silent make %:S
 endfunction
 
 " }}}1
