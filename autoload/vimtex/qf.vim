@@ -5,16 +5,25 @@
 "
 
 function! vimtex#qf#init_buffer() abort " {{{1
-  " Set compiler (this defines the errorformat)
-  compiler latexmk
-
-  " Define commands
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
   command! -buffer VimtexLacheck call vimtex#qf#lacheck()
 
-  " Define mappings
   nnoremap <buffer> <plug>(vimtex-errors)  :call vimtex#qf#toggle()<cr>
   nnoremap <buffer> <plug>(vimtex-lacheck) :call vimtex#qf#lacheck()<cr>
+endfunction
+
+" }}}1
+function! vimtex#qf#init_state() abort " {{{1
+  compiler latexlog
+endfunction
+
+" }}}1
+
+function! vimtex#qf#set(compiler) abort " {{{1
+  let l:qf = vimtex#qf#{a:compiler}#new()
+  call l:qf.init()
+  unlet l:qf.init
+  let b:vimtex.qf = l:qf
 endfunction
 
 " }}}1
@@ -106,7 +115,7 @@ function! vimtex#qf#lacheck() " {{{1
   silent redraw
   wincmd p
 
-  compiler latexmk
+  compiler latexlog
 endfunction
 
 " }}}1

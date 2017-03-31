@@ -5,6 +5,6 @@
 "
 
 if exists('current_compiler') | finish | endif
-call vimtex#qf#set('lacheck')
+call vimtex#qf#set('latexlog')
 
 " vim: fdm=marker sw=2
