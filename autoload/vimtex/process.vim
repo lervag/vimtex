@@ -80,8 +80,10 @@ function! s:process.run() abort dict " {{{1
       execute '!' . l:cmd
     endif
 
-    if !has('gui_running')
-      redraw!
+    if self.silent || self.background
+      if !has('gui_running')
+        redraw!
+      endif
     endif
   endif
 
