@@ -125,11 +125,11 @@ endfunction
 " }}}1
 function! s:qf.setqflist(base, jump) abort dict "{{{1
   if empty(a:base)
-    let l:log = b:vimtex.log()
     let l:tex = b:vimtex.tex
+    let l:log = b:vimtex.log()
   else
-    let l:log = a:base . '.log'
-    let l:tex = a:base . '.tex'
+    let l:tex = a:base
+    let l:log = fnamemodify(a:base, ':r') . '.log'
   endif
 
   if empty(l:log)

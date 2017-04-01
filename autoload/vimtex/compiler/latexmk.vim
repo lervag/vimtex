@@ -135,7 +135,7 @@ function! s:compiler.start() abort dict " {{{1
             \ ['VimtexSuccess', 'started in background!']])
     else
       call vimtex#echo#status(['latexmk compile: ',
-            \ vimtex#qf#inquire(self.file)
+            \ vimtex#qf#inquire(self.target)
             \   ? ['VimtexWarning', 'fail']
             \   : ['VimtexSuccess', 'success']])
     endif
