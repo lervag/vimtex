@@ -22,6 +22,7 @@ function! s:qf.init() abort dict "{{{1
   let self.config.default = get(self.config, 'default', 1)
   let self.config.packages = get(self.config, 'packages', {})
   let self.config.packages.default = get(self.config.packages, 'default', 1)
+  let self.config.fix_paths = get(self.config, 'fix_paths', 1)
 
   CompilerSet makeprg=""
 
@@ -140,16 +141,20 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
   "
   " We use a temporary autocmd to fix some paths in the quickfix entry
   "
-  let s:main = l:tex
-  let s:title = 'Vimtex errors (' . self.name . ')'
-  augroup vimtex_qf_tmp
-    autocmd!
-    autocmd QuickFixCmdPost [cl]*file call s:fix_paths()
-  augroup END
+  if self.config.fix_paths
+    let s:main = l:tex
+    let s:title = 'Vimtex errors (' . self.name . ')'
+    augroup vimtex_qf_tmp
+      autocmd!
+      autocmd QuickFixCmdPost [cl]*file call s:fix_paths()
+    augroup END
+  endif
 
   execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(l:log)
 
-  autocmd! vimtex_qf_tmp
+  if self.config.fix_paths
+    autocmd! vimtex_qf_tmp
+  endif
 endfunction
 
 " }}}1

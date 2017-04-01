@@ -5,6 +5,7 @@ filetype plugin indent on
 syntax enable
 
 let g:vimtex_view_automatic = 0
+let g:vimtex_quickfix_latexlog = {'fix_paths':0}
 let g:vimtex_compiler_progname = 'nvr'
 let g:vimtex_compiler_latexmk = {
       \ 'continuous' : 0,
