@@ -24,7 +24,7 @@ function! vimtex#qf#set(compiler) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#qf#lacheck() " {{{1
+function! vimtex#qf#lacheck() abort " {{{1
   compiler lacheck
 
   call vimtex#qf#open(0)
@@ -34,7 +34,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#qf#toggle() " {{{1
+function! vimtex#qf#toggle() abort " {{{1
   if s:qf_is_open()
     cclose
   else
@@ -43,7 +43,7 @@ function! vimtex#qf#toggle() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#qf#open(force) " {{{1
+function! vimtex#qf#open(force) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return | endif
 
   try
@@ -84,7 +84,7 @@ function! vimtex#qf#open(force) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#qf#inquire(...) " {{{1
+function! vimtex#qf#inquire(...) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return 0 | endif
 
   try
@@ -99,7 +99,7 @@ endfunction
 
 " }}}1
 
-function! s:window_save() " {{{1
+function! s:window_save() abort " {{{1
   if exists('*win_gotoid')
     let s:previous_window = win_getid()
   else
@@ -108,7 +108,7 @@ function! s:window_save() " {{{1
 endfunction
 
 " }}}1
-function! s:window_restore() " {{{1
+function! s:window_restore() abort " {{{1
   if exists('*win_gotoid')
     call win_gotoid(s:previous_window)
   else
@@ -123,7 +123,7 @@ endfunction
 
 " }}}1
 
-function! s:qf_is_open() " {{{1
+function! s:qf_is_open() abort " {{{1
   redir => l:buflist
   silent! ls!
   redir END
@@ -140,7 +140,7 @@ function! s:qf_is_open() " {{{1
 endfunction
 
 " }}}1
-function! s:qf_has_errors() " {{{1
+function! s:qf_has_errors() abort " {{{1
   return len(filter(getqflist(), 'v:val.type ==# ''E''')) > 0
 endfunction
 
