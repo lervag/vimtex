@@ -196,7 +196,7 @@ function! s:compiler.clean(full) abort dict " {{{1
     let l:cmd .= ' -outdir=' . self.build_dir
   endif
   let l:cmd .= vimtex#util#shellescape(self.target)
-  call vimtex#process#run(l:cmd)
+  call vimtex#process#run(l:cmd, {'null':1})
 
   call vimtex#echo#status(['latexmk clean: ',
         \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
