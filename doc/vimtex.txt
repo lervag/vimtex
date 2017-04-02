@@ -2097,11 +2097,11 @@ COMPILER                                                      *vimtex-compiler*
 relatively easy to add new compilers. At the moment, only one compiler is
 supported: |vimtex-latexmk|.
 
-Compilation is started and stopped with |VimtexCompile| and |VimtexStop|,
-or with |VimtexCompileToggle|.  Although, stopping is only relevant for
-continuous compilations.  Single short compilation is always available through
-|VimtexCompileSS|.  The default mappings for these commands are listed here:
-|vimtex-default-mappings|.
+Compilation is started and stopped with |VimtexCompile| and |VimtexStop|.
+Although, |VimtexStop| stopping is only relevant for continuous compilations,
+and in this case, |VimtexCompile| itself works as a toggle.  Single short
+compilation is always available through |VimtexCompileSS|.  The default
+mappings for these commands are listed here: |vimtex-default-mappings|.
 
 It is also possible to compile a selection of the file. To do this, one may
 either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
@@ -2115,7 +2115,6 @@ The compilers should respect the TeX program directive as described here:
 
 Associated commands:
     |VimtexCompile|
-    |VimtexCompileToggle|
     |VimtexCompileSS|
     |VimtexCompileSS!|
     |VimtexCompileSelected|
@@ -2518,6 +2517,9 @@ Deprecated options:
     *g:vimtex_latexmk_continuous*
     *g:vimtex_latexmk_background*
     *g:vimtex_latexmk_options*
+
+Deprecated commands:
+    *VimtexCompileToggle* (use |VimtexCompile|)
 
 2017-03-28: Major refactoring of initialization~
 The initialization has been refactored in order to provide a more consistent
