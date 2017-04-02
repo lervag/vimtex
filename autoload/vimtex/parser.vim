@@ -22,8 +22,10 @@ endfunction
 
 " }}}1
 function! vimtex#parser#get_externalfiles() " {{{1
-  let l:preamble = vimtex#parser#tex(b:vimtex.tex,
-        \ {'re_stop' : '\\begin{document}'})
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop' : '\\begin{document}',
+        \ 'detailed' : 0,
+        \})
 
   let l:result = []
   for l:line in filter(l:preamble, 'v:val =~# ''\\externaldocument''')
