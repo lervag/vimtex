@@ -5,9 +5,11 @@
 "
 
 function! vimtex#index#open(bufname) abort " {{{1
-  let winnr = bufwinnr(bufnr(a:bufname))
-  if winnr >= 0
-    silent execute winnr . 'wincmd w'
+  let l:winnr = bufwinnr(bufnr(a:bufname))
+  if l:winnr >= 0
+    let l:prev_winnr = winnr()
+    silent execute l:winnr . 'wincmd w'
+    let b:index.prev_winnr = l:prev_winnr
     return 1
   else
     return 0
@@ -25,6 +27,7 @@ endfunction
 " }}}1
 function! vimtex#index#create(index) abort " {{{1
   let l:index = extend(deepcopy(s:index), a:index)
+  let l:index.prev_winnr = winnr()
 
   let l:vimtex = get(b:, 'vimtex', {})
   if g:vimtex_index_split_pos ==# 'full'
@@ -111,7 +114,7 @@ function! s:index.activate(close) abort dict "{{{1
   let toc_wnr = winnr()
 
   " Return to calling window
-  wincmd w
+  silent execute self.prev_winnr . 'wincmd w'
 
   " Get buffer number, add buffer if necessary
   let bnr = bufnr(entry.file)
