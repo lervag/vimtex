@@ -1,0 +1,13 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+nmap x :vnew<cr><c-w>l\lt<cr>
+
+let g:vimtex_index_split_pos = 'vert botright'
+let g:vimtex_echo_ignore_wait = 1
+
+silent! edit minimal.tex
