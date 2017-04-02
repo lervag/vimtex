@@ -60,24 +60,24 @@ function! s:process.run() abort dict " {{{1
 
   " Set up command string based on the given system
   if has('win32')
-    let l:cmd = self.build_cmd_win32()
+    let self.cmd = self.build_cmd_win32()
     call self.win32_prepare()
   else
-    let l:cmd = self.build_cmd_unix()
+    let self.cmd = self.build_cmd_unix()
   endif
 
   " Run the command
   if self.use_system
     if self.silent && self.background
-      silent call system(l:cmd)
+      silent call system(self.cmd)
     else
-      call system(l:cmd)
+      call system(self.cmd)
     endif
   else
     if self.silent && self.background
-      silent execute '!' . l:cmd
+      silent execute '!' . self.cmd
     else
-      execute '!' . l:cmd
+      execute '!' . self.cmd
     endif
 
     if self.silent || self.background
