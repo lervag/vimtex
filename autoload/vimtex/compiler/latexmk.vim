@@ -366,12 +366,18 @@ function! s:build_cmd(opts) abort " {{{1
   endif
 
   if a:opts.callback
-    let l:cb = shellescape('""') . g:vimtex_compiler_progname . shellescape('""')
-          \ . ' --servername ' . v:servername
-    let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
-          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
-    let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
-          \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+    if empty(v:servername)
+      call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
+      call vimtex#echo#wait()
+    else
+      let l:cb = shellescape('""')
+            \ . g:vimtex_compiler_progname . shellescape('""')
+            \ . ' --servername ' . v:servername
+      let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
+            \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
+      let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
+            \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+    endif
   endif
 
   let l:cmd .= ' ' . vimtex#util#shellescape(a:opts.target)
