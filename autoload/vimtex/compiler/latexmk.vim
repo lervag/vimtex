@@ -159,6 +159,19 @@ function! s:compiler.start_single() abort dict " {{{1
 
   let self.process = s:init_process(l:opts)
   call self.process.run()
+
+  if !l:opts.continuous
+    if self.background
+      call vimtex#echo#status(['latexmk compile: ',
+            \ ['VimtexSuccess', 'started in background!']])
+    else
+      if !has('gui') | redraw | endif
+      call vimtex#echo#status(['latexmk compile: ',
+            \ vimtex#qf#inquire(self.target)
+            \   ? ['VimtexWarning', 'fail']
+            \   : ['VimtexSuccess', 'success']])
+    endif
+  endif
 endfunction
 
 " }}}1
