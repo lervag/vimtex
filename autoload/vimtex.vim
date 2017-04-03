@@ -391,6 +391,10 @@ function! s:init_default_mappings() " {{{1
     call s:map('x', 'a$', '<plug>(vimtex-a$)')
     call s:map('o', 'i$', '<plug>(vimtex-i$)')
     call s:map('o', 'a$', '<plug>(vimtex-a$)')
+    call s:map('x', 'iP', '<plug>(vimtex-iP)')
+    call s:map('x', 'aP', '<plug>(vimtex-aP)')
+    call s:map('o', 'iP', '<plug>(vimtex-iP)')
+    call s:map('o', 'aP', '<plug>(vimtex-aP)')
   endif
 
   if get(g:, 'vimtex_toc_enabled', 0)

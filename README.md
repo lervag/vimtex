@@ -68,6 +68,7 @@ disabled if desired.
   - `id ad` Delimiters
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
+  - `iP aP` Sections
 - Other mappings
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
