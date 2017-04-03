@@ -37,7 +37,6 @@ let s:process = {
       \ 'pid' : 0,
       \ 'continuous' : 0,
       \ 'background' : 1,
-      \ 'silent' : 1,
       \ 'null' : 0,
       \}
 
@@ -67,11 +66,7 @@ function! s:process.run() abort dict " {{{1
 
   " Run the command
   if self.background
-    if self.silent
-      silent call system(self.cmd)
-    else
-      call system(self.cmd)
-    endif
+    call system(self.cmd)
   else
     execute '!' . self.cmd
   endif
@@ -194,7 +189,6 @@ function! s:process.pprint_items() abort dict " {{{1
   call add(l:list, ['configuration', {
         \ 'background': self.background,
         \ 'continuous': self.continuous,
-        \ 'silent': self.silent,
         \ 'null': self.null,
         \}])
 
