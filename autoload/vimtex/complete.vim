@@ -146,10 +146,7 @@ function! s:completer_bib.search(regexp) dict " {{{2
           \ ], tmp.aux)
 
     " Create the temporary bbl file
-    call vimtex#process#run('bibtex -terse ' . tmp.aux, {
-          \ 'background' : 0,
-          \ 'use_system' : 1,
-          \})
+    call vimtex#process#run('bibtex -terse ' . tmp.aux, {'null' : 1})
 
     " Parse temporary bbl file
     let lines = map(readfile(tmp.bbl), 's:tex2unicode(v:val)')
