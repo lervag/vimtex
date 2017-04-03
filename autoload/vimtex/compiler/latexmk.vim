@@ -53,10 +53,6 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
       let self.callback = 0
       call vimtex#echo#warning('Can''t use callbacks without +clientserver')
       call vimtex#echo#wait()
-    elseif empty(v:servername)
-      let self.callback = 0
-      call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
-      call vimtex#echo#wait()
     endif
   endif
 
