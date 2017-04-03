@@ -1,0 +1,25 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall<cr>
+
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_view_automatic = 0
+
+let g:vimtex_compiler_latexmk = {
+     \ 'background' : 0,
+     \ 'build_dir' : '',
+     \ 'callback' : 0,
+     \ 'continuous' : 0,
+     \}
+
+let g:vimtex_quickfix_latexlog = {
+      \ 'overfull' : 0,
+      \ 'underfull' : 0,
+      \ 'packages' : {
+      \   'default' : 0,
+      \ },
+      \}
