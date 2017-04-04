@@ -36,7 +36,13 @@ function! vimtex#compiler#init_state(state) abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
   try
-    let a:state.compiler = vimtex#compiler#{g:vimtex_compiler_method}#init()
+    let l:options = {
+          \ 'root': a:state.root,
+          \ 'target' : a:state.base,
+          \ 'target_path' : a:state.tex,
+          \}
+    let a:state.compiler
+          \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
   catch /vimtex: Requirements not met/
     call vimtex#echo#echo('- vimtex#compiler was not initialized!')
     call vimtex#echo#wait()
@@ -99,8 +105,9 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
 
   " Create and initialize temporary compiler
   let l:options = {
+        \ 'root' : l:file.root,
         \ 'target' : l:file.base,
-        \ 'target_full_path' : l:file.tex,
+        \ 'target_path' : l:file.tex,
         \ 'background' : 0,
         \ 'continuous' : 0,
         \ 'callback' : 0,

@@ -4,8 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#compiler#latexmk#init(...) abort " {{{1
-  let l:options = extend(a:0 > 0 ? a:1 : {},
+function! vimtex#compiler#latexmk#init(options) abort " {{{1
+  let l:options = extend(a:options,
         \ get(g:, 'vimtex_compiler_latexmk', {}), 'keep')
 
   " Create copy of the compiler object and extend with user settings
@@ -28,9 +28,9 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'latexmk',
-      \ 'root' : b:vimtex.root,
-      \ 'target' : b:vimtex.base,
-      \ 'target_path' : b:vimtex.tex,
+      \ 'root' : '',
+      \ 'target' : '',
+      \ 'target_path' : '',
       \ 'background' : 0,
       \ 'build_dir' : '',
       \ 'callback' : 1,
