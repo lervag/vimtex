@@ -36,7 +36,6 @@ let s:process = {
       \ 'pid' : 0,
       \ 'background' : 1,
       \ 'continuous' : 0,
-      \ 'silent' : 1,
       \ 'null' : 0,
       \ 'workdir' : '',
       \ 'use_system' : 0,
@@ -68,22 +67,19 @@ function! s:process.run() abort dict " {{{1
 
   " Run the command
   if self.use_system
-    if self.silent && self.background
+    if self.background
       silent call system(self.cmd)
     else
       call system(self.cmd)
     endif
   else
-    if self.silent && self.background
+    if self.background
       silent execute '!' . self.cmd
-    else
-      execute '!' . self.cmd
-    endif
-
-    if self.silent || self.background
       if !has('gui_running')
         redraw!
       endif
+    else
+      execute '!' . self.cmd
     endif
   endif
 
@@ -205,7 +201,6 @@ function! s:process.pprint_items() abort dict " {{{1
   call add(l:list, ['configuration', {
         \ 'background': self.background,
         \ 'continuous': self.continuous,
-        \ 'silent': self.silent,
         \ 'null': self.null,
         \}])
 

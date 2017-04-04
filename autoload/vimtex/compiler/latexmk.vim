@@ -280,9 +280,6 @@ function! s:init_process(opts) abort " {{{1
   let l:process.name = 'latexmk'
   let l:process.continuous = a:opts.continuous
   let l:process.background = a:opts.background
-  if !l:process.background
-    let l:process.silent = 0
-  endif
   let l:process.cmd = s:build_cmd(a:opts)
 
   if l:process.continuous
