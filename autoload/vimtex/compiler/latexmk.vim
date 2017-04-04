@@ -288,7 +288,6 @@ function! s:init_process(opts) abort " {{{1
   if l:process.continuous
     if has('win32')
       " Not implemented
-      return
     else
       for l:pid in split(system(
             \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . a:opts.target . '"'), "\n")
