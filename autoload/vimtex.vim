@@ -86,7 +86,6 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_format_enabled', 0)
 
   call s:init_option('vimtex_imaps_enabled', 1)
-  call s:init_option('vimtex_imaps_leader', '`')
   call s:init_option('vimtex_imaps_disabled', [])
   call s:init_option('vimtex_imaps_list', [
         \ { 'lhs' : '0',  'rhs' : '\emptyset' },

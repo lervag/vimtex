@@ -41,7 +41,7 @@ function! vimtex#imaps#list() " {{{1
 
   for l:map in s:created_maps
     call append('$', printf('%5S  ->  %-30S %S',
-          \ get(l:map, 'leader', g:vimtex_imaps_leader) . l:map.lhs,
+          \ get(l:map, 'leader', get(g:, 'vimtex_imaps_leader', '`')) . l:map.lhs,
           \ l:map.rhs,
           \ get(l:map, 'wrapper', 'vimtex#imaps#wrap_math')))
   endfor
@@ -76,7 +76,7 @@ endfunction
 " The imap generator
 "
 function! s:create_map(map) " {{{1
-  let l:leader = get(a:map, 'leader', g:vimtex_imaps_leader)
+  let l:leader = get(a:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
   endif
