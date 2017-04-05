@@ -91,7 +91,7 @@ function! s:process.run() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:process.kill() abort dict " {{{1
+function! s:process.stop() abort dict " {{{1
   if !self.pid | return | endif
 
   let l:cmd = has('win32')

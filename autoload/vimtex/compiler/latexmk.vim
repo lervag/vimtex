@@ -164,7 +164,7 @@ endfunction
 " }}}1
 function! s:compiler.stop() abort dict " {{{1
   if self.is_running()
-    call self.process.kill()
+    call self.process.stop()
     call vimtex#echo#status(['latexmk compile: ',
           \ ['VimtexSuccess', 'stopped (' . self.target . ')']])
     if exists('#User#VimtexEventCompileStopped')
