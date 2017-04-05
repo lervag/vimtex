@@ -1,15 +1,12 @@
 set nocompatible
-
-" Load Vimtex
-" Note: The path might need an update
 let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
-
-" Load other plugins, if necessary
-" let &rtp = '~/path/to/other/plugin,' . &rtp
-
 filetype plugin indent on
 syntax enable
 
-" Vimtex options go here
+nnoremap q :qall<cr>
 
+let g:tex_flavor = 'latex'
+
+" let g:vimtex_echo_ignore_wait = 1
+" let g:vimtex_view_automatic = 0
