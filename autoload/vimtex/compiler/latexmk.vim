@@ -202,7 +202,7 @@ function! s:compiler.clean(full) abort dict " {{{1
     let l:cmd .= ' -outdir=' . self.build_dir
   endif
   let l:cmd .= vimtex#util#shellescape(self.target)
-  call vimtex#process#run(l:cmd, {'null':1})
+  call vimtex#process#run(l:cmd)
 
   call vimtex#echo#status(['latexmk clean: ',
         \ ['VimtexSuccess', 'finished' . (a:full ? ' (full)' : '')]])
@@ -257,7 +257,6 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   if has_key(self, 'process')
     call add(l:list, ['process', self.process])
-    call add(l:list, ['output', self.output])
   endif
 
   return l:list
@@ -291,6 +290,7 @@ function! s:init_process(opts) abort " {{{1
   let l:process.continuous = a:opts.continuous
   let l:process.background = a:opts.background
   let l:process.workdir = a:opts.root
+  let l:process.output = a:opts.output
   let l:process.cmd = s:build_cmd(a:opts)
 
   if l:process.continuous
@@ -335,8 +335,6 @@ function! s:build_cmd(opts) abort " {{{1
   else
     if fnamemodify(&shell, ':t') ==# 'fish'
       let l:cmd = 'set max_print_line 2000; and latexmk'
-    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
-      let l:cmd = 'set max_print_line=2000 && latexmk'
     else
       let l:cmd = 'max_print_line=2000 latexmk'
     endif
@@ -383,24 +381,7 @@ function! s:build_cmd(opts) abort " {{{1
     endif
   endif
 
-  let l:cmd .= ' ' . vimtex#util#shellescape(a:opts.target)
-
-  if a:opts.background
-    let l:tmp = a:opts.output
-
-    if has('win32')
-      let l:cmd .= ' >'  . l:tmp
-      let l:cmd = 'cmd /s /c "' . l:cmd . '"'
-    elseif fnamemodify(&shell, ':t') ==# 'tcsh'
-      let l:cmd .= ' >' . l:tmp . ' |& cat'
-    else
-      let l:cmd .= ' >' . l:tmp . ' 2>&1'
-    endif
-  elseif has('win32')
-    let l:cmd = 'cmd /c "' . l:cmd . '"'
-  endif
-
-  return l:cmd
+  return l:cmd . ' ' . vimtex#util#shellescape(a:opts.target)
 endfunction
 
 " }}}1

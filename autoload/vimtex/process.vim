@@ -36,7 +36,7 @@ let s:process = {
       \ 'pid' : 0,
       \ 'background' : 1,
       \ 'continuous' : 0,
-      \ 'null' : 0,
+      \ 'output' : '',
       \ 'workdir' : '',
       \}
 
@@ -54,6 +54,10 @@ function! s:process.run() abort dict " {{{1
   if !empty(self.workdir)
     let l:save_pwd = getcwd()
     execute 'lcd' fnameescape(self.workdir)
+  endif
+
+  if empty(self.output) && self.background
+    let self.output = 'null'
   endif
 
   " Set up command string based on the given system
@@ -117,8 +121,13 @@ endfunction
 function! s:process.build_cmd_win32() abort dict " {{{1
   let l:cmd = self.cmd
 
-  if self.null
-    let l:cmd .= ' >nul'
+  if !empty(self.output)
+    let l:cmd .= self.output ==# 'null'
+          \ ? ' >nul'
+          \ : ' >'  . self.output
+    let l:cmd = 'cmd /s /c "' . l:cmd . '"'
+  else
+    let l:cmd = 'cmd /c "' . l:cmd . '"'
   endif
 
   if self.background
@@ -132,10 +141,10 @@ endfunction
 function! s:process.build_cmd_unix() abort dict " {{{1
   let l:cmd = self.cmd
 
-  if self.null
-    let l:cmd .= fnamemodify(&shell, ':t') ==# 'tcsh'
-          \ ? ' >/dev/null |& cat'
-          \ : ' >/dev/null 2>&1'
+  if !empty(self.output)
+    let l:cmd .= ' >'
+          \ . (self.output ==# 'null' ? '/dev/null' : shellescape(self.output))
+          \ . ' 2>&1'
   endif
 
   if self.background
@@ -192,7 +201,7 @@ function! s:process.pprint_items() abort dict " {{{1
   call add(l:list, ['configuration', {
         \ 'background': self.background,
         \ 'continuous': self.continuous,
-        \ 'null': self.null,
+        \ 'output': self.output,
         \ 'workdir': self.workdir,
         \}])
 
