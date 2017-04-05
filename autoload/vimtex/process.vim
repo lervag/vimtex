@@ -4,29 +4,26 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#process#new() abort " {{{1
-  return deepcopy(s:process)
+function! vimtex#process#new(...) abort " {{{1
+  let l:opts = a:0 > 0 ? a:1 : {}
+  return extend(deepcopy(s:process), l:opts)
 endfunction
 
 " }}}1
 function! vimtex#process#run(cmd, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
-  let l:process = extend(deepcopy(s:process), l:opts)
-  let l:process.cmd = a:cmd
-  call l:process.run()
+  let l:opts.cmd = a:cmd
+  let l:process = vimtex#process#new(l:opts)
 
+  call l:process.run()
   return l:process
 endfunction
 
 " }}}1
 function! vimtex#process#start(cmd, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
-  let l:process = extend(deepcopy(s:process), l:opts)
-  let l:process.cmd = a:cmd
-  let l:process.continuous = 1
-  call l:process.run()
-
-  return l:process
+  let l:opts.continuous = 1
+  return vimtex#process#run(a:cmd, l:opts)
 endfunction
 
 " }}}1
