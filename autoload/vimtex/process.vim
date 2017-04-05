@@ -164,16 +164,15 @@ if has('win32')
 
     let l:cmd = self.cmd
 
-    if !empty(self.output)
-      let l:cmd .= self.output ==# 'null'
-            \ ? ' >nul'
-            \ : ' >'  . self.output
-      let l:cmd = 'cmd /s /c "' . l:cmd . '"'
-    else
-      let l:cmd = 'cmd /c "' . l:cmd . '"'
-    endif
-
     if self.background
+      if !empty(self.output)
+        let l:cmd .= self.output ==# 'null'
+              \ ? ' >nul'
+              \ : ' >'  . self.output
+        let l:cmd = 'cmd /s /c "' . l:cmd . '"'
+      else
+        let l:cmd = 'cmd /c "' . l:cmd . '"'
+      endif
       let l:cmd = 'start /b "' . cmd . '"'
     endif
 
@@ -204,13 +203,12 @@ else
   function! s:process._prepare() abort dict " {{{1
     let l:cmd = self.cmd
 
-    if !empty(self.output)
-      let l:cmd .= ' >'
-            \ . (self.output ==# 'null' ? '/dev/null' : shellescape(self.output))
-            \ . ' 2>&1'
-    endif
-
     if self.background
+      if !empty(self.output)
+        let l:cmd .= ' >'
+              \ . (self.output ==# 'null' ? '/dev/null' : shellescape(self.output))
+              \ . ' 2>&1'
+      endif
       let l:cmd .= ' &'
     endif
 
