@@ -5,7 +5,9 @@
 "
 
 function! vimtex#qf#init_buffer() abort " {{{1
-  compiler latexlog
+  try
+    execute 'compiler' g:vimtex_quickfix_method
+  endtry
 
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
   command! -buffer VimtexLacheck call vimtex#qf#lacheck()
@@ -17,10 +19,15 @@ endfunction
 " }}}1
 
 function! vimtex#qf#set(compiler) abort " {{{1
-  let l:qf = vimtex#qf#{a:compiler}#new()
-  call l:qf.init()
-  unlet l:qf.init
-  let b:vimtex.qf = l:qf
+  try
+    let l:qf = vimtex#qf#{a:compiler}#new()
+    call l:qf.init()
+    unlet l:qf.init
+    let b:vimtex.qf = l:qf
+  catch /vimtex: Requirements not met/
+    call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
+    call vimtex#echo#wait()
+  endtry
 endfunction
 
 " }}}1

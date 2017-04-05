@@ -889,6 +889,20 @@ Options~
 
   Default value: 1
 
+*g:vimtex_quickfix_method*
+  This option sets the quickfix method. The following methods are available:
+
+  latexlog~
+    This is the standard method which parses the normal LaTeX output. See
+    |g:vimtex_quickfix_latexmk| for configuration.
+
+  lacheck~
+    This is a simple method that uses `lacheck` to parse the TeX file for
+    errors. It is typically used implicitly with |VimtexLacheck|. See also
+    |vimtex-lacheck|.
+
+  Default value: 'latexlog'
+
 *g:vimtex_quickfix_autojump*
   This option controls if vim should automatically jump to the first error
   whenever the |quickfix| window is opened.
