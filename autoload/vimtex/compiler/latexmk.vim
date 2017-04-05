@@ -147,7 +147,7 @@ function! s:compiler.start_single() abort dict " {{{1
   endif
 
   let l:opts = self.get_default_opts()
-  let l:opts.continuous = l:opts.callback
+  let l:opts.continuous = l:opts.callback && !empty(v:servername)
 
   if l:opts.continuous
     let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
