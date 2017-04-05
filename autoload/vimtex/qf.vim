@@ -7,6 +7,11 @@
 function! vimtex#qf#init_buffer() abort " {{{1
   try
     execute 'compiler' g:vimtex_quickfix_method
+  catch /E666/
+    call vimtex#echo#warning('Quickfix method does not exist: '
+          \ . g:vimtex_quickfix_method)
+    call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
+    call vimtex#echo#wait()
   endtry
 
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
