@@ -16,10 +16,15 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal autoindent
-setlocal indentexpr=VimtexIndent(v:lnum)
+setlocal indentexpr=VimtexIndentExpr()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
+function! VimtexIndentExpr() " {{{1
+  return VimtexIndent(v:lnum)
+endfunction
+
+"}}}
 function! VimtexIndent(lnum) " {{{1
   let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
   if l:prev_lnum == 0 | return indent(a:lnum) | endif
@@ -58,6 +63,7 @@ function! VimtexIndent(lnum) " {{{1
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
+
 "}}}
 
 function! s:get_prev_line(lnum, ignore_amps) " {{{1
