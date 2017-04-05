@@ -38,7 +38,6 @@ let s:process = {
       \ 'continuous' : 0,
       \ 'null' : 0,
       \ 'workdir' : '',
-      \ 'use_system' : 0,
       \}
 
 function! s:process.run() abort dict " {{{1
@@ -66,21 +65,13 @@ function! s:process.run() abort dict " {{{1
   endif
 
   " Run the command
-  if self.use_system
-    if self.background
-      silent call system(self.cmd)
-    else
-      call system(self.cmd)
+  if self.background
+    silent execute '!' . self.cmd
+    if !has('gui_running')
+      redraw!
     endif
   else
-    if self.background
-      silent execute '!' . self.cmd
-      if !has('gui_running')
-        redraw!
-      endif
-    else
-      execute '!' . self.cmd
-    endif
+    execute '!' . self.cmd
   endif
 
   " Capture the pid if relevant
