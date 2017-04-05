@@ -290,6 +290,7 @@ function! s:init_process(opts) abort " {{{1
   let l:process.name = 'latexmk'
   let l:process.continuous = a:opts.continuous
   let l:process.background = a:opts.background
+  let l:process.workdir = a:opts.root
   let l:process.cmd = s:build_cmd(a:opts)
 
   if l:process.continuous
@@ -330,16 +331,14 @@ endfunction
 " }}}1
 function! s:build_cmd(opts) abort " {{{1
   if has('win32')
-    let l:cmd  = 'cd /D ' . vimtex#util#shellescape(a:opts.root)
-    let l:cmd .= ' && set max_print_line=2000 & latexmk'
+    let l:cmd = 'set max_print_line=2000 & latexmk'
   else
-    let l:cmd  = 'cd ' . vimtex#util#shellescape(a:opts.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
-      let l:cmd .= '; and set max_print_line 2000; and latexmk'
+      let l:cmd = 'set max_print_line 2000; and latexmk'
     elseif fnamemodify(&shell, ':t') ==# 'tcsh'
-      let l:cmd .= ' && set max_print_line=2000 && latexmk'
+      let l:cmd = 'set max_print_line=2000 && latexmk'
     else
-      let l:cmd .= ' && max_print_line=2000 latexmk'
+      let l:cmd = 'max_print_line=2000 latexmk'
     endif
   endif
 

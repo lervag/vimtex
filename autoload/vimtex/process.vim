@@ -193,6 +193,7 @@ function! s:process.pprint_items() abort dict " {{{1
         \ 'background': self.background,
         \ 'continuous': self.continuous,
         \ 'null': self.null,
+        \ 'workdir': self.workdir,
         \}])
 
   return l:list
