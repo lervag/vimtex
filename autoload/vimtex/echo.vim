@@ -35,7 +35,7 @@ function! vimtex#echo#info(message) " {{{1
 endfunction
 
 function! vimtex#echo#formatted(parts) " {{{1
-  echon "\r"
+  echo ''
   try
     for part in a:parts
       if type(part) == type('')
