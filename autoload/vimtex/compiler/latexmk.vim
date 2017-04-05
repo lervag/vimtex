@@ -320,10 +320,8 @@ endfunction
 " }}}1
 function! s:build_cmd(opts) abort " {{{1
   if has('win32')
-    let l:cmd  = 'cd /D "' . a:opts.root . '"'
+    let l:cmd  = 'cd /D ' . vimtex#util#shellescape(a:opts.root)
     let l:cmd .= ' && set max_print_line=2000 & latexmk'
-    let l:shellslash = &shellslash
-    set noshellslash
   else
     let l:cmd  = 'cd ' . vimtex#util#shellescape(a:opts.root)
     if fnamemodify(&shell, ':t') ==# 'fish'
@@ -366,8 +364,8 @@ function! s:build_cmd(opts) abort " {{{1
       call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
       call vimtex#echo#wait()
     else
-      let l:cb = shellescape('""')
-            \ . g:vimtex_compiler_progname . shellescape('""')
+      let l:cb = vimtex#util#shellescape(
+            \ '""' . g:vimtex_compiler_progname . '""')
             \ . ' --servername ' . v:servername
       let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
             \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
@@ -391,10 +389,6 @@ function! s:build_cmd(opts) abort " {{{1
     endif
   elseif has('win32')
     let l:cmd = 'cmd /c "' . l:cmd . '"'
-  endif
-
-  if has('win32')
-    let &shellslash = l:shellslash
   endif
 
   return l:cmd
