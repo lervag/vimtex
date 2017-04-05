@@ -5,15 +5,6 @@
 "
 
 function! vimtex#qf#init_buffer() abort " {{{1
-  try
-    execute 'compiler' g:vimtex_quickfix_method
-  catch /E666/
-    call vimtex#echo#warning('Quickfix method does not exist: '
-          \ . g:vimtex_quickfix_method)
-    call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
-    call vimtex#echo#wait()
-  endtry
-
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
   command! -buffer VimtexLacheck call vimtex#qf#lacheck()
 
@@ -22,13 +13,12 @@ function! vimtex#qf#init_buffer() abort " {{{1
 endfunction
 
 " }}}1
-
-function! vimtex#qf#set(compiler) abort " {{{1
+function! vimtex#qf#init_state(state) abort " {{{1
   try
-    let l:qf = vimtex#qf#{a:compiler}#new()
+    let l:qf = vimtex#qf#{g:vimtex_quickfix_method}#new()
     call l:qf.init()
     unlet l:qf.init
-    let b:vimtex.qf = l:qf
+    let a:state.qf = l:qf
   catch /vimtex: Requirements not met/
     call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
     call vimtex#echo#wait()
@@ -36,12 +26,15 @@ function! vimtex#qf#set(compiler) abort " {{{1
 endfunction
 
 " }}}1
+
 function! vimtex#qf#lacheck() abort " {{{1
-  compiler lacheck
+  let l:qf_save = b:vimtex.qf
+  let l:qf = vimtex#qf#lacheck#new()
+  call l:qf.init()
 
-  call vimtex#qf#open(0)
-
-  compiler latexlog
+  let b:vimtex.qf = l:qf
+  call vimtex#qf#open(1)
+  let b:vimtex.qf = l:qf_save
 endfunction
 
 " }}}1

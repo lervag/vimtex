@@ -16,15 +16,11 @@ let s:qf = {
       \}
 
 function! s:qf.init() abort dict "{{{1
-  let g:current_compiler = 'latexlog'
-
   let self.config = get(g:, 'vimtex_quickfix_latexlog', {})
   let self.config.default = get(self.config, 'default', 1)
   let self.config.packages = get(self.config, 'packages', {})
   let self.config.packages.default = get(self.config.packages, 'default', 1)
   let self.config.fix_paths = get(self.config, 'fix_paths', 1)
-
-  CompilerSet makeprg=""
 
   call self.set_errorformat()
   unlet self.set_errorformat
@@ -38,43 +34,43 @@ function! s:qf.set_errorformat() abort dict "{{{1
   "
 
   " Push file to file stack
-  CompilerSet errorformat=%-P**%f
-  CompilerSet errorformat+=%-P**\"%f\"
+  setlocal errorformat=%-P**%f
+  setlocal errorformat+=%-P**\"%f\"
 
   " Match errors
-  CompilerSet errorformat+=%E!\ LaTeX\ %trror:\ %m
-  CompilerSet errorformat+=%E%f:%l:\ %m
-  CompilerSet errorformat+=%E!\ %m
+  setlocal errorformat+=%E!\ LaTeX\ %trror:\ %m
+  setlocal errorformat+=%E%f:%l:\ %m
+  setlocal errorformat+=%E!\ %m
 
   " More info for undefined control sequences
-  CompilerSet errorformat+=%Z<argument>\ %m
+  setlocal errorformat+=%Z<argument>\ %m
 
   " More info for some errors
-  CompilerSet errorformat+=%Cl.%l\ %m
+  setlocal errorformat+=%Cl.%l\ %m
 
   "
   " Define general warnings
   "
   let l:default = self.config.default
   if get(self.config, 'font', l:default)
-    CompilerSet errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
-    CompilerSet errorformat+=%-CLaTeX\ Font\ Warning:\ %m
-    CompilerSet errorformat+=%-C(Font)%m
+    setlocal errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
+    setlocal errorformat+=%-CLaTeX\ Font\ Warning:\ %m
+    setlocal errorformat+=%-C(Font)%m
   else
-    CompilerSet errorformat+=%-WLaTeX\ Font\ Warning:\ %m
+    setlocal errorformat+=%-WLaTeX\ Font\ Warning:\ %m
   endif
 
   if get(self.config, 'general', l:default)
-    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-    CompilerSet errorformat+=%+WLaTeX\ %.%#Warning:\ %m
+    setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
+    setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %m
   endif
 
   if get(self.config, 'overfull', l:default)
-    CompilerSet errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+    setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   endif
 
   if get(self.config, 'underfull', l:default)
-    CompilerSet errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+    setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   endif
 
   "
@@ -82,45 +78,45 @@ function! s:qf.set_errorformat() abort dict "{{{1
   "
   let l:default = self.config.packages.default
   if get(self.config.packages, 'natbib', l:default)
-    CompilerSet errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
   endif
 
   if get(self.config.packages, 'biblatex', l:default)
-    CompilerSet errorformat+=%+WPackage\ biblatex\ Warning:\ %m
-    CompilerSet errorformat+=%-C(biblatex)%.%#in\ t%.%#
-    CompilerSet errorformat+=%-C(biblatex)%.%#Please\ v%.%#
-    CompilerSet errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
-    CompilerSet errorformat+=%-C(biblatex)%m
+    setlocal errorformat+=%+WPackage\ biblatex\ Warning:\ %m
+    setlocal errorformat+=%-C(biblatex)%.%#in\ t%.%#
+    setlocal errorformat+=%-C(biblatex)%.%#Please\ v%.%#
+    setlocal errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
+    setlocal errorformat+=%-C(biblatex)%m
   endif
 
   if get(self.config.packages, 'babel', l:default)
-    CompilerSet errorformat+=%-Z(babel)%.%#input\ line\ %l.
-    CompilerSet errorformat+=%-C(babel)%m
+    setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
+    setlocal errorformat+=%-C(babel)%m
   endif
 
   if get(self.config.packages, 'hyperref', l:default)
-    CompilerSet errorformat+=%+WPackage\ hyperref\ Warning:\ %m
-    CompilerSet errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
-    CompilerSet errorformat+=%-C(hyperref)%m
+    setlocal errorformat+=%+WPackage\ hyperref\ Warning:\ %m
+    setlocal errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
+    setlocal errorformat+=%-C(hyperref)%m
   endif
 
   if get(self.config.packages, 'scrreprt', l:default)
-    CompilerSet errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
-    CompilerSet errorformat+=%-C(scrreprt)%m
+    setlocal errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
+    setlocal errorformat+=%-C(scrreprt)%m
   endif
 
   if get(self.config.packages, 'fixltx2e', l:default)
-    CompilerSet errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
-    CompilerSet errorformat+=%-C(fixltx2e)%m
+    setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
+    setlocal errorformat+=%-C(fixltx2e)%m
   endif
 
   if get(self.config.packages, 'titlesec', l:default)
-    CompilerSet errorformat+=%+WPackage\ titlesec\ Warning:\ %m
-    CompilerSet errorformat+=%-C(titlesec)%m
+    setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
+    setlocal errorformat+=%-C(titlesec)%m
   endif
 
   " Ignore unmatched lines
-  CompilerSet errorformat+=%-G%.%#
+  setlocal errorformat+=%-G%.%#
 endfunction
 
 " }}}1

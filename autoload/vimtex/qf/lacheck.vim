@@ -16,11 +16,9 @@ let s:qf = {
       \}
 
 function! s:qf.init() abort dict "{{{1
-  let g:current_compiler = 'lacheck'
-
-  CompilerSet makeprg=lacheck
-  CompilerSet errorformat=\"%f\"\\,\ line\ %l:\ %m
-  CompilerSet errorformat+=%-G%.%#
+  setlocal makeprg=lacheck
+  setlocal errorformat=\"%f\"\\,\ line\ %l:\ %m
+  setlocal errorformat+=%-G%.%#
 endfunction
 
 " }}}1
