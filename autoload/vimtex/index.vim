@@ -27,9 +27,9 @@ endfunction
 " }}}1
 function! vimtex#index#create(index) abort " {{{1
   let l:index = extend(deepcopy(s:index), a:index)
-  let l:index.prev_winnr = winnr()
-
   let l:vimtex = get(b:, 'vimtex', {})
+
+  let l:bufnr = bufnr('')
   if g:vimtex_index_split_pos ==# 'full'
     silent execute 'edit' escape(l:index.name, ' ')
   else
@@ -40,8 +40,10 @@ function! vimtex#index#create(index) abort " {{{1
           \ g:vimtex_index_split_pos g:vimtex_index_split_width
           \ 'new' escape(l:index.name, ' ')
   endif
-  let b:vimtex = l:vimtex
+  let l:index.prev_winnr = bufwinnr(l:bufnr)
+
   let b:index = l:index
+  let b:vimtex = l:vimtex
 
   setlocal bufhidden=wipe
   setlocal buftype=nofile
