@@ -16,33 +16,34 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal autoindent
-setlocal indentexpr=VimtexIndent(v:lnum)
+setlocal indentexpr=VimtexIndent()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
-function! VimtexIndent(lnum) " {{{1
-  let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
-  if l:prev_lnum == 0 | return indent(a:lnum) | endif
+function! VimtexIndent() " {{{1
+  let l:lnum = v:lnum
+  let l:prev_lnum = s:get_prev_line(prevnonblank(l:lnum - 1), 0)
+  if l:prev_lnum == 0 | return indent(l:lnum) | endif
 
   " Get current and previous line and remove comments
-  let l:line = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
+  let l:line = substitute(getline(l:lnum), '\\\@<!%.*', '', '')
   let l:prev_line = substitute(getline(l:prev_lnum),   '\\\@<!%.*', '', '')
 
   " Check for verbatim modes
-  if s:is_verbatim(l:line, a:lnum)
-    return empty(l:line) ? indent(l:prev_lnum) : indent(a:lnum)
+  if s:is_verbatim(l:line, l:lnum)
+    return empty(l:line) ? indent(l:prev_lnum) : indent(l:lnum)
   endif
 
   " Align on ampersands
   if get(g:, 'vimtex_indent_on_ampersands', 1)
         \ && l:line =~# '^\s*&'
         \ && l:prev_line =~# '\\\@<!&.*'
-    return indent(a:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
+    return indent(l:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
   endif
 
   " Use previous indentation for comments
   if l:line =~# '^\s*%'
-    return indent(a:lnum)
+    return indent(l:lnum)
   endif
 
   " Ensure previous line does not start with ampersand
@@ -54,7 +55,7 @@ function! VimtexIndent(lnum) " {{{1
   " Indent environments, delimiters, and tikz
   let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
-  let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
+  let l:ind += s:indent_delims(l:line, l:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
