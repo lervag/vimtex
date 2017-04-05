@@ -66,15 +66,22 @@ function! s:process.pprint_items() abort dict " {{{1
         \ ['cmd', self.prepared_cmd],
         \]
 
-  let l:config = {
-        \ 'background': self.background,
-        \ 'continuous': self.continuous,
-        \}
-  if !empty(self.output)
-    let l:config.output = self.output
+  let l:config = [
+        \ ['continuous', self.continuous],
+        \]
+
+  if !self.continuous
+    call add(l:config, ['background', self.background])
   endif
+
+  if self.background
+    if !empty(self.output)
+      call add(l:config, ['output', self.output])
+    endif
+  endif
+
   if !empty(self.workdir)
-    let l:config.workdir = self.workdir
+    call add(l:config, ['workdir', self.workdir])
   endif
 
   call add(l:list, ['configuration', l:config])
