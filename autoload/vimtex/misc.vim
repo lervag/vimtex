@@ -21,7 +21,13 @@ endfunction
 
 function! vimtex#misc#info(global) abort " {{{1
   if a:global
+    let l:first = 1
     for l:data in vimtex#state#list_all()
+      if l:first
+        let l:first = 0
+      else
+        echo "\n"
+      endif
       call vimtex#echo#pprint(l:data)
     endfor
   else
