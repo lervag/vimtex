@@ -109,7 +109,7 @@ function! s:compiler.cleanup() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.start() abort dict " {{{1
+function! s:compiler.start(...) abort dict " {{{1
   if self.is_running()
     call vimtex#echo#status(['compiler: ',
           \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
@@ -121,7 +121,9 @@ function! s:compiler.start() abort dict " {{{1
 
   if self.continuous
     call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess', 'started continuous mode']])
+          \ ['VimtexSuccess',
+          \   'started continuous mode' . (a:0 > 0 ? ' (single shot)' : '')]
+          \])
     if exists('#User#VimtexEventCompileStarted')
       doautocmd User VimtexEventCompileStarted
     endif
@@ -130,26 +132,17 @@ function! s:compiler.start() abort dict " {{{1
       call vimtex#echo#status(['compiler: ',
             \ ['VimtexSuccess', 'started in background!']])
     else
-      call vimtex#echo#status(['compiler: ',
-            \ vimtex#qf#inquire(self.target)
-            \   ? ['VimtexWarning', 'fail']
-            \   : ['VimtexSuccess', 'success']])
+      call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
     endif
   endif
 endfunction
 
 " }}}1
 function! s:compiler.start_single() abort dict " {{{1
-  if self.is_running()
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
-    return
-  endif
+  let l:continuous = self.continuous
+  let self.continuous = self.callback && !empty(v:servername)
 
-  let l:opts = self.get_default_opts()
-  let l:opts.continuous = l:opts.callback && !empty(v:servername)
-
-  if l:opts.continuous
+  if self.continuous
     let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
     function! VimtexSSCallback(status)
       silent call vimtex#compiler#stop()
@@ -157,18 +150,8 @@ function! s:compiler.start_single() abort dict " {{{1
     endfunction
   endif
 
-  let self.process = s:init_process(l:opts)
-  call self.process.run()
-
-  if self.background
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess', 'started in background!']])
-  else
-    call vimtex#echo#status(['compiler: ',
-          \ vimtex#qf#inquire(self.target)
-          \   ? ['VimtexWarning', 'fail']
-          \   : ['VimtexSuccess', 'success']])
-  endif
+  call self.start(1)
+  let self.continuous = l:continuous
 endfunction
 
 " }}}1
@@ -362,7 +345,7 @@ function! s:build_cmd(opts) abort " {{{1
 
     " Set viewer options
     if !get(g:, 'vimtex_view_automatic', 1)
-          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id', 0) > 0
+          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id') > 0
           \ || get(s:, 'silence_next_callback', 0)
       let l:cmd .= ' -view=none'
     elseif g:vimtex_view_enabled
