@@ -219,6 +219,11 @@ function! s:compiler.is_running() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.get_pid() abort dict " {{{1
+  return has_key(self, 'process') ? self.process.pid : 0
+endfunction
+
+" }}}1
 function! s:compiler.get_default_opts() abort dict " {{{1
   return {
         \ 'root' : self.root,

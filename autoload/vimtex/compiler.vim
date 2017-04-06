@@ -245,7 +245,7 @@ function! vimtex#compiler#status(detailed) " {{{1
         endif
 
         call vimtex#echo#status([
-              \ ['None', printf('  %-6s ', l:data.compiler.process.pid)],
+              \ ['None', printf('  %-6s ', l:data.compiler.get_pid())],
               \ ['None', l:name . "\n"]])
       endif
     endfor
