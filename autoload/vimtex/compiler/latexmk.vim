@@ -352,20 +352,20 @@ function! s:build_cmd(opts) abort " {{{1
           \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
       let l:cmd .= b:vimtex.viewer.latexmk_append_argument()
     endif
-  endif
 
-  if a:opts.callback
-    if empty(v:servername)
-      call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
-      call vimtex#echo#wait()
-    else
-      let l:cb = vimtex#util#shellescape(
-            \ '""' . g:vimtex_compiler_progname . '""')
-            \ . ' --servername ' . v:servername
-      let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
-            \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
-      let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
-            \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+    if a:opts.callback
+      if empty(v:servername)
+        call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
+        call vimtex#echo#wait()
+      else
+        let l:cb = vimtex#util#shellescape(
+              \ '""' . g:vimtex_compiler_progname . '""')
+              \ . ' --servername ' . v:servername
+        let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
+              \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
+        let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
+              \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+      endif
     endif
   endif
 
