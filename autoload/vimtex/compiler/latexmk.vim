@@ -228,20 +228,27 @@ function! s:compiler.pprint_items() abort dict " {{{1
         \ ['continuous', self.continuous],
         \ ['callback', self.callback],
         \]
+
   if !self.continuous
     call add(l:configuration, ['background', self.background])
   endif
+
   if !empty(self.build_dir)
     call add(l:configuration, ['build_dir', self.build_dir])
   endif
   call add(l:configuration, ['latexmk options', self.options])
 
-  let l:list = [['configuration', l:configuration]]
+  let l:list = []
+  if self.background
+    call add(l:list, ['output', self.output])
+  endif
 
   if self.target_path !=# b:vimtex.tex
     call add(l:list, ['root', self.root])
     call add(l:list, ['target', self.target_path])
   endif
+
+  call add(l:list, ['configuration', l:configuration])
 
   if has_key(self, 'process')
     call add(l:list, ['process', self.process])
