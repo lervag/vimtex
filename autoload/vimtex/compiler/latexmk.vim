@@ -26,6 +26,7 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'latexmk',
+      \ 'backend' : 'process',
       \ 'root' : '',
       \ 'target' : '',
       \ 'target_path' : '',
@@ -50,9 +51,11 @@ function! s:compiler.init(options) abort dict " {{{1
   call self.init_check_requirements()
   call self.init_build_dir_option()
 
+  call extend(self, deepcopy(s:compiler_{self.backend}))
+
   " Continuous processes can't run in foreground, neither can processes run
   " with the new jobs api
-  if self.continuous
+  if self.continuous || self.backend ==# 'jobs'
     let self.background = 1
   endif
 endfunction
@@ -184,7 +187,7 @@ function! s:compiler.pprint_items() abort dict " {{{1
         \ ['callback', self.callback],
         \]
 
-  if !self.continuous
+  if self.backend ==# 'process' && !self.continuous
     call add(l:configuration, ['background', self.background])
   endif
 
@@ -194,6 +197,7 @@ function! s:compiler.pprint_items() abort dict " {{{1
   call add(l:configuration, ['latexmk options', self.options])
 
   let l:list = []
+  call add(l:list, ['backend', self.backend])
   if self.background
     call add(l:list, ['output', self.output])
   endif
@@ -207,6 +211,11 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   if has_key(self, 'process')
     call add(l:list, ['process', self.process])
+  endif
+
+  if has_key(self, 'job')
+    call add(l:list, ['cmd', self.cmd])
+    call add(l:list, ['job', self.job])
   endif
 
   return l:list
@@ -302,7 +311,8 @@ endfunction
 
 " }}}1
 
-function! s:compiler.exec() abort dict " {{{1
+let s:compiler_process = {}
+function! s:compiler_process.exec() abort dict " {{{1
   let l:process = vimtex#process#new()
   let l:process.name = 'latexmk'
   let l:process.continuous = self.continuous
@@ -346,7 +356,7 @@ function! s:compiler.exec() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.start_single() abort dict " {{{1
+function! s:compiler_process.start_single() abort dict " {{{1
   let l:continuous = self.continuous
   let self.continuous = self.callback && !empty(v:servername)
 
@@ -363,21 +373,77 @@ function! s:compiler.start_single() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.is_running() abort dict " {{{1
+function! s:compiler_process.is_running() abort dict " {{{1
   return exists('self.process.pid') && self.process.pid > 0
 endfunction
 
 " }}}1
-function! s:compiler.kill() abort dict " {{{1
+function! s:compiler_process.kill() abort dict " {{{1
   call self.process.stop()
 endfunction
 
 " }}}1
-function! s:compiler.get_pid() abort dict " {{{1
+function! s:compiler_process.get_pid() abort dict " {{{1
   return has_key(self, 'process') ? self.process.pid : 0
 endfunction
 
 " }}}1
 
+let s:compiler_jobs = {}
+function! s:compiler_jobs.exec() abort dict " {{{1
+  let self.cmd = self.build_cmd()
+  let l:cmd = ['sh', '-c', self.cmd]
+  let l:options = {
+        \ 'out_io' : 'file',
+        \ 'err_io' : 'file',
+        \ 'out_name' : self.output,
+        \ 'err_name' : self.output,
+        \}
+
+  if !self.continuous
+    let s:cb_target = self.target
+    let l:options.exit_cb = function('s:callback')
+  endif
+
+  if !empty(self.root)
+    let l:save_pwd = getcwd()
+    execute 'lcd' fnameescape(self.root)
+  endif
+  let self.job = job_start(l:cmd, l:options)
+  if !empty(self.root)
+    execute 'lcd' fnameescape(l:save_pwd)
+  endif
+endfunction
+
+" }}}1
+function! s:compiler_jobs.start_single() abort dict " {{{1
+  let l:continuous = self.continuous
+  let self.continuous = 0
+  call self.start()
+  let self.continuous = l:continuous
+endfunction
+
+" }}}1
+function! s:compiler_jobs.kill() abort dict " {{{1
+  call job_stop(self.job)
+endfunction
+
+" }}}1
+function! s:compiler_jobs.is_running() abort dict " {{{1
+  return has_key(self, 'job') && job_status(self.job) ==# 'run'
+endfunction
+
+" }}}1
+function! s:compiler_jobs.get_pid() abort dict " {{{1
+  return has_key(self, 'job')
+        \ ? get(job_info(self.job), 'process') : 0
+endfunction
+
+" }}}1
+function! s:callback(ch, msg) abort " {{{1
+  call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
+endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2
