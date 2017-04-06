@@ -229,7 +229,7 @@ endfunction
 function! vimtex#compiler#status(detailed) " {{{1
   if a:detailed
     let l:running = 0
-    for l:data in values(g:vimtex_data)
+    for l:data in vimtex#state#list_all()
       if l:data.compiler.is_running()
         if !l:running
           call vimtex#echo#status(['latexmk status: ',

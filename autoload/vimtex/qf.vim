@@ -50,6 +50,7 @@ endfunction
 " }}}1
 function! vimtex#qf#open(force) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return | endif
+  cclose
 
   try
     call b:vimtex.qf.setqflist('', g:vimtex_quickfix_autojump)
