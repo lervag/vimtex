@@ -111,7 +111,7 @@ endfunction
 " }}}1
 function! s:compiler.start() abort dict " {{{1
   if self.is_running()
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
     return
   endif
@@ -120,17 +120,17 @@ function! s:compiler.start() abort dict " {{{1
   call self.process.run()
 
   if self.continuous
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexSuccess', 'started continuous mode']])
     if exists('#User#VimtexEventCompileStarted')
       doautocmd User VimtexEventCompileStarted
     endif
   else
     if self.background
-      call vimtex#echo#status(['latexmk compile: ',
+      call vimtex#echo#status(['compiler: ',
             \ ['VimtexSuccess', 'started in background!']])
     else
-      call vimtex#echo#status(['latexmk compile: ',
+      call vimtex#echo#status(['compiler: ',
             \ vimtex#qf#inquire(self.target)
             \   ? ['VimtexWarning', 'fail']
             \   : ['VimtexSuccess', 'success']])
@@ -141,7 +141,7 @@ endfunction
 " }}}1
 function! s:compiler.start_single() abort dict " {{{1
   if self.is_running()
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
     return
   endif
@@ -161,10 +161,10 @@ function! s:compiler.start_single() abort dict " {{{1
   call self.process.run()
 
   if self.background
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexSuccess', 'started in background!']])
   else
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ vimtex#qf#inquire(self.target)
           \   ? ['VimtexWarning', 'fail']
           \   : ['VimtexSuccess', 'success']])
@@ -175,13 +175,13 @@ endfunction
 function! s:compiler.stop() abort dict " {{{1
   if self.is_running()
     call self.process.stop()
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexSuccess', 'stopped (' . self.target . ')']])
     if exists('#User#VimtexEventCompileStopped')
       doautocmd User VimtexEventCompileStopped
     endif
   else
-    call vimtex#echo#status(['latexmk compile: ',
+    call vimtex#echo#status(['compiler: ',
           \ ['VimtexWarning', 'no process to stop (' . self.target . ')']])
   endif
 endfunction

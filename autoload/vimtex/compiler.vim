@@ -232,7 +232,7 @@ function! vimtex#compiler#status(detailed) " {{{1
     for l:data in vimtex#state#list_all()
       if l:data.compiler.is_running()
         if !l:running
-          call vimtex#echo#status(['latexmk status: ',
+          call vimtex#echo#status(['compiler: ',
                 \ ['VimtexSuccess', "running\n"]])
           call vimtex#echo#status([['None', '  pid    '],
                 \ ['None', "file\n"]])
@@ -251,17 +251,15 @@ function! vimtex#compiler#status(detailed) " {{{1
     endfor
 
     if !l:running
-      call vimtex#echo#status(['latexmk status: ',
+      call vimtex#echo#status(['compiler: ',
             \ ['VimtexWarning', 'not running']])
     endif
   else
-    if b:vimtex.compiler.is_running()
-      call vimtex#echo#status(['latexmk status: ',
-            \ ['VimtexSuccess', 'running']])
-    else
-      call vimtex#echo#status(['latexmk status: ',
-            \ ['VimtexWarning', 'not running']])
-    endif
+      call vimtex#echo#status(['compiler: ',
+            \ b:vimtex.compiler.is_running()
+            \ ? ['VimtexSuccess', 'running']
+            \ : ['VimtexWarning', 'not running']
+            \])
   endif
 endfunction
 
