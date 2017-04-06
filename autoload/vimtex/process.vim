@@ -35,6 +35,7 @@ let s:process = {
       \ 'continuous' : 0,
       \ 'output' : '',
       \ 'workdir' : '',
+      \ 'silent' : 0,
       \}
 
 function! s:process.run() abort dict " {{{1
@@ -118,7 +119,9 @@ endfunction
 
 " }}}1
 function! s:process._execute() abort dict " {{{1
-  if self.background
+  if self.silent
+    silent call system(self.prepared_cmd)
+  elseif self.background
     silent execute '!' . self.prepared_cmd
     if !has('gui_running')
       redraw!
