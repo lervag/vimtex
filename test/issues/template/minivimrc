@@ -8,5 +8,26 @@ nnoremap q :qall<cr>
 
 let g:tex_flavor = 'latex'
 
-" let g:vimtex_echo_ignore_wait = 1
-" let g:vimtex_view_automatic = 0
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_view_automatic = 0
+
+if has('nvim')
+  let g:vimtex_quickfix_latexlog = {'fix_paths' : 0}
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+" augroup Testing
+"   autocmd!
+"   autocmd VimEnter * VimtexCompile
+" augroup END
+
+if get(s:, 'sourced')
+  silent VimtexStop
+  silent VimtexClean
+  silent VimtexReload
+  redraw!
+  sleep 500m
+else
+  silent edit minimal.tex
+endif
+let s:sourced = 1
