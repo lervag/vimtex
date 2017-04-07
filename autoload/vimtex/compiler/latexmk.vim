@@ -55,7 +55,7 @@ function! s:compiler.init(options) abort dict " {{{1
 
   " Continuous processes can't run in foreground, neither can processes run
   " with the new jobs api
-  if self.continuous || self.backend ==# 'jobs'
+  if self.continuous || self.backend !=# 'process'
     let self.background = 1
   endif
 endfunction
@@ -215,7 +215,13 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   if has_key(self, 'job')
     call add(l:list, ['cmd', self.cmd])
-    call add(l:list, ['job', self.job])
+    if self.continuous
+      if self.backend ==# 'jobs'
+        call add(l:list, ['job', self.job])
+      else
+        call add(l:list, ['pid', self.get_pid()])
+      endif
+    endif
   endif
 
   return l:list
@@ -442,6 +448,72 @@ endfunction
 " }}}1
 function! s:callback(ch, msg) abort " {{{1
   call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
+endfunction
+
+" }}}1
+
+let s:compiler_nvim = {}
+function! s:compiler_nvim.exec() abort dict " {{{1
+  let self.cmd = self.build_cmd()
+  let l:cmd = ['sh', '-c', self.cmd]
+
+  let l:shell = {
+        \ 'on_stdout' : function('s:callback_nvim_output'),
+        \ 'on_stderr' : function('s:callback_nvim_output'),
+        \ 'cwd' : self.root,
+        \ 'target' : self.target,
+        \ 'output' : self.output,
+        \}
+
+  if !self.continuous
+    let l:shell.on_exit = function('s:callback_nvim_exit')
+  endif
+
+  let self.job = jobstart(l:cmd, l:shell)
+endfunction
+
+" }}}1
+function! s:compiler_nvim.start_single() abort dict " {{{1
+  let l:continuous = self.continuous
+  let self.continuous = 0
+  call self.start()
+  let self.continuous = l:continuous
+endfunction
+
+" }}}1
+function! s:compiler_nvim.kill() abort dict " {{{1
+  call jobstop(self.job)
+endfunction
+
+" }}}1
+function! s:compiler_nvim.is_running() abort dict " {{{1
+  try
+    let pid = jobpid(self.job)
+    return 1
+  catch
+    return 0
+  endtry
+endfunction
+
+" }}}1
+function! s:compiler_nvim.get_pid() abort dict " {{{1
+  try
+    return jobpid(self.job)
+  catch
+    return 0
+  endtry
+endfunction
+
+" }}}1
+function! s:callback_nvim_output(id, data, event) abort dict " {{{1
+  if !empty(a:data)
+    call writefile(filter(a:data, '!empty(v:val)'), self.output, 'a')
+  endif
+endfunction
+
+" }}}1
+function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
+  call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
 endfunction
 
 " }}}1

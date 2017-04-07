@@ -408,12 +408,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_compiler_method*
-  Set the compiler method. There is currently only a single available method,
-  so don't change this option!
-
-  Default value: 'latexmk'
-
 *g:vimtex_compiler_progname*
   Path to vim executable.  This is used for the callback functionality, and it
   must be set correctly in order for the callback function to work.  The
@@ -441,6 +435,12 @@ Options~
     endfunction
 
 <  Default value: []
+
+*g:vimtex_compiler_method*
+  Set the compiler method. There is currently only a single available method,
+  so don't change this option!
+
+  Default value: 'latexmk'
 
 *g:vimtex_compiler_latexmk*
   This is a dictionary that allows customization of the |vimtex-latexmk|
@@ -476,10 +476,8 @@ Options~
                modern Vim installations. Note that this will start every job
                in the background, regardless of the value of the `background`
                key. The output may be viewed through |VimtexOutput|.
-      `nvim`     [NOT IMPLEMENTED] This uses the neovim |job-control| system
-               to control the compiler process. Note that this will start
-               every job in the background, regardless of the value of the
-               `background` key. The output may be viewed through |VimtexOutput|.
+      `nvim`     This uses the neovim |job-control| system to control the
+               compiler process. It is very similar to the `jobs` backend.
 
   background~
     This option sets whether single shot compilations should be run in the
