@@ -2362,7 +2362,7 @@ A: Yes. Most features work out of the box, but the `latexmk` coupling and some
 
    In the meantime, there exists a workaround: `neovim-remote` [1] is a simple
    tool that implements the |--remote| options through a python script. If one
-   downloads this tool and sets the option |g:vimtex_latexmk_progname| to
+   downloads this tool and sets the option |g:vimtex_compiler_progname| to
    `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
    should work.
 
