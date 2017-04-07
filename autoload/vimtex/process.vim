@@ -64,7 +64,7 @@ endfunction
 function! s:process.pprint_items() abort dict " {{{1
   let l:list = [
         \ ['pid', self.pid ? self.pid : '-'],
-        \ ['cmd', self.prepared_cmd],
+        \ ['cmd', get(self, 'prepared_cmd', self.cmd)],
         \]
 
   return l:list

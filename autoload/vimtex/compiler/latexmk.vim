@@ -216,7 +216,6 @@ function! s:compiler.pprint_items() abort dict " {{{1
   endif
 
   if has_key(self, 'job')
-    call add(l:list, ['cmd', self.cmd])
     if self.continuous
       if self.backend ==# 'jobs'
         call add(l:list, ['job', self.job])
@@ -224,6 +223,7 @@ function! s:compiler.pprint_items() abort dict " {{{1
         call add(l:list, ['pid', self.get_pid()])
       endif
     endif
+    call add(l:list, ['cmd', self.cmd])
   endif
 
   return l:list
@@ -338,7 +338,6 @@ function! s:compiler_process.exec() abort dict " {{{1
         let l:path = resolve('/proc/' . l:pid . '/cwd') . '/' . self.target
         if l:path ==# self.target_path
           let l:process.pid = str2nr(l:pid)
-          let l:process.is_running = 1
           break
         endif
       endfor
@@ -366,7 +365,7 @@ endfunction
 " }}}1
 function! s:compiler_process.start_single() abort dict " {{{1
   let l:continuous = self.continuous
-  let self.continuous = self.callback && !empty(v:servername)
+  let self.continuous = self.background && self.callback && !empty(v:servername)
 
   if self.continuous
     let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
