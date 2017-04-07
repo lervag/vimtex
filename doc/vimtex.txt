@@ -450,7 +450,8 @@ Options~
   Default value: >
 
     let g:vimtex_compiler_latexmk = {
-    \ 'background' : 0,
+    \ 'backend' : 'process',
+    \ 'background' : 1,
     \ 'build_dir' : '',
     \ 'callback' : 1,
     \ 'continuous' : 1,
@@ -466,9 +467,24 @@ Options~
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
+  backend~
+    Sets the backend for running processes. Possible values are:
+
+      `process`  Traditional interface that should work (tm) on all systems.
+               It uses |!:| to control the compiler processes.
+      `jobs`     Uses |job| to control the processes. This is available on
+               modern Vim installations. Note that this will start every job
+               in the background, regardless of the value of the `background`
+               key. The output may be viewed through |VimtexOutput|.
+      `nvim`     [NOT IMPLEMENTED] This uses the neovim |job-control| system
+               to control the compiler process. Note that this will start
+               every job in the background, regardless of the value of the
+               `background` key. The output may be viewed through |VimtexOutput|.
+
   background~
     This option sets whether single shot compilations should be run in the
-    foreground or the background.
+    foreground or the background. Note that it is only relevant for the
+    `process` backend.
 
   build_dir~
     This option sets the compilation build directory.  It corresponds to the

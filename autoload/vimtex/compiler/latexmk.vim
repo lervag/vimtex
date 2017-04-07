@@ -30,7 +30,7 @@ let s:compiler = {
       \ 'root' : '',
       \ 'target' : '',
       \ 'target_path' : '',
-      \ 'background' : 0,
+      \ 'background' : 1,
       \ 'build_dir' : '',
       \ 'callback' : 1,
       \ 'continuous' : 1,
