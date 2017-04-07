@@ -26,7 +26,9 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'latexmk',
-      \ 'backend' : 'process',
+      \ 'backend' : has('win32') ? 'process'
+      \             : has('nvim') ? 'nvim'
+      \                         : v:version >= 800 ? 'jobs' : 'process',
       \ 'root' : '',
       \ 'target' : '',
       \ 'target_path' : '',
