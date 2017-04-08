@@ -408,7 +408,8 @@ function! s:compiler_jobs.exec() abort dict " {{{1
         \}
 
   if !self.continuous
-    let s:cb_target = self.target
+    let s:cb_target = self.target_path !=# b:vimtex.tex
+          \ ? self.target_path : ''
     let l:options.exit_cb = function('s:callback')
   endif
 
@@ -462,7 +463,7 @@ function! s:compiler_nvim.exec() abort dict " {{{1
         \ 'on_stdout' : function('s:callback_nvim_output'),
         \ 'on_stderr' : function('s:callback_nvim_output'),
         \ 'cwd' : self.root,
-        \ 'target' : self.target,
+        \ 'target' : self.target_path,
         \ 'output' : self.output,
         \}
 
@@ -514,7 +515,8 @@ endfunction
 
 " }}}1
 function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
-  call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
+  let l:target = self.target !=# b:vimtex.tex ? self.target : ''
+  call vimtex#compiler#callback(!vimtex#qf#inquire(l:target))
 endfunction
 
 " }}}1
