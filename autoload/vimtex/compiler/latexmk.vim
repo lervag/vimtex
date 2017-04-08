@@ -161,8 +161,9 @@ function! s:compiler.build_cmd() abort dict " {{{1
         call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
         call vimtex#echo#wait()
       else
-        let l:cb = vimtex#util#shellescape(
-              \ '""' . g:vimtex_compiler_progname . '""')
+        let l:cb = vimtex#util#shellescape('"')
+              \ . g:vimtex_compiler_progname
+              \ . vimtex#util#shellescape('"')
               \ . ' --servername ' . v:servername
         let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
               \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
