@@ -169,7 +169,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
         " - The succes_cmd and fail_cmd are the same, except for the callback
         "   status value (1 and 0)
         " - We need to escape the parantheses on windows, but not on unix
-        for [l:opt, l:val] in items({'success_cmd' : 1, 'fail_cmd' : 0})
+        for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
           let l:func = l:cb . ' --remote-expr '
                 \ . (has('win32')
                 \   ? '\"vimtex\#compiler\#callback\\(' . l:val . '\\)\"'
