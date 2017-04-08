@@ -26,8 +26,7 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'latexmk',
-      \ 'backend' : has('win32') ? 'process'
-      \             : has('nvim') ? 'nvim'
+      \ 'backend' : has('nvim') ? 'nvim'
       \                         : v:version >= 800 ? 'jobs' : 'process',
       \ 'root' : '',
       \ 'target' : '',
@@ -165,10 +164,18 @@ function! s:compiler.build_cmd() abort dict " {{{1
               \ . g:vimtex_compiler_progname
               \ . vimtex#util#shellescape('"')
               \ . ' --servername ' . v:servername
-        let l:cmd .= vimtex#compiler#latexmk#wrap_option('success_cmd',
-              \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(1)\"')
-        let l:cmd .= vimtex#compiler#latexmk#wrap_option('failure_cmd',
-              \ l:cb . ' --remote-expr \"vimtex\#compiler\#callback(0)\"')
+
+        " This seems more complicated than it is!
+        " - The succes_cmd and fail_cmd are the same, except for the callback
+        "   status value (1 and 0)
+        " - We need to escape the parantheses on windows, but not on unix
+        for [l:opt, l:val] in items({'success_cmd' : 1, 'fail_cmd' : 0})
+          let l:func = l:cb . ' --remote-expr '
+                \ . (has('win32')
+                \   ? '\"vimtex\#compiler\#callback\\(' . l:val . '\\)\"'
+                \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"')
+          let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+        endfor
       endif
     endif
   endif
@@ -400,7 +407,9 @@ endfunction
 let s:compiler_jobs = {}
 function! s:compiler_jobs.exec() abort dict " {{{1
   let self.cmd = self.build_cmd()
-  let l:cmd = ['sh', '-c', self.cmd]
+  let l:cmd = has('win32')
+        \ ? 'cmd /s /c "' . self.cmd . '"'
+        \ : ['sh', '-c', self.cmd]
   let l:options = {
         \ 'out_io' : 'file',
         \ 'err_io' : 'file',
@@ -458,7 +467,9 @@ endfunction
 let s:compiler_nvim = {}
 function! s:compiler_nvim.exec() abort dict " {{{1
   let self.cmd = self.build_cmd()
-  let l:cmd = ['sh', '-c', self.cmd]
+  let l:cmd = has('win32')
+        \ ? 'cmd /s /c "' . self.cmd . '"'
+        \ : ['sh', '-c', self.cmd]
 
   let l:shell = {
         \ 'on_stdout' : function('s:callback_nvim_output'),
