@@ -1,6 +1,11 @@
 set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
+if has('win32')
+  let &rtp = '~/vimfiles/bundle/vimtex,' . &rtp
+  let &rtp .= ',~/vimfiles/bundle/vimtex/after'
+else
+  let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+  let &rtp .= ',~/.vim/bundle/vimtex/after'
+endif
 filetype plugin indent on
 syntax enable
 
@@ -21,6 +26,13 @@ let g:vimtex_compiler_latexmk.background = 1
 if has('nvim')
   let g:vimtex_quickfix_latexlog = {'fix_paths':0}
   let g:vimtex_compiler_progname = 'nvr'
+endif
+
+if has('win32')
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options =
+        \ '-reuse-instance -forward-search @line @pdf @tex'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 endif
 
 augroup Testing
