@@ -45,7 +45,8 @@ custom mappings.  All features are enabled by default, but each feature may be
 disabled if desired.
 
 - Document compilation with
-  [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/)
+  [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/) or
+  [latexrun](https://github.com/aclements/latexrun)
 - Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - [MuPDF](http://www.mupdf.com/)
@@ -127,8 +128,8 @@ The following are some alternative LaTeX plugins for Vim:
     - vimtex builds upon Vim principles: It provides text objects for
       environments, inline math, it provides motions for sections and
       paragraphs
-    - vimtex uses `latexmk` for compilation with a callback feature to get
-      instant feedback on compilation errors
+    - vimtex uses `latexrun` or `latexmk` for compilation with a callback
+      feature to get instant feedback on compilation errors
     - vimtex is very modular: if you don't like a feature, you can turn it off.
 
 - [AutomaticTexPlugin](http://atp-vim.sourceforge.net)

@@ -67,6 +67,7 @@ CONTENTS                                                      *vimtex-contents*
     Include expression (|gf| command)             |vimtex-includeexpr|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
+    Latexrun                                    |vimtex-latexrun|
     Lacheck                                     |vimtex-lacheck|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
@@ -89,7 +90,7 @@ and evolve.
 Feature overview~
                                                               *vimtex-features*
 
-- Document compilation with `latexmk`
+- Document compilation with `latexmk` or `latexrun`
 - Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - `MuPDF`
@@ -143,16 +144,24 @@ Requirements~
 The following is a list of specific requirements for the key features of
 |vimtex|:
 
-  `latexmk`  http://users.phys.psu.edu/~collins/software/latexmk-jcc
-    |vimtex| uses `latexmk` to compile the LaTeX document.  `latexmk` is "a perl
-    script for running LaTeX the correct number of times to resolve cross
-    references, etc; it also runs auxiliary programs (bibtex, makeindex if
-    necessary, and dvips and/or a previewer as requested).  It has a number of
-    other useful capabilities, for example to start a previewer and then run
-    latex whenever the source files are updated, so that the previewer gives
-    an up-to-date view of the document. The script runs on both UNIX and
-    MS-WINDOWS (XP, etc)." [Copied from the latexmk page.]  For more info, see
-    |vimtex-latexmk|.
+  `latexmk`   http://users.phys.psu.edu/~collins/software/latexmk-jcc
+  `latexrun`  https://github.com/aclements/latexrun
+    |vimtex| uses `latexmk` or `latexrun` to compile the LaTeX document.
+      `latexmk` is "a perl script for running LaTeX the correct number of
+    times to resolve cross references, etc; it also runs auxiliary programs
+    (bibtex, makeindex if necessary, and dvips and/or a previewer as
+    requested).  It has a number of other useful capabilities, for example to
+    start a previewer and then run latex whenever the source files are
+    updated, so that the previewer gives an up-to-date view of the document.
+    The script runs on both UNIX and MS-WINDOWS (XP, etc)." [Copied from the
+    latexmk page.]  For more info, see |vimtex-latexmk|.
+      `latexrun` is similar to `latexmk` in that it runs the desired LaTeX
+    engine an appropriate number of times, including `bibtex`/`biber`.
+    However, it differes in philosophy in that it only does the build part. It
+    does not support continuous builds, nor automatic starting of the viewer.
+    However, it does parse the output log in order to provide a more concise
+    list of relevant warnings and error messages (this has currently not been
+    adapted to vimtex, as of yet).
 
   |clientserver|
     |vimtex| requires the |clientserver| for the callback functionality to
@@ -525,6 +534,39 @@ Options~
           though, that options specified on the command line has priority, and
           so if one wants to override one of the above default options, then
           one has to set this key to a list that contains the desired options.
+
+*g:vimtex_compiler_latexrun*
+  This is a dictionary that allows customization of the |vimtex-latexrun|
+  compiler. The values set by the user will take precedense over the default
+  values.
+
+  Default value: >
+
+    let g:vimtex_compiler_latexmk = {
+    \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+    \ 'background' : 1,
+    \ 'build_dir' : '',
+    \ 'options' : [
+    \   '-verbose-cmds',
+    \   '--latex-args="-synctex=1"',
+    \ ],
+    \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  backend~
+    Same as |g:vimtex_compiler_latexmk| / `backend`.
+
+  background~
+    Same as |g:vimtex_compiler_latexmk| / `background`.
+
+  build_dir~
+    Same as |g:vimtex_compiler_latexmk| / `background`.
+
+  options~
+    This is a list of options that are passed to `latexrun`. The default
+    options should work well for most people.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
@@ -910,7 +952,7 @@ Options~
 
   latexlog~
     This is the standard method which parses the normal LaTeX output. See
-    |g:vimtex_quickfix_latexmk| for configuration.
+    |g:vimtex_quickfix_latexlog| for configuration.
 
   lacheck~
     This is a simple method that uses `lacheck` to parse the TeX file for
@@ -1097,7 +1139,9 @@ Options~
 
 *g:vimtex_view_automatic*
   If enabled, the viewer will open automatically when compilation is started
-  in continuous mode.  This is the default behaviour of `latexmk`.
+  in continuous mode.  This is the default behaviour of `latexmk`, which will
+  typically start the viewer directly.  However, |vimtex| will also start the
+  viewer through callbacks also for the `latexrun` compiler.
 
   Default value: 1
 
@@ -1116,9 +1160,9 @@ Options~
     *vimtex_viewer_general*
       This is a generic interface where the viewer application is specified
       through |g:vimtex_view_general_viewer| and the viewer options are given
-      with |g:vimtex_view_general_options|.  After successful compilation with
-      `latexmk`, the viewer is started with the options provided by
-      |g:vimtex_view_general_options_latexmk|.  The interface allows the
+      with |g:vimtex_view_general_options|.  With the `latexmk` compiler, the
+      viewer is started after successful compilation with the options provided
+      by |g:vimtex_view_general_options_latexmk|.  The interface allows the
       general viewer to support forward search with a lot of different
       applications:
 
@@ -1241,9 +1285,14 @@ Options~
   becomes unavailable during compilation, as it will only update the viewer
   outut file after a successful compilation.
 
-  Note: This will disable the viewer from the latexmk end. That is, if this
+  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
+        already ensures that the output file is updated only after the
+        compilation is completed.
+
+  Note: This will disable the viewer from the `latexmk` end. That is, if this
         option is enabled, opening and updating the pdf viewer will have to be
-        done by the user or by vimtex.
+        done by the user or by vimtex, even if `latexmk` is chosen as the
+        compiler.
 
   Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
         these viewers should update automatically after the pdf is updated.
@@ -1276,6 +1325,8 @@ Options~
   viewer, see |vimtex_viewer_general|.  This allows to send options that
   ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|. Only the
   `@line` escape is expanded.
+
+  Note: This option is only relevant with |vimtex-latexmk| as the compiler.
 
   Default value: ''
 
@@ -2131,14 +2182,18 @@ documentclass and `.sty` files for packages).
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
 
-|vimtex| provides an interface to LaTeX compilers/compiler backends such as
-`latexmk`. The interface is implemented in a general way, which makes it
-relatively easy to add new compilers. At the moment, only one compiler is
-supported: |vimtex-latexmk|.
+|vimtex| provides an interface to the following LaTeX compilers/compiler
+backends:
+
+  |vimtex-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
+  |vimtex-latexrun|  https://github.com/aclements/latexrun
+
+The interface is implemented in a general way, which makes it relatively easy
+to add new compilers.
 
 Compilation is started and stopped with |VimtexCompile| and |VimtexStop|.
 Although, |VimtexStop| stopping is only relevant for continuous compilations,
-and in this case, |VimtexCompile| itself works as a toggle.  Single short
+and in this case, |VimtexCompile| itself works as a toggle.  Single shot
 compilation is always available through |VimtexCompileSS|.  The default
 mappings for these commands are listed here: |vimtex-default-mappings|.
 
@@ -2172,8 +2227,10 @@ Associated commands:
 Associated settings:
     |g:vimtex_compiler_enabled|
     |g:vimtex_compiler_method|
+    |g:vimtex_compiler_latexmk|
+    |g:vimtex_compiler_latexrun|
+    |g:vimtex_compiler_progname|
     |g:vimtex_compiler_callback_hooks|
-    |g:vimtex_compiler_autojump|
 
 Associated events:
     |VimtexEventCompileStarted|
@@ -2236,6 +2293,25 @@ Note: If you define these options similar to the above `xdotool` trick and
 Note: More info on `xdotool` here: http://www.semicomplete.com/projects/xdotool.
 
 ------------------------------------------------------------------------------
+Latexrun~
+                                                              *vimtex-latexrun*
+
+                                        https://github.com/aclements/latexrun
+> See LaTeX run. Run latexrun.
+>
+> latexrun fits LaTeX into a modern build environment. It hides LaTeX's
+> circular dependencies, surfaces errors in a standard and user-friendly
+> format, and generally enables other tools to do what they do best.
+
+`latexrun` is a compiler backend that handles recompilation of LaTeX documents
+when source files have been changed.  However, it is a much simpler backend,
+and does not support e.g. continuous mode and automatic starting of viewers.
+The latter is supported by vimtex, though, through the callback.  See
+|g:vimtex_view_automatic|.
+
+The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
+
+------------------------------------------------------------------------------
 Lacheck~
                                                                *vimtex-lacheck*
 
@@ -2273,13 +2349,11 @@ to go from a specific position in the pdf file to the corresponding position
 in vim (inverse/backward search).
 
 To make synctex work, it must be enabled. vimtex enables this by default by
-passing `-synctex=1` on the command line, unless the user overrides the option
-(see `option` key for |g:vimtex_compiler_latexmk|. In the latter case, the
-user should ensure that the synctex flag is passed, i.e. with: >
+passing `-synctex=1` on the command line, unless the user overrides the
+option (see the `option` key for |g:vimtex_compiler_latexmk| or
+|g:vimtex_compiler_latexrun|).
 
-  let g:vimtex_compiler_latexmk.options = [..., '-synctex=1', ...]
-
-Alternatively, one can put this in ones `~/.latexmkrc` file: >
+Alternatively, for |vimtex-latexmk|, one can put this in ones `~/.latexmkrc` file: >
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
@@ -2370,7 +2444,7 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 <
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
-A: Yes. Most features work out of the box, but the `latexmk` coupling and some
+A: Yes. Most features work out of the box, but the compiler coupling and some
    of the viewer functionality require the |--remote| options from the
    |clientserver|. For some reason, these options have been removed from
    neovim, see #1750 [0]. There does remain some hope that the options will be
