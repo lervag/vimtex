@@ -28,6 +28,7 @@ let s:compiler = {
       \ 'output' : tempname(),
       \ 'options' : [
       \   '--verbose-cmds',
+      \   '--latex-args="-synctex=1"',
       \ ],
       \}
 
