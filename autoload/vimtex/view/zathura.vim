@@ -58,7 +58,7 @@ function! s:zathura.forward_search(outfile) dict " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.latexmk_callback(status) dict " {{{1
+function! s:zathura.compiler_callback(status) dict " {{{1
   if !a:status | return | endif
 
   if g:vimtex_view_use_temp_files

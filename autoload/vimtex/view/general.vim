@@ -19,7 +19,7 @@ function! vimtex#view#general#new() " {{{1
 
   " Add callback hook
   if exists('g:vimtex_view_general_callback')
-    let l:viewer.latexmk_callback = function(g:vimtex_view_general_callback)
+    let l:viewer.compiler_callback = function(g:vimtex_view_general_callback)
   endif
 
   return l:viewer
