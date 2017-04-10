@@ -51,6 +51,7 @@ endfunction
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   if a:mode
+    let l:selection = getpos("'<")[1:2] + getpos("'>")[1:2]
     call vimtex#pos#cursor(getpos("'>"))
   endif
 
@@ -96,6 +97,18 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
     endif
   else
     let c2 += len(l:close.match) - 1
+
+    " Select next pair if we reached the same selection
+    if a:mode && l:selection == [l1, c1, l2, c2]
+      call vimtex#pos#cursor(vimtex#pos#next([l2, c2]))
+      let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+      if empty(l:open)
+        normal! gv
+        return
+      endif
+      let [l1, c1, l2, c2] = [l:open.lnum, l:open.cnum,
+            \ l:close.lnum, l:close.cnum + len(l:close.match) - 1]
+    endif
 
     let l:is_inline = (l2 - l1) > 1
           \ && match(strpart(getline(l1), 0, c1-1), '^\s*$') >= 0
