@@ -61,14 +61,14 @@ function! s:skim.compiler_callback(status) dict " {{{1
     call self.copy_files()
   endif
 
-  let l:cmd = join([
+  let l:cmd = [
         \ self.path,
         \ '-r',
         \ '-b' . (!empty(system('pgrep Skim')) ? ' -g' : ''),
         \ line('.'),
         \ vimtex#util#shellescape(self.out()),
         \ vimtex#util#shellescape(expand('%:p'))
-        \])
+        \]
 
   if has('nvim')
     let self.process = jobstart(l:cmd)
