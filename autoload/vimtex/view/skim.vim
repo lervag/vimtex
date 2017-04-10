@@ -61,22 +61,15 @@ function! s:skim.compiler_callback(status) dict " {{{1
     call self.copy_files()
   endif
 
-  let l:cmd = [
+  let l:cmd = join([
         \ self.path,
-        \ '-r',
-        \ '-b' . (!empty(system('pgrep Skim')) ? ' -g' : ''),
+        \ '-r' . (!empty(system('pgrep Skim')) ? ' -g' : ''),
         \ line('.'),
         \ vimtex#util#shellescape(self.out()),
         \ vimtex#util#shellescape(expand('%:p'))
-        \]
+        \])
 
-  if has('nvim')
-    let self.process = jobstart(l:cmd)
-  elseif has('job')
-    let self.process = job_start(l:cmd)
-  else
-    let self.process = vimtex#process#start(join(l:cmd))
-  endif
+  let self.process = vimtex#process#start(l:cmd)
 endfunction
 
 " }}}1
