@@ -287,7 +287,7 @@ endfunction
 function! s:completer_ref.parse_aux_files() dict " {{{2
   let l:aux = b:vimtex.aux()
   if empty(l:aux)
-    return self.labels
+    return []
   endif
 
   let self.labels = []
