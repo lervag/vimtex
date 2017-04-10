@@ -194,7 +194,13 @@ function! s:fix_paths() abort " {{{1
     endif
     let l:qf.bufnr = bufnr(l:file)
   endfor
-  call setqflist(l:qflist, 'r', {'title': s:title})
+
+  " Set title if setqflist supports it
+  try
+    call setqflist(l:qflist, 'r', {'title': s:title})
+  catch /E118/
+    call setqflist(l:qflist, 'r')
+  endtry
 endfunction
 
 " }}}1
