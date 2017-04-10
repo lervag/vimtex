@@ -37,10 +37,14 @@ function! s:skim.view(file) dict " {{{1
   endif
   if vimtex#view#common#not_readable(outfile) | return | endif
 
-  let l:cmd = self.path
-        \ . ' -r ' . line('.')
-        \ . ' ' . vimtex#util#shellescape(outfile)
-        \ . ' ' . vimtex#util#shellescape(expand('%:p'))
+  let l:cmd = join([
+        \ self.path,
+        \ '-r',
+        \ '-b',
+        \ line('.'),
+        \ vimtex#util#shellescape(outfile),
+        \ vimtex#util#shellescape(expand('%:p'))
+        \])
 
   let self.process = vimtex#process#start(l:cmd)
 
@@ -57,25 +61,21 @@ function! s:skim.compiler_callback(status) dict " {{{1
     call self.copy_files()
   endif
 
-  let l:out = self.out()
-  let l:tex = expand('%:p')
-
-  let l:cmd = [self.path, '-r']
-  if !empty(system('pgrep Skim'))
-    let l:cmd += ['-g']
-  endif
-  let l:cmd += [
+  let l:cmd = join([
+        \ self.path,
+        \ '-r',
+        \ '-b' . (!empty(system('pgrep Skim')) ? ' -g' : ''),
         \ line('.'),
-        \ vimtex#util#shellescape(l:out),
-        \ vimtex#util#shellescape(l:tex),
-        \]
+        \ vimtex#util#shellescape(self.out()),
+        \ vimtex#util#shellescape(expand('%:p'))
+        \])
 
   if has('nvim')
-    call jobstart(l:cmd)
+    let self.process = jobstart(l:cmd)
   elseif has('job')
-    call job_start(l:cmd)
+    let self.process = job_start(l:cmd)
   else
-    call system(join(l:cmd))
+    let self.process = vimtex#process#start(join(l:cmd))
   endif
 endfunction
 
