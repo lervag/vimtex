@@ -12,7 +12,7 @@ endfunction
 function! vimtex#pos#val(...) " {{{1
   let [l:lnum, l:cnum] = s:parse_args(a:000)
 
-  return 10000*l:lnum + l:cnum
+  return 100000*l:lnum + min([l:cnum, 90000])
 endfunction
 
 " }}}1
