@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{subfiles}
+
+\usepackage[
+    backend=biber,
+    style=gost-numeric,
+    autolang=other,
+    defernumbers=true,
+    sorting=none,
+    doi=false,
+    eprint=true,
+    url=true
+]{biblatex}
+
+\addbibresource{references.bib}
+
+\begin{document}
+\section{Section 1}
+\label{sec:section1}
+Text in section 1. Citations: \cite{cite1}, \cite{cite2}
+
+\section{Section 2}
+\label{sec:section2}
+Text in section 2
+
+\subfile{sub.tex}
+
+\printbibliography
+
+\end{document}
