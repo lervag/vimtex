@@ -73,7 +73,7 @@ function! s:common_template.pprint_items() abort dict " {{{1
   endif
 
   if has_key(self, 'process')
-    call add(l:list, ['cmd', self.process.cmd])
+    call add(l:list, ['process', self.process])
   endif
 
   for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
