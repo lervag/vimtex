@@ -73,6 +73,7 @@ CONTENTS                                                      *vimtex-contents*
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
     Backward search                             |vimtex-synctex-backward-search|
+  LaTeX Documentation                           |vimtex-latexdoc|
   Code structure                                |vimtex-code|
   FAQ                                           |vimtex-faq|
   Troubleshooting                               |vimtex-troubleshooting|
@@ -2389,6 +2390,49 @@ Note: Inverse search relies on the |clientserver| functionality of vim.  Each
 
 Note: For backward search to work on windows, one must ensure that the folder
       that contains `gVim.exe` is in your `%PATH%` environment variable.
+
+==============================================================================
+LATEX DOCUMENTATION                                           *vimtex-latexdoc*
+
+|vimtex| currently does not provide any direct means of accessing LaTeX
+documentation. However, there exists several good solutions both for online
+and offline documentation.
+
+------------------------------------------------------------------------------
+Online~
+
+I recommend the LaTeX Wikibook [0] as a good source of documentation for
+LaTeX. One should also know about the Comprehensive TeX Archive Network, or
+CTAN [1], which is the central place for all kinds of material around TeX.
+
+[0]: https://en.wikibooks.org/wiki/LaTeX
+[1]: http://ctan.org/
+
+------------------------------------------------------------------------------
+Offline~
+
+For offline documentation, I recommend the vim-latexrefman plugin [0] for
+accessing the well known LaTeX refman [1] from within Vim in the same style as
+normal Vim help pages.
+
+Alternatively, one may also use a more dedicated offline documentation system.
+On OSX, Dash [2] is a non-free but high-quality system. On Linux, one may use
+Zeal [3] or dasht [4], both of which access the Dash documentation sets. Zeal
+should also work well on Windows.
+
+The above systems may be accessed from vim through dash.vim [5], zeavim.vim
+[6] or vim-dasht [7], respectively. Other alternative vim plugins include
+investigate.vim [8].
+
+[0]: https://github.com/poppyschmo/vim-latexrefman
+[1]: http://home.gna.org/latexrefman
+[2]: https://kapeli.com/dash
+[3]: https://zealdocs.org/
+[4]: https://github.com/sunaku/dasht
+[5]: https://github.com/rizzatti/dash.vim
+[6]: https://github.com/sunaku/vim-dasht
+[7]: https://github.com/KabbAmine/zeavim.vim
+[8]: https://github.com/keith/investigate.vim
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
