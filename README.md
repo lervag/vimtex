@@ -56,7 +56,12 @@ disabled if desired.
   - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
   - [Zathura](https://pwmt.org/projects/zathura/)
   - Other viewers are supported through a general interface
-- Completion of citations, labels, and file names for figures
+- Completion of
+  - citations
+  - labels
+  - file names for figures, input/include, includepdf, includestandalone
+  - glossary entries
+  - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
   - table of content
   - table of labels

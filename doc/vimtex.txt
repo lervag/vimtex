@@ -100,7 +100,12 @@ Feature overview~
   - `qpdfview`
   - `SumatraPDF`
   - Other viewers are supported through a general interface
-- Completion of citations, labels, glossary entries and filenames
+- Completion of
+  - citations
+  - labels
+  - file names for figures, input/include, includepdf, includestandalone
+  - glossary entries
+  - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
   - table of content
   - table of labels
@@ -1849,7 +1854,7 @@ Complete include standalone files~
                                                    *vimtex-complete-standalone*
 
 File name completion for standalone files offered by the package `standalone`
-is triggered by '\includepdf{' commands.
+is triggered by '\includestandalone{' commands.
 
 ------------------------------------------------------------------------------
 Complete include glossary entries~
