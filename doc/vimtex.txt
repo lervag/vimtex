@@ -2424,6 +2424,13 @@ The above systems may be accessed from vim through dash.vim [5], zeavim.vim
 [6] or vim-dasht [7], respectively. Other alternative vim plugins include
 investigate.vim [8].
 
+A different option is to rely on texdoc [9]. If you specify e.g. in your
+`~/.vim/after/ftplugin/tex.vim` to use `setlocal keywordprg=texdoc`, then
+press |K| on a package name in `\usepackage{name}`, this will open the
+documentation pdf of this package. Note, though, that this assumes that the
+documentation is available offline, which it might not be (e.g. on Arch Linux
+it is not available through the texlive packages).
+
 [0]: https://github.com/poppyschmo/vim-latexrefman
 [1]: http://home.gna.org/latexrefman
 [2]: https://kapeli.com/dash
@@ -2433,6 +2440,7 @@ investigate.vim [8].
 [6]: https://github.com/sunaku/vim-dasht
 [7]: https://github.com/KabbAmine/zeavim.vim
 [8]: https://github.com/keith/investigate.vim
+[9]: https://www.tug.org/texdoc/doc/texdoc.pdf
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
