@@ -323,20 +323,23 @@ endfunction
 " }}}1
 function! vimtex#delim#get_surrounding(type) " {{{1
   let l:save_pos = getpos('.')
-  let l:lnum = l:save_pos[1] + 1
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
+  let l:pos_val_last = l:pos_val_cursor
+  let l:pos_val_open = l:pos_val_cursor - 1
 
-  while l:lnum > 1
+  while l:pos_val_open < l:pos_val_last
     let l:open  = vimtex#delim#get_prev(a:type, 'open')
     if empty(l:open) | break | endif
+
     let l:close = vimtex#delim#get_matching(l:open)
     let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match) - 1
     if l:pos_val_try >= l:pos_val_cursor
       call vimtex#pos#cursor(l:save_pos)
       return [l:open, l:close]
     else
-      let l:lnum = l:open.lnum
       call vimtex#pos#cursor(vimtex#pos#prev(l:open))
+      let l:pos_val_last = l:pos_val_open
+      let l:pos_val_open = vimtex#pos#val(l:open)
     endif
   endwhile
 
