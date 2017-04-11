@@ -1,0 +1,40 @@
+set nocompatible
+let &rtp = '~/vimfiles/bundle/vimtex,' . &rtp
+let &rtp .= ',~/vimfiles/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:tex_flavor = 'latex'
+let g:vimtex_view_automatic = 0
+
+let g:vimtex_view_general_viewer = 'SumatraPDF'
+let g:vimtex_view_general_options =
+      \ '-reuse-instance -forward-search @line @pdf @tex'
+
+let g:vimtex_compiler_latexmk = {}
+let g:vimtex_compiler_latexmk.continuous = 1
+let g:vimtex_compiler_latexmk.callback = 1
+let g:vimtex_compiler_latexmk.background = 1
+" let g:vimtex_compiler_latexmk.backend = 'jobs'
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * VimtexCompile
+augroup END
+
+if get(s:, 'sourced')
+  silent VimtexStop
+  silent VimtexClean
+  silent VimtexReload
+  redraw!
+  sleep 500m
+  VimtexCompile
+else
+  silent edit minimal.tex
+endif
+let s:sourced = 1
