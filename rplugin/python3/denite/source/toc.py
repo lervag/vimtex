@@ -13,7 +13,7 @@ class Source(Base):
 
     @staticmethod
     def format_number(n):
-        if not n or n['frontmatter'] or n['backmatter']:
+        if not n or not type(n) is dict or n['frontmatter'] or n['backmatter']:
             return ''
 
         num = [str(n[k]) for k in [
@@ -32,7 +32,7 @@ class Source(Base):
 
     @staticmethod
     def create_candidate(e, depth):
-        indent = (' ' * 2*(depth - e['level']) + e['title'])[:60]
+        indent = (' ' * 2*(int(depth) - int(e['level'])) + e['title'])[:60]
         number = Source.format_number(e['number'])
         abbr = '{:65}{:10}'.format(indent, number)
         return {'word': e['title'],
@@ -42,5 +42,5 @@ class Source(Base):
 
     def gather_candidates(self, context):
         entries = self.vim.eval('vimtex#toc#get_entries()')
-        depth = max([e['level'] for e in entries])
+        depth = max([int(e['level']) for e in entries])
         return [Source.create_candidate(e, depth) for e in entries]
