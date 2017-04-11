@@ -50,10 +50,11 @@ disabled if desired.
 - Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - [MuPDF](http://www.mupdf.com/)
-  - [Zathura](https://pwmt.org/projects/zathura/)
   - [Okular](https://okular.kde.org/)
   - [qpdfview](https://launchpad.net/qpdfview)
+  - [Skim](http://skim-app.sourceforge.net/)
   - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
+  - [Zathura](https://pwmt.org/projects/zathura/)
   - Other viewers are supported through a general interface
 - Completion of citations, labels, and file names for figures
 - Document navigation through
