@@ -28,13 +28,12 @@ function! vimtex#util#shellescape(cmd) " {{{1
   if has('win32')
     let l:shellslash = &shellslash
     set noshellslash
-  endif
-  let l:cmd = shellescape(a:cmd)
-  if has('win32')
+    let l:cmd = escape(shellescape(a:cmd), '\')
     let &shellslash = l:shellslash
+    return l:cmd
+  else
+    return shellescape(a:cmd)
   endif
-
-  return l:cmd
 endfunction
 
 " }}}1
