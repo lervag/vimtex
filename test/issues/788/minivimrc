@@ -1,0 +1,23 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+set nomagic
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:tex_flavor = 'latex'
+
+if get(s:, 'sourced')
+  silent VimtexReload
+  redraw!
+  sleep 500m
+else
+  silent edit minimal.tex
+endif
+let s:sourced = 1
