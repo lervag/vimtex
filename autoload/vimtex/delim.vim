@@ -880,6 +880,15 @@ function! s:init_delim_regexes() " {{{1
     let l:re.all[k] = l:re.env_all[k] . '\|' . l:re.delim_all[k]
   endfor
 
+  "
+  " Be explicit about regex mode (set magic mode)
+  "
+  for l:type in values(l:re)
+    for l:side in ['open', 'close', 'both']
+      let l:type[l:side] = '\m' . l:type[l:side]
+    endfor
+  endfor
+
   return l:re
 endfunction
 
