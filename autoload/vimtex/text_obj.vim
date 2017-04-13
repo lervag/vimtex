@@ -221,12 +221,12 @@ endfunction
 " Pattern to match section/chapter/...
 let s:section_search = '\v%(%(\\<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
       \ . join([
-      \   '%(sub)?paragraph',
-      \   '%(sub)*section',
-      \   'chapter',
-      \   'part',
-      \   'appendix',
-      \   '%(front|back|main)matter',
+      \   '%(sub)?paragraph\\>',
+      \   '%(sub)*section\\>',
+      \   'chapter\\>',
+      \   'part\\>',
+      \   'appendix\\>',
+      \   '%(front|back|main)matter\\>',
       \   '%(begin|end)\{\zsdocument\ze\}'
       \  ], '|')
       \ .')'
