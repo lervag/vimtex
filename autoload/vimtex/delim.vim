@@ -404,10 +404,8 @@ function! s:get_delim(opts) " {{{1
 
     break
   endwhile
-  echom getcurpos()[4]
   call vimtex#pos#set_cursor(l:save_pos)
 
-  echom getcurpos()[4]
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
   if a:opts.direction ==# 'current'
