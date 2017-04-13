@@ -1,0 +1,2 @@
+#!/bin/sh
+env SHELL=/usr/local/bin/fish nvim -u minivimrc
