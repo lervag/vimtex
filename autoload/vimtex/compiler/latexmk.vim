@@ -44,6 +44,7 @@ let s:compiler = {
       \   '-synctex=1',
       \   '-interaction=nonstopmode',
       \ ],
+      \ 'shell' : fnamemodify(&shell, ':t'),
       \}
 
 function! s:compiler.init(options) abort dict " {{{1
@@ -58,6 +59,10 @@ function! s:compiler.init(options) abort dict " {{{1
   " with the new jobs api
   if self.continuous || self.backend !=# 'process'
     let self.background = 1
+  endif
+
+  if self.backend !=# 'process'
+    let self.shell = 'sh'
   endif
 endfunction
 
@@ -123,7 +128,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
   if has('win32')
     let l:cmd = 'set max_print_line=2000 & latexmk'
   else
-    if fnamemodify(&shell, ':t') ==# 'fish'
+    if self.shell ==# 'fish'
       let l:cmd = 'set max_print_line 2000; and latexmk'
     else
       let l:cmd = 'max_print_line=2000 latexmk'
