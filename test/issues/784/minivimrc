@@ -6,7 +6,7 @@ syntax enable
 
 set nomagic
 
-nnoremap q :qall<cr>
+nnoremap q :qall!<cr>
 
 let s:file = expand('<sfile>')
 execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
