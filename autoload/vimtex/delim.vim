@@ -456,8 +456,8 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\\begin\s*{' . result.name . '\*\?}',
-        \ 'close' : '\\end\s*{' . result.name . '\*\?}',
+        \ 'open' : '\m\\begin\s*{' . result.name . '\*\?}',
+        \ 'close' : '\m\\end\s*{' . result.name . '\*\?}',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
@@ -483,10 +483,10 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
   let result.corr = a:match
   let result.get_matching = function('s:get_matching_tex')
   let result.re = {
-        \ 'this'  : escape(a:match, '$'),
-        \ 'corr'  : escape(a:match, '$'),
-        \ 'open'  : escape(a:match, '$'),
-        \ 'close' : escape(a:match, '$'),
+        \ 'this'  : '\m' . escape(a:match, '$'),
+        \ 'corr'  : '\m' . escape(a:match, '$'),
+        \ 'open'  : '\m' . escape(a:match, '$'),
+        \ 'close' : '\m' . escape(a:match, '$'),
         \}
   let result.side = vimtex#util#in_syntax(
         \   (a:match ==# '$' ? 'texMathZoneX' : 'texMathZoneY'),
@@ -536,8 +536,8 @@ function! s:parser_latex(match, lnum, cnum, ...) " {{{1
         \ : substitute(substitute(a:match, '\]', '[', ''), ')', '(', '')
 
   let result.re = {
-        \ 'open'  : a:match =~# '\\(\|\\)' ? '\\(' : '\\\[',
-        \ 'close' : a:match =~# '\\(\|\\)' ? '\\)' : '\\\]',
+        \ 'open'  : a:match =~# '\\(\|\\)' ? '\m\\(' : '\m\\\[',
+        \ 'close' : a:match =~# '\\(\|\\)' ? '\m\\)' : '\m\\\]',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
