@@ -54,10 +54,10 @@ function! vimtex#env#change(open, close, new) " {{{1
     let n = len(l:beg) - len(a:open.match)
     let l:c1 += n
     let l:c2 += n
-    let pos = getpos('.')
+    let pos = vimtex#pos#get_cursor()
     if pos[2] > a:open.cnum + len(a:open.match) - 1
       let pos[2] += n
-      call vimtex#pos#cursor(pos)
+      call vimtex#pos#set_cursor(pos)
     endif
   endif
 

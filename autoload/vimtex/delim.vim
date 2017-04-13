@@ -24,7 +24,7 @@ endfunction
 " }}}1
 
 function! vimtex#delim#close() " {{{1
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
   let l:lnum = l:save_pos[1] + 1
@@ -37,21 +37,21 @@ function! vimtex#delim#close() " {{{1
 
     let l:close = vimtex#delim#get_matching(l:open)
     if empty(l:close.match)
-      call vimtex#pos#cursor(l:save_pos)
+      call vimtex#pos#set_cursor(l:save_pos)
       return l:open.corr
     endif
 
     let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
     if l:pos_val_try > l:pos_val_cursor
-      call vimtex#pos#cursor(l:save_pos)
+      call vimtex#pos#set_cursor(l:save_pos)
       return l:open.corr
     else
       let l:lnum = l:open.lnum
-      call vimtex#pos#cursor(vimtex#pos#prev(l:open))
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
     endif
   endwhile
 
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
   return ''
 endfunction
 
@@ -84,10 +84,10 @@ function! vimtex#delim#toggle_modifier(...) " {{{1
   if l:open.lnum == l:close.lnum
     let n = len(newmods[0]) - len(l:open.mod)
     let l:cnum += n
-    let pos = getpos('.')
+    let pos = vimtex#pos#get_cursor()
     if pos[2] > l:open.cnum + len(l:open.mod)
       let pos[2] += n
-      call vimtex#pos#cursor(pos)
+      call vimtex#pos#set_cursor(pos)
     endif
   endif
 
@@ -104,7 +104,7 @@ endfunction
 
 " }}}1
 function! vimtex#delim#toggle_modifier_visual() " {{{1
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:start_pos = getpos("'<")
   let l:end_pos = getpos("'>")
   let l:end_pos_val = vimtex#pos#val(l:end_pos) + 1000
@@ -124,7 +124,7 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   "
   let l:stack = []
   while vimtex#pos#val(l:cur_pos) < l:end_pos_val
-    call vimtex#pos#cursor(l:cur_pos)
+    call vimtex#pos#set_cursor(l:cur_pos)
     let l:open = vimtex#delim#get_next('delim_modq_math', 'open')
     if empty(l:open) | break | endif
 
@@ -158,7 +158,7 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   "
   call setpos(l:swapped? "'>" : "'<", l:start_pos)
   call setpos(l:swapped? "'<" : "'>", l:end_pos)
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
   normal! gv
 endfunction
 
@@ -195,10 +195,10 @@ function! vimtex#delim#change(open, close, new) " {{{1
     let n = len(l:beg) - len(a:open.match)
     let l:c1 += n
     let l:c2 += n
-    let pos = getpos('.')
+    let pos = vimtex#pos#get_cursor()
     if pos[2] > a:open.cnum + len(a:open.match) - 1
       let pos[2] += n
-      call vimtex#pos#cursor(pos)
+      call vimtex#pos#set_cursor(pos)
     endif
   endif
 
@@ -286,10 +286,10 @@ function! vimtex#delim#get_matching(delim) " {{{1
   "
   " Get the matching position
   "
-  let l:save_pos = getpos('.')
-  call vimtex#pos#cursor(a:delim)
+  let l:save_pos = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(a:delim)
   let [l:match, l:lnum, l:cnum] = a:delim.get_matching()
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
 
   "
   " Create the match result
@@ -322,7 +322,7 @@ endfunction
 
 " }}}1
 function! vimtex#delim#get_surrounding(type) " {{{1
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
   let l:pos_val_last = l:pos_val_cursor
   let l:pos_val_open = l:pos_val_cursor - 1
@@ -334,16 +334,16 @@ function! vimtex#delim#get_surrounding(type) " {{{1
     let l:close = vimtex#delim#get_matching(l:open)
     let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match) - 1
     if l:pos_val_try >= l:pos_val_cursor
-      call vimtex#pos#cursor(l:save_pos)
+      call vimtex#pos#set_cursor(l:save_pos)
       return [l:open, l:close]
     else
-      call vimtex#pos#cursor(vimtex#pos#prev(l:open))
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
       let l:pos_val_last = l:pos_val_open
       let l:pos_val_open = vimtex#pos#val(l:open)
     endif
   endwhile
 
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
   return [{}, {}]
 endfunction
 
@@ -386,7 +386,7 @@ function! s:get_delim(opts) " {{{1
   "     }
   "   }
   "
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:re = g:vimtex#delim#re[a:opts.type][a:opts.side]
   while 1
     let [l:lnum, l:cnum] = a:opts.direction ==# 'next'
@@ -398,14 +398,16 @@ function! s:get_delim(opts) " {{{1
 
     if has_key(a:opts, 'syn_exclude')
           \ && vimtex#util#in_syntax(a:opts.syn_exclude, l:lnum, l:cnum)
-      call vimtex#pos#cursor(vimtex#pos#prev(l:lnum, l:cnum))
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:lnum, l:cnum))
       continue
     endif
 
     break
   endwhile
-  call vimtex#pos#cursor(l:save_pos)
+  echom getcurpos()[4]
+  call vimtex#pos#set_cursor(l:save_pos)
 
+  echom getcurpos()[4]
   let l:match = matchstr(getline(l:lnum), '^' . l:re, l:cnum-1)
 
   if a:opts.direction ==# 'current'
@@ -501,10 +503,10 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
     " position, since the function searchpos relies on the current cursor
     " position.
     "
-    let l:save_pos = getpos('.')
+    let l:save_pos = vimtex#pos#get_cursor()
 
     " Move the cursor
-    call vimtex#pos#cursor(a:direction ==# 'next'
+    call vimtex#pos#set_cursor(a:direction ==# 'next'
           \ ? vimtex#pos#next(a:lnum, a:cnum)
           \ : vimtex#pos#prev(a:lnum, a:cnum))
 
@@ -516,7 +518,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
           \})
 
     " Restore the cursor
-    call vimtex#pos#cursor(l:save_pos)
+    call vimtex#pos#set_cursor(l:save_pos)
   endif
 
   return result

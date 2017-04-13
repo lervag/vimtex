@@ -106,7 +106,7 @@ endfunction
 
 " }}}1
 function! s:index.activate(close) abort dict "{{{1
-  let n = getpos('.')[1] - 1
+  let n = vimtex#pos#get_cursor_line() - 1
   if n < self.help_nlines | return | endif
   let entry = self.entries[n - self.help_nlines]
   let l:vimtex_main = get(b:vimtex, 'tex', '')
@@ -147,7 +147,7 @@ function! s:index.activate(close) abort dict "{{{1
 
   " Go to entry line
   if has_key(entry, 'line')
-    call vimtex#pos#cursor(entry.line, 0)
+    call vimtex#pos#set_cursor(entry.line, 0)
   endif
 
   " If relevant, enable vimtex stuff
@@ -180,7 +180,7 @@ function! s:index.close() abort dict "{{{1
 endfunction
 
 function! s:index.position_save() abort dict " {{{1
-  let self.position = getpos('.')
+  let self.position = vimtex#pos#get_cursor()
 endfunction
 
 " }}}1
@@ -188,7 +188,7 @@ function! s:index.position_restore() abort dict " {{{1
   if self.position[1] <= self.help_nlines
     let self.position[1] = self.help_nlines + 1
   endif
-  call vimtex#pos#cursor(self.position)
+  call vimtex#pos#set_cursor(self.position)
 endfunction
 
 " }}}1

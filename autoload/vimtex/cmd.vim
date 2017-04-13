@@ -43,7 +43,7 @@ function! vimtex#cmd#change() " {{{1
   if empty(l:new_name) | return | endif
 
   " Update current position
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
 
   " Perform the change
@@ -54,7 +54,7 @@ function! vimtex#cmd#change() " {{{1
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
   " Restore cursor position and create repeat hook
-  cal vimtex#pos#cursor(l:save_pos)
+  cal vimtex#pos#set_cursor(l:save_pos)
   silent! call repeat#set(
         \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
@@ -64,7 +64,7 @@ function! vimtex#cmd#delete() " {{{1
   if empty(l:cmd) | return | endif
 
   " Save current position
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:lnum_cur = l:save_pos[1]
   let l:cnum_cur = l:save_pos[2]
 
@@ -97,7 +97,7 @@ function! vimtex#cmd#delete() " {{{1
       let l:save_pos[2] -= l:cnum_cur - l:cnum
     endif
   endif
-  cal vimtex#pos#cursor(l:save_pos)
+  cal vimtex#pos#set_cursor(l:save_pos)
 
   " Create repeat hook
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
@@ -126,7 +126,7 @@ function! vimtex#cmd#create_insert() " {{{1
   let l:strpart3 = strpart(l:line, l:c0)
   call setline(l:l1, l:strpart1 . l:strpart2 . l:strpart3)
 
-  call vimtex#pos#cursor(l:l1, l:c2+3)
+  call vimtex#pos#set_cursor(l:l1, l:c2+3)
   return ''
 endfunction
 
@@ -158,16 +158,16 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
       let l:pos_end[2] += strlen(l:cmd) + 2
     endif
 
-    call vimtex#pos#cursor(l:pos_end)
+    call vimtex#pos#set_cursor(l:pos_end)
   else
-    let l:pos = getpos('.')
+    let l:pos = vimtex#pos#get_cursor()
     let l:save_reg = getreg('"')
     let l:pos[2] += strlen(l:cmd) + 2
     execute 'normal! ciw\' . l:cmd . '{"}'
     silent! call repeat#set(
           \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
     call setreg('"', l:save_reg)
-    call vimtex#pos#cursor(l:pos)
+    call vimtex#pos#set_cursor(l:pos)
   endif
 
   " Restore indentkeys setting
@@ -193,7 +193,7 @@ function! vimtex#cmd#toggle_star() " {{{1
   if empty(l:new_name) | return | endif
 
   " Update current position
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
 
   " Perform the change
@@ -204,7 +204,7 @@ function! vimtex#cmd#toggle_star() " {{{1
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
   " Restore cursor position and create repeat hook
-  cal vimtex#pos#cursor(l:save_pos)
+  cal vimtex#pos#set_cursor(l:save_pos)
   silent! call repeat#set("\<plug>(vimtex-cmd-toggle-star)", v:count)
 endfunction
 
@@ -221,7 +221,7 @@ endfunction
 
 " }}}1
 function! vimtex#cmd#get_current() " {{{1
-  let l:save_pos = getpos('.')
+  let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
   let l:depth = 3
@@ -232,23 +232,23 @@ function! vimtex#cmd#get_current() " {{{1
 
     let l:pos_val = vimtex#pos#val(l:cmd.pos_end)
     if l:pos_val > l:pos_val_cursor
-      call vimtex#pos#cursor(l:save_pos)
+      call vimtex#pos#set_cursor(l:save_pos)
       return l:cmd
     else
-      call vimtex#pos#cursor(vimtex#pos#prev(l:cmd.pos_start))
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:cmd.pos_start))
     endif
   endwhile
 
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
   return {}
 endfunction
 
 " }}}1
 function! vimtex#cmd#get_at(lnum, cnum) " {{{1
-  let l:pos_saved = getpos('.')
-  call vimtex#pos#cursor(a:lnum, a:cnum)
+  let l:pos_saved = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(a:lnum, a:cnum)
   let l:cmd = vimtex#cmd#get_current()
-  call vimtex#pos#cursor(l:pos_saved)
+  call vimtex#pos#set_cursor(l:pos_saved)
   return l:cmd
 endfunction
 
@@ -305,10 +305,10 @@ endfunction
 
 " }}}1
 function! s:get_cmd_part(part, start_pos) " {{{1
-  let l:save_pos = getpos('.')
-  call vimtex#pos#cursor(a:start_pos)
+  let l:save_pos = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
-  call vimtex#pos#cursor(l:save_pos)
+  call vimtex#pos#set_cursor(l:save_pos)
 
   "
   " Ensure that the delimiter

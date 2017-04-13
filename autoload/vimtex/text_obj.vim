@@ -28,7 +28,7 @@ endfunction
 
 function! vimtex#text_obj#commands(is_inner, mode) " {{{1
   if a:mode
-    call vimtex#pos#cursor(getpos("'>"))
+    call vimtex#pos#set_cursor(getpos("'>"))
   endif
 
   let l:cmd = vimtex#cmd#get_current()
@@ -43,16 +43,16 @@ function! vimtex#text_obj#commands(is_inner, mode) " {{{1
     let c1 += 1
   endif
 
-  call vimtex#pos#cursor(l1, c1)
+  call vimtex#pos#set_cursor(l1, c1)
   normal! v
-  call vimtex#pos#cursor(l2, c2)
+  call vimtex#pos#set_cursor(l2, c2)
 endfunction
 
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   if a:mode
     let l:selection = getpos("'<")[1:2] + getpos("'>")[1:2]
-    call vimtex#pos#cursor(getpos("'>"))
+    call vimtex#pos#set_cursor(getpos("'>"))
   endif
 
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
@@ -100,7 +100,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
 
     " Select next pair if we reached the same selection
     if a:mode && l:selection == [l1, c1, l2, c2]
-      call vimtex#pos#cursor(vimtex#pos#next([l2, c2]))
+      call vimtex#pos#set_cursor(vimtex#pos#next([l2, c2]))
       let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
       if empty(l:open)
         normal! gv
@@ -121,21 +121,21 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
 
   " Apply selection
   execute 'normal!' l:select_mode
-  call vimtex#pos#cursor(l1, c1)
+  call vimtex#pos#set_cursor(l1, c1)
   normal! o
-  call vimtex#pos#cursor(l2, c2)
+  call vimtex#pos#set_cursor(l2, c2)
 endfunction
 
 " }}}1
 function! vimtex#text_obj#sections(is_inner, mode) " {{{1
-  let l:pos_save = getpos('.')
-  call vimtex#pos#cursor(vimtex#pos#next(l:pos_save))
+  let l:pos_save = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(vimtex#pos#next(l:pos_save))
 
   " Get section border positions
   let [l:pos_start, l:pos_end, l:type]
         \ = s:get_sections_positions(a:is_inner, '')
   if empty(l:pos_start)
-    call vimtex#pos#cursor(l:pos_save)
+    call vimtex#pos#set_cursor(l:pos_save)
     return
   endif
 
@@ -153,15 +153,15 @@ function! vimtex#text_obj#sections(is_inner, mode) " {{{1
   endif
 
   " Apply selection
-  call vimtex#pos#cursor(l:pos_start)
+  call vimtex#pos#set_cursor(l:pos_start)
   normal! V
-  call vimtex#pos#cursor(l:pos_end)
+  call vimtex#pos#set_cursor(l:pos_end)
 endfunction
 
 " }}}1
 
 function! s:get_sections_positions(is_inner, type) " {{{1
-  let l:pos_save = getpos('.')
+  let l:pos_save = vimtex#pos#get_cursor()
   let l:min_val = get(s:section_to_val, a:type)
 
   " Get the position of the section start
@@ -174,9 +174,9 @@ function! s:get_sections_positions(is_inner, type) " {{{1
 
     if !empty(a:type)
       if l:sec_val >= l:min_val
-        call vimtex#pos#cursor(vimtex#pos#prev(l:pos_start))
+        call vimtex#pos#set_cursor(vimtex#pos#prev(l:pos_start))
       else
-        call vimtex#pos#cursor(l:pos_save)
+        call vimtex#pos#set_cursor(l:pos_save)
         break
       endif
     else
@@ -199,12 +199,12 @@ function! s:get_sections_positions(is_inner, type) " {{{1
       break
     endif
 
-    call vimtex#pos#cursor(l:pos_end)
+    call vimtex#pos#set_cursor(l:pos_end)
   endwhile
 
   " Adjust for inner text object
   if a:is_inner
-    call vimtex#pos#cursor(l:pos_start[0]+1, l:pos_start[1])
+    call vimtex#pos#set_cursor(l:pos_start[0]+1, l:pos_start[1])
     let l:pos_start = searchpos('\S', 'cnW')
   elseif l:sec_val ==# 'document'
     let l:pos_start = [l:pos_start[0]+1, l:pos_start[1]]

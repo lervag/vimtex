@@ -226,16 +226,16 @@ endfunction
 " }}}1
 
 function! s:foldmethod_in_modeline() " {{{1
-  let l:cursor_pos = getpos('.')
+  let l:cursor_pos = vimtex#pos#get_cursor()
   let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
 
-  call vimtex#pos#cursor(1, 1)
+  call vimtex#pos#set_cursor(1, 1)
   let l:check_top = search(l:fdm_modeline, 'cn', &modelines)
 
   normal! G$
   let l:check_btm = search(l:fdm_modeline, 'b', line('$') + 1 - &modelines)
 
-  call vimtex#pos#cursor(l:cursor_pos)
+  call vimtex#pos#set_cursor(l:cursor_pos)
   return l:check_top || l:check_btm
 endfunction
 

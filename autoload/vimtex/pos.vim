@@ -4,20 +4,32 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#pos#cursor(...) " {{{1
+function! vimtex#pos#set_cursor(...) " {{{1
   call cursor(s:parse_args(a:000))
 endfunction
 
 " }}}1
+function! vimtex#pos#get_cursor() " {{{1
+  return exists('*getcurpos') ? getcurpos() : getpos('.')
+endfunction
+
+" }}}1
+function! vimtex#pos#get_cursor_line() " {{{1
+  let l:pos = vimtex#pos#get_cursor()
+  return l:pos[1]
+endfunction
+
+" }}}1
+
 function! vimtex#pos#val(...) " {{{1
-  let [l:lnum, l:cnum] = s:parse_args(a:000)
+  let [l:lnum, l:cnum; l:rest] = s:parse_args(a:000)
 
   return 100000*l:lnum + min([l:cnum, 90000])
 endfunction
 
 " }}}1
 function! vimtex#pos#next(...) " {{{1
-  let [l:lnum, l:cnum] = s:parse_args(a:000)
+  let [l:lnum, l:cnum; l:rest] = s:parse_args(a:000)
 
   return l:cnum < strlen(getline(l:lnum))
         \ ? [0, l:lnum, l:cnum+1, 0]
@@ -26,7 +38,7 @@ endfunction
 
 " }}}1
 function! vimtex#pos#prev(...) " {{{1
-  let [l:lnum, l:cnum] = s:parse_args(a:000)
+  let [l:lnum, l:cnum; l:rest] = s:parse_args(a:000)
 
   return l:cnum > 1
         \ ? [0, l:lnum, l:cnum-1, 0]
@@ -52,23 +64,17 @@ function! s:parse_args(args) " {{{1
 
   if len(a:args) == 1
     if type(a:args[0]) == type({})
-      let l:lnum = get(a:args[0], 'lnum')
-      let l:cnum = get(a:args[0], 'cnum')
+      return [get(a:args[0], 'lnum'), get(a:args[0], 'cnum')]
     else
       if len(a:args[0]) == 2
-        let l:lnum = a:args[0][0]
-        let l:cnum = a:args[0][1]
+        return a:args[0]
       else
-        let l:lnum = a:args[0][1]
-        let l:cnum = a:args[0][2]
+        return a:args[0][1:]
       endif
     endif
   else
-    let l:lnum = a:args[0]
-    let l:cnum = a:args[1]
+    return a:args
   endif
-
-  return [l:lnum, l:cnum]
 endfunction
 
 " }}}1
