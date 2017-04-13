@@ -4,7 +4,7 @@ let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-nnoremap q :qall<cr>
+nnoremap q :qall!<cr>
 
 let s:file = expand('<sfile>')
 execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
