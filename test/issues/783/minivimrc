@@ -11,8 +11,11 @@ execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
 let g:tex_flavor = 'latex'
 let g:vimtex_view_automatic = 0
-let g:vimtex_quickfix_latexlog = {'fix_paths':0}
-let g:vimtex_compiler_progname = 'nvr'
+
+if has('nvim')
+  let g:vimtex_quickfix_latexlog = {'fix_paths':0}
+  let g:vimtex_compiler_progname = 'nvr'
+endif
 
 augroup Testing
   autocmd!
