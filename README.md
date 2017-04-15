@@ -59,6 +59,7 @@ disabled if desired.
 - Completion of
   - citations
   - labels
+  - commands
   - file names for figures, input/include, includepdf, includestandalone
   - glossary entries
   - package and documentclass names based on available `.sty` and `.cls` files

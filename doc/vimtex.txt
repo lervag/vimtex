@@ -45,6 +45,7 @@ CONTENTS                                                      *vimtex-contents*
   Completion                                    |vimtex-completion|
     Complete citations                          |vimtex-complete-cites|
     Complete labels                             |vimtex-complete-labels|
+    Complete commands                           |vimtex-complete-commands|
     Complete image file names                   |vimtex-complete-images|
     Complete input file names                   |vimtex-complete-input|
     Complete PDF file names                     |vimtex-complete-pdf|
@@ -103,6 +104,7 @@ Feature overview~
 - Completion of
   - citations
   - labels
+  - commands
   - file names for figures, input/include, includepdf, includestandalone
   - glossary entries
   - package and documentclass names based on available `.sty` and `.cls` files
@@ -1831,6 +1833,16 @@ number.  The label completion matches:
         \eqref{eq 2<CTRL-X><CTRL-O>
 
 ------------------------------------------------------------------------------
+Complete commands~
+                                                     *vimtex-complete-commands*
+
+Command completion is available after `\` and should provide completion
+candidates for relevant LaTeX commands.  The document's preamble is analysed,
+and commands will be completed for the loaded packages. A lot of packages are
+supported, see the path `VIMTEX/autoload/vimtex/complete` for a relevant file
+listing.
+
+------------------------------------------------------------------------------
 Complete file names for figures~
                                                        *vimtex-complete-images*
 
@@ -1923,6 +1935,7 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
         \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . '|usepackage%(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . '|documentclass%(\s*\[[^]]*\])?\s*\{[^}]*'
+        \ . '|\a*'
         \ . ')'
 
 deoplete~
@@ -1982,6 +1995,7 @@ To enable automatic completion with |youcompleteme|, use the following options: 
         \ 're!\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
         \ 're!\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
         \ 're!\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
+        \ 're!\\[A-Za-z]*',
         \ ]
 <
 VimCompletesMe~
