@@ -219,7 +219,7 @@ endfunction
 " {{{1 Initialize module
 
 " Pattern to match section/chapter/...
-let s:section_search = '\v%(%(\\<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
+let s:section_search = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
       \ . join([
       \   '%(sub)?paragraph\ze\W',
       \   '%(sub)*section\ze\W',
