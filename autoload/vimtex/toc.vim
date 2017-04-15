@@ -7,11 +7,9 @@
 function! vimtex#toc#init_buffer() " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
-  " Define commands
   command! -buffer VimtexTocOpen   call vimtex#toc#open()
   command! -buffer VimtexTocToggle call vimtex#toc#toggle()
 
-  " Define mappings
   nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
   nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
 endfunction
@@ -70,10 +68,17 @@ function! vimtex#toc#toggle() " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#toc#get_entries() " {{{1
-  if !exists('b:vimtex') | return [] | endif
+  if !has_key(b:vimtex, 'toc') || g:vimtex_toc_refresh_always
+    let b:vimtex.toc = s:generate_toc()
+  endif
 
+  return b:vimtex.toc
+endfunction
+
+" }}}1
+
+function! s:generate_toc() " {{{1
   "
   " Parses tex project for TOC entries
   "

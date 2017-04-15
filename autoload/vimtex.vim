@@ -178,6 +178,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_toc_fold', 0)
   call s:init_option('vimtex_toc_fold_levels', 10)
   call s:init_option('vimtex_toc_number_width', 0)
+  call s:init_option('vimtex_toc_refresh_always', 1)
   call s:init_option('vimtex_toc_secnumdepth', 3)
   call s:init_option('vimtex_toc_show_numbers', 1)
   call s:init_option('vimtex_toc_show_preamble', 1)
