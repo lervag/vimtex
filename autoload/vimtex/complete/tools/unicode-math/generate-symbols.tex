@@ -1,0 +1,26 @@
+% Tex program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{unicode-math}
+
+\setmathfont{XITS Math}
+\unimathsetup{math-style=literal}
+
+\begin{document}
+\linespread{1.3}\small
+\def\UnicodeMathSymbol#1#2#3#4{\texttt{\string#2}\quad$
+  \ifx#2\sqrt
+    #2{\mbox{\space}}
+  \else
+    \ifx#2\not
+      #2^^^^2062
+    \else
+      \ifdefined#2
+        #2{\space}
+      \fi
+    \fi
+  \fi
+  $\\}
+\noindent\input{unicode-math-table}
+\end{document}

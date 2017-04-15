@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+"""Convert texstudio cwl files to vimtex format"""
+import os
+import re
+
+
+with open('tools/symbols') as f:
+    SYMBOLS = dict([line.strip().split(' ') for line in f.readlines()])
+
+
+with open('default') as f:
+    DEFAULT = [line.strip().split(' ')[0] for line in f.readlines()]
+
+
+RE_CMD = re.compile(r'\w+\*?')
+
+
+files = [['texstudio-cwls/' + f, os.path.splitext(f)[0]]
+         for f in os.listdir('texstudio-cwls')]
+for infile, outfile in files:
+    with open(infile) as f:
+        lines = f.readlines()
+
+    includes = [line for line in lines if line[0:4] == '#inc']
+    commands = sorted(set([RE_CMD.search(line).group(0)
+                           for line in lines
+                           if line[0] == '\\']),
+                      key=str.lower)
+    commands = [cmd for cmd in commands if cmd not in DEFAULT]
+    commands = [cmd for cmd in commands if len(cmd) > 3]
+    commands = [[cmd, SYMBOLS.get(cmd, '')] for cmd in commands]
+    commands = [' '.join(cmd).strip() + '\n' for cmd in commands]
+
+    with open(outfile, 'w') as f:
+        for line in includes + commands:
+            f.write(line)
