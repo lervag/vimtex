@@ -1,0 +1,12 @@
+DeclareNewFootnote
+defaultfootnoterule
+extrafootnoterule
+ExtraParaSkip
+Footnote
+Footnotemark
+footnoterulepriority
+Footnotetext
+newfootnote
+SelectFootnoteRule
+SetFootnoteHook
+SplitNote

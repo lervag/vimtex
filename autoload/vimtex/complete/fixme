@@ -1,0 +1,14 @@
+#include:ifthen
+#include:verbatim
+#include:xkeyval
+fxerror
+fxerror*
+fxfatal
+fxfatal*
+fxnote
+fxnote*
+fxsetup
+fxsetup*
+fxwarning
+fxwarning*
+listoffixmes

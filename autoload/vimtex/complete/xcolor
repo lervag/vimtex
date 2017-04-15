@@ -1,0 +1,15 @@
+#include:color
+#include:colortbl
+#include:pdfcolmk
+blendcolors
+colorlet
+definecolors
+definecolorseries
+definecolorset
+DefineNamedColor
+GetGinDriver
+preparecolor
+preparecolorset
+providecolor
+providecolors
+providecolorset

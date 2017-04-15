@@ -1,0 +1,10 @@
+boolean
+equal =
+ifthenelse
+isodd
+isundefined
+lengthtest
+newboolean
+provideboolean
+setboolean
+whiledo

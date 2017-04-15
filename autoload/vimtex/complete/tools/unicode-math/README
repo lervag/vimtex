@@ -1,0 +1,2 @@
+1. Compile file
+2. Use `pdftotext -layout file.tex`

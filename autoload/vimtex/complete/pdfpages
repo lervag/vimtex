@@ -1,0 +1,10 @@
+#include:graphicx
+#include:calc
+#include:count1to
+#include:eso-pic
+#include:ifthen
+#include:pdflscape
+includepdf
+includepdfmerge
+includepdfset
+threadinfodict

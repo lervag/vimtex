@@ -31,7 +31,7 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
         if l:line =~# l:pattern
           let s:completer = l:completer
           while l:pos > 0
-            if l:line[l:pos - 1] =~# '{\|,\|\['
+            if l:line[l:pos - 1] =~# '{\|,\|\[\|\\'
                   \ || l:line[l:pos-2:l:pos-1] ==# ', '
               let s:completer.context = matchstr(l:line, '\S*$')
               return l:pos
@@ -352,6 +352,69 @@ function! s:completer_ref.parse_number(num_tree) dict " {{{2
     let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*)($|\s.*)')
     return len(l:matches) > 3 ? l:matches[2] : '-'
   endif
+endfunction
+
+" }}}1
+" {{{1 Commands
+
+let s:completer_cmd = {
+      \ 'patterns' : [
+      \   '\v\\\a*$',
+      \ ],
+      \ 'candidates' : [],
+      \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
+      \}
+
+function! s:completer_cmd.complete(regex) dict " {{{2
+  call self.gather_candidates()
+
+  let l:candidates = deepcopy(self.candidates)
+  let l:mode = vimtex#util#in_mathzone() ? 'm' : 'n'
+
+  call filter(l:candidates, 'v:val.word =~# ''^'' . a:regex')
+  call filter(l:candidates, 'l:mode =~# v:val.mode')
+
+  return l:candidates
+endfunction
+
+function! s:completer_cmd.gather_candidates() dict " {{{2
+  if !empty(self.candidates) | return | endif
+
+  let l:save_pwd = getcwd()
+  execute 'lcd' fnameescape(self.complete_dir)
+
+  let l:packages = [
+        \ 'default',
+        \ 'class-' . get(b:vimtex, 'documentclass', ''),
+        \] + keys(b:vimtex.packages)
+  call filter(l:packages, 'filereadable(v:val)')
+
+  let l:queue = copy(l:packages)
+  while !empty(l:queue)
+    let l:current = remove(l:queue, 0)
+    let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
+    if empty(l:includes) | continue | endif
+
+    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
+    call filter(l:includes, 'filereadable(v:val)')
+    call filter(l:includes, 'index(l:packages, v:val) < 0')
+
+    let l:packages += l:includes
+    let l:queue += l:includes
+  endwhile
+
+  for l:package in l:packages
+    let l:candidates = filter(readfile(l:package), 'v:val =~# ''^\a''')
+    call map(l:candidates, 'split(v:val)')
+    call map(l:candidates, '{
+          \ ''word'' : v:val[0],
+          \ ''mode'' : ''.'',
+          \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
+          \}')
+    let self.candidates += l:candidates
+  endfor
+
+  execute 'lcd' fnameescape(l:save_pwd)
 endfunction
 
 " }}}1

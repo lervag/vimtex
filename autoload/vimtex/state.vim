@@ -420,8 +420,15 @@ function! s:vimtex.parse_preamble() abort dict " {{{1
         \ 'detailed' : 0,
         \ 're_stop' : '\\begin\s*{document}',
         \})
-    if l:line =~# '\\usepackage.*{tikz}'
-      let self.packages.tikz = 1
+    let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
+    if !empty(l:class)
+      let self.documentclass = l:class
+      continue
+    endif
+
+    let l:package = matchstr(l:line, '^\s*\\usepackage.*{\zs\w*\ze}')
+    if !empty(l:package)
+      let self.packages[l:package] = {}
       continue
     endif
   endfor

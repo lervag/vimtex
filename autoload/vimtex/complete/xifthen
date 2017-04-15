@@ -1,0 +1,16 @@
+boolean
+cnttest
+dimtest
+endswith
+equal =
+ifthenelse
+isempty
+isequivalentto
+isin
+isnamedefined
+isodd
+isundefined
+lengthtest
+newboolean
+newtest
+setboolean

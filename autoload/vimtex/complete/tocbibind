@@ -1,0 +1,13 @@
+restorechapter
+setindexname
+setlofname
+setlotname
+settocbibname
+settocname
+simplechapter
+simplechapterdelim
+tocbibname
+tocchapter
+tocfile
+tocotherhead
+tocsection

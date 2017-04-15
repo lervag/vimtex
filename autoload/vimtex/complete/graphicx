@@ -1,0 +1,11 @@
+DeclareGraphicsExtensions
+DeclareGraphicsRule
+graphicspath
+includegraphics
+includegraphics*
+reflectbox
+resizebox
+resizebox*
+rotatebox
+scalebox
+setkeys

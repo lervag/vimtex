@@ -1,0 +1,80 @@
+#include:amsmath
+Aboxed
+adjustlimits
+ArrowBetweenLines
+ArrowBetweenLines*
+bigtimes ⨉
+clap
+Colonapprox
+colonapprox
+Coloneq ⩴
+coloneq ≔
+Coloneqq
+coloneqq
+colonsim
+Colonsim
+cramped
+crampedclap
+crampedllap
+crampedrlap
+dblcolon
+DeclarePairedDelimiter
+DeclarePairedDelimiterX
+DeclarePairedDelimiterXPP
+endlinechar
+Eqcolon
+eqcolon ≕
+Eqqcolon
+eqqcolon
+intertext
+LaTeXoverbrace
+LaTeXunderbrace
+lparen (
+mathclap
+mathllap
+mathmakebox
+mathmbox
+mathrlap
+mathtoolsset
+MoveEqLeft
+MTFlushSpaceAbove
+MTFlushSpaceBelow
+ndownarrow
+newgathered
+newtagform
+noeqref
+nuparrow
+ordinarycolon
+overbracket ⎴
+prescript
+reDeclarePairedDelimiterInnerWrapper
+refeq
+renewgathered
+renewtagform
+rparen )
+shortintertext
+shortvdotswithin
+shortvdotswithin*
+shoveleft
+shoveright
+smashoperator
+splitdfrac
+splitfrac
+SwapAboveDisplaySkip
+underbracket ⎵
+usetagform
+vcentcolon
+vdotswithin
+xhookleftarrow
+xhookrightarrow
+xLeftarrow
+xleftharpoondown
+xleftharpoonup
+xleftrightarrow
+xLeftrightarrow
+xleftrightharpoons
+xmapsto
+xRightarrow
+xrightharpoondown
+xrightharpoonup
+xrightleftharpoons
