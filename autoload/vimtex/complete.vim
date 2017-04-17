@@ -371,7 +371,7 @@ function! s:completer_cmd.complete(regex) dict " {{{2
   let l:candidates = deepcopy(self.candidates)
   let l:mode = vimtex#util#in_mathzone() ? 'm' : 'n'
 
-  call filter(l:candidates, 'v:val.word =~# ''^'' . a:regex')
+  call filter(l:candidates, 'v:val.word =~? ''^'' . a:regex')
   call filter(l:candidates, 'l:mode =~# v:val.mode')
 
   return l:candidates
