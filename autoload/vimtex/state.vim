@@ -469,7 +469,7 @@ function! s:vimtex.pprint_items() abort dict " {{{1
   endif
 
   if !empty(self.packages)
-    call add(l:items, ['packages', self.packages])
+    call add(l:items, ['packages', keys(self.packages)])
   endif
 
   call add(l:items, ['compiler', get(self, 'compiler', {})])
