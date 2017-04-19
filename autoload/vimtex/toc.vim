@@ -17,6 +17,11 @@ endfunction
 " }}}1
 
 function! vimtex#toc#open() " {{{1
+  let l:bib_warning = 'In order to use the ToC the .bib file has to be opened from within a .tex document!'
+  if !exists('g:vimtex_data[get(b:, "vimtex_id")].root')
+    call vimtex#echo#warning(bib_warning)
+    return
+  endif
   if vimtex#index#open(s:name) | return | endif
 
   if !exists('b:vimtex')
@@ -59,6 +64,11 @@ endfunction
 
 " }}}1
 function! vimtex#toc#toggle() " {{{1
+  let l:bib_warning = 'In order to use the ToC the .bib file has to be opened from within a .tex document!'
+  if !exists('g:vimtex_data[get(b:, "vimtex_id")].root')
+    call vimtex#echo#warning(bib_warning)
+    return
+  endif
   if vimtex#index#open(s:name)
     call vimtex#index#close(s:name)
   else
