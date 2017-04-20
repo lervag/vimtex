@@ -419,6 +419,7 @@ function! s:vimtex.parse_preamble() abort dict " {{{1
   for l:line in vimtex#parser#tex(self.tex, {
         \ 'detailed' : 0,
         \ 're_stop' : '\\begin\s*{document}',
+        \ 'root' : self.root,
         \})
     let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
     if !empty(l:class)
@@ -438,7 +439,9 @@ endfunction
 function! s:vimtex.gather_sources() abort dict " {{{1
   let self.sources = []
 
-  for [l:file, l:lnum, l:line] in vimtex#parser#tex(self.tex)
+  for [l:file, l:lnum, l:line] in vimtex#parser#tex(self.tex, {
+        \ 'root' : self.root,
+        \})
     let l:cand = substitute(l:file, '\M' . self.root, '', '')
     if l:cand[0] ==# '/' | let l:cand = l:cand[1:] | endif
 
