@@ -7,10 +7,11 @@
 if exists('b:did_indent')
   finish
 endif
-let b:did_indent = 1
-let b:did_vimtex_indent = 1
 
 if !get(g:, 'vimtex_indent_enabled', 1) | finish | endif
+
+let b:did_vimtex_indent = 1
+let b:did_indent = 1
 
 let s:cpo_save = &cpoptions
 set cpoptions&vim
