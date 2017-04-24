@@ -454,8 +454,15 @@ Options~
 <  Default value: []
 
 *g:vimtex_compiler_method*
-  Set the compiler method. There is currently only a single available method,
-  so don't change this option!
+  Set the compiler method. Available choices are:
+
+    latexmk~
+      See |vimtex-latexmk| for more details, and |g:vimtex_compiler_latexmk|
+      for customization.
+
+    latexrun~
+      See |vimtex-latexrun| for more details, and |g:vimtex_compiler_latexrun|
+      for customization.
 
   Default value: 'latexmk'
 
@@ -554,7 +561,7 @@ Options~
 
   Default value: >
 
-    let g:vimtex_compiler_latexmk = {
+    let g:vimtex_compiler_latexrun = {
     \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
     \ 'background' : 1,
     \ 'build_dir' : '',
