@@ -472,6 +472,7 @@ Options~
     \ 'build_dir' : '',
     \ 'callback' : 1,
     \ 'continuous' : 1,
+    \ 'executable' : 'latexmk',
     \ 'options' : [
     \   '-pdf',
     \   '-verbose',
@@ -532,6 +533,9 @@ Options~
 
     Note: The events |VimtexEventCompileStarted| and |VimtexEventCompileStopped|
           are only relevant when this option is enabled.
+
+  executable~
+    The name/path to the `latexmk` executable.
 
   options~
     This is a list of options that are passed to `latexmk`. The default

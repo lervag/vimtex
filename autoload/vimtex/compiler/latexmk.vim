@@ -26,6 +26,7 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'latexmk',
+      \ 'executable' : 'latexmk',
       \ 'backend' : has('nvim') ? 'nvim'
       \                         : v:version >= 800 ? 'jobs' : 'process',
       \ 'root' : '',
@@ -107,7 +108,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
   endif
 
   " Check for required executables
-  let l:required = ['latexmk']
+  let l:required = [self.executable]
   if self.continuous && !has('win32')
     let l:required += ['pgrep']
   endif
@@ -126,12 +127,12 @@ endfunction
 
 function! s:compiler.build_cmd() abort dict " {{{1
   if has('win32')
-    let l:cmd = 'set max_print_line=2000 & latexmk'
+    let l:cmd = 'set max_print_line=2000 & ' . self.executable
   else
     if self.shell ==# 'fish'
-      let l:cmd = 'set max_print_line 2000; and latexmk'
+      let l:cmd = 'set max_print_line 2000; and ' . self.executable
     else
-      let l:cmd = 'max_print_line=2000 latexmk'
+      let l:cmd = 'max_print_line=2000 ' . self.executable
     endif
   endif
 
@@ -213,6 +214,9 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   let l:list = []
   call add(l:list, ['backend', self.backend])
+  if self.executable !=# s:compiler.executable
+    call add(l:list, ['latexmk executable', self.executable])
+  endif
   if self.background
     call add(l:list, ['output', self.output])
   endif
@@ -254,7 +258,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   let l:cmd = (has('win32')
         \   ? 'cd /D "' . self.root . '" & '
         \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
-        \ . 'latexmk ' . (a:full ? '-C ' : '-c ')
+        \ . self.executable . ' . (a:full ? '-C ' : '-c ')
   if !empty(self.build_dir)
     let l:cmd .= ' -outdir=' . self.build_dir
   endif
