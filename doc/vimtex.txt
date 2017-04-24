@@ -1160,15 +1160,15 @@ Options~
   Default value: 1
 
 *g:vimtex_view_method*
-  Set the viewer method.  The general viewer |vimtex_viewer_general| defines
-  a generic interface that allows sufficient customization for most viewer
-  applications.  However, a few applications require some special attention,
-  and so |vimtex| provides a couple of custom viewers: |vimtex_viewer_mupdf| and
-  |vimtex_viewer_zathura|.
+  Set the viewer method.
+
+  Note that the general viewer |vimtex_viewer_general| defines a generic
+  interface that allows sufficient customization for most viewer applications.
 
   Possible values:
     'general' (default)
     'mupdf'
+    'skim'
     'zathura'
 
     *vimtex_viewer_general*
@@ -1207,40 +1207,6 @@ Options~
               \ = '--unique @pdf\#src:@tex:@line:@col'
             let g:vimtex_view_general_options_latexmk = '--unique'
 <
-        *vimtex_viewer_skim*
-          http://skim-app.sourceforge.net/
-          Skim is a PDF reader and note-taker for OS X.  It is designed to help
-          you read and annotate scientific papers in PDF, but is also great
-          for viewing any PDF file. >
-
-            let g:vimtex_view_general_viewer
-                  \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-            let g:vimtex_view_general_options = '-r @line @pdf @tex'
-
-            " This adds a callback hook that updates Skim after compilation
-            let g:vimtex_compiler_callback_hooks = ['UpdateSkim']
-            function! UpdateSkim(status)
-              if !a:status | return | endif
-
-              let l:out = b:vimtex.out()
-              let l:tex = expand('%:p')
-              let l:cmd = [g:vimtex_view_general_viewer, '-r']
-              if !empty(system('pgrep Skim'))
-                call extend(l:cmd, ['-g'])
-              endif
-              if has('nvim')
-                call jobstart(l:cmd + [line('.'), l:out, l:tex])
-              elseif has('job')
-                call job_start(l:cmd + [line('.'), l:out, l:tex])
-              else
-                call system(join(l:cmd + [line('.'), shellescape(l:out), shellescape(l:tex)], ' '))
-              endif
-            endfunction
-<
-          Note: See the Skim wiki for documentation on how to get backward
-                search to work:
-                https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
-
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
@@ -1277,6 +1243,17 @@ Options~
             Forward search will only take you to the correct page.  Backward
             search will take you to the line in Vim that corresponds to the
             first line of the current page in MuPDF.
+
+    *vimtex_viewer_skim*
+      http://skim-app.sourceforge.net/
+      Skim is a PDF reader and note-taker for OS X.  It is designed to help
+      you read and annotate scientific papers in PDF, but is also great
+      for viewing any PDF file. The vimtex implementation supports forward
+      search and uses a callback to update Skim after successful compilations.
+
+      Note: See the Skim wiki for documentation on how to get backward
+            search to work:
+            https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
     *vimtex_viewer_zathura*
       https://pwmt.org/projects/zathura/
