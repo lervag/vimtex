@@ -166,20 +166,15 @@ function! s:compiler.build_cmd() abort dict " {{{1
         call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
         call vimtex#echo#wait()
       else
-        let l:cb = '""""""'
-              \ . g:vimtex_compiler_progname
-              \ . '""""""'
-              \ . ' --servername ' . v:servername
-
-        " This seems more complicated than it is!
-        " - The succes_cmd and fail_cmd are the same, except for the callback
-        "   status value (1 and 0)
-        " - We need to escape the parantheses on windows, but not on unix
         for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
-          let l:func = l:cb . ' --remote-expr '
-                \ . (has('win32')
+          let l:callback = has('win32')
                 \   ? '"vimtex#compiler#callback(' . l:val . ')"'
-                \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"')
+                \   : '\"vimtex#compiler#callback(' . l:val . ')\"'
+          let l:func = vimtex#util#shellescape('""')
+                \ . g:vimtex_compiler_progname
+                \ . vimtex#util#shellescape('""')
+                \ . ' --servername ' . v:servername
+                \ . ' --remote-expr ' . l:callback
           let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
         endfor
       endif
