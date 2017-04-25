@@ -966,6 +966,24 @@ Options~
 
   Default value: 1
 
+*g:vimtex_labels_refresh_always*
+  Set to 0 to manually refresh entries in the table of labels. This may be
+  useful for very large projects where generating the entries becomes slow.
+
+  It may be useful to combine manually refreshing with a |BufWritePost|
+  autocommand, e.g.: >
+
+    augroup vimtex
+      autocmd!
+      autocmd BufWritePost *.tex call vimtex#labels#refresh()
+    augroup END
+<
+  Or, if preferred, one may use a mapping such as: >
+
+    nnoremap <silent> <localleader>lf :call vimtex#labels#refresh()
+<
+  Default value: 1
+
 *g:vimtex_quickfix_method*
   This option sets the quickfix method. The following methods are available:
 
