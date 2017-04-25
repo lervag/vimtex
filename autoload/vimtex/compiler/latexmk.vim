@@ -258,7 +258,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   let l:cmd = (has('win32')
         \   ? 'cd /D "' . self.root . '" & '
         \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
-        \ . self.executable . ' . (a:full ? '-C ' : '-c ')
+        \ . self.executable . ' ' . (a:full ? '-C ' : '-c ')
   if !empty(self.build_dir)
     let l:cmd .= ' -outdir=' . self.build_dir
   endif
