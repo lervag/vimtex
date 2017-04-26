@@ -4,45 +4,47 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#index#open(bufname) abort " {{{1
-  let l:winnr = bufwinnr(bufnr(a:bufname))
-  if l:winnr >= 0
-    let l:prev_winnr = winnr()
-    silent execute l:winnr . 'wincmd w'
-    let b:index.prev_winnr = l:prev_winnr
-    return 1
-  else
-    return 0
-  endif
+function! vimtex#index#new(index) abort " {{{1
+  return extend(a:index, deepcopy(s:index), 'keep')
 endfunction
 
 " }}}1
-function! vimtex#index#close(bufname) abort " {{{1
-  if g:vimtex_index_resize
-    silent exe 'set columns -=' . g:vimtex_index_split_width
+
+let s:index = {
+      \ 'show_help' : g:vimtex_index_show_help,
+      \}
+
+function! s:index.open() abort dict " {{{1
+  if self.is_open() | return | endif
+
+  let self.calling_file = expand('%:p')
+  let self.calling_line = line('.')
+
+  if has_key(self, 'update')
+    call self.update(0)
   endif
-  silent execute 'bwipeout' . bufnr(a:bufname)
+
+  call self.create()
 endfunction
 
 " }}}1
-function! vimtex#index#create(index) abort " {{{1
-  let l:index = extend(deepcopy(s:index), a:index)
+function! s:index.create() abort dict " {{{1
+  let l:bufnr = bufnr('')
   let l:vimtex = get(b:, 'vimtex', {})
 
-  let l:bufnr = bufnr('')
   if g:vimtex_index_split_pos ==# 'full'
-    silent execute 'edit' escape(l:index.name, ' ')
+    silent execute 'edit' escape(self.name, ' ')
   else
     if g:vimtex_index_resize
       silent exe 'set columns +=' . g:vimtex_index_split_width
     endif
     silent execute
           \ g:vimtex_index_split_pos g:vimtex_index_split_width
-          \ 'new' escape(l:index.name, ' ')
+          \ 'new' escape(self.name, ' ')
   endif
-  let l:index.prev_winnr = bufwinnr(l:bufnr)
 
-  let b:index = l:index
+  let self.prev_winnr = bufwinnr(l:bufnr)
+  let b:index = self
   let b:vimtex = l:vimtex
 
   setlocal bufhidden=wipe
@@ -76,22 +78,51 @@ function! vimtex#index#create(index) abort " {{{1
   nnoremap <silent><buffer> <cr>          :call b:index.activate(1)<cr>
   nnoremap <silent><buffer> <2-leftmouse> :call b:index.activate(1)<cr>
 
-  call b:index.syntax()
-  call b:index.refresh()
+  call self.syntax()
+  call self.refresh()
 
-  if has_key(b:index, 'hook_init_post')
-    call b:index.hook_init_post()
-    unlet b:index.hook_init_post
+  if has_key(self, 'hook_init_post')
+    call self.hook_init_post()
+    unlet self.hook_init_post
   endif
 endfunction
 
 " }}}1
+function! s:index.goto() abort dict " {{{1
+  if self.is_open()
+    let l:winnr = bufwinnr(bufnr(self.name))
+    let l:prev_winnr = winnr()
+    silent execute l:winnr . 'wincmd w'
+    let b:index.prev_winnr = l:prev_winnr
+  endif
+endfunction
 
-let s:index = {
-      \ 'show_help' : g:vimtex_index_show_help,
-      \}
+" }}}1
+function! s:index.toggle() abort dict " {{{1
+  if self.is_open()
+    call self.close()
+  else
+    call self.open()
+    silent execute self.prev_winnr . 'wincmd w'
+  endif
+endfunction
 
+" }}}1
+function! s:index.is_open() abort dict " {{{1
+  return bufwinnr(bufnr(self.name)) >= 0
+endfunction
+
+" }}}1
 function! s:index.refresh() abort dict " {{{1
+  let l:index_winnr = bufwinnr(bufnr(self.name))
+  let l:buf_winnr = bufwinnr(bufnr(''))
+
+  if l:index_winnr < 0
+    return
+  elseif l:buf_winnr != l:index_winnr
+    silent execute l:index_winnr . 'wincmd w'
+  endif
+
   call self.position_save()
   setlocal modifiable
   %delete
@@ -102,6 +133,10 @@ function! s:index.refresh() abort dict " {{{1
   0delete _
   setlocal nomodifiable
   call self.position_restore()
+
+  if l:buf_winnr != l:index_winnr
+    silent execute l:buf_winnr . 'wincmd w'
+  endif
 endfunction
 
 " }}}1
@@ -172,13 +207,14 @@ function! s:index.activate(close) abort dict "{{{1
   endif
 endfunction
 
-function! s:index.close() abort dict "{{{1
+function! s:index.close() abort dict " {{{1
   if g:vimtex_index_resize
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
-  bwipeout
+  silent execute 'bwipeout' . bufnr(self.name)
 endfunction
 
+" }}}1
 function! s:index.position_save() abort dict " {{{1
   let self.position = vimtex#pos#get_cursor()
 endfunction
