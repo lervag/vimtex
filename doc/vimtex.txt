@@ -1145,6 +1145,18 @@ Options~
   Set to 0 to manually refresh ToC entries. This may be useful for very large
   projects where generating the ToC entries becomes slow.
 
+  It may be useful to combine manually refreshing with a |BufWritePost|
+  autocommand, e.g.: >
+
+    augroup vimtex
+      autocmd!
+      autocmd BufWritePost *.tex call vimtex#toc#refresh()
+    augroup END
+<
+  Or, if preferred, one may use a mapping such as: >
+
+    nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
+<
   Default value: 1
 
 *g:vimtex_toc_secnumdepth*

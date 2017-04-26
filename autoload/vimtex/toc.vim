@@ -4,85 +4,100 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#toc#init_buffer() " {{{1
+function! vimtex#toc#init_buffer() abort " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
-  command! -buffer VimtexTocOpen   call vimtex#toc#open()
-  command! -buffer VimtexTocToggle call vimtex#toc#toggle()
+  command! -buffer VimtexTocOpen   call b:vimtex.toc.open()
+  command! -buffer VimtexTocToggle call b:vimtex.toc.toggle()
 
-  nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
-  nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
+  nnoremap <buffer> <plug>(vimtex-toc-open)   :call b:vimtex.toc.open()<cr>
+  nnoremap <buffer> <plug>(vimtex-toc-toggle) :call b:vimtex.toc.toggle()<cr>
+endfunction
+
+" }}}1
+function! vimtex#toc#init_state(state) abort " {{{1
+  if !g:vimtex_toc_enabled | return | endif
+
+  let a:state.toc = vimtex#index#new(deepcopy(s:toc))
 endfunction
 
 " }}}1
 
-function! vimtex#toc#open() " {{{1
-  if vimtex#index#open(s:name) | return | endif
+function! vimtex#toc#get_entries() abort " {{{1
+  if !has_key(b:vimtex, 'toc') | return [] | endif
 
-  if !exists('b:vimtex')
-    if exists('s:index')
-      call vimtex#index#create(s:index)
-    elseif expand('%:e') =~# 'bib'
-      call vimtex#echo#warning('Can''t open ToC!')
-      call vimtex#echo#echo('Please open ToC from a relevant tex file first.')
-      call vimtex#echo#wait()
+  return b:vimtex.toc.update(0)
+endfunction
+
+" }}}1
+function! vimtex#toc#refresh() abort " {{{1
+  if has_key(b:vimtex, 'toc')
+    call b:vimtex.toc.update(1)
+  endif
+endfunction
+
+" }}}1
+
+let s:toc = {
+      \ 'name' : 'Table of contents (vimtex)',
+      \ 'help' : [
+      \   '-:       decrease secnumdepth',
+      \   '+:       increase secnumdepth',
+      \   's:       hide numbering',
+      \   'u:       update',
+      \ ],
+      \ 'show_numbers' : g:vimtex_toc_show_numbers,
+      \ 'secnumdepth' : g:vimtex_toc_secnumdepth,
+      \}
+
+function! s:toc.update(force) abort dict " {{{1
+  if has_key(self, 'entries') && !g:vimtex_toc_refresh_always && !a:force
+    return self.entries
+  endif
+
+  let l:content = vimtex#parser#tex(b:vimtex.tex)
+
+  let self.entries = []
+  let self.max_level = 0
+  let self.topmatters = 0
+
+  "
+  " First iteration: Prepare total values
+  "
+  call self.parse_prepare(l:content)
+
+  "
+  " Main iteration: Generate entries
+  "
+  call self.parse(l:content)
+
+  if a:force && self.is_open()
+    call self.refresh()
+  endif
+
+  return self.entries
+endfunction
+
+" }}}1
+
+function! s:toc.parse_prepare(content) " {{{1
+  for [l:file, l:lnum, l:line] in a:content
+    if l:line =~# s:re_sec
+      let self.max_level = max([
+            \ self.max_level,
+            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]
+            \])
+    elseif l:line =~# s:re_matters
+      let self.topmatters += 1
     endif
-    return
-  endif
-
-  let s:index = {
-        \ 'name'            : s:name,
-        \ 'calling_file'    : expand('%:p'),
-        \ 'calling_line'    : line('.'),
-        \ 'entries'         : vimtex#toc#get_entries(),
-        \ 'show_numbers'    : g:vimtex_toc_show_numbers,
-        \ 'max_level'       : s:max_level,
-        \ 'topmatters'      : s:count_matters,
-        \ 'secnumdepth'     : g:vimtex_toc_secnumdepth,
-        \ 'help'            : [
-        \   '-:       decrease secnumdepth',
-        \   '+:       increase secnumdepth',
-        \   's:       hide numbering',
-        \ ],
-        \ 'hook_init_post'  : function('s:index_hook_init_post'),
-        \ 'print_entries'   : function('s:index_print_entries'),
-        \ 'print_entry'     : function('s:index_print_entry'),
-        \ 'print_number'    : function('s:index_print_number'),
-        \ 'increase_depth'  : function('s:index_secnumdepth_increase'),
-        \ 'decrease_depth'  : function('s:index_secnumdepth_decrease'),
-        \ 'syntax'          : function('s:index_syntax'),
-        \ 'toggle_numbers'  : function('s:index_toggle_numbers'),
-        \ }
-
-  call vimtex#index#create(s:index)
+  endfor
 endfunction
 
 " }}}1
-function! vimtex#toc#toggle() " {{{1
-  if vimtex#index#open(s:name)
-    call vimtex#index#close(s:name)
-  else
-    call vimtex#toc#open()
-    silent execute 'wincmd w'
-  endif
-endfunction
-
-" }}}1
-function! vimtex#toc#get_entries() " {{{1
-  if !has_key(b:vimtex, 'toc') || g:vimtex_toc_refresh_always
-    let b:vimtex.toc = s:generate_toc()
-  endif
-
-  return b:vimtex.toc
-endfunction
-
-" }}}1
-
-function! s:generate_toc() " {{{1
+function! s:toc.parse(content) abort dict " {{{1
   "
-  " Parses tex project for TOC entries
-  "
-  " The function returns a list of entries.  Each entry is a dictionary:
+  " Parses tex project for TOC entries.  Each entry is a dictionary similar to
+  " the following:
   "
   "   entry = {
   "     title  : "Some title",
@@ -93,41 +108,27 @@ function! s:generate_toc() " {{{1
   "   }
   "
 
-  let l:parsed = vimtex#parser#tex(b:vimtex.tex)
+  call s:level.reset('preamble', self.max_level)
 
-  let s:max_level = 0
-  let s:count_matters = 0
-  for [l:file, l:lnum, l:line] in l:parsed
-    if l:line =~# s:re_sec
-      let s:max_level = max([s:max_level,
-            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]])
-    elseif l:line =~# s:re_matters
-      let s:count_matters += 1
-    endif
-  endfor
-
-  call s:number_reset('preamble')
-
-  let l:toc = []
   let l:included = {
         \ 'toc_length' : 0,
-        \ 'prev' : l:parsed[0][0],
-        \ 'files' : [l:parsed[0][0]],
+        \ 'prev' : a:content[0][0],
+        \ 'files' : [a:content[0][0]],
         \ 'current' : { 'entries' : 0 },
         \}
 
-  for [l:file, l:lnum, l:line] in l:parsed
+  for [l:file, l:lnum, l:line] in a:content
     " Handle multi-line sections (and chapter/subsection/etc)
     if get(s:, 'sec_continue', 0)
       let [l:end, l:count] = s:find_closing(0, l:line, s:sec_count, s:sec_type)
       if l:count == 0
-        let l:toc[-1].title = s:parse_line_sec_title(
-              \ l:toc[-1].title . strpart(l:line, 0, l:end+1))
+        let self.entries[-1].title = self.parse_line_sec_title(
+              \ self.entries[-1].title . strpart(l:line, 0, l:end+1))
         unlet s:sec_type
         unlet s:sec_count
         unlet s:sec_continue
       else
-        let l:toc[-1].title .= l:line
+        let self.entries[-1].title .= l:line
         let s:sec_count = l:count
       endif
       continue
@@ -139,8 +140,8 @@ function! s:generate_toc() " {{{1
     "       for included files that do not have other TOC entries inside them.
     if l:file !=# l:included.prev
       let l:included.prev = l:file
-      let l:included.current.entries = len(l:toc) - l:included.toc_length
-      let l:included.toc_length = len(l:toc)
+      let l:included.current.entries = len(self.entries) - l:included.toc_length
+      let l:included.toc_length = len(self.entries)
 
       if index(l:included.files, l:file) < 0
         let l:included.files += [l:file]
@@ -149,10 +150,10 @@ function! s:generate_toc() " {{{1
               \ 'number'  : '[i]',
               \ 'file'    : l:file,
               \ 'line'    : 1,
-              \ 'level'   : s:number.current_level,
+              \ 'level'   : s:level.current,
               \ 'entries' : 0,
               \ }
-        call add(l:toc, l:included.current)
+        call add(self.entries, l:included.current)
       else
         let l:included.current = { 'entries' : 0 }
       endif
@@ -165,13 +166,13 @@ function! s:generate_toc() " {{{1
         let l:fname = b:vimtex.root . '/' . l:fname
       endif
       let l:fname = fnamemodify(l:fname, ':~:.')
-      call add(l:toc, {
+      call add(self.entries, {
             \ 'title'  : (strlen(l:fname) < 70
             \               ? l:fname
             \               : l:fname[0:30] . '...' . l:fname[-36:]),
             \ 'number' : '[v]',
             \ 'file'   : l:fname,
-            \ 'level'  : s:number.current_level,
+            \ 'level'  : s:level.current,
             \ 'link'   : 1,
             \ })
       continue
@@ -179,25 +180,25 @@ function! s:generate_toc() " {{{1
 
     " Bibliography files
     if l:line =~# s:re_bibs
-      call add(l:toc, s:parse_bib_input(l:line))
+      call add(self.entries, self.parse_bib_input(l:line))
       continue
     endif
 
     " Preamble
-    if s:number.preamble
+    if s:level.preamble
       if g:vimtex_toc_show_preamble && l:line =~# '\v^\s*\\documentclass'
-        call add(l:toc, {
+        call add(self.entries, {
               \ 'title'  : 'Preamble',
               \ 'number' : '',
               \ 'file'   : l:file,
               \ 'line'   : l:lnum,
-              \ 'level'  : s:max_level,
+              \ 'level'  : self.max_level,
               \ })
         continue
       endif
 
       if l:line =~# '\v^\s*\\begin\{document\}'
-        let s:number.preamble = 0
+        let s:level.preamble = 0
       endif
 
       continue
@@ -205,77 +206,202 @@ function! s:generate_toc() " {{{1
 
     " Document structure (front-/main-/backmatter, appendix)
     if l:line =~# s:re_structure
-      call s:number_reset(matchstr(l:line, s:re_structure_match))
+      call s:level.reset(matchstr(l:line, s:re_structure_match), self.max_level)
       continue
     endif
 
     " Sections (\parts, \chapters, \sections, and \subsections, ...)
     if l:line =~# s:re_sec
-      call add(l:toc, s:parse_line_sec(l:file, l:lnum, l:line))
+      call add(self.entries, self.parse_line_sec(l:file, l:lnum, l:line))
       continue
     endif
 
     " Other stuff
     for l:other in values(s:re_other)
       if l:line =~# l:other.re
-        call add(l:toc, {
+        call add(self.entries, {
               \ 'title'  : l:other.title,
               \ 'number' : '',
               \ 'file'   : l:file,
               \ 'line'   : l:lnum,
-              \ 'level'  : s:max_level,
+              \ 'level'  : self.max_level,
               \ })
         continue
       endif
     endfor
   endfor
 
-  " Remove the superfluous TOC entries and return
-  return filter(l:toc, 'get(v:val, ''entries'', 1) == 1')
+  " Remove superfluous TOC entries (cf. the "included files" section above)
+  call filter(self.entries, 'get(v:val, ''entries'', 1) == 1')
+endfunction
+
+" }}}1
+function! s:toc.parse_line_sec(file, lnum, line) abort dict " {{{1
+  let level = matchstr(a:line, s:re_sec_level)
+  let type = matchlist(a:line, s:re_sec)[1]
+  let title = matchstr(a:line, s:re_sec_title)
+
+  let [l:end, l:count] = s:find_closing(0, title, 1, type)
+  if l:count == 0
+    let title = self.parse_line_sec_title(strpart(title, 0, l:end+1))
+  else
+    let s:sec_type = type
+    let s:sec_count = l:count
+    let s:sec_continue = 1
+  endif
+
+  call s:level.increment(level)
+
+  return {
+        \ 'title'  : title,
+        \ 'number' : a:line =~# s:re_sec_starred ? '' : deepcopy(s:level),
+        \ 'file'   : a:file,
+        \ 'line'   : a:lnum,
+        \ 'level'  : s:level.current,
+        \ }
+endfunction
+
+" }}}1
+function! s:toc.parse_line_sec_title(title) abort dict " {{{1
+  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
+  return s:clear_texorpdfstring(l:title)
+endfunction
+
+" }}}1
+function! s:toc.parse_bib_input(line) abort dict " {{{1
+  let l:file = matchstr(a:line, s:re_bibs)
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.bib$'
+    let l:file .= '.bib'
+  endif
+
+  return {
+        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
+        \ 'number' : '[b]',
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'line'   : 0,
+        \ 'level'  : self.max_level,
+        \ }
 endfunction
 
 " }}}1
 
-function! s:index_fold_level(lnum) " {{{1
-  let pline = getline(a:lnum - 1)
-  let cline = getline(a:lnum)
-  let nline = getline(a:lnum + 1)
-  let l:pn = matchstr(pline, '\d$')
-  let l:cn = matchstr(cline, '\d$')
-  let l:nn = matchstr(nline, '\d$')
+function! s:clear_texorpdfstring(title) abort " {{{1
+  let l:i1 = match(a:title, '\\texorpdfstring')
+  if l:i1 < 0 | return a:title | endif
 
-  " Don't fold options
-  if cline =~# '^\s*$'
-    return 0
-  endif
+  " Find start of included part
+  let [l:i2, l:dummy] = s:find_closing(
+        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
+  let l:i2 = match(a:title, '{', l:i2+1)
+  if l:i2 < 0 | return a:title | endif
 
-  if l:nn > l:cn && g:vimtex_toc_fold_levels >= l:nn
-    return '>' . l:nn
-  endif
+  " Find end of included part
+  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
+  if l:i3 < 0 | return a:title | endif
 
-  if l:cn < l:pn && l:cn >= l:nn && g:vimtex_toc_fold_levels >= l:cn
-    return l:cn
-  endif
-
-  return '='
+  return strpart(a:title, 0, l:i1)
+        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
+        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
 endfunction
 
 " }}}1
-function! s:index_fold_text() " {{{1
-  return getline(v:foldstart)
+function! s:find_closing(start, string, count, type) abort " {{{1
+  if a:type ==# '{'
+    let l:re = '{\|}'
+    let l:open = '{'
+  else
+    let l:re = '\[\|\]'
+    let l:open = '['
+  endif
+  let l:i2 = a:start
+  let l:count = a:count
+  while l:count > 0
+    let l:i2 = match(a:string, l:re, l:i2+1)
+    if l:i2 < 0 | break | endif
+
+    if a:string[l:i2] ==# l:open
+      let l:count += 1
+    else
+      let l:count -= 1
+    endif
+  endwhile
+
+  return [l:i2, l:count]
 endfunction
 
 " }}}1
-function! s:index_hook_init_post() dict " {{{1
+
+let s:level = {}
+function! s:level.reset(part, level) abort dict " {{{1
+  let self.current = 0
+  let self.preamble = 0
+  let self.frontmatter = 0
+  let self.mainmatter = 0
+  let self.appendix = 0
+  let self.backmatter = 0
+  let self.part = 0
+  let self.chapter = 0
+  let self.section = 0
+  let self.subsection = 0
+  let self.subsubsection = 0
+  let self.subsubsubsection = 0
+  let self.current = a:level
+  let self[a:part] = 1
+endfunction
+
+" }}}1
+function! s:level.increment(level) abort dict " {{{1
+  let self.current = s:sec_to_value[a:level]
+
+  if a:level ==# 'part'
+    let self.part += 1
+    let self.chapter = 0
+    let self.section = 0
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'chapter'
+    let self.chapter += 1
+    let self.section = 0
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'section'
+    let self.section += 1
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsection'
+    let self.subsection += 1
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsubsection'
+    let self.subsubsection += 1
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsubsubsection'
+    let self.subsubsubsection += 1
+  endif
+endfunction
+
+" }}}1
+
+"
+" Index related methods
+"
+
+function! s:toc.hook_init_post() abort dict " {{{1
   if g:vimtex_toc_fold
-    let self.fold_level = function('s:index_fold_level')
-    let self.fold_text  = function('s:index_fold_text')
+    let self.fold_level = function('s:fold_level')
+    let self.fold_text  = function('s:fold_text')
     setlocal foldmethod=expr
     setlocal foldexpr=b:index.fold_level(v:lnum)
     setlocal foldtext=b:index.fold_text()
   endif
 
   nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
+  nnoremap <buffer> <silent> u :call b:index.update(1)<cr>
   nnoremap <buffer> <silent> - :call b:index.decrease_depth()<cr>
   nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
 
@@ -284,7 +410,7 @@ function! s:index_hook_init_post() dict " {{{1
 endfunction
 
 " }}}1
-function! s:index_print_entries() dict " {{{1
+function! s:toc.print_entries() abort dict " {{{1
   if g:vimtex_toc_number_width
     let self.number_width = g:vimtex_toc_number_width
   else
@@ -307,7 +433,7 @@ function! s:index_print_entries() dict " {{{1
 endfunction
 
 " }}}1
-function! s:index_print_entry(entry) dict " {{{1
+function! s:toc.print_entry(entry) abort dict " {{{1
   let level = self.max_level - a:entry.level
 
   let output = ''
@@ -322,7 +448,7 @@ function! s:index_print_entry(entry) dict " {{{1
 endfunction
 
 " }}}1
-function! s:index_print_number(number) dict " {{{1
+function! s:toc.print_number(number) abort dict " {{{1
   if empty(a:number) | return '' | endif
   if type(a:number) == type('') | return a:number | endif
 
@@ -355,19 +481,19 @@ function! s:index_print_number(number) dict " {{{1
 endfunction
 
 " }}}1
-function! s:index_secnumdepth_decrease() dict "{{{1
+function! s:toc.secnumdepth_decrease() abort dict "{{{1
   let self.secnumdepth = max([self.secnumdepth - 1, -2])
   call self.refresh()
 endfunction
 
 " }}}1
-function! s:index_secnumdepth_increase() dict "{{{1
+function! s:toc.secnumdepth_increase() abort dict "{{{1
   let self.secnumdepth = min([self.secnumdepth + 1, 5])
   call self.refresh()
 endfunction
 
 " }}}1
-function! s:index_syntax() dict "{{{1
+function! s:toc.syntax() abort dict "{{{1
   syntax match VimtexTocHelp /^\S.*: .*/
   syntax match VimtexTocNum
         \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
@@ -381,188 +507,46 @@ function! s:index_syntax() dict "{{{1
 endfunction
 
 " }}}1
-function! s:index_toggle_numbers() dict "{{{1
+function! s:toc.toggle_numbers() abort dict "{{{1
   let self.show_numbers = self.show_numbers ? 0 : 1
   call self.refresh()
 endfunction
 
 " }}}1
 
-function! s:parse_line_sec(file, lnum, line) " {{{1
-  let level = matchstr(a:line, s:re_sec_level)
-  let type = matchlist(a:line, s:re_sec)[1]
-  let title = matchstr(a:line, s:re_sec_title)
+function! s:fold_level(lnum) abort " {{{1
+  let pline = getline(a:lnum - 1)
+  let cline = getline(a:lnum)
+  let nline = getline(a:lnum + 1)
+  let l:pn = matchstr(pline, '\d$')
+  let l:cn = matchstr(cline, '\d$')
+  let l:nn = matchstr(nline, '\d$')
 
-  let [l:end, l:count] = s:find_closing(0, title, 1, type)
-  if l:count == 0
-    let title = s:parse_line_sec_title(strpart(title, 0, l:end+1))
-  else
-    let s:sec_type = type
-    let s:sec_count = l:count
-    let s:sec_continue = 1
+  " Don't fold options
+  if cline =~# '^\s*$'
+    return 0
   endif
 
-  " Check if section is starred
-  if a:line =~# s:re_sec_starred
-    let number = ''
-    let s:number.current_level = s:sec_to_value[level]
-  else
-    let number = s:number_increment(level)
+  if l:nn > l:cn && g:vimtex_toc_fold_levels >= l:nn
+    return '>' . l:nn
   endif
 
-  return {
-        \ 'title'  : title,
-        \ 'number' : number,
-        \ 'file'   : a:file,
-        \ 'line'   : a:lnum,
-        \ 'level'  : s:number.current_level,
-        \ }
-endfunction
-
-" }}}1
-function! s:parse_line_sec_title(title) " {{{1
-  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
-  return s:clear_texorpdfstring(l:title)
-endfunction
-
-" }}}1
-function! s:parse_bib_input(line) " {{{1
-  let l:file = matchstr(a:line, s:re_bibs)
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.bib$'
-    let l:file .= '.bib'
+  if l:cn < l:pn && l:cn >= l:nn && g:vimtex_toc_fold_levels >= l:cn
+    return l:cn
   endif
 
-  return {
-        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[b]',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
-        \ 'line'   : 0,
-        \ 'level'  : s:max_level,
-        \ }
+  return '='
 endfunction
 
 " }}}1
-
-function! s:number_reset(part) " {{{1
-  for key in keys(s:number)
-    let s:number[key] = 0
-  endfor
-  let s:number[a:part] = 1
-
-  let s:number.current_level = s:max_level
-endfunction
-
-" }}}1
-function! s:number_increment(level) " {{{1
-  if a:level ==# 'part'
-    let s:number.part += 1
-    let s:number.chapter = 0
-    let s:number.section = 0
-    let s:number.subsection = 0
-    let s:number.subsubsection = 0
-    let s:number.subsubsubsection = 0
-  elseif a:level ==# 'chapter'
-    let s:number.chapter += 1
-    let s:number.section = 0
-    let s:number.subsection = 0
-    let s:number.subsubsection = 0
-    let s:number.subsubsubsection = 0
-  elseif a:level ==# 'section'
-    let s:number.section += 1
-    let s:number.subsection = 0
-    let s:number.subsubsection = 0
-    let s:number.subsubsubsection = 0
-  elseif a:level ==# 'subsection'
-    let s:number.subsection += 1
-    let s:number.subsubsection = 0
-    let s:number.subsubsubsection = 0
-  elseif a:level ==# 'subsubsection'
-    let s:number.subsubsection += 1
-    let s:number.subsubsubsection = 0
-  elseif a:level ==# 'subsubsubsection'
-    let s:number.subsubsubsection += 1
-  endif
-
-  " Store current level
-  let s:number.current_level = s:sec_to_value[a:level]
-
-  return copy(s:number)
-endfunction
-
-" }}}1
-
-function! s:clear_texorpdfstring(title) " {{{1
-  let l:i1 = match(a:title, '\\texorpdfstring')
-  if l:i1 < 0 | return a:title | endif
-
-  " Find start of included part
-  let [l:i2, l:dummy] = s:find_closing(
-        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
-  let l:i2 = match(a:title, '{', l:i2+1)
-  if l:i2 < 0 | return a:title | endif
-
-  " Find end of included part
-  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
-  if l:i3 < 0 | return a:title | endif
-
-  return strpart(a:title, 0, l:i1)
-        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
-        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
-endfunction
-
-" }}}1
-function! s:find_closing(start, string, count, type) " {{{1
-  if a:type ==# '{'
-    let l:re = '{\|}'
-    let l:open = '{'
-  else
-    let l:re = '\[\|\]'
-    let l:open = '['
-  endif
-  let l:i2 = a:start
-  let l:count = a:count
-  while l:count > 0
-    let l:i2 = match(a:string, l:re, l:i2+1)
-    if l:i2 < 0 | break | endif
-
-    if a:string[l:i2] ==# l:open
-      let l:count += 1
-    else
-      let l:count -= 1
-    endif
-  endwhile
-
-  return [l:i2, l:count]
+function! s:fold_text() abort " {{{1
+  return getline(v:foldstart)
 endfunction
 
 " }}}1
 
 
 " {{{1 Initialize module
-
-let s:name = 'Table of contents (vimtex)'
-
-" Define counters
-let s:max_level = 0
-let s:count_matters = 0
-
-" Define dictionary to keep track of TOC numbers
-let s:number = {
-      \ 'part' : 0,
-      \ 'chapter' : 0,
-      \ 'section' : 0,
-      \ 'subsection' : 0,
-      \ 'subsubsection' : 0,
-      \ 'subsubsubsection' : 0,
-      \ 'current_level' : 0,
-      \ 'preamble' : 0,
-      \ 'frontmatter' : 0,
-      \ 'mainmatter' : 0,
-      \ 'appendix' : 0,
-      \ 'backmatter' : 0,
-      \ }
 
 " Map for section hierarchy
 let s:sec_to_value = {
