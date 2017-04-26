@@ -26,6 +26,7 @@ function! vimtex#state#init() " {{{1
     call vimtex#view#init_state(b:vimtex)
     call vimtex#compiler#init_state(b:vimtex)
     call vimtex#qf#init_state(b:vimtex)
+    call vimtex#toc#init_state(b:vimtex)
   endif
 endfunction
 
@@ -51,6 +52,7 @@ function! vimtex#state#init_local() " {{{1
     call vimtex#view#init_state(l:vimtex)
     call vimtex#compiler#init_state(l:vimtex)
     call vimtex#qf#init_state(l:vimtex)
+    call vimtex#toc#init_state(l:vimtex)
   endif
 
   let b:vimtex_local = {
@@ -164,7 +166,7 @@ function! s:get_main() " {{{1
     if l:id >= 0
       return s:vimtex_states[l:id].tex
     else
-      let s:disabled_modules = ['latexmk', 'view']
+      let s:disabled_modules = ['latexmk', 'view', 'toc']
       return expand('%:p')
     endif
   endif
