@@ -83,7 +83,6 @@ function! s:index.create() abort dict " {{{1
 
   if has_key(self, 'hook_init_post')
     call self.hook_init_post()
-    unlet self.hook_init_post
   endif
 endfunction
 
