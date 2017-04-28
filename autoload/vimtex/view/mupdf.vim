@@ -164,7 +164,7 @@ function! s:mupdf.focus_viewer() dict " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_id > 0
-    silent call system('xdotool windowfocus ' . self.xwin_id . ' --sync')
+    silent call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
     silent call system('xdotool windowraise ' . self.xwin_id)
   endif
 endfunction
@@ -173,7 +173,7 @@ endfunction
 function! s:mupdf.focus_vim() dict " {{{1
   if !executable('xdotool') | return | endif
 
-  silent call system('xdotool windowfocus ' . v:windowid . ' --sync')
+  silent call system('xdotool windowactivate ' . v:windowid . ' --sync')
   silent call system('xdotool windowraise ' . v:windowid)
 endfunction
 
