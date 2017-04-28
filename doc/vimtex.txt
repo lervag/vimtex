@@ -1155,7 +1155,7 @@ Options~
 
 *g:vimtex_toc_number_width*
   Set the display width of numbers in the ToC.  If it is set to 0, then the
-  width is set based on the section depth, see |g:vimtex_toc_secnumdepth|.
+  width is set based on the section depth, see |g:vimtex_toc_tocdepth|.
 
   Default value: 0
 
@@ -1177,10 +1177,11 @@ Options~
 <
   Default value: 1
 
-*g:vimtex_toc_secnumdepth*
-  Define the number of section levels to display.  Set level corresponding to
-  the desired latex variable `secnumdepth`.  For more info on `secnumdepth`,
-  see http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure.
+*g:vimtex_toc_tocdepth*
+  Define the number of section levels with section numbering.  Set level
+  corresponding to the desired latex variable `tocdepth`.  For more info on
+  `tocdepth`, see:
+  http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
 
   Note: The variable may be updated inside the ToC window with the mappings
         `+` and `-`.
@@ -2169,7 +2170,7 @@ Associated settings:
     |g:vimtex_toc_refresh_always|
     |g:vimtex_toc_show_preamble|
     |g:vimtex_toc_show_numbers|
-    |g:vimtex_toc_secnumdepth|
+    |g:vimtex_toc_tocdepth|
 
 ------------------------------------------------------------------------------
 Table of labels~

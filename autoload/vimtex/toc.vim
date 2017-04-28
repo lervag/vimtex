@@ -41,13 +41,13 @@ endfunction
 let s:toc = {
       \ 'name' : 'Table of contents (vimtex)',
       \ 'help' : [
-      \   '-:       decrease secnumdepth',
-      \   '+:       increase secnumdepth',
+      \   '-:       decrease g:vimtex_toc_tocdepth',
+      \   '+:       increase g:vimtex_toc_tocdepth',
       \   's:       hide numbering',
       \   'u:       update',
       \ ],
       \ 'show_numbers' : g:vimtex_toc_show_numbers,
-      \ 'secnumdepth' : g:vimtex_toc_secnumdepth,
+      \ 'tocdepth' : g:vimtex_toc_tocdepth,
       \}
 
 function! s:toc.update(force) abort dict " {{{1
@@ -414,7 +414,7 @@ function! s:toc.print_entries() abort dict " {{{1
   if g:vimtex_toc_number_width
     let self.number_width = g:vimtex_toc_number_width
   else
-    let self.number_width = 2*(self.secnumdepth + 2)
+    let self.number_width = 2*(self.tocdepth + 2)
   endif
   let self.number_width = max([0, self.number_width])
   let self.number_format = '%-' . self.number_width . 's'
@@ -438,7 +438,7 @@ function! s:toc.print_entry(entry) abort dict " {{{1
 
   let output = ''
   if self.show_numbers
-    let number = level >= self.secnumdepth + 2 ? ''
+    let number = level >= self.tocdepth + 2 ? ''
           \ : strpart(self.print_number(a:entry.number), 0, self.number_width - 1)
     let output .= printf(self.number_format, number)
   endif
@@ -482,13 +482,13 @@ endfunction
 
 " }}}1
 function! s:toc.decrease_depth() abort dict "{{{1
-  let self.secnumdepth = max([self.secnumdepth - 1, -2])
+  let self.tocdepth = max([self.tocdepth - 1, -2])
   call self.refresh()
 endfunction
 
 " }}}1
 function! s:toc.increase_depth() abort dict "{{{1
-  let self.secnumdepth = min([self.secnumdepth + 1, 5])
+  let self.tocdepth = min([self.tocdepth + 1, 5])
   call self.refresh()
 endfunction
 
