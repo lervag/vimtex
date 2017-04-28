@@ -481,13 +481,13 @@ function! s:toc.print_number(number) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:toc.secnumdepth_decrease() abort dict "{{{1
+function! s:toc.decrease_depth() abort dict "{{{1
   let self.secnumdepth = max([self.secnumdepth - 1, -2])
   call self.refresh()
 endfunction
 
 " }}}1
-function! s:toc.secnumdepth_increase() abort dict "{{{1
+function! s:toc.increase_depth() abort dict "{{{1
   let self.secnumdepth = min([self.secnumdepth + 1, 5])
   call self.refresh()
 endfunction
