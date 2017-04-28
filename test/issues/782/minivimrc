@@ -1,0 +1,19 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+let g:tex_flavor = 'latex'
+
+let g:vimtex_toc_refresh_always = 0
+let g:vimtex_labels_refresh_always = 0
+
+set hidden
+let g:vimtex_index_split_pos = 'full'
+
+augroup vimtex
+  autocmd!
+  autocmd BufWritePost *.tex call vimtex#toc#refresh()
+  autocmd BufWritePost *.tex call vimtex#labels#refresh()
+augroup END
