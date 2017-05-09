@@ -45,9 +45,11 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
     endfor
     return -3
   else
-    return exists('s:completer')
+    if !exists('s:completer') | return [] | endif
+
+    return g:vimtex_complete_close_braces && get(s:completer, 'inside_braces', 1)
           \ ? s:close_braces(s:completer.complete(a:base))
-          \ : []
+          \ : s:completer.complete(a:base)
   endif
 endfunction
 
@@ -363,6 +365,7 @@ let s:completer_cmd = {
       \ ],
       \ 'candidates' : [],
       \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
+      \ 'inside_braces' : 0,
       \}
 
 function! s:completer_cmd.complete(regex) dict " {{{2
@@ -644,16 +647,13 @@ endfunction
 
 " }}}1
 function! s:close_braces(candidates) " {{{1
-  if g:vimtex_complete_close_braces
-        \ && strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
-    let l:candidates = a:candidates
-    for l:cand in l:candidates
+  if strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
+    for l:cand in a:candidates
       let l:cand.word .= '}'
     endfor
-    return l:candidates
-  else
-    return a:candidates
   endif
+
+  return a:candidates
 endfunction
 
 " }}}1
