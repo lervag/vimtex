@@ -1037,6 +1037,9 @@ Options~
     " Disable all warnings
     let g:vimtex_quickfix_latexlog = {'default' : 0}
 
+    " Disable undefined reference warnings
+    let g:vimtex_quickfix_latexlog = {'references' : 0}
+
     " Disable overfull/underfull \hbox and all package warnings
     let g:vimtex_quickfix_latexlog = {
           \ 'overfull' : 0,
@@ -1051,6 +1054,7 @@ Options~
     let g:vimtex_quickfix_latexlog = {
           \ 'default' : 1,
           \ 'general' : 1,
+          \ 'references' : 1,
           \ 'overfull' : 1,
           \ 'underfull' : 1,
           \ 'font' : 1,

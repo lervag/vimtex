@@ -60,6 +60,11 @@ function! s:qf.set_errorformat() abort dict "{{{1
     setlocal errorformat+=%-WLaTeX\ Font\ Warning:\ %m
   endif
 
+  if !get(self.config, 'references', l:default)
+    setlocal errorformat+=%-WLaTeX\ %.%#Warning:\ %.%#eference%.%#undefined%.%#line\ %l%.%#
+    setlocal errorformat+=%-WLaTeX\ %.%#Warning:\ %.%#undefined\ references.
+  endif
+
   if get(self.config, 'general', l:default)
     setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
     setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %m
