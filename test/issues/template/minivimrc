@@ -15,7 +15,6 @@ let g:vimtex_echo_ignore_wait = 1
 let g:vimtex_view_automatic = 0
 
 if has('nvim')
-  let g:vimtex_quickfix_latexlog = {'fix_paths' : 0}
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
