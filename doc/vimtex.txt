@@ -93,6 +93,9 @@ Feature overview~
                                                               *vimtex-features*
 
 - Document compilation with `latexmk` or `latexrun`
+- LaTeX log parsing for quickfix entries using
+  - internal method
+  - `pplatex`
 - Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - `MuPDF`
@@ -990,6 +993,15 @@ Options~
   latexlog~
     This is the standard method which parses the normal LaTeX output. See
     |g:vimtex_quickfix_latexlog| for configuration.
+
+  pplatex~
+    Uses `pplatex` [0] to parse the LaTeX output file. `pplatex` is a command line
+    utility used to pretify the output of the LaTeX compiler.
+
+    [0]: https://github.com/stefanhepp/pplatex
+
+    Note: `pplatex` requires that `-file-line-error` is NOT passed to the LaTeX
+    compiler. Adapt |g:vimtex_compiler_latexmk| as necessary.
 
   lacheck~
     This is a simple method that uses `lacheck` to parse the TeX file for

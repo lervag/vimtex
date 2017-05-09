@@ -47,6 +47,9 @@ disabled if desired.
 - Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/) or
   [latexrun](https://github.com/aclements/latexrun)
+- LaTeX log parsing for quickfix entries using
+  - internal method
+  - [pplatex](https://github.com/stefanhepp/pplatex)
 - Compilation of selected part of document
 - Support for several PDF viewers with forward search
   - [MuPDF](http://www.mupdf.com/)
