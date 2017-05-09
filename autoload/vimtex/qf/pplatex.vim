@@ -17,8 +17,10 @@ let s:qf = {
       \}
 
 function! s:qf.init() abort dict "{{{1
-  " Use the -i flag from pplatex to parse logfiles
-  setlocal makeprg=pplatex\ -i
+  if !executable('pplatex')
+    call vimtex#echo#warning('pplatex is not executable!')
+    throw 'vimtex: Requirements not met'
+  endif
 
   " Each new item starts with two asterics followed by the file, potentially
   " a line number and sometimes even the message itself is on the same line.
@@ -53,18 +55,19 @@ function! s:qf.init() abort dict "{{{1
 endfunction
 
 function! s:qf.setqflist(base, jump) abort dict "{{{1
-  if empty(a:base)
-    let l:log = b:vimtex.log()
-  else
-    let l:log = fnamemodify(a:base, ':r') . '.log'
-  endif
+  let l:log = empty(a:base)
+        \ ? b:vimtex.log()
+        \ : fnamemodify(a:base, ':r') . '.log'
+  let l:tmp = fnamemodify(l:log, ':r') . '.pplatex'
 
   if empty(l:log)
     call setqflist([])
     throw 'Vimtex: No log file found'
   endif
 
-  execute 'silent make' . (a:jump ? '' : '!') l:log
+  silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
+  execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(l:tmp)
+  silent call system('rm ' . l:tmp)
 endfunction
 
 " }}}1
