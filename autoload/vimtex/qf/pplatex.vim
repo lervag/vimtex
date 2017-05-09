@@ -68,6 +68,11 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
   silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
   execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(l:tmp)
   silent call system('rm ' . l:tmp)
+
+  try
+    call setqflist(getqflist(), 'r', {'title': 'Vimtex errors (' . self.name . ')'})
+  catch
+  endtry
 endfunction
 
 " }}}1
