@@ -1,9 +1,8 @@
 " vimtex - LaTeX plugin for Vim
 "
+" CreatedBy:    Johannes Wienke (languitar@semipol.de)
 " Maintainer:   Karl Yngve Lervåg
 " Email:        karl.yngve@gmail.com
-" Initial work: Johannes Wienke
-" Email:        languitar@semipol.de
 "
 
 function! vimtex#qf#pplatex#new() " {{{1
@@ -18,10 +17,10 @@ let s:qf = {
       \}
 
 function! s:qf.init() abort dict "{{{1
-  " Each new item starts with two asterics followed by the file,
-  " potentially a line number and sometimes even the message itself is on the
-  " same line. Please note that the trailing whitspaces in the error formats
-  " are intentional as pplatex produces these.
+  " Each new item starts with two asterics followed by the file, potentially
+  " a line number and sometimes even the message itself is on the same line.
+  " Please note that the trailing whitspaces in the error formats are
+  " intentional as pplatex produces these.
 
   " Start of new items with file and line number, message on next line(s).
   setlocal errorformat=%E**\ Error\ \ \ in\ %f\\,\ Line\ %l:\ 
