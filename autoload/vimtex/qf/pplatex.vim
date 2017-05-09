@@ -47,6 +47,11 @@ function! s:qf.init(state) abort dict "{{{1
   setlocal errorformat+=%W**\ Warning\ in\ %f:\ 
   setlocal errorformat+=%I**\ BadBox\ \ in\ %f:\ 
 
+  " Start of items with with file, line and message on the same line. There
+  " are no BadBoxes reported this way.
+  setlocal errorformat+=**\ Error\ \ \ in\ %f\\,\ Line\ %l:\ %m
+  setlocal errorformat+=**\ Warning\ in\ %f\\,\ Line\ %l:\ %m
+
   " Start of items with with file and message on the same line. There are
   " no BadBoxes reported this way.
   setlocal errorformat+=**\ Error\ in\ %f:\ %m
