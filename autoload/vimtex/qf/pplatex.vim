@@ -17,6 +17,9 @@ let s:qf = {
       \}
 
 function! s:qf.init() abort dict "{{{1
+  " Use the -i flag from pplatex to parse logfiles
+  setlocal makeprg=pplatex\ -i
+
   " Each new item starts with two asterics followed by the file, potentially
   " a line number and sometimes even the message itself is on the same line.
   " Please note that the trailing whitspaces in the error formats are
@@ -61,13 +64,7 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
     throw 'Vimtex: No log file found'
   endif
 
-  execute "setlocal" "makeprg=pplatex\\ -i\\ " . l:log
-
-  if a:jump
-    silent make l:log %:S
-  else
-    silent make! l:log %:S
-  endif
+  execute 'silent make' . (a:jump ? '' : '!') l:log
 endfunction
 
 " }}}1
