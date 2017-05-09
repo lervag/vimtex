@@ -90,17 +90,16 @@ function! vimtex#qf#open(force) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#qf#inquire(...) abort " {{{1
+function! vimtex#qf#inquire(file) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return 0 | endif
 
   try
-    let l:file = a:0 > 0 ? a:1 : ''
-    call b:vimtex.qf.setqflist(l:file, 0)
+    call b:vimtex.qf.setqflist(a:file, 0)
   catch /Vimtex: No log file found/
     return 0
   endtry
 
-  return !empty(getqflist())
+  return s:qf_has_errors()
 endfunction
 
 " }}}1
