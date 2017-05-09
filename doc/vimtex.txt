@@ -1001,7 +1001,10 @@ Options~
     [0]: https://github.com/stefanhepp/pplatex
 
     Note: `pplatex` requires that `-file-line-error` is NOT passed to the LaTeX
-    compiler. Adapt |g:vimtex_compiler_latexmk| as necessary.
+    compiler. |g:vimtex_compiler_latexmk| will be updated automatically if one
+    uses `latexmk` through vimtex. However, if one uses other compiler
+    methods, either through vimtex (see |g:vimtex_compiler_method|) or
+    externally, this requirement must be ensured by the user.
 
   lacheck~
     This is a simple method that uses `lacheck` to parse the TeX file for

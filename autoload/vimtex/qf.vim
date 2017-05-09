@@ -16,7 +16,7 @@ endfunction
 function! vimtex#qf#init_state(state) abort " {{{1
   try
     let l:qf = vimtex#qf#{g:vimtex_quickfix_method}#new()
-    call l:qf.init()
+    call l:qf.init(a:state)
     unlet l:qf.init
     let a:state.qf = l:qf
   catch /vimtex: Requirements not met/

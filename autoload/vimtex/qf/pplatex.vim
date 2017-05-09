@@ -16,10 +16,20 @@ let s:qf = {
       \ 'name' : 'LaTeX logfile using pplatex',
       \}
 
-function! s:qf.init() abort dict "{{{1
+function! s:qf.init(state) abort dict "{{{1
   if !executable('pplatex')
     call vimtex#echo#warning('pplatex is not executable!')
     throw 'vimtex: Requirements not met'
+  endif
+
+  " Automatically remove the -file-line-error option if we use the latexmk
+  " backend (for convenience)
+  if a:state.compiler.name ==# 'latexmk'
+    let l:index = index(a:state.compiler.options,
+          \ '-file-line-error')
+    if l:index >= 0
+      call remove(a:state.compiler.options, l:index)
+    endif
   endif
 
   " Each new item starts with two asterics followed by the file, potentially

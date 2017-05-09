@@ -15,7 +15,7 @@ let s:qf = {
       \ 'name' : 'LaTeX logfile',
       \}
 
-function! s:qf.init() abort dict "{{{1
+function! s:qf.init(state) abort dict "{{{1
   let self.config = get(g:, 'vimtex_quickfix_latexlog', {})
   let self.config.default = get(self.config, 'default', 1)
   let self.config.packages = get(self.config, 'packages', {})

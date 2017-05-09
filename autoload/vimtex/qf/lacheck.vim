@@ -15,7 +15,7 @@ let s:qf = {
       \ 'name' : 'Lacheck',
       \}
 
-function! s:qf.init() abort dict "{{{1
+function! s:qf.init(state) abort dict "{{{1
   setlocal makeprg=lacheck
   setlocal errorformat=\"%f\"\\,\ line\ %l:\ %m
   setlocal errorformat+=%-G%.%#
