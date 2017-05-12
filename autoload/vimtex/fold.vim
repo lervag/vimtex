@@ -391,7 +391,7 @@ function! s:parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\label'
-      return matchstr(getline(i), '^\s*\\label{\zs.*\ze}')
+      return matchstr(getline(i), '^\s*\\label\%(\[.*\]\)\?{\zs.*\ze}')
     end
     let i -= 1
   endwhile
