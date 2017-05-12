@@ -295,7 +295,7 @@ endfunction
 " }}}1
 
 function! s:cmd_single(cmds) " {{{1
-  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
+  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?\s*%(\[.*\])?'
 
   let l:fold = {}
   let l:fold.re = {
