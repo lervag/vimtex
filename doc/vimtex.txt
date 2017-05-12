@@ -2739,8 +2739,8 @@ Added a general compiler interface, see |vimtex-compiler|.  To configure the
 `latexmk` compiler, see |g:vimtex_compiler_latexmk|.
 
 Deprecated options:
-    *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_progname|)
-    *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_enabled|)
+    *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_enabled|)
+    *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_progname|)
     *g:vimtex_latexmk_callback_hooks* (use |g:vimtex_compiler_callback_hooks|)
     *g:vimtex_latexmk_callback*
     *g:vimtex_latexmk_autojump*
