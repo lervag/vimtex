@@ -507,10 +507,9 @@ call s:init_cmds()
 " List of identifiers for improving efficiency
 "
 let s:folded  = '\v'
-let s:folded .= ' ^\s*\%'
+let s:folded .=  '^\s*\%'
 let s:folded .= '|^\s*\]\{'
 let s:folded .= '|^\s*}\s*(\%|$)'
-let s:folded .= '|^\s*\% Fake'
 let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
 let s:folded .= '|\\%(' . join([
       \   'begin',
