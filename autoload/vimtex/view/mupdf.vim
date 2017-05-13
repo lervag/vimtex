@@ -37,7 +37,10 @@ function! s:mupdf.start(outfile) dict " {{{1
 
   call self.xwin_get_id()
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
-  call self.forward_search(a:outfile)
+
+  if g:vimtex_view_forward_search_on_start
+    call self.forward_search(a:outfile)
+  endif
 endfunction
 
 " }}}1

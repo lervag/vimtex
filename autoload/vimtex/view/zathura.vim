@@ -36,10 +36,12 @@ function! s:zathura.start(outfile) dict " {{{1
   let l:cmd .= ' -x "' . g:vimtex_compiler_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
-  let l:cmd .= ' --synctex-forward '
-        \ .  line('.')
-        \ .  ':' . col('.')
-        \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+  if g:vimtex_view_forward_search_on_start
+    let l:cmd .= ' --synctex-forward '
+          \ .  line('.')
+          \ .  ':' . col('.')
+          \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+  endif
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   let self.process = vimtex#process#start(l:cmd)

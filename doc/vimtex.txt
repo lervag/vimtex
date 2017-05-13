@@ -1354,6 +1354,17 @@ Options~
 
   Default value: 0
 
+*g:vimtex_view_forward_search_on_start*
+  If disabled, the first invocation of the viewer will not perform a forward
+  search to the current cursor position.
+
+  Note: This option is only relevant for the following view methods (see
+  |g:vimtex_view_method|):
+    'mupdf'
+    'zathura'
+
+  Default value: 1
+
 *g:vimtex_view_general_viewer*
   Use generic viewer application, see |vimtex_viewer_general|.
 
