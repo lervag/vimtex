@@ -36,12 +36,15 @@ function! s:zathura.start(outfile) dict " {{{1
   let l:cmd .= ' -x "' . g:vimtex_compiler_progname
         \ . ' --servername ' . v:servername
         \ . ' --remote +\%{line} \%{input}"'
+  let l:cmd .= ' --synctex-forward '
+        \ .  line('.')
+        \ .  ':' . col('.')
+        \ .  ':' . vimtex#util#shellescape(expand('%:p'))
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   let self.process = vimtex#process#start(l:cmd)
 
   call self.xwin_get_id()
-  call self.forward_search(a:outfile)
 endfunction
 
 " }}}1
