@@ -223,6 +223,19 @@ endfunction
 " }}}1
 function! vimtex#compiler#clean(full) " {{{1
   call b:vimtex.compiler.clean(a:full)
+
+  if empty(b:vimtex.compiler.build_dir) | return | endif
+  sleep 100m
+
+  " Remove auxilliary output directories if they are empty
+  let l:build_dir = b:vimtex.root . '/' . b:vimtex.compiler.build_dir
+  let l:tree = glob(l:build_dir . '/**/*', 0, 1)
+  let l:files = filter(copy(l:tree), 'filereadable(v:val)')
+  if !empty(l:files) | return | endif
+
+  for l:dir in sort(l:tree) + [l:build_dir]
+    call delete(l:dir, 'd')
+  endfor
 endfunction
 
 " }}}1
