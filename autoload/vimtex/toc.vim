@@ -18,7 +18,7 @@ endfunction
 function! vimtex#toc#init_state(state) abort " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
-  let a:state.toc = vimtex#index#new(deepcopy(s:toc))
+  let a:state.toc = vimtex#index#new(s:toc.new())
 endfunction
 
 " }}}1
@@ -50,6 +50,34 @@ let s:toc = {
       \ 'tocdepth' : g:vimtex_toc_tocdepth,
       \}
 
+function! s:toc.new() abort dict " {{{1
+  let l:toc = deepcopy(self)
+
+  let l:toc.matchers = [
+        \ s:m_preamble_start,
+        \ s:m_preamble_end,
+        \ s:m_vimtex_include,
+        \ s:m_bib,
+        \ s:m_struct,
+        \ s:m_sec,
+        \ { 'title' : 'Table of contents',
+        \   're'    : '\v^\s*\\tableofcontents' },
+        \ { 'title' : 'Alphabetical index',
+        \   're'    : '\v^\s*\\printindex\[?' },
+        \ { 'title' : 'Titlepage',
+        \   're'    : '\v^\s*\\begin\{titlepage\}' },
+        \ { 'title' : 'Bibliography',
+        \   're'    : '\v^\s*\\%('
+        \             .  'printbib%(liography|heading)\s*(\{|\[)?'
+        \             . '|begin\s*\{\s*thebibliography\s*\}'
+        \             . '|bibliography\s*\{)' },
+        \] + g:vimtex_toc_custom_matchers
+
+  unlet l:toc.new
+  return l:toc
+endfunction
+
+" }}}1
 function! s:toc.update(force) abort dict " {{{1
   if has_key(self, 'entries') && !g:vimtex_toc_refresh_always && !a:force
     return self.entries
@@ -82,12 +110,12 @@ endfunction
 
 function! s:toc.parse_prepare(content) " {{{1
   for [l:file, l:lnum, l:line] in a:content
-    if l:line =~# s:re_sec
+    if l:line =~# s:m_sec.re
       let self.max_level = max([
             \ self.max_level,
-            \ s:sec_to_value[matchstr(l:line, s:re_sec_level)]
+            \ s:sec_to_value[matchstr(l:line, s:m_sec.re_level)]
             \])
-    elseif l:line =~# s:re_matters
+    elseif l:line =~# '\v^\s*\\%(front|main|back)matter>'
       let self.topmatters += 1
     endif
   endfor
@@ -118,19 +146,9 @@ function! s:toc.parse(content) abort dict " {{{1
         \}
 
   for [l:file, l:lnum, l:line] in a:content
-    " Handle multi-line sections (and chapter/subsection/etc)
-    if get(s:, 'sec_continue', 0)
-      let [l:end, l:count] = s:find_closing(0, l:line, s:sec_count, s:sec_type)
-      if l:count == 0
-        let self.entries[-1].title = self.parse_line_sec_title(
-              \ self.entries[-1].title . strpart(l:line, 0, l:end+1))
-        unlet s:sec_type
-        unlet s:sec_count
-        unlet s:sec_continue
-      else
-        let self.entries[-1].title .= l:line
-        let s:sec_count = l:count
-      endif
+    " Handle multi-line entries
+    if exists('s:matcher_continue')
+      call s:matcher_continue.continue(self.entries[-1], l:file, l:lnum, l:line)
       continue
     endif
 
@@ -159,74 +177,30 @@ function! s:toc.parse(content) abort dict " {{{1
       endif
     endif
 
-    " Convenience includes
-    let l:fname = matchstr(l:line, s:re_vimtex_include)
-    if !empty(l:fname)
-      if l:fname[0] !=# '/'
-        let l:fname = b:vimtex.root . '/' . l:fname
-      endif
-      let l:fname = fnamemodify(l:fname, ':~:.')
-      call add(self.entries, {
-            \ 'title'  : (strlen(l:fname) < 70
-            \               ? l:fname
-            \               : l:fname[0:30] . '...' . l:fname[-36:]),
-            \ 'number' : '[v]',
-            \ 'file'   : l:fname,
-            \ 'level'  : s:level.current,
-            \ 'link'   : 1,
-            \ })
-      continue
-    endif
-
-    " Bibliography files
-    if l:line =~# s:re_bibs
-      call add(self.entries, self.parse_bib_input(l:line))
-      continue
-    endif
-
-    " Preamble
-    if s:level.preamble
-      if g:vimtex_toc_show_preamble && l:line =~# '\v^\s*\\documentclass'
-        call add(self.entries, {
-              \ 'title'  : 'Preamble',
-              \ 'number' : '',
-              \ 'file'   : l:file,
-              \ 'line'   : l:lnum,
-              \ 'level'  : self.max_level,
-              \ })
+    for l:matcher in self.matchers
+      if (s:level.preamble && !get(l:matcher, 'in_preamble'))
+            \ || (!s:level.preamble && !get(l:matcher, 'in_content', 1))
         continue
       endif
 
-      if l:line =~# '\v^\s*\\begin\{document\}'
-        let s:level.preamble = 0
-      endif
-
-      continue
-    endif
-
-    " Document structure (front-/main-/backmatter, appendix)
-    if l:line =~# s:re_structure
-      call s:level.reset(matchstr(l:line, s:re_structure_match), self.max_level)
-      continue
-    endif
-
-    " Sections (\parts, \chapters, \sections, and \subsections, ...)
-    if l:line =~# s:re_sec
-      call add(self.entries, self.parse_line_sec(l:file, l:lnum, l:line))
-      continue
-    endif
-
-    " Other stuff
-    for l:other in values(s:re_other)
-      if l:line =~# l:other.re
-        call add(self.entries, {
-              \ 'title'  : l:other.title,
-              \ 'number' : '',
-              \ 'file'   : l:file,
-              \ 'line'   : l:lnum,
-              \ 'level'  : self.max_level,
-              \ })
-        continue
+      if l:line =~# l:matcher.re
+        if has_key(l:matcher, 'action')
+          call l:matcher.action(l:file, l:lnum, l:line, self.max_level)
+        elseif has_key(l:matcher, 'get_entry')
+          let l:entry = l:matcher.get_entry(l:file, l:lnum, l:line, self.max_level)
+          if !empty(l:entry)
+            call add(self.entries, l:entry)
+          endif
+        elseif has_key(l:matcher, 'title')
+          call add(self.entries, {
+                \ 'title'  : l:matcher.title,
+                \ 'number' : '',
+                \ 'file'   : l:file,
+                \ 'line'   : l:lnum,
+                \ 'level'  : self.max_level,
+                \ })
+        endif
+        break
       endif
     endfor
   endfor
@@ -236,160 +210,6 @@ function! s:toc.parse(content) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:toc.parse_line_sec(file, lnum, line) abort dict " {{{1
-  let level = matchstr(a:line, s:re_sec_level)
-  let type = matchlist(a:line, s:re_sec)[1]
-  let title = matchstr(a:line, s:re_sec_title)
-
-  let [l:end, l:count] = s:find_closing(0, title, 1, type)
-  if l:count == 0
-    let title = self.parse_line_sec_title(strpart(title, 0, l:end+1))
-  else
-    let s:sec_type = type
-    let s:sec_count = l:count
-    let s:sec_continue = 1
-  endif
-
-  call s:level.increment(level)
-
-  return {
-        \ 'title'  : title,
-        \ 'number' : a:line =~# s:re_sec_starred ? '' : deepcopy(s:level),
-        \ 'file'   : a:file,
-        \ 'line'   : a:lnum,
-        \ 'level'  : s:level.current,
-        \ }
-endfunction
-
-" }}}1
-function! s:toc.parse_line_sec_title(title) abort dict " {{{1
-  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
-  return s:clear_texorpdfstring(l:title)
-endfunction
-
-" }}}1
-function! s:toc.parse_bib_input(line) abort dict " {{{1
-  let l:file = matchstr(a:line, s:re_bibs)
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.bib$'
-    let l:file .= '.bib'
-  endif
-
-  return {
-        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[b]',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
-        \ 'line'   : 0,
-        \ 'level'  : self.max_level,
-        \ }
-endfunction
-
-" }}}1
-
-function! s:clear_texorpdfstring(title) abort " {{{1
-  let l:i1 = match(a:title, '\\texorpdfstring')
-  if l:i1 < 0 | return a:title | endif
-
-  " Find start of included part
-  let [l:i2, l:dummy] = s:find_closing(
-        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
-  let l:i2 = match(a:title, '{', l:i2+1)
-  if l:i2 < 0 | return a:title | endif
-
-  " Find end of included part
-  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
-  if l:i3 < 0 | return a:title | endif
-
-  return strpart(a:title, 0, l:i1)
-        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
-        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
-endfunction
-
-" }}}1
-function! s:find_closing(start, string, count, type) abort " {{{1
-  if a:type ==# '{'
-    let l:re = '{\|}'
-    let l:open = '{'
-  else
-    let l:re = '\[\|\]'
-    let l:open = '['
-  endif
-  let l:i2 = a:start
-  let l:count = a:count
-  while l:count > 0
-    let l:i2 = match(a:string, l:re, l:i2+1)
-    if l:i2 < 0 | break | endif
-
-    if a:string[l:i2] ==# l:open
-      let l:count += 1
-    else
-      let l:count -= 1
-    endif
-  endwhile
-
-  return [l:i2, l:count]
-endfunction
-
-" }}}1
-
-let s:level = {}
-function! s:level.reset(part, level) abort dict " {{{1
-  let self.current = 0
-  let self.preamble = 0
-  let self.frontmatter = 0
-  let self.mainmatter = 0
-  let self.appendix = 0
-  let self.backmatter = 0
-  let self.part = 0
-  let self.chapter = 0
-  let self.section = 0
-  let self.subsection = 0
-  let self.subsubsection = 0
-  let self.subsubsubsection = 0
-  let self.current = a:level
-  let self[a:part] = 1
-endfunction
-
-" }}}1
-function! s:level.increment(level) abort dict " {{{1
-  let self.current = s:sec_to_value[a:level]
-
-  if a:level ==# 'part'
-    let self.part += 1
-    let self.chapter = 0
-    let self.section = 0
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'chapter'
-    let self.chapter += 1
-    let self.section = 0
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'section'
-    let self.section += 1
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsection'
-    let self.subsection += 1
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsubsection'
-    let self.subsubsection += 1
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsubsubsection'
-    let self.subsubsubsection += 1
-  endif
-endfunction
-
-" }}}1
-
-"
-" Index related methods
-"
 
 function! s:toc.hook_init_post() abort dict " {{{1
   if g:vimtex_toc_fold
@@ -545,8 +365,60 @@ endfunction
 
 " }}}1
 
+" Define simple type for TOC level
+let s:level = {}
+function! s:level.reset(part, level) abort dict " {{{1
+  let self.current = 0
+  let self.preamble = 0
+  let self.frontmatter = 0
+  let self.mainmatter = 0
+  let self.appendix = 0
+  let self.backmatter = 0
+  let self.part = 0
+  let self.chapter = 0
+  let self.section = 0
+  let self.subsection = 0
+  let self.subsubsection = 0
+  let self.subsubsubsection = 0
+  let self.current = a:level
+  let self[a:part] = 1
+endfunction
 
-" {{{1 Initialize module
+" }}}1
+function! s:level.increment(level) abort dict " {{{1
+  let self.current = s:sec_to_value[a:level]
+
+  if a:level ==# 'part'
+    let self.part += 1
+    let self.chapter = 0
+    let self.section = 0
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'chapter'
+    let self.chapter += 1
+    let self.section = 0
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'section'
+    let self.section += 1
+    let self.subsection = 0
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsection'
+    let self.subsection += 1
+    let self.subsubsection = 0
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsubsection'
+    let self.subsubsection += 1
+    let self.subsubsubsection = 0
+  elseif a:level ==# 'subsubsubsection'
+    let self.subsubsubsection += 1
+  endif
+endfunction
+
+" }}}1
 
 " Map for section hierarchy
 let s:sec_to_value = {
@@ -559,41 +431,212 @@ let s:sec_to_value = {
       \ 'part' : 6,
       \ }
 
-" Define regular expressions to match document parts
-let s:re_sec = '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)'
-let s:re_sec_title = s:re_sec . '\zs.{-}\ze\%?\s*$'
-let s:re_sec_starred = '\v^\s*\\%(part|chapter|%(sub)*section)\*'
-let s:re_sec_level = '\v^\s*\\\zs%(part|chapter|%(sub)*section)'
-let s:re_vimtex_include = '%\s*vimtex-include:\?\s\+\zs\f\+'
-let s:re_matters = '\v^\s*\\%(front|main|back)matter>'
-let s:re_structure = '\v^\s*\\((front|main|back)matter|appendix)>'
-let s:re_structure_match = '\v((front|main|back)matter|appendix)'
-let s:re_other = {
-      \ 'toc' : {
-      \   'title' : 'Table of contents',
-      \   're'    : '\v^\s*\\tableofcontents',
-      \   },
-      \ 'index' : {
-      \   'title' : 'Alphabetical index',
-      \   're'    : '\v^\s*\\printindex\[?',
-      \   },
-      \ 'titlepage' : {
-      \   'title' : 'Titlepage',
-      \   're'    : '\v^\s*\\begin\{titlepage\}',
-      \   },
-      \ 'bib' : {
-      \   'title' : 'Bibliography',
-      \   're'    : '\v^\s*\\%('
-      \             .  'printbib%(liography|heading)\s*(\{|\[)?'
-      \             . '|begin\s*\{\s*thebibliography\s*\}'
-      \             . '|bibliography\s*\{)',
-      \   },
-      \ }
+"
+" Define TOC matchers
+"
+" {{{1 Vimtex includes (convenience feature)
 
-let s:nocomment = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-let s:re_bibs  = s:nocomment
-let s:re_bibs .= '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-let s:re_bibs .= '\m\s*{\zs[^}]\+\ze}'
+let s:m_vimtex_include = {
+      \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
+      \ 'in_preamble' : 1,
+      \}
+function! s:m_vimtex_include.get_entry(file, lnum, line, max_level) abort dict " {{{2
+  let l:file = matchstr(a:line, self.re)
+  if l:file[0] !=# '/'
+    let l:file = b:vimtex.root . '/' . l:file
+  endif
+  let l:file = fnamemodify(l:file, ':~:.')
+  return {
+        \ 'title'  : (strlen(l:file) < 70
+        \               ? l:file
+        \               : l:file[0:30] . '...' . l:file[-36:]),
+        \ 'number' : '[v]',
+        \ 'file'   : l:file,
+        \ 'level'  : s:level.current,
+        \ 'link'   : 1,
+        \ }
+endfunction
+
+" }}}2
+
+" }}}1
+" {{{1 Preamble start
+
+let s:m_preamble_start = {
+      \ 're' : '\v^\s*\\documentclass',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 0,
+      \}
+function! s:m_preamble_start.get_entry(file, lnum, line, max_level) " {{{2
+  return g:vimtex_toc_show_preamble
+        \ ? {
+        \   'title'  : 'Preamble',
+        \   'number' : '',
+        \   'file'   : a:file,
+        \   'line'   : a:lnum,
+        \   'level'  : a:max_level,
+        \   }
+        \ : {}
+endfunction
+
+" }}}2
+
+" }}}1
+" {{{1 Preamble end (action to set preamble flag)
+
+let s:m_preamble_end = {
+      \ 're' : '\v^\s*\\begin\{document\}',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 0,
+      \}
+function! s:m_preamble_end.action(file, lnum, line, max_level) abort dict " {{{2
+  let s:level.preamble = 0
+endfunction
+
+" }}}2
+
+" }}}1
+" {{{1 Bibliography file inputs
+
+let s:m_bib = {
+      \ 're' : g:vimtex#re#not_comment
+      \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+      \        . '\m\s*{\zs[^}]\+\ze}',
+      \ 'in_preamble' : 1,
+      \}
+function! s:m_bib.get_entry(file, lnum, line, max_level) abort dict " {{{2
+  let l:file = matchstr(a:line, self.re)
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.bib$'
+    let l:file .= '.bib'
+  endif
+
+  return {
+        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
+        \ 'number' : '[b]',
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'line'   : 0,
+        \ 'level'  : a:max_level,
+        \ }
+endfunction
+
+" }}}2
+
+" }}}1
+" {{{1 Section structures (e.g. frontmatters)
+
+let s:m_struct = {
+      \ 're' : '\v^\s*\\\zs((front|main|back)matter|appendix)>',
+      \}
+function! s:m_struct.action(file, lnum, line, max_level) abort dict " {{{2
+  call s:level.reset(matchstr(a:line, self.re), a:max_level)
+endfunction
+
+" }}}2
+
+" }}}1
+" {{{1 Sectionings
+
+let s:m_sec = {
+      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
+      \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
+      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
+      \}
+let s:m_sec.re_title = s:m_sec.re . '\zs.{-}\ze\%?\s*$'
+function! s:m_sec.get_entry(file, lnum, line, max_level) abort dict " {{{2
+  let level = matchstr(a:line, self.re_level)
+  let type = matchlist(a:line, self.re)[1]
+  let title = matchstr(a:line, self.re_title)
+
+  let [l:end, l:count] = s:find_closing(0, title, 1, type)
+  if l:count == 0
+    let title = self.parse_title(strpart(title, 0, l:end+1))
+  else
+    let self.type = type
+    let self.count = l:count
+    let s:matcher_continue = deepcopy(self)
+  endif
+
+  call s:level.increment(level)
+
+  return {
+        \ 'title'  : title,
+        \ 'number' : a:line =~# self.re_starred ? '' : deepcopy(s:level),
+        \ 'file'   : a:file,
+        \ 'line'   : a:lnum,
+        \ 'level'  : s:level.current,
+        \ }
+endfunction
+
+" }}}2
+function! s:m_sec.parse_title(title) abort dict " {{{2
+  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
+  return s:clear_texorpdfstring(l:title)
+endfunction
+
+" }}}2
+function! s:m_sec.continue(entry, file, lnum, line) abort dict " {{{2
+  let [l:end, l:count] = s:find_closing(0, a:line, self.count, self.type)
+  if l:count == 0
+    let a:entry.title = self.parse_title(a:entry.title . strpart(a:line, 0, l:end+1))
+    unlet! s:matcher_continue
+  else
+    let a:entry.title .= a:line
+    let self.count = l:count
+  endif
+endfunction
+
+" }}}2
+
+" }}}1
+
+"
+" Utility functions
+"
+function! s:clear_texorpdfstring(title) abort " {{{1
+  let l:i1 = match(a:title, '\\texorpdfstring')
+  if l:i1 < 0 | return a:title | endif
+
+  " Find start of included part
+  let [l:i2, l:dummy] = s:find_closing(
+        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
+  let l:i2 = match(a:title, '{', l:i2+1)
+  if l:i2 < 0 | return a:title | endif
+
+  " Find end of included part
+  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
+  if l:i3 < 0 | return a:title | endif
+
+  return strpart(a:title, 0, l:i1)
+        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
+        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
+endfunction
+
+" }}}1
+function! s:find_closing(start, string, count, type) abort " {{{1
+  if a:type ==# '{'
+    let l:re = '{\|}'
+    let l:open = '{'
+  else
+    let l:re = '\[\|\]'
+    let l:open = '['
+  endif
+  let l:i2 = a:start
+  let l:count = a:count
+  while l:count > 0
+    let l:i2 = match(a:string, l:re, l:i2+1)
+    if l:i2 < 0 | break | endif
+
+    if a:string[l:i2] ==# l:open
+      let l:count += 1
+    else
+      let l:count -= 1
+    endif
+  endwhile
+
+  return [l:i2, l:count]
+endfunction
 
 " }}}1
 
