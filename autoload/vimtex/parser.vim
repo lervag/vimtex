@@ -192,7 +192,7 @@ function! s:parser.input_line_parser_tex(line, file, re) abort dict " {{{1
   let l:subimport = 0
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
     let l:candidate = self.input_parser(
-          \ substitute(l:file, '\\\w*\s*{[^{}]*}\s*', '', ''),
+          \ substitute(l:file, '\\\w*\s*\({[^{}]*}\)\s*', '\1', ''),
           \ a:file, '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
 
