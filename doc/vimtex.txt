@@ -1148,6 +1148,69 @@ Options~
 
   Default value: 1
 
+*g:vimtex_toc_custom_matchers*
+  This option is a list of custom matchers to define extra entries to be
+  included in the TOC window. A matcher is a dictionary with a specified set
+  of keys, see below for the specification.
+
+  As an example, one can use this option to add TOC entries for a custom
+  environment. If, for instance, one have defined an environment named
+  `halftitlepage`, one could add a TOC matcher for this environment with the
+  following configuration: >
+
+    let g:vimtex_toc_custom_matchers = [
+            \ { 'title' : 'Halftitlepage',
+            \   're' : '\v^\s*\\begin\{halftitlepage\}' }
+            \]
+<
+  Default value: []
+
+  The possible keys for the matcher dictionary are listed below. For
+  further specification of the `context` argument and the `toc entry` return
+  value, please see the source files: `autoload/vimtex/toc.vim` and
+  `autoload/vimtex/toc/matchers.vim`.
+
+    re~
+      Type: |String|
+      Required: `yes`
+      This specifies a regular expression that should match the current line
+      for the desired TOC entry.
+
+    title~
+      Type: |String|
+      Required: `no`
+      If the matcher does not have an `action` or `get_entry` key, then it
+      will use a simple, general matcher function to generate the entry. In
+      this case, the `title` key should be specified to give the title of the
+      TOC entry.
+
+    action~
+      Type: |Dictionary-function|
+      Arguments: `context`
+      Required: `no`
+      This key specifies a general action to be performed with the given
+      context on matching lines. It will not add entries to the TOC, and
+      is probably not useful for most people.
+
+    get_entry~
+      Type: |Dictionary-function|
+      Arguments: `context`
+      Returns: `toc entry`
+      Required: `no`
+      This is the general way to define TOC entries. It allows to define the
+      TOC entry based on the context. See e.g.
+      `g:vimtex#toc#matchers#sections` for an example on how to use this.
+
+    continue~
+      Type: |Dictionary-function|
+      Arguments: `context`
+      Returns: `toc entry`
+      Required: `no`
+      Some entries may be specified over several lines, in which case this key
+      becomes necessary in combination with the `get_entry` key. See the built
+      in matcher `g:vimtex#toc#matchers#sections` for an example on how to use
+      this.
+
 *g:vimtex_toc_fold*
   Turn on folding of ToC entries.
 
