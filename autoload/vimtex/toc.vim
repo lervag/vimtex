@@ -54,24 +54,17 @@ function! s:toc.new() abort dict " {{{1
   let l:toc = deepcopy(self)
 
   let l:toc.matchers = [
-        \ g:vimtex#toc#matchers#preamble_start,
-        \ g:vimtex#toc#matchers#preamble_end,
+        \ g:vimtex#toc#matchers#preamble,
         \ g:vimtex#toc#matchers#vimtex_include,
-        \ g:vimtex#toc#matchers#bib,
-        \ g:vimtex#toc#matchers#struct,
-        \ g:vimtex#toc#matchers#sec,
-        \ { 'title' : 'Table of contents',
-        \   're'    : '\v^\s*\\tableofcontents' },
-        \ { 'title' : 'Alphabetical index',
-        \   're'    : '\v^\s*\\printindex\[?' },
-        \ { 'title' : 'Titlepage',
-        \   're'    : '\v^\s*\\begin\{titlepage\}' },
-        \ { 'title' : 'Bibliography',
-        \   're'    : '\v^\s*\\%('
-        \             .  'printbib%(liography|heading)\s*(\{|\[)?'
-        \             . '|begin\s*\{\s*thebibliography\s*\}'
-        \             . '|bibliography\s*\{)' },
-        \] + g:vimtex_toc_custom_matchers
+        \ g:vimtex#toc#matchers#bibinputs,
+        \ g:vimtex#toc#matchers#parts,
+        \ g:vimtex#toc#matchers#sections,
+        \ g:vimtex#toc#matchers#table_of_contents,
+        \ g:vimtex#toc#matchers#index,
+        \ g:vimtex#toc#matchers#titlepage,
+        \ g:vimtex#toc#matchers#bibliography,
+        \]
+  let l:toc.matchers += g:vimtex_toc_custom_matchers
 
   unlet l:toc.new
   return l:toc
@@ -110,10 +103,10 @@ endfunction
 
 function! s:toc.parse_prepare(content) " {{{1
   for [l:file, l:lnum, l:line] in a:content
-    if l:line =~# g:vimtex#toc#matchers#sec.re
+    if l:line =~# g:vimtex#toc#matchers#sections.re
       let self.max_level = max([
             \ self.max_level,
-            \ s:sec_to_value[matchstr(l:line, g:vimtex#toc#matchers#sec.re_level)]
+            \ s:sec_to_value[matchstr(l:line, g:vimtex#toc#matchers#sections.re_level)]
             \])
     elseif l:line =~# '\v^\s*\\%(front|main|back)matter>'
       let self.topmatters += 1
@@ -152,6 +145,12 @@ function! s:toc.parse(content) abort dict " {{{1
           \ 'entry' : get(self.entries, -1, {}),
           \ 'num_entries' : len(self.entries),
           \}
+
+    " Detect end of preamble
+    if s:level.preamble && l:line =~# '\v^\s*\\begin\{document\}'
+      let s:level.preamble = 0
+      continue
+    endif
 
     " Handle multi-line entries
     if exists('s:matcher_continue')

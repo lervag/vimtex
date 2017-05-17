@@ -16,6 +16,9 @@ endfunction
 
 " }}}1
 
+"
+" Adds TOC entry for each included file that does not contain other TOC entries
+"
 let vimtex#toc#matchers#included = {}
 function! vimtex#toc#matchers#included.init(file) " {{{1
   let l:inc = deepcopy(self)
@@ -52,6 +55,11 @@ endfunction
 
 " }}}1
 
+
+"
+" Adds TOC entries for included files through vimtex specific syntax (this
+" allows to add entries for any filetype or file)
+"
 let g:vimtex#toc#matchers#vimtex_include = {
       \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
       \ 'in_preamble' : 1,
@@ -75,12 +83,13 @@ endfunction
 
 " }}}1
 
-let g:vimtex#toc#matchers#preamble_start = {
+
+let g:vimtex#toc#matchers#preamble = {
       \ 're' : '\v^\s*\\documentclass',
       \ 'in_preamble' : 1,
       \ 'in_content' : 0,
       \}
-function! g:vimtex#toc#matchers#preamble_start.get_entry(context) " {{{1
+function! g:vimtex#toc#matchers#preamble.get_entry(context) " {{{1
   return g:vimtex_toc_show_preamble
         \ ? {
         \   'title'  : 'Preamble',
@@ -94,24 +103,14 @@ endfunction
 
 " }}}1
 
-let g:vimtex#toc#matchers#preamble_end = {
-      \ 're' : '\v^\s*\\begin\{document\}',
-      \ 'in_preamble' : 1,
-      \ 'in_content' : 0,
-      \}
-function! g:vimtex#toc#matchers#preamble_end.action(context) abort dict " {{{1
-  let a:context.level.preamble = 0
-endfunction
 
-" }}}1
-
-let g:vimtex#toc#matchers#bib = {
+let g:vimtex#toc#matchers#bibinputs = {
       \ 're' : g:vimtex#re#not_comment
       \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
       \        . '\m\s*{\zs[^}]\+\ze}',
       \ 'in_preamble' : 1,
       \}
-function! g:vimtex#toc#matchers#bib.get_entry(context) abort dict " {{{1
+function! g:vimtex#toc#matchers#bibinputs.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
 
   " Ensure that the file name has extension
@@ -130,22 +129,24 @@ endfunction
 
 " }}}1
 
-let g:vimtex#toc#matchers#struct = {
+
+let g:vimtex#toc#matchers#parts = {
       \ 're' : '\v^\s*\\\zs((front|main|back)matter|appendix)>',
       \}
-function! g:vimtex#toc#matchers#struct.action(context) abort dict " {{{1
+function! g:vimtex#toc#matchers#parts.action(context) abort dict " {{{1
   call a:context.level.reset(matchstr(a:context.line, self.re), a:context.max_level)
 endfunction
 
 " }}}1
 
-let g:vimtex#toc#matchers#sec = {
+
+let g:vimtex#toc#matchers#sections = {
       \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
       \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
       \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
       \}
-let g:vimtex#toc#matchers#sec.re_title = g:vimtex#toc#matchers#sec.re . '\zs.{-}\ze\%?\s*$'
-function! g:vimtex#toc#matchers#sec.get_entry(context) abort dict " {{{1
+let g:vimtex#toc#matchers#sections.re_title = g:vimtex#toc#matchers#sections.re . '\zs.{-}\ze\%?\s*$'
+function! g:vimtex#toc#matchers#sections.get_entry(context) abort dict " {{{1
   let level = matchstr(a:context.line, self.re_level)
   let type = matchlist(a:context.line, self.re)[1]
   let title = matchstr(a:context.line, self.re_title)
@@ -171,13 +172,13 @@ function! g:vimtex#toc#matchers#sec.get_entry(context) abort dict " {{{1
 endfunction
 
 " }}}1
-function! g:vimtex#toc#matchers#sec.parse_title(title) abort dict " {{{1
+function! g:vimtex#toc#matchers#sections.parse_title(title) abort dict " {{{1
   let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
   return s:clear_texorpdfstring(l:title)
 endfunction
 
 " }}}1
-function! g:vimtex#toc#matchers#sec.continue(context) abort dict " {{{1
+function! g:vimtex#toc#matchers#sections.continue(context) abort dict " {{{1
   let [l:end, l:count] = s:find_closing(0, a:context.line, self.count, self.type)
   if l:count == 0
     let a:context.entry.title = self.parse_title(a:context.entry.title . strpart(a:context.line, 0, l:end+1))
@@ -189,6 +190,34 @@ function! g:vimtex#toc#matchers#sec.continue(context) abort dict " {{{1
 endfunction
 
 " }}}1
+
+
+let g:vimtex#toc#matchers#table_of_contents = {
+      \ 'title' : 'Table of contents',
+      \ 're'    : '\v^\s*\\tableofcontents'
+      \}
+
+
+let g:vimtex#toc#matchers#index = {
+      \ 'title' : 'Alphabetical index',
+      \ 're'    : '\v^\s*\\printindex\[?'
+      \}
+
+
+let g:vimtex#toc#matchers#titlepage = {
+      \ 'title' : 'Titlepage',
+      \ 're'    : '\v^\s*\\begin\{titlepage\}'
+      \}
+
+
+let g:vimtex#toc#matchers#bibliography = {
+      \ 'title' : 'Bibliography',
+      \ 're'    : '\v^\s*\\%('
+      \           .  'printbib%(liography|heading)\s*(\{|\[)?'
+      \           . '|begin\s*\{\s*thebibliography\s*\}'
+      \           . '|bibliography\s*\{)'
+      \}
+
 
 "
 " Utility functions
