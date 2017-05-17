@@ -54,12 +54,12 @@ function! s:toc.new() abort dict " {{{1
   let l:toc = deepcopy(self)
 
   let l:toc.matchers = [
-        \ s:m_preamble_start,
-        \ s:m_preamble_end,
-        \ s:m_vimtex_include,
-        \ s:m_bib,
-        \ s:m_struct,
-        \ s:m_sec,
+        \ g:vimtex#toc#matchers#preamble_start,
+        \ g:vimtex#toc#matchers#preamble_end,
+        \ g:vimtex#toc#matchers#vimtex_include,
+        \ g:vimtex#toc#matchers#bib,
+        \ g:vimtex#toc#matchers#struct,
+        \ g:vimtex#toc#matchers#sec,
         \ { 'title' : 'Table of contents',
         \   're'    : '\v^\s*\\tableofcontents' },
         \ { 'title' : 'Alphabetical index',
@@ -110,10 +110,10 @@ endfunction
 
 function! s:toc.parse_prepare(content) " {{{1
   for [l:file, l:lnum, l:line] in a:content
-    if l:line =~# s:m_sec.re
+    if l:line =~# g:vimtex#toc#matchers#sec.re
       let self.max_level = max([
             \ self.max_level,
-            \ s:sec_to_value[matchstr(l:line, s:m_sec.re_level)]
+            \ s:sec_to_value[matchstr(l:line, g:vimtex#toc#matchers#sec.re_level)]
             \])
     elseif l:line =~# '\v^\s*\\%(front|main|back)matter>'
       let self.topmatters += 1
@@ -138,70 +138,61 @@ function! s:toc.parse(content) abort dict " {{{1
 
   call s:level.reset('preamble', self.max_level)
 
-  let l:included = {
-        \ 'toc_length' : 0,
-        \ 'prev' : a:content[0][0],
-        \ 'files' : [a:content[0][0]],
-        \ 'current' : { 'entries' : 0 },
-        \}
+  " Prepare included file matcher
+  let l:included = g:vimtex#toc#matchers#included.init(a:content[0][0])
 
+  " Parse project content for TOC entries
   for [l:file, l:lnum, l:line] in a:content
+    let l:context = {
+          \ 'file' : l:file,
+          \ 'line' : l:line,
+          \ 'lnum' : l:lnum,
+          \ 'level' : s:level,
+          \ 'max_level' : self.max_level,
+          \ 'entry' : get(self.entries, -1, {}),
+          \ 'num_entries' : len(self.entries),
+          \}
+
     " Handle multi-line entries
     if exists('s:matcher_continue')
-      call s:matcher_continue.continue(self.entries[-1], l:file, l:lnum, l:line)
+      call s:matcher_continue.continue(l:context)
       continue
     endif
 
     " Add TOC entry for each included file
-    " Note: We do some "magic" in order to filter out the TOC entries that are
-    "       not necessaries. In other words, we only want to keep TOC entries
-    "       for included files that do not have other TOC entries inside them.
+    "
+    " Note: This is handled differently from other matchers. Every new file
+    "       will get an entry, and all such entries that are provided by other
+    "       means will be filtered out at the end.
     if l:file !=# l:included.prev
-      let l:included.prev = l:file
-      let l:included.current.entries = len(self.entries) - l:included.toc_length
-      let l:included.toc_length = len(self.entries)
-
-      if index(l:included.files, l:file) < 0
-        let l:included.files += [l:file]
-        let l:included.current = {
-              \ 'title'   : fnamemodify(l:file, ':t'),
-              \ 'number'  : '[i]',
-              \ 'file'    : l:file,
-              \ 'line'    : 1,
-              \ 'level'   : s:level.current,
-              \ 'entries' : 0,
-              \ }
-        call add(self.entries, l:included.current)
-      else
-        let l:included.current = { 'entries' : 0 }
+      let l:entry = l:included.get_entry(l:context)
+      if !empty(l:entry)
+        call add(self.entries, l:entry)
       endif
     endif
 
+    " Apply the registered TOC matchers
     for l:matcher in self.matchers
       if (s:level.preamble && !get(l:matcher, 'in_preamble'))
             \ || (!s:level.preamble && !get(l:matcher, 'in_content', 1))
+            \ || l:line !~# l:matcher.re
         continue
       endif
 
-      if l:line =~# l:matcher.re
-        if has_key(l:matcher, 'action')
-          call l:matcher.action(l:file, l:lnum, l:line, self.max_level)
-        elseif has_key(l:matcher, 'get_entry')
-          let l:entry = l:matcher.get_entry(l:file, l:lnum, l:line, self.max_level)
-          if !empty(l:entry)
-            call add(self.entries, l:entry)
-          endif
-        elseif has_key(l:matcher, 'title')
-          call add(self.entries, {
-                \ 'title'  : l:matcher.title,
-                \ 'number' : '',
-                \ 'file'   : l:file,
-                \ 'line'   : l:lnum,
-                \ 'level'  : self.max_level,
-                \ })
+      if has_key(l:matcher, 'action')
+        call l:matcher.action(l:context)
+      else
+        let l:entry = call(
+              \ get(l:matcher, 'get_entry', function('vimtex#toc#matchers#general')),
+              \ [l:context],
+              \ l:matcher)
+
+        if !empty(l:entry)
+          call add(self.entries, l:entry)
         endif
-        break
       endif
+
+      break
     endfor
   endfor
 
@@ -430,214 +421,5 @@ let s:sec_to_value = {
       \ 'chapter' : 5,
       \ 'part' : 6,
       \ }
-
-"
-" Define TOC matchers
-"
-" {{{1 Vimtex includes (convenience feature)
-
-let s:m_vimtex_include = {
-      \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
-      \ 'in_preamble' : 1,
-      \}
-function! s:m_vimtex_include.get_entry(file, lnum, line, max_level) abort dict " {{{2
-  let l:file = matchstr(a:line, self.re)
-  if l:file[0] !=# '/'
-    let l:file = b:vimtex.root . '/' . l:file
-  endif
-  let l:file = fnamemodify(l:file, ':~:.')
-  return {
-        \ 'title'  : (strlen(l:file) < 70
-        \               ? l:file
-        \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '[v]',
-        \ 'file'   : l:file,
-        \ 'level'  : s:level.current,
-        \ 'link'   : 1,
-        \ }
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Preamble start
-
-let s:m_preamble_start = {
-      \ 're' : '\v^\s*\\documentclass',
-      \ 'in_preamble' : 1,
-      \ 'in_content' : 0,
-      \}
-function! s:m_preamble_start.get_entry(file, lnum, line, max_level) " {{{2
-  return g:vimtex_toc_show_preamble
-        \ ? {
-        \   'title'  : 'Preamble',
-        \   'number' : '',
-        \   'file'   : a:file,
-        \   'line'   : a:lnum,
-        \   'level'  : a:max_level,
-        \   }
-        \ : {}
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Preamble end (action to set preamble flag)
-
-let s:m_preamble_end = {
-      \ 're' : '\v^\s*\\begin\{document\}',
-      \ 'in_preamble' : 1,
-      \ 'in_content' : 0,
-      \}
-function! s:m_preamble_end.action(file, lnum, line, max_level) abort dict " {{{2
-  let s:level.preamble = 0
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Bibliography file inputs
-
-let s:m_bib = {
-      \ 're' : g:vimtex#re#not_comment
-      \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-      \        . '\m\s*{\zs[^}]\+\ze}',
-      \ 'in_preamble' : 1,
-      \}
-function! s:m_bib.get_entry(file, lnum, line, max_level) abort dict " {{{2
-  let l:file = matchstr(a:line, self.re)
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.bib$'
-    let l:file .= '.bib'
-  endif
-
-  return {
-        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[b]',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
-        \ 'line'   : 0,
-        \ 'level'  : a:max_level,
-        \ }
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Section structures (e.g. frontmatters)
-
-let s:m_struct = {
-      \ 're' : '\v^\s*\\\zs((front|main|back)matter|appendix)>',
-      \}
-function! s:m_struct.action(file, lnum, line, max_level) abort dict " {{{2
-  call s:level.reset(matchstr(a:line, self.re), a:max_level)
-endfunction
-
-" }}}2
-
-" }}}1
-" {{{1 Sectionings
-
-let s:m_sec = {
-      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
-      \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
-      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
-      \}
-let s:m_sec.re_title = s:m_sec.re . '\zs.{-}\ze\%?\s*$'
-function! s:m_sec.get_entry(file, lnum, line, max_level) abort dict " {{{2
-  let level = matchstr(a:line, self.re_level)
-  let type = matchlist(a:line, self.re)[1]
-  let title = matchstr(a:line, self.re_title)
-
-  let [l:end, l:count] = s:find_closing(0, title, 1, type)
-  if l:count == 0
-    let title = self.parse_title(strpart(title, 0, l:end+1))
-  else
-    let self.type = type
-    let self.count = l:count
-    let s:matcher_continue = deepcopy(self)
-  endif
-
-  call s:level.increment(level)
-
-  return {
-        \ 'title'  : title,
-        \ 'number' : a:line =~# self.re_starred ? '' : deepcopy(s:level),
-        \ 'file'   : a:file,
-        \ 'line'   : a:lnum,
-        \ 'level'  : s:level.current,
-        \ }
-endfunction
-
-" }}}2
-function! s:m_sec.parse_title(title) abort dict " {{{2
-  let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
-  return s:clear_texorpdfstring(l:title)
-endfunction
-
-" }}}2
-function! s:m_sec.continue(entry, file, lnum, line) abort dict " {{{2
-  let [l:end, l:count] = s:find_closing(0, a:line, self.count, self.type)
-  if l:count == 0
-    let a:entry.title = self.parse_title(a:entry.title . strpart(a:line, 0, l:end+1))
-    unlet! s:matcher_continue
-  else
-    let a:entry.title .= a:line
-    let self.count = l:count
-  endif
-endfunction
-
-" }}}2
-
-" }}}1
-
-"
-" Utility functions
-"
-function! s:clear_texorpdfstring(title) abort " {{{1
-  let l:i1 = match(a:title, '\\texorpdfstring')
-  if l:i1 < 0 | return a:title | endif
-
-  " Find start of included part
-  let [l:i2, l:dummy] = s:find_closing(
-        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
-  let l:i2 = match(a:title, '{', l:i2+1)
-  if l:i2 < 0 | return a:title | endif
-
-  " Find end of included part
-  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
-  if l:i3 < 0 | return a:title | endif
-
-  return strpart(a:title, 0, l:i1)
-        \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
-        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
-endfunction
-
-" }}}1
-function! s:find_closing(start, string, count, type) abort " {{{1
-  if a:type ==# '{'
-    let l:re = '{\|}'
-    let l:open = '{'
-  else
-    let l:re = '\[\|\]'
-    let l:open = '['
-  endif
-  let l:i2 = a:start
-  let l:count = a:count
-  while l:count > 0
-    let l:i2 = match(a:string, l:re, l:i2+1)
-    if l:i2 < 0 | break | endif
-
-    if a:string[l:i2] ==# l:open
-      let l:count += 1
-    else
-      let l:count -= 1
-    endif
-  endwhile
-
-  return [l:i2, l:count]
-endfunction
-
-" }}}1
 
 " vim: fdm=marker sw=2
