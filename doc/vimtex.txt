@@ -1228,19 +1228,6 @@ Options~
 
   Default value: Same as |g:vimtex_toc_tocdepth|
 
-*g:vimtex_toc_show_preamble*
-  Whether to include the preamble in the ToC.
-
-  Default value: 1
-
-*g:vimtex_toc_show_numbers*
-  Set whether or not to show section numbers in ToC.
-
-  Note: The numbers may also be toggled inside the ToC window with the `s`
-        keybinding.
-
-  Default value: 1
-
 *g:vimtex_toc_number_width*
   Set the display width of numbers in the ToC.  If it is set to 0, then the
   width is set based on the section depth, see |g:vimtex_toc_tocdepth|.
@@ -1263,6 +1250,19 @@ Options~
 
     nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
 <
+  Default value: 1
+
+*g:vimtex_toc_show_preamble*
+  Whether to include the preamble in the ToC.
+
+  Default value: 1
+
+*g:vimtex_toc_show_numbers*
+  Set whether or not to show section numbers in ToC.
+
+  Note: The numbers may also be toggled inside the ToC window with the `s`
+        keybinding.
+
   Default value: 1
 
 *g:vimtex_toc_tocdepth*
@@ -2249,8 +2249,8 @@ Table of contents~
 The ToC entries may be activated/jumped to with <cr> or <space>.  The local
 keybindings are described if |g:vimtex_index_show_help| is enabled.
 
-One may force entries into the ToC through designated comments with the
-following syntax: >
+One may force file input entries into the ToC through designated comments with
+the following syntax: >
 
   % vimtex-include: /path/to/file
 
@@ -2263,8 +2263,10 @@ not a LaTeX file.
 
 Associated settings:
     |g:vimtex_toc_enabled|
+    |g:vimtex_toc_custom_matchers|
     |g:vimtex_toc_fold|
     |g:vimtex_toc_fold_levels|
+    |g:vimtex_toc_fold_level_start|
     |g:vimtex_toc_number_width|
     |g:vimtex_toc_refresh_always|
     |g:vimtex_toc_show_preamble|
