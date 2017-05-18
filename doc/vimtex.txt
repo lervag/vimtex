@@ -1149,26 +1149,31 @@ Options~
   Default value: 1
 
 *g:vimtex_toc_custom_matchers*
-  This option is a list of custom matchers to define extra entries to be
-  included in the TOC window. A matcher is a dictionary with a specified set
-  of keys, see below for the specification.
+  This option is a list of custom TOC matchers. A matcher is used to define
+  the entries that are included in the TOC window. It is implemented as
+  a |Dictionary| with a specified set of keys, see below for the
+  specification.
 
   As an example, one can use this option to add TOC entries for a custom
-  environment. If, for instance, one have defined an environment named
-  `halftitlepage`, one could add a TOC matcher for this environment with the
-  following configuration: >
+  environment. Say you have defined an environment `mycustomenv`, then
+  instances of this environment could be added to the TOC with the following
+  configuration: >
 
     let g:vimtex_toc_custom_matchers = [
-            \ { 'title' : 'Halftitlepage',
-            \   're' : '\v^\s*\\begin\{halftitlepage\}' }
+            \ { 'title' : 'My Custom Environment',
+            \   're' : '\v^\s*\\begin\{mycustomenv\}' }
             \]
 <
   Default value: []
 
-  The possible keys for the matcher dictionary are listed below. For
-  further specification of the `context` argument and the `toc entry` return
-  value, please see the source files: `autoload/vimtex/toc.vim` and
-  `autoload/vimtex/toc/matchers.vim`.
+                                                    *toc_matcher_specification*
+  A TOC matcher is defined as a |Dictionary| where the possible keys are
+  specified below. In order to write a matcher, one should also be aware of
+  the `context` argument that is passed to the matcher functions, as well as
+  the specification of the `toc entry` return value. However, since this kind
+  of customization is advanced I refer users to the source file for further
+  specification of these objects. In particular, see the function
+  `s:toc.parse(...)` in `autoload/vimtex/toc.vim`.
 
     re~
       Type: |String|
@@ -2260,6 +2265,11 @@ the ToC which makes it easy to open any file. Any file opened through the ToC
 that was included in this manner will be linked to the current vimtex project,
 and thus the ToC and similar commands will be available, even if the file is
 not a LaTeX file.
+
+The TOC parser uses a list of matchers to parse the LaTeX project for the TOC
+entries. One may add custom matchers through |g:vimtex_toc_custom_matchers|.
+See also |toc_matcher_specification| for a specification of the matcher
+objects.
 
 Associated settings:
     |g:vimtex_toc_enabled|
