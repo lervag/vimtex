@@ -180,6 +180,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_toc_number_width', 0)
   call s:init_option('vimtex_toc_refresh_always', 1)
   call s:init_option('vimtex_toc_tocdepth', 3)
+  call s:init_option('vimtex_toc_fold_level_start', g:vimtex_toc_tocdepth)
   call s:init_option('vimtex_toc_show_numbers', 1)
   call s:init_option('vimtex_toc_show_preamble', 1)
 

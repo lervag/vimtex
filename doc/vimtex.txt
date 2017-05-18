@@ -1222,6 +1222,12 @@ Options~
 
   Default value: 10
 
+*g:vimtex_toc_fold_level_start*
+  This option controls the initial fold level for the TOC window if folding is
+  enabled.
+
+  Default value: Same as |g:vimtex_toc_tocdepth|
+
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
 
