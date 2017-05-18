@@ -1220,7 +1220,7 @@ Options~
   This option controls the number of fold levels that will be used if the
   folding of the ToC is enabled.
 
-  Default value: 1
+  Default value: 10
 
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
