@@ -160,7 +160,9 @@ function! g:vimtex#toc#matchers#sections.get_entry(context) abort dict " {{{1
     let s:matcher_continue = deepcopy(self)
   endif
 
-  call a:context.level.increment(level)
+  if a:context.line !~# self.re_starred
+    call a:context.level.increment(level)
+  endif
 
   return {
         \ 'title'  : title,
