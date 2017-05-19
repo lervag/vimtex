@@ -121,8 +121,7 @@ let s:parser = {
       \ 'input_re_tex' : '\v^\s*\\%(' . join([
       \   'input',
       \   'include',
-      \   '%(sub)?import',
-      \   '%(sub)?%(input|include)from',
+      \   '%(sub)?%(import|%(input|include)from)\*?',
       \   'subfile',
       \ ], '|') . ')\s*\{',
       \ 'input_re_aux' : '\\@input{',
@@ -190,14 +189,14 @@ function! s:parser.input_line_parser_tex(line, file, re) abort dict " {{{1
 
   " Handle import package commands
   let l:subimport = 0
-  if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)'
+  if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)\*?'
     let l:candidate = self.input_parser(
           \ substitute(l:file, '\\\w*\s*\({[^{}]*}\)\s*', '\1', ''),
           \ a:file, '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
 
     " Handle relative paths
-    let l:subimport = l:file =~# '\v\\sub%(import|%(input|include)from)'
+    let l:subimport = l:file =~# '\v\\sub'
 
     let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif

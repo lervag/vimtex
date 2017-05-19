@@ -561,8 +561,13 @@ function! s:completer_gls.parse_glossaries() dict " {{{2
 
   for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
         \   'detailed' : 0,
-        \   'input_re' :
-        \     '\v^\s*\\%(input|include|subimport|subfile|loadglsentries)\s*\{',
+        \   'input_re' : '\v^\s*\\%(' . join([
+        \     'input',
+        \     'include',
+        \     '%(sub)?%(import|%(input|include)from)\*?',
+        \     'subfile',
+        \     'loadglsentries',
+        \   ], '|') . ')\s*\{',
         \ }), 'v:val =~# ''\\newglossaryentry''')
     let l:entries = matchstr(l:line, '\\newglossaryentry\s*{\zs[^{}]*')
     call add(self.candidates, {

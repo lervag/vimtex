@@ -277,7 +277,7 @@ function! s:get_main_recurse(...) " {{{1
 
     let l:filter  = 'v:val =~# ''\v'
     let l:filter .= '\\%(input|include)\{' . l:file_re
-    let l:filter .= '|\\subimport\{[^\}]*\}\{' . l:file_re
+    let l:filter .= '|\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{' . l:file_re
     let l:filter .= ''''
 
     if len(filter(readfile(l:cand), l:filter)) > 0
@@ -310,7 +310,7 @@ function! s:file_reaches_current(file) " {{{1
 
   for l:line in readfile(a:file)
     let l:file = matchstr(l:line,
-          \ '\v\\%(input|include|subimport\{[^\}]*\})\s*\{\zs\f+')
+          \ '\v\\%(input|include|%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\})\s*\{\zs\f+')
     if empty(l:file) | continue | endif
 
     if l:file[0] !=# '/'
