@@ -1259,9 +1259,8 @@ Options~
   Default value: 1
 
 *g:vimtex_toc_tocdepth*
-  Define the number of section levels with section numbering.  Set level
-  corresponding to the desired latex variable `tocdepth`.  For more info on
-  `tocdepth`, see:
+  Define the number of section levels to display.  Set level corresponding to
+  the desired latex variable `tocdepth`.  For more info on `tocdepth`, see:
   http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
 
   Note: This will also change the width of the number column according to the
