@@ -203,11 +203,11 @@ endfunction
 
 function! s:toc.hook_init_post() abort dict " {{{1
   if g:vimtex_toc_fold
-    let self.fold_level = function('s:fold_level')
-    let self.fold_text  = function('s:fold_text')
+    let self.foldexpr = function('s:foldexpr')
+    let self.foldtext  = function('s:foldtext')
     setlocal foldmethod=expr
-    setlocal foldexpr=b:index.fold_level(v:lnum)
-    setlocal foldtext=b:index.fold_text()
+    setlocal foldexpr=b:index.foldexpr(v:lnum)
+    setlocal foldtext=b:index.foldtext()
     let &l:foldlevel = g:vimtex_toc_fold_level_start
   endif
 
@@ -325,7 +325,7 @@ endfunction
 
 " }}}1
 
-function! s:fold_level(lnum) abort " {{{1
+function! s:foldexpr(lnum) abort " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)
   let nline = getline(a:lnum + 1)
@@ -350,7 +350,7 @@ function! s:fold_level(lnum) abort " {{{1
 endfunction
 
 " }}}1
-function! s:fold_text() abort " {{{1
+function! s:foldtext() abort " {{{1
   return getline(v:foldstart)
 endfunction
 
