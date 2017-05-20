@@ -202,6 +202,8 @@ function! s:index.activate(close) abort dict "{{{1
 endfunction
 
 function! s:index.close() abort dict " {{{1
+  let self.fold_level = &l:foldlevel
+
   if g:vimtex_index_resize
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif

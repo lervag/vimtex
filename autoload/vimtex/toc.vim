@@ -208,7 +208,7 @@ function! s:toc.hook_init_post() abort dict " {{{1
     setlocal foldmethod=expr
     setlocal foldexpr=b:index.foldexpr(v:lnum)
     setlocal foldtext=b:index.foldtext()
-    let &l:foldlevel = g:vimtex_toc_fold_level_start
+    let &l:foldlevel = get(self, 'fold_level', g:vimtex_toc_fold_level_start)
   endif
 
   nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
