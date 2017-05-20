@@ -145,9 +145,8 @@ function! s:index.activate(close) abort dict "{{{1
   let entry = self.entries[n - self.help_nlines]
   let l:vimtex_main = get(b:vimtex, 'tex', '')
 
-  " Save index buffer info for later use
-  let toc_bnr = bufnr('%')
-  let toc_wnr = winnr()
+  " Save index winnr info for later use
+  let index_winnr = winnr()
 
   " Return to calling window
   silent execute self.prev_winnr . 'wincmd w'
@@ -193,16 +192,12 @@ function! s:index.activate(close) abort dict "{{{1
   " Ensure folds are opened
   normal! zv
 
+  " Return to index window
+  execute index_winnr . 'wincmd w'
+
   " Keep or close index window (based on options)
   if a:close
-    if bufexists(toc_bnr)
-      if g:vimtex_index_resize
-        silent exe 'set columns -=' . g:vimtex_index_split_width
-      endif
-      execute 'bwipeout ' . toc_bnr
-    endif
-  else
-    execute toc_wnr . 'wincmd w'
+    call self.close()
   endif
 endfunction
 
@@ -210,6 +205,7 @@ function! s:index.close() abort dict " {{{1
   if g:vimtex_index_resize
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
+
   silent execute 'bwipeout' . bufnr(self.name)
 endfunction
 
