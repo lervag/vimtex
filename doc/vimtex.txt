@@ -1221,23 +1221,11 @@ Options~
 
   Default value: 0
 
-*g:vimtex_toc_fold_levels*
-  This option controls the number of fold levels that will be used if the
-  folding of the ToC is enabled.
-
-  Default value: 10
-
 *g:vimtex_toc_fold_level_start*
   This option controls the initial fold level for the TOC window if folding is
   enabled.
 
   Default value: Same as |g:vimtex_toc_tocdepth|
-
-*g:vimtex_toc_number_width*
-  Set the display width of numbers in the ToC.  If it is set to 0, then the
-  width is set based on the section depth, see |g:vimtex_toc_tocdepth|.
-
-  Default value: 0
 
 *g:vimtex_toc_refresh_always*
   Set to 0 to manually refresh ToC entries. This may be useful for very large
@@ -1275,6 +1263,9 @@ Options~
   corresponding to the desired latex variable `tocdepth`.  For more info on
   `tocdepth`, see:
   http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+
+  Note: This will also change the width of the number column according to the
+        space needed to show the section numbers.
 
   Note: The variable may be updated inside the ToC window with the mappings
         `+` and `-`.
@@ -2275,9 +2266,7 @@ Associated settings:
     |g:vimtex_toc_enabled|
     |g:vimtex_toc_custom_matchers|
     |g:vimtex_toc_fold|
-    |g:vimtex_toc_fold_levels|
     |g:vimtex_toc_fold_level_start|
-    |g:vimtex_toc_number_width|
     |g:vimtex_toc_refresh_always|
     |g:vimtex_toc_show_preamble|
     |g:vimtex_toc_show_numbers|
@@ -2816,6 +2805,14 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2017-05-20: Updated TOC options~
+There's been a few updates to the TOC. During this work, I removed some
+unecessary options.
+
+Deprecated options:
+    *g:vimtex_toc_fold_levels*  (was not necessary)
+    *g:vimtex_toc_number_width*  (see |g:vimtex_toc_tocdepth|)
 
 2017-03-31: Refactored quickfix related features~
 I've added a more general layer for handling different error parsers.

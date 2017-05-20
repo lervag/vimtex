@@ -222,12 +222,7 @@ endfunction
 
 " }}}1
 function! s:toc.print_entries() abort dict " {{{1
-  if g:vimtex_toc_number_width
-    let self.number_width = g:vimtex_toc_number_width
-  else
-    let self.number_width = 2*(self.tocdepth + 2)
-  endif
-  let self.number_width = max([0, self.number_width])
+  let self.number_width = max([0, 2*(self.tocdepth + 2)])
   let self.number_format = '%-' . self.number_width . 's'
 
   let index = 0
@@ -250,7 +245,8 @@ function! s:toc.print_entry(entry) abort dict " {{{1
   let output = ''
   if self.show_numbers
     let number = level >= self.tocdepth + 2 ? ''
-          \ : strpart(self.print_number(a:entry.number), 0, self.number_width - 1)
+          \ : strpart(self.print_number(a:entry.number),
+          \           0, self.number_width - 1)
     let output .= printf(self.number_format, number)
   endif
   let output .= printf('%-140S%s', a:entry.title, level)
@@ -338,11 +334,11 @@ function! s:foldexpr(lnum) abort " {{{1
     return 0
   endif
 
-  if l:nn > l:cn && g:vimtex_toc_fold_levels >= l:nn
+  if l:nn > l:cn
     return '>' . l:nn
   endif
 
-  if l:cn < l:pn && l:cn >= l:nn && g:vimtex_toc_fold_levels >= l:cn
+  if l:cn < l:pn
     return l:cn
   endif
 

@@ -176,8 +176,6 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_toc_enabled', 1)
   call s:init_option('vimtex_toc_custom_matchers', [])
   call s:init_option('vimtex_toc_fold', 0)
-  call s:init_option('vimtex_toc_fold_levels', 10)
-  call s:init_option('vimtex_toc_number_width', 0)
   call s:init_option('vimtex_toc_refresh_always', 1)
   call s:init_option('vimtex_toc_tocdepth', 3)
   call s:init_option('vimtex_toc_fold_level_start', g:vimtex_toc_tocdepth)
