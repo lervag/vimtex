@@ -183,26 +183,29 @@ endfunction
 "
 " Input line parsers
 "
-function! s:parser.input_line_parser_tex(line, file, re) abort dict " {{{1
+function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{{1
+  let l:root = self.root
+
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
   " Handle import package commands
-  let l:subimport = 0
   if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)\*?'
     let l:candidate = self.input_parser(
           \ substitute(l:file, '\\\w*\*\?\s*\({[^{}]*}\)\s*', '\1', ''),
-          \ a:file, '\v^\s*\{')
+          \ a:current_file, '\v^\s*\{')
     if !empty(l:candidate) | return l:candidate | endif
 
     " Handle relative paths
-    let l:subimport = l:file =~# '\v\\sub'
+    if l:file =~# '\\sub'
+      let l:root = fnamemodify(a:current_file, ':h')
+    endif
 
     let l:file = substitute(l:file, '}\s*{', '', 'g')
   endif
 
   " Parse file name
-  let l:file = matchstr(l:file, a:re . '\zs[^\}]+\ze}')
+  let l:file = matchstr(l:file, '\zs[^{}]\+\ze}\s*$')
 
   " Trim whitespaces and quotes from beginning/end of string
   let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
@@ -215,8 +218,7 @@ function! s:parser.input_line_parser_tex(line, file, re) abort dict " {{{1
 
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = (l:subimport ? fnamemodify(a:file, ':h') : self.root)
-          \ . '/' . l:file
+    let l:file = l:root . '/' . l:file
   endif
 
   " Only return filename if it is readable
