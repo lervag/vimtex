@@ -2071,6 +2071,7 @@ may use: >
         \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . '|usepackage(\s*\[[^]]*\])?\s*\{[^}]*'
         \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
+        \ . '|\w*'
         \ .')'
 
 Note: I don't personally use |deoplete|, and I have not tested the above
