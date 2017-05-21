@@ -488,7 +488,7 @@ endfunction
 " {{{1 Filenames (\input and \include)
 
 let s:completer_inc = {
-      \ 'patterns' : ['\v\\%(include%(only)?|input|subfile)\s*\{[^}]*$'],
+      \ 'patterns' : [g:vimtex#re#tex_input . '[^}]*$'],
       \}
 
 function! s:completer_inc.complete(regex) dict " {{{2
@@ -561,13 +561,7 @@ function! s:completer_gls.parse_glossaries() dict " {{{2
 
   for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
         \   'detailed' : 0,
-        \   'input_re' : '\v^\s*\\%(' . join([
-        \     'input',
-        \     'include',
-        \     '%(sub)?%(import|%(input|include)from)\*?',
-        \     'subfile',
-        \     'loadglsentries',
-        \   ], '|') . ')\s*\{',
+        \   'input_re' : g:vimtex#re#tex_input . '|^\s*\\loadglsentries',
         \ }), 'v:val =~# ''\\newglossaryentry''')
     let l:entries = matchstr(l:line, '\\newglossaryentry\s*{\zs[^{}]*')
     call add(self.candidates, {

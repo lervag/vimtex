@@ -118,12 +118,7 @@ let s:parser = {
       \ 'root' : '',
       \ 'finished' : 0,
       \ 'type' : 'tex',
-      \ 'input_re_tex' : '\v^\s*\\%(' . join([
-      \   'input',
-      \   'include',
-      \   '%(sub)?%(import|%(input|include)from)\*?',
-      \   'subfile',
-      \ ], '|') . ')\s*\{',
+      \ 'input_re_tex' : g:vimtex#re#tex_input,
       \ 'input_re_aux' : '\\@input{',
       \}
 
@@ -190,7 +185,7 @@ function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
   " Handle import package commands
-  if l:file =~# '\v\\%(sub)?%(import|%(input|include)from)\*?'
+  if l:file =~# g:vimtex#re#tex_input_import
     let l:candidate = self.input_parser(
           \ substitute(l:file, '\\\w*\*\?\s*\({[^{}]*}\)\s*', '\1', ''),
           \ a:current_file, '\v^\s*\{')

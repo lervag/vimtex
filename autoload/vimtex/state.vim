@@ -273,14 +273,10 @@ function! s:get_main_recurse(...) " {{{1
     " Avoid infinite recursion (checking the same file repeatedly)
     if l:cand == l:file | continue | endif
 
-    let l:file_re = '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
+    let l:filter_re = g:vimtex#re#tex_input
+          \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
 
-    let l:filter  = 'v:val =~# ''\v'
-    let l:filter .= '\\%(input|include)\{' . l:file_re
-    let l:filter .= '|\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{' . l:file_re
-    let l:filter .= ''''
-
-    if len(filter(readfile(l:cand), l:filter)) > 0
+    if len(filter(readfile(l:cand), 'v:val =~# l:filter_re')) > 0
       return s:get_main_recurse(fnamemodify(l:cand, ':p'))
     endif
   endfor
@@ -309,8 +305,7 @@ function! s:file_reaches_current(file) " {{{1
   if !filereadable(a:file) | return 0 | endif
 
   for l:line in readfile(a:file)
-    let l:file = matchstr(l:line,
-          \ '\v\\%(input|include|%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\})\s*\{\zs\f+')
+    let l:file = matchstr(l:line, g:vimtex#re#tex_input . '\zs\f+')
     if empty(l:file) | continue | endif
 
     if l:file[0] !=# '/'
