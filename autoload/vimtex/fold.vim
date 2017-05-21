@@ -122,11 +122,11 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Fold environments
   if g:vimtex_fold_envs
-    if line =~# s:notcomment . s:notbslash . '\\begin\s*{.\{-}}'
+    if line =~# s:env_start
       if line !~# '\\end'
         return 'a1'
       endif
-    elseif line =~# s:notcomment . s:notbslash . '\\end\s*{.\{-}}'
+    elseif line =~# s:env_stop
       if line !~# '\\begin'
         return 's1'
       endif
@@ -478,8 +478,10 @@ endfunction
 
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
 let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-let s:notbslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
-let s:notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+let s:env_start = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\\begin\s*{.\{-}}'
+let s:env_stop = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\\end\s*{.\{-}}'
 
 "
 " Set up command fold structure
