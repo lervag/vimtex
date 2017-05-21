@@ -488,7 +488,10 @@ endfunction
 " {{{1 Filenames (\input and \include)
 
 let s:completer_inc = {
-      \ 'patterns' : [g:vimtex#re#tex_input . '[^}]*$'],
+      \ 'patterns' : [
+      \   g:vimtex#re#tex_input . '[^}]*$',
+      \   '\v\\includeonly\s*\{[^}]*$',
+      \ ],
       \}
 
 function! s:completer_inc.complete(regex) dict " {{{2
