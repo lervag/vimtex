@@ -479,9 +479,9 @@ endfunction
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
 let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
 let s:env_start = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\\begin\s*{.\{-}}'
+      \ . '\\begin\s*\{.{-}\}'
 let s:env_stop = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\\end\s*{.\{-}}'
+      \ . '\\end\s*\{.{-}\}'
 
 "
 " Set up command fold structure
