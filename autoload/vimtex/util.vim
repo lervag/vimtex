@@ -32,7 +32,7 @@ function! vimtex#util#shellescape(cmd) " {{{1
     let &shellslash = l:shellslash
     return l:cmd
   else
-    return shellescape(a:cmd)
+    return escape(shellescape(a:cmd), '\')
   endif
 endfunction
 
