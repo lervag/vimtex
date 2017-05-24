@@ -1,9 +1,12 @@
 set nocompatible
-let &rtp  = '~/.vim/bundle/FastFold,' . &rtp
 let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-" Here we need to edit a large tex file, e.g. a thesis or long paper
-edit main.tex
+nnoremap q :qa!<cr>
+
+silent edit main.tex
+
+" Open the toc to inspect the chapter numbers
+VimtexTocOpen
