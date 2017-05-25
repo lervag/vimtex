@@ -17,13 +17,6 @@ execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 let g:tex_flavor = 'latex'
 let g:vimtex_view_automatic = 0
 
-let g:vimtex_compiler_method = 'latexrun'
-
-let g:vimtex_compiler_latexrun = {}
-" let g:vimtex_compiler_latexrun.backend = 'process'
-let g:vimtex_compiler_latexrun.build_dir = 'out'
-let g:vimtex_compiler_latexrun.background = 1
-
 let g:vimtex_compiler_latexmk = {}
 " let g:vimtex_compiler_latexmk.backend = 'jobs'
 " let g:vimtex_compiler_latexrun.build_dir = 'out'
@@ -31,8 +24,13 @@ let g:vimtex_compiler_latexmk.background = 1
 let g:vimtex_compiler_latexmk.continuous = 1
 let g:vimtex_compiler_latexmk.callback = 1
 
+" let g:vimtex_compiler_method = 'latexrun'
+" let g:vimtex_compiler_latexrun = {}
+" let g:vimtex_compiler_latexrun.backend = 'process'
+" let g:vimtex_compiler_latexrun.build_dir = 'out'
+" let g:vimtex_compiler_latexrun.background = 1
+
 if has('nvim')
-  let g:vimtex_quickfix_latexlog = {'fix_paths':0}
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
