@@ -259,8 +259,11 @@ function! s:toc.print_number(number) abort dict " {{{1
   if empty(a:number) | return '' | endif
   if type(a:number) == type('') | return a:number | endif
 
+  if a:number.part_toggle
+    return s:int_to_roman(a:number.part)
+  endif
+
   let number = [
-        \ a:number.part,
         \ a:number.chapter,
         \ a:number.section,
         \ a:number.subsection,
@@ -352,6 +355,36 @@ endfunction
 
 " }}}1
 
+function! s:int_to_roman(number) " {{{1
+  let l:number = a:number
+  let l:result = ''
+  for [l:val, l:romn] in [
+        \ ['1000', 'M'],
+        \ ['900', 'CM'],
+        \ ['500', 'D'],
+        \ ['400', 'CD' ],
+        \ ['100', 'C'],
+        \ ['90', 'XC'],
+        \ ['50', 'L'],
+        \ ['40', 'XL'],
+        \ ['10', 'X'],
+        \ ['9', 'IX'],
+        \ ['5', 'V'],
+        \ ['4', 'IV'],
+        \ ['1', 'I'],
+        \]
+    while l:number >= l:val
+      let l:number -= l:val
+      let l:result .= l:romn
+    endwhile
+  endfor
+
+  return l:result
+endfunction
+
+" }}}1
+
+
 " Define simple type for TOC level
 let s:level = {}
 function! s:level.reset(part, level) abort dict " {{{1
@@ -375,13 +408,11 @@ endfunction
 function! s:level.increment(level) abort dict " {{{1
   let self.current = s:sec_to_value[a:level]
 
+  let self.part_toggle = 0
+
   if a:level ==# 'part'
     let self.part += 1
-    let self.chapter = 0
-    let self.section = 0
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
+    let self.part_toggle = 1
   elseif a:level ==# 'chapter'
     let self.chapter += 1
     let self.section = 0
