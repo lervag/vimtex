@@ -65,45 +65,13 @@ function! s:create_candidate(entry, maxlevel) " {{{1
   let level = a:maxlevel - a:entry.level
   let title = printf('%-65S%-10s',
         \ strpart(repeat(' ', 2*level) . a:entry.title, 0, 60),
-        \ s:print_number(a:entry.number))
+        \ b:vimtex.toc.print_number(a:entry.number))
   return {
         \ 'word' : title,
         \ 'abbr' : title . ' @' . level,
         \ 'action__path' : a:entry.file,
         \ 'action__line' : get(a:entry, 'line', 0),
         \ }
-endfunction
-
-" }}}1
-
-function! s:print_number(number) " {{{1
-  if empty(a:number) | return '' | endif
-  if type(a:number) == type('') | return a:number | endif
-
-  let number = [
-        \ a:number.part,
-        \ a:number.chapter,
-        \ a:number.section,
-        \ a:number.subsection,
-        \ a:number.subsubsection,
-        \ a:number.subsubsubsection,
-        \ ]
-
-  " Remove unused parts
-  while number[0] == 0
-    call remove(number, 0)
-  endwhile
-  while number[-1] == 0
-    call remove(number, -1)
-  endwhile
-
-  if a:number.frontmatter || a:number.backmatter
-    return ''
-  elseif a:number.appendix
-    let number[0] = nr2char(number[0] + 64)
-  endif
-
-  return join(number, '.')
 endfunction
 
 " }}}1
