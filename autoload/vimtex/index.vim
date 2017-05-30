@@ -192,6 +192,9 @@ function! s:index.activate(close) abort dict "{{{1
   " Ensure folds are opened
   normal! zv
 
+  " We're finished now if the index was wiped
+  if bufnr(self.name) < 0 | return | endif
+
   " Return to index window
   execute index_winnr . 'wincmd w'
 
