@@ -10,6 +10,7 @@ function! vimtex#toc#matchers#general(context) abort dict " {{{1
         \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
+        \ 'rank'   : a:context.lnum_total,
         \ 'level'  : a:context.max_level,
         \}
 endfunction
@@ -44,6 +45,7 @@ function! vimtex#toc#matchers#included.get_entry(context) " {{{1
           \ 'file'    : a:context.file,
           \ 'line'    : 1,
           \ 'level'   : a:context.level.current,
+          \ 'rank'    : a:context.lnum_total,
           \ 'entries' : 0,
           \ }
     return self.current
@@ -77,6 +79,7 @@ function! g:vimtex#toc#matchers#vimtex_include.get_entry(context) abort dict " {
         \ 'number' : '[v]',
         \ 'file'   : l:file,
         \ 'level'  : a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
         \ 'link'   : 1,
         \ }
 endfunction
@@ -97,6 +100,7 @@ function! g:vimtex#toc#matchers#preamble.get_entry(context) " {{{1
         \   'file'   : a:context.file,
         \   'line'   : a:context.lnum,
         \   'level'  : a:context.max_level,
+        \   'rank'   : a:context.lnum_total,
         \   }
         \ : {}
 endfunction
@@ -124,6 +128,7 @@ function! g:vimtex#toc#matchers#bibinputs.get_entry(context) abort dict " {{{1
         \ 'file'   : vimtex#kpsewhich#find(l:file),
         \ 'line'   : 0,
         \ 'level'  : a:context.max_level,
+        \ 'rank'   : a:context.lnum_total,
         \ }
 endfunction
 
@@ -170,6 +175,7 @@ function! g:vimtex#toc#matchers#sections.get_entry(context) abort dict " {{{1
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
         \ }
 endfunction
 

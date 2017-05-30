@@ -233,7 +233,34 @@ function! s:toc.hook_init_post() abort dict " {{{1
   nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
 
   " Jump to closest index
-  call vimtex#pos#set_cursor(self.pos_closest)
+  call vimtex#pos#set_cursor(self.get_closest_index())
+endfunction
+
+" }}}1
+function! s:toc.get_closest_index() abort dict " {{{1
+  let l:calling_rank = 0
+  for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
+    let l:calling_rank += 1
+    if l:file ==# self.calling_file && l:lnum >= self.calling_line
+      break
+    endif
+  endfor
+
+  let l:index = 0
+  let l:dist = 0
+  let l:closest_index = 1
+  let l:closest_dist = 10000
+  for l:entry in self.entries
+    let l:index += 1
+    let l:dist = l:calling_rank - entry.rank
+
+    if l:dist >= 0 && l:dist < l:closest_dist
+      let l:closest_dist = l:dist
+      let l:closest_index = l:index
+    endif
+  endfor
+
+  return [0, l:closest_index + self.help_nlines, 0, 0]
 endfunction
 
 " }}}1
@@ -241,17 +268,9 @@ function! s:toc.print_entries() abort dict " {{{1
   let self.number_width = max([0, 2*(self.tocdepth + 2)])
   let self.number_format = '%-' . self.number_width . 's'
 
-  let index = 0
-  let closest_index = 0
   for entry in self.entries
-    let index += 1
     call self.print_entry(entry)
-    if entry.file == self.calling_file && entry.line <= self.calling_line
-      let closest_index = index
-    endif
   endfor
-
-  let self.pos_closest = [0, closest_index + self.help_nlines, 0, 0]
 endfunction
 
 " }}}1
@@ -349,6 +368,7 @@ endfunction
 function! s:toc.toggle_sorted_todos() abort dict "{{{1
   let self.todo_sorted = self.todo_sorted ? 0 : 1
   call self.update(1)
+  call vimtex#pos#set_cursor(self.get_closest_index())
 endfunction
 
 " }}}1
