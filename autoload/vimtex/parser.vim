@@ -179,40 +179,26 @@ endfunction
 " Input line parsers
 "
 function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{{1
-  let l:root = self.root
-
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
   " Handle import package commands
   if l:file =~# g:vimtex#re#tex_input_import
-    " Handle relative paths
-    if l:file =~# '\\sub'
-      let l:root = fnamemodify(a:current_file, ':p:h')
+    let l:root = l:file =~# '\\sub'
+          \ ? fnamemodify(a:current_file, ':p:h')
+          \ : self.root
+
+    let l:candidate = s:input_to_filename(
+          \ substitute(copy(l:file), '}\s*{', '', 'g'), l:root)
+    if !empty(l:candidate)
+      return l:candidate
+    else
+      return s:input_to_filename(
+          \ substitute(copy(l:file), '{.{-}}', '', ''), l:root)
     endif
-
-    let l:file = substitute(l:file, '}\s*{', '', 'g')
+  else
+    return s:input_to_filename(l:file, self.root)
   endif
-
-  " Parse file name
-  let l:file = matchstr(l:file, '\zs[^{}]\+\ze}\s*$')
-
-  " Trim whitespaces and quotes from beginning/end of string
-  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
-  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.tex$'
-    let l:file .= '.tex'
-  endif
-
-  " Use absolute paths
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = l:root . '/' . l:file
-  endif
-
-  " Only return filename if it is readable
-  return filereadable(l:file) ? l:file : ''
 endfunction
 
 " }}}1
@@ -230,6 +216,32 @@ function! s:parser.input_line_parser_aux(line, file, re) abort dict " {{{1
   " Use absolute paths
   if l:file !~# '\v^(\/|[A-Z]:)'
     let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
+  endif
+
+  " Only return filename if it is readable
+  return filereadable(l:file) ? l:file : ''
+endfunction
+
+" }}}1
+
+"
+" Utility functions
+"
+function! s:input_to_filename(input, root) abort " {{{1
+  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*$')
+
+  " Trim whitespaces and quotes from beginning/end of string
+  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
+  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.tex$'
+    let l:file .= '.tex'
+  endif
+
+  " Use absolute paths
+  if l:file !~# '\v^(\/|[A-Z]:)'
+    let l:file = a:root . '/' . l:file
   endif
 
   " Only return filename if it is readable
