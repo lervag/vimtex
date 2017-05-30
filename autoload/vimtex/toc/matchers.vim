@@ -221,6 +221,22 @@ let g:vimtex#toc#matchers#bibliography = {
       \}
 
 
+let g:vimtex#toc#matchers#todos = {
+      \ 're' : g:vimtex#re#not_bslash . '\%\c\s*todo\s*:?\s*\zs.*',
+      \ 'in_preamble' : 1,
+      \}
+function! g:vimtex#toc#matchers#todos.get_entry(context) abort dict " {{{1
+  return {
+        \ 'title'  : printf('%-.78S', matchstr(a:context.line, self.re)),
+        \ 'number' : '[T]',
+        \ 'file'   : a:context.file,
+        \ 'line'   : a:context.lnum,
+        \ 'level'  : a:context.max_level,
+        \ }
+endfunction
+
+" }}}1
+
 "
 " Utility functions
 "
