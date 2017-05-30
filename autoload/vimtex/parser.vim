@@ -186,14 +186,9 @@ function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{
 
   " Handle import package commands
   if l:file =~# g:vimtex#re#tex_input_import
-    let l:candidate = self.input_parser(
-          \ substitute(l:file, '\\\w*\*\?\s*\({[^{}]*}\)\s*', '\1', ''),
-          \ a:current_file, '\v^\s*\{')
-    if !empty(l:candidate) | return l:candidate | endif
-
     " Handle relative paths
     if l:file =~# '\\sub'
-      let l:root = fnamemodify(a:current_file, ':h')
+      let l:root = fnamemodify(a:current_file, ':p:h')
     endif
 
     let l:file = substitute(l:file, '}\s*{', '', 'g')
