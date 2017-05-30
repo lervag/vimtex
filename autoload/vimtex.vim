@@ -226,6 +226,7 @@ function! s:init_highlights() " {{{1
         \ ['VimtexMsg', 'ModeMsg'],
         \ ['VimtexSuccess', 'Statement'],
         \ ['VimtexTocHelp', 'helpVim'],
+        \ ['VimtexTocTodo', 'Todo'],
         \ ['VimtexTocNum', 'Number'],
         \ ['VimtexTocSec0', 'Title'],
         \ ['VimtexTocSec1', 'Normal'],

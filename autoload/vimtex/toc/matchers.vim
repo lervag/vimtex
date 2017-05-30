@@ -227,11 +227,16 @@ let g:vimtex#toc#matchers#todos = {
       \}
 function! g:vimtex#toc#matchers#todos.get_entry(context) abort dict " {{{1
   return {
-        \ 'title'  : printf('%-.78S', matchstr(a:context.line, self.re)),
-        \ 'number' : '[T]',
+        \ 'title'  : printf('%s', matchstr(a:context.line, self.re)),
+        \ 'title_sorted'  : printf('%-7s %s',
+        \   b:vimtex.toc.print_number(a:context.level),
+        \   matchstr(a:context.line, self.re)),
+        \ 'number' : 'TODO:',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
-        \ 'level'  : a:context.max_level,
+        \ 'level'  : a:context.level.current,
+        \ 'todo'   : 1,
+        \ 'rank'   : a:context.lnum_total,
         \ }
 endfunction
 

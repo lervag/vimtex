@@ -44,10 +44,12 @@ let s:toc = {
       \   '-:       decrease g:vimtex_toc_tocdepth',
       \   '+:       increase g:vimtex_toc_tocdepth',
       \   's:       hide numbering',
+      \   't:       toggle sorted TODOs',
       \   'u:       update',
       \ ],
       \ 'show_numbers' : g:vimtex_toc_show_numbers,
       \ 'tocdepth' : g:vimtex_toc_tocdepth,
+      \ 'todo_sorted' : 1,
       \}
 
 function! s:toc.new() abort dict " {{{1
@@ -93,6 +95,15 @@ function! s:toc.update(force) abort dict " {{{1
   "
   call self.parse(l:content)
 
+  "
+  " Sort todo entries
+  "
+  if self.todo_sorted
+    let l:todos = filter(copy(self.entries), 'get(v:val, ''todo'')')
+    call filter(self.entries, '!get(v:val, ''todo'')')
+    let self.entries = l:todos + self.entries
+  endif
+
   if a:force && self.is_open()
     call self.refresh()
   endif
@@ -136,11 +147,14 @@ function! s:toc.parse(content) abort dict " {{{1
   let l:included = g:vimtex#toc#matchers#included.init(a:content[0][0])
 
   " Parse project content for TOC entries
+  let l:lnum_total = 0
   for [l:file, l:lnum, l:line] in a:content
+    let l:lnum_total += 1
     let l:context = {
           \ 'file' : l:file,
           \ 'line' : l:line,
           \ 'lnum' : l:lnum,
+          \ 'lnum_total' : l:lnum_total,
           \ 'level' : s:level,
           \ 'max_level' : self.max_level,
           \ 'entry' : get(self.entries, -1, {}),
@@ -213,6 +227,7 @@ function! s:toc.hook_init_post() abort dict " {{{1
   endif
 
   nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
+  nnoremap <buffer> <silent> t :call b:index.toggle_sorted_todos()<cr>
   nnoremap <buffer> <silent> u :call b:index.update(1)<cr>
   nnoremap <buffer> <silent> - :call b:index.decrease_depth()<cr>
   nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
@@ -250,7 +265,12 @@ function! s:toc.print_entry(entry) abort dict " {{{1
           \           0, self.number_width - 1)
     let output .= printf(self.number_format, number)
   endif
-  let output .= printf('%-140S%s', a:entry.title, level)
+
+  let title = self.todo_sorted
+        \ ? get(a:entry, 'title_sorted', a:entry.title)
+        \ : a:entry.title
+
+  let output .= printf('%-140S%s', title, level)
 
   call append('$', output)
 endfunction
@@ -260,7 +280,7 @@ function! s:toc.print_number(number) abort dict " {{{1
   if empty(a:number) | return '' | endif
   if type(a:number) == type('') | return a:number | endif
 
-  if a:number.part_toggle
+  if get(a:number, 'part_toggle')
     return s:int_to_roman(a:number.part)
   endif
 
@@ -273,10 +293,10 @@ function! s:toc.print_number(number) abort dict " {{{1
         \ ]
 
   " Remove unused parts
-  while number[0] == 0
+  while len(number) > 0 && number[0] == 0
     call remove(number, 0)
   endwhile
-  while number[-1] == 0
+  while len(number) > 0 && number[-1] == 0
     call remove(number, -1)
   endwhile
 
@@ -307,7 +327,9 @@ endfunction
 function! s:toc.syntax() abort dict "{{{1
   syntax match VimtexTocHelp /^\S.*: .*/
   syntax match VimtexTocNum
-        \ /^\(\([A-Z]\+\>\|\d\+\)\(\.\d\+\)*\)\?\s*/ contained
+        \ /\v^(T%[ODO:]\s*)?(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
+        \ contains=VimtexTocTodo
+  syntax match VimtexTocTodo /T\%[ODO:]/ contained
   syntax match VimtexTocTag
         \ /^\[.\]/ contained
   syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,VimtexTocTag,@Tex
@@ -321,6 +343,12 @@ endfunction
 function! s:toc.toggle_numbers() abort dict "{{{1
   let self.show_numbers = self.show_numbers ? 0 : 1
   call self.refresh()
+endfunction
+
+" }}}1
+function! s:toc.toggle_sorted_todos() abort dict "{{{1
+  let self.todo_sorted = self.todo_sorted ? 0 : 1
+  call self.update(1)
 endfunction
 
 " }}}1
