@@ -1,0 +1,55 @@
+Execute (Setup):
+  call writefile([
+      \ '\documentclass{minimal}',
+      \ '\usepackage{import}',
+      \ '\usepackage{subfiles}',
+      \ '\begin{document}',
+      \ '\import{' . getcwd() . '/test/}{include1}',
+      \ '\inputfrom{test/}{include3}',
+      \ '\subfile{test.tex}',
+      \ '\end{document}',
+      \], 'main.tex')
+  call mkdir('test/sub', 'p')
+  call writefile([
+      \ 'Hello world from include1',
+      \ '\subimport*{sub/}{include2}',
+      \], 'test/include1.tex')
+  call writefile([
+      \ 'Hello world from include2',
+      \], 'test/sub/include2.tex')
+  call writefile([
+      \ 'Hello world from include3',
+      \ 'Note: This file tests that we also search from the main root',
+      \], 'include3.tex')
+  call writefile([
+    \ '\documentclass[main.tex]{subfiles}',
+    \ '\begin{document}',
+    \ '\end{document}',
+    \], 'subfile.tex')
+
+Execute (Test variants of import commands):
+  edit main.tex
+  AssertEqual [
+    \ 'main.tex',
+    \ 'test/include1.tex',
+    \ 'test/sub/include2.tex',
+    \ 'include3.tex',
+    \], b:vimtex.sources
+  bdelete!
+
+Execute (Find correct main files):
+  for fname in [
+      \ 'test/sub/include2.tex',
+      \ 'include3.tex',
+      \ 'subfile.tex']
+    execute 'edit' fname
+    Log 'Testing included file: ' . fname
+    AssertEqual 'main.tex', fnamemodify(b:vimtex.tex, ':t')
+    bdelete!
+  endfor
+
+Execute (Clean up):
+  call delete('main.tex')
+  call delete('include3.tex')
+  call delete('subfile.tex')
+  call delete('test', 'rf')
