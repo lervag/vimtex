@@ -25,6 +25,14 @@ Or use some other plugin manager:
 - [neobundle](https://github.com/Shougo/neobundle.vim)
 - [pathogen](https://github.com/tpope/vim-pathogen)
 
+### Mention for terminal users
+
+If you run vim in the terminal, than you might run into an issue where your quickfix error and warning window doesn't update automatically after compilation in continous mode. This is caused by vim not initialising servername attribute when you use it in non-GUI mode as mentioned [here](http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm). To fix this problem you need to add this alias to your shell config file i.e. ~/.bashrc:
+
+```sh
+alias vim='vim --servername VIM'
+```
+
 ## Quick Start
 
 The following is a simple guide for how to use vimtex. It only displays the
