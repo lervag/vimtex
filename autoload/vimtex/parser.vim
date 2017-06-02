@@ -21,6 +21,19 @@ function! vimtex#parser#aux(file, ...) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#parser#fls(file, ...) " {{{1
+  let l:options = a:0 > 0 ? a:1 : {}
+  call extend(l:options, {
+        \ 'detailed' : 0,
+        \ 'type' : 'fls',
+        \ 'input_re_fls' : 'nomatch^',
+        \}, 'keep')
+
+  let l:parser = s:parser.new(l:options)
+  return l:parser.parse(a:file)
+endfunction
+
+" }}}1
 function! vimtex#parser#get_externalfiles() " {{{1
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
         \ 're_stop' : '\\begin{document}',

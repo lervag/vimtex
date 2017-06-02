@@ -28,6 +28,8 @@ function! vimtex#state#init() " {{{1
     call vimtex#qf#init_state(b:vimtex)
     call vimtex#toc#init_state(b:vimtex)
     call vimtex#labels#init_state(b:vimtex)
+
+    call b:vimtex.parse_fls()
   endif
 endfunction
 
@@ -55,6 +57,8 @@ function! vimtex#state#init_local() " {{{1
     call vimtex#qf#init_state(l:vimtex)
     call vimtex#toc#init_state(l:vimtex)
     call vimtex#labels#init_state(l:vimtex)
+
+    call b:vimtex.parse_fls()
   endif
 
   let b:vimtex_local = {
@@ -426,12 +430,43 @@ function! s:vimtex.parse_preamble() abort dict " {{{1
       continue
     endif
 
-    let l:package = matchstr(l:line, '^\s*\\usepackage.*{\zs\w*\ze}')
+    " Find \usepackage[options]{package} statements
+    let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+        \ . '\v\\usepackage\s*(\[[^[\]]*\])?\s*\{([^{}]+)\}'
+
+    let l:indx = match(l:line, l:pat)
+    while l:indx >= 0
+      let l:matches = matchlist(l:line, l:pat, l:indx)
+      for l:package in split(l:matches[2], '\s*,\s*')
+        let l:package = substitute(l:package, '^\s*\|\s*$', '', 'g')
+        if !empty(l:package)
+          let self.packages[l:package] = {}
+        endif
+      endfor
+      let l:indx += len(l:matches[0])
+      let l:indx = match(l:line, l:pat, l:indx)
+    endwhile
+  endfor
+endfunction
+
+" }}}1
+function! s:vimtex.parse_fls() abort dict " {{{1
+  let l:fls = self.fls()
+  if empty(l:fls) | return | endif
+
+  let l:fls_packages = {}
+
+  for l:line in vimtex#parser#fls(l:fls)
+    let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
+    let l:package = fnamemodify(l:package, ':t')
     if !empty(l:package)
-      let self.packages[l:package] = {}
-      continue
+      let l:fls_packages[l:package] = {}
     endif
   endfor
+
+  if !empty(l:fls_packages)
+    let self.packages = l:fls_packages
+  endif
 endfunction
 
 " }}}1
@@ -460,6 +495,7 @@ function! s:vimtex.pprint_items() abort dict " {{{1
         \ ['out', self.out()],
         \ ['log', self.log()],
         \ ['aux', self.aux()],
+        \ ['fls', self.fls()],
         \]
 
   if !empty(self.engine)
@@ -469,6 +505,8 @@ function! s:vimtex.pprint_items() abort dict " {{{1
   if len(self.sources) >= 2
     call add(l:items, ['source files', self.sources])
   endif
+
+  call add(l:items, ['document class', self.documentclass])
 
   if !empty(self.packages)
     call add(l:items, ['packages', keys(self.packages)])
@@ -489,6 +527,11 @@ endfunction
 " }}}1
 function! s:vimtex.aux() abort dict " {{{1
   return self.ext('aux')
+endfunction
+
+" }}}1
+function! s:vimtex.fls() abort dict " {{{1
+  return self.ext('fls')
 endfunction
 
 " }}}1
