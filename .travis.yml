@@ -1,9 +1,9 @@
-language: ruby
+language: vim
 
-before_install:
-  - sudo add-apt-repository -y ppa:nmi/vim-snapshots
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install vim
+# before_install:
+#   - sudo add-apt-repository -y ppa:nmi/vim-snapshots
+#   - sudo apt-get -qq update
+#   - sudo apt-get -qq install vim
 
 before_script:
   git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
