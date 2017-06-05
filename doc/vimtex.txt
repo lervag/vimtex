@@ -69,7 +69,6 @@ CONTENTS                                                      *vimtex-contents*
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
-    Lacheck                                     |vimtex-lacheck|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
@@ -1006,11 +1005,6 @@ Options~
     methods, either through vimtex (see |g:vimtex_compiler_method|) or
     externally, this requirement must be ensured by the user.
 
-  lacheck~
-    This is a simple method that uses `lacheck` to parse the TeX file for
-    errors. It is typically used implicitly with |VimtexLacheck|. See also
-    |vimtex-lacheck|.
-
   Default value: 'latexlog'
 
 *g:vimtex_quickfix_autojump*
@@ -1577,10 +1571,6 @@ Commands~
                                              *<plug>(vimtex-errors)*
 :VimtexErrors             Open |quickfix| window if there are errors or
                           warnings.
-
-                                             *VimtexLacheck*
-                                             *<plug>(vimtex-lacheck)*
-:VimtexLacheck            Run `lacheck` to check document for errors.
 
                                              *VimtexView*
                                              *<plug>(vimtex-view)*
@@ -2368,7 +2358,6 @@ Associated commands:
     |VimtexClean|
     |VimtexClean!|
     |VimtexErrors|
-    |VimtexLacheck|
 
 Associated settings:
     |g:vimtex_compiler_enabled|
@@ -2456,15 +2445,6 @@ The latter is supported by vimtex, though, through the callback.  See
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
-
-------------------------------------------------------------------------------
-Lacheck~
-                                                               *vimtex-lacheck*
-
-After compilation of a LaTeX document, the log file will contain errors that
-are parsed by |vimtex| as explained above.  However, there are syntax checkers
-for LaTeX.  |vimtex| provides a simple interface to `lacheck` for checking
-LaTeX manuscripts for errors.  This is available through |VimtexLacheck|.
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
@@ -2805,6 +2785,26 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2017-06-05: Removed Lacheck support~
+                                                               *vimtex-lacheck*
+Removed support for using `lacheck` for checking LaTeX syntax. The reason is
+that there exist several (good) external plugins for syntax checking files.
+These are general purpose plugins that work for multiple file types. The
+following is a list of good plugins that have support for (La)TeX syntax
+checking.
+
+  `ale`         https://github.com/w0rp/ale
+  `neomake`     https://github.com/neomake/neomake
+  `syntastic`   https://github.com/vim-syntastic/syntastic
+
+All of the above plugins supoorts `lacheck` [0], `chktex` [1], `proselint` [2].
+`neomake` also supports `rubberinfo` [3].
+
+[0]: https://www.ctan.org/pkg/lacheck
+[1]: http://www.nongnu.org/chktex/
+[2]: http://proselint.com/
+[3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
 
 2017-05-20: Updated TOC options~
 There's been a few updates to the TOC. During this work, I removed some

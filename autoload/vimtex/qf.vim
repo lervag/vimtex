@@ -6,10 +6,8 @@
 
 function! vimtex#qf#init_buffer() abort " {{{1
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
-  command! -buffer VimtexLacheck call vimtex#qf#lacheck()
 
   nnoremap <buffer> <plug>(vimtex-errors)  :call vimtex#qf#toggle()<cr>
-  nnoremap <buffer> <plug>(vimtex-lacheck) :call vimtex#qf#lacheck()<cr>
 endfunction
 
 " }}}1
@@ -23,18 +21,6 @@ function! vimtex#qf#init_state(state) abort " {{{1
     call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
     call vimtex#echo#wait()
   endtry
-endfunction
-
-" }}}1
-
-function! vimtex#qf#lacheck() abort " {{{1
-  let l:qf_save = b:vimtex.qf
-  let l:qf = vimtex#qf#lacheck#new()
-  call l:qf.init()
-
-  let b:vimtex.qf = l:qf
-  call vimtex#qf#open(1)
-  let b:vimtex.qf = l:qf_save
 endfunction
 
 " }}}1
