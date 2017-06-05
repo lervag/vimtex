@@ -31,6 +31,7 @@ CONTENTS                                                      *vimtex-contents*
 
   Introduction                                  |vimtex-introduction|
     Feature overview                            |vimtex-features|
+    Features provided by other plugins          |vimtex-non-features|
     Requirements                                |vimtex-requirements|
     Support for multi-file projects             |vimtex-multi-file|
     Comment on internal tex plugin              |vimtex-comment-internal|
@@ -146,6 +147,36 @@ Feature overview~
 - Support for multi-file project packages
   - `import`
   - `subfiles`
+
+------------------------------------------------------------------------------
+Features provided by other plugins~
+                                                          *vimtex-non-features*
+
+The following is a short list of features that one might think should be
+provided by vimtex, but that are instead provided by other plugins.
+
+  Linting and syntax checking~
+    The following is a list of good plugins that have support for (La)TeX
+    syntax checking.
+
+      `ale`         https://github.com/w0rp/ale
+      `neomake`     https://github.com/neomake/neomake
+      `syntastic`   https://github.com/vim-syntastic/syntastic
+
+    All of the above plugins supoorts `lacheck` [0], `chktex` [1], `proselint` [2].
+    `neomake` also supports `rubberinfo` [3].
+
+    [0]: https://www.ctan.org/pkg/lacheck
+    [1]: http://www.nongnu.org/chktex/
+    [2]: http://proselint.com/
+    [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
+
+  Snippets/Templates~
+    Snippets and/or templates are provided by for instance `neosnippet` and
+    `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
+
+  Syntax highlighting~
+    See |vimtex-comment-internal|.
 
 ------------------------------------------------------------------------------
 Requirements~
@@ -2800,21 +2831,8 @@ changelog.
                                                                *vimtex-lacheck*
 Removed support for using `lacheck` for checking LaTeX syntax. The reason is
 that there exist several (good) external plugins for syntax checking files.
-These are general purpose plugins that work for multiple file types. The
-following is a list of good plugins that have support for (La)TeX syntax
-checking.
-
-  `ale`         https://github.com/w0rp/ale
-  `neomake`     https://github.com/neomake/neomake
-  `syntastic`   https://github.com/vim-syntastic/syntastic
-
-All of the above plugins supoorts `lacheck` [0], `chktex` [1], `proselint` [2].
-`neomake` also supports `rubberinfo` [3].
-
-[0]: https://www.ctan.org/pkg/lacheck
-[1]: http://www.nongnu.org/chktex/
-[2]: http://proselint.com/
-[3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
+These are general purpose plugins that work for multiple file types. For more
+info, see |vimtex-non-features|.
 
 2017-05-20: Updated TOC options~
 There's been a few updates to the TOC. During this work, I removed some
