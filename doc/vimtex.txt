@@ -1363,6 +1363,11 @@ Options~
             search will take you to the line in Vim that corresponds to the
             first line of the current page in MuPDF.
 
+      Note: Viewer handling uses window title matching. If there exists
+            another pdf viewer with the same name as the current project pdf
+            file, then there might be conflicts, and so MuPDF might not work
+            as expected.
+
     *vimtex_viewer_skim*
       http://skim-app.sourceforge.net/
       Skim is a PDF reader and note-taker for OS X.  It is designed to help
@@ -1387,6 +1392,11 @@ Options~
             has resulted in synctex support being dropped on some platforms,
             e.g. on OpenSUSE, cf. https://github.com/lervag/vimtex/issues/384.
             A workaround is to build Zathura from source manually.
+
+      Note: Viewer handling uses window title matching. If there exists
+            another pdf viewer with the same name as the current project pdf
+            file, then there might be conflicts. In particular, this might
+            affect forward/backward searching for Zathura.
 
 *g:vimtex_view_use_temp_files*
   If enabled, this will copy output files to a corresponding set of files
