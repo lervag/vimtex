@@ -130,15 +130,15 @@ endfunction
 
 function! s:qf_is_open() abort " {{{1
   redir => l:buflist
-  silent! ls!
+  silent! filter /Quickfix/ ls!
   redir END
 
   for l:line in split(l:buflist, '\n')
-    if match(l:line, '\[Quickfix List]') < 0 | continue | endif
-
     let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
-    let l:winnr = bufwinnr(l:bufnr)
-    return l:winnr >= 0
+    if bufwinnr(l:bufnr) >= 0
+          \ && getbufvar(l:bufnr, '&buftype', '') ==# 'quickfix'
+      return 1
+    endif
   endfor
 
   return 0
