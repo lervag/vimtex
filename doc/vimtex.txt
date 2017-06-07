@@ -178,6 +178,17 @@ provided by vimtex, but that are instead provided by other plugins.
   Syntax highlighting~
     See |vimtex-comment-internal|.
 
+  Tag navigation~
+    One may navigate by tags with the |CTRL-]| mapping, e.g. from
+    `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
+    this requires that a tag file has been generated with |ctags|. I recommend
+    that one uses the maintained version of ctags [0]. In addition,
+    I recommend that one uses a plugin that automatically generates the tag
+    files as necessary, e.g. |gutentags| [1].
+
+    [0]: https://ctags.io/
+    [1]: https://github.com/ludovicchabant/vim-gutentags
+
 ------------------------------------------------------------------------------
 Requirements~
                                                           *vimtex-requirements*
