@@ -362,7 +362,7 @@ function! s:cmd_multi(cmds) " {{{1
   let l:fold = {}
   let l:fold.re = {
         \ 'start' : l:re . '.*(\{|\[)\s*(\%.*)?$',
-        \ 'end' : '^\s*}\s*\(%\|$\)',
+        \ 'end' : '^\s*}\s*$',
         \ 'text' : l:re . '\{[^}]*\}',
         \}
   let l:fold.opened = 0
@@ -379,7 +379,7 @@ function! s:cmd_multi(cmds) " {{{1
   endfunction
 
   function! l:fold.text(line) dict
-    return matchstr(a:line, self.re.text) . ' ...'
+    return a:line
   endfunction
 
   return l:fold
