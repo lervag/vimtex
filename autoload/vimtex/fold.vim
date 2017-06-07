@@ -318,6 +318,7 @@ function! s:cmd_single(cmds) " {{{1
 
   function! l:fold.text(line) dict
     return matchstr(a:line, self.re.text) . '{...}'
+          \ . substitute(getline(v:foldend), self.re.end, '', '')
   endfunction
 
   return l:fold
@@ -511,7 +512,7 @@ call s:init_cmds()
 let s:folded  = '\v'
 let s:folded .=  '^\s*\%'
 let s:folded .= '|^\s*\]\{'
-let s:folded .= '|^\s*}\s*(\%|$)'
+let s:folded .= '|^\s*}'
 let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
 let s:folded .= '|\\%(' . join([
       \   'begin',
