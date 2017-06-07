@@ -72,31 +72,46 @@
   \ifstrempty{#1}{%
     \mdfsetup{
       frametitle={%
-      \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+        \tikz[baseline=(current bounding box.east),outer sep=0pt]%
         \node[anchor=east,rectangle,fill=blue!20] {\strut Theorem~\thetheo};%
-      }
+      }%
     }%
   }%
   {% else ifstrempty:
-  \mdfsetup{
-    frametitle={
-    \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+    \mdfsetup{
+      frametitle={
+        \tikz[baseline=(current bounding box.east),outer sep=0pt]%
       \node[anchor=east,rectangle,fill=blue!20]{\strut Theorem~\thetheo:~#1};}%
-  }
+    }%
   }%
   \mdfsetup{
     innertopmargin=10pt,
     linecolor=blue!20,
     linewidth=2pt,topline=true,
     frametitleaboveskip=\dimexpr-\ht\strutbox\relax,
-  }
+  }%
   \begin{mdframed}[]\relax%
-}{%
+    }{%
   \end{mdframed}%
 }
 
 \begin{document}
 
 Hello World
+
+\pgfplotstableread[col sep=semicolon,trim cells]{
+x    ; y    ; z   ; type  ; reference       ; comment
+0.01 ; 1.00 ; nan ; type1 ; ref-unspecified ;
+0.02 ; 2.00 ; nan ; type2 ; ref-unspecified ;
+0.03 ; 3.00 ; nan ; type3 ; ref-unspecified ;
+}{\datatable}
+
+\pgfplotstableread[col sep=semicolon,trim cells]{
+x    ; y    ; z   ; type  ; reference       ; comment
+0.01 ; 1.00 ; nan ; type1 ; ref-unspecified ;
+0.02 ; 2.00 ; nan ; type2 ; ref-unspecified ;
+0.03 ; 3.00 ; nan ; type3 ; ref-unspecified ;
+}
+\datatable
 
 \end{document}
