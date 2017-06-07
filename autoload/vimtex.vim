@@ -277,6 +277,7 @@ function! s:init_buffer() " {{{1
   setlocal suffixesadd=.tex,.sty,.cls
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
   setlocal commentstring=%%s
+  setlocal iskeyword+=:
   setlocal includeexpr=vimtex#include#expr()
   let &l:include = g:vimtex#re#tex_input
   let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
