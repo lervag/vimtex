@@ -95,8 +95,17 @@ function! vimtex#fold#level(lnum) " {{{1
     endif
   endfor
 
-  " Fold comments
-  if g:vimtex_fold_comments
+  " Fold markers
+  if line =~# '\v\%.*\{\{\{'
+    let s:fold_markers = 1
+    return 'a1'
+  elseif line =~# '\v\%\s*\}\}\}'
+    let s:fold_markers = 0
+    return 's1'
+  endif
+
+  " Fold long comments
+  if g:vimtex_fold_comments && !get(s:, 'fold_markers')
     if line =~# '^\s*%'
       let l:next = getline(a:lnum-1) !~# '^\s*%'
       let l:prev = getline(a:lnum+1) !~# '^\s*%'
@@ -106,13 +115,6 @@ function! vimtex#fold#level(lnum) " {{{1
         return 's1'
       endif
     endif
-  endif
-
-  " Fold markers
-  if line =~# '\v\%.*\{\{\{'
-    return 'a1'
-  elseif line =~# '\v\%\s*\}\}\}'
-    return 's1'
   endif
 
   " Never fold \end{document}
