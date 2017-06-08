@@ -425,31 +425,31 @@ endfunction
 " }}}1
 
 function! s:filename_changed_pre() " {{{1
-  let thisfile = fnamemodify(expand('%'), ':p')
-  let s:filename_changed = thisfile ==# b:vimtex.tex
-  let s:filename_old = b:vimtex.base
+  let s:filename_changed = expand('%:p') ==# b:vimtex.tex
 endfunction
 
 " }}}1
 function! s:filename_changed_post() " {{{1
   if s:filename_changed
+    let l:base_old = b:vimtex.base
     let b:vimtex.tex = fnamemodify(expand('%'), ':p')
     let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
     let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
-    let message = ['vimtex: ',
+
+    call vimtex#echo#status(['vimtex: ',
           \ ['VimtexWarning', 'Filename change detected!'],
-          \ "\n  Old filename: ", ['VimtexInfo', s:filename_old],
-          \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base]]
+          \ "\n  Old filename: ", ['VimtexInfo', l:base_old],
+          \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base],
+          \ "\n"])
 
     if has_key(b:vimtex, 'compiler')
-          \ && b:vimtex.compiler.is_running()
-      let message += ["\n  latexmk process: ",
-            \ ['VimtexInfo', b:vimtex.pid],
-            \ ['VimtexWarning', ' killed!']]
-      call vimtex#compiler#stop()
+      if b:vimtex.compiler.is_running()
+        call vimtex#echo#warning('Compilation stopped')
+        call vimtex#compiler#stop()
+      endif
+      let b:vimtex.compiler.target = b:vimtex.base
+      let b:vimtex.compiler.target_path = b:vimtex.tex
     endif
-
-    call vimtex#echo#status(message)
   endif
 endfunction
 
