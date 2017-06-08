@@ -28,24 +28,24 @@ Execute (Setup):
     \], 'subfile.tex')
 
 Execute (Test variants of import commands):
-  edit main.tex
+  silent edit main.tex
   AssertEqual [
     \ 'main.tex',
     \ 'test/include1.tex',
     \ 'test/sub/include2.tex',
     \ 'include3.tex',
     \], b:vimtex.sources
-  bdelete!
+  bwipeout!
 
 Execute (Find correct main files):
   for fname in [
       \ 'test/sub/include2.tex',
       \ 'include3.tex',
       \ 'subfile.tex']
-    execute 'edit' fname
+    execute 'silent edit' fname
     Log 'Testing included file: ' . fname
     AssertEqual 'main.tex', fnamemodify(b:vimtex.tex, ':t')
-    bdelete!
+    bwipeout!
   endfor
 
 Execute (Clean up):
