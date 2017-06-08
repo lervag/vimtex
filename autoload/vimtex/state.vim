@@ -79,6 +79,12 @@ function! vimtex#state#toggle_main() " {{{1
           \ : b:vimtex_local.main_id
     let b:vimtex = vimtex#state#get(b:vimtex_id)
 
+    " Reset the root dir to dir from main file
+    let b:vimtex.root = vimtex#state#get(b:vimtex_local.main_id).root
+    " Get the active file realtive to the root dir
+	" (only working when the tex-root dir is the same as the vim cwd)
+    let b:vimtex.base = fnamemodify(b:vimtex.tex,':p:.')
+
     call vimtex#echo#status(['vimtex: ',
           \ ['Normal', 'Changed to `'],
           \ ['VimtexSuccess', b:vimtex.base],
