@@ -186,8 +186,16 @@ provided by vimtex, but that are instead provided by other plugins.
     I recommend that one uses a plugin that automatically generates the tag
     files as necessary, e.g. |gutentags| [1].
 
+    Note: In order to support `bibtex`, one may add the following to one's
+          `~/.ctags` file: >
+
+            --langdef=bib
+            --langmap=bib:.bib
+            --regex-bib=/^@[A-Za-z]+\{([^,]*)/\1/b,bib/
+<
     [0]: https://ctags.io/
     [1]: https://github.com/ludovicchabant/vim-gutentags
+
 
 ------------------------------------------------------------------------------
 Requirements~
