@@ -1,7 +1,7 @@
 language: vim
 sudo: required
 dist: precise
-group: legacy
+group: deprecated-2017Q1
 
 before_install:
   - sudo add-apt-repository -y ppa:nmi/vim-snapshots
