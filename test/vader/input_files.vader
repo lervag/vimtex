@@ -52,4 +52,4 @@ Execute (Clean up):
   call delete('main.tex')
   call delete('include3.tex')
   call delete('subfile.tex')
-  call delete('test', 'rf')
+  call system('rm -rf test')
