@@ -1,5 +1,7 @@
 language: vim
 
+dist: trusty
+
 before_install:
   - sudo add-apt-repository -y ppa:nmi/vim-snapshots
   - sudo apt-get -qq update
@@ -8,5 +10,6 @@ before_install:
 before_script:
   git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
 
-script: test/vader/run
+script:
+  - vim +version +quit
 
