@@ -1,7 +1,5 @@
 language: vim
 
-dist: trusty
-
 before_install:
   - sudo add-apt-repository -y ppa:nmi/vim-snapshots
   - sudo apt-get -qq update
