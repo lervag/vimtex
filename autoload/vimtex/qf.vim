@@ -116,8 +116,10 @@ endfunction
 
 function! s:qf_is_open() abort " {{{1
   redir => l:buflist
-  silent! filter /Quickfix/ ls!
+  silent! ls!
   redir END
+
+  call filter(l:buflist, 'v:val =~# ''Quickfix''')
 
   for l:line in split(l:buflist, '\n')
     let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
