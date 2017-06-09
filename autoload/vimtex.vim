@@ -74,6 +74,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_fold_commands_default', {
         \ 'hypersetup' : 'single',
         \ 'tikzset' : 'single',
+        \ 'pgfplotstableread' : 'single',
         \ 'usepackage' : 'single_opt',
         \ 'includepdf' : 'single_opt',
         \ '%(re)?new%(command|environment)' : 'multi',
