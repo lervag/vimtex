@@ -819,6 +819,19 @@ Options~
 
   Default value: 1
 
+*g:vimtex_fold_env_blacklist*
+  Environments in this list will never be folded.
+  
+  Note: The `document` environment will never be folded regardless.
+
+  Default value: []
+
+*g:vimtex_fold_env_whitelist*
+  If not empty, only the environments in this list will be folded, unless the
+  environment is also specified in |g:vimtex_fold_env_blacklist|.
+
+  Default value: []
+
 *g:vimtex_fold_markers*
   Use this option to disable/enable vim-style markers for folding, i.e. pairs
   of `{{{` and `}}}`.
@@ -2228,6 +2241,8 @@ Associated settings:
   |g:vimtex_fold_levelmarker|
   |g:vimtex_fold_preamble|
   |g:vimtex_fold_envs|
+  |g:vimtex_fold_env_blacklist|
+  |g:vimtex_fold_env_whitelist|
   |g:vimtex_fold_markers|
   |g:vimtex_fold_parts|
   |g:vimtex_fold_sections|

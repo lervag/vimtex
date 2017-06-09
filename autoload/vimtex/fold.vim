@@ -124,13 +124,19 @@ function! vimtex#fold#level(lnum) " {{{1
 
   " Fold environments
   if g:vimtex_fold_envs
-    if line =~# s:env_start
-      if line !~# '\\end'
-        return 'a1'
-      endif
-    elseif line =~# s:env_stop
-      if line !~# '\\begin'
-        return 's1'
+    let l:env = matchstr(line, s:env_name)
+    if !empty(l:env)
+          \ && (empty(g:vimtex_fold_env_whitelist)
+          \   || index(g:vimtex_fold_env_whitelist, l:env) >= 0)
+          \ && index(g:vimtex_fold_env_blacklist, l:env) < 0
+      if line =~# s:env_start
+        if line !~# '\\end'
+          return 'a1'
+        endif
+      elseif line =~# s:env_stop
+        if line !~# '\\begin'
+          return 's1'
+        endif
       endif
     endif
   endif
@@ -481,6 +487,8 @@ endfunction
 
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
 let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
+let s:env_name = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
 let s:env_start = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\\begin\s*\{.{-}\}'
 let s:env_stop = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
