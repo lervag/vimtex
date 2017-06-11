@@ -119,9 +119,9 @@ function! s:qf_is_open() abort " {{{1
   silent! ls!
   redir END
 
-  call filter(l:buflist, 'v:val =~# ''Quickfix''')
+  let l:buflist = filter(split(l:buflist, '\n'), 'v:val =~# ''Quickfix''')
 
-  for l:line in split(l:buflist, '\n')
+  for l:line in l:buflist
     let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
     if bufwinnr(l:bufnr) >= 0
           \ && getbufvar(l:bufnr, '&buftype', '') ==# 'quickfix'
