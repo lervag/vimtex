@@ -260,7 +260,7 @@ Buffer variable~
   If one uses project specific |vimrc| files, one may then use an |autocmd| to
   specify the main file through this buffer variable with >
 
-    autocmd FileType tex let b:vimtex_main = 'main.tex'
+    autocmd BufReadPre *.tex let b:vimtex_main = 'main.tex'
 <
                                                               *vimtex-tex-root*
 TeX root directive~
