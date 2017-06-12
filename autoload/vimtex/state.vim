@@ -506,7 +506,9 @@ function! s:vimtex.pprint_items() abort dict " {{{1
     call add(l:items, ['source files', self.sources])
   endif
 
-  call add(l:items, ['document class', self.documentclass])
+  if exists('self.documentclass')
+    call add(l:items, ['document class', self.documentclass])
+  endif
 
   if !empty(self.packages)
     call add(l:items, ['packages', keys(self.packages)])
