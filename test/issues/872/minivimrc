@@ -1,0 +1,15 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+let g:vimtex_echo_ignore_wait = 1
+
+" autocmd FileType tex let b:vimtex_main = 'other.tex'
+autocmd BufReadPre *.tex let b:vimtex_main = 'other.tex'
+
+silent edit included.tex
