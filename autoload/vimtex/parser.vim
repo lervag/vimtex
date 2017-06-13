@@ -127,7 +127,7 @@ endfunction
 
 let s:parser = {
       \ 'detailed' : 1,
-      \ 'prev_parsed' : '',
+      \ 'prev_parsed' : [],
       \ 'root' : '',
       \ 'finished' : 0,
       \ 'type' : 'tex',
@@ -151,10 +151,10 @@ endfunction
 
 " }}}1
 function! s:parser.parse(file) abort dict " {{{1
-  if !filereadable(a:file) || self.prev_parsed ==# a:file
+  if !filereadable(a:file) || index(self.prev_parsed, a:file) >= 0
     return []
   endif
-  let self.prev_parsed = a:file
+  call add(self.prev_parsed, a:file)
 
   let l:parsed = []
   let l:lnum = 0
