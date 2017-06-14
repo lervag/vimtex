@@ -874,6 +874,8 @@ Options~
                 argument, then a short "real" argument.
   `multi`         Useful for commands that start with a short regular argument
                 and continue with long optional and/or regular arguments.
+  `addplot`       This is a specific type meant for the `\addplot` series of
+                commands from the `pgfplots` package. See below for an example.
 
   The option combines the contents of |g:vimtex_fold_commands| and
   |g:vimtex_fold_commands_default|. Entries in the former will have higher
@@ -901,6 +903,10 @@ Options~
     'multi'       \newcommand{\command}[3]{      \newcommand{\command} ...
                     Hello #1, #2, and #3.
                   }
+
+    'addplot'     \addplot+ [] table [] {        \addplot+ [] table [] {...}
+                    table data
+                  };
     ----------------------------------------------------------------------
 <
   Note: |g:vimtex_fold_commands| deprecates the old *g:vimtex_fold_documentclass*
@@ -912,6 +918,7 @@ Options~
     let g:vimtex_fold_commands_default = {
         \ 'hypersetup' : 'single',
         \ 'tikzset' : 'single',
+        \ 'pgfplotstableread' : 'single',
         \ 'usepackage' : 'single_opt',
         \ 'includepdf' : 'single_opt',
         \ '%(re)?new%(command|environment)' : 'multi',
@@ -919,6 +926,7 @@ Options~
         \ 'presetkeys' : 'multi',
         \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
         \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \ 'addplot[3+]?' : 'addplot',
         \}
 
 *g:vimtex_format_enabled*
