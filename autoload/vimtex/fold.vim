@@ -403,7 +403,6 @@ function! s:cmd_addplot(cmds) " {{{1
         \ 'start' : l:re . '\s*\w+\s*%(\[[^\]]*\])?\s*\ze\{\s*%($|\%)',
         \ 'end' : '^\s*}',
         \}
-  unsilent echom l:fold.re.start
 
   function! l:fold.level(line, lnum) dict
     if a:line =~# self.re.start
