@@ -84,6 +84,7 @@ function! s:init_options() " {{{1
         \ 'presetkeys' : 'multi',
         \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
         \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
+        \ 'addplot[+3]?' : 'addplot',
         \})
 
   call s:init_option('vimtex_format_enabled', 0)

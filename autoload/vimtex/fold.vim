@@ -395,6 +395,37 @@ function! s:cmd_multi(cmds) " {{{1
 endfunction
 
 " }}}1
+function! s:cmd_addplot(cmds) " {{{1
+  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\s*%(\[[^\]]*\])?'
+
+  let l:fold = {}
+  let l:fold.re = {
+        \ 'start' : l:re . '\s*\w+\s*%(\[[^\]]*\])?\s*\ze\{\s*%($|\%)',
+        \ 'end' : '^\s*}',
+        \}
+  unsilent echom l:fold.re.start
+
+  function! l:fold.level(line, lnum) dict
+    if a:line =~# self.re.start
+      let self.opened = 1
+      return 'a1'
+    elseif has_key(self, 'opened')
+          \ && a:line =~# self.re.end
+      unlet self.opened
+      return 's1'
+    endif
+    return ''
+  endfunction
+
+  function! l:fold.text(line) dict
+    return matchstr(a:line, self.re.start) . '{...}'
+          \ . substitute(getline(v:foldend), self.re.end, '', '')
+  endfunction
+
+  return l:fold
+endfunction
+
+" }}}1
 
 function! s:parse_label() " {{{1
   let i = v:foldend
@@ -503,7 +534,7 @@ function! s:init_cmds() " {{{2
   let s:cmds_types = []
   let s:cmds_all = []
 
-  for l:type in ['single', 'single_opt', 'multi']
+  for l:type in ['single', 'single_opt', 'multi', 'addplot']
     let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
     if !empty(l:cmds)
       call extend(s:cmds_all, l:cmds)
