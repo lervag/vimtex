@@ -419,17 +419,22 @@ endfunction
 function! s:vimtex.parse_preamble() abort dict " {{{1
   let self.packages = {}
 
-  for l:line in vimtex#parser#tex(self.tex, {
+  let l:lines = vimtex#parser#tex(self.tex, {
         \ 'detailed' : 0,
         \ 're_stop' : '\\begin\s*{document}',
         \ 'root' : self.root,
         \})
+
+  for l:line in l:lines
     let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
     if !empty(l:class)
       let self.documentclass = l:class
-      continue
+      break
     endif
+  endfor
 
+  " For efficiency, only look at lines containing 'usepackage'
+  for l:line in filter(l:lines, 'v:val =~# "usepackage"')
     " Find \usepackage[options]{package} statements
     let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
         \ . '\v\\usepackage\s*(\[[^[\]]*\])?\s*\{([^{}]+)\}'
@@ -438,7 +443,7 @@ function! s:vimtex.parse_preamble() abort dict " {{{1
     while l:indx >= 0
       let l:matches = matchlist(l:line, l:pat, l:indx)
       for l:package in split(l:matches[2], '\s*,\s*')
-        let l:package = substitute(l:package, '^\s*\|\s*$', '', 'g')
+        let l:package = substitute(l:package, '^\s\+\|\s\+$', '', 'g')
         if !empty(l:package)
           let self.packages[l:package] = {}
         endif
