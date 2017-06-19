@@ -16,19 +16,8 @@ execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
 let g:tex_flavor = 'latex'
 let g:vimtex_view_automatic = 0
-
-let g:vimtex_compiler_latexmk = {}
-" let g:vimtex_compiler_latexmk.backend = 'jobs'
-" let g:vimtex_compiler_latexrun.build_dir = 'out'
-let g:vimtex_compiler_latexmk.background = 1
-let g:vimtex_compiler_latexmk.continuous = 1
-let g:vimtex_compiler_latexmk.callback = 1
-
-" let g:vimtex_compiler_method = 'latexrun'
-" let g:vimtex_compiler_latexrun = {}
-" let g:vimtex_compiler_latexrun.backend = 'process'
-" let g:vimtex_compiler_latexrun.build_dir = 'out'
-" let g:vimtex_compiler_latexrun.background = 1
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_echo_ignore_status = 1
 
 if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
@@ -41,19 +30,102 @@ if has('win32')
   let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 endif
 
-augroup Testing
-  autocmd!
-  autocmd VimEnter * VimtexCompile
-augroup END
+let s:suite = [
+      \ { 'method' : 'latexmk',
+      \   'opts' : { 
+      \     'backend' : 'process',
+      \     'build_dir' : 'out',
+      \   }},
+      \ { 'method' : 'latexmk',
+      \   'opts' : { 
+      \     'callback' : 0,
+      \   }},
+      \ { 'method' : 'latexmk',
+      \   'opts' : { 
+      \     'background' : 0,
+      \     'callback' : 0,
+      \   }},
+      \ { 'method' : 'latexmk',
+      \   'opts' : { 
+      \     'continuous' : 0,
+      \     'callback' : 0,
+      \   }},
+      \ { 'method' : 'latexmk',
+      \   'opts' : { 
+      \     'background' : 0,
+      \     'continuous' : 0,
+      \   }},
+      \ { 'method' : 'latexrun',
+      \   'opts' : { 
+      \     'backend' : 'process',
+      \     'build_dir' : 'out',
+      \   }},
+      \ { 'method' : 'latexrun',
+      \   'opts' : { 
+      \     'background' : 0,
+      \   }},
+      \]
 
-if get(s:, 'sourced')
-  silent VimtexStop
-  silent VimtexClean
-  silent VimtexReload
-  redraw!
-  sleep 500m
-  VimtexCompile
-else
+function! RunCompileTestSuite()
   silent edit minimal.tex
-endif
-let s:sourced = 1
+  filetype detect
+
+  for l:config in s:suite
+    let g:vimtex_compiler_method = l:config.method
+    let g:vimtex_compiler_{l:config.method} = l:config.opts
+    VimtexReload
+
+    echom 'Method:' l:config.method
+    echom 'Config:'
+    for [l:key, l:val] in items(l:config.opts)
+      echom '  ' . l:key . ':' l:val
+    endfor
+    echo ''
+
+    " Check if the compiler was loaded
+    if !has_key(b:vimtex, 'compiler')
+      echoerr "Compiler failed to load!\n"
+      break
+    endif
+
+    silent! VimtexCompile
+    sleep 1
+
+    " Check if continuous mode is active
+    if get(b:vimtex.compiler, 'continuous')
+      let l:pid = b:vimtex.compiler.get_pid()
+      echom 'PID:' l:pid
+      if !l:pid
+        echoerr "VimtexCompile failed!\n"
+        break
+      endif
+    endif
+    call vimtex#compiler#stop()
+    sleep 200m
+
+    " Check that the PDF has been built
+    let l:out = b:vimtex.out()
+    echom 'PDF:' l:out
+    if empty(l:out)
+      echoerr "VimtexCompile failed!\n"
+      break
+    endif
+    echo ""
+
+    silent! VimtexClean!
+    sleep 200m
+    if !empty(b:vimtex.out()) || !empty(b:vimtex.aux())
+      echoerr "VimtexClean failed!\n"
+      break
+    endif
+    if !empty(get(l:config.opts, 'build_dir', ''))
+      call delete(l:config.opts.build_dir, 'rf')
+    endif
+
+    echo "\r"
+  endfor
+
+  if has('nvim') | quit | endif
+endfunction
+
+call RunCompileTestSuite()
