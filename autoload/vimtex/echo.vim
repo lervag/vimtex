@@ -34,6 +34,14 @@ function! vimtex#echo#info(message) " {{{1
         \ ['VimtexMsg', a:message]])
 endfunction
 
+function! vimtex#echo#status(parts) " {{{1
+  if get(g:, 'vimtex_echo_ignore_status') | return | endif
+  echon "\r"
+  call vimtex#echo#formatted(a:parts)
+endfunction
+
+" }}}1
+
 function! vimtex#echo#formatted(parts) " {{{1
   echo ''
   try
@@ -52,12 +60,6 @@ function! vimtex#echo#formatted(parts) " {{{1
   endtry
 endfunction
 
-function! vimtex#echo#status(parts) " {{{1
-  echon "\r"
-  call vimtex#echo#formatted(a:parts)
-endfunction
-
-" }}}1
 function! vimtex#echo#pair(title, Value, ...) " {{{1
   let l:indent = a:0 > 0 ? repeat(' ', 2*a:1) : ''
 
