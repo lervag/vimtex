@@ -166,6 +166,9 @@ function! s:compiler.build_cmd() abort dict " {{{1
         call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
         call vimtex#echo#wait()
       else
+        " Some notes:
+        " - We excape the v:servername because this seems necessary on Windows
+        "   for neovim, see e.g. Github Issue #877
         for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
           let l:callback = has('win32')
                 \   ? '"vimtex#compiler#callback(' . l:val . ')"'
@@ -173,7 +176,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
           let l:func = vimtex#util#shellescape('""')
                 \ . g:vimtex_compiler_progname
                 \ . vimtex#util#shellescape('""')
-                \ . ' --servername ' . v:servername
+                \ . ' --servername ' . vimtex#util#shellescape(v:servername)
                 \ . ' --remote-expr ' . l:callback
           let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
         endfor
