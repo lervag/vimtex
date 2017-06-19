@@ -103,7 +103,7 @@ if get(s:, 'reload_guard', 1)
       runtime indent/tex.vim
     endif
 
-    call vimtex#echo#status('reloaded')
+    call vimtex#echo#info('reloaded')
     unlet s:reload_guard
   endfunction
 endif
