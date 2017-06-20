@@ -409,15 +409,11 @@ function! s:vimtex.parse_engine() abort dict " {{{1
         \ 'context (xetex)'  : '-pdflatex=''texexec --xtx''',
         \}
 
-  let self.engine = ''
+  let l:engines = copy(self.preamble[:20])
+  call map(l:engines, 'matchstr(v:val, l:engine_regex)')
+  call filter(l:engines, 'empty(v:val)')
 
-  for l:line in self.preamble
-    let l:engine = matchstr(l:line, l:engine_regex)
-    if !empty(l:engine)
-      let self.engine = get(l:engine_list, tolower(l:engine), '')
-      continue
-    endif
-  endfor
+  let self.engine = get(l:engine_list, tolower(get(l:engines, -1, 'pdflatex')), '')
 endfunction
 
 " }}}1
