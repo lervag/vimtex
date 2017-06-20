@@ -136,7 +136,7 @@ function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
   let l:cands = ['\[']
 
   try
-    let l:cands += s:uniq(sort(
+    let l:cands += vimtex#util#uniq(sort(
           \ map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
           \          'v:val =~# ''\\begin'''),
           \   'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
@@ -147,27 +147,6 @@ function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
   endtry
 
   return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')
-endfunction
-
-" }}}1
-
-function! s:uniq(list) " {{{1
-  "
-  " Trivial cases (uniq exists or one or fewer list elements)
-  "
-  if exists('*uniq') | return uniq(a:list) | endif
-  if len(a:list) <= 1 | return a:list | endif
-
-  "
-  " Custom uniq implementation
-  "
-  let l:uniq = [a:list[0]]
-  for l:next in a:list[1:]
-    if l:uniq[-1] != l:next
-      call add(l:uniq, l:next)
-    endif
-  endfor
-  return l:uniq
 endfunction
 
 " }}}1
