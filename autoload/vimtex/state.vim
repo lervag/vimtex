@@ -28,8 +28,6 @@ function! vimtex#state#init() " {{{1
     call vimtex#qf#init_state(b:vimtex)
     call vimtex#toc#init_state(b:vimtex)
     call vimtex#labels#init_state(b:vimtex)
-
-    call b:vimtex.parse_fls()
   endif
 endfunction
 
@@ -57,8 +55,6 @@ function! vimtex#state#init_local() " {{{1
     call vimtex#qf#init_state(l:vimtex)
     call vimtex#toc#init_state(l:vimtex)
     call vimtex#labels#init_state(l:vimtex)
-
-    call b:vimtex.parse_fls()
   endif
 
   let b:vimtex_local = {
@@ -355,10 +351,23 @@ function! s:vimtex.new(main) abort dict " {{{1
     let l:new.disabled_modules = s:disabled_modules
   endif
 
+  "
+  " The preamble content is used to parse for the engine directive, the
+  " documentclass and the package list; we store it as a temporary shared
+  " object variable
+  "
+  let l:new.preamble = vimtex#parser#tex(l:new.tex, {
+        \ 'detailed' : 0,
+        \ 're_stop' : '\\begin\s*{document}',
+        \ 'root' : l:new.root,
+        \})
+
   call l:new.parse_engine()
-  call l:new.parse_preamble()
+  call l:new.parse_documentclass()
+  call l:new.parse_packages()
   call l:new.gather_sources()
 
+  unlet l:new.preamble
   unlet l:new.new
   return l:new
 endfunction
@@ -402,11 +411,7 @@ function! s:vimtex.parse_engine() abort dict " {{{1
 
   let self.engine = ''
 
-  for l:line in vimtex#parser#tex(self.tex, {
-        \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
-        \ 'root' : self.root,
-        \})
+  for l:line in self.preamble
     let l:engine = matchstr(l:line, l:engine_regex)
     if !empty(l:engine)
       let self.engine = get(l:engine_list, tolower(l:engine), '')
@@ -416,25 +421,26 @@ function! s:vimtex.parse_engine() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:vimtex.parse_preamble() abort dict " {{{1
-  let self.packages = {}
-
-  let l:lines = vimtex#parser#tex(self.tex, {
-        \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
-        \ 'root' : self.root,
-        \})
-
-  for l:line in l:lines
+function! s:vimtex.parse_documentclass() abort dict " {{{1
+  let self.documentclass = ''
+  for l:line in self.preamble
     let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
     if !empty(l:class)
       let self.documentclass = l:class
       break
     endif
   endfor
+endfunction
+
+" }}}1
+function! s:vimtex.parse_packages() abort dict " {{{1
+  let self.packages = {}
+
+  call self.parse_packages_from_fls()
+  if !empty(self.packages) | return | endif
 
   " For efficiency, only look at lines containing 'usepackage'
-  for l:line in filter(l:lines, 'v:val =~# "usepackage"')
+  for l:line in filter(copy(self.preamble), 'v:val =~# "usepackage"')
     " Find \usepackage[options]{package} statements
     let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
         \ . '\v\\usepackage\s*(\[[^[\]]*\])?\s*\{([^{}]+)\}'
@@ -455,7 +461,12 @@ function! s:vimtex.parse_preamble() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:vimtex.parse_fls() abort dict " {{{1
+function! s:vimtex.parse_packages_from_fls() abort dict " {{{1
+  "
+  " The .fls file contains a generated list of all the packages that are used,
+  " and as such it is a better way of parsing for packages then reading the
+  " preamble.
+  "
   let l:fls = self.fls()
   if empty(l:fls) | return | endif
 
