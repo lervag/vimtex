@@ -435,24 +435,17 @@ function! s:vimtex.parse_packages() abort dict " {{{1
   call self.parse_packages_from_fls()
   if !empty(self.packages) | return | endif
 
-  " For efficiency, only look at lines containing 'usepackage'
-  for l:line in filter(copy(self.preamble), 'v:val =~# "usepackage"')
-    " Find \usepackage[options]{package} statements
-    let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-        \ . '\v\\usepackage\s*(\[[^[\]]*\])?\s*\{([^{}]+)\}'
+  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\v\\usepackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
 
-    let l:indx = match(l:line, l:pat)
-    while l:indx >= 0
-      let l:matches = matchlist(l:line, l:pat, l:indx)
-      for l:package in split(l:matches[2], '\s*,\s*')
-        let l:package = substitute(l:package, '^\s\+\|\s\+$', '', 'g')
-        if !empty(l:package)
-          let self.packages[l:package] = {}
-        endif
-      endfor
-      let l:indx += len(l:matches[0])
-      let l:indx = match(l:line, l:pat, l:indx)
-    endwhile
+  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''usepackage''')
+  call map(l:usepackages, 'matchstr(v:val, l:pat)')
+  call map(l:usepackages, 'split(v:val, ''\s*,\s*'')')
+
+  for l:packages in l:usepackages
+    for l:package in l:packages
+      let self.packages[l:package] = {}
+    endfor
   endfor
 endfunction
 
