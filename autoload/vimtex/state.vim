@@ -478,16 +478,10 @@ endfunction
 function! s:vimtex.gather_sources() abort dict " {{{1
   let self.sources = []
 
-  for [l:file, l:lnum, l:line] in vimtex#parser#tex(self.tex, {
-        \ 'root' : self.root,
-        \})
-    let l:cand = substitute(l:file, '\M' . self.root, '', '')
-    if l:cand[0] ==# '/' | let l:cand = l:cand[1:] | endif
-
-    if index(self.sources, l:cand) < 0
-      call add(self.sources, l:cand)
-    endif
-  endfor
+  let self.sources = map(vimtex#parser#tex(self.tex, { 'root' : self.root }),
+        \ 'v:val[0]')
+  call map(vimtex#util#uniq_unsorted(self.sources),
+        \ 'vimtex#paths#relative(v:val, self.root)')
 endfunction
 
 " }}}1
