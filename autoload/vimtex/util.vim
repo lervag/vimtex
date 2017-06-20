@@ -79,24 +79,16 @@ endfunction
 
 " }}}1
 function! vimtex#util#uniq(list) " {{{1
-  if exists('*uniq')
-    return uniq(a:list)
-  elseif len(a:list) == 0
-    return a:list
-  endif
+  if exists('*uniq') | return uniq(a:list) | endif
+  if len(a:list) <= 1 | return a:list | endif
 
-  let l:last = get(a:list, 0)
-  let l:ulist = [l:last]
-
-  for l:i in range(1, len(a:list) - 1)
-    let l:next = get(a:list, l:i)
-    if l:next != l:last
-      let l:last = l:next
-      call add(l:ulist, l:next)
+  let l:uniq = [a:list[0]]
+  for l:next in a:list[1:]
+    if l:uniq[-1] != l:next
+      call add(l:uniq, l:next)
     endif
   endfor
-
-  return l:ulist
+  return l:uniq
 endfunction
 
 " }}}1
