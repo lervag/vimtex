@@ -92,5 +92,20 @@ function! vimtex#util#uniq(list) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#uniq_unsorted(list) " {{{1
+  if len(a:list) <= 1 | return a:list | endif
+
+  let l:visited = [a:list[0]]
+  for l:index in reverse(range(1, len(a:list)-1))
+    if index(l:visited, a:list[l:index]) >= 0
+      call remove(a:list, l:index)
+    else
+      call add(l:visited, a:list[l:index])
+    endif
+  endfor
+  return a:list
+endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2
