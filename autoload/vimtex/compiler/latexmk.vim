@@ -36,7 +36,6 @@ let s:compiler = {
       \ 'build_dir' : '',
       \ 'callback' : 1,
       \ 'continuous' : 1,
-      \ 'engine' : b:vimtex.engine,
       \ 'output' : tempname(),
       \ 'options' : [
       \   '-verbose',

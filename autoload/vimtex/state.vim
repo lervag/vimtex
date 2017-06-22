@@ -19,42 +19,27 @@ function! vimtex#state#init() " {{{1
     let b:vimtex = s:vimtex_states[l:id]
   else
     let b:vimtex_id = s:vimtex_next_id
-    let b:vimtex = s:vimtex.new(l:main)
+    let b:vimtex = s:vimtex.new(l:main, 0)
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
-
-    call vimtex#view#init_state(b:vimtex)
-    call vimtex#compiler#init_state(b:vimtex)
-    call vimtex#qf#init_state(b:vimtex)
-    call vimtex#toc#init_state(b:vimtex)
-    call vimtex#labels#init_state(b:vimtex)
   endif
 endfunction
 
 " }}}1
 function! vimtex#state#init_local() " {{{1
   let l:filename = expand('%:p')
+  let l:preserve_root = get(s:, 'subfile_preserve_root')
+  unlet! s:subfile_preserve_root
+
   if b:vimtex.tex ==# l:filename | return | endif
 
   let l:vimtex_id = s:get_main_id(l:filename)
 
   if l:vimtex_id < 0
     let l:vimtex_id = s:vimtex_next_id
-    let l:vimtex = s:vimtex.new(l:filename)
+    let l:vimtex = s:vimtex.new(l:filename, l:preserve_root)
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
-
-    if get(s:, 'subfile_preserve_root')
-      let l:vimtex.root = b:vimtex.root
-      let l:vimtex.base = strpart(expand('%:p'), len(b:vimtex.root) + 1)
-      unlet s:subfile_preserve_root
-    endif
-
-    call vimtex#view#init_state(l:vimtex)
-    call vimtex#compiler#init_state(l:vimtex)
-    call vimtex#qf#init_state(l:vimtex)
-    call vimtex#toc#init_state(l:vimtex)
-    call vimtex#labels#init_state(l:vimtex)
   endif
 
   let b:vimtex_local = {
@@ -346,12 +331,17 @@ endfunction
 
 let s:vimtex = {}
 
-function! s:vimtex.new(main) abort dict " {{{1
+function! s:vimtex.new(main, preserve_root) abort dict " {{{1
   let l:new = deepcopy(self)
   let l:new.tex  = a:main
   let l:new.root = fnamemodify(l:new.tex, ':h')
   let l:new.base = fnamemodify(l:new.tex, ':t')
   let l:new.name = fnamemodify(l:new.tex, ':t:r')
+
+  if a:preserve_root && exists('b:vimtex')
+    let l:new.root = b:vimtex.root
+    let l:new.base = strpart(a:main, len(b:vimtex.root) + 1)
+  endif
 
   if exists('s:disabled_modules')
     let l:new.disabled_modules = s:disabled_modules
@@ -370,8 +360,16 @@ function! s:vimtex.new(main) abort dict " {{{1
 
   call l:new.parse_engine()
   call l:new.parse_documentclass()
-  call l:new.parse_packages()
   call l:new.gather_sources()
+
+  call vimtex#view#init_state(l:new)
+  call vimtex#compiler#init_state(l:new)
+  call vimtex#qf#init_state(l:new)
+  call vimtex#toc#init_state(l:new)
+  call vimtex#labels#init_state(l:new)
+
+  " Parsing packages might depend on the compiler setting for build_dir
+  call l:new.parse_packages()
 
   unlet l:new.preamble
   unlet l:new.new
@@ -419,7 +417,8 @@ function! s:vimtex.parse_engine() abort dict " {{{1
   call map(l:engines, 'matchstr(v:val, l:engine_regex)')
   call filter(l:engines, 'empty(v:val)')
 
-  let self.engine = get(l:engine_list, tolower(get(l:engines, -1, 'pdflatex')), '')
+  let self.engine = get(l:engine_list, tolower(get(l:engines, -1, 'pdflatex')),
+        \ get(get(b:, 'vimtex', {}), 'engine', ''))
 endfunction
 
 " }}}1

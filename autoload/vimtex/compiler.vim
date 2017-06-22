@@ -40,6 +40,7 @@ function! vimtex#compiler#init_state(state) abort " {{{1
           \ 'root': a:state.root,
           \ 'target' : a:state.base,
           \ 'target_path' : a:state.tex,
+          \ 'engine' : a:state.engine,
           \}
     let a:state.compiler
           \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
