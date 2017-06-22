@@ -184,9 +184,13 @@ function! s:get_main() " {{{1
   endif
 
   "
-  " Fallback to the current file
+  " Use fallback candidate or the current file
   "
-  return expand('%:p')
+  let l:candidate = get(s:, 'cand_fallback', expand('%:p'))
+  if exists('s:cand_fallback')
+    unlet s:cand_fallback
+  endif
+  return l:candidate
 endfunction
 
 " }}}1
@@ -243,6 +247,8 @@ function! s:get_main_latexmain(file) " {{{1
     let l:cand = fnamemodify(l:cand, ':p:r')
     if s:file_reaches_current(l:cand)
       return l:cand
+    else
+      let s:cand_fallback = l:cand
     endif
   endfor
 
