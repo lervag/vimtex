@@ -13,7 +13,6 @@ function! vimtex#view#common#apply_xwin_template(class, viewer) " {{{1
   let a:viewer.class = a:class
   let a:viewer.xwin_id = 0
   call extend(a:viewer, deepcopy(s:xwin_template))
-  call a:viewer.xwin_exists()
   return a:viewer
 endfunction
 
