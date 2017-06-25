@@ -1642,11 +1642,17 @@ Commands~
 
                                              *VimtexClean*
                                              *<plug>(vimtex-clean)*
-:VimtexClean              Clean auxiliary files
+:VimtexClean              Clean auxiliary files.
+
+                          Note: If compilation is running continuously in the
+                                background (which is the default behaviour),
+                                then this command will first temporarily stop
+                                compilation, then execute the clean command,
+                                and finally restart the compilation.
 
                                              *VimtexClean!*
                                              *<plug>(vimtex-clean-full)*
-:VimtexClean!             Clean auxiliary files, include output files
+:VimtexClean!             As |VimtexClean|, but also remove output files.
 
                                              *VimtexErrors*
                                              *<plug>(vimtex-errors)*
