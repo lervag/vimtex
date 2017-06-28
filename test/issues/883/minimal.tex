@@ -1,0 +1,14 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[xindy]{glossaries}
+
+\loadglsentries{entries}
+\makeglossaries{}
+
+\begin{document}
+
+This is not \gls{res}. But \gls{foobar}.
+
+\printglossary{}
+
+\end{document}
