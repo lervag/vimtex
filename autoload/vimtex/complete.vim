@@ -564,7 +564,7 @@ function! s:completer_gls.parse_glossaries() dict " {{{2
 
   for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
         \   'detailed' : 0,
-        \   'input_re' : g:vimtex#re#tex_input . '|^\s*\\loadglsentries',
+        \   'input_re_tex' : g:vimtex#re#tex_input . '|^\s*\\loadglsentries',
         \ }), 'v:val =~# ''\\newglossaryentry''')
     let l:entries = matchstr(l:line, '\\newglossaryentry\s*{\zs[^{}]*')
     call add(self.candidates, {
