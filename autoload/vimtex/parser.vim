@@ -142,8 +142,10 @@ function! s:parser.new(opts) abort dict " {{{1
     let l:parser.root = b:vimtex.root
   endif
 
-  let l:parser.input_re = get(l:parser, 'input_re_' . l:parser.type)
-  let l:parser.input_parser = get(l:parser, 'input_line_parser_' . l:parser.type)
+  let l:parser.input_re = get(l:parser, 'input_re',
+        \ get(l:parser, 'input_re_' . l:parser.type))
+  let l:parser.input_parser = get(l:parser, 'input_parser',
+        \ get(l:parser, 'input_line_parser_' . l:parser.type))
 
   unlet l:parser.new
   return l:parser
