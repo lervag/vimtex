@@ -144,6 +144,7 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
   "
   if self.config.fix_paths
     let s:main = l:tex
+    let s:root = b:vimtex.root
     let s:title = 'Vimtex errors (' . self.name . ')'
     augroup vimtex_qf_tmp
       autocmd!
@@ -192,7 +193,7 @@ function! s:fix_paths() abort " {{{1
     " The buffer names of all file:line type errors are relative to the root of
     " the main LaTeX file.
     let l:file = fnamemodify(
-          \ simplify(b:vimtex.root . '/' . bufname(l:qf.bufnr)), ':.')
+          \ simplify(s:root . '/' . bufname(l:qf.bufnr)), ':.')
     if !filereadable(l:file) | continue | endif
     if !bufexists(l:file)
       execute 'badd' l:file
