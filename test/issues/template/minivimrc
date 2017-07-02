@@ -25,16 +25,15 @@ if has('win32')
   let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 endif
 
-if get(s:, 'sourced')
+if has('vim_starting')
+  silent edit minimal.tex
+else
   silent VimtexStop
   silent VimtexClean
   silent VimtexReload
   redraw!
   sleep 500m
-else
-  silent edit minimal.tex
 endif
-let s:sourced = 1
 
 " augroup Testing
 "   autocmd!
