@@ -15,4 +15,52 @@ let g:vimtex#re#tex_input = '\v%(' . join([
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
 
+" {{{1 Completion regexes
+let g:vimtex#re#neocomplete = 
+      \ '\v\\%('
+      \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
+      \ . '|hyperref\s*\[[^]]*'
+      \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|%(include%(only)?|input)\s*\{[^}]*'
+      \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|usepackage%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|documentclass%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|\a*'
+      \ . ')'
+
+let g:vimtex#re#deoplete = '\\(?:'
+      \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
+      \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
+      \ . '|hyperref\s*\[[^]]*'
+      \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
+      \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|usepackage(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|\w*'
+      \ .')'
+
+let g:vimtex#re#ncm = [
+      \ '\\[A-Za-z]*',
+      \ '\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
+      \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
+      \ '\\hyperref\[[^]]*',
+      \ '\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
+      \ '\\(include(only)?|input){[^}]*',
+      \ '\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+      \ '\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
+      \]
+
+let g:vimtex#re#youcompleteme = map(copy(g:vimtex#re#ncm), "'re!' . v:val")
+
+" }}}1
+
 " vim: fdm=marker sw=2

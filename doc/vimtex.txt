@@ -2114,19 +2114,7 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
     let g:neocomplete#sources#omni#input_patterns = {}
   endif
   let g:neocomplete#sources#omni#input_patterns.tex =
-        \ '\v\\%('
-        \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
-        \ . '|hyperref\s*\[[^]]*'
-        \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|%(include%(only)?|input)\s*\{[^}]*'
-        \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|usepackage%(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|documentclass%(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|\a*'
-        \ . ')'
+        \ g:vimtex#re#neocomplete
 
 deoplete~
                                                      *vimtex-complete-deoplete*
@@ -2137,23 +2125,7 @@ may use: >
   if !exists('g:deoplete#omni#input_patterns')
       let g:deoplete#omni#input_patterns = {}
   endif
-  let g:deoplete#omni#input_patterns.tex = '\\(?:'
-        \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
-        \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
-        \ . '|hyperref\s*\[[^]]*'
-        \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
-        \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-        \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|usepackage(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
-        \ . '|\w*'
-        \ .')'
-
-Note: I don't personally use |deoplete|, and I have not tested the above
-      expression. Please let me know if the regex does not work as intended,
-      so that we can update it appropriately.
+  let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
 
 YouCompleteMe~
                                                 *vimtex-complete-youcompleteme*
@@ -2175,20 +2147,8 @@ To enable automatic completion with |youcompleteme|, use the following options: 
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
   endif
-  let g:ycm_semantic_triggers.tex = [
-        \ 're!\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
-        \ 're!\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
-        \ 're!\\hyperref\[[^]]*',
-        \ 're!\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
-        \ 're!\\(include(only)?|input){[^}]*',
-        \ 're!\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
-        \ 're!\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
-        \ 're!\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
-        \ 're!\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
-        \ 're!\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
-        \ 're!\\[A-Za-z]*',
-        \ ]
-<
+  let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+
 VimCompletesMe~
                                                           *vimtex-complete-vcm*
 A plugin that maps <tab> to trigger the built-in completion that is most
@@ -2200,11 +2160,9 @@ for LaTeX documents with |VimCompletesMe| and |vimtex|s omni completion function
 
   augroup VimCompletesMeTex
     autocmd!
-    autocmd FileType tex let b:vcm_omni_pattern = <neocomplete-pattern>
+    autocmd FileType tex
+        \ let b:vcm_omni_pattern = g:vimtex#re#neocomplete
   augroup END
-<
-Note: Here `<neocomplete-pattern>` is the same pattern as was defined above
-      for neocomplete.
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
