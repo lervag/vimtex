@@ -5,18 +5,14 @@ let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-function! SynNames()
-  return join(map(synstack(line('.'), col('.')),
-        \ 'synIDattr(v:val, ''name'')'), ' -> ')
-endfunction
+nnoremap q :qall!<cr>
 
-augroup Testing
-  autocmd!
-  autocmd CursorMoved * echo SynNames()
-augroup END
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
-nnoremap q :qa!<cr>
-
+let g:tex_flavor = 'latex'
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_view_automatic = 0
 let g:vimtex_syntax_minted = [
       \ {
       \   'lang' : 'c',
@@ -38,4 +34,19 @@ let g:vimtex_syntax_minted = [
       \ }
       \]
 
-silent edit test-syntax.tex
+function! SynNames()
+  return join(map(synstack(line('.'), col('.')),
+        \ 'synIDattr(v:val, ''name'')'), ' -> ')
+endfunction
+
+augroup Testing
+  autocmd!
+  autocmd CursorMoved * echo SynNames()
+augroup END
+
+if has('vim_starting')
+  silent edit test-syntax.tex
+else
+  silent VimtexReload
+  redraw!
+endif
