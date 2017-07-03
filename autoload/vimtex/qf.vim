@@ -38,6 +38,7 @@ function! vimtex#qf#open(force) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return | endif
   cclose
 
+  call s:window_save()
   try
     call b:vimtex.qf.setqflist('', g:vimtex_quickfix_autojump)
   catch /Vimtex: No log file found/
@@ -66,7 +67,6 @@ function! vimtex#qf#open(force) abort " {{{1
         \     && (s:qf_has_errors() || g:vimtex_quickfix_open_on_warning))
 
   if l:do_open
-    call s:window_save()
     botright cwindow
     if g:vimtex_quickfix_mode == 2
       call s:window_restore()
