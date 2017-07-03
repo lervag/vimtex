@@ -36,7 +36,6 @@ endfunction
 " }}}1
 function! vimtex#qf#open(force) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return | endif
-  cclose
 
   try
     call b:vimtex.qf.setqflist('', g:vimtex_quickfix_autojump)
@@ -45,6 +44,7 @@ function! vimtex#qf#open(force) abort " {{{1
       call vimtex#echo#status(['vimtex: ',
             \ ['VimtexWarning', 'No log file found']])
     endif
+    cclose
     return
   endtry
 
@@ -52,6 +52,7 @@ function! vimtex#qf#open(force) abort " {{{1
     if a:force
       call vimtex#echo#status(['vimtex: ', ['VimtexSuccess', 'No errors!']])
     endif
+    cclose
     return
   endif
 
@@ -61,17 +62,17 @@ function! vimtex#qf#open(force) abort " {{{1
   " warnings (forced typically imply that the functions is called from the
   " normal mode mapping).  Else the behaviour is based on the settings.
   "
-  let l:do_open = a:force
-        \ || (g:vimtex_quickfix_mode > 0
-        \     && (s:qf_has_errors() || g:vimtex_quickfix_open_on_warning))
+  let l:errors_or_warnings = s:qf_has_errors() || g:vimtex_quickfix_open_on_warning
 
-  if l:do_open
+  if a:force || (g:vimtex_quickfix_mode > 0 && l:errors_or_warnings)
     call s:window_save()
     botright cwindow
     if g:vimtex_quickfix_mode == 2
       call s:window_restore()
     endif
     redraw
+  elseif !l:errors_or_warnings
+    cclose
   endif
 endfunction
 
