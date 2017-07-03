@@ -1,0 +1,47 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:tex_flavor = 'latex'
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_view_automatic = 0
+let g:vimtex_quickfix_mode = 0
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * call RunTest()
+augroup END
+
+function! RunTest()
+  wincmd o
+  VimtexClean
+  sleep 100m
+  VimtexReload
+
+  VimtexCompileSS
+  sleep 500m
+
+  cwindow
+  wincmd k
+  redraw!
+  sleep 1
+
+  VimtexCompileSS
+endfunction
+
+if has('vim_starting')
+  silent edit minimal.tex
+else
+  call RunTest()
+endif
