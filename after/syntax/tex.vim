@@ -270,8 +270,7 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for minted
 
 " First set all minted environments to listings
-syntax cluster texDocGroup add=texZoneMinted
-syntax cluster texChapterGroup add=texZoneMinted
+syntax cluster texFoldGroup add=texZoneMinted
 syntax region texZoneMinted
       \ start="\\begin{minted}\_[^}]\{-}{\w\+}"rs=s
       \ end="\\end{minted}"re=e
@@ -284,8 +283,7 @@ for s:entry in get(g:, 'vimtex_syntax_minted', [])
   let s:syntax = get(s:entry, 'syntax', s:lang)
 
   let s:group_name = 'texZoneMinted' . toupper(s:lang[0]) . s:lang[1:]
-  execute 'syntax cluster texDocGroup add=' . s:group_name
-  execute 'syntax cluster texChapterGroup add=' . s:group_name
+  execute 'syntax cluster texFoldGroup add=' . s:group_name
 
   unlet b:current_syntax
   execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
