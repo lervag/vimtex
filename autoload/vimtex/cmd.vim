@@ -240,13 +240,21 @@ function! vimtex#cmd#get_current() " {{{1
   endwhile
 
   call vimtex#pos#set_cursor(l:save_pos)
+
+  " Check if we are at the last '}' of a command, which is not detected
+  " properly by the previous code
+  if getline('.')[l:save_pos[2]-1] ==# '}'
+    let l:cmd = vimtex#cmd#get_at(vimtex#pos#prev(l:save_pos))
+    if !empty(l:cmd) | return l:cmd | endif
+  endif
+
   return {}
 endfunction
 
 " }}}1
-function! vimtex#cmd#get_at(lnum, cnum) " {{{1
+function! vimtex#cmd#get_at(...) " {{{1
   let l:pos_saved = vimtex#pos#get_cursor()
-  call vimtex#pos#set_cursor(a:lnum, a:cnum)
+  call call('vimtex#pos#set_cursor', a:000)
   let l:cmd = vimtex#cmd#get_current()
   call vimtex#pos#set_cursor(l:pos_saved)
   return l:cmd
