@@ -29,3 +29,9 @@ if has('win32')
         \ '-reuse-instance -forward-search @line @pdf @tex'
   let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 endif
+
+if has('vim_starting')
+  silent edit file\ with\ errors.tex
+else
+  VimtexReload
+endif
