@@ -243,7 +243,7 @@ function! vimtex#cmd#get_current() " {{{1
 
   " Check if we are at the last '}' of a command, which is not detected
   " properly by the previous code
-  if getline('.')[l:save_pos[2]-1] ==# '}'
+  if getline('.')[l:save_pos[2]-1] =~# '[]}]'
     let l:cmd = vimtex#cmd#get_at(vimtex#pos#prev(l:save_pos))
     if !empty(l:cmd) | return l:cmd | endif
   endif
