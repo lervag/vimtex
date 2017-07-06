@@ -9,7 +9,7 @@ nnoremap q :qall!<cr>
 let g:tex_flavor = 'latex'
 
 let g:vimtex_echo_ignore_wait = 1
-let g:vimtex_quickfix_mode = 0
+let g:vimtex_quickfix_mode = 2
 let g:vimtex_quickfix_open_on_warning = 0
 " let g:vimtex_quickfix_method = 'pplatex'
 let g:vimtex_compiler_latexmk = {
@@ -37,11 +37,8 @@ augroup Testing
 augroup END
 
 function! Test()
-  VimtexClean
   VimtexCompileSS
   sleep 500m
   VimtexErrors
   redraw!
-  sleep 2
-  quitall
 endfunction
