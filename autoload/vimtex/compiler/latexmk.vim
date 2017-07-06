@@ -77,6 +77,7 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
         \ self.root . '/latexmkrc',
         \ self.root . '/.latexmkrc',
         \ fnamemodify('~/.latexmkrc', ':p'),
+        \ expand('$XDG_CONFIG_HOME/latexmk/latexmkrc'),
         \]
 
   for l:file in l:files
