@@ -13,57 +13,66 @@ endfunction
 " }}}1
 
 function! vimtex#doc#package(word) " {{{1
-  let l:package = empty(a:word)
-        \ ? s:package_get_current()
-        \ : a:word
+  let l:packages = empty(a:word)
+        \ ? s:packages_get_from_cursor()
+        \ : [a:word]
+  if empty(l:packages) | return | endif
 
-  if empty(l:package) | return | endif
+  call s:packages_detect_invalid(l:packages)
 
-  if empty(vimtex#kpsewhich#find(l:package . '.sty'))
-    call vimtex#echo#warning('Package not recognized: ' . l:package)
-    return
+  if len(l:packages) == 1
+    call s:packages_open_doc(l:packages[0])
+  elseif len(l:packages) > 1
+    call s:packages_open_doc_list(l:packages)
   endif
-
-  call vimtex#echo#status(['Open documentation for ',
-        \ ['VimtexSuccess', l:package], '? [y/N] > '])
-  if nr2char(getchar()) ==# 'y'
-    silent execute '!xdg-open http://texdoc.net/pkg/' . l:package . '&'
-  else
-    echon 'N'
-    sleep 300m
-  endif
-
-  redraw!
 endfunction
 
 " }}}1
 
-function! s:package_get_current() " {{{1
+function! s:packages_get_from_cursor() " {{{1
   let l:cmd = vimtex#cmd#get_current()
-  if empty(l:cmd) | return '' | endif
+  if empty(l:cmd) | return [] | endif
 
   if l:cmd.name ==# '\usepackage'
-    try
-      let l:packages = split(l:cmd.args[0].text, ',\s*')
-
-      let l:cword = expand('<cword>')
-      if len(l:packages) > 1 && index(l:packages, l:cword) >= 0
-        return l:cword
-      endif
-
-      return l:packages[0]
-    catch
-      call vimtex#echo#warning('Could not parse the package from \usepackage!')
-      return ''
-    endtry
+    return s:packages_from_usepackage(l:cmd)
+  elseif l:cmd.name ==# '\documentclass'
+    return s:packages_from_documentclass(l:cmd)
   else
-    return s:package_from_command(strpart(l:cmd.name, 1))
+    return s:packages_from_command(strpart(l:cmd.name, 1))
   endif
 endfunction
 
 " }}}1
-function! s:package_from_command(cmd) " {{{1
+function! s:packages_from_usepackage(cmd) " {{{1
+  try
+    let l:packages = split(a:cmd.args[0].text, ',\s*')
+
+    let l:cword = expand('<cword>')
+    if len(l:packages) > 1 && index(l:packages, l:cword) >= 0
+      return [l:cword]
+    endif
+
+    return l:packages
+  catch
+    call vimtex#echo#warning('Could not parse the package from \usepackage!')
+    return []
+  endtry
+endfunction
+
+" }}}1
+function! s:packages_from_documentclass(cmd) " {{{1
+  try
+    return [a:cmd.args[0].text]
+  catch
+    call vimtex#echo#warning('Could not parse the package from \documentclass!')
+    return []
+  endtry
+endfunction
+
+" }}}1
+function! s:packages_from_command(cmd) " {{{1
   let l:packages = [
+        \ 'default',
         \ 'class-' . get(b:vimtex, 'documentclass', ''),
         \] + keys(b:vimtex.packages)
   call filter(l:packages, 'filereadable(s:complete_dir . v:val)')
@@ -86,11 +95,89 @@ function! s:package_from_command(cmd) " {{{1
   for l:package in l:packages
     let l:cmds = readfile(s:complete_dir . l:package)
     call filter(l:cmds, l:filter)
-    if !empty(l:cmds) | return l:package | endif
+    if empty(l:cmds) | continue | endif
+
+    if l:package ==# 'default'
+      return ['latex2e', 'lshort']
+    else
+      return [substitute(l:package, '^class-', '', '')]
+    endif
   endfor
 
   call vimtex#echo#warning('Could not find corresponding package')
-  return ''
+  return []
+endfunction
+
+" }}}1
+function! s:packages_detect_invalid(paclist) " {{{1
+  let l:invalid_packages = filter(copy(a:paclist),
+        \   'empty(vimtex#kpsewhich#find(v:val . ''.sty'')) && '
+        \ . 'empty(vimtex#kpsewhich#find(v:val . ''.cls''))')
+
+  call filter(l:invalid_packages,
+        \ 'index([''latex2e'', ''lshort''], v:val) < 0')
+
+  if !empty(l:invalid_packages)
+    if len(l:invalid_packages) == 1
+      call vimtex#echo#warning('Package not recognized: ' . l:invalid_packages[0])
+    else
+      call vimtex#echo#warning('Packages not recognized:')
+      for l:package in l:invalid_packages
+        call vimtex#echo#echo('- ' . l:package)
+      endfor
+    endif
+  endif
+
+  " Return if no valid packages remain
+  call filter(a:paclist, 'index(l:invalid_packages, v:val) < 0')
+endfunction
+
+" }}}1
+function! s:packages_open_doc(package) " {{{1
+  call vimtex#echo#status(['Open documentation for ',
+        \ ['VimtexSuccess', a:package], ' [y/N]? '])
+
+  let l:choice = nr2char(getchar())
+  if l:choice ==# 'y'
+    silent execute '!xdg-open http://texdoc.net/pkg/' . a:package . '&'
+  else
+    echohl VimtexWarning
+    echon l:choice =~# '\w' ? l:choice : 'N'
+    echohl NONE
+    sleep 250m
+  endif
+
+  redraw!
+endfunction
+
+" }}}1
+function! s:packages_open_doc_list(packages) " {{{1
+  call vimtex#echo#status(['Open documentation for:'])
+  let l:count = 0
+  for l:package in a:packages
+    let l:count += 1
+    call vimtex#echo#status([
+          \ '  [' . string(l:count) . '] ',
+          \ ['VimtexSuccess', l:package]
+          \])
+  endfor
+  call vimtex#echo#status(['Type number (everything else cancels): '])
+
+  let l:choice = nr2char(getchar())
+  if l:choice !~# '\d'
+        \ || l:choice == 0
+        \ || l:choice > len(a:packages)
+    echohl VimtexWarning
+    echon l:choice =~# '\d' ? l:choice : '-'
+    echohl NONE
+    sleep 500m
+  else
+    echon l:choice
+    sleep 250m
+    silent execute '!xdg-open http://texdoc.net/pkg/' . a:packages[l:choice-1] . '&'
+  endif
+
+  redraw!
 endfunction
 
 " }}}1
