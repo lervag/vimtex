@@ -231,7 +231,7 @@ function! vimtex#cmd#get_current() " {{{1
     if empty(l:cmd) | break | endif
 
     let l:pos_val = vimtex#pos#val(l:cmd.pos_end)
-    if l:pos_val > l:pos_val_cursor
+    if l:pos_val >= l:pos_val_cursor
       call vimtex#pos#set_cursor(l:save_pos)
       return l:cmd
     else
@@ -240,13 +240,6 @@ function! vimtex#cmd#get_current() " {{{1
   endwhile
 
   call vimtex#pos#set_cursor(l:save_pos)
-
-  " Check if we are at the last '}' of a command, which is not detected
-  " properly by the previous code
-  if getline('.')[l:save_pos[2]-1] =~# '[]}]'
-    let l:cmd = vimtex#cmd#get_at(vimtex#pos#prev(l:save_pos))
-    if !empty(l:cmd) | return l:cmd | endif
-  endif
 
   return {}
 endfunction
