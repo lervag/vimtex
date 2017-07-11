@@ -51,18 +51,31 @@ function! vimtex#pos#larger(pos1, pos2) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#pos#equal(p1, p2) " {{{1
+  let l:pos1 = s:parse_args(a:p1)
+  let l:pos2 = s:parse_args(a:p2)
+  return l:pos1[:1] == l:pos2[:1]
+endfunction
+
+" }}}1
+function! vimtex#pos#smaller(pos1, pos2) " {{{1
+  return vimtex#pos#val(a:pos1) < vimtex#pos#val(a:pos2)
+endfunction
+
+" }}}1
 
 function! s:parse_args(args) " {{{1
   "
-  " The arguments should be in one of the following forms:
+  " The arguments should be in one of the following forms (when unpacked):
   "
-  "   lnum, cnum
   "   [lnum, cnum]
   "   [bufnum, lnum, cnum, ...]
   "   {'lnum' : lnum, 'cnum' : cnum}
   "
 
-  if len(a:args) == 1
+  if len(a:args) > 1
+    return s:parse_args([a:args])
+  elseif len(a:args) == 1
     if type(a:args[0]) == type({})
       return [get(a:args[0], 'lnum'), get(a:args[0], 'cnum')]
     else
