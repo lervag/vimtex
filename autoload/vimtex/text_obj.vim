@@ -34,18 +34,30 @@ function! vimtex#text_obj#commands(is_inner, mode) " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
-  let [l1, c1] = [l:cmd.pos_start.lnum, l:cmd.pos_start.cnum]
-  let [l2, c2] = [l:cmd.pos_end.lnum, l:cmd.pos_end.cnum]
+  let l:pos_start = l:cmd.pos_start
+  let l:pos_end = l:cmd.pos_end
 
   if a:is_inner
-    let l2 = l1
-    let c2 = c1 + strlen(l:cmd.name) - 1
-    let c1 += 1
+    let l:pos_end.lnum = l:pos_start.lnum
+    let l:pos_end.cnum = l:pos_start.cnum + strlen(l:cmd.name) - 1
+    let l:pos_start.cnum += 1
+  elseif vimtex#pos#equal(l:pos_start, getpos("'<"))
+        \ && vimtex#pos#equal(l:pos_end, getpos("'>"))
+    let l:cursor = vimtex#pos#get_cursor()
+    call vimtex#pos#set_cursor(vimtex#pos#next(l:cursor))
+
+    let l:cmd = vimtex#cmd#get_current()
+    if empty(l:cmd) | return | endif
+
+    if vimtex#pos#smaller(l:cmd.pos_start, l:cursor)
+      let l:pos_start = l:cmd.pos_start
+      let l:pos_end = l:cmd.pos_end
+    endif
   endif
 
-  call vimtex#pos#set_cursor(l1, c1)
+  call vimtex#pos#set_cursor(l:pos_start)
   normal! v
-  call vimtex#pos#set_cursor(l2, c2)
+  call vimtex#pos#set_cursor(l:pos_end)
 endfunction
 
 " }}}1
