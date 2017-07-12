@@ -70,6 +70,7 @@ disabled if desired.
   - table of content
   - table of labels
   - enhanced `gf` command
+- Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`

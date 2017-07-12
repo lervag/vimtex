@@ -115,6 +115,7 @@ Feature overview~
   - table of content
   - table of labels
   - enhanced `gf` command
+- Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
@@ -461,6 +462,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ][               |<plug>(vimtex-][)|                     `nxo`
    []               |<plug>(vimtex-[])|                     `nxo`
    [[               |<plug>(vimtex-[[)|                     `nxo`
+   K                |<plug>(vimtex-doc-package)|            `n`
   -------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
@@ -764,6 +766,24 @@ Options~
   |vimtex| will warn you if you are using an unsupported version of Vim. This
   warning may be disabled by setting this option to a nonzero value.
 
+  Default value: Undefined.
+
+*g:vimtex_doc_handler*
+  By default, package documentation is looked up online through
+  http://texdoc.net/pkg/packagename. With this option, one may specify
+  a custom handler, e.g. one that uses a local lookup with `texdoc`.
+
+  The option must be set to the name of a function that takes one argument.
+  This argument is the name of the package whose documentation should be
+  opened.
+
+  The following example uses the local `texdoc` to open the documentation: >
+
+    let g:vimtex_doc_handler = 'MyHandler'
+    function! MyHandler(package)
+      execute '!texdoc' a:package '&'
+    endfunction
+<
   Default value: Undefined.
 
 *g:vimtex_echo_ignore_wait*
@@ -1573,6 +1593,14 @@ Commands~
 :VimtexInfo!              Show information that is stored by vimtex about all
                           open LaTeX projects (available mostly for debug
                           purposes).
+
+                                             *VimtexDocPackage*
+                                             *<plug>(vimtex-doc-package)*
+:VimtexDocPackage         Show documentation for packages. The command takes
+                          one optional argument, which is the name of the
+                          package to show docs for. If no argument is
+                          supplied, it parses the command under the cursor and
+                          opens the most relevant documentation.
 
                                              *VimtexRefreshFolds*
 :VimtexRefreshFolds       Refresh folds, see |vimtex-zx|.
@@ -2566,9 +2594,13 @@ Note: For backward search to work on windows, one must ensure that the folder
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
 
-|vimtex| currently does not provide any direct means of accessing LaTeX
-documentation. However, there exists several good solutions both for online
-and offline documentation.
+|vimtex| provides the command |VimtexDocPackage| to open documentation for
+packages and documentclasses. The command is mapped to `K` by default, and by
+default package documentation is looked up through http://texdoc.net/. This
+can be customized through |g:vimtex_doc_handler|.
+
+In the following, I list some alternative and relevant options for access to
+LaTeX documentation, both online and offline.
 
 ------------------------------------------------------------------------------
 Online~
