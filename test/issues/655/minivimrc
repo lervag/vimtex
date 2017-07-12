@@ -9,12 +9,14 @@ nnoremap q :qall!<cr>
 let s:file = expand('<sfile>')
 execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
-let g:tex_flavor = 'latex'
-let g:vimtex_echo_ignore_wait = 1
-let g:vimtex_view_automatic = 0
+" let g:vimtex_doc_handler = 'Handler'
+
+function! Handler(package)
+  redraw!
+  echom 'x' a:package 'y'
+endfunction
 
 if has('vim_starting')
   silent edit minimal.tex
-  silent VimtexReload
   redraw!
 endif
