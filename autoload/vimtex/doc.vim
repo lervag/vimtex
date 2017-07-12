@@ -139,15 +139,13 @@ function! s:packages_open_doc(package) " {{{1
 
   let l:choice = nr2char(getchar())
   if l:choice ==# 'y'
-    silent execute '!xdg-open http://texdoc.net/pkg/' . a:package . '&'
+    echon 'y'
+    call s:packages_handler_texdoc(a:package)
   else
     echohl VimtexWarning
     echon l:choice =~# '\w' ? l:choice : 'N'
     echohl NONE
-    sleep 250m
   endif
-
-  redraw!
 endfunction
 
 " }}}1
@@ -170,14 +168,35 @@ function! s:packages_open_doc_list(packages) " {{{1
     echohl VimtexWarning
     echon l:choice =~# '\d' ? l:choice : '-'
     echohl NONE
-    sleep 500m
   else
     echon l:choice
-    sleep 250m
-    silent execute '!xdg-open http://texdoc.net/pkg/' . a:packages[l:choice-1] . '&'
+    call s:packages_handler_texdoc(a:packages[l:choice-1])
+  endif
+endfunction
+
+" }}}1
+function! s:packages_handler_texdoc(package) " {{{1
+  if !get(s:, 'use_default') && exists('g:vimtex_doc_handler')
+    if exists('*' . g:vimtex_doc_handler)
+      return call(g:vimtex_doc_handler, [a:package])
+    else
+      let s:use_default = 1
+      call vimtex#echo#warning('g:vimtex_doc_handler must be the name of a function!')
+      call vimtex#echo#echo('                Falling back to default handler.')
+      return
+    endif
   endif
 
-  redraw!
+  let l:os = vimtex#util#get_os()
+  let l:url = 'http://texdoc.net/pkg/' . a:package
+
+  silent execute (l:os ==# 'linux'
+        \         ? '!xdg-open'
+        \         : (l:os ==# 'mac'
+        \            ? '!open'
+        \            : '!start /b'))
+        \ . ' ' . l:url
+        \ . (l:os ==# 'win' ? '' : ' &')
 endfunction
 
 " }}}1
