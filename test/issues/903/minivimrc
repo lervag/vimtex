@@ -1,0 +1,45 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:vimtex_view_method = 'mupdf'
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+function! Test()
+  VimtexStop
+  VimtexClean!
+
+  VimtexCompile
+  sleep 2
+  %s/Hello/Goodbye/ge
+  update
+  sleep 2
+
+  VimtexStop
+  sleep 100m
+  VimtexCompile
+  %s/Goodbye/Hello/ge
+  update
+endfunction
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * call Test()
+augroup END
+
+if has('vim_starting')
+  silent edit minimal.tex
+else
+  VimtexReload
+  call Test()
+endif
