@@ -24,7 +24,6 @@ let s:compiler = {
       \ 'target_path' : '',
       \ 'background' : 1,
       \ 'build_dir' : '',
-      \ 'engine' : b:vimtex.engine,
       \ 'output' : tempname(),
       \ 'options' : [
       \   '--verbose-cmds',
