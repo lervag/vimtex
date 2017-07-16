@@ -139,7 +139,7 @@ function! s:mupdf.compiler_callback(status) dict " {{{1
     endif
   endif
 
-  if g:vimtex_view_use_temp_files
+  if g:vimtex_view_use_temp_files || b:vimtex.compiler.callback
     call self.xwin_send_keys('r')
   endif
 
@@ -150,7 +150,7 @@ endfunction
 
 " }}}1
 function! s:mupdf.latexmk_append_argument() dict " {{{1
-  if g:vimtex_view_use_temp_files
+  if g:vimtex_view_use_temp_files || b:vimtex.compiler.callback
     let cmd = ' -view=none'
   else
     let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
@@ -159,6 +159,7 @@ function! s:mupdf.latexmk_append_argument() dict " {{{1
     let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
           \ 'mupdf ' .  g:vimtex_view_mupdf_options)
   endif
+
   return cmd
 endfunction
 
