@@ -13,17 +13,62 @@ endfunction
 " }}}1
 
 function! vimtex#doc#package(word) " {{{1
-  let l:packages = empty(a:word)
+  let l:context = empty(a:word)
         \ ? s:packages_get_from_cursor()
-        \ : [a:word]
-  if empty(l:packages) | return | endif
+        \ : {
+        \     'type': 'word',
+        \     'candidates': [a:word],
+        \   }
+  if empty(l:context) | return | endif
 
-  call s:packages_detect_invalid(l:packages)
+  call s:packages_remove_invalid(l:context)
 
-  if len(l:packages) == 1
-    call s:packages_open_doc(l:packages[0])
-  elseif len(l:packages) > 1
-    call s:packages_open_doc_list(l:packages)
+  for l:handler in g:vimtex_doc_handlers
+    if exists('*' . l:handler)
+      if call(l:handler, [l:context]) | return | endif
+    endif
+  endfor
+
+  call s:packages_open(l:context)
+endfunction
+
+" }}}1
+function! vimtex#doc#make_selection(context) " {{{1
+  if has_key(a:context, 'selected') | return | endif
+
+  if len(a:context.candidates) == 0
+    let a:context.selected = ''
+    return
+  endif
+
+  if len(a:context.candidates) == 1
+    let a:context.selected = a:context.candidates[0]
+    return
+  endif
+
+  call vimtex#echo#status(['Multiple candidates detected, please select one:'])
+  let l:count = 0
+  for l:package in a:context.candidates
+    let l:count += 1
+    call vimtex#echo#status([
+          \ '  [' . string(l:count) . '] ',
+          \ ['VimtexSuccess', l:package]
+          \])
+  endfor
+
+  call vimtex#echo#status(['Type number (everything else cancels): '])
+  let l:choice = nr2char(getchar())
+  if l:choice !~# '\d'
+        \ || l:choice == 0
+        \ || l:choice > len(a:context.candidates)
+    echohl VimtexWarning
+    echon l:choice =~# '\d' ? l:choice : '-'
+    echohl NONE
+    let a:context.selected = ''
+  else
+    echon l:choice
+    let a:context.selected = a:context.candidates[l:choice-1]
+    let a:context.ask_before_open = 0
   endif
 endfunction
 
@@ -31,7 +76,7 @@ endfunction
 
 function! s:packages_get_from_cursor() " {{{1
   let l:cmd = vimtex#cmd#get_current()
-  if empty(l:cmd) | return [] | endif
+  if empty(l:cmd) | return {} | endif
 
   if l:cmd.name ==# '\usepackage'
     return s:packages_from_usepackage(l:cmd)
@@ -45,27 +90,33 @@ endfunction
 " }}}1
 function! s:packages_from_usepackage(cmd) " {{{1
   try
-    let l:packages = split(a:cmd.args[0].text, ',\s*')
+    let l:context = {
+          \ 'type': 'usepackage',
+          \ 'candidates': split(a:cmd.args[0].text, ',\s*'),
+          \}
 
     let l:cword = expand('<cword>')
-    if len(l:packages) > 1 && index(l:packages, l:cword) >= 0
-      return [l:cword]
+    if len(l:context.candidates) > 1 && index(l:context.candidates, l:cword) >= 0
+      let l:context.selected = l:cword
     endif
 
-    return l:packages
+    return l:context
   catch
     call vimtex#echo#warning('Could not parse the package from \usepackage!')
-    return []
+    return {}
   endtry
 endfunction
 
 " }}}1
 function! s:packages_from_documentclass(cmd) " {{{1
   try
-    return [a:cmd.args[0].text]
+    return {
+          \ 'type': 'documentclass',
+          \ 'candidates': [a:cmd.args[0].text],
+          \}
   catch
     call vimtex#echo#warning('Could not parse the package from \documentclass!')
-    return []
+    return {}
   endtry
 endfunction
 
@@ -91,32 +142,36 @@ function! s:packages_from_command(cmd) " {{{1
     let l:queue += l:includes
   endwhile
 
+  let l:candidates = []
   let l:filter = 'v:val =~# ''^' . a:cmd . '\>'''
   for l:package in l:packages
-    let l:cmds = readfile(s:complete_dir . l:package)
-    call filter(l:cmds, l:filter)
+    let l:cmds = filter(readfile(s:complete_dir . l:package), l:filter)
     if empty(l:cmds) | continue | endif
 
     if l:package ==# 'default'
-      return ['latex2e', 'lshort']
+      call extend(l:candidates, ['latex2e', 'lshort'])
     else
-      return [substitute(l:package, '^class-', '', '')]
+      call add(l:candidates, substitute(l:package, '^class-', '', ''))
     endif
   endfor
 
-  call vimtex#echo#warning('Could not find corresponding package')
-  return []
+  return {
+        \ 'type': 'command',
+        \ 'name': a:cmd,
+        \ 'candidates': l:candidates,
+        \}
 endfunction
 
 " }}}1
-function! s:packages_detect_invalid(paclist) " {{{1
-  let l:invalid_packages = filter(copy(a:paclist),
+function! s:packages_remove_invalid(context) " {{{1
+  let l:invalid_packages = filter(copy(a:context.candidates),
         \   'empty(vimtex#kpsewhich#find(v:val . ''.sty'')) && '
         \ . 'empty(vimtex#kpsewhich#find(v:val . ''.cls''))')
 
   call filter(l:invalid_packages,
         \ 'index([''latex2e'', ''lshort''], v:val) < 0')
 
+  " Warn about invalid candidates
   if !empty(l:invalid_packages)
     if len(l:invalid_packages) == 1
       call vimtex#echo#warning('Package not recognized: ' . l:invalid_packages[0])
@@ -128,67 +183,41 @@ function! s:packages_detect_invalid(paclist) " {{{1
     endif
   endif
 
-  " Return if no valid packages remain
-  call filter(a:paclist, 'index(l:invalid_packages, v:val) < 0')
-endfunction
+  " Remove invalid candidates
+  call filter(a:context.candidates, 'index(l:invalid_packages, v:val) < 0')
 
-" }}}1
-function! s:packages_open_doc(package) " {{{1
-  call vimtex#echo#status(['Open documentation for ',
-        \ ['VimtexSuccess', a:package], ' [y/N]? '])
-
-  let l:choice = nr2char(getchar())
-  if l:choice ==# 'y'
-    echon 'y'
-    call s:packages_handler_texdoc(a:package)
-  else
-    echohl VimtexWarning
-    echon l:choice =~# '\w' ? l:choice : 'N'
-    echohl NONE
+  " Reset the selection if the selected candidate is not valid
+  if has_key(a:context, 'selected')
+        \ && index(a:context.candidates, a:context.selected) < 0
+    unlet a:context.selected
   endif
 endfunction
 
 " }}}1
-function! s:packages_open_doc_list(packages) " {{{1
-  call vimtex#echo#status(['Open documentation for:'])
-  let l:count = 0
-  for l:package in a:packages
-    let l:count += 1
-    call vimtex#echo#status([
-          \ '  [' . string(l:count) . '] ',
-          \ ['VimtexSuccess', l:package]
-          \])
-  endfor
-  call vimtex#echo#status(['Type number (everything else cancels): '])
-
-  let l:choice = nr2char(getchar())
-  if l:choice !~# '\d'
-        \ || l:choice == 0
-        \ || l:choice > len(a:packages)
-    echohl VimtexWarning
-    echon l:choice =~# '\d' ? l:choice : '-'
-    echohl NONE
-  else
-    echon l:choice
-    call s:packages_handler_texdoc(a:packages[l:choice-1])
+function! s:packages_open(context) " {{{1
+  if !has_key(a:context, 'selected')
+    call vimtex#doc#make_selection(a:context)
   endif
-endfunction
 
-" }}}1
-function! s:packages_handler_texdoc(package) " {{{1
-  if !get(s:, 'use_default') && exists('g:vimtex_doc_handler')
-    if exists('*' . g:vimtex_doc_handler)
-      return call(g:vimtex_doc_handler, [a:package])
+  if empty(a:context.selected) | return | endif
+
+  if get(a:context, 'ask_before_open', 1)
+    call vimtex#echo#status(['Open documentation for ',
+          \ ['VimtexSuccess', a:context.selected], ' [y/N]? '])
+
+    let l:choice = nr2char(getchar())
+    if l:choice ==# 'y'
+      echon 'y'
     else
-      let s:use_default = 1
-      call vimtex#echo#warning('g:vimtex_doc_handler must be the name of a function!')
-      call vimtex#echo#echo('                Falling back to default handler.')
+      echohl VimtexWarning
+      echon l:choice =~# '\w' ? l:choice : 'N'
+      echohl NONE
       return
     endif
   endif
 
   let l:os = vimtex#util#get_os()
-  let l:url = 'http://texdoc.net/pkg/' . a:package
+  let l:url = 'http://texdoc.net/pkg/' . a:context.selected
 
   silent execute (l:os ==# 'linux'
         \         ? '!xdg-open'
