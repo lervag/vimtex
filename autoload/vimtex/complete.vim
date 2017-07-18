@@ -363,15 +363,13 @@ let s:completer_cmd = {
       \ 'patterns' : [
       \   '\v\\\a*$',
       \ ],
-      \ 'candidates' : [],
+      \ 'candidates_from_packages' : [],
       \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
       \ 'inside_braces' : 0,
       \}
 
 function! s:completer_cmd.complete(regex) dict " {{{2
-  call self.gather_candidates()
-
-  let l:candidates = deepcopy(self.candidates)
+  let l:candidates = self.gather_candidates()
   let l:mode = vimtex#util#in_mathzone() ? 'm' : 'n'
 
   call filter(l:candidates, 'v:val.word =~? ''^'' . a:regex')
@@ -381,8 +379,19 @@ function! s:completer_cmd.complete(regex) dict " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates() dict " {{{2
-  if !empty(self.candidates) | return | endif
+  if empty(self.candidates_from_packages)
+    let self.candidates_from_packages = self.gather_candidates_from_packages()
+  endif
 
+  let l:candidates = extend(copy(self.candidates_from_packages),
+        \ self.gather_candidates_from_preamble())
+
+  call vimtex#util#uniq_unsorted(l:candidates)
+
+  return l:candidates
+endfunction
+
+function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
   let l:save_pwd = getcwd()
   execute 'lcd' fnameescape(self.complete_dir)
 
@@ -406,6 +415,7 @@ function! s:completer_cmd.gather_candidates() dict " {{{2
     let l:queue += l:includes
   endwhile
 
+  let l:candidates_from_packages = []
   for l:package in l:packages
     let l:candidates = filter(readfile(l:package), 'v:val =~# ''^\a''')
     call map(l:candidates, 'split(v:val)')
@@ -414,10 +424,28 @@ function! s:completer_cmd.gather_candidates() dict " {{{2
           \ ''mode'' : ''.'',
           \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
           \}')
-    let self.candidates += l:candidates
+    let l:candidates_from_packages += l:candidates
   endfor
 
   execute 'lcd' fnameescape(l:save_pwd)
+
+  return l:candidates_from_packages
+endfunction
+
+function! s:completer_cmd.gather_candidates_from_preamble() dict " {{{2
+  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {
+        \ 'detailed' : 0,
+        \ 're_stop' : '\\begin\s*{document}',
+        \})
+
+  call filter(l:candidates, 'v:val =~# ''\v\\(re)?newcommand''')
+  call map(l:candidates, '{
+        \ ''word'' : matchstr(v:val, ''\v\\(re)?newcommand\{\\?\zs[^}]*''),
+        \ ''mode'' : ''.'',
+        \ ''menu'' : ''[cmd: newcommand]'',
+        \ }')
+
+  return l:candidates
 endfunction
 
 " }}}1
