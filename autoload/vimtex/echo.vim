@@ -138,18 +138,22 @@ function! s:pprint_list(list, indent, title) abort " {{{1
   if type(a:list[0]) == type([])
     let l:name = ''
     let l:index = 0
-    for [l:title, l:value] in a:list
-      if l:title ==# 'name'
-        let l:name = l:value
+
+    " l:entry[0] == title
+    " l:entry[1] == value
+    for l:entry in a:list
+      if l:entry[0] ==# 'name'
+        let l:name = l:entry[1]
         break
       endif
       let l:index += 1
     endfor
-    if !empty(l:name)
+
+    if empty(l:name)
+      let l:list = a:list
+    else
       let l:list = deepcopy(a:list)
       call remove(l:list, l:index)
-    else
-      let l:list = a:list
     endif
 
     call vimtex#echo#pair(a:title, ['VimtexInfo', l:name], a:indent)
