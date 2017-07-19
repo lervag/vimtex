@@ -46,6 +46,9 @@ function! vimtex#misc#wc(type, detailed, ...) abort range " {{{1
   " Run texcount, save output to lines variable
   let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
   let cmd .= '; texcount -nosub -sum '
+  if has("win32")
+    let cmd .= '& texcount -nosub -sum '
+  endif
   let cmd .= a:0 > 0 ? '-letter ' : ''
   let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
   let cmd .= vimtex#util#shellescape(l:file.base)
