@@ -1104,6 +1104,11 @@ Options~
 <
   Default value: 1
 
+*g:vimtex_quickfix_enabled*
+  Use this option to disable/enable the quickfix integration.
+
+  Default value: 1
+
 *g:vimtex_quickfix_method*
   This option sets the quickfix method. The following methods are available:
 

@@ -5,6 +5,8 @@
 "
 
 function! vimtex#qf#init_buffer() abort " {{{1
+  if !g:vimtex_quickfix_enabled | return | endif
+
   command! -buffer VimtexErrors  call vimtex#qf#toggle()
 
   nnoremap <buffer> <plug>(vimtex-errors)  :call vimtex#qf#toggle()<cr>
@@ -12,6 +14,8 @@ endfunction
 
 " }}}1
 function! vimtex#qf#init_state(state) abort " {{{1
+  if !g:vimtex_quickfix_enabled | return | endif
+
   try
     let l:qf = vimtex#qf#{g:vimtex_quickfix_method}#new()
     call l:qf.init(a:state)

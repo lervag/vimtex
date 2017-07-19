@@ -172,6 +172,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_labels_enabled', 1)
   call s:init_option('vimtex_labels_refresh_always', 1)
 
+  call s:init_option('vimtex_quickfix_enabled', 1)
   call s:init_option('vimtex_quickfix_method', 'latexlog')
   call s:init_option('vimtex_quickfix_autojump', '0')
   call s:init_option('vimtex_quickfix_mode', '2')
