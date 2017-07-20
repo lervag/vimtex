@@ -37,6 +37,11 @@ function! vimtex#doc#make_selection(context) " {{{1
   if has_key(a:context, 'selected') | return | endif
 
   if len(a:context.candidates) == 0
+    if exists('a:context.name')
+      echohl ErrorMsg
+      echo 'Sorry, no doc for '.a:context.name
+      echohl NONE
+    endif
     let a:context.selected = ''
     return
   endif
@@ -233,6 +238,8 @@ function! s:packages_open(context) " {{{1
         \            : '!start /b'))
         \ . ' ' . l:url
         \ . (l:os ==# 'win' ? '' : ' &')
+
+  redraw!
 endfunction
 
 " }}}1
