@@ -150,7 +150,7 @@ endfunction
 
 " }}}1
 function! s:mupdf.latexmk_append_argument() dict " {{{1
-  if g:vimtex_view_use_temp_files || b:vimtex.compiler.callback
+  if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
     let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
