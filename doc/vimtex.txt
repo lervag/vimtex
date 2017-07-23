@@ -57,6 +57,7 @@ CONTENTS                                                      *vimtex-contents*
     Autocomplete                                |vimtex-complete-auto|
       Neocomplete                               |vimtex-complete-neocomplete|
       deoplete                                  |vimtex-complete-deoplete|
+      nvim-completion-manager                   |vimtex-complete-ncm|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
       VimCompletesMe                            |vimtex-complete-vcm|
   Folding                                       |vimtex-folding|
@@ -2157,8 +2158,9 @@ Autocomplete~
                                                          *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-two good plugins that provide this: |neocomplete| and |youcompleteme|.  Moreover,
-there is |VimCompletesMe| that overrides <tab> to trigger different built-in
+four good plugins that provide this: |neocomplete|, |deoplete|,
+|nvim-completion-manager| and |youcompleteme|.  Moreover, there is
+|VimCompletesMe| that overrides <tab> to trigger different built-in
 completions, such as the omni-completion by vimtex, depending on the context.
 See below for descriptions on how to setup these with |vimtex|.
 
@@ -2186,6 +2188,27 @@ may use: >
       let g:deoplete#omni#input_patterns = {}
   endif
   let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
+
+nvim-completion-manager~
+                                                          *vimtex-complete-ncm*
+|nvim-completion-manager| is a fast, extensible, async completion framework
+for neovim (and Vim version 8.0 and above).  The project is available here:
+https://github.com/roxma/nvim-completion-manager
+
+To configure for vimtex, one can use the following code: >
+
+  augroup my_cm_setup
+    autocmd!
+    autocmd User CmSetup call cm#register_source({
+          \ 'name' : 'vimtex',
+          \ 'priority': 8,
+          \ 'scoping': 1,
+          \ 'scopes': ['tex'],
+          \ 'abbreviation': 'tex',
+          \ 'cm_refresh_patterns': g:vimtex#re#ncm,
+          \ 'cm_refresh': {'omnifunc': 'vimtex#complete#omnifunc'},
+          \ })
+  augroup END
 
 YouCompleteMe~
                                                 *vimtex-complete-youcompleteme*
