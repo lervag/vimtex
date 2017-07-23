@@ -18,9 +18,9 @@ endfunction
 function! vimtex#paths#relative(path, current) " {{{1
   " Note: This algorithm is based on the one presented by @Offirmo at SO,
   "       http://stackoverflow.com/a/12498485/51634
-  let l:target = a:path
+  let l:target = substitute(a:path, '\\', '/', 'g')
+  let l:common = substitute(a:current, '\\', '/', 'g')
 
-  let l:common = a:current
   let l:result = ''
   while substitute(l:target, '^' . l:common, '', '') ==# l:target
     let l:common = fnamemodify(l:common, ':h')
