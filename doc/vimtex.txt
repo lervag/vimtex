@@ -36,6 +36,7 @@ CONTENTS                                                      *vimtex-contents*
     Support for multi-file projects             |vimtex-multi-file|
     Comment on internal tex plugin              |vimtex-comment-internal|
     Support for TeX specifiers                  |vimtex-tex-directives|
+    Package detection                           |vimtex-package-detection|
   Usage                                         |vimtex-usage|
     Default mappings                            |vimtex-default-mappings|
     Options                                     |vimtex-options|
@@ -165,7 +166,7 @@ provided by vimtex, but that are instead provided by other plugins.
       `neomake`     https://github.com/neomake/neomake
       `syntastic`   https://github.com/vim-syntastic/syntastic
 
-    All of the above plugins supoorts `lacheck` [0], `chktex` [1], `proselint` [2].
+    All of the above plugins support `lacheck` [0], `chktex` [1], `proselint` [2].
     `neomake` also supports `rubberinfo` [3].
 
     [0]: https://www.ctan.org/pkg/lacheck
@@ -219,7 +220,7 @@ The following is a list of specific requirements for the key features of
     latexmk page.]  For more info, see |vimtex-latexmk|.
       `latexrun` is similar to `latexmk` in that it runs the desired LaTeX
     engine an appropriate number of times, including `bibtex`/`biber`.
-    However, it differes in philosophy in that it only does the build part. It
+    However, it differs in philosophy in that it only does the build part. It
     does not support continuous builds, nor automatic starting of the viewer.
     However, it does parse the output log in order to provide a more concise
     list of relevant warnings and error messages (this has currently not been
@@ -365,11 +366,44 @@ Here `program` may be one of the following: >
   context (luatex)
   context (xetex)
 
-The implementation was inspired by @andymass [1]. See also [2].
+See also [0,1].
 
-[0]: http://tex.stackexchange.com/q/78101/34697
-[1]: https://gist.github.com/andymass/ea7e381d51387e205f44c0c43aca7225
-[2]: https://github.com/lervag/vimtex/issues/713
+[0]: https://tex.stackexchange.com/q/78101/34697
+[1]: https://github.com/lervag/vimtex/issues/713
+
+------------------------------------------------------------------------------
+Package detection~
+                                                     *vimtex-package-detection*
+
+vimtex maintains a list of latex packages that are required by the current
+project.  This list is used by vimtex for instance to determine which commands
+to suggest during command completion (see |vimtex-complete-commands|) and
+which packages to look up documentation for (see |vimtex-doc-package|).  The
+list can be viewed with |:VimtexInfo|.
+
+The package list is determined in two ways: >
+
+1. If a `.fls` file exists having the name of the main file, it is scanned.
+   This file is created by the tex program (e.g., pdflatex) during compilation
+   and might not be supported by all tex programs.  Parsing the `.fls` file is
+   done both at vimtex initialization and after each successful compilation,
+   if possible.
+
+   Note: Parsing after successful compilations requires that one uses
+         a) continuous compilation with callbacks (see the `callback` option
+            for |g:vimtex_compiler_latexmk|), or
+         b) single-shot compilation with the `jobs` or `nvim` backend (see the
+            `backend` option of |g:vimtex_compiler_latexmk| and
+            |g:vimtex_compiler_latexrun|).  If one uses the `process` backend
+            (e.g. on older Vim versions), one must either have the `callback`
+            option also enabled or it must run in foreground.
+
+2. Otherwise, the preamble is parsed for `\usepackage` statements.  This is
+   slower and less accurate than `.fls` file parsing.  Therefore, it is only
+   done during vimtex initialization.  If desired, one may manually reload
+   vimtex to parse the preamble again during an editing session. See
+   |VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
+   `<localleader>lx`).
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
@@ -523,7 +557,7 @@ Options~
 
 *g:vimtex_compiler_latexmk*
   This is a dictionary that allows customization of the |vimtex-latexmk|
-  compiler. The values set by the user will take precedense over the default
+  compiler. The values set by the user will take precedence over the default
   values.
 
   Default value: >
@@ -555,7 +589,7 @@ Options~
       `jobs`     Uses |job| to control the processes. This is available on
                modern Vim installations. Note that this will start every job
                in the background, regardless of the value of the `background`
-               key. The output may be viewed through |VimtexOutput|.
+               key. The output may be viewed through |VimtexCompileOutput|.
       `nvim`     This uses the neovim |job-control| system to control the
                compiler process. It is very similar to the `jobs` backend.
 
@@ -1679,9 +1713,9 @@ Commands~
 
                           Note: This always works linewise!
 
-                                             *VimtexOutput*
+                                             *VimtexCompileOutput*
                                              *<plug>(vimtex-compile-output)*
-:VimtexOutput             Open file where compiler output is redirected.
+:VimtexCompileOutput      Open file where compiler output is redirected.
 
                                              *VimtexStop*
                                              *<plug>(vimtex-stop)*
@@ -2097,7 +2131,7 @@ listing.
 Complete file names for figures~
                                                        *vimtex-complete-images*
 
-File name completion for figures is triggered by '\includegraphic{' commands.
+File name completion for figures is triggered by '\includegraphics{' commands.
 
 By default, the paths are completed relative to the root path of the main
 file. One can use the option |g:vimtex_complete_img_use_tail| to instead
@@ -2478,7 +2512,7 @@ Associated commands:
     |VimtexCompileSS|
     |VimtexCompileSS!|
     |VimtexCompileSelected|
-    |VimtexOutput|
+    |VimtexCompileOutput|
     |VimtexStatus|
     |VimtexStatus!|
     |VimtexStop|
@@ -2665,7 +2699,7 @@ LaTeX. One should also know about the Comprehensive TeX Archive Network, or
 CTAN [1], which is the central place for all kinds of material around TeX.
 
 [0]: https://en.wikibooks.org/wiki/LaTeX
-[1]: http://ctan.org/
+[1]: https://ctan.org/
 
 ------------------------------------------------------------------------------
 Offline~

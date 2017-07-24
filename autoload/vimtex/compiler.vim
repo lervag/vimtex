@@ -73,6 +73,10 @@ function! vimtex#compiler#callback(status) abort " {{{1
   call vimtex#echo#status(['compiler: ',
         \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
 
+  if a:status
+    call b:vimtex.parse_packages_from_fls()
+  endif
+
   for l:hook in g:vimtex_compiler_callback_hooks
     execute 'call' l:hook . '(' . a:status . ')'
   endfor
