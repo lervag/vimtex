@@ -375,10 +375,11 @@ See also [0,1].
 Package detection~
                                                      *vimtex-package-detection*
 
-vimtex maintains a list of latex packages required by the current project in
-order to determine which commands to suggest during command completion (see
-|vimtex-complete-commands|) and which packages to look up documentation for
-(see |vimtex-doc-package|). The list can be viewed with |:VimtexInfo|.
+vimtex maintains a list of latex packages that are required by the current
+project.  This list is used by vimtex for instance to determine which commands
+to suggest during command completion (see |vimtex-complete-commands|) and
+which packages to look up documentation for (see |vimtex-doc-package|).  The
+list can be viewed with |:VimtexInfo|.
 
 The package list is determined in two ways: >
 
@@ -386,19 +387,23 @@ The package list is determined in two ways: >
    This file is created by the tex program (e.g., pdflatex) during compilation
    and might not be supported by all tex programs.  Parsing the `.fls` file is
    done both at vimtex initialization and after each successful compilation,
-   if supported (see Note below)
+   if possible.
 
-   Note: If you are using single shot compilation with background compilation
-         and the process backend (see *g:vimtex_compiler_latexrun* and
-         *g:vimtex_compiler_latexmk* for an explanation of these options),
-         the `.fls` will not be parsed after each compilation
+   Note: Parsing after successful compilations requires that one uses
+         a) continuous compilation with callbacks (see the `callback` option
+            for |g:vimtex_compiler_latexmk|), or
+         b) single-shot compilation with the `jobs` or `nvim` backend (see the
+            `backend` option of |g:vimtex_compiler_latexmk| and
+            |g:vimtex_compiler_latexrun|).  If one uses the `process` backend
+            (e.g. on older Vim versions), one must either have the `callback`
+            option also enabled or it must run in foreground.
 
-2. Otherwise, the preamble and files included in the preamble are parsed for
-   `\usepackage` statements. This is slower and less accurate than `.fls` file
-   parsing. Therefore, it is only done during vimtex initialization.  If
-   desired one may manually reload vimtex in order to parse the preamble again
-   during an editing session. See |VimtexReload| and |<plug>(vimtex-reload)|
-   (by default mapped to `<localleader>lx`).
+2. Otherwise, the preamble is parsed for `\usepackage` statements.  This is
+   slower and less accurate than `.fls` file parsing.  Therefore, it is only
+   done during vimtex initialization.  If desired, one may manually reload
+   vimtex to parse the preamble again during an editing session. See
+   |VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
+   `<localleader>lx`).
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
