@@ -949,6 +949,25 @@ Options~
 
   Default value: []
 
+*g:vimtex_fold_env_options*
+  Control whether or not environment beginnings that are not otherwise folded
+  (see |g:vimtex_fold_envs|, |g:vimtex_fold_env_blacklist|, and
+  |g:vimtex_fold_env_whitelist|) will be folded if they contain long option
+  lists.  Consider the following example: >
+
+      \begin{axis}[
+          width=\textwidth,
+          height=\textwidth/1.618,
+          ...,
+      ]
+<
+  If the `axis` environment would not be folded, then the above would be
+  folded to >
+
+      \begin{axis}[...]
+< 
+  Default value: 1
+
 *g:vimtex_fold_markers*
   Use this option to disable/enable vim-style markers for folding, i.e. pairs
   of `{{{` and `}}}`.

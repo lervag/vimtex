@@ -126,6 +126,10 @@ function! vimtex#fold#level(lnum) " {{{1
   let l:value = s:fold_env.level(line, a:lnum)
   if !empty(l:value) | return l:value | endif
 
+  " Fold environments with long options (if desired)
+  let l:value = s:fold_env_options.level(line, a:lnum)
+  if !empty(l:value) | return l:value | endif
+
   " Return foldlevel of previous line
   return '='
 endfunction
@@ -156,6 +160,10 @@ function! vimtex#fold#text() " {{{1
   if line =~# s:fold_env.re.start
     let l:value = s:fold_env.text(line, level)
     if !empty(l:value) | return l:value | endif
+  endif
+
+  if line =~# s:fold_env_options.re.start
+    return s:fold_env_options.text(line)
   endif
 
   " Preamble, parts, sections, fakesections and comments
@@ -523,6 +531,43 @@ function! s:fold_env.parse_caption_frame(line) " {{{1
 endfunction
 
 " }}}1
+
+let s:fold_env_options = {
+      \ 'opened' : 0,
+      \ 're' : {
+      \   'start' : s:fold_env.re.start . '\[\s*($|\%)',
+      \   'end' : '\s*\]\s*$',
+      \ }
+      \}
+function! s:fold_env_options.level(line, lnum) dict " {{{1
+  if !g:vimtex_fold_env_options | return | endif
+
+  return self.opened
+        \ ? self.fold_closed(a:line, a:lnum)
+        \ : self.fold_opened(a:line, a:lnum)
+endfunction
+function! s:fold_env_options.fold_opened(line, lnum) dict " {{{1
+  if a:line =~# self.re.start
+    let self.opened = 1
+    return 'a1'
+  endif
+endfunction
+
+" }}}1
+function! s:fold_env_options.fold_closed(line, lnum) dict " {{{1
+  if a:line =~# self.re.end
+    let self.opened = 0
+    return 's1'
+  endif
+endfunction
+
+" }}}1
+function! s:fold_env_options.text(line) dict " {{{1
+  return a:line . '...] '
+endfunction
+
+" }}}1
+
 function! s:parse_sec_title(string, type) " {{{1
   let l:idx = 0
   let l:length = strlen(a:string)
@@ -577,6 +622,7 @@ let s:folded  = '\v'
 let s:folded .=  '^\s*\%'
 let s:folded .= '|^\s*\]\{'
 let s:folded .= '|^\s*}'
+let s:folded .= '|^\s*\]\s*$'
 let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
 let s:folded .= '|\\%(' . join([
       \   'begin',

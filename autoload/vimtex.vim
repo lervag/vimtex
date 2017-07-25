@@ -60,6 +60,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_fold_envs', 1)
   call s:init_option('vimtex_fold_env_blacklist', [])
   call s:init_option('vimtex_fold_env_whitelist', [])
+  call s:init_option('vimtex_fold_env_options', 1)
   call s:init_option('vimtex_fold_markers', 1)
   call s:init_option('vimtex_fold_parts',
         \ [
