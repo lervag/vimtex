@@ -73,14 +73,8 @@ function! vimtex#fold#level(lnum) " {{{1
   if line !~# s:folded | return '=' | endif
 
   " Fold preamble
-  if g:vimtex_fold_preamble && line =~# '^\s*\\documentclass'
-    return '>1'
-  endif
-
-  " Never fold \begin{document}
-  if line =~# '^\s*\\begin\s*{\s*document\s*}'
-    return '0'
-  endif
+  let l:value = s:fold_preamble.level(line, a:lnum)
+  if !empty(l:value) | return l:value | endif
 
   " Fold commands
   for l:cmd in s:cmds_types
@@ -96,16 +90,11 @@ function! vimtex#fold#level(lnum) " {{{1
   endfor
 
   " Fold markers
-  if line =~# '\v\%.*\{\{\{'
-    let s:fold_markers = 1
-    return 'a1'
-  elseif line =~# '\v\%\s*\}\}\}'
-    let s:fold_markers = 0
-    return 's1'
-  endif
+  let l:value = s:fold_markers.level(line, a:lnum)
+  if !empty(l:value) | return l:value | endif
 
   " Fold long comments
-  if g:vimtex_fold_comments && !get(s:, 'fold_markers')
+  if g:vimtex_fold_comments && !s:fold_markers.opened
     if line =~# '^\s*%'
       let l:next = getline(a:lnum-1) !~# '^\s*%'
       let l:prev = getline(a:lnum+1) !~# '^\s*%'
@@ -138,13 +127,6 @@ endfunction
 function! vimtex#fold#text() " {{{1
   let line = getline(v:foldstart)
 
-  " Text for marker folding
-  if line =~# '\v\%\s*\{\{\{'
-    return ' ' . matchstr(line, '\v\%\s*\{\{\{\s*\zs.*')
-  elseif line =~# '\v\%.*\{\{\{'
-    return ' ' . matchstr(line, '\v\%\s*\zs.*\ze\{\{\{')
-  endif
-
   " Text for various folded commands
   for l:cmd in s:cmds_types
     if line =~# l:cmd.re.start
@@ -157,6 +139,14 @@ function! vimtex#fold#text() " {{{1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
         \ : ''
 
+  if line =~# s:fold_preamble.re.start
+    return s:fold_preamble.text(line)
+  endif
+
+  if line =~# s:fold_markers.re.start
+    return s:fold_markers.text(line)
+  endif
+
   if line =~# s:fold_env.re.start
     let l:value = s:fold_env.text(line, level)
     if !empty(l:value) | return l:value | endif
@@ -166,15 +156,13 @@ function! vimtex#fold#text() " {{{1
     return s:fold_env_options.text(line)
   endif
 
-  " Preamble, parts, sections, fakesections and comments
+  " Parts, sections, fakesections and comments
   let title = 'Not defined'
   let nt = 73
   let sections = '(%(sub)*%(section|paragraph)|part|chapter)'
   let secpat1 = '\v^\s*\\' . sections . '\*?\s*\{'
   let secpat2 = '\v^\s*\\' . sections . '\*?\s*\['
-  if line =~# '\s*\\documentclass'
-    let title = 'Preamble'
-  elseif line =~# '\\frontmatter'
+  if line =~# '\\frontmatter'
     let title = 'Frontmatter'
   elseif line =~# '\\mainmatter'
     let title = 'Mainmatter'
@@ -388,6 +376,55 @@ function! s:cmd_addplot(cmds) " {{{1
   endfunction
 
   return l:fold
+endfunction
+
+" }}}1
+
+let s:fold_preamble = {
+      \ 're' : {
+      \   'start' : '^\s*\\documentclass',
+      \   'end' : '^\s*\\begin\s*{\s*document\s*}',
+      \ },
+      \}
+function! s:fold_preamble.level(line, lnum) " {{{1
+  if g:vimtex_fold_preamble && a:line =~# self.re.start
+    return '>1'
+  elseif a:line =~# self.re.end
+    return '0'
+  endif
+endfunction
+
+" }}}1
+function! s:fold_preamble.text(line) " {{{1
+  return '      Preamble'
+endfunction
+
+" }}}1
+
+let s:fold_markers = {
+      \ 'opened' : 0,
+      \ 're' : {
+      \   'start' : '\v\%.*\{\{\{',
+      \   'end' : '\v\%\s*\}\}\}',
+      \   'parser1' : '\v\%\s*\{\{\{',
+      \   'parser2' : '\v\%\s*\zs.*\ze\{\{\{',
+      \ },
+      \}
+function! s:fold_markers.level(line, lnum) " {{{1
+  if a:line =~# self.re.start
+    let s:self.opened = 1
+    return 'a1'
+  elseif a:line =~# self.re.end
+    let s:self.opened = 0
+    return 's1'
+  endif
+endfunction
+
+" }}}1
+function! s:fold_markers.text(line) " {{{1
+  return a:line =~# self.re.parser1
+        \ ? ' ' . matchstr(a:line, self.re.parser1 . '\s*\zs.*')
+        \ : ' ' . matchstr(a:line, self.re.parser2)
 endfunction
 
 " }}}1
