@@ -1,0 +1,18 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_compiler_method = 'arara'
+" let g:vimtex_compiler_arara = {}
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+if has('vim_starting')
+  silent edit minimal.tex
+endif
