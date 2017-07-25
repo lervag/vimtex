@@ -72,6 +72,7 @@ CONTENTS                                                      *vimtex-contents*
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
+    Arara                                       |vimtex-arara|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
@@ -94,7 +95,7 @@ and evolve.
 Feature overview~
                                                               *vimtex-features*
 
-- Document compilation with `latexmk` or `latexrun`
+- Document compilation with `latexmk`, `latexrun`, or `arara`
 - LaTeX log parsing for quickfix entries using
   - internal method
   - `pplatex`
@@ -209,7 +210,8 @@ The following is a list of specific requirements for the key features of
 
   `latexmk`   http://users.phys.psu.edu/~collins/software/latexmk-jcc
   `latexrun`  https://github.com/aclements/latexrun
-    |vimtex| uses `latexmk` or `latexrun` to compile the LaTeX document.
+  `arara`     https://github.com/cereda/arara
+    |vimtex| uses `latexmk`, `latexrun`, or `arara` to compile the LaTeX document.
       `latexmk` is "a perl script for running LaTeX the correct number of
     times to resolve cross references, etc; it also runs auxiliary programs
     (bibtex, makeindex if necessary, and dvips and/or a previewer as
@@ -225,6 +227,9 @@ The following is a list of specific requirements for the key features of
     However, it does parse the output log in order to provide a more concise
     list of relevant warnings and error messages (this has currently not been
     adapted to vimtex, as of yet).
+      `arara` is a TeX automation tool similar to the above mentioned tools,
+    but where the compilation behaviour is typically defined in the preamble
+    of the document. Note: The current implementation is experimental.
 
   |clientserver|
     |vimtex| requires the |clientserver| for the callback functionality to
@@ -553,6 +558,10 @@ Options~
       See |vimtex-latexrun| for more details, and |g:vimtex_compiler_latexrun|
       for customization.
 
+    arara~
+      See |vimtex-arara| for more details, and |g:vimtex_compiler_arara| for
+      customization.
+
   Default value: 'latexmk'
 
 *g:vimtex_compiler_latexmk*
@@ -563,20 +572,20 @@ Options~
   Default value: >
 
     let g:vimtex_compiler_latexmk = {
-    \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-    \ 'background' : 1,
-    \ 'build_dir' : '',
-    \ 'callback' : 1,
-    \ 'continuous' : 1,
-    \ 'executable' : 'latexmk',
-    \ 'options' : [
-    \   '-pdf',
-    \   '-verbose',
-    \   '-file-line-error',
-    \   '-synctex=1',
-    \   '-interaction=nonstopmode',
-    \ ],
-    \}
+        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+        \ 'background' : 1,
+        \ 'build_dir' : '',
+        \ 'callback' : 1,
+        \ 'continuous' : 1,
+        \ 'executable' : 'latexmk',
+        \ 'options' : [
+        \   '-pdf',
+        \   '-verbose',
+        \   '-file-line-error',
+        \   '-synctex=1',
+        \   '-interaction=nonstopmode',
+        \ ],
+        \}
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
@@ -651,14 +660,14 @@ Options~
   Default value: >
 
     let g:vimtex_compiler_latexrun = {
-    \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-    \ 'background' : 1,
-    \ 'build_dir' : '',
-    \ 'options' : [
-    \   '-verbose-cmds',
-    \   '--latex-args="-synctex=1"',
-    \ ],
-    \}
+        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+        \ 'background' : 1,
+        \ 'build_dir' : '',
+        \ 'options' : [
+        \   '-verbose-cmds',
+        \   '--latex-args="-synctex=1"',
+        \ ],
+        \}
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
@@ -675,6 +684,32 @@ Options~
   options~
     This is a list of options that are passed to `latexrun`. The default
     options should work well for most people.
+
+*g:vimtex_compiler_arara*
+  This is a dictionary that allows customization of the |vimtex-arara|
+  compiler. The values set by the user will take precedense over the default
+  values.
+
+  Default value: >
+
+    let g:vimtex_compiler_arara = {
+        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+        \ 'background' : 1,
+        \ 'options' : ['-v'],
+        \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  backend~
+    Same as |g:vimtex_compiler_latexmk| / `backend`.
+
+  background~
+    Same as |g:vimtex_compiler_latexmk| / `background`.
+
+  options~
+    This is a list of options that are passed to `arara`. The default options
+    should work well for most people.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
@@ -2487,6 +2522,7 @@ backends:
 
   |vimtex-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
   |vimtex-latexrun|  https://github.com/aclements/latexrun
+  |vimtex-arara|     https://github.com/cereda/arara
 
 The interface is implemented in a general way, which makes it relatively easy
 to add new compilers.
@@ -2505,7 +2541,8 @@ compiled similarly to a single shot compile, and if there are errors, they
 will be shown in the quickfix list.
 
 The compilers should respect the TeX program directive as described here:
-|vimtex-tex-program|.
+|vimtex-tex-program|, except for |vimtex-arara|, which uses its own set of
+directives and rules.
 
 Associated commands:
     |VimtexCompile|
@@ -2528,6 +2565,7 @@ Associated settings:
     |g:vimtex_compiler_method|
     |g:vimtex_compiler_latexmk|
     |g:vimtex_compiler_latexrun|
+    |g:vimtex_compiler_arara|
     |g:vimtex_compiler_progname|
     |g:vimtex_compiler_callback_hooks|
 
@@ -2609,6 +2647,22 @@ The latter is supported by vimtex, though, through the callback.  See
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
+------------------------------------------------------------------------------
+Arara~
+                                                                 *vimtex-arara*
+
+                                        https://github.com/cereda/arara
+> arara is a TeX automation tool based on rules and directives. It gives you
+> subsidies to enhance your TeX experience.
+
+`arara` is a TeX automation tool that uses rules and directives that are
+defined in the preamble of a LaTeX project. The user manual can be found here:
+http://ctan.uib.no/support/arara/doc/arara-usermanual.pdf
+
+Note: The current support is experimental and will most likely be updated and
+changed in near future.
+
+The compiler may be configured through the |g:vimtex_compiler_arara| option.
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
