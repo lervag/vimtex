@@ -490,7 +490,6 @@ function! s:buffer_deleted(...) " {{{1
   " Check if we are quitting
   "
   let l:quit = a:0 > 1 && winnr('$') - vimtex#qf#is_open() == 1
-  unsilent echom l:quit (a:0 > 1) (winnr('$') - vimtex#qf#is_open())
 
   "
   " Cleanup if the deleted buffer was the last remaining buffer of an opened
