@@ -30,7 +30,7 @@ endfunction
 " }}}1
 
 function! vimtex#qf#toggle() abort " {{{1
-  if s:qf_is_open()
+  if vimtex#qf#is_open()
     cclose
   else
     call vimtex#qf#open(1)
@@ -95,6 +95,26 @@ endfunction
 
 " }}}1
 
+function! vimtex#qf#is_open() abort " {{{1
+  redir => l:buflist
+  silent! ls!
+  redir END
+
+  let l:buflist = filter(split(l:buflist, '\n'), 'v:val =~# ''Quickfix''')
+
+  for l:line in l:buflist
+    let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
+    if bufwinnr(l:bufnr) >= 0
+          \ && getbufvar(l:bufnr, '&buftype', '') ==# 'quickfix'
+      return 1
+    endif
+  endfor
+
+  return 0
+endfunction
+
+" }}}1
+
 function! s:window_save() abort " {{{1
   if exists('*win_gotoid')
     let s:previous_window = win_getid()
@@ -119,25 +139,6 @@ endfunction
 
 " }}}1
 
-function! s:qf_is_open() abort " {{{1
-  redir => l:buflist
-  silent! ls!
-  redir END
-
-  let l:buflist = filter(split(l:buflist, '\n'), 'v:val =~# ''Quickfix''')
-
-  for l:line in l:buflist
-    let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
-    if bufwinnr(l:bufnr) >= 0
-          \ && getbufvar(l:bufnr, '&buftype', '') ==# 'quickfix'
-      return 1
-    endif
-  endfor
-
-  return 0
-endfunction
-
-" }}}1
 function! s:qf_has_errors() abort " {{{1
   return len(filter(getqflist(), 'v:val.type ==# ''E''')) > 0
 endfunction
