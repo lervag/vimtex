@@ -65,37 +65,38 @@ endfunction
 
 " }}}1
 function! vimtex#fold#level(lnum) " {{{1
-  " Refresh fold levels for section commands
-  call s:refresh_folded_sections()
+  let l:line = getline(a:lnum)
 
   " Check for normal lines first (optimization)
-  let line = getline(a:lnum)
-  if line !~# s:folded | return '=' | endif
+  if l:line !~# s:folded | return '=' | endif
 
   " Fold preamble
-  let l:value = s:fold_preamble.level(line, a:lnum)
+  let l:value = s:fold_preamble.level(l:line, a:lnum)
   if !empty(l:value) | return l:value | endif
 
   " Fold commands
   for l:cmd in s:cmds_types
-    let l:value = l:cmd.level(line, a:lnum)
+    let l:value = l:cmd.level(l:line, a:lnum)
     if !empty(l:value) | return l:value | endif
   endfor
 
+  " Refresh fold levels for section commands
+  call s:refresh_folded_sections()
+
   " Fold chapters and sections
   for [part, level] in b:vimtex_fold.parts
-    if line =~# part
+    if l:line =~# part
       return '>' . level
     endif
   endfor
 
   " Fold markers
-  let l:value = s:fold_markers.level(line, a:lnum)
+  let l:value = s:fold_markers.level(l:line, a:lnum)
   if !empty(l:value) | return l:value | endif
 
   " Fold long comments
   if g:vimtex_fold_comments && !s:fold_markers.opened
-    if line =~# '^\s*%'
+    if l:line =~# '^\s*%'
       let l:next = getline(a:lnum-1) !~# '^\s*%'
       let l:prev = getline(a:lnum+1) !~# '^\s*%'
       if l:next && ! l:prev
@@ -106,18 +107,18 @@ function! vimtex#fold#level(lnum) " {{{1
     endif
   endif
 
+  " Fold environments
+  let l:value = s:fold_env.level(l:line, a:lnum)
+  if !empty(l:value) | return l:value | endif
+
+  " Fold environments with long options
+  let l:value = s:fold_env_options.level(l:line, a:lnum)
+  if !empty(l:value) | return l:value | endif
+
   " Never fold \end{document}
-  if line =~# '^\s*\\end{document}'
+  if l:line =~# '^\s*\\end{document}'
     return 0
   endif
-
-  " Fold environments
-  let l:value = s:fold_env.level(line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold environments with long options (if desired)
-  let l:value = s:fold_env_options.level(line, a:lnum)
-  if !empty(l:value) | return l:value | endif
 
   " Return foldlevel of previous line
   return '='
