@@ -1,0 +1,29 @@
+set nocompatible
+if has('win32')
+  let &rtp = '~/vimfiles/bundle/vimtex,' . &rtp
+  let &rtp .= ',~/vimfiles/bundle/vimtex/after'
+else
+  let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+  let &rtp .= ',~/.vim/bundle/vimtex/after'
+endif
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:vimtex_echo_ignore_wait = 1
+let g:vimtex_view_automatic = 0
+
+if has('win32')
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options =
+        \ '-reuse-instance -forward-search @line @pdf @tex'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+endif
+
+if has('vim_starting')
+  silent edit minimal.tex
+endif
