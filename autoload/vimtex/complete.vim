@@ -364,6 +364,7 @@ let s:completer_cmd = {
       \   '\v\\\a*$',
       \ ],
       \ 'candidates_from_packages' : [],
+      \ 'candidates_from_newcommands' : [],
       \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
       \ 'inside_braces' : 0,
       \}
@@ -379,19 +380,17 @@ function! s:completer_cmd.complete(regex) dict " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates() dict " {{{2
-  if empty(self.candidates_from_packages)
-    let self.candidates_from_packages = self.gather_candidates_from_packages()
-  endif
+  call self.gather_candidates_from_packages()
+  call self.gather_candidates_from_newcommands()
 
-  let l:candidates = extend(copy(self.candidates_from_packages),
-        \ self.gather_candidates_from_preamble())
-
-  call vimtex#util#uniq_unsorted(l:candidates)
-
-  return l:candidates
+  return vimtex#util#uniq_unsorted(
+        \   copy(self.candidates_from_packages)
+        \ + copy(self.candidates_from_newcommands))
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
+  if !empty(self.candidates_from_packages) | return | endif
+
   let l:save_pwd = getcwd()
   execute 'lcd' fnameescape(self.complete_dir)
 
@@ -415,7 +414,6 @@ function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
     let l:queue += l:includes
   endwhile
 
-  let l:candidates_from_packages = []
   for l:package in l:packages
     let l:candidates = filter(readfile(l:package), 'v:val =~# ''^\a''')
     call map(l:candidates, 'split(v:val)')
@@ -424,28 +422,35 @@ function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
           \ ''mode'' : ''.'',
           \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
           \}')
-    let l:candidates_from_packages += l:candidates
+    let self.candidates_from_packages += l:candidates
   endfor
 
   execute 'lcd' fnameescape(l:save_pwd)
-
-  return l:candidates_from_packages
 endfunction
 
-function! s:completer_cmd.gather_candidates_from_preamble() dict " {{{2
-  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {
-        \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
-        \})
+function! s:completer_cmd.gather_candidates_from_newcommands() dict " {{{2
+  " Simple caching
+  if !empty(self.candidates_from_newcommands)
+    let l:modified_time = max(map(
+          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+          \ 'getftime(v:val)'))
+    if l:modified_time > get(self, 'newcommands_updated')
+      let self.newcommands_updated = l:modified_time
+    else
+      return
+    endif
+  endif
+
+  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
   call filter(l:candidates, 'v:val =~# ''\v\\(re)?newcommand''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\(re)?newcommand\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\(re)?newcommand\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''menu'' : ''[cmd: newcommand]'',
         \ }')
 
-  return l:candidates
+  let self.candidates_from_newcommands = l:candidates
 endfunction
 
 " }}}1
