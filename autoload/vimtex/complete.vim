@@ -586,10 +586,13 @@ endfunction
 
 let s:completer_gls = {
       \ 'patterns' : ['\v\\(gls|Gls|GLS)(pl)?\s*\{[^}]*$'],
+      \ 'candidates' : [],
       \}
 
 function! s:completer_gls.complete(regex) dict " {{{2
-  return self.parse_glossaries()
+  let l:candidates = self.parse_glossaries()
+
+  return filter(l:candidates, 'v:val.word =~? ''^'' . a:regex')
 endfunction
 
 function! s:completer_gls.parse_glossaries() dict " {{{2
