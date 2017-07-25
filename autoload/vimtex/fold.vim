@@ -123,23 +123,8 @@ function! vimtex#fold#level(lnum) " {{{1
   endif
 
   " Fold environments
-  if g:vimtex_fold_envs
-    let l:env = matchstr(line, s:env_name)
-    if !empty(l:env)
-          \ && (empty(g:vimtex_fold_env_whitelist)
-          \   || index(g:vimtex_fold_env_whitelist, l:env) >= 0)
-          \ && index(g:vimtex_fold_env_blacklist, l:env) < 0
-      if line =~# s:env_start
-        if line !~# '\\end'
-          return 'a1'
-        endif
-      elseif line =~# s:env_stop
-        if line !~# '\\begin'
-          return 's1'
-        endif
-      endif
-    endif
-  endif
+  let l:value = s:fold_env.level(line, a:lnum)
+  if !empty(l:value) | return l:value | endif
 
   " Return foldlevel of previous line
   return '='
@@ -163,13 +148,19 @@ function! vimtex#fold#text() " {{{1
     endif
   endfor
 
+  " Set fold level
   let level = v:foldlevel > 1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
         \ : ''
-  let title = 'Not defined'
-  let nt = 73
+
+  if line =~# s:fold_env.re.start
+    let l:value = s:fold_env.text(line, level)
+    if !empty(l:value) | return l:value | endif
+  endif
 
   " Preamble, parts, sections, fakesections and comments
+  let title = 'Not defined'
+  let nt = 73
   let sections = '(%(sub)*%(section|paragraph)|part|chapter)'
   let secpat1 = '\v^\s*\\' . sections . '\*?\s*\{'
   let secpat2 = '\v^\s*\\' . sections . '\*?\s*\['
@@ -191,39 +182,6 @@ function! vimtex#fold#text() " {{{1
     let title = matchstr(line, '\vFake' . sections . '.*')
   elseif line =~# '^\s*%'
     let title = matchstr(line, '^\s*\zs%.*')
-  endif
-
-  " Environments
-  if line =~# '\\begin'
-    " Capture environment name
-    let env = matchstr(line,'\\begin\*\?{\zs\w*\*\?\ze}')
-    let ne = 12
-
-    " Set caption/label based on type of environment
-    if env ==# 'frame'
-      let label = ''
-      let caption = s:parse_caption_frame(line)
-    elseif env ==# 'table'
-      let label = s:parse_label()
-      let caption = s:parse_caption_table(line)
-    else
-      let label = s:parse_label()
-      let caption = s:parse_caption(line)
-    endif
-
-    " Add parenthesis to label
-    if label !=# ''
-      let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
-    endif
-
-    " Set size of label and caption part of string
-    let nl = len(label) > nt - ne ? nt - ne : len(label)
-    let nc = nt - ne - nl - 1
-    let caption = strpart(caption, 0, nc)
-
-    " Create title based on env, caption and label
-    let title = printf('%-' . ne . 's%-' . nc . 's %' . nl . 's',
-          \ env, caption, label)
   endif
 
   " Combine level and title and return the trimmed fold text
@@ -426,7 +384,79 @@ endfunction
 
 " }}}1
 
-function! s:parse_label() " {{{1
+let s:fold_env = {
+      \ 're' : {
+      \   'start' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\begin\s*\{.{-}\}',
+      \   'end' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\end\s*\{.{-}\}',
+      \   'name' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \            . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
+      \ }
+      \}
+function! s:fold_env.level(line, lnum) " {{{1
+  if !g:vimtex_fold_envs | return | endif
+
+  let l:env = matchstr(a:line, self.re.name)
+  if !empty(l:env) && self.validate(l:env)
+    if a:line =~# self.re.start
+      if a:line !~# '\\end'
+        return 'a1'
+      endif
+    elseif a:line =~# self.re.end
+      if a:line !~# '\\begin'
+        return 's1'
+      endif
+    endif
+  endif
+endfunction
+
+" }}}1
+function! s:fold_env.text(line, level) " {{{1
+  let env = matchstr(a:line, self.re.name)
+  if !self.validate(env) | return | endif
+
+  let nt = 73
+  let ne = 12
+
+  " Set caption/label based on type of environment
+  if env ==# 'frame'
+    let label = ''
+    let caption = self.parse_caption_frame(a:line)
+  elseif env ==# 'table'
+    let label = self.parse_label()
+    let caption = self.parse_caption_table(a:line)
+  else
+    let label = self.parse_label()
+    let caption = self.parse_caption(a:line)
+  endif
+
+  " Add parenthesis to label
+  if label !=# ''
+    let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
+  endif
+
+  " Set size of label and caption part of string
+  let nl = len(label) > nt - ne ? nt - ne : len(label)
+  let nc = nt - ne - nl - 1
+  let caption = strpart(caption, 0, nc)
+
+  " Create title based on env, caption and label
+  let title = printf('%-' . ne . 's%-' . nc . 's %' . nl . 's',
+        \ env, caption, label)
+
+  " Combine level and title and return the trimmed fold text
+  let text = printf('%-5s %-' . nt . 's', a:level, strpart(title, 0, nt))
+  return substitute(text, '\s\+$', '', '') . ' '
+endfunction
+
+" }}}1
+function! s:fold_env.validate(env) " {{{1
+  return (empty(g:vimtex_fold_env_whitelist)
+        \   || index(g:vimtex_fold_env_whitelist, a:env) >= 0)
+        \ && index(g:vimtex_fold_env_blacklist, a:env) < 0
+endfunction
+
+" }}}1
+function! s:fold_env.parse_label() " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\label'
@@ -438,7 +468,7 @@ function! s:parse_label() " {{{1
 endfunction
 
 " }}}1
-function! s:parse_caption(line) " {{{1
+function! s:fold_env.parse_caption(line) " {{{1
   let i = v:foldend
   while i >= v:foldstart
     if getline(i) =~# '^\s*\\caption'
@@ -453,7 +483,7 @@ function! s:parse_caption(line) " {{{1
 endfunction
 
 " }}}1
-function! s:parse_caption_table(line) " {{{1
+function! s:fold_env.parse_caption_table(line) " {{{1
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~# '^\s*\\caption'
@@ -468,7 +498,7 @@ function! s:parse_caption_table(line) " {{{1
 endfunction
 
 " }}}1
-function! s:parse_caption_frame(line) " {{{1
+function! s:fold_env.parse_caption_frame(line) " {{{1
   " Test simple variants first
   let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
   let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
@@ -517,12 +547,6 @@ endfunction
 
 let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
 let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-let s:env_name = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
-let s:env_start = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\\begin\s*\{.{-}\}'
-let s:env_stop = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\\end\s*\{.{-}\}'
 
 "
 " Set up command fold structure
