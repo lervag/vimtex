@@ -1,0 +1,18 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_fold_enabled = 1
+let g:vimtex_fold_env_options = 1
+let g:vimtex_fold_env_blacklist = ['axis']
+
+silent edit minimal.tex
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * redraw! | sleep 2 | quit
+augroup END
