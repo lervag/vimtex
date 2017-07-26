@@ -81,14 +81,8 @@ function! vimtex#fold#level(lnum) " {{{1
   endfor
 
   " Refresh fold levels for section commands
-  call s:refresh_folded_sections()
-
-  " Fold chapters and sections
-  for [part, level] in b:vimtex_fold.parts
-    if l:line =~# part
-      return '>' . level
-    endif
-  endfor
+  let l:value = s:fold_sections.level(l:line, a:lnum)
+  if !empty(l:value) | return l:value | endif
 
   " Fold markers
   let l:value = s:fold_markers.level(l:line, a:lnum)
@@ -144,6 +138,10 @@ function! vimtex#fold#text() " {{{1
     return s:fold_preamble.text(line)
   endif
 
+  if line =~# s:fold_sections.re.start
+    return s:fold_sections.text(line, level)
+  endif
+
   if line =~# s:fold_markers.re.start
     return s:fold_markers.text(line)
   endif
@@ -157,27 +155,10 @@ function! vimtex#fold#text() " {{{1
     return s:fold_env_options.text(line)
   endif
 
-  " Parts, sections, fakesections and comments
+  " Comments
   let title = 'Not defined'
   let nt = 73
-  let sections = '(%(sub)*%(section|paragraph)|part|chapter)'
-  let secpat1 = '\v^\s*\\' . sections . '\*?\s*\{'
-  let secpat2 = '\v^\s*\\' . sections . '\*?\s*\['
-  if line =~# '\\frontmatter'
-    let title = 'Frontmatter'
-  elseif line =~# '\\mainmatter'
-    let title = 'Mainmatter'
-  elseif line =~# '\\backmatter'
-    let title = 'Backmatter'
-  elseif line =~# '\\appendix'
-    let title = 'Appendix'
-  elseif line =~# secpat1
-    let title = s:parse_sec_title(matchstr(line, secpat1 . '\zs.*'), 0)
-  elseif line =~# secpat2
-    let title = s:parse_sec_title(matchstr(line, secpat2 . '\zs.*'), 1)
-  elseif line =~# '\vFake' . sections
-    let title = matchstr(line, '\vFake' . sections . '.*')
-  elseif line =~# '^\s*%'
+  if line =~# '^\s*%'
     let title = matchstr(line, '^\s*\zs%.*')
   endif
 
@@ -200,59 +181,6 @@ function! s:foldmethod_in_modeline() " {{{1
 
   call vimtex#pos#set_cursor(l:cursor_pos)
   return l:check_top || l:check_btm
-endfunction
-
-" }}}1
-function! s:refresh_folded_sections() " {{{1
-  "
-  " Parse current buffer to find which sections to fold and their levels.  The
-  " patterns are predefined to optimize the folding.
-  "
-  " We ignore top level parts such as \frontmatter, \appendix, \part, and
-  " similar, unless there are at least two such commands in a document.
-  "
-
-  " Only refresh if file has been changed
-  let l:time = getftime(expand('%'))
-  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
-  let b:vimtex_fold.time = l:time
-
-  " Initialize
-  let b:vimtex_fold.parts = []
-  let buffer = getline(1,'$')
-
-  " Parse part commands (frontmatter, appendix, part, etc)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
-  for part in g:vimtex_fold_parts
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        call insert(b:vimtex_fold.parts, [partpattern, 1])
-        break
-      endif
-    endfor
-  endfor
-
-  " We want a minimum of two top level parts
-  if len(b:vimtex_fold.parts) >= 2
-    let level = 1
-  else
-    let level = 0
-    let b:vimtex_fold.parts = []
-  endif
-
-  " Parse section commands (chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
-  for part in g:vimtex_fold_sections
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        let level += 1
-        call insert(b:vimtex_fold.parts, [partpattern, level])
-        break
-      endif
-    endfor
-  endfor
 endfunction
 
 " }}}1
@@ -398,6 +326,127 @@ endfunction
 " }}}1
 function! s:fold_preamble.text(line) " {{{1
   return '      Preamble'
+endfunction
+
+" }}}1
+
+let s:fold_sections = {
+      \ 're' : {
+      \   'start' : '\v\\(' . join([
+      \     '%(sub)*%(section|paragraph)',
+      \     'part',
+      \     'chapter',
+      \     '(front|back|main)matter',
+      \     'appendix'], '|') . ')'
+      \     . '|^\s*\%\s*Fake',
+      \   'sections' : '(%(sub)*%(section|paragraph)|part|chapter)',
+      \ },
+      \}
+function! s:fold_sections.level(line, lnum) " {{{1
+  call self.refresh_folded_sections()
+
+  " Fold chapters and sections
+  for [l:part, l:level] in b:vimtex_fold.parts
+    if a:line =~# l:part
+      return '>' . l:level
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:fold_sections.text(line, level) " {{{1
+  let secpat1 = '\v^\s*\\' . self.re.sections . '\*?\s*\{'
+  let secpat2 = '\v^\s*\\' . self.re.sections . '\*?\s*\['
+  if a:line =~# '\\frontmatter'
+    let title = 'Frontmatter'
+  elseif a:line =~# '\\mainmatter'
+    let title = 'Mainmatter'
+  elseif a:line =~# '\\backmatter'
+    let title = 'Backmatter'
+  elseif a:line =~# '\\appendix'
+    let title = 'Appendix'
+  elseif a:line =~# secpat1
+    let title = self.parse_title(matchstr(a:line, secpat1 . '\zs.*'), 0)
+  elseif a:line =~# secpat2
+    let title = self.parse_title(matchstr(a:line, secpat2 . '\zs.*'), 1)
+  elseif a:line =~# '\vFake' . self.re.sections
+    let title = matchstr(a:line, '\vFake' . self.re.sections . '.*')
+  endif
+
+  " Combine level and title and return the trimmed fold text
+  let text = printf('%-5s %-73s', a:level, strpart(title, 0, 73))
+  return substitute(text, '\s\+$', '', '') . ' '
+endfunction
+
+" }}}1
+function! s:fold_sections.refresh_folded_sections() dict " {{{1
+  "
+  " Parse current buffer to find which sections to fold and their levels.  The
+  " patterns are predefined to optimize the folding.
+  "
+  " We ignore top level parts such as \frontmatter, \appendix, \part, and
+  " similar, unless there are at least two such commands in a document.
+  "
+
+  " Only refresh if file has been changed
+  let l:time = getftime(expand('%'))
+  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
+  let b:vimtex_fold.time = l:time
+
+  " Initialize
+  let b:vimtex_fold.parts = []
+  let buffer = getline(1,'$')
+
+  " Parse part commands (frontmatter, appendix, part, etc)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
+  for part in g:vimtex_fold_parts
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        call insert(b:vimtex_fold.parts, [partpattern, 1])
+        break
+      endif
+    endfor
+  endfor
+
+  " We want a minimum of two top level parts
+  if len(b:vimtex_fold.parts) >= 2
+    let level = 1
+  else
+    let level = 0
+    let b:vimtex_fold.parts = []
+  endif
+
+  " Parse section commands (chapter, [sub...]section)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
+  for part in g:vimtex_fold_sections
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        let level += 1
+        call insert(b:vimtex_fold.parts, [partpattern, level])
+        break
+      endif
+    endfor
+  endfor
+endfunction
+
+" }}}1
+function! s:fold_sections.parse_title(string, type) dict " {{{1
+  let l:idx = 0
+  let l:length = strlen(a:string)
+  let l:level = 1
+  while l:level >= 1
+    let l:idx += 1
+    if l:idx > l:length
+      break
+    elseif a:string[l:idx] ==# ['}',']'][a:type]
+      let l:level -= 1
+    elseif a:string[l:idx] ==# ['{','['][a:type]
+      let l:level += 1
+    endif
+  endwhile
+  return strpart(a:string, 0, l:idx)
 endfunction
 
 " }}}1
@@ -602,25 +651,6 @@ endfunction
 " }}}1
 function! s:fold_env_options.text(line) dict " {{{1
   return a:line . '...] '
-endfunction
-
-" }}}1
-
-function! s:parse_sec_title(string, type) " {{{1
-  let l:idx = 0
-  let l:length = strlen(a:string)
-  let l:level = 1
-  while l:level >= 1
-    let l:idx += 1
-    if l:idx > l:length
-      break
-    elseif a:string[l:idx] ==# ['}',']'][a:type]
-      let l:level -= 1
-    elseif a:string[l:idx] ==# ['{','['][a:type]
-      let l:level += 1
-    endif
-  endwhile
-  return strpart(a:string, 0, l:idx)
 endfunction
 
 " }}}1
