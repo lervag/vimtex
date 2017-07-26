@@ -89,17 +89,8 @@ function! vimtex#fold#level(lnum) " {{{1
   if !empty(l:value) | return l:value | endif
 
   " Fold long comments
-  if g:vimtex_fold_comments && !s:fold_markers.opened
-    if l:line =~# '^\s*%'
-      let l:next = getline(a:lnum-1) !~# '^\s*%'
-      let l:prev = getline(a:lnum+1) !~# '^\s*%'
-      if l:next && ! l:prev
-        return 'a1'
-      elseif l:prev && ! l:next
-        return 's1'
-      endif
-    endif
-  endif
+  let l:value = s:fold_comments.level(l:line, a:lnum)
+  if !empty(l:value) | return l:value | endif
 
   " Fold environments
   let l:value = s:fold_env.level(l:line, a:lnum)
@@ -146,6 +137,10 @@ function! vimtex#fold#text() " {{{1
     return s:fold_markers.text(line)
   endif
 
+  if line =~# s:fold_comments.re.start
+    return s:fold_comments.text(line, level)
+  endif
+
   if line =~# s:fold_env.re.start
     let l:value = s:fold_env.text(line, level)
     if !empty(l:value) | return l:value | endif
@@ -154,17 +149,6 @@ function! vimtex#fold#text() " {{{1
   if line =~# s:fold_env_options.re.start
     return s:fold_env_options.text(line)
   endif
-
-  " Comments
-  let title = 'Not defined'
-  let nt = 73
-  if line =~# '^\s*%'
-    let title = matchstr(line, '^\s*\zs%.*')
-  endif
-
-  " Combine level and title and return the trimmed fold text
-  let text = printf('%-5s %-' . nt . 's', level, strpart(title, 0, nt))
-  return substitute(text, '\s\+$', '', '') . ' '
 endfunction
 
 " }}}1
@@ -475,6 +459,36 @@ function! s:fold_markers.text(line) " {{{1
   return a:line =~# self.re.parser1
         \ ? ' ' . matchstr(a:line, self.re.parser1 . '\s*\zs.*')
         \ : ' ' . matchstr(a:line, self.re.parser2)
+endfunction
+
+" }}}1
+
+let s:fold_comments = {
+      \ 'opened' : 0,
+      \ 're' : {
+      \   'start' : '^\s*%',
+      \   'text' : '^\s*\zs%.*',
+      \ },
+      \}
+function! s:fold_comments.level(line, lnum) " {{{1
+  if g:vimtex_fold_comments && !s:fold_markers.opened
+    if l:line =~# self.re.start
+      let l:next = getline(a:lnum-1) !~# self.re.start
+      let l:prev = getline(a:lnum+1) !~# self.re.start
+      if l:next && !l:prev
+        let self.opened = 1
+        return 'a1'
+      elseif l:prev && !l:next
+        let self.opened = 0
+        return 's1'
+      endif
+    endif
+  endif
+endfunction
+
+" }}}1
+function! s:fold_comments.text(line, level) " {{{1
+  return printf('%-5s %-73s', a:level, matchstr(line, self.re.text)[0:73])
 endfunction
 
 " }}}1
