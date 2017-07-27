@@ -99,6 +99,9 @@
 
 Hello World
 
+%
+% Fold commands (single)
+%
 \pgfplotstableread[col sep=semicolon,trim cells]{
 x    ; y    ; z   ; type  ; reference       ; comment
 0.01 ; 1.00 ; nan ; type1 ; ref-unspecified ;
@@ -106,6 +109,9 @@ x    ; y    ; z   ; type  ; reference       ; comment
 0.03 ; 3.00 ; nan ; type3 ; ref-unspecified ;
 }{\datatable}
 
+%
+% Fold commands (single)
+%
 \pgfplotstableread[col sep=semicolon,trim cells]{
 x    ; y    ; z   ; type  ; reference       ; comment
 0.01 ; 1.00 ; nan ; type1 ; ref-unspecified ;
@@ -113,5 +119,34 @@ x    ; y    ; z   ; type  ; reference       ; comment
 0.03 ; 3.00 ; nan ; type3 ; ref-unspecified ;
 }
 \datatable
+
+%
+% Test for cmd_addplot
+%
+\begin{tikzpicture}
+\begin{axis}
+\addplot+[error bars/.cd,x dir=both,x explicit] coordinates {
+    (0,0)   +- (0.1,0)
+    (0.5,1) +- (0.4,0.2)
+    (1,2)
+    (2,5)   +- (1,0.1)
+};
+\end{axis}
+\end{tikzpicture}
+
+\section{test 1}
+
+\subsection{test 1.1}
+
+\section{test 2}
+
+% {{{ Testing markers
+% asdasd
+%
+% }}}
+
+\subsection{test 2.1}
+
+\subsection{test 2.2}
 
 \end{document}
