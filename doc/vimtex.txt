@@ -912,158 +912,175 @@ Options~
 
   Default value: 0
 
-*g:vimtex_fold_comments*
-  Control whether or not to fold multiline comments.
-
-  Default value: 0
-
 *g:vimtex_fold_levelmarker*
 
   Use custom section symbol for folding.
 
   Default value: '*'
 
-*g:vimtex_fold_preamble*
-  Control whether or not to fold the preamble.
+*g:vimtex_fold_types*
+*g:vimtex_fold_types_defaults*
+  This is a dictionary where each key configures the corresponding fold type.
+  One may disable the fold types by setting the key `enabled` to 0. If a type
+  can be configured with a list of patterns or similar, the patterns assume
+  that one uses very magic regexes (see |\v|).
 
-  Note: If |g:vimtex_fold_commands| contains `documentclass`, then this option
-        will be automatically disabled.
+  Each entry in |g:vimtex_fold_types| is combined with the corresponding entry
+  of |g:vimtex_fold_types_defaults|. If there are conflicting entries, then
+  |g:vimtex_fold_types| take presedence. This way, it is easy to customize
+  various fold types without touching those that can stay with default
+  configuration.
 
-  Default value: 1
+  The available fold types (and keys) are listed below, and the default
+  configurations are listed at the bottom.
 
-*g:vimtex_fold_envs*
-  Control whether or not to fold environments.
+    <preamble>          Fold the preamble.
 
-  Default value: 1
+    <sections>          Fold sections and parts of documents. Can be
+                        configured with a list of sections and parts that
+                        should be folded.
 
-*g:vimtex_fold_env_blacklist*
-  Environments in this list will never be folded.
-  
-  Note: The `document` environment will never be folded regardless.
+                        When a LaTeX document is opened, the document is
+                        parsed in order to define the highest fold level based
+                        on which parts (such as frontmatter, backmatter, and
+                        appendix) and section types (parts, chapter, section,
+                        etc.) are present. This parsing is done automatically
+                        every time the folds are recomputed, if there are any
+                        changes to the file.
 
-  Default value: []
+                        The fold function also recognizes "fake" sections.
+                        That is, it parses comments similar to: >
 
-*g:vimtex_fold_env_whitelist*
-  If not empty, only the environments in this list will be folded, unless the
-  environment is also specified in |g:vimtex_fold_env_blacklist|.
-
-  Default value: []
-
-*g:vimtex_fold_env_options*
-  Control whether or not environment beginnings that are not otherwise folded
-  (see |g:vimtex_fold_envs|, |g:vimtex_fold_env_blacklist|, and
-  |g:vimtex_fold_env_whitelist|) will be folded if they contain long option
-  lists.  Consider the following example: >
-
-      \begin{axis}[
-          width=\textwidth,
-          height=\textwidth/1.618,
-          ...,
-      ]
+                          % Fakepart title
+                          % Fakechapter title
+                          % Fakesection title
+                          % Fakesubsection title
 <
-  If the `axis` environment would not be folded, then the above would be
-  folded to >
+                        The fake sections are folded at the same level as the
+                        corresponding "real" sections. The fold title is the
+                        provided title with the `Fake...` part prepended.
 
-      \begin{axis}[...]
-< 
-  Default value: 1
+    <comments>          Fold multiline comments. This is disabled by default.
 
-*g:vimtex_fold_markers*
-  Use this option to disable/enable vim-style markers for folding, i.e. pairs
-  of `{{{` and `}}}`.
+    <markers>           Fold on vim-style markers inside comments, that is,
+                        pairs of `{{{` and `}}}`.
 
-  Default value: 1
+    <envs>              Fold environments.
+                        Can be further configured with a blacklist and
+                        whitelist of environments to be folded.
 
-*g:vimtex_fold_parts*
-  List of document parts that should be folded.
+                        Note: The `document` environment will never be folded.
 
+    <env_options>       This fold type allows to fold the `\begin` command if
+                        it contains a long optional argument. Consider the
+                        following example: >
+
+                          \begin{axis}[    --->    \begin{axis}[...]
+                              width=6cm,
+                              height=8cm,
+                              ...,
+                          ]
+<
+                        Here the `axis` environment must not be otherwise
+                        folded through the <envs> fold type.
+
+    <cmd_single>        Fold long commands with a single argument. E.g.: >
+
+                          \hypersetup{    --->    \hypersetup{...}
+                            option 1,
+                            ...,
+                            option n
+                            }
+<
+    <cmd_single_opt>    Fold commands that opens with a single long optional
+                        argument that is followed by a short "real" argument.
+                        E.g.: >
+
+                          \usepackage[    --->    \usepackage[...]{name}
+                            option 1,
+                            ...,
+                            option n
+                            ]{name}
+<
+    <cmd_multi>         Fold commands that start with a short regular argument
+                        and continue with long optional and/or regular
+                        arguments. E.g.: >
+
+                          \newcommand{\xx}[3]{    --->    \newcommand{\xx} ...
+                            Hello #1, #2, and #3.
+                          }
+<
+    <cmd_addplot>       Folding of the `\addplot` series of commands from the
+                        `pgfplots` package. E.g.: >
+
+                          \addplot+[] table[] {    --->    \addplot+[] table[] {...};
+                            table data
+                          };
+<
+  As an example, the following configuration will disable folding of the
+  preamble, as well as the `figure` and `table` environments. >
+
+    let  g:vimtex_fold_types = {
+           \ 'preamble' : {'enabled' : 0},
+           \ 'envs' : {
+           \   'blacklist' : ['figure', 'table'],
+           \ },
+           \}
+<
   Default value: >
-    let g:vimtex_fold_parts = [
-        \ 'appendix',
-        \ 'frontmatter',
-        \ 'mainmatter',
-        \ 'backmatter',
-      \ ]
-<
-*g:vimtex_fold_sections*
-  List of section constructs that should be folded.
-
-  Default value: >
-    let g:vimtex_fold_sections = [
-        \ 'part',
-        \ 'chapter',
-        \ 'section',
-        \ 'subsection',
-        \ 'subsubsection',
-      \ ]
-<
-*g:vimtex_fold_commands*
-*g:vimtex_fold_commands_default*
-  Use this option to disable/enable folding of commands. The option is
-  a dictionary of key-value pairs, where the key is a regex in very magic mode
-  (see |\v|) that matches the desired command name(s), and the value is the
-  variant of command folding. There are three variants allowed (see below for
-  a few examples that may be clarifying):
-
-  `single`        Useful for commands with a single long argument.
-  `single_opt`    Useful for commands that open with a single long optional
-                argument, then a short "real" argument.
-  `multi`         Useful for commands that start with a short regular argument
-                and continue with long optional and/or regular arguments.
-  `addplot`       This is a specific type meant for the `\addplot` series of
-                commands from the `pgfplots` package. See below for an example.
-
-  The option combines the contents of |g:vimtex_fold_commands| and
-  |g:vimtex_fold_commands_default|. Entries in the former will have higher
-  priority than entries in the latter. This way, it is easy to add custom
-  entries without disturbing the defaults. For those who want to ignore the
-  defaults, one may simple set |g:vimtex_fold_commands_default| to an empty
-  dictionary.
-
-  Examples of how command folds work for the different variants: >
-
-    Variant       Not folded                     Folded
-    ----------------------------------------------------------------------
-    'single'      \hypersetup{                   \hypersetup{...}
-                    option 1,
-                    ...,
-                    option n
-                    }
-
-    'single_opt'  \usepackage[                   \usepackage[...]{name}
-                    option 1,
-                    ...,
-                    option n
-                    ]{name}
-
-    'multi'       \newcommand{\command}[3]{      \newcommand{\command} ...
-                    Hello #1, #2, and #3.
-                  }
-
-    'addplot'     \addplot+ [] table [] {        \addplot+ [] table [] {...}
-                    table data
-                  };
-    ----------------------------------------------------------------------
-<
-  Note: |g:vimtex_fold_commands| deprecates the old *g:vimtex_fold_documentclass*
-        option. To fold the `\documentclass` command, it may be added with the
-        `single_opt` variant. As before, one must disable |g:vimtex_fold_preamble|.
-
-  Default value: >
-    let g:vimtex_fold_commands = {}
-    let g:vimtex_fold_commands_default = {
-        \ 'hypersetup' : 'single',
-        \ 'tikzset' : 'single',
-        \ 'pgfplotstableread' : 'single',
-        \ 'usepackage' : 'single_opt',
-        \ 'includepdf' : 'single_opt',
-        \ '%(re)?new%(command|environment)' : 'multi',
-        \ 'providecommand' : 'multi',
-        \ 'presetkeys' : 'multi',
-        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
-        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
-        \ 'addplot[3+]?' : 'addplot',
-        \}
+    let g:vimtex_fold_types = {}
+    let g:vimtex_fold_types_defaults = {
+          \ 'preamble' : {},
+          \ 'comments' : {'enabled' : 0},
+          \ 'envs' : {
+          \   'blacklist' : [],   !!! This is a list of strings
+          \   'whitelist' : [],   !!! This is a list of strings
+          \ },
+          \ 'env_options' : {},
+          \ 'markers' : {},
+          \ 'sections' : {
+          \   'sections' : [      !!! This is a list of regexes
+          \     'part',
+          \     'chapter',
+          \     'section',
+          \     'subsection',
+          \     'subsubsection',
+          \   ],
+          \   'parts' : [         !!! This is a list of regexes
+          \     'appendix',
+          \     'frontmatter',
+          \     'mainmatter',
+          \     'backmatter',
+          \   ],
+          \ },
+          \ 'cmd_single' : {
+          \   'cmds' : [          !!! This is a list of regexes
+          \     'hypersetup',
+          \     'tikzset',
+          \     'pgfplotstableread',
+          \   ],
+          \ },
+          \ 'cmd_single_opt' : {
+          \   'cmds' : [          !!! This is a list of regexes
+          \     'usepackage',
+          \     'includepdf',
+          \   ],
+          \ },
+          \ 'cmd_multi' : {
+          \   'cmds' : [          !!! This is a list of regexes
+          \     '%(re)?new%(command|environment)',
+          \     'providecommand',
+          \     'presetkeys',
+          \     'Declare%(Multi|Auto)?CiteCommand',
+          \     'Declare%(Index)?%(Field|List|Name)%(Format|Alias)',
+          \   ],
+          \ },
+          \ 'cmd_addplot' : {
+          \   'cmds' : [          !!! This is a list of regexes
+          \     'addplot[+3]?',
+          \   ],
+          \ },
+          \}
 
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
@@ -2347,23 +2364,8 @@ manually with >
   set foldexpr=vimtex#fold#level(v:lnum)
   set foldtext=vimtex#fold#text()
 
-When folding is enabled and a LaTeX document is opened, the document is parsed
-in order to define the highest fold level based on which parts (such as
-frontmatter, backmatter, and appendix) and section types (chapter, section,
-etc.) are present. This parsing is done automatically every time the folds are
-recomputed, if there are any changes to the file.
-
-The fold function also recognizes "fake" sections. That is, it parses comments
-similar to: >
-
-  % Fakepart title
-  % Fakechapter title
-  % Fakesection title
-  % Fakesubsection title
-
-The fake sections are folded at the same level as the corresponding "real"
-sections. The fold title is the provided title with the `Fake...` part
-prepended.
+The folding is mainly configured through the dictionary option
+|g:vimtex_fold_types|.
 
 Note: The |fold-expr| method of folding is well known to be slow, e.g. for
       long lines and large files. To speed things up, the user may want to
@@ -2380,17 +2382,9 @@ change the fold filler, use e.g.: >
 Associated settings:
   |g:vimtex_fold_enabled|
   |g:vimtex_fold_manual|
-  |g:vimtex_fold_comments|
   |g:vimtex_fold_levelmarker|
-  |g:vimtex_fold_preamble|
-  |g:vimtex_fold_envs|
-  |g:vimtex_fold_env_blacklist|
-  |g:vimtex_fold_env_whitelist|
-  |g:vimtex_fold_markers|
-  |g:vimtex_fold_parts|
-  |g:vimtex_fold_sections|
-  |g:vimtex_fold_commands|
-  |g:vimtex_fold_commands_default|
+  |g:vimtex_fold_types|
+  |g:vimtex_fold_types_defaults|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
@@ -3027,6 +3021,23 @@ The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
+2017-07-27: Major refactoring of the folding feature~
+I've made a large update to the code for folding. The configuration of the
+various folded elements is now done through a single option:
+|g:vimtex_fold_types|.
+
+Deprecated options:
+  *g:vimtex_fold_comments*
+  *g:vimtex_fold_preamble*
+  *g:vimtex_fold_envs*
+  *g:vimtex_fold_env_blacklist*
+  *g:vimtex_fold_env_whitelist*
+  *g:vimtex_fold_markers*
+  *g:vimtex_fold_parts*
+  *g:vimtex_fold_sections*
+  *g:vimtex_fold_commands*
+  *g:vimtex_fold_commands_default*
+
 2017-06-05: Removed Lacheck support~
                                                                *vimtex-lacheck*
 Removed support for using `lacheck` for checking LaTeX syntax. The reason is
@@ -3039,8 +3050,8 @@ There's been a few updates to the TOC. During this work, I removed some
 unecessary options.
 
 Deprecated options:
-    *g:vimtex_toc_fold_levels*  (was not necessary)
-    *g:vimtex_toc_number_width*  (see |g:vimtex_toc_tocdepth|)
+  *g:vimtex_toc_fold_levels*  (was not necessary)
+  *g:vimtex_toc_number_width*  (see |g:vimtex_toc_tocdepth|)
 
 2017-03-31: Refactored quickfix related features~
 I've added a more general layer for handling different error parsers.
@@ -3049,24 +3060,24 @@ should make it possible to add other methods for showing errors in a LaTeX
 project than the current one that parses the `.log` file directly.
 
 Deprecated options:
-    *g:vimtex_quickfix_warnings*  (see |g:vimtex_quickfix_latexlog|)
+  *g:vimtex_quickfix_warnings*  (see |g:vimtex_quickfix_latexlog|)
 
 2017-03-28: Major refactoring of initialization~
 Added a general compiler interface, see |vimtex-compiler|.  To configure the
 `latexmk` compiler, see |g:vimtex_compiler_latexmk|.
 
 Deprecated options:
-    *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_enabled|)
-    *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_progname|)
-    *g:vimtex_latexmk_callback_hooks* (use |g:vimtex_compiler_callback_hooks|)
-    *g:vimtex_latexmk_callback*
-    *g:vimtex_latexmk_autojump*
-    *g:vimtex_latexmk_continuous*
-    *g:vimtex_latexmk_background*
-    *g:vimtex_latexmk_options*
+  *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_enabled|)
+  *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_progname|)
+  *g:vimtex_latexmk_callback_hooks* (use |g:vimtex_compiler_callback_hooks|)
+  *g:vimtex_latexmk_callback*
+  *g:vimtex_latexmk_autojump*
+  *g:vimtex_latexmk_continuous*
+  *g:vimtex_latexmk_background*
+  *g:vimtex_latexmk_options*
 
 Deprecated commands:
-    *VimtexCompileToggle* (use |VimtexCompile|)
+  *VimtexCompileToggle* (use |VimtexCompile|)
 
 2017-03-28: Major refactoring of initialization~
 The initialization has been refactored in order to provide a more consistent
@@ -3113,14 +3124,14 @@ The following options have been removed:
   *g:vimtex_change_ignored_delims_pattern* --- It was no longer necessary
 
 The following mappings have been renamed:
-   *<plug>(vimtex-delete-env)*   ---> |<plug>(vimtex-env-delete)|
-   *<plug>(vimtex-delete-cmd)*   ---> |<plug>(vimtex-cmd-delete)|
-   *<plug>(vimtex-change-env)*   ---> |<plug>(vimtex-env-change)|
-   *<plug>(vimtex-change-cmd)*   ---> |<plug>(vimtex-cmd-change)|
-   *<plug>(vimtex-toggle-star)*  ---> |<plug>(vimtex-env-toggle-star)|
-   *<plug>(vimtex-toggle-delim)* ---> |<plug>(vimtex-delim-toggle-modifier)|
-   *<plug>(vimtex-create-cmd)*   ---> |<plug>(vimtex-cmd-create)|
-   *<plug>(vimtex-close-env)*    ---> |<plug>(vimtex-delim-close)|
+  *<plug>(vimtex-delete-env)*   ---> |<plug>(vimtex-env-delete)|
+  *<plug>(vimtex-delete-cmd)*   ---> |<plug>(vimtex-cmd-delete)|
+  *<plug>(vimtex-change-env)*   ---> |<plug>(vimtex-env-change)|
+  *<plug>(vimtex-change-cmd)*   ---> |<plug>(vimtex-cmd-change)|
+  *<plug>(vimtex-toggle-star)*  ---> |<plug>(vimtex-env-toggle-star)|
+  *<plug>(vimtex-toggle-delim)* ---> |<plug>(vimtex-delim-toggle-modifier)|
+  *<plug>(vimtex-create-cmd)*   ---> |<plug>(vimtex-cmd-create)|
+  *<plug>(vimtex-close-env)*    ---> |<plug>(vimtex-delim-close)|
 
 2015-10-19: Added convenient insert mode mappings~
 I've merged the `math_mappings` branch (see #172 and #251). It adds the
