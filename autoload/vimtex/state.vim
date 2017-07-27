@@ -367,6 +367,7 @@ function! s:vimtex.new(main, preserve_root) abort dict " {{{1
   call vimtex#qf#init_state(l:new)
   call vimtex#toc#init_state(l:new)
   call vimtex#labels#init_state(l:new)
+  call vimtex#fold#init_state(l:new)
 
   " Parsing packages might depend on the compiler setting for build_dir
   call l:new.parse_packages()

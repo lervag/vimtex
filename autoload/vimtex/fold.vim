@@ -4,22 +4,9 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#fold#init_buffer() " {{{1
-  " b:vimtex_fold is a dictionary used to store dynamic fold information
-  " Note: We define this even if folding is disabled, because people might want
-  "       to enable folding manually
-  let b:vimtex_fold = {}
-
-  if !g:vimtex_fold_enabled | return | endif
-  if s:foldmethod_in_modeline() | return | endif
-
-  " Sanity check
-  if g:vimtex_fold_preamble
-        \ && has_key(s:cmds, 'documentclass')
-    let g:vimtex_fold_preamble = 0
-    call vimtex#echo#warning('Can''t fold both preamble and documentclass!')
-    call vimtex#echo#wait()
-  endif
+function! vimtex#fold#init_buffer() abort " {{{1
+  if !g:vimtex_fold_enabled
+        \ || s:foldmethod_in_modeline() | return | endif
 
   " Set fold options
   setlocal foldmethod=expr
@@ -56,104 +43,98 @@ function! vimtex#fold#init_buffer() " {{{1
 endfunction
 
 " }}}1
+function! vimtex#fold#init_state(state) abort " {{{1
+  "
+  " Initialize the enabled fold types
+  "
+  let a:state.fold_types_dict = {}
+  for [l:key, l:val] in items(g:vimtex_fold_types_defaults)
+    let l:config = extend(deepcopy(l:val), get(g:vimtex_fold_types, l:key, {}))
+    if get(l:config, 'enabled', 1)
+      let a:state.fold_types_dict[l:key] = vimtex#fold#{l:key}#new(l:config)
+    endif
+  endfor
 
-function! vimtex#fold#refresh(map) " {{{1
+  "
+  " Define ordered list and the global fold regex
+  "
+  let a:state.fold_types_ordered = []
+  let a:state.fold_re = '\v'
+        \ .  '^\s*\\%(begin|end)>'
+        \ . '|^\s*\%'
+        \ . '|\%%(.*\{\{\{|\s*\}\}\})'
+        \ . '|^\s*\]\s*%(\{|$)'
+        \ . '|^\s*}'
+  for l:name in [
+        \ 'preamble',
+        \ 'cmd_single',
+        \ 'cmd_single_opt',
+        \ 'cmd_multi',
+        \ 'cmd_addplot',
+        \ 'sections',
+        \ 'markers',
+        \ 'comments',
+        \ 'envs',
+        \ 'env_options',
+        \]
+    let l:type = get(a:state.fold_types_dict, l:name, {})
+    if !empty(l:type)
+      call add(a:state.fold_types_ordered, l:type)
+      if exists('l:type.re.fold_re')
+        let a:state.fold_re .= '|' . l:type.re.fold_re
+      endif
+    endif
+  endfor
+endfunction
+
+" }}}1
+
+function! vimtex#fold#refresh(map) abort " {{{1
   setlocal foldmethod=expr
   execute 'normal! ' . a:map
   setlocal foldmethod=manual
 endfunction
 
 " }}}1
-function! vimtex#fold#level(lnum) " {{{1
+function! vimtex#fold#level(lnum) abort " {{{1
   let l:line = getline(a:lnum)
 
-  " Check for normal lines first (optimization)
-  if l:line !~# s:folded | return '=' | endif
+  " Filter out lines that do not start any folds (optimization)
+  if l:line !~# b:vimtex.fold_re | return '=' | endif
 
-  " Fold preamble
-  let l:value = s:fold_preamble.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold commands
-  for l:cmd in s:cmds_types
-    let l:value = l:cmd.level(l:line, a:lnum)
-    if !empty(l:value) | return l:value | endif
-  endfor
-
-  " Refresh fold levels for section commands
-  let l:value = s:fold_sections.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold markers
-  let l:value = s:fold_markers.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold long comments
-  let l:value = s:fold_comments.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold environments
-  let l:value = s:fold_env.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Fold environments with long options
-  let l:value = s:fold_env_options.level(l:line, a:lnum)
-  if !empty(l:value) | return l:value | endif
-
-  " Never fold \end{document}
-  if l:line =~# '^\s*\\end{document}'
+  " Never fold \begin|end{document}
+  if l:line =~# '^\s*\\\%(begin\|end\){document}'
     return 0
   endif
+
+  for l:type in b:vimtex.fold_types_ordered
+    let l:value = l:type.level(l:line, a:lnum)
+    if !empty(l:value) | return l:value | endif
+  endfor
 
   " Return foldlevel of previous line
   return '='
 endfunction
 
 " }}}1
-function! vimtex#fold#text() " {{{1
-  let line = getline(v:foldstart)
-
-  " Text for various folded commands
-  for l:cmd in s:cmds_types
-    if line =~# l:cmd.re.start
-      return l:cmd.text(line)
-    endif
-  endfor
-
-  " Set fold level
-  let level = v:foldlevel > 1
+function! vimtex#fold#text() abort " {{{1
+  let l:line = getline(v:foldstart)
+  let l:level = v:foldlevel > 1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
         \ : ''
 
-  if line =~# s:fold_preamble.re.start
-    return s:fold_preamble.text(line)
-  endif
-
-  if line =~# s:fold_sections.re.start
-    return s:fold_sections.text(line, level)
-  endif
-
-  if line =~# s:fold_markers.re.start
-    return s:fold_markers.text(line)
-  endif
-
-  if line =~# s:fold_comments.re.start
-    return s:fold_comments.text(line, level)
-  endif
-
-  if line =~# s:fold_env.re.start
-    let l:value = s:fold_env.text(line, level)
-    if !empty(l:value) | return l:value | endif
-  endif
-
-  if line =~# s:fold_env_options.re.start
-    return s:fold_env_options.text(line)
-  endif
+  for l:type in b:vimtex.fold_types_ordered
+    if l:line =~# l:type.re.start
+      let l:text = l:type.text(l:line, l:level)
+      if !empty(l:text) | return l:text | endif
+    endif
+  endfor
 endfunction
 
 " }}}1
 
-function! s:foldmethod_in_modeline() " {{{1
+
+function! s:foldmethod_in_modeline() abort " {{{1
   let l:cursor_pos = vimtex#pos#get_cursor()
   let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
 
@@ -166,556 +147,6 @@ function! s:foldmethod_in_modeline() " {{{1
   call vimtex#pos#set_cursor(l:cursor_pos)
   return l:check_top || l:check_btm
 endfunction
-
-" }}}1
-
-function! s:cmd_single(cmds) " {{{1
-  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?\s*%(\[.*\])?'
-
-  let l:fold = {}
-  let l:fold.re = {
-        \ 'start' : l:re . '\s*\{\s*%($|\%)',
-        \ 'end' : '^\s*}',
-        \ 'text' : l:re,
-        \}
-
-  function! l:fold.level(line, lnum) dict
-    if a:line =~# self.re.start
-      let self.opened = 1
-      return 'a1'
-    elseif has_key(self, 'opened')
-          \ && a:line =~# self.re.end
-      unlet self.opened
-      return 's1'
-    endif
-    return ''
-  endfunction
-
-  function! l:fold.text(line) dict
-    return matchstr(a:line, self.re.text) . '{...}'
-          \ . substitute(getline(v:foldend), self.re.end, '', '')
-  endfunction
-
-  return l:fold
-endfunction
-
-" }}}1
-function! s:cmd_single_opt(cmds) " {{{1
-  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
-
-  let l:fold = {}
-  let l:fold.re = {
-        \ 'start' : l:re . '\s*\[\s*%($|\%)',
-        \ 'end' : '^\s*\]{',
-        \ 'text' : l:re,
-        \}
-
-  function! l:fold.level(line, lnum) dict
-    if a:line =~# self.re.start
-      let self.opened = 1
-      return 'a1'
-    elseif has_key(self, 'opened')
-          \ && a:line =~# self.re.end
-      unlet self.opened
-      return 's1'
-    endif
-    return ''
-  endfunction
-
-  function! l:fold.text(line) dict
-    let l:col = strlen(matchstr(a:line, '^\s*')) + 1
-    return matchstr(a:line, self.re.text) . '[...]{'
-          \ . vimtex#cmd#get_at(v:foldstart, l:col).args[0].text . '}'
-  endfunction
-
-  return l:fold
-endfunction
-
-" }}}1
-function! s:cmd_multi(cmds) " {{{1
-  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\*?'
-
-  let l:fold = {}
-  let l:fold.re = {
-        \ 'start' : l:re . '.*(\{|\[)\s*(\%.*)?$',
-        \ 'end' : '^\s*}\s*$',
-        \ 'text' : l:re . '\{[^}]*\}',
-        \}
-  let l:fold.opened = 0
-
-  function! l:fold.level(line, lnum) dict
-    if a:line =~# self.re.start
-      let self.opened += 1
-      return 'a1'
-    elseif self.opened > 0 && a:line =~# self.re.end
-      let self.opened -= 1
-      return 's1'
-    endif
-    return ''
-  endfunction
-
-  function! l:fold.text(line) dict
-    return a:line
-  endfunction
-
-  return l:fold
-endfunction
-
-" }}}1
-function! s:cmd_addplot(cmds) " {{{1
-  let l:re = '\v^\s*\\%(' . join(a:cmds, '|') . ')\s*%(\[[^\]]*\])?'
-
-  let l:fold = {}
-  let l:fold.re = {
-        \ 'start' : l:re . '\s*\w+\s*%(\[[^\]]*\])?\s*\ze\{\s*%($|\%)',
-        \ 'end' : '^\s*}',
-        \}
-
-  function! l:fold.level(line, lnum) dict
-    if a:line =~# self.re.start
-      let self.opened = 1
-      return 'a1'
-    elseif has_key(self, 'opened')
-          \ && a:line =~# self.re.end
-      unlet self.opened
-      return 's1'
-    endif
-    return ''
-  endfunction
-
-  function! l:fold.text(line) dict
-    return matchstr(a:line, self.re.start) . '{...}'
-          \ . substitute(getline(v:foldend), self.re.end, '', '')
-  endfunction
-
-  return l:fold
-endfunction
-
-" }}}1
-
-let s:fold_preamble = {
-      \ 're' : {
-      \   'start' : '^\s*\\documentclass',
-      \   'end' : '^\s*\\begin\s*{\s*document\s*}',
-      \ },
-      \}
-function! s:fold_preamble.level(line, lnum) " {{{1
-  if g:vimtex_fold_preamble && a:line =~# self.re.start
-    return '>1'
-  elseif a:line =~# self.re.end
-    return '0'
-  endif
-endfunction
-
-" }}}1
-function! s:fold_preamble.text(line) " {{{1
-  return '      Preamble'
-endfunction
-
-" }}}1
-
-let s:fold_sections = {
-      \ 're' : {
-      \   'start' : '\v\\(' . join([
-      \     '%(sub)*%(section|paragraph)',
-      \     'part',
-      \     'chapter',
-      \     '(front|back|main)matter',
-      \     'appendix'], '|') . ')'
-      \     . '|^\s*\%\s*Fake',
-      \   'sections' : '(%(sub)*%(section|paragraph)|part|chapter)',
-      \ },
-      \}
-function! s:fold_sections.level(line, lnum) " {{{1
-  call self.refresh_folded_sections()
-
-  " Fold chapters and sections
-  for [l:part, l:level] in b:vimtex_fold.parts
-    if a:line =~# l:part
-      return '>' . l:level
-    endif
-  endfor
-endfunction
-
-" }}}1
-function! s:fold_sections.text(line, level) " {{{1
-  let secpat1 = '\v^\s*\\' . self.re.sections . '\*?\s*\{'
-  let secpat2 = '\v^\s*\\' . self.re.sections . '\*?\s*\['
-  if a:line =~# '\\frontmatter'
-    let title = 'Frontmatter'
-  elseif a:line =~# '\\mainmatter'
-    let title = 'Mainmatter'
-  elseif a:line =~# '\\backmatter'
-    let title = 'Backmatter'
-  elseif a:line =~# '\\appendix'
-    let title = 'Appendix'
-  elseif a:line =~# secpat1
-    let title = self.parse_title(matchstr(a:line, secpat1 . '\zs.*'), 0)
-  elseif a:line =~# secpat2
-    let title = self.parse_title(matchstr(a:line, secpat2 . '\zs.*'), 1)
-  elseif a:line =~# '\vFake' . self.re.sections
-    let title = matchstr(a:line, '\vFake' . self.re.sections . '.*')
-  endif
-
-  " Combine level and title and return the trimmed fold text
-  let text = printf('%-5s %-73s', a:level, strpart(title, 0, 73))
-  return substitute(text, '\s\+$', '', '') . ' '
-endfunction
-
-" }}}1
-function! s:fold_sections.refresh_folded_sections() dict " {{{1
-  "
-  " Parse current buffer to find which sections to fold and their levels.  The
-  " patterns are predefined to optimize the folding.
-  "
-  " We ignore top level parts such as \frontmatter, \appendix, \part, and
-  " similar, unless there are at least two such commands in a document.
-  "
-
-  " Only refresh if file has been changed
-  let l:time = getftime(expand('%'))
-  if l:time == get(b:vimtex_fold, 'time', 0) | return | endif
-  let b:vimtex_fold.time = l:time
-
-  " Initialize
-  let b:vimtex_fold.parts = []
-  let buffer = getline(1,'$')
-
-  " Parse part commands (frontmatter, appendix, part, etc)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:parts . '''')
-  for part in g:vimtex_fold_parts
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        call insert(b:vimtex_fold.parts, [partpattern, 1])
-        break
-      endif
-    endfor
-  endfor
-
-  " We want a minimum of two top level parts
-  if len(b:vimtex_fold.parts) >= 2
-    let level = 1
-  else
-    let level = 0
-    let b:vimtex_fold.parts = []
-  endif
-
-  " Parse section commands (chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . s:secs . '''')
-  for part in g:vimtex_fold_sections
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
-    for line in lines
-      if line =~# partpattern
-        let level += 1
-        call insert(b:vimtex_fold.parts, [partpattern, level])
-        break
-      endif
-    endfor
-  endfor
-endfunction
-
-" }}}1
-function! s:fold_sections.parse_title(string, type) dict " {{{1
-  let l:idx = 0
-  let l:length = strlen(a:string)
-  let l:level = 1
-  while l:level >= 1
-    let l:idx += 1
-    if l:idx > l:length
-      break
-    elseif a:string[l:idx] ==# ['}',']'][a:type]
-      let l:level -= 1
-    elseif a:string[l:idx] ==# ['{','['][a:type]
-      let l:level += 1
-    endif
-  endwhile
-  return strpart(a:string, 0, l:idx)
-endfunction
-
-" }}}1
-
-let s:fold_markers = {
-      \ 'opened' : 0,
-      \ 're' : {
-      \   'start' : '\v\%.*\{\{\{',
-      \   'end' : '\v\%\s*\}\}\}',
-      \   'parser1' : '\v\%\s*\{\{\{',
-      \   'parser2' : '\v\%\s*\zs.*\ze\{\{\{',
-      \ },
-      \}
-function! s:fold_markers.level(line, lnum) " {{{1
-  if a:line =~# self.re.start
-    let s:self.opened = 1
-    return 'a1'
-  elseif a:line =~# self.re.end
-    let s:self.opened = 0
-    return 's1'
-  endif
-endfunction
-
-" }}}1
-function! s:fold_markers.text(line) " {{{1
-  return a:line =~# self.re.parser1
-        \ ? ' ' . matchstr(a:line, self.re.parser1 . '\s*\zs.*')
-        \ : ' ' . matchstr(a:line, self.re.parser2)
-endfunction
-
-" }}}1
-
-let s:fold_comments = {
-      \ 'opened' : 0,
-      \ 're' : {
-      \   'start' : '^\s*%',
-      \   'text' : '^\s*\zs%.*',
-      \ },
-      \}
-function! s:fold_comments.level(line, lnum) " {{{1
-  if g:vimtex_fold_comments && !s:fold_markers.opened
-    if l:line =~# self.re.start
-      let l:next = getline(a:lnum-1) !~# self.re.start
-      let l:prev = getline(a:lnum+1) !~# self.re.start
-      if l:next && !l:prev
-        let self.opened = 1
-        return 'a1'
-      elseif l:prev && !l:next
-        let self.opened = 0
-        return 's1'
-      endif
-    endif
-  endif
-endfunction
-
-" }}}1
-function! s:fold_comments.text(line, level) " {{{1
-  return printf('%-5s %-73s', a:level, matchstr(line, self.re.text)[0:73])
-endfunction
-
-" }}}1
-
-let s:fold_env = {
-      \ 're' : {
-      \   'start' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\begin\s*\{.{-}\}',
-      \   'end' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\end\s*\{.{-}\}',
-      \   'name' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \            . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
-      \ }
-      \}
-function! s:fold_env.level(line, lnum) " {{{1
-  if !g:vimtex_fold_envs | return | endif
-
-  let l:env = matchstr(a:line, self.re.name)
-  if !empty(l:env) && self.validate(l:env)
-    if a:line =~# self.re.start
-      if a:line !~# '\\end'
-        return 'a1'
-      endif
-    elseif a:line =~# self.re.end
-      if a:line !~# '\\begin'
-        return 's1'
-      endif
-    endif
-  endif
-endfunction
-
-" }}}1
-function! s:fold_env.text(line, level) " {{{1
-  let env = matchstr(a:line, self.re.name)
-  if !self.validate(env) | return | endif
-
-  let nt = 73
-  let ne = 12
-
-  " Set caption/label based on type of environment
-  if env ==# 'frame'
-    let label = ''
-    let caption = self.parse_caption_frame(a:line)
-  elseif env ==# 'table'
-    let label = self.parse_label()
-    let caption = self.parse_caption_table(a:line)
-  else
-    let label = self.parse_label()
-    let caption = self.parse_caption(a:line)
-  endif
-
-  " Add parenthesis to label
-  if label !=# ''
-    let label = substitute(strpart(label,0,nt-ne-2), '\(.*\)', '(\1)','')
-  endif
-
-  " Set size of label and caption part of string
-  let nl = len(label) > nt - ne ? nt - ne : len(label)
-  let nc = nt - ne - nl - 1
-  let caption = strpart(caption, 0, nc)
-
-  " Create title based on env, caption and label
-  let title = printf('%-' . ne . 's%-' . nc . 's %' . nl . 's',
-        \ env, caption, label)
-
-  " Combine level and title and return the trimmed fold text
-  let text = printf('%-5s %-' . nt . 's', a:level, strpart(title, 0, nt))
-  return substitute(text, '\s\+$', '', '') . ' '
-endfunction
-
-" }}}1
-function! s:fold_env.validate(env) " {{{1
-  return (empty(g:vimtex_fold_env_whitelist)
-        \   || index(g:vimtex_fold_env_whitelist, a:env) >= 0)
-        \ && index(g:vimtex_fold_env_blacklist, a:env) < 0
-endfunction
-
-" }}}1
-function! s:fold_env.parse_label() " {{{1
-  let i = v:foldend
-  while i >= v:foldstart
-    if getline(i) =~# '^\s*\\label'
-      return matchstr(getline(i), '^\s*\\label\%(\[.*\]\)\?{\zs.*\ze}')
-    end
-    let i -= 1
-  endwhile
-  return ''
-endfunction
-
-" }}}1
-function! s:fold_env.parse_caption(line) " {{{1
-  let i = v:foldend
-  while i >= v:foldstart
-    if getline(i) =~# '^\s*\\caption'
-      return matchstr(getline(i),
-            \ '^\s*\\caption\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
-    end
-    let i -= 1
-  endwhile
-
-  " If no caption found, check for a caption comment
-  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
-endfunction
-
-" }}}1
-function! s:fold_env.parse_caption_table(line) " {{{1
-  let i = v:foldstart
-  while i <= v:foldend
-    if getline(i) =~# '^\s*\\caption'
-      return matchstr(getline(i),
-            \ '^\s*\\caption\s*\(\[.*\]\)\?\s*{\zs.\{-1,}\ze\(}\s*\)\?$')
-    end
-    let i += 1
-  endwhile
-
-  " If no caption found, check for a caption comment
-  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
-endfunction
-
-" }}}1
-function! s:fold_env.parse_caption_frame(line) " {{{1
-  " Test simple variants first
-  let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
-  let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
-
-  if len(caption1) > 0
-    return caption1
-  elseif len(caption2) > 0
-    return caption2
-  else
-    let i = v:foldstart
-    while i <= v:foldend
-      if getline(i) =~# '^\s*\\frametitle'
-        return matchstr(getline(i),
-              \ '^\s*\\frametitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
-      end
-      let i += 1
-    endwhile
-
-    " If no caption found, check for a caption comment
-    return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
-  endif
-endfunction
-
-" }}}1
-
-let s:fold_env_options = {
-      \ 'opened' : 0,
-      \ 're' : {
-      \   'start' : s:fold_env.re.start . '\[\s*($|\%)',
-      \   'end' : '\s*\]\s*$',
-      \ }
-      \}
-function! s:fold_env_options.level(line, lnum) dict " {{{1
-  if !g:vimtex_fold_env_options | return | endif
-
-  return self.opened
-        \ ? self.fold_closed(a:line, a:lnum)
-        \ : self.fold_opened(a:line, a:lnum)
-endfunction
-function! s:fold_env_options.fold_opened(line, lnum) dict " {{{1
-  if a:line =~# self.re.start
-    let self.opened = 1
-    return 'a1'
-  endif
-endfunction
-
-" }}}1
-function! s:fold_env_options.fold_closed(line, lnum) dict " {{{1
-  if a:line =~# self.re.end
-    let self.opened = 0
-    return 's1'
-  endif
-endfunction
-
-" }}}1
-function! s:fold_env_options.text(line) dict " {{{1
-  return a:line . '...] '
-endfunction
-
-" }}}1
-
-
-" {{{1 Initialize module
-
-let s:parts = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_parts, '|') . ')>'
-let s:secs  = '\v^\s*(\\|\% Fake)(' . join(g:vimtex_fold_sections,  '|') . ')>'
-
-"
-" Set up command fold structure
-"
-function! s:init_cmds() " {{{2
-  let s:cmds = extend(g:vimtex_fold_commands_default,
-        \ get(g:, 'vimtex_fold_commands', {}))
-  let s:cmds_types = []
-  let s:cmds_all = []
-
-  for l:type in ['single', 'single_opt', 'multi', 'addplot']
-    let l:cmds = keys(filter(copy(s:cmds), 'v:val ==# l:type'))
-    if !empty(l:cmds)
-      call extend(s:cmds_all, l:cmds)
-      call add(s:cmds_types, s:cmd_{l:type}(l:cmds))
-    endif
-  endfor
-endfunction
-
-" }}}2
-
-call s:init_cmds()
-
-"
-" List of identifiers for improving efficiency
-"
-let s:folded  = '\v'
-let s:folded .=  '^\s*\%'
-let s:folded .= '|^\s*\]\{'
-let s:folded .= '|^\s*}'
-let s:folded .= '|^\s*\]\s*$'
-let s:folded .= '|\%%(.*\{\{\{|\s*\}\}\})'
-let s:folded .= '|\\%(' . join([
-      \   'begin',
-      \   'end',
-      \   '%(sub)*%(section|paragraph)',
-      \   'chapter',
-      \   'documentclass',
-      \   '%(front|main|back)matter',
-      \   'appendix',
-      \   'part',
-      \ ] + s:cmds_all, '|') . ')'
 
 " }}}1
 

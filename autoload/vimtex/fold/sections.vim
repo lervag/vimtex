@@ -1,0 +1,135 @@
+" vimtex - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
+function! vimtex#fold#sections#new(config) abort " {{{1
+  return extend(deepcopy(s:folder), a:config).init()
+endfunction
+
+" }}}1
+
+
+let s:folder = {
+      \ 'name' : 'sections',
+      \ 're' : {},
+      \ 'folds' : [],
+      \ 'sections' : [],
+      \ 'parts' : [],
+      \ 'time' : 0,
+      \}
+function! s:folder.init() abort dict " {{{1
+  let self.re.parts = '\v^\s*\\%(' . join(self.parts, '|') . ')'
+  let self.re.sections = '\v^\s*\\%(' . join(self.sections, '|') . ')'
+  let self.re.fake_sections = '\v^\s*\% \vFake%('
+        \ . join(self.sections, '|') . ').*'
+
+  let self.re.start = self.re.parts
+        \ . '|' . self.re.sections
+        \ . '|' . self.re.fake_sections
+
+  let self.re.secpat1 = self.re.sections . '\*?\s*\{\zs.*'
+  let self.re.secpat2 = self.re.sections . '\*?\s*\[\zs.*'
+
+  let self.re.fold_re = '\\%(' . join(self.parts + self.sections, '|') . ')'
+
+  return self
+endfunction
+
+" }}}1
+function! s:folder.level(line, lnum) abort dict " {{{1
+  call self.refresh()
+
+  " Fold chapters and sections
+  for [l:part, l:level] in self.folds
+    if a:line =~# l:part
+      return '>' . l:level
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:folder.text(line, level) abort dict " {{{1
+  if a:line =~# '\\frontmatter'
+    let l:title = 'Frontmatter'
+  elseif a:line =~# '\\mainmatter'
+    let l:title = 'Mainmatter'
+  elseif a:line =~# '\\backmatter'
+    let l:title = 'Backmatter'
+  elseif a:line =~# '\\appendix'
+    let l:title = 'Appendix'
+  elseif a:line =~# self.re.secpat1
+    let l:title = self.parse_title(matchstr(a:line, self.re.secpat1), 0)
+  elseif a:line =~# self.re.secpat2
+    let l:title = self.parse_title(matchstr(a:line, self.re.secpat2), 1)
+  elseif a:line =~# self.re.fake_sections
+    let l:title = matchstr(a:line, self.re.fake_sections)
+  endif
+
+  return printf('%-5s %-73s', a:level, strpart(l:title, 0, 73))
+endfunction
+
+" }}}1
+function! s:folder.parse_title(string, type) abort dict " {{{1
+  let l:idx = 0
+  let l:length = strlen(a:string)
+  let l:level = 1
+  while l:level >= 1
+    let l:idx += 1
+    if l:idx > l:length
+      break
+    elseif a:string[l:idx] ==# ['}',']'][a:type]
+      let l:level -= 1
+    elseif a:string[l:idx] ==# ['{','['][a:type]
+      let l:level += 1
+    endif
+  endwhile
+  return strpart(a:string, 0, l:idx)
+endfunction
+
+" }}}1
+function! s:folder.refresh() abort dict " {{{1
+  "
+  " Parse current buffer to find which sections to fold and their levels.  The
+  " patterns are predefined to optimize the folding.
+  "
+  " We ignore top level parts such as \frontmatter, \appendix, \part, and
+  " similar, unless there are at least two such commands in a document.
+  "
+
+  " Only refresh if file has been changed
+  let l:time = getftime(expand('%'))
+  if l:time == self.time | return | endif
+  let self.time = l:time
+
+  " Initialize
+  let self.folds = []
+  let level = 0
+  let buffer = getline(1,'$')
+
+  " Parse part commands (frontmatter, appendix, etc)
+  " Note: We want a minimum of two top level parts
+  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.parts . '''')
+  if len(lines) >= 2
+    let level += 1
+    call insert(self.folds, [self.re.parts, level])
+  endif
+
+  " Parse section commands (part, chapter, [sub...]section)
+  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.sections . '''')
+  for part in self.sections
+    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    for line in lines
+      if line =~# partpattern
+        let level += 1
+        call insert(self.folds, [partpattern, level])
+        break
+      endif
+    endfor
+  endfor
+endfunction
+
+" }}}1
+
+" vim: fdm=marker sw=2

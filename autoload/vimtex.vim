@@ -54,41 +54,59 @@ function! s:init_options() " {{{1
   else
     call s:init_option('vimtex_fold_manual', 0)
   endif
-  call s:init_option('vimtex_fold_comments', 0)
   call s:init_option('vimtex_fold_levelmarker', '*')
-  call s:init_option('vimtex_fold_preamble', 1)
-  call s:init_option('vimtex_fold_envs', 1)
-  call s:init_option('vimtex_fold_env_blacklist', [])
-  call s:init_option('vimtex_fold_env_whitelist', [])
-  call s:init_option('vimtex_fold_env_options', 1)
-  call s:init_option('vimtex_fold_markers', 1)
-  call s:init_option('vimtex_fold_parts',
-        \ [
-        \   'part',
-        \   'appendix',
-        \   'frontmatter',
-        \   'mainmatter',
-        \   'backmatter',
-        \ ])
-  call s:init_option('vimtex_fold_sections',
-        \ [
-        \   'chapter',
-        \   'section',
-        \   'subsection',
-        \   'subsubsection',
-        \ ])
-  call s:init_option('vimtex_fold_commands_default', {
-        \ 'hypersetup' : 'single',
-        \ 'tikzset' : 'single',
-        \ 'pgfplotstableread' : 'single',
-        \ 'usepackage' : 'single_opt',
-        \ 'includepdf' : 'single_opt',
-        \ '%(re)?new%(command|environment)' : 'multi',
-        \ 'providecommand' : 'multi',
-        \ 'presetkeys' : 'multi',
-        \ 'Declare%(Multi|Auto)?CiteCommand' : 'multi',
-        \ 'Declare%(Index)?%(Field|List|Name)%(Format|Alias)' : 'multi',
-        \ 'addplot[+3]?' : 'addplot',
+  call s:init_option('vimtex_fold_types', {})
+  call s:init_option('vimtex_fold_types_defaults', {
+        \ 'preamble' : {},
+        \ 'comments' : { 'enabled' : 0 },
+        \ 'envs' : {
+        \   'blacklist' : [],
+        \   'whitelist' : [],
+        \ },
+        \ 'env_options' : {},
+        \ 'markers' : {},
+        \ 'sections' : {
+        \   'sections' : [
+        \     'part',
+        \     'chapter',
+        \     'section',
+        \     'subsection',
+        \     'subsubsection',
+        \   ],
+        \   'parts' : [
+        \     'appendix',
+        \     'frontmatter',
+        \     'mainmatter',
+        \     'backmatter',
+        \   ],
+        \ },
+        \ 'cmd_single' : {
+        \   'cmds' : [
+        \     'hypersetup',
+        \     'tikzset',
+        \     'pgfplotstableread',
+        \   ],
+        \ },
+        \ 'cmd_single_opt' : {
+        \   'cmds' : [
+        \     'usepackage',
+        \     'includepdf',
+        \   ],
+        \ },
+        \ 'cmd_multi' : {
+        \   'cmds' : [
+        \     '%(re)?new%(command|environment)',
+        \     'providecommand',
+        \     'presetkeys',
+        \     'Declare%(Multi|Auto)?CiteCommand',
+        \     'Declare%(Index)?%(Field|List|Name)%(Format|Alias)',
+        \   ],
+        \ },
+        \ 'cmd_addplot' : {
+        \   'cmds' : [
+        \     'addplot[+3]?',
+        \   ],
+        \ },
         \})
 
   call s:init_option('vimtex_format_enabled', 0)
