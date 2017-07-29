@@ -60,7 +60,7 @@ function! vimtex#fold#init_state(state) abort " {{{1
   "
   let a:state.fold_types_ordered = []
   let a:state.fold_re = '\v'
-        \ .  '^\s*\\%(begin|end)>'
+        \ .  '\\%(begin|end)>'
         \ . '|^\s*\%'
         \ . '|\%%(.*\{\{\{|\s*\}\}\})'
         \ . '|^\s*\]\s*%(\{|$)'

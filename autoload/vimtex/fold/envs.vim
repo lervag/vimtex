@@ -50,7 +50,6 @@ function! s:folder.level(line, lnum) abort dict " {{{1
   let l:env = matchstr(a:line, self.re.name)
 
   if !empty(l:env) && self.validate(l:env)
-    echom 'test:' a:lnum l:env
     if a:line =~# self.re.start
       if a:line !~# '\\end'
         return 'a1'
@@ -61,8 +60,6 @@ function! s:folder.level(line, lnum) abort dict " {{{1
       endif
     endif
   endif
-
-  echom 'bad:' a:lnum l:env
 endfunction
 
 " }}}1
