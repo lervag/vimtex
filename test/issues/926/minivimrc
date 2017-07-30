@@ -1,0 +1,25 @@
+set nocompatible
+
+if !isdirectory('vim-airline')
+  call system('git clone https://github.com/vim-airline/vim-airline')
+endif
+
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = 'vim-airline,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+set laststatus=2
+set noshowmode
+
+let g:airline#extensions#tabline#enabled=1
+
+if has('vim_starting')
+  silent edit minimal.tex
+endif
