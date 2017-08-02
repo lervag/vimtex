@@ -31,9 +31,14 @@ function! vimtex#debug#stacktrace(...) " {{{1
   let l:qflist = []
   let l:files = {}
   for l:func in l:stack
-    let [l:name, l:offset] = (l:func =~# '\S\+\[\d')
-          \ ? matchlist(l:func, '\(\S\+\)\[\(\d\+\)\]')[1:2]
-          \ : matchlist(l:func, '\(\S\+\), line \(\d\+\)')[1:2]
+    try
+      let [l:name, l:offset] = (l:func =~# '\S\+\[\d')
+            \ ? matchlist(l:func, '\(\S\+\)\[\(\d\+\)\]')[1:2]
+            \ : matchlist(l:func, '\(\S\+\), line \(\d\+\)')[1:2]
+    catch
+      let l:name = l:func
+      let l:offset = 0
+    endtry
 
     if l:name =~# '\v(\<SNR\>|^)\d+_'
       let l:sid = matchstr(l:name, '\v(\<SNR\>|^)\zs\d+\ze_')
