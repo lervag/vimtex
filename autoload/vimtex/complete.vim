@@ -158,7 +158,7 @@ function! s:completer_bib.search(regexp) dict " {{{2
     let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
-    for line in filter(lines, 'v:val =~ a:regexp')
+    for line in filter(lines, 'v:val =~? a:regexp')
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
