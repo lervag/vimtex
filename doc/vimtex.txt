@@ -729,6 +729,14 @@ Options~
 
   Default value: 0
 
+*g:vimtex_complete_bib_ignorecase*
+  If this option is set to 1, vimtex will ignore case when completing
+  bibliography entries.  When set to 0, case will be matched.  If unset or set
+  to any other value, bibliography completion will be done according to the
+  user's 'ignorecase' option.
+
+  Default value: follows the 'ignorecase' option
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub
@@ -2138,6 +2146,7 @@ Associated settings:
   |g:vimtex_complete_enabled|
   |g:vimtex_complete_close_braces|
   |g:vimtex_complete_recursive_bib|
+  |g:vimtex_complete_bib_ignorecase|
 
 ------------------------------------------------------------------------------
 Complete citations~
