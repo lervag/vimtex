@@ -5,37 +5,17 @@
 "
 
 function! vimtex#misc#init_buffer() " {{{1
-  command! -buffer -bang        VimtexInfo                                call vimtex#misc#info(<q-bang> == '!')
   command! -buffer              VimtexReload                              call vimtex#misc#reload()
   command! -buffer -bang        VimtexCountWords                          call vimtex#misc#wc('', <q-bang> == '!')
   command! -buffer -bang        VimtexCountLetters                        call vimtex#misc#wc('', <q-bang> == '!', 1)
   command! -buffer -bang -range VimtexCountSelectedWords   <line1>,<line2>call vimtex#misc#wc('cmd', <q-bang> == '!')
   command! -buffer -bang -range VimtexCountSelectedLetters <line1>,<line2>call vimtex#misc#wc('cmd', <q-bang> == '!', 1)
 
-  nnoremap <buffer> <plug>(vimtex-info)      :VimtexInfo<cr>
-  nnoremap <buffer> <plug>(vimtex-info-full) :VimtexInfo!<cr>
   nnoremap <buffer> <plug>(vimtex-reload)    :VimtexReload<cr>
 endfunction
 
 " }}}1
 
-function! vimtex#misc#info(global) abort " {{{1
-  if a:global
-    let l:first = 1
-    for l:data in vimtex#state#list_all()
-      if l:first
-        let l:first = 0
-      else
-        echo "\n"
-      endif
-      call vimtex#echo#pprint(l:data)
-    endfor
-  else
-    call vimtex#echo#pprint(b:vimtex)
-  endif
-endfunction
-
-" }}}1
 function! vimtex#misc#wc(type, detailed, ...) abort range " {{{1
   if empty(a:type)
     let l:file = b:vimtex
@@ -110,6 +90,7 @@ if get(s:, 'reload_guard', 1)
 endif
 
 " }}}1
+
 
 let s:file = expand('<sfile>')
 

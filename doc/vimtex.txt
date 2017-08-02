@@ -2822,7 +2822,8 @@ with `vimtex#mymodule#init_state`, which takes the state object as a single
 argument.
 
 The command |VimtexInfo| (mapped to <localleader>li by default) will show the
-(relevant) contents of the local state.
+(relevant) contents of the local state, as well as some auxiliary information
+that may be useful for debugging purposes.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
