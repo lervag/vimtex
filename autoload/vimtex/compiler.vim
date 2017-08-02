@@ -114,23 +114,27 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
         \ 'root' : l:file.root,
         \ 'target' : l:file.base,
         \ 'target_path' : l:file.tex,
-        \ 'background' : 0,
+        \ 'backend' : 'process',
+        \ 'engine' : b:vimtex.engine,
+        \ 'background' : 1,
         \ 'continuous' : 0,
         \ 'callback' : 0,
         \}
   let l:compiler = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
 
-  call vimtex#log#info('Compiling selected lines ...')
+  call vimtex#log#toggle_verbose()
   call l:compiler.start()
 
   " Check if successful
   if vimtex#qf#inquire(l:file.base)
+    call vimtex#log#toggle_verbose()
     call vimtex#log#warning('Compiling selected lines ... failed!')
     botright cwindow
     return
   else
     call l:compiler.clean(0)
     call b:vimtex.viewer.view(l:file.pdf)
+    call vimtex#log#toggle_verbose()
     call vimtex#log#info('Compiling selected lines ... done')
   endif
 endfunction
