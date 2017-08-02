@@ -241,14 +241,14 @@ function! s:get_main_latexmain(file) " {{{1
 endfunction
 
 function! s:get_main_recurse(...) " {{{1
-  "
   " Either start the search from the original file, or check if the supplied
   " file is a main file (or invalid)
-  "
   if a:0 == 0
     let l:file = expand('%:p')
+    let l:tried = {}
   else
     let l:file = a:1
+    let l:tried = a:2
 
     if s:file_is_main(l:file)
       return l:file
@@ -257,20 +257,26 @@ function! s:get_main_recurse(...) " {{{1
     endif
   endif
 
-  "
+  " Create list of candidates that was already tried for the current file
+  if !has_key(l:tried, l:file)
+    let l:tried[l:file] = [l:file]
+  endif
+
   " Search through candidates found recursively upwards in the directory tree
-  "
   for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
-    " Avoid infinite recursion (checking the same file repeatedly)
-    if l:cand == l:file | continue | endif
+    if index(l:tried[l:file], l:cand) >= 0 | continue | endif
+    call add(l:tried[l:file], l:cand)
 
     let l:filter_re = g:vimtex#re#tex_input
           \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
 
     if len(filter(readfile(l:cand), 'v:val =~# l:filter_re')) > 0
-      return s:get_main_recurse(fnamemodify(l:cand, ':p'))
+      let l:res = s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
+      if !empty(l:res) | return l:res | endif
     endif
   endfor
+
+  return ''
 endfunction
 
 " }}}1
