@@ -46,17 +46,17 @@ function! vimtex#doc#make_selection(context) " {{{1
     return
   endif
 
-  call vimtex#echo#status(['Multiple candidates detected, please select one:'])
+  call vimtex#echo#echo('Multiple candidates detected, please select one:')
   let l:count = 0
   for l:package in a:context.candidates
     let l:count += 1
-    call vimtex#echo#status([
+    call vimtex#echo#formatted([
           \ '  [' . string(l:count) . '] ',
           \ ['VimtexSuccess', l:package]
           \])
   endfor
 
-  call vimtex#echo#status(['Type number (everything else cancels): '])
+  call vimtex#echo#echo('Type number (everything else cancels): ')
   let l:choice = nr2char(getchar())
   if l:choice !~# '\d'
         \ || l:choice == 0
@@ -102,7 +102,7 @@ function! s:packages_from_usepackage(cmd) " {{{1
 
     return l:context
   catch
-    call vimtex#echo#warning('Could not parse the package from \usepackage!')
+    call vimtex#log#warning('Could not parse the package from \usepackage!')
     return {}
   endtry
 endfunction
@@ -115,7 +115,7 @@ function! s:packages_from_documentclass(cmd) " {{{1
           \ 'candidates': [a:cmd.args[0].text],
           \}
   catch
-    call vimtex#echo#warning('Could not parse the package from \documentclass!')
+    call vimtex#log#warning('Could not parse the package from \documentclass!')
     return {}
   endtry
 endfunction
@@ -174,12 +174,12 @@ function! s:packages_remove_invalid(context) " {{{1
   " Warn about invalid candidates
   if !empty(l:invalid_packages)
     if len(l:invalid_packages) == 1
-      call vimtex#echo#warning('Package not recognized: ' . l:invalid_packages[0])
+      call vimtex#log#warning(
+            \ 'Package not recognized: ' . l:invalid_packages[0])
     else
-      call vimtex#echo#warning('Packages not recognized:')
-      for l:package in l:invalid_packages
-        call vimtex#echo#echo('- ' . l:package)
-      endfor
+      call vimtex#log#warning(
+            \ 'Packages not recognized:',
+            \ map(copy(l:invalid_packages), "'- ' . v:val"))
     endif
   endif
 
@@ -202,8 +202,10 @@ function! s:packages_open(context) " {{{1
   if empty(a:context.selected) | return | endif
 
   if get(a:context, 'ask_before_open', 1)
-    call vimtex#echo#status(['Open documentation for ',
-          \ ['VimtexSuccess', a:context.selected], ' [y/N]? '])
+    call vimtex#echo#formatted([
+          \ 'Open documentation for ',
+          \ ['VimtexSuccess', a:context.selected], ' [y/N]? '
+          \])
 
     let l:choice = nr2char(getchar())
     if l:choice ==# 'y'

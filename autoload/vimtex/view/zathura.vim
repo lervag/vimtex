@@ -7,15 +7,13 @@
 function! vimtex#view#zathura#new() " {{{1
   " Check if the viewer is executable
   if !executable('zathura')
-    call vimtex#echo#warning('Zathura is not executable!')
-    call vimtex#echo#echo('- vimtex viewer will not work!')
-    call vimtex#echo#wait()
+    call vimtex#log#error('Zathura is not executable!')
     return {}
   endif
 
   " Check if the xdotool is available
   if !executable('xdotool')
-    call vimtex#echo#warning('Zathura requires xdotool for forward search!')
+    call vimtex#log#warning('Zathura requires xdotool for forward search!')
   endif
 
   "

@@ -35,10 +35,9 @@ function! vimtex#cmd#change() " {{{1
   let l:cnum = l:cmd.pos_start.cnum
 
   " Get new command name
-  call vimtex#echo#status(['Change command: ', ['VimtexWarning', l:old_name]])
-  echohl VimtexMsg
-  let l:new_name = input('> ')
-  echohl None
+  let l:new_name = vimtex#echo#input({
+        \ 'info' : ['Change command: ', ['VimtexWarning', l:old_name]],
+        \})
   let l:new_name = substitute(l:new_name, '^\\', '', '')
   if empty(l:new_name) | return | endif
 
@@ -116,8 +115,7 @@ function! vimtex#cmd#create_insert() " {{{1
   let l:c2 = l:c1 + strlen(l:match)
 
   if l:c0 > l:c2
-    call vimtex#echo#status(['vimtex: ',
-          \ ['VimtexWarning', 'Could not create command']])
+    call vimtex#log#warning('Could not create command')
     return ''
   endif
 
@@ -132,11 +130,10 @@ endfunction
 
 " }}}1
 function! vimtex#cmd#create_ask(visualmode) " {{{1
-  call vimtex#echo#status(['Command command: ',
-        \ ['VimtexWarning', '(empty to cancel)']])
-  echohl VimtexMsg
-  let l:cmd = input('> ')
-  echohl None
+  let l:cmd = vimtex#echo#input({
+        \ 'info' :
+        \   ['Change command: ', ['VimtexWarning', '(empty to cancel)']],
+        \})
   let l:cmd = substitute(l:cmd, '^\\', '', '')
   if empty(l:cmd) | return | endif
 

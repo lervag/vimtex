@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#debug#stacktrace() " {{{1
+function! vimtex#debug#stacktrace(...) " {{{1
   "
   " This function builds on Luc Hermite's answer on Stack Exchange:
   " http://vi.stackexchange.com/a/6024/21
@@ -60,15 +60,20 @@ function! vimtex#debug#stacktrace() " {{{1
 
       call add(l:qflist, {
             \ 'filename': l:filename,
+            \ 'function': l:name,
             \ 'lnum': l:lnum,
             \ 'text': l:text,
             \})
     endif
   endfor
 
-  call setqflist(l:qflist)
-  execute 'copen' len(l:qflist) + 2
-  wincmd p
+  if a:0 > 0
+    call setqflist(l:qflist)
+    execute 'copen' len(l:qflist) + 2
+    wincmd p
+  endif
+
+  return l:qflist
 endfunction
 
 " }}}1

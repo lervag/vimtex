@@ -7,15 +7,15 @@
 function! vimtex#view#mupdf#new() " {{{1
   " Check if the viewer is executable
   if !executable('mupdf')
-    call vimtex#echo#warning('MuPDF is not executable!')
-    call vimtex#echo#echo('- vimtex viewer will not work!')
-    call vimtex#echo#wait()
+    call vimtex#log#error(
+          \ 'MuPDF is not executable!',
+          \ '- vimtex viewer will not work!')
     return {}
   endif
 
   " Check if the xdotool is available
   if !executable('xdotool')
-    call vimtex#echo#warning('MuPDF requires xdotool!')
+    call vimtex#log#error('MuPDF requires xdotool!')
     return {}
   endif
 
@@ -76,7 +76,7 @@ function! s:mupdf.reverse_search() dict " {{{1
   if vimtex#view#common#not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
-    call vimtex#echo#warning('reverse search failed (is MuPDF open?)')
+    call vimtex#log#warning('Reverse search failed (is MuPDF open?)')
     return
   endif
 

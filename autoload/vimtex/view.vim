@@ -30,10 +30,9 @@ function! vimtex#view#init_state(state) " {{{1
   try
     let a:state.viewer = vimtex#view#{g:vimtex_view_method}#new()
   catch /E117/
-    call vimtex#echo#warning('viewer '
-          \ . g:vimtex_view_method . ' does not exist!')
-    call vimtex#echo#echo('- Please see :h g:vimtex_view_method')
-    call vimtex#echo#wait()
+    call vimtex#log#warning(
+          \ 'Invalid viewer: ' . g:vimtex_view_method,
+          \ 'Please see :h g:vimtex_view_method')
     return
   endtry
 

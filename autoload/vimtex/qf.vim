@@ -22,8 +22,9 @@ function! vimtex#qf#init_state(state) abort " {{{1
     unlet l:qf.init
     let a:state.qf = l:qf
   catch /vimtex: Requirements not met/
-    call vimtex#echo#warning('Please see :help g:vimtex_quickfix_method')
-    call vimtex#echo#wait()
+    call vimtex#log#warning(
+          \ 'Quickfix state not initialized!',
+          \ 'Please see :help g:vimtex_quickfix_method')
   endtry
 endfunction
 
@@ -45,8 +46,7 @@ function! vimtex#qf#open(force) abort " {{{1
     call b:vimtex.qf.setqflist('', g:vimtex_quickfix_autojump)
   catch /Vimtex: No log file found/
     if a:force
-      call vimtex#echo#status(['vimtex: ',
-            \ ['VimtexWarning', 'No log file found']])
+      call vimtex#log#warning('No log file found')
     endif
     cclose
     return
@@ -54,7 +54,7 @@ function! vimtex#qf#open(force) abort " {{{1
 
   if empty(getqflist())
     if a:force
-      call vimtex#echo#status(['vimtex: ', ['VimtexSuccess', 'No errors!']])
+      call vimtex#log#info('No errors!')
     endif
     cclose
     return

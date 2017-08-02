@@ -4,40 +4,27 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#echo#wait() " {{{1
-  if get(g:, 'vimtex_echo_ignore_wait') | return | endif
-
-  if filereadable(expand('%'))
-    echohl VimtexMsg
-    call input('Press ENTER to continue')
-    echohl None
-  else
-    sleep 1
-  endif
-endfunction
-
 function! vimtex#echo#echo(message) " {{{1
   echohl VimtexMsg
   echo a:message
   echohl None
 endfunction
 
-function! vimtex#echo#warning(message) " {{{1
-  call vimtex#echo#formatted([
-        \ ['VimtexWarning', 'vimtex warning: '],
-        \ ['VimtexMsg', a:message]])
-endfunction
+" }}}1
+function! vimtex#echo#input(opts) " {{{1
+  if has_key(a:opts, 'info')
+    call vimtex#echo#formatted(a:opts.info)
+  endif
 
-function! vimtex#echo#info(message) " {{{1
-  call vimtex#echo#formatted([
-        \ ['VimtexInfo', 'vimtex: '],
-        \ ['VimtexMsg', a:message]])
-endfunction
+  let l:args = [get(a:opts, 'prompt', '> ')]
+  if has_key(a:opts, 'complete')
+    let l:args += ['', a:opts.complete]
+  endif
 
-function! vimtex#echo#status(parts) " {{{1
-  if get(g:, 'vimtex_echo_ignore_status') | return | endif
-  echon "\r"
-  call vimtex#echo#formatted(a:parts)
+  echohl VimtexMsg
+  let l:reply = call('input', l:args)
+  echohl None
+  return l:reply
 endfunction
 
 " }}}1

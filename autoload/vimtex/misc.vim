@@ -104,7 +104,7 @@ if get(s:, 'reload_guard', 1)
       runtime indent/tex.vim
     endif
 
-    call vimtex#echo#info('reloaded')
+    call vimtex#log#info('The plugin has been reloaded!')
     unlet s:reload_guard
   endfunction
 endif

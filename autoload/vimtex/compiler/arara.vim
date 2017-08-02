@@ -30,8 +30,8 @@ let s:compiler = {
 function! s:compiler.init(options) abort dict " {{{1
   call extend(self, a:options)
 
-  if !executable('latexrun')
-    call vimtex#echo#warning('latexrun is not executable!')
+  if !executable('arara')
+    call vimtex#log#warning('arara is not executable!')
     throw 'vimtex: Requirements not met'
   endif
 
@@ -97,8 +97,7 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  call vimtex#echo#status(['compiler: ',
-        \ ['VimtexWarning', 'Clean not implemneted for arara']])
+  call vimtex#log#warning('Clean not implemented for arara')
 endfunction
 
 " }}}1
@@ -106,8 +105,7 @@ function! s:compiler.start(...) abort dict " {{{1
   call self.exec()
 
   if self.background
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess', 'started in background!']])
+    call vimtex#log#info('Compiler started in background')
   else
     call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
   endif

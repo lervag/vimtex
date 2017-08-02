@@ -35,7 +35,7 @@ function! s:compiler.init(options) abort dict " {{{1
   call extend(self, a:options)
 
   if !executable('latexrun')
-    call vimtex#echo#warning('latexrun is not executable!')
+    call vimtex#log#warning('latexrun is not executable!')
     throw 'vimtex: Requirements not met'
   endif
 
@@ -117,8 +117,7 @@ function! s:compiler.clean(...) abort dict " {{{1
         \ . ' -O ' . (empty(self.build_dir) ? '.' : self.build_dir)
   call vimtex#process#run(l:cmd)
 
-  call vimtex#echo#status(['compiler: ',
-        \ ['VimtexSuccess', 'clean finished']])
+  call vimtex#log#info('Compiler clean finished')
 endfunction
 
 " }}}1
@@ -126,8 +125,7 @@ function! s:compiler.start(...) abort dict " {{{1
   call self.exec()
 
   if self.background
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess', 'started in background!']])
+    call vimtex#log#info('Compiler started in background')
   else
     call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
   endif

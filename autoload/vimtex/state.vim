@@ -60,11 +60,8 @@ function! vimtex#state#toggle_main() " {{{1
           \ : b:vimtex_local.main_id
     let b:vimtex = vimtex#state#get(b:vimtex_id)
 
-    call vimtex#echo#status(['vimtex: ',
-          \ ['Normal', 'Changed to `'],
-          \ ['VimtexSuccess', b:vimtex.base],
-          \ ['Normal', "' "],
-          \ ['VimtexInfo', b:vimtex_local.active ? '[local]' : '[main]' ]])
+    call vimtex#log#info('Changed to `' . b:vimtex.base . "' "
+          \ . (b:vimtex_local.active ? '[local]' : '[main]'))
   endif
 endfunction
 

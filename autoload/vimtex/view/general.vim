@@ -7,10 +7,10 @@
 function! vimtex#view#general#new() " {{{1
   " Check if the viewer is executable
   if !executable(g:vimtex_view_general_viewer)
-    call vimtex#echo#warning('viewer "'
-          \ . g:vimtex_view_general_viewer . '" is not executable!')
-    call vimtex#echo#echo('- Please see :h g:vimtex_view_general_viewer')
-    call vimtex#echo#wait()
+    call vimtex#log#warning(
+          \ 'Selected viewer is not executable!',
+          \ '- Selection: ' . g:vimtex_view_general_viewer,
+          \ '- Please see :h g:vimtex_view_general_viewer')
     return {}
   endif
 

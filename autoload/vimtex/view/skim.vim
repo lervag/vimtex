@@ -7,9 +7,7 @@
 function! vimtex#view#skim#new() " {{{1
   " Check if the viewer is executable
   if !executable(s:skim.path)
-    call vimtex#echo#warning('Skim is not executable!')
-    call vimtex#echo#echo('- vimtex viewer will not work!')
-    call vimtex#echo#wait()
+    call vimtex#log#error('Skim is not executable!')
     return {}
   endif
 

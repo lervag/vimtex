@@ -45,13 +45,11 @@ function! vimtex#compiler#init_state(state) abort " {{{1
     let a:state.compiler
           \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
   catch /vimtex: Requirements not met/
-    call vimtex#echo#echo('- vimtex#compiler was not initialized!')
-    call vimtex#echo#wait()
+    call vimtex#log#error('Compiler was not initialized!')
   catch /E117/
-    call vimtex#echo#warning('compiler '
-          \ . g:vimtex_compiler_method . ' does not exist!')
-    call vimtex#echo#echo('- Please see :h g:vimtex_compiler_method')
-    call vimtex#echo#wait()
+    call vimtex#log#error(
+          \ 'Invalid compiler: ' . g:vimtex_compiler_method,
+          \ 'Please see :h g:vimtex_compiler_method')
   endtry
 endfunction
 
@@ -70,8 +68,11 @@ function! vimtex#compiler#callback(status) abort " {{{1
     call s:output.update()
   endif
 
-  call vimtex#echo#status(['compiler: ',
-        \ a:status ? ['VimtexSuccess', 'success'] : ['VimtexWarning', 'fail']])
+  if a:status
+    call vimtex#log#info('Compilation completed')
+  else
+    call vimtex#log#warning('Compilation failed!')
+  endif
 
   if a:status
     call b:vimtex.parse_packages_from_fls()
@@ -119,25 +120,18 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
         \}
   let l:compiler = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
 
-  call vimtex#echo#status([
-        \ ['VimtexInfo', 'vimtex: '],
-        \ ['VimtexMsg', 'compiling selected lines ...']])
+  call vimtex#log#info('Compiling selected lines ...')
   call l:compiler.start()
 
   " Check if successful
   if vimtex#qf#inquire(l:file.base)
-    call vimtex#echo#formatted([
-          \ ['VimtexInfo', 'vimtex: '],
-          \ ['VimtexMsg', 'compiling selected lines ...'],
-          \ ['VimtexWarning', ' failed!']])
+    call vimtex#log#warning('Compiling selected lines ... failed!')
     botright cwindow
     return
   else
     call l:compiler.clean(0)
     call b:vimtex.viewer.view(l:file.pdf)
-    call vimtex#echo#status([
-          \ ['VimtexInfo', 'vimtex: '],
-          \ ['VimtexMsg', 'compiling selected lines ... done!']])
+    call vimtex#log#info('Compiling selected lines ... done')
   endif
 endfunction
 
@@ -145,7 +139,7 @@ endfunction
 function! vimtex#compiler#output() " {{{1
   let l:file = get(b:vimtex.compiler, 'output', '')
   if empty(l:file)
-    call vimtex#echo#status(['vimtex: ', ['VimtexWarning', 'No output exists']])
+    call vimtex#log#warning('No output exists!')
     return
   endif
 
@@ -246,38 +240,29 @@ endfunction
 " }}}1
 function! vimtex#compiler#status(detailed) " {{{1
   if a:detailed
-    let l:running = 0
+    let l:running = []
     for l:data in vimtex#state#list_all()
       if l:data.compiler.is_running()
-        if !l:running
-          call vimtex#echo#status(['compiler: ',
-                \ ['VimtexSuccess', "running\n"]])
-          call vimtex#echo#status([['None', '  pid    '],
-                \ ['None', "file\n"]])
-          let l:running = 1
-        endif
-
         let l:name = l:data.tex
         if len(l:name) >= winwidth('.') - 20
           let l:name = '...' . l:name[-winwidth('.')+23:]
         endif
-
-        call vimtex#echo#status([
-              \ ['None', printf('  %-6s ', l:data.compiler.get_pid())],
-              \ ['None', l:name . "\n"]])
+        call add(l:running, printf('%-6s %s',
+              \ string(l:data.compiler.get_pid()) . ':', l:name))
       endif
     endfor
 
-    if !l:running
-      call vimtex#echo#status(['compiler: ',
-            \ ['VimtexWarning', 'not running']])
+    if empty(l:running)
+      call vimtex#log#warning('Compiler is not running!')
+    else
+      call vimtex#log#info('Compiler is running', l:running)
     endif
   else
-      call vimtex#echo#status(['compiler: ',
-            \ b:vimtex.compiler.is_running()
-            \ ? ['VimtexSuccess', 'running']
-            \ : ['VimtexWarning', 'not running']
-            \])
+    if b:vimtex.compiler.is_running()
+      call vimtex#log#info('Compiler is running')
+    else
+      call vimtex#log#warning('Compiler is not running!')
+    endif
   endif
 endfunction
 

@@ -222,12 +222,12 @@ function! vimtex#delim#change_prompt() " {{{1
   let l:name = get(l:open, 'name', l:open.is_open
         \ ? l:open.match . ' ... ' . l:open.corr
         \ : l:open.match . ' ... ' . l:open.corr)
-  call vimtex#echo#status(['Change surrounding delimiter: ',
-        \ ['VimtexWarning', l:name]])
-  echohl VimtexMsg
-  let l:new_delim = input('> ', '',
-        \ 'customlist,vimtex#delim#change_input_complete')
-  echohl None
+
+  let l:new_delim = vimtex#echo#input({
+        \ 'info' :
+        \   ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
+        \ 'complete' : 'customlist,vimtex#delim#change_input_complete',
+        \})
   if empty(l:new_delim) | return | endif
 
   call vimtex#delim#change(l:open, l:close, l:new_delim)

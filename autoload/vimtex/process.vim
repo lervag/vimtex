@@ -74,11 +74,11 @@ endfunction
 
 function! s:process._do_not_run() abort dict " {{{1
   if empty(self.cmd)
-    call vimtex#echo#warning('Can''t run empty command')
+    call vimtex#log#warning('Can''t run empty command')
     return 1
   endif
   if self.pid
-    call vimtex#echo#warning('Process already running!')
+    call vimtex#log#warning('Process already running!')
     return 1
   endif
 

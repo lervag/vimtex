@@ -55,7 +55,7 @@ function! vimtex#format#formatexpr() " {{{1
   " Don't change the text if the formatting algorithm failed
   if l:tries == 0
     silent! undo
-    call vimtex#echo#warning('Formatting of selected text failed!')
+    call vimtex#log#warning('Formatting of selected text failed!')
   endif
 
   let &l:foldenable = l:foldenable

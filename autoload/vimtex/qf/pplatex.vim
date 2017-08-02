@@ -18,7 +18,7 @@ let s:qf = {
 
 function! s:qf.init(state) abort dict "{{{1
   if !executable('pplatex')
-    call vimtex#echo#warning('pplatex is not executable!')
+    call vimtex#log#error('pplatex is not executable!')
     throw 'vimtex: Requirements not met'
   endif
 

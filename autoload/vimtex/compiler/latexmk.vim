@@ -85,9 +85,10 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
       let l:out_dir = matchlist(readfile(l:file), l:pattern)
       if len(l:out_dir) > 1
         if !empty(self.build_dir)
-          call vimtex#echo#warning(
-                \ 'compiler.build_dir changed to: ' . self.build_dir)
-          call vimtex#echo#wait()
+          call vimtex#log#warning(
+                \ 'Setting out_dir from latexmkrc overrides build_dir!',
+                \ 'Changed build_dir from: ' . self.build_dir,
+                \ 'Changed build_dir to: ' . l:out_dir[1])
         endif
         let self.build_dir = l:out_dir[1]
         return
@@ -102,8 +103,9 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
   if self.callback
     if !(has('clientserver') || has('nvim'))
       let self.callback = 0
-      call vimtex#echo#warning('Can''t use callbacks without +clientserver')
-      call vimtex#echo#wait()
+      call vimtex#log#warning(
+            \ 'Can''t use callbacks without +clientserver',
+            \ 'Callback option has been disabled.')
     endif
   endif
 
@@ -117,7 +119,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
   " Disable latexmk if required programs are missing
   if len(l:missing) > 0
     for l:cmd in l:missing
-      call vimtex#echo#warning(l:cmd . ' is not executable')
+      call vimtex#log#warning(l:cmd . ' is not executable')
     endfor
     throw 'vimtex: Requirements not met'
   endif
@@ -163,8 +165,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
 
     if self.callback
       if empty(v:servername)
-        call vimtex#echo#warning('Can''t use callbacks with empty v:servername')
-        call vimtex#echo#wait()
+        call vimtex#log#warning('Can''t use callbacks with empty v:servername')
       else
         " Some notes:
         " - We excape the v:servername because this seems necessary on Windows
@@ -263,8 +264,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   let l:cmd .= vimtex#util#shellescape(self.target)
   call vimtex#process#run(l:cmd)
 
-  call vimtex#echo#status(['compiler: ',
-        \ ['VimtexSuccess', 'clean finished' . (a:full ? ' (full)' : '')]])
+  call vimtex#log#info('Compiler clean finished' . (a:full ? ' (full)' : ''))
 
   if l:restart
     let self.silent_next_callback = 1
@@ -275,8 +275,8 @@ endfunction
 " }}}1
 function! s:compiler.start(...) abort dict " {{{1
   if self.is_running()
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexWarning', 'already running for `' . self.target . "'"]])
+    call vimtex#log#warning(
+          \ 'Compiler is already running for `' . self.target . "'")
     return
   endif
 
@@ -300,17 +300,14 @@ function! s:compiler.start(...) abort dict " {{{1
   call self.exec()
 
   if self.continuous
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess',
-          \   'started continuous mode' . (a:0 > 0 ? ' (single shot)' : '')]
-          \])
+    call vimtex#log#info('Compiler started in continuous mode'
+          \ . (a:0 > 0 ? ' (single shot)' : ''))
     if exists('#User#VimtexEventCompileStarted')
       doautocmd User VimtexEventCompileStarted
     endif
   else
     if self.background
-      call vimtex#echo#status(['compiler: ',
-            \ ['VimtexSuccess', 'started in background!']])
+      call vimtex#log#info('Compiler started in background!')
     else
       call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
     endif
@@ -321,14 +318,13 @@ endfunction
 function! s:compiler.stop() abort dict " {{{1
   if self.is_running()
     call self.kill()
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexSuccess', 'stopped (' . self.target . ')']])
+    call vimtex#log#info('Compiler stopped (' . self.target . ')')
     if exists('#User#VimtexEventCompileStopped')
       doautocmd User VimtexEventCompileStopped
     endif
   else
-    call vimtex#echo#status(['compiler: ',
-          \ ['VimtexWarning', 'no process to stop (' . self.target . ')']])
+    call vimtex#log#warning(
+          \ 'There is not process to stop (' . self.target . ')')
   endif
 endfunction
 

@@ -262,6 +262,7 @@ function! s:init_highlights() " {{{1
         \ ['VimtexTocSec4', 'Comment'],
         \ ['VimtexTocTag', 'Directory'],
         \ ['VimtexWarning', 'WarningMsg'],
+        \ ['VimtexError', 'ErrorMsg'],
         \]
     if !hlexists(l:name)
       silent execute 'highlight default link' l:name l:target
@@ -350,6 +351,7 @@ function! s:init_default_mappings() " {{{1
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
   call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
+  call s:map('n', '<localleader>lq', '<plug>(vimtex-log)')
 
   call s:map('n', 'ds$', '<plug>(vimtex-env-delete-math)')
   call s:map('n', 'cs$', '<plug>(vimtex-env-change-math)')
@@ -467,15 +469,13 @@ function! s:filename_changed_post() " {{{1
     let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
     let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
 
-    call vimtex#echo#status(['vimtex: ',
-          \ ['VimtexWarning', 'Filename change detected!'],
-          \ "\n  Old filename: ", ['VimtexInfo', l:base_old],
-          \ "\n  New filename: ", ['VimtexInfo', b:vimtex.base],
-          \ "\n"])
+    call vimtex#log#warning('Filename change detected')
+    call vimtex#log#info('Old filename: ' . l:base_old)
+    call vimtex#log#info('New filename: ' . b:vimtex.base)
 
     if has_key(b:vimtex, 'compiler')
       if b:vimtex.compiler.is_running()
-        call vimtex#echo#warning('Compilation stopped')
+        call vimtex#log#warning('Compilation stopped!')
         call vimtex#compiler#stop()
       endif
       let b:vimtex.compiler.target = b:vimtex.base

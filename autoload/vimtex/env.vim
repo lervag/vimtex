@@ -80,11 +80,13 @@ function! vimtex#env#change_prompt(type) " {{{1
   let l:name = get(l:open, 'name', l:open.is_open
         \ ? l:open.match . ' ... ' . l:open.corr
         \ : l:open.match . ' ... ' . l:open.corr)
-  call vimtex#echo#status(['Change surrounding environment: ',
-        \ ['VimtexWarning', l:name]])
-  echohl VimtexMsg
-  let l:new_env = input('> ', '', 'customlist,vimtex#env#input_complete')
-  echohl None
+
+  let l:new_env = vimtex#echo#input({
+        \ 'info' :
+        \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
+        \ 'complete' : 'customlist,vimtex#env#input_complete',
+        \})
+
   if empty(l:new_env) | return | endif
 
   call vimtex#env#change(l:open, l:close, l:new_env)
