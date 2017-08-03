@@ -25,9 +25,32 @@ let s:info = {
       \ 'global' : 0,
       \}
 function! s:info.print_content() abort dict " {{{1
+  for l:line in self.gather_system_info()
+    call append('$', l:line)
+  endfor
+  call append('$', '')
   for l:line in self.gather_state_info()
     call append('$', l:line)
   endfor
+endfunction
+
+" }}}1
+function! s:info.gather_system_info() abort dict " {{{1
+  let l:lines = [
+        \ 'System info',
+        \ '  OS: ' . s:get_os_info(),
+        \ '  Vim version: ' . s:get_vim_info(),
+        \]
+
+  if has('clientserver') || has('nvim')
+    call add(l:lines, '  Has clientserver: true')
+    call add(l:lines, '  Servername: '
+          \ . (empty(v:servername) ? 'undefined (vim started without --servername)' : v:servername))
+  else
+    call add(l:lines, '  Has clientserver: false')
+  endif
+
+  return l:lines
 endfunction
 
 " }}}1
@@ -52,6 +75,7 @@ function! s:info.syntax() abort dict " {{{1
   syntax match VimtexInfoKey /^.*:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoValue /.*/ contained
   syntax match VimtexInfoTitle /vimtex project:/ nextgroup=VimtexInfoValue
+  syntax match VimtexInfoTitle /System info/
 endfunction
 
 " }}}1
@@ -146,6 +170,48 @@ function! s:parse_list(list, indent, title) abort " {{{1
   endif
 
   return l:entries
+endfunction
+
+" }}}1
+
+"
+" Other utility functions
+"
+function! s:get_os_info() abort " {{{1
+  let l:os = vimtex#util#get_os()
+
+  if l:os ==# 'linux'
+    let l:result = system('lsb_release -d')[12:-2]
+    return substitute(l:result, '^\s*', '', '')
+  elseif l:os ==# 'mac'
+    let l:name = system('sw_vers -productName')[:-2]
+    let l:version = system('sw_vers -productVersion')[:-2]
+    let l:build = system('sw_vers -buildVersion')[:-2]
+    return l:name . ' ' . l:version . ' (' . l:build . ')'
+  else
+    let l:info = split(system('systeminfo'), '')
+    let l:string = ''
+
+    for l:type in ['OS Name', 'OS Version']
+      let l:string .= matchstr(
+            \ filter(copy(l:info), 'v:val =~# l:type')[0],
+            \ '^\s*' . l:type . ':\s*\zs.*')
+    endfor
+
+    return l:string
+  endif
+endfunction
+
+" }}}1
+function! s:get_vim_info() abort " {{{1
+  let l:info = vimtex#util#command('version')
+
+  if has('nvim')
+    return l:info[0]
+  else
+    return 'VIM ' . strpart(l:info[0], 18, 3)
+          \ . ' (' . strpart(l:info[1], 18) . ')'
+  endif
 endfunction
 
 " }}}1
