@@ -243,6 +243,7 @@ function! s:init_highlights() " {{{1
         \ ['VimtexIndexHelp', 'helpVim'],
         \ ['VimtexIndexLine', 'ModeMsg'],
         \ ['VimtexInfo', 'Question'],
+        \ ['VimtexInfoTitle', 'PreProc'],
         \ ['VimtexInfoKey', 'Statement'],
         \ ['VimtexInfoValue', 'ModeMsg'],
         \ ['VimtexInfoOther', 'Normal'],

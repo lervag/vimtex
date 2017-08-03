@@ -25,13 +25,13 @@ let s:info = {
       \ 'global' : 0,
       \}
 function! s:info.print_content() abort dict " {{{1
-  for l:line in self.gather_lines()
+  for l:line in self.gather_state_info()
     call append('$', l:line)
   endfor
 endfunction
 
 " }}}1
-function! s:info.gather_lines() abort dict " {{{1
+function! s:info.gather_state_info() abort dict " {{{1
   if self.global
     let l:lines = []
     for l:data in vimtex#state#list_all()
@@ -51,6 +51,7 @@ function! s:info.syntax() abort dict " {{{1
   syntax match VimtexInfoOther /.*/
   syntax match VimtexInfoKey /^.*:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoValue /.*/ contained
+  syntax match VimtexInfoTitle /vimtex project:/ nextgroup=VimtexInfoValue
 endfunction
 
 " }}}1
