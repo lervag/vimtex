@@ -189,16 +189,13 @@ function! s:get_os_info() abort " {{{1
     let l:build = system('sw_vers -buildVersion')[:-2]
     return l:name . ' ' . l:version . ' (' . l:build . ')'
   else
-    let l:info = split(system('systeminfo'), '')
-    let l:string = ''
+    if !exists('s:win_info')
+      let s:win_info = split(system('systeminfo'), "\n")
+    endif
 
-    for l:type in ['OS Name', 'OS Version']
-      let l:string .= matchstr(
-            \ filter(copy(l:info), 'v:val =~# l:type')[0],
-            \ '^\s*' . l:type . ':\s*\zs.*')
-    endfor
-
-    return l:string
+    let l:name = matchstr(s:win_info[1], ':\s*\zs.*')
+    let l:version = matchstr(s:win_info[2], ':\s*\zs.*')
+    return l:name . ' (' . l:version . ')'
   endif
 endfunction
 
@@ -209,8 +206,10 @@ function! s:get_vim_info() abort " {{{1
   if has('nvim')
     return l:info[0]
   else
-    return 'VIM ' . strpart(l:info[0], 18, 3)
-          \ . ' (' . strpart(l:info[1], 18) . ')'
+    let l:version = 'VIM ' . strpart(l:info[0], 18, 3) . ' ('
+    let l:index = 2 - (l:info[1] =~# ':\s*\d')
+    let l:version .= matchstr(l:info[l:index], ':\s*\zs.*') . ')'
+    return l:version
   endif
 endfunction
 
