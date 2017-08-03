@@ -19,9 +19,9 @@ function! s:scratch.open() abort dict " {{{1
   let l:bufnr = bufnr('')
   let l:vimtex = get(b:, 'vimtex', {})
 
-  silent execute 'edit' escape(self.name, ' ')
+  silent execute 'keepalt edit' escape(self.name, ' ')
 
-  let self.prev_winnr = bufwinnr(l:bufnr)
+  let self.prev_bufnr = l:bufnr
   let b:scratch = self
   let b:vimtex = l:vimtex
 
@@ -38,6 +38,9 @@ function! s:scratch.open() abort dict " {{{1
 
   nnoremap <silent><buffer> q     :call b:scratch.close()<cr>
   nnoremap <silent><buffer> <esc> :call b:scratch.close()<cr>
+  nnoremap <silent><buffer> <c-6> :call b:scratch.close()<cr>
+  nnoremap <silent><buffer> <c-^> :call b:scratch.close()<cr>
+  nnoremap <silent><buffer> <c-e> :call b:scratch.close()<cr>
 
   if has_key(self, 'syntax')
     call self.syntax()
@@ -50,9 +53,7 @@ endfunction
 
 " }}}1
 function! s:scratch.close() abort dict " {{{1
-  let self.fold_level = &l:foldlevel
-
-  silent execute 'bwipeout' . bufnr(self.name)
+  silent execute 'keepalt buffer' self.prev_bufnr
 endfunction
 
 " }}}1
