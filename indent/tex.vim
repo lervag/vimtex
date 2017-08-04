@@ -94,13 +94,13 @@ function! s:indent_envs(cur, prev) " {{{1
   let l:ind = 0
 
   " First for general environments
-  let l:ind += &sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignored))
-  let l:ind -= &sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignored))
+  let l:ind += s:sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignored))
+  let l:ind -= s:sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignored))
 
   " Indentation for prolonged items in lists
-  let l:ind += &sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
-  let l:ind -= &sw*((a:cur  =~# s:envs_item)    && (a:prev !~# s:envs_begitem))
-  let l:ind -= &sw*((a:cur  =~# s:envs_endlist) && (a:prev !~# s:envs_begitem))
+  let l:ind += s:sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
+  let l:ind -= s:sw*((a:cur  =~# s:envs_item)    && (a:prev !~# s:envs_begitem))
+  let l:ind -= s:sw*((a:cur  =~# s:envs_endlist) && (a:prev !~# s:envs_begitem))
 
   return l:ind
 endfunction
@@ -116,7 +116,7 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
-  return &sw*(  max([  s:count(a:prev_line, s:re_open)
+  return s:sw*(  max([  s:count(a:prev_line, s:re_open)
         \            - s:count(a:prev_line, s:re_close), 0])
         \     - max([  s:count(a:line, s:re_close)
         \            - s:count(a:line, s:re_open), 0]))
@@ -144,13 +144,13 @@ function! s:indent_tikz(lnum, prev) " {{{1
 
     " Increase indent on tikz command start
     if l:prev_starts && ! l:prev_stops
-      return &sw
+      return s:sw
     endif
 
     " Decrease indent on tikz command end, i.e. on semicolon
     if ! l:prev_starts && l:prev_stops
       let l:context = join(getline(l:env_lnum, a:lnum-1), '')
-      return -&sw*(l:context =~# s:tikz_commands)
+      return -s:sw*(l:context =~# s:tikz_commands)
     endif
   endif
 
@@ -181,6 +181,10 @@ function! s:count(line, pattern) " {{{1
 endfunction
 
 " }}}1
+
+let s:sw = exists('*shiftwidth')
+      \ ? shiftwidth()
+      \ : &shiftwidth
 
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
