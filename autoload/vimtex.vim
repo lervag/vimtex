@@ -375,6 +375,8 @@ function! s:init_default_mappings() " {{{1
   call s:map('n', 'csd', '<plug>(vimtex-delim-change-math)')
   call s:map('n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
   call s:map('x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map('n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+  call s:map('x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
   if get(g:, 'vimtex_compiler_enabled', 0)
