@@ -6,10 +6,16 @@
 
 function! vimtex#delim#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
-        \ :call vimtex#delim#toggle_modifier()<cr>
+        \ :<c-u>call vimtex#delim#toggle_modifier()<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier-reverse)
+        \ :<c-u>call vimtex#delim#toggle_modifier({'dir': -1})<cr>
 
   xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
         \ :<c-u>call vimtex#delim#toggle_modifier_visual()<cr>
+
+  xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier-reverse)
+        \ :<c-u>call vimtex#delim#toggle_modifier_visual({'dir': -1})<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-change-math)
         \ :call vimtex#delim#change_prompt()<cr>
@@ -57,17 +63,27 @@ endfunction
 
 " }}}1
 function! vimtex#delim#toggle_modifier(...) " {{{1
-  let [l:open, l:close] = a:0 == 2
-        \ ? [a:1, a:2]
+  let l:args = a:0 > 0 ? a:1 : {}
+  call extend(l:args, {
+      \ 'count': v:count1,
+      \ 'dir': 1,
+      \ 'repeat': 1,
+      \ 'openclose': [],
+      \ }, 'keep')
+
+  let [l:open, l:close] = !empty(l:args.openclose)
+        \ ? l:args.openclose
         \ : vimtex#delim#get_surrounding('delim_modq_math')
   if empty(l:open) | return | endif
+
+  let l:direction = l:args.dir < 0 ? -l:args.count : l:args.count
 
   let newmods = ['', '']
   let modlist = [['', '']] + get(g:, 'vimtex_delim_toggle_mod_list',
         \ [['\left', '\right']])
   let n = len(modlist)
   for i in range(n)
-    let j = (i + 1) % n
+    let j = (i + l:direction) % n
     if l:open.mod ==# modlist[i][0]
       let newmods = modlist[j]
       break
@@ -97,13 +113,23 @@ function! vimtex#delim#toggle_modifier(...) " {{{1
         \ . strpart(line, l:cnum + len(l:close.mod) - 1)
   call setline(l:close.lnum, line)
 
-  silent! call repeat#set("\<plug>(vimtex-delim-toggle-modifier)", v:count)
+  if l:args.repeat
+    silent! call repeat#set("\<plug>(vimtex-delim-toggle-modifier"
+          \ . (l:direction < 0 ? '-reverse' : '') .')', l:args.count)
+  endif
 
   return newmods
 endfunction
 
 " }}}1
-function! vimtex#delim#toggle_modifier_visual() " {{{1
+function! vimtex#delim#toggle_modifier_visual(...) " {{{1
+  let l:args = a:0 > 0 ? a:1 : {}
+  call extend(l:args, {
+      \ 'count': v:count1,
+      \ 'dir': 1,
+      \ 'reselect': 1,
+      \ }, 'keep')
+
   let l:save_pos = vimtex#pos#get_cursor()
   let l:start_pos = getpos("'<")
   let l:end_pos = getpos("'>")
@@ -136,7 +162,12 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
     if !empty(l:close)
 
       if l:end_pos_val >= vimtex#pos#val(l:close) + strlen(l:close.match) - 1
-        let l:newmods = vimtex#delim#toggle_modifier(l:open, l:close)
+        let l:newmods = vimtex#delim#toggle_modifier({
+              \ 'repeat': 0,
+              \ 'count': l:args.count,
+              \ 'dir': l:args.dir,
+              \ 'openclose': [l:open, l:close],
+              \ })
 
         let l:col_diff  = (l:open.lnum == l:end_pos[1])
               \ ? strlen(newmods[0]) - strlen(l:open.mod) : 0
@@ -159,7 +190,9 @@ function! vimtex#delim#toggle_modifier_visual() " {{{1
   call setpos(l:swapped? "'>" : "'<", l:start_pos)
   call setpos(l:swapped? "'<" : "'>", l:end_pos)
   call vimtex#pos#set_cursor(l:save_pos)
-  normal! gv
+  if l:args.reselect
+    normal! gv
+  endif
 endfunction
 
 " }}}1
@@ -175,7 +208,6 @@ function! vimtex#delim#change(open, close, new) " {{{1
     let l:index = index(map(copy(g:vimtex#delim#lists.delim_math.name),
           \   'v:val[' . l:side . ']'),
           \ a:new)
-    echo "\n" l:index
     if l:index >= 0
       let [l:beg, l:end] = g:vimtex#delim#lists.delim_math.name[l:index]
     else
