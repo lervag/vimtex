@@ -346,7 +346,8 @@ function! s:init_default_mappings() " {{{1
   if !get(g:,'vimtex_mappings_enabled', 1) | return | endif
 
   function! s:map(mode, lhs, rhs, ...)
-    if (a:0 > 0) || (maparg(a:lhs, a:mode) ==# '')
+    if !hasmapto(a:rhs, a:mode)
+          \ && ((a:0 > 0) || (maparg(a:lhs, a:mode) ==# ''))
       silent execute a:mode . 'map <silent><buffer>' a:lhs a:rhs
     endif
   endfunction
