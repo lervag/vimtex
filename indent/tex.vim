@@ -27,6 +27,8 @@ endfunction
 
 "}}}
 function! VimtexIndent(lnum) " {{{1
+  let s:sw = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
+
   let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
   if l:prev_lnum == 0 | return indent(a:lnum) | endif
 
@@ -181,10 +183,6 @@ function! s:count(line, pattern) " {{{1
 endfunction
 
 " }}}1
-
-let s:sw = exists('*shiftwidth')
-      \ ? shiftwidth()
-      \ : &shiftwidth
 
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
