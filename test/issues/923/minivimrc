@@ -4,12 +4,14 @@ let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-nnoremap q :qall!<cr>
+nnoremap q        :qall!<cr>
+nnoremap <space>x :<c-u>call Test()<cr>
 
 let s:file = expand('<sfile>')
 execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
 let g:vimtex_view_automatic = 0
+let g:vimtex_quickfix_mode = 0
 
 if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
@@ -18,3 +20,18 @@ endif
 if has('vim_starting')
   silent edit minimal.tex
 endif
+
+function! Test()
+  VimtexCompile
+  execute 'sleep' string(v:count > 0 ? v:count : 500) . 'm'
+  normal! gg=G
+
+  redraw!
+  echo 'Sleeping to wait until compilation has completed'
+
+  sleep 6
+  VimtexStop
+  sleep 100m
+  VimtexClean!
+  call delete('minimal.bib')
+endfunction
