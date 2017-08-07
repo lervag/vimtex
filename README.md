@@ -11,6 +11,14 @@ and other LaTeX plugins for Vim.
 [![Build Status](https://travis-ci.org/lervag/vimtex.svg?branch=master)](https://travis-ci.org/lervag/vimtex)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5N4MFVXN7U8NW)
 
+## Table of contents
+
+  * [Installation](#installation)
+  * [Quick Start](#quick-start)
+  * [Features](#features)
+  * [Other relevant plugins](#other-relevant-plugins)
+  * [Alternatives](#alternatives)
+
 ## Installation
 
 If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
@@ -105,6 +113,13 @@ disabled if desired.
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
 
 See the documentation for a thorough introduction to vimtex (e.g. `:h vimtex`).
+
+## Other relevant plugins
+
+Even though vimtex provides a lot of nice features for working with LaTeX
+documents, there are several features that are better served by other,
+dedicated plugins. For a more detailed listing of these, please see [`:help
+vimtex-non-features`](doc/vimtex.txt).
 
 ## Alternatives
 
