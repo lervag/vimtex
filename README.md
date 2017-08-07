@@ -119,7 +119,23 @@ See the documentation for a thorough introduction to vimtex (e.g. `:h vimtex`).
 Even though vimtex provides a lot of nice features for working with LaTeX
 documents, there are several features that are better served by other,
 dedicated plugins. For a more detailed listing of these, please see [`:help
-vimtex-non-features`](doc/vimtex.txt).
+vimtex-non-features`](doc/vimtex.txt#L156) (note that I may forget to update
+the correct line number for the help section in the previous link).
+
+### Linting and syntax checking
+
+  * [ale](https://github.com/w0rp/ale)
+  * [neomake](https://github.com/neomake/neomake)
+  * [syntastic](https://github.com/vim-syntastic/syntastic)
+
+### Snippets and templates
+
+  * [UltiSnips](https://github.com/SirVer/ultisnips)
+  * [neosnippet](https://github.com/Shougo/neosnippet.vim)
+
+### Tag navigation
+
+  * [vim-gutentags](https://github.com/ludovicchabant/vim-gutentags)
 
 ## Alternatives
 
