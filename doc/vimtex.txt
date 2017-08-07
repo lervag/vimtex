@@ -179,6 +179,29 @@ provided by vimtex, but that are instead provided by other plugins.
     Snippets and/or templates are provided by for instance `neosnippet` and
     `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
 
+  Surround text with command, delimiter or environment~
+    vimtex itself provides only mappings to change, delete and toggle commands
+    delimiters and environments. If one wish to add these conveniently, there
+    is the plugin `sandwich` by Machakann [0] which provides this functionality.
+    Default mappings are `sa{motion/textobject}` or `{visual mode}sa` followed by
+       `c` to surround with a command
+       `e` to surround with an environment
+       left delimiter, e.g. `m(` to surround with `\left(` and `\right)`
+    For a list of delimiters see |sandwich-filetype-recipes|.
+    For consistency one may use as well the mappings for replacing `sr` and
+    deleting `sd` provided by sandwich instead of those from vimtex.
+    Note, you can repeat them with the dot command |.|.
+    One may dislike that the builtin mapping |s| is overwritten. However,
+    alternative mappings are available using as prefix `ys` instead of `sa`,
+    `cs` instead of `sr` and `ds` instead of `sd`. See |sandwich-miscellaneous|
+    how to enable them. Note, these are those of the plugin `surround` by Tim Pope
+    which, however, has only limited support for LaTeX.
+    
+    `sandwich` offers many more features and consists of three vim help files
+    |sandwich.txt|, |operator-sandwich.txt| and |textobj-sandwich.txt|.
+    
+    [0]: https://github.com/machakann/vim-sandwich
+
   Syntax highlighting~
     See |vimtex-comment-internal|.
 
