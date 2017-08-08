@@ -46,9 +46,7 @@ function! s:scratch.open() abort dict " {{{1
     call self.syntax()
   endif
 
-  if has_key(self, 'fill')
-    call self.fill()
-  endif
+  call self.fill()
 endfunction
 
 " }}}1

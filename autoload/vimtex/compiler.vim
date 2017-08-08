@@ -201,11 +201,13 @@ function! vimtex#compiler#output() " {{{1
   augroup END
 
   " Set some mappings
-  nnoremap <buffer> <silent> q :bwipeout<cr>
+  nnoremap <silent><buffer> q :bwipeout<cr>
+  nnoremap <silent><buffer> <esc> :bwipeout<cr>
 
   " Set some buffer options
   setlocal autoread
   setlocal nomodifiable
+  setlocal bufhidden=wipe
 endfunction
 
 " }}}1
