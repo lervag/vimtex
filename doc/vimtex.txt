@@ -179,6 +179,60 @@ provided by vimtex, but that are instead provided by other plugins.
     Snippets and/or templates are provided by for instance `neosnippet` and
     `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
 
+  Surround text with command, delimiter or environment~
+    |vimtex| itself provides only mappings to change, delete and toggle commands
+    delimiters and environments. If one wish to add these conveniently,
+    one can install one of the plugins
+        1. `sandwich` by Machakann [0] or
+        2. `surround` by Tim Pope [1]
+    which can assist by this.
+    
+    By default both plugins provide support for single character surroundings
+    such as `'', "", (), [], {}, <>`.  However, `sandwich` supports already
+    additionally many LaTeX-specific surroundings such as quotations ``text''
+    and math delimiter `$\left(a+b\right)$` which can be further customized.
+    The default mappings of `sandwich` are `sa{motion/textobject}` or `{visual
+    mode}sa` followed by
+       `c` to surround with a command,
+       `e` to surround with an environment,
+       left delimiter, e.g. `m(` to surround with `\left(` and `\right)`.
+    For a list of delimiters see |sandwich-filetype-recipes|. For consistency
+    one may use as well the mappings for replacing `sr` and deleting `sd`
+    provided by sandwich instead of those from |vimtex|. All the mappings can
+    be repeated with the dot command |.|. There is even support for
+    `visualrepeat.vim` [2]. One may dislike that the builtin mapping |s| is
+    overwritten. However, alternative mappings are available using as prefix
+    `ys` instead of `sa`, `cs` instead of `sr` and `ds` instead of `sd`. See
+    |sandwich-miscellaneous| how to enable them. Note, these are those of the
+    plugin `surround` which can ease the transition from the plugin `surround`
+    to `sandwich`. `sandwich` offers many more features which are described in
+    three vim help files |sandwich.txt|, |operator-sandwich.txt| and
+    |textobj-sandwich.txt|.
+
+    `surround` by Tim Pope can also be customized to assist for LaTeX
+    surroundings. Support for LaTeX environments is already available via `l`
+    or `\`. To add support for LaTeX commands and quotations add these
+    lines to `~/.vim/after/ftplugin/tex.vim`
+    >
+        let b:surround_{char2nr('c')} = "\\\1command\1{\r}"
+        let b:surround_{char2nr('q')} = "`\r'"
+        let b:surround_{char2nr('Q')} = "``\r''"
+    <
+    However, note following about `surround`
+    - custom surroundings cannot be changed with `cs` or deleted with `ds`;
+      for instance, changing ``text'' to `text' with `csQq` or deleting with
+      `dsQ` does not work;
+    - the specifier for custom surroundings has to be a single letter; `m(` is
+      not allowed;
+    - current builtin support for LaTeX environments is an undocumented and
+      deprecated feature [3];
+    - it has no support for `visualrepeat.vim` [2].
+
+    [0]: https://github.com/machakann/vim-sandwich
+    [1]: https://github.com/tpope/vim-surround
+    [2]: http://www.vim.org/scripts/script.php?script_id=3848
+    [3]: https://github.com/tpope/vim-surround/commit/ac67c1a7387a9e1c082fa98e
+
   Syntax highlighting~
     See |vimtex-comment-internal|.
 
