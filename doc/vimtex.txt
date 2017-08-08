@@ -200,6 +200,43 @@ provided by vimtex, but that are instead provided by other plugins.
     [0]: https://ctags.io/
     [1]: https://github.com/ludovicchabant/vim-gutentags
 
+  Manipulate surrounding commands/delimiters/environments~
+    |vimtex| provides mappings that change, delete and toggle commands,
+    delimiters and environments (see the `ds`, `cs` and `ts` family of
+    mappings listed under |vimtex-default-mappings|).  These mappings are
+    inspired by the great `vim-surround` [0] (|surround.txt|) by Tim Pope,
+    which provides mappings to manipulate surrounding delimiters such as `''`,
+    `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
+    should work well together with, and as an extension of, `vim-surround`.
+    The mappings may be repeated with the dot mapping |.| if one has
+    `vim-repeat` [1].
+
+    A different possibility is to use `vim-sandwich` [2] (|sandwich.txt|) by
+    Machakann, which may be considered a generalisation of `vim-surround` in
+    that it can handle much more complex sets of delimiters.  `vim-sandwich`
+    is relatively easy to expand with custom surroundings and has built in
+    support for LaTeX-specific surroundings such as quotations, ```text''`,
+    and math delimiters, `$\left(a+b\right)$`.  For a list of supported
+    delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` also supports
+    `vim-repeat` in addition to `visualrepeat.vim` [3].
+
+    Note: The default mappings of `vim-sandwich` differ from those of
+    `vim-surround`, in that the use `s` as the prefix.  E.g., to add
+    surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
+    instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
+    the map variants from `vim-surround`, these are also available as an
+    option, see |sandwich-miscellaneous|.  And it is also easy to define
+    custom mappings, if one prefers that.
+
+    Note: `vim-sandwich` actually consists of three plugins that work
+    together.  One should make sure to read the docs for all of them:
+    |sandwich.txt|, |operator-sandwich.txt|, and |textobj-sandwich.txt|.
+
+    [0]: https://github.com/tpope/vim-surround
+    [1]: https://github.com/tpope/vim-repeat
+    [2]: https://github.com/machakann/vim-sandwich
+    [3]: http://www.vim.org/scripts/script.php?script_id=3848
+
 
 ------------------------------------------------------------------------------
 Requirements~
