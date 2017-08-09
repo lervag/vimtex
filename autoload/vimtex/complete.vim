@@ -64,6 +64,7 @@ let s:completer_bib = {
       \ 'patterns' : [
       \   '\v\\\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*$',
       \   '\v\\bibentry\s*\{[^}]*$',
+      \   '\v\\textcquote\*?%(\s*\[[^]]*\]){0,2}\{[^}]*$',
       \  ],
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
