@@ -135,7 +135,7 @@ Feature overview~
   - Change the surrounding command, environment or delimiter with
     `csc`/`cse`/`cs$`/`csd`
   - Toggle starred command or environment with `tsc`/`tse`
-  - Toggle between e.g. `()` and `\left(\right)` with `tsd`
+  - Toggle between e.g. `()` and `\left(\right)` with `tsd`/`tsD`
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
@@ -487,60 +487,61 @@ In addition to the mappings listed below, |vimtex| provides convenient insert
 mode mappings to make it easier and faster to type mathematical equations.
 This feature is explained in more detail later, see |vimtex-imaps|.
 
-  -------------------------------------------------------------~
-   LHS              RHS                                  MODE~
-  -------------------------------------------------------------~
-   <localleader>li  |<plug>(vimtex-info)|                   `n`
-   <localleader>lI  |<plug>(vimtex-info-full)|              `n`
-   <localleader>lt  |<plug>(vimtex-toc-open)|               `n`
-   <localleader>lT  |<plug>(vimtex-toc-toggle)|             `n`
-   <localleader>ly  |<plug>(vimtex-labels-open)|            `n`
-   <localleader>lY  |<plug>(vimtex-labels-toggle)|          `n`
-   <localleader>lv  |<plug>(vimtex-view)|                   `n`
-   <localleader>lr  |<plug>(vimtex-reverse-search)|         `n`
-   <localleader>ll  |<plug>(vimtex-compile)|                `n`
-   <localleader>lL  |<plug>(vimtex-compile-selected)|       `nx`
-   <localleader>lk  |<plug>(vimtex-stop)|                   `n`
-   <localleader>lK  |<plug>(vimtex-stop-all)|               `n`
-   <localleader>le  |<plug>(vimtex-errors)|                 `n`
-   <localleader>lo  |<plug>(vimtex-compile-output)|         `n`
-   <localleader>lg  |<plug>(vimtex-status)|                 `n`
-   <localleader>lG  |<plug>(vimtex-status-all)|             `n`
-   <localleader>lc  |<plug>(vimtex-clean)|                  `n`
-   <localleader>lC  |<plug>(vimtex-clean-full)|             `n`
-   <localleader>lm  |<plug>(vimtex-imaps-list)|             `n`
-   <localleader>lx  |<plug>(vimtex-reload)|                 `n`
-   <localleader>ls  |<plug>(vimtex-toggle-main)|            `n`
-   dse              |<plug>(vimtex-env-delete)|             `n`
-   dsc              |<plug>(vimtex-cmd-delete)|             `n`
-   ds$              |<plug>(vimtex-env-delete-math)|        `n`
-   dsd              |<plug>(vimtex-delim-delete)|           `n`
-   cse              |<plug>(vimtex-env-change)|             `n`
-   csc              |<plug>(vimtex-cmd-change)|             `n`
-   cs$              |<plug>(vimtex-env-change-math)|        `n`
-   csd              |<plug>(vimtex-delim-change-math)|      `n`
-   tsc              |<plug>(vimtex-cmd-toggle-star)|        `n`
-   tse              |<plug>(vimtex-env-toggle-star)|        `n`
-   tsd              |<plug>(vimtex-delim-toggle-modifier)|  `nx`
-   <F7>             |<plug>(vimtex-cmd-create)|             `nxi`
-   ]]               |<plug>(vimtex-delim-close)|            `i`
-   ac               |<plug>(vimtex-ac)|                     `xo`
-   ic               |<plug>(vimtex-ic)|                     `xo`
-   ad               |<plug>(vimtex-ad)|                     `xo`
-   id               |<plug>(vimtex-id)|                     `xo`
-   ae               |<plug>(vimtex-ae)|                     `xo`
-   ie               |<plug>(vimtex-ie)|                     `xo`
-   a$               |<plug>(vimtex-a$)|                     `xo`
-   i$               |<plug>(vimtex-i$)|                     `xo`
-   aP               |<plug>(vimtex-aP)|                     `xo`
-   iP               |<plug>(vimtex-iP)|                     `xo`
-   %                |<plug>(vimtex-%)|                      `nxo`
-   ]]               |<plug>(vimtex-]])|                     `nxo`
-   ][               |<plug>(vimtex-][)|                     `nxo`
-   []               |<plug>(vimtex-[])|                     `nxo`
-   [[               |<plug>(vimtex-[[)|                     `nxo`
-   K                |<plug>(vimtex-doc-package)|            `n`
-  -------------------------------------------------------------~
+  ---------------------------------------------------------------------~
+   LHS              RHS                                          MODE~
+  ---------------------------------------------------------------------~
+   <localleader>li  |<plug>(vimtex-info)|                           `n`
+   <localleader>lI  |<plug>(vimtex-info-full)|                      `n`
+   <localleader>lt  |<plug>(vimtex-toc-open)|                       `n`
+   <localleader>lT  |<plug>(vimtex-toc-toggle)|                     `n`
+   <localleader>ly  |<plug>(vimtex-labels-open)|                    `n`
+   <localleader>lY  |<plug>(vimtex-labels-toggle)|                  `n`
+   <localleader>lv  |<plug>(vimtex-view)|                           `n`
+   <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
+   <localleader>ll  |<plug>(vimtex-compile)|                        `n`
+   <localleader>lL  |<plug>(vimtex-compile-selected)|               `nx`
+   <localleader>lk  |<plug>(vimtex-stop)|                           `n`
+   <localleader>lK  |<plug>(vimtex-stop-all)|                       `n`
+   <localleader>le  |<plug>(vimtex-errors)|                         `n`
+   <localleader>lo  |<plug>(vimtex-compile-output)|                 `n`
+   <localleader>lg  |<plug>(vimtex-status)|                         `n`
+   <localleader>lG  |<plug>(vimtex-status-all)|                     `n`
+   <localleader>lc  |<plug>(vimtex-clean)|                          `n`
+   <localleader>lC  |<plug>(vimtex-clean-full)|                     `n`
+   <localleader>lm  |<plug>(vimtex-imaps-list)|                     `n`
+   <localleader>lx  |<plug>(vimtex-reload)|                         `n`
+   <localleader>ls  |<plug>(vimtex-toggle-main)|                    `n`
+   dse              |<plug>(vimtex-env-delete)|                     `n`
+   dsc              |<plug>(vimtex-cmd-delete)|                     `n`
+   ds$              |<plug>(vimtex-env-delete-math)|                `n`
+   dsd              |<plug>(vimtex-delim-delete)|                   `n`
+   cse              |<plug>(vimtex-env-change)|                     `n`
+   csc              |<plug>(vimtex-cmd-change)|                     `n`
+   cs$              |<plug>(vimtex-env-change-math)|                `n`
+   csd              |<plug>(vimtex-delim-change-math)|              `n`
+   tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
+   tse              |<plug>(vimtex-env-toggle-star)|                `n`
+   tsd              |<plug>(vimtex-delim-toggle-modifier)|          `nx`
+   tsD              |<plug>(vimtex-delim-toggle-modifier-reverse)|  `nx`
+   <F7>             |<plug>(vimtex-cmd-create)|                     `nxi`
+   ]]               |<plug>(vimtex-delim-close)|                    `i`
+   ac               |<plug>(vimtex-ac)|                             `xo`
+   ic               |<plug>(vimtex-ic)|                             `xo`
+   ad               |<plug>(vimtex-ad)|                             `xo`
+   id               |<plug>(vimtex-id)|                             `xo`
+   ae               |<plug>(vimtex-ae)|                             `xo`
+   ie               |<plug>(vimtex-ie)|                             `xo`
+   a$               |<plug>(vimtex-a$)|                             `xo`
+   i$               |<plug>(vimtex-i$)|                             `xo`
+   aP               |<plug>(vimtex-aP)|                             `xo`
+   iP               |<plug>(vimtex-iP)|                             `xo`
+   %                |<plug>(vimtex-%)|                              `nxo`
+   ]]               |<plug>(vimtex-]])|                             `nxo`
+   ][               |<plug>(vimtex-][)|                             `nxo`
+   []               |<plug>(vimtex-[])|                             `nxo`
+   [[               |<plug>(vimtex-[[)|                             `nxo`
+   K                |<plug>(vimtex-doc-package)|                    `n`
+  ---------------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
 Options~
@@ -823,14 +824,17 @@ Options~
   Default value: See `s:init_delim_lists()` in `autoload/vimtex/delim.vim`.
 
 *g:vimtex_delim_toggle_mod_list*
-  Define list of delimiter modifiers to toggle through with
-  |<plug>(vimtex-delim-toggle-modifier)|. The list must be a subset of the
-  `mods` entry of |g:vimtex_delim_list|, else the toggle will not work
-  properly. Thus, if one wants to toggle non standard delimiters, then one
-  must also update the above option.
+  Defines a list of delimiter modifiers to toggle through using the maps:
 
-  For example, to toggle between no modifiers, the `\left/\right` pair, and
-  the `\mleft/\mright` pair, one may use the following options: >
+    |<plug>(vimtex-delim-toggle-modifier)|
+    |<plug>(vimtex-delim-toggle-modifier-reverse)|
+
+  The list must be a subset of the `mods` entry of |g:vimtex_delim_list|,
+  otherwise the toggle will not work properly.  Thus, if one wants to toggle
+  non-standard delimiters, then one must also update the above option.
+
+  Example 1: to toggle between no modifiers, the `\left/\right` pair, and the
+  `\mleft/\mright` pair, one may use the following options: >
 
     let g:vimtex_delim_list = {'mods' : {}}
     let g:vimtex_delim_list.mods.name = [
@@ -848,6 +852,16 @@ Options~
     let g:vimtex_delim_toggle_mod_list = [
       \ ['\left', '\right'],
       \ ['\mleft', '\mright'],
+      \]
+<
+  Example 2: to step through no modifiers, and the pairs `\bigl/\bigr`,
+  `\Bigl/\Bigr`, `\biggl/\biggr`, and `\Biggl/\Biggr`, one may use: >
+
+    let g:vimtex_delim_toggle_mod_list = [
+      \ ['\bigl', '\bigr'],
+      \ ['\Bigl', '\Bigr'],
+      \ ['\biggl', '\biggr'],
+      \ ['\Biggl', '\Biggr'],
       \]
 <
   Default value: `[['\left', '\right']]`
@@ -1961,10 +1975,18 @@ Map definitions~
   Toggle starred command/environment.
 
 *<plug>(vimtex-delim-toggle-modifier)*
-  Toggle delimiter modifiers, for instance between `(...)` and `\left(...\right)`.
-  The normal mode mapping toggles the closes surrounding delimiter, whereas
-  the visual mode mapping toggles all delimiters that are fully contained in
-  the visual selection. The selection is preserved.
+*<plug>(vimtex-delim-toggle-modifier-reverse)*
+  Toggle delimiter modifiers, by default alternating between `(...)` and
+  `\left(...\right)`.  The normal mode mapping toggles the closest surrounding
+  delimiter, whereas the visual mode mapping toggles all delimiters that are
+  fully contained in the visual selection.  The visual selection is preserved.
+
+  When |g:vimtex_delim_toggle_mod_list| is set to contain more than one set of
+  modifiers, these mappings iterate through the list instead of just toggling.
+  For example, one may alternate between `(...)`, `\bigl(...\bigr)`,
+  `\Bigl(...\Bigr)`, and so on.  These mappings accept a [count], which allows
+  the modifier to be incremented multiple steps at a time.  The `-reverse`
+  mapping goes backwards through the modifier list instead of forwards.
 
   See also |g:vimtex_delim_toggle_mod_list| and |g:vimtex_delim_list|.
 
