@@ -104,6 +104,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ 'supercite',
         \ '[Aa]utocite\*?',
         \ '[Ppf]?[Nn]otecite',
+        \ 'textcquote\*?',
         \]
     execute 'syntax match texStatement'
           \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
