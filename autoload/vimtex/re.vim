@@ -18,7 +18,9 @@ let g:vimtex#re#tex_input = '\v%(' . join([
 " {{{1 Completion regexes
 let g:vimtex#re#neocomplete = 
       \ '\v\\%('
-      \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ .  '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|%(text|block)cquote\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|%(for|hy)\w*cquote\*?\{[^}]*}%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
@@ -33,6 +35,8 @@ let g:vimtex#re#neocomplete =
 
 let g:vimtex#re#deoplete = '\\(?:'
       \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
+      \ . '|(text|block)cquote\*?(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
+      \ . '|(for|hy)\w*cquote\*?{[^}]*}(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
       \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
@@ -48,6 +52,8 @@ let g:vimtex#re#deoplete = '\\(?:'
 let g:vimtex#re#ncm = [
       \ '\\[A-Za-z]*',
       \ '\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
+      \ '\\(text|block)cquote\*?(\[[^]]*\]){0,2}{[^}]*',
+      \ '\\(for|hy)[A-Za-z]*cquote\*?{[^}]*}(\[[^]]*\]){0,2}{[^}]*',
       \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
       \ '\\hyperref\[[^]]*',
       \ '\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
