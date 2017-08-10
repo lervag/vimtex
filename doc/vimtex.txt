@@ -1684,11 +1684,16 @@ Options~
             affect forward/backward searching for Zathura.
 
 *g:vimtex_view_use_temp_files*
-  If enabled, this will copy output files to a corresponding set of files
+  If nonzero, this will copy output files to a corresponding set of files
   with `_vimtex` prepended to the name. If one combines this with the callback
   feature, this may provide a very convenient way to avoid that the pdf
   becomes unavailable during compilation, as it will only update the viewer
   outut file after a successful compilation.
+
+  The behaviour depends on the value:
+
+    1: Copy output files after successful compilations.
+    2: Copy output files after all compilations.
 
   Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
         already ensures that the output file is updated only after the

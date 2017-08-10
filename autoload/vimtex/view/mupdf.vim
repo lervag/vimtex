@@ -113,7 +113,12 @@ endfunction
 
 " }}}1
 function! s:mupdf.compiler_callback(status) dict " {{{1
-  if !a:status | return | endif
+  if !a:status
+    if g:vimtex_view_use_temp_files == 2
+      call self.copy_files()
+    endif
+    return
+  endif
 
   if g:vimtex_view_use_temp_files
     call self.copy_files()
