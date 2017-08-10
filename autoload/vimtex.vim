@@ -16,6 +16,11 @@ function! vimtex#init() " {{{1
   if exists('#User#VimtexEventInitPost')
     doautocmd User VimtexEventInitPost
   endif
+
+  augroup vimtex_main
+    autocmd!
+    autocmd VimLeave * call s:quit()
+  augroup END
 endfunction
 
 " }}}1
@@ -323,11 +328,12 @@ function! s:init_buffer() " {{{1
 
   " Define autocommands
   augroup vimtex_buffers
-    au BufFilePre  <buffer> call s:filename_changed_pre()
-    au BufFilePost <buffer> call s:filename_changed_post()
-    au BufLeave    <buffer> call s:buffer_left()
-    au BufDelete   <buffer> call s:buffer_deleted()
-    au QuitPre     <buffer> call s:buffer_deleted(b:vimtex_id, 'quitting')
+    autocmd!
+    autocmd BufFilePre  <buffer> call s:filename_changed_pre()
+    autocmd BufFilePost <buffer> call s:filename_changed_post()
+    autocmd BufLeave    <buffer> call s:buffer_left()
+    autocmd BufDelete   <buffer> call s:buffer_deleted()
+    autocmd QuitPre     <buffer> call s:buffer_deleted(b:vimtex_id)
   augroup END
 
   " Initialize buffer settings for sub modules
@@ -513,17 +519,19 @@ function! s:buffer_deleted(...) " {{{1
   let l:count = count(l:vimtex_ids, l:vimtex_id)
 
   "
-  " Check if we are quitting
-  "
-  let l:quit = a:0 > 1 && winnr('$') - vimtex#qf#is_open() == 1
-
-  "
   " Cleanup if the deleted buffer was the last remaining buffer of an opened
   " latex project, or if we are quitting
   "
-  if l:count <= 1 || l:quit
+  if l:count <= 1
     call vimtex#state#cleanup(l:vimtex_id)
   endif
+endfunction
+
+" }}}1
+function! s:quit() " {{{1
+  for l:state in vimtex#state#list_all()
+    call l:state.cleanup()
+  endfor
 endfunction
 
 " }}}1

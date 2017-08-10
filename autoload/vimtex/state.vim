@@ -82,7 +82,7 @@ endfunction
 
 " }}}1
 function! vimtex#state#cleanup(id) " {{{1
-  let l:vimtex = s:vimtex_states[a:id]
+  let l:vimtex = remove(s:vimtex_states, a:id)
   call l:vimtex.cleanup()
 endfunction
 
