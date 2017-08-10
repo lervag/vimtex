@@ -87,7 +87,8 @@ highlight link texHref         texUrl
 highlight link texHyperref     texRefZone
 
 " }}}1
-" {{{1 Improve support for cite commands
+" {{{1 Add support for biblatex and csquotes packages (cite commands)
+
 if get(g:, 'tex_fast', 'r') =~# 'r'
 
   for s:pattern in [
@@ -104,7 +105,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ 'supercite',
         \ '[Aa]utocite\*?',
         \ '[Ppf]?[Nn]otecite',
-        \ 'textcquote\*?',
+        \ '%(text|block)cquote\*?',
         \]
     execute 'syntax match texStatement'
           \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
@@ -127,6 +128,16 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
           \ 'nextgroup=texRefOptions,texCites'
   endfor
 
+  for s:pattern in [
+        \ '%(foreign|hyphen)textcquote\*?',
+        \ '%(foreign|hyphen)blockcquote',
+        \ 'hybridblockcquote',
+        \]
+    execute 'syntax match texStatement'
+          \ '/\v\\' . s:pattern . '\ze\s*%(\[|\{)/'
+          \ 'nextgroup=texQuoteLang'
+  endfor
+
   syntax region texRefOptions contained matchgroup=Delimiter
         \ start='\[' end=']'
         \ contains=@texRefGroup,texRefZone
@@ -136,6 +147,12 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ start='{' end='}'
         \ contains=@texRefGroup,texRefZone,texCites
         \ nextgroup=texRefOptions,texCites
+
+  syntax region texQuoteLang contained matchgroup=Delimiter
+        \ start='{' end='}'
+        \ transparent
+        \ contains=@texMatchGroup
+        \ nextgroup=texRefOption,texCite
 
   highlight def link texRefOptions texRefOption
   highlight def link texCites texCite
