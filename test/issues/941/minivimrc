@@ -1,0 +1,20 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+augroup Testing
+  autocmd!
+  autocmd User VimtexEventQuit echom 'foobar' | sleep 2
+augroup END
+
+if has('vim_starting')
+  silent edit minimal.tex
+  edit test.txt
+  quit
+endif
