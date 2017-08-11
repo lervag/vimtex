@@ -1692,8 +1692,8 @@ Options~
 
   The behaviour depends on the value:
 
-    1: Copy output files after successful compilations.
-    2: Copy output files after all compilations.
+    1: Copy output files after successful compilations and then update.
+    2: Copy output files after all compilations and then update.
 
   Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
         already ensures that the output file is updated only after the

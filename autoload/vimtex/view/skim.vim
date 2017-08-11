@@ -53,10 +53,7 @@ endfunction
 
 " }}}1
 function! s:skim.compiler_callback(status) dict " {{{1
-  if !a:status
-    if g:vimtex_view_use_temp_files == 2
-      call self.copy_files()
-    endif
+  if !a:status && g:vimtex_view_use_temp_files < 2
     return
   endif
 
