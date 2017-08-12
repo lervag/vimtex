@@ -61,6 +61,8 @@ function! s:skim.compiler_callback(status) dict " {{{1
     call self.copy_files()
   endif
 
+  if !filereadable(self.out()) | return | endif
+
   let l:cmd = join([
         \ self.path,
         \ '-r' . (!empty(system('pgrep Skim')) ? ' -g' : ''),

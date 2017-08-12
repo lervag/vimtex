@@ -121,6 +121,8 @@ function! s:mupdf.compiler_callback(status) dict " {{{1
     call self.copy_files()
   endif
 
+  if !filereadable(self.out()) | return | endif
+
   if g:vimtex_view_automatic
     "
     " Search for existing window created by latexmk
