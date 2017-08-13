@@ -213,6 +213,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_toc_fold_level_start', g:vimtex_toc_tocdepth)
   call s:init_option('vimtex_toc_show_numbers', 1)
   call s:init_option('vimtex_toc_show_preamble', 1)
+  call s:init_option('vimtex_toc_hotkeys', {})
 
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)

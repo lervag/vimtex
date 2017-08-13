@@ -69,6 +69,12 @@ function! s:toc.new() abort dict " {{{1
         \]
   let l:toc.matchers += g:vimtex_toc_custom_matchers
 
+  let l:toc.hotkeys = extend({
+        \ 'enabled' : '0',
+        \ 'leader' : ';',
+        \ 'keys' : 'abcdefghijklmnopqrstuvxyz',
+        \}, g:vimtex_toc_hotkeys)
+
   unlet l:toc.new
   return l:toc
 endfunction
@@ -104,6 +110,24 @@ function! s:toc.update(force) abort dict " {{{1
     let self.entries = l:todos + self.entries
   endif
 
+  "
+  " Add hotkeys to entries
+  "
+  let k = len(self.hotkeys.keys)
+  let n = len(self.entries)
+  let m = len(s:base(n, k))
+  let i = 0
+  for entry in self.entries
+    let keys = map(s:base(i, k), 'self.hotkeys.keys[v:val]')
+    let keys = repeat([self.hotkeys.keys[0]], m - len(keys)) + keys
+    let i+=1
+    let entry.num = i
+    let entry.hotkey = join(keys, '')
+  endfor
+
+  "
+  " Refresh if wanted
+  "
   if a:force && self.is_open()
     call self.refresh()
   endif
@@ -232,6 +256,13 @@ function! s:toc.hook_init_post() abort dict " {{{1
   nnoremap <buffer> <silent> - :call b:index.decrease_depth()<cr>
   nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
 
+  for entry in self.entries
+    execute printf(
+          \ 'nnoremap <buffer><silent> %s%s'
+          \ . ' :call b:index.activate_number(%d)<cr>',
+          \ self.hotkeys.leader, entry.hotkey, entry.num)
+  endfor
+
   " Jump to closest index
   call vimtex#pos#set_cursor(self.get_closest_index())
 endfunction
@@ -283,6 +314,10 @@ function! s:toc.print_entry(entry) abort dict " {{{1
           \ : strpart(self.print_number(a:entry.number),
           \           0, self.number_width - 1)
     let output .= printf(self.number_format, number)
+  endif
+
+  if self.hotkeys.enabled
+    let output .= printf('[%s] ', a:entry.hotkey)
   endif
 
   let title = self.todo_sorted
@@ -369,6 +404,12 @@ function! s:toc.toggle_sorted_todos() abort dict "{{{1
   let self.todo_sorted = self.todo_sorted ? 0 : 1
   call self.update(1)
   call vimtex#pos#set_cursor(self.get_closest_index())
+endfunction
+
+" }}}1
+function! s:toc.activate_number(n) abort dict "{{{1
+  execute printf('normal! %dG', self.help_nlines + a:n)
+  call self.activate(1)
 endfunction
 
 " }}}1
@@ -497,5 +538,15 @@ let s:sec_to_value = {
       \ 'chapter' : 5,
       \ 'part' : 6,
       \ }
+
+function! s:base(n, k) " {{{1
+  if a:n < a:k
+    return [a:n]
+  else
+    return add(s:base(a:n/a:k, a:k), a:n % a:k)
+  endif
+endfunction
+
+" }}}1
 
 " vim: fdm=marker sw=2
