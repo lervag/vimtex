@@ -214,7 +214,7 @@ function! s:completer_bib.find_bibs() dict " {{{2
   "
   "
 
-  " Handle local file editigin (e.g. subfiles package)
+  " Handle local file editing (e.g. subfiles package)
   let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
   let l:file = vimtex#state#get(l:id).tex
 
@@ -294,10 +294,13 @@ function! s:completer_ref.get_matches(regex) dict " {{{2
 endfunction
 
 function! s:completer_ref.parse_aux_files() dict " {{{2
-  let l:aux = b:vimtex.aux()
+  " Handle local file editing (e.g. subfiles package)
+  let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
+  let l:aux = vimtex#state#get(l:id).aux()
   if empty(l:aux)
-    return []
+    let l:aux = b:vimtex.aux()
   endif
+  if empty(l:aux) | return [] | endif
 
   let self.labels = []
   for [l:file, l:prefix] in [[l:aux, '']]
