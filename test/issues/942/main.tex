@@ -1,0 +1,22 @@
+\documentclass{book}
+
+\input{preamble}
+\bibliography{book.bib}
+
+\begin{document}
+
+\frontmatter
+\input{ frontmatter }
+
+\mainmatter
+% Todo Should split chapters into parts
+\input{chapters}
+
+\appendix
+\input{appendix}
+% TODO: This should be much better!
+
+\backmatter
+\input{backmatter}
+
+\end{document}
