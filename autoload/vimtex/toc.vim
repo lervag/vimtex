@@ -322,11 +322,7 @@ function! s:toc.print_entry(entry) abort dict " {{{1
     let output .= printf('[%S] ', a:entry.hotkey)
   endif
 
-  let title = self.todo_sorted
-        \ ? get(a:entry, 'title_sorted', a:entry.title)
-        \ : a:entry.title
-
-  let output .= printf('%-140S%s', title, level)
+  let output .= printf('%-140S%s', a:entry.title, level)
 
   call append('$', output)
 endfunction
@@ -382,10 +378,8 @@ endfunction
 " }}}1
 function! s:toc.syntax() abort dict "{{{1
   syntax match VimtexTocHelp /^\S.*: .*/
-  syntax match VimtexTocNum
-        \ /\v^(T%[ODO:]\s*)?(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
-        \ contains=VimtexTocTodo
-  syntax match VimtexTocTodo /T\%[ODO:]/ contained
+  syntax match VimtexTocNum /\v^(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
+  syntax match VimtexTocTodo /\s\zsTODO: / contained
   syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
   syntax match VimtexTocTag
         \ /^\[.\]/ contained
@@ -397,7 +391,7 @@ function! s:toc.syntax() abort dict "{{{1
   syntax match VimtexTocSec4 /^.*4$/ contains=@VimtexTocStuff
 
   syntax cluster VimtexTocStuff
-        \ contains=VimtexTocNum,VimtexTocTag,VimtexTocHotkey,@Tex
+        \ contains=VimtexTocNum,VimtexTocTag,VimtexTocHotkey,VimtexTocTodo,@Tex
 endfunction
 
 " }}}1
