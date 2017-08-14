@@ -208,6 +208,7 @@ provided by vimtex, but that are instead provided by other plugins.
     which provides mappings to manipulate surrounding delimiters such as `''`,
     `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
     should work well together with, and as an extension of, `vim-surround`.
+    Consider also the customization described under |vimtex-faq-surround|.
     The mappings may be repeated with the dot mapping |.| if one has
     `vim-repeat` [1].
 
