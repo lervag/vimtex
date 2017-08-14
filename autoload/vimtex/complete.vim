@@ -213,7 +213,12 @@ function! s:completer_bib.find_bibs() dict " {{{2
   " * This also removes the .bib extensions
   "
   "
-  let l:lines = vimtex#parser#tex(b:vimtex.tex, {
+
+  " Handle local file editigin (e.g. subfiles package)
+  let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
+  let l:file = vimtex#state#get(l:id).tex
+
+  let l:lines = vimtex#parser#tex(l:file, {
         \ 'detailed' : 0,
         \ 'recursive' : g:vimtex_complete_recursive_bib,
         \ })
