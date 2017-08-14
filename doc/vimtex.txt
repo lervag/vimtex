@@ -1504,6 +1504,23 @@ Options~
 
   Default value: Same as |g:vimtex_toc_tocdepth|
 
+*g:vimtex_toc_hotkeys*
+  This option controls whether or not to activate individual hotkeys for the
+  TOC entries, and how these hotkeys should behave.  The option is
+  a dictionary with the following keys:
+
+    `enabled`  Set to 1 to enable individual hotkeys.
+    `leader`   The leader key for the hotkeys.
+    `keys`     The set of keys that are used for the hotkeys.
+
+  Default value: >
+
+    let g:vimtex_toc_hotkeys = {
+        \ 'enabled' : 0,
+        \ 'leader' : ';',
+        \ 'keys' : 'abcdefghijklmnopqrstuvxyz',
+        \}
+
 *g:vimtex_toc_refresh_always*
   Set to 0 to manually refresh ToC entries. This may be useful for very large
   projects where generating the ToC entries becomes slow.
@@ -2539,6 +2556,7 @@ Associated settings:
     |g:vimtex_toc_custom_matchers|
     |g:vimtex_toc_fold|
     |g:vimtex_toc_fold_level_start|
+    |g:vimtex_toc_hotkeys|
     |g:vimtex_toc_refresh_always|
     |g:vimtex_toc_show_preamble|
     |g:vimtex_toc_show_numbers|
