@@ -1,0 +1,24 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+let g:tex_flavor = 'latex'
+
+silent edit sub.tex
+call feedkeys("GO\\cite{\<c-x>\<c-o>}", 'x')
+let s:line1 = getline(line('$')-1) "\n"
+silent VimtexToggleMain
+call feedkeys("GO\\cite{\<c-x>\<c-o>}", 'x')
+let s:line2 = getline(line('$')-1) "\n"
+
+echo 'main:' s:line1
+echo 'sub: ' s:line2
+echo ''
+
+if s:line1 != s:line2
+  cquit
+else
+  quit!
+endif
