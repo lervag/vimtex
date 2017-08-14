@@ -271,6 +271,7 @@ function! s:init_highlights() " {{{1
         \ ['VimtexTocSec3', 'NonText'],
         \ ['VimtexTocSec4', 'Comment'],
         \ ['VimtexTocTag', 'Directory'],
+        \ ['VimtexTocHotkey', 'Comment'],
         \ ['VimtexWarning', 'WarningMsg'],
         \ ['VimtexError', 'ErrorMsg'],
         \]

@@ -386,13 +386,18 @@ function! s:toc.syntax() abort dict "{{{1
         \ /\v^(T%[ODO:]\s*)?(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
         \ contains=VimtexTocTodo
   syntax match VimtexTocTodo /T\%[ODO:]/ contained
+  syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
   syntax match VimtexTocTag
         \ /^\[.\]/ contained
-  syntax match VimtexTocSec0 /^.*0$/ contains=VimtexTocNum,VimtexTocTag,@Tex
-  syntax match VimtexTocSec1 /^.*1$/ contains=VimtexTocNum,VimtexTocTag,@Tex
-  syntax match VimtexTocSec2 /^.*2$/ contains=VimtexTocNum,VimtexTocTag,@Tex
-  syntax match VimtexTocSec3 /^.*3$/ contains=VimtexTocNum,VimtexTocTag,@Tex
-  syntax match VimtexTocSec4 /^.*4$/ contains=VimtexTocNum,VimtexTocTag,@Tex
+
+  syntax match VimtexTocSec0 /^.*0$/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec1 /^.*1$/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec2 /^.*2$/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec3 /^.*3$/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec4 /^.*4$/ contains=@VimtexTocStuff
+
+  syntax cluster VimtexTocStuff
+        \ contains=VimtexTocNum,VimtexTocTag,VimtexTocHotkey,@Tex
 endfunction
 
 " }}}1
