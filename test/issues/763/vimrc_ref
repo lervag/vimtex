@@ -15,10 +15,11 @@ let s:line2 = getline(line('$')-1)
 
 echo 'main:' s:line1
 echo 'sub: ' s:line2
-echo ''
 
 if s:line1 != s:line2
+  echo "Failed!\n\n"
   cquit
 else
+  echo "Success!\n\n"
   quit!
 endif
