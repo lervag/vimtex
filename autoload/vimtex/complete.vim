@@ -294,20 +294,20 @@ function! s:completer_ref.get_matches(regex) dict " {{{2
 endfunction
 
 function! s:completer_ref.parse_aux_files() dict " {{{2
+  let l:files = [[b:vimtex.aux(), '']]
+
   " Handle local file editing (e.g. subfiles package)
-  let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
-  let l:aux = vimtex#state#get(l:id).aux()
-  if empty(l:aux)
-    let l:aux = b:vimtex.aux()
+  if exists('b:vimtex_local') && b:vimtex_local.active
+    let l:files += [[vimtex#state#get(b:vimtex_local.main_id).aux(), '']]
   endif
-  if empty(l:aux) | return [] | endif
+
+  " Add externaldocuments (from \externaldocument in preamble)
+  let l:files += map(
+        \ vimtex#parser#get_externalfiles(),
+        \ '[v:val.aux, v:val.opt]')
 
   let self.labels = []
-  for [l:file, l:prefix] in [[l:aux, '']]
-        \ + filter(map(vimtex#parser#get_externalfiles(),
-        \   '[v:val.aux, v:val.opt]'),
-        \ 'filereadable(v:val[0])')
-
+  for [l:file, l:prefix] in filter(l:files, 'filereadable(v:val[0])')
     let l:cached = get(self.cache, l:file, {})
     if get(l:cached, 'ftime', 0) != getftime(l:file)
       let l:cached.ftime = getftime(l:file)
