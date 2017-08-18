@@ -40,6 +40,12 @@ function! vimtex#state#init_local() " {{{1
     let l:vimtex = s:vimtex.new(l:filename, l:preserve_root)
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
+
+    if !has_key(b:vimtex, 'subids')
+      let b:vimtex.subids = []
+    endif
+    call add(b:vimtex.subids, l:vimtex_id)
+    let l:vimtex.main_id = b:vimtex_id
   endif
 
   let b:vimtex_local = {
@@ -96,8 +102,39 @@ function! vimtex#state#cleanup(id) " {{{1
   " blob
   "
   if l:count > 1 | return | endif
+  let l:vimtex = vimtex#state#get(a:id)
 
-  call remove(s:vimtex_states, a:id).cleanup()
+  "
+  " Handle possible subfiles properly
+  "
+  if has_key(l:vimtex, 'subids')
+    let l:subcount = 0
+    for l:sub_id in get(l:vimtex, 'subids', [])
+      let l:subcount += count(l:ids, l:sub_id)
+    endfor
+    if l:count + l:subcount > 1 | return | endif
+
+    for l:sub_id in get(l:vimtex, 'subids', [])
+      call remove(s:vimtex_states, l:sub_id).cleanup()
+    endfor
+
+    call remove(s:vimtex_states, a:id).cleanup()
+  else
+    call remove(s:vimtex_states, a:id).cleanup()
+
+    if has_key(l:vimtex, 'main_id')
+      let l:main = vimtex#state#get(l:vimtex.main_id)
+
+      let l:count_main = count(l:ids, l:vimtex.main_id)
+      for l:sub_id in get(l:main, 'subids', [])
+        let l:count_main += count(l:ids, l:sub_id)
+      endfor
+
+      if l:count_main + l:count <= 1
+        call remove(s:vimtex_states, l:vimtex.main_id).cleanup()
+      endif
+    endif
+  endif
 endfunction
 
 " }}}1

@@ -335,7 +335,7 @@ function! s:init_buffer() " {{{1
     autocmd BufFilePost <buffer> call s:filename_changed_post()
     autocmd BufLeave    <buffer> call s:buffer_left()
     autocmd BufDelete   <buffer> call s:buffer_deleted()
-    autocmd QuitPre     <buffer> call s:buffer_deleted(b:vimtex_id)
+    autocmd BufUnload   <buffer> call s:buffer_deleted()
   augroup END
 
   " Initialize buffer settings for sub modules
