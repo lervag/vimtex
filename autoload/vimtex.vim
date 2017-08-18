@@ -506,27 +506,10 @@ endfunction
 
 " }}}1
 function! s:buffer_deleted(...) " {{{1
-  "
-  " Get the relevant blob id
-  "
   let l:vimtex_id = a:0 > 0 ? a:1 : get(s:, 'vimtex_id', -1)
   if exists('s:vimtex_id') | unlet s:vimtex_id | endif
-  if !vimtex#state#exists(l:vimtex_id) | return | endif
 
-  "
-  " Count the number of open buffers for the given blob
-  "
-  let l:buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  let l:vimtex_ids = map(l:buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
-  let l:count = count(l:vimtex_ids, l:vimtex_id)
-
-  "
-  " Cleanup if the deleted buffer was the last remaining buffer of an opened
-  " latex project, or if we are quitting
-  "
-  if l:count <= 1
-    call vimtex#state#cleanup(l:vimtex_id)
-  endif
+  call vimtex#state#cleanup(l:vimtex_id)
 endfunction
 
 " }}}1

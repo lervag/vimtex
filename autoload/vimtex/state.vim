@@ -82,8 +82,22 @@ endfunction
 
 " }}}1
 function! vimtex#state#cleanup(id) " {{{1
-  let l:vimtex = remove(s:vimtex_states, a:id)
-  call l:vimtex.cleanup()
+  if !vimtex#state#exists(a:id) | return | endif
+
+  "
+  " Count the number of open buffers for the given blob
+  "
+  let l:buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  let l:ids = map(l:buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
+  let l:count = count(l:ids, a:id)
+
+  "
+  " Don't clean up if there are more than one buffer connected to the current
+  " blob
+  "
+  if l:count > 1 | return | endif
+
+  call remove(s:vimtex_states, a:id).cleanup()
 endfunction
 
 " }}}1
