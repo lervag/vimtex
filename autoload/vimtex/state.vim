@@ -442,7 +442,7 @@ function! s:vimtex.cleanup() abort dict " {{{1
       let b:vimtex_tmp = b:vimtex
     endif
     let b:vimtex = self
-    doautocmd User VimtexEventQuit
+    doautocmd <nomodeline> User VimtexEventQuit
     if exists('b:vimtex_tmp')
       let b:vimtex = b:vimtex_tmp
       unlet b:vimtex_tmp

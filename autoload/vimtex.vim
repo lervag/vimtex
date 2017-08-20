@@ -14,7 +14,7 @@ function! vimtex#init() " {{{1
   call s:init_default_mappings()
 
   if exists('#User#VimtexEventInitPost')
-    doautocmd User VimtexEventInitPost
+    doautocmd <nomodeline> User VimtexEventInitPost
   endif
 
   augroup vimtex_main
