@@ -1,0 +1,53 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+set shiftwidth=4
+set expandtab
+
+nnoremap q :qall!<cr>
+
+if has('vim_starting')
+  silent edit minimal.tex
+endif
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * call CreateMaps()
+  autocmd VimEnter * call Test()
+augroup END
+
+function! CreateMaps()
+  call vimtex#imaps#add_map({
+        \ 'lhs' : '<m-i>',
+        \ 'rhs' : '\item ',
+        \ 'leader'  : '',
+        \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+        \ 'context' : ['itemize', 'enumerate'],
+        \})
+  call vimtex#imaps#add_map({
+        \ 'lhs' : '<m-i>',
+        \ 'rhs' : '\item[',
+        \ 'leader'  : '',
+        \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+        \ 'context' : ['description'],
+        \})
+endfunction
+
+function! Test()
+  call search('begin')
+  call feedkeys('jo%  <m-i> should not expand', 'x')
+  call feedkeys("o\<m-i>", 'x')
+
+  call search('begin')
+  call feedkeys('o%  <m-i> should expand to \item', 'x')
+  call feedkeys("o\<m-i> Bullet", 'x')
+
+  call search('begin')
+  call feedkeys('o%  <m-i> should expand to \item[', 'x')
+  call feedkeys("o\<m-i>Test]", 'x')
+
+  normal! gg
+endfunction
