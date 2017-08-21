@@ -22,18 +22,30 @@ augroup END
 function! CreateMaps()
   call vimtex#imaps#add_map({
         \ 'lhs' : '<m-i>',
-        \ 'rhs' : '\item ',
+        \ 'rhs' : '',
         \ 'leader'  : '',
         \ 'wrapper' : 'vimtex#imaps#wrap_environment',
-        \ 'context' : ['itemize', 'enumerate'],
+        \ 'context' : [
+        \   {'envs' : ['itemize', 'enumerate'],
+        \    'rhs' : '\item '},
+        \   {'envs' : ['description'],
+        \    'rhs' : '\item['},
+        \ ],
         \})
-  call vimtex#imaps#add_map({
-        \ 'lhs' : '<m-i>',
-        \ 'rhs' : '\item[',
-        \ 'leader'  : '',
-        \ 'wrapper' : 'vimtex#imaps#wrap_environment',
-        \ 'context' : ['description'],
-        \})
+  " call vimtex#imaps#add_map({
+  "       \ 'lhs' : '<m-i>',
+  "       \ 'rhs' : '\item ',
+  "       \ 'leader'  : '',
+  "       \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+  "       \ 'context' : ['itemize', 'enumerate'],
+  "       \})
+  " call vimtex#imaps#add_map({
+  "       \ 'lhs' : '<m-i>',
+  "       \ 'rhs' : '\item[',
+  "       \ 'leader'  : '',
+  "       \ 'wrapper' : 'vimtex#imaps#wrap_environment',
+  "       \ 'context' : ['description'],
+  "       \})
 endfunction
 
 function! Test()

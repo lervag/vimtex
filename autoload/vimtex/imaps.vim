@@ -122,11 +122,24 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
-  for l:env in b:vimtex_context[a:lhs . a:rhs]
-    if vimtex#env#is_inside(l:env)
-      return a:rhs
+  for l:context in b:vimtex_context[a:lhs . a:rhs]
+    if type(l:context) == type('')
+      let l:envs = [l:context]
+      let l:rhs = a:rhs
+    elseif type(l:context) == type({})
+      let l:envs = l:context.envs
+      let l:rhs = l:context.rhs
     endif
+
+    for l:env in l:envs
+      if vimtex#env#is_inside(l:env)
+        return l:rhs
+      endif
+    endfor
+
+    unlet l:context
   endfor
+
   return a:lhs
 endfunction
 

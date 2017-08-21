@@ -2142,9 +2142,17 @@ Explanation of the keys:
         wrapper function and will be used if no other wrapper is supplied.
 
       `vimtex#imaps#wrap_environment`
-        Only define `rhs` if inside one of the environments specified through
-        a list of environment names. The list must be supplied through the
-        `context` key.
+        Only define `rhs` if inside a specified environment. The wrapper works
+        by utilizing the `context` key, which is a list that contains strings
+        and/or dictionaries:
+
+          i.  If the entry is a string, then the `lhs` is mapped to `rhs`
+              inside the specified environment.
+          ii. If the entry is a dictionary, then we assume it has two entries,
+              `envs` and `rhs`, where `envs` is a list of environment names.
+              If inside any environment in this list, then we expand to the
+              corresponding `rhs`. This allows one to create a mapping that
+              expands to different `rhs`s in different environments.
 
     Of course, one may use custom wrapper functions. To write a custom wrapper
     function, please see the source for examples on how the |vimtex| wrappers
