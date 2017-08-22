@@ -333,9 +333,8 @@ function! s:init_buffer() " {{{1
     autocmd!
     autocmd BufFilePre  <buffer> call s:filename_changed_pre()
     autocmd BufFilePost <buffer> call s:filename_changed_post()
-    autocmd BufLeave    <buffer> call s:buffer_left()
-    autocmd BufDelete   <buffer> call s:buffer_deleted()
-    autocmd BufUnload   <buffer> call s:buffer_deleted()
+    autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
+    autocmd BufWipeout  <buffer> call s:buffer_deleted('wipe')
   augroup END
 
   " Initialize buffer settings for sub modules
@@ -500,16 +499,10 @@ function! s:filename_changed_post() " {{{1
 endfunction
 
 " }}}1
-function! s:buffer_left() " {{{1
-  let s:vimtex_id = b:vimtex_id
-endfunction
-
-" }}}1
-function! s:buffer_deleted(...) " {{{1
-  let l:vimtex_id = a:0 > 0 ? a:1 : get(s:, 'vimtex_id', -1)
-  if exists('s:vimtex_id') | unlet s:vimtex_id | endif
-
-  call vimtex#state#cleanup(l:vimtex_id)
+function! s:buffer_deleted(reason) " {{{1
+  if a:reason ==# 'wipe' || &hidden
+    call vimtex#state#cleanup(getbufvar(expand('<afile>'), 'vimtex_id', -1))
+  endif
 endfunction
 
 " }}}1
