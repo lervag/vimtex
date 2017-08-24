@@ -500,8 +500,21 @@ endfunction
 
 " }}}1
 function! s:buffer_deleted(reason) " {{{1
+  "
+  " We need a simple cache of buffer ids because a buffer unload might clear
+  " buffer variables, so that a subsequent buffer wipe will not trigger a full
+  " cleanup. By caching the buffer id, we should avoid this issue.
+  "
+  let l:file = expand('<afile>')
+  if !exists('s:buffer_cache')
+    let s:buffer_cache = {}
+  endif
+  if !has_key(s:buffer_cache, l:file)
+    let s:buffer_cache[l:file] = getbufvar(l:file, 'vimtex_id', -1)
+  endif
+
   if a:reason ==# 'wipe' || &hidden
-    call vimtex#state#cleanup(getbufvar(expand('<afile>'), 'vimtex_id', -1))
+    call vimtex#state#cleanup(s:buffer_cache[l:file])
   endif
 endfunction
 
