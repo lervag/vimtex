@@ -96,11 +96,11 @@ endfunction
 " }}}1
 
 function! vimtex#qf#is_open() abort " {{{1
-  redir => l:buflist
+  redir => l:bufstring
   silent! ls!
   redir END
 
-  let l:buflist = filter(split(l:buflist, '\n'), 'v:val =~# ''Quickfix''')
+  let l:buflist = filter(split(l:bufstring, '\n'), 'v:val =~# ''Quickfix''')
 
   for l:line in l:buflist
     let l:bufnr = str2nr(matchstr(l:line, '^\s*\zs\d\+'))
