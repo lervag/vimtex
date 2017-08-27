@@ -1,0 +1,3 @@
+call plug#begin('~/.vim/bundle')
+Plug 'lervag/vimtex'
+call plug#end()
