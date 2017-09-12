@@ -1841,7 +1841,7 @@ Commands~
                                              *VimtexCompile*
                                              *<plug>(vimtex-compile)*
 :VimtexCompile            If the compiler supports and is set to run in
-                          continuouos mode, then this command works as
+                          continuous mode, then this command works as
                           a compiler toggle. If not, this command will run
                           a single shot compilation.
 
@@ -2192,16 +2192,26 @@ therefore a better approach than using the anonymous snippet function.
 Events~
                                                                 *vimtex-events*
 
-|vimtex| defines some events that may be used for further customization
-through |autocmd|s, in particular the |User| autocmd.
+|vimtex| defines some events using the |User| autocmd that may be used for
+further customization.
 
   *VimtexEventQuit*
-    This event is triggered when the last buffer for a particular LaTeX
-    project is exited. The event may be used for instance to issue
-    a |VimtexClean| command when exiting.
+    This event is triggered when the last buffer for a particular LaTeX project
+    is wiped (for example, using `:bwipeout`) and when Vim is quit.  The event
+    may be used, for instance, to cleanup up auxiliary build files or close
+    open viewers (see Examples below).  With Vim defaults, this event is not
+    triggered when using `:quit` or `:bdelete` since these commands merely hide
+    the buffer.  In multi-file projects, the event may be triggered multiple
+    times.  The 'b:vimtex' variable contains context data for the quitting
+    file or project.  For example, 'b:vimtex.tex' identifies the tex file being
+    wiped, or the main tex file of a multi-file project.
+
+    Note: Commands such as |VimtexClean| cannot be used in this autocommand
+    because when quitting vim the current buffer does not necessarily have
+    filetype 'tex'.
 
   *VimtexEventInitPost*
-    This event is triggered after |vimtex| initialization is completed. It may
+    This event is triggered after |vimtex| initialization is completed.  It may
     be used to automatically start compiling a document.
 
   *VimtexEventCompileStarted*
@@ -2212,10 +2222,24 @@ through |autocmd|s, in particular the |User| autocmd.
 
 Examples: >
 
-  augroup vimtex_config
+  " Compile on initialization, cleanup on quit
+  augroup vimtex_event_1
     au!
-    au User VimtexEventQuit     VimtexClean
-    au User VimtexEventInitPost VimtexCompile
+    au User VimtexEventQuit     call vimtex#compiler#clean(0)
+    au User VimtexEventInitPost call vimtex#compiler#compile()
+  augroup END
+
+  " Close viewers on quit
+  function! CloseViewers()
+    if executable('xdotool') && exists('b:vimtex')
+        \ && exists('b:vimtex.viewer') && b:vimtex.viewer.xwin_id > 0
+      call system('xdotool windowclose '. b:vimtex.viewer.xwin_id)
+    endif
+  endfunction
+
+  augroup vimtex_event_2
+    au!
+    au User VimtexEventQuit call CloseViewers()
   augroup END
 
 ==============================================================================
