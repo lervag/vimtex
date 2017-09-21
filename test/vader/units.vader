@@ -4,3 +4,6 @@ Execute (paths):
   AssertEqual 'Tex/test2',
     \ vimtex#paths#relative('\Files\2016-2017\Tex\test2',
     \                       '\Files\2016-2017')
+  AssertEqual 'tilde~/test3',
+    \ vimtex#paths#relative('/path/with/tilde~/test3',
+    \                       '/path/with')
