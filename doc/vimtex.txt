@@ -243,8 +243,17 @@ provided by vimtex, but that are instead provided by other plugins.
 Requirements~
                                                           *vimtex-requirements*
 
-The following is a list of specific requirements for the key features of
-|vimtex|:
+The following is a list of specific requirements for running |vimtex| and some
+of its key features.
+
+  *vimtex_version_check*
+    |vimtex| supports Vim version 7.4.52 and neovim version 0.1.7.  It will not
+    load for older versions, unless one adds >
+
+      let g:vimtex_version_check = 0
+<
+    to one's `vimrc` file.  This might work, but issues due to older versions
+    than the mentioned here will be ignored.
 
   `latexmk`   http://users.phys.psu.edu/~collins/software/latexmk-jcc
   `latexrun`  https://github.com/aclements/latexrun
