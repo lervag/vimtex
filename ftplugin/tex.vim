@@ -16,6 +16,8 @@ let b:did_ftplugin = 1
 if !(!get(g:, 'vimtex_version_check', 1) || has('nvim'))
       \ && (v:version < 704 || !has('patch-7.4.52'))
   echoerr 'Error: vimtex does not support your version of Vim'
+  echom '  v:version: ' . v:version
+  echom '  has 7.4.52: ' . has('patch-7.4.52')
   echom 'Please update to Vim 7.4.52 or later'
   echom 'Please see :h vimtex_version_check'
   finish
