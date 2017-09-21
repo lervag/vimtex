@@ -22,7 +22,7 @@ function! vimtex#paths#relative(path, current) " {{{1
   let l:common = substitute(a:current, '\\', '/', 'g')
 
   let l:result = ''
-  while substitute(l:target, '^' . l:common, '', '') ==# l:target
+  while stridx(l:target, l:common) != 0
     let l:common = fnamemodify(l:common, ':h')
     let l:result = empty(l:result) ? '..' : '../' . l:result
   endwhile
@@ -31,7 +31,7 @@ function! vimtex#paths#relative(path, current) " {{{1
     let l:result .= '/'
   endif
 
-  let l:forward = substitute(l:target, '^' . l:common, '', '')
+  let l:forward = strpart(l:target, strlen(l:common))
   if !empty(l:forward)
     let l:result = empty(l:result)
           \ ? l:forward[1:]
