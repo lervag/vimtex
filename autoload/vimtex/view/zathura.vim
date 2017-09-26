@@ -45,6 +45,7 @@ function! s:zathura.start(outfile) dict " {{{1
   let self.process = vimtex#process#start(l:cmd)
 
   call self.xwin_get_id()
+  let self.outfile = a:outfile
 endfunction
 
 " }}}1
@@ -58,6 +59,7 @@ function! s:zathura.forward_search(outfile) dict " {{{1
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
   call vimtex#process#run(l:cmd)
   let self.cmd_forward_search = l:cmd
+  let self.outfile = a:outfile
 endfunction
 
 " }}}1
@@ -111,6 +113,14 @@ function! s:zathura.latexmk_append_argument() dict " {{{1
   endif
 
   return cmd
+endfunction
+
+" }}}1
+function! s:zathura.get_pid() dict " {{{1
+  let cmd = 'pgrep -nf "zathura.*'
+        \ . escape(get(self, 'outfile', self.out()), '~\%.') . '"'
+  let pid = str2nr(system(cmd)[:-2])
+  return pid > 0 ? pid : 0
 endfunction
 
 " }}}1
