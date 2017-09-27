@@ -117,10 +117,18 @@ endfunction
 
 " }}}1
 function! s:zathura.get_pid() dict " {{{1
+  " First try to match full output file name
   let cmd = 'pgrep -nf "zathura.*'
         \ . escape(get(self, 'outfile', self.out()), '~\%.') . '"'
   let pid = str2nr(system(cmd)[:-2])
-  return pid > 0 ? pid : 0
+
+  " Now try to match correct servername as fallback
+  if empty(pid)
+    let cmd = 'pgrep -nf "zathura.+--servername ' . v:servername . '"'
+    let pid = str2nr(system(cmd)[:-2])
+  endif
+
+  return pid
 endfunction
 
 " }}}1
