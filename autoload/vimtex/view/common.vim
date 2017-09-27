@@ -151,21 +151,23 @@ function! s:xwin_template.xwin_exists() dict " {{{1
   " If xwin_id is unset, check if matching viewer windows exist
   "
   if self.xwin_id == 0
-    let pid = has_key(self, 'get_pid') ? self.get_pid() : 0
-    let cmd = 'xdotool search'
-          \ . (pid > 0 ? ' --all --pid ' . pid : '')
-          \ . ' --name ' . fnamemodify(self.out(), ':t')
-    let ids = split(system(cmd), '\n')
-
-    let ids_already_used = filter(map(deepcopy(vimtex#state#list_all()),
-          \ "get(get(v:val, 'viewer', {}), 'xwin_id')"), 'v:val > 0')
-
-    for id in ids
-      if index(ids_already_used, id) < 0
-        let self.xwin_id = id
-        break
-      endif
-    endfor
+    if has_key(self, 'get_pid')
+      let cmd = 'xdotool search'
+            \ . ' --all --pid ' . self.get_pid()
+            \ . ' --name ' . fnamemodify(self.out(), ':t')
+      let self.xwin_id = get(split(system(cmd), '\n'), 0)
+    else
+      let cmd = 'xdotool search --name ' . fnamemodify(self.out(), ':t')
+      let ids = split(system(cmd), '\n')
+      let ids_already_used = filter(map(deepcopy(vimtex#state#list_all()),
+            \ "get(get(v:val, 'viewer', {}), 'xwin_id')"), 'v:val > 0')
+      for id in ids
+        if index(ids_already_used, id) < 0
+          let self.xwin_id = id
+          break
+        endif
+      endfor
+    endif
   endif
 
   return self.xwin_id > 0
