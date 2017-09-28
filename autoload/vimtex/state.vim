@@ -317,6 +317,7 @@ function! s:get_main_recurse(...) " {{{1
 
     let l:filter_re = g:vimtex#re#tex_input
           \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
+          \ . '%(\.tex)?\}'
 
     if len(filter(readfile(l:cand), 'v:val =~# l:filter_re')) > 0
       let l:res = s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
