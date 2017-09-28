@@ -1,0 +1,20 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+silent edit dir/ab.tex
+
+if b:vimtex.base ==# 'test.tex'
+  echo "Success\n"
+else
+  echo 'Failed: Main file set to "' . b:vimtex.base . '"'
+  echo "        Should be \"test.tex\"\n"
+endif
+
+quit
