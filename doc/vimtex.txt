@@ -68,7 +68,7 @@ CONTENTS                                                      *vimtex-contents*
     Table of contents                           |vimtex-toc|
     Table of labels                             |vimtex-labels|
     Unite sources                               |vimtex-unite|
-    Include expression (|gf| command)             |vimtex-includeexpr|
+    Include expression (|gf| command)           |vimtex-includeexpr|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
@@ -351,7 +351,7 @@ File .latexmain specifier~
 Recursive search~
   If no other method provides an appropriate candidate, then the recursive
   search detects the main LaTeX file by searching for a file in the current
-  and parent directories that includes the present file and that has the
+  and parent directories that includes the present file and has the
   `\documentclass` line.
 
   This should work in most cases, but it may fail if for instance the project
@@ -485,8 +485,8 @@ that if a user defines a custom mapping, e.g. with >
 then the corresponding default left-hand side will not be mapped.
 
 If one prefers, one may disable all the default mappings through the option
-|g:vimtex_mappings_enabled|.  One must then define custom mappings for all
-desired features through the listed RHS <plug>-maps or by mapping the
+|g:vimtex_mappings_enabled|. Custom mappings for all desired features 
+must then be defined through the listed RHS <plug>-maps or by mapping the
 available commands.
 
 In the below list of mappings, LHS is the default mapping, RHS is the
@@ -497,9 +497,9 @@ In addition to the mappings listed below, |vimtex| provides convenient insert
 mode mappings to make it easier and faster to type mathematical equations.
 This feature is explained in more detail later, see |vimtex-imaps|.
 
-  ---------------------------------------------------------------------~
-   LHS              RHS                                          MODE~
-  ---------------------------------------------------------------------~
+  ----------------------------------------------------------------------~
+   LHS              RHS                                             MODE~
+  ----------------------------------------------------------------------~
    <localleader>li  |<plug>(vimtex-info)|                           `n`
    <localleader>lI  |<plug>(vimtex-info-full)|                      `n`
    <localleader>lt  |<plug>(vimtex-toc-open)|                       `n`
@@ -551,7 +551,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    []               |<plug>(vimtex-[])|                             `nxo`
    [[               |<plug>(vimtex-[[)|                             `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
-  ---------------------------------------------------------------------~
+  ----------------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
 Options~
@@ -1146,8 +1146,8 @@ Options~
 
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
-  comments. That is, if it is enabled, then comments at end of lines will not
-  be joined with the |gq| command.
+  comments. That is, if it is enabled, comments at end of lines will not be 
+  joined with the |gq| command.
 
   Default value: 0
 
@@ -2508,11 +2508,11 @@ change the fold filler, use e.g.: >
   set fillchars=vert:|,fold:\
 
 Associated settings:
-  |g:vimtex_fold_enabled|
-  |g:vimtex_fold_manual|
-  |g:vimtex_fold_levelmarker|
-  |g:vimtex_fold_types|
-  |g:vimtex_fold_types_defaults|
+    |g:vimtex_fold_enabled|
+    |g:vimtex_fold_manual|
+    |g:vimtex_fold_levelmarker|
+    |g:vimtex_fold_types|
+    |g:vimtex_fold_types_defaults|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
@@ -2561,11 +2561,11 @@ The |vimtex-index| interface is used by the table of contents |vimtex-toc| and
 the table of labels |vimtex-labels|.
 
 Associated settings:
-  |g:vimtex_index_hide_line_numbers|
-  |g:vimtex_index_resize|
-  |g:vimtex_index_show_help|
-  |g:vimtex_index_split_pos|
-  |g:vimtex_index_split_width|
+    |g:vimtex_index_hide_line_numbers|
+    |g:vimtex_index_resize|
+    |g:vimtex_index_show_help|
+    |g:vimtex_index_split_pos|
+    |g:vimtex_index_split_width|
 
 ------------------------------------------------------------------------------
 Table of contents~
