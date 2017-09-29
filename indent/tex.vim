@@ -43,9 +43,13 @@ function! VimtexIndent(lnum) " {{{1
 
   " Align on ampersands
   if get(g:, 'vimtex_indent_on_ampersands', 1)
-        \ && l:line =~# '^\s*&'
-        \ && l:prev_line =~# '\\\@<!&.*'
-    return indent(a:lnum) + match(l:prev_line, '\\\@<!&') - stridx(l:line, '&')
+        \ && l:line =~# s:amper_align
+        \ && l:prev_line =~# s:ampersand
+    let l:indent_prev = strdisplaywidth(strpart(l:prev_line, 0,
+      \ match(l:prev_line, s:ampersand)))
+    let l:indent_cur = strdisplaywidth(strpart(l:line, 0,
+      \ match(l:line, s:ampersand)))
+    return max([indent(a:lnum) - l:indent_cur + l:indent_prev, 0])
   endif
 
   " Use previous indentation for comments
@@ -76,13 +80,16 @@ function! s:get_prev_line(lnum, ignore_amps) " {{{1
   while l:lnum != 0
         \ && (l:prev =~# '^\s*%'
         \     || s:is_verbatim(l:prev, l:lnum)
-        \     || a:ignore_amps && match(l:prev, '^\s*&') >= 0)
+        \     || a:ignore_amps && match(l:prev, s:amper_align) >= 0)
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:prev = getline(l:lnum)
   endwhile
 
   return l:lnum
 endfunction
+
+let s:ampersand = g:vimtex#re#not_bslash . '\&'
+let s:amper_align = '^[ \t\\]*' . s:ampersand
 
 " }}}1
 function! s:is_verbatim(line, lnum) " {{{1
