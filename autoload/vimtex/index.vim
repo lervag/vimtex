@@ -74,9 +74,8 @@ function! s:index.create() abort dict " {{{1
   nnoremap <silent><buffer> q             :call b:index.close()<cr>
   nnoremap <silent><buffer> <esc>         :call b:index.close()<cr>
   nnoremap <silent><buffer> <space>       :call b:index.activate(0)<cr>
-  nnoremap <silent><buffer> <leftrelease> :call b:index.activate(0)<cr>
+  nnoremap <silent><buffer> <2-leftmouse> :call b:index.activate(0)<cr>
   nnoremap <silent><buffer> <cr>          :call b:index.activate(1)<cr>
-  nnoremap <silent><buffer> <2-leftmouse> :call b:index.activate(1)<cr>
 
   call self.syntax()
   call self.refresh()
