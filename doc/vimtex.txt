@@ -351,7 +351,7 @@ File .latexmain specifier~
 Recursive search~
   If no other method provides an appropriate candidate, then the recursive
   search detects the main LaTeX file by searching for a file in the current
-  and parent directories that includes the present file and that has the
+  and parent directories that includes the present file and has the
   `\documentclass` line.
 
   This should work in most cases, but it may fail if for instance the project
@@ -485,9 +485,9 @@ that if a user defines a custom mapping, e.g. with >
 then the corresponding default left-hand side will not be mapped.
 
 If one prefers, one may disable all the default mappings through the option
-|g:vimtex_mappings_enabled|.  One must then define custom mappings for all
-desired features through the listed RHS <plug>-maps or by mapping the
-available commands.
+|g:vimtex_mappings_enabled|.  Custom mappings for all desired features must
+then be defined through the listed RHS <plug>-maps or by mapping the available
+commands.
 
 In the below list of mappings, LHS is the default mapping, RHS is the
 corresponding <plug>-maps, and MODE indicates in which vim mode the mappings
@@ -1146,8 +1146,8 @@ Options~
 
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
-  comments. That is, if it is enabled, then comments at end of lines will not
-  be joined with the |gq| command.
+  comments. That is, if it is enabled, comments at end of lines will not be
+  joined with the |gq| command.
 
   Default value: 0
 
@@ -2522,10 +2522,10 @@ INDENTATION                                                     *vimtex-indent*
 for bibliography files (`.bib` files).
 
 Associated settings:
-    |g:vimtex_indent_enabled|
-    |g:vimtex_indent_bib_enabled|
-    |g:vimtex_indent_ignored_envs|
-    |g:vimtex_indent_on_ampersands|
+  |g:vimtex_indent_enabled|
+  |g:vimtex_indent_bib_enabled|
+  |g:vimtex_indent_ignored_envs|
+  |g:vimtex_indent_on_ampersands|
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
@@ -2593,15 +2593,15 @@ See also |toc_matcher_specification| for a specification of the matcher
 objects.
 
 Associated settings:
-    |g:vimtex_toc_enabled|
-    |g:vimtex_toc_custom_matchers|
-    |g:vimtex_toc_fold|
-    |g:vimtex_toc_fold_level_start|
-    |g:vimtex_toc_hotkeys|
-    |g:vimtex_toc_refresh_always|
-    |g:vimtex_toc_show_preamble|
-    |g:vimtex_toc_show_numbers|
-    |g:vimtex_toc_tocdepth|
+  |g:vimtex_toc_enabled|
+  |g:vimtex_toc_custom_matchers|
+  |g:vimtex_toc_fold|
+  |g:vimtex_toc_fold_level_start|
+  |g:vimtex_toc_hotkeys|
+  |g:vimtex_toc_refresh_always|
+  |g:vimtex_toc_show_preamble|
+  |g:vimtex_toc_show_numbers|
+  |g:vimtex_toc_tocdepth|
 
 ------------------------------------------------------------------------------
 Table of labels~
@@ -2612,7 +2612,7 @@ may be filtered with the `f` keybinding.  Filters may be removed with the `c`
 keybinding.
 
 Associated settings:
-    |g:vimtex_labels_enabled|
+  |g:vimtex_labels_enabled|
 
 ------------------------------------------------------------------------------
 Unite sources~
@@ -2687,33 +2687,33 @@ The compilers should respect the TeX program directive as described here:
 directives and rules.
 
 Associated commands:
-    |VimtexCompile|
-    |VimtexCompileSS|
-    |VimtexCompileSS!|
-    |VimtexCompileSelected|
-    |VimtexCompileOutput|
-    |VimtexStatus|
-    |VimtexStatus!|
-    |VimtexStop|
-    |VimtexStopAll|
-    |VimtexErrors|
-    |VimtexErrors|
-    |VimtexClean|
-    |VimtexClean!|
-    |VimtexErrors|
+  |VimtexCompile|
+  |VimtexCompileSS|
+  |VimtexCompileSS!|
+  |VimtexCompileSelected|
+  |VimtexCompileOutput|
+  |VimtexStatus|
+  |VimtexStatus!|
+  |VimtexStop|
+  |VimtexStopAll|
+  |VimtexErrors|
+  |VimtexErrors|
+  |VimtexClean|
+  |VimtexClean!|
+  |VimtexErrors|
 
 Associated settings:
-    |g:vimtex_compiler_enabled|
-    |g:vimtex_compiler_method|
-    |g:vimtex_compiler_latexmk|
-    |g:vimtex_compiler_latexrun|
-    |g:vimtex_compiler_arara|
-    |g:vimtex_compiler_progname|
-    |g:vimtex_compiler_callback_hooks|
+  |g:vimtex_compiler_enabled|
+  |g:vimtex_compiler_method|
+  |g:vimtex_compiler_latexmk|
+  |g:vimtex_compiler_latexrun|
+  |g:vimtex_compiler_arara|
+  |g:vimtex_compiler_progname|
+  |g:vimtex_compiler_callback_hooks|
 
 Associated events:
-    |VimtexEventCompileStarted|
-    |VimtexEventCompileStopped|
+  |VimtexEventCompileStarted|
+  |VimtexEventCompileStopped|
 
 ------------------------------------------------------------------------------
 Latexmk~
@@ -2819,12 +2819,12 @@ For supported viewers, |VimtexView| will also perform forward search when the
 viewer is opened.
 
 Associated settings:
-    |g:vimtex_view_enabled|
-    |g:vimtex_view_automatic|
-    |g:vimtex_view_method|
-    |g:vimtex_view_use_temp_files|
-    |g:vimtex_view_general_viewer|
-    |g:vimtex_view_<viewer>_options|
+  |g:vimtex_view_enabled|
+  |g:vimtex_view_automatic|
+  |g:vimtex_view_method|
+  |g:vimtex_view_use_temp_files|
+  |g:vimtex_view_general_viewer|
+  |g:vimtex_view_<viewer>_options|
 
 ------------------------------------------------------------------------------
 Synctex support~
