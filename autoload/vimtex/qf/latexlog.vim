@@ -195,17 +195,20 @@ function! s:fix_paths() abort " {{{1
     let l:file = fnamemodify(
           \ simplify(s:root . '/' . bufname(l:qf.bufnr)), ':.')
     if !filereadable(l:file) | continue | endif
+
     if !bufexists(l:file)
       execute 'badd' l:file
     endif
+
+    let l:qf.filename = l:file
     let l:qf.bufnr = bufnr(l:file)
   endfor
 
-  " Set title if setqflist supports it
+  " Update qflist and set title if setqflist supports it
+  call setqflist(l:qflist, 'r')
   try
     call setqflist(l:qflist, 'r', {'title': s:title})
-  catch /E118/
-    call setqflist(l:qflist, 'r')
+  catch
   endtry
 endfunction
 
