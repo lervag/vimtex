@@ -52,6 +52,9 @@ function! vimtex#qf#open(force) abort " {{{1
     return
   endtry
 
+  " Also parse bibtex errors
+  call vimtex#qf#bibtex#addqflist()
+
   if empty(getqflist())
     if a:force
       call vimtex#log#info('No errors!')
