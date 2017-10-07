@@ -244,7 +244,9 @@ Requirements~
                                                           *vimtex-requirements*
 
 The following is a list of specific requirements for running |vimtex| and some
-of its key features.
+of its key features.  There are a couple of relevant FAQs for those who use
+|neovim| and those restricted to a Windows OS, see |vimtex-faq-neovim| and
+|vimtex-faq-windows|.
 
   *vimtex_version_check*
     |vimtex| supports Vim version 7.4.52 and neovim version 0.1.7.  It will not
@@ -3064,6 +3066,24 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
    [0]: https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
    [1]: http://zsh.sourceforge.net/Intro/intro_3.html
    [2]: http://askubuntu.com/a/356973/16395
+
+                                                           *vimtex-faq-windows*
+Q: Does vimtex support Windows?
+A: Yes and no.  I personally don't use Windows, and as such, it is difficult
+   to make every feature work perfectly.  However, I think most features
+   should work.  Here are some things that might not work quite as expected,
+   with some workarounds.
+
+   * The full executable path for `gvim.exe` might include spaces, which might
+     lead to problems, see e.g. [0].  A workaround is to put the default
+     installation path of Vim (or neovim) to your PATH variable and set
+     |g:vimtex_compiler_progname| to |v:progname|.
+
+   Also, see [1-2] for some relevant issues that might be of interest.
+
+   [0]: https://github.com/lervag/vimtex/issues/966
+   [1]: https://github.com/lervag/vimtex/issues/736
+   [2]: https://github.com/lervag/vimtex/issues/882
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
