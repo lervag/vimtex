@@ -1,15 +1,30 @@
 \documentclass{article}
 \begin{document}
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+% I was expecting a `,' or a `}'---line 9 of file ref1.bib
+%  :
+%  :   note    = {Blah},
+% (Error may have been on previous line)
+\cite{expecting-comma}
 
-\cite{noauthor} has no author.
-\cite{noyear} has no year.
-\cite{notitle} has no title.
-\cite{undefined} is undefined.
+% Repeated entry---line 7 of file ref2.bib
+%  : @article{repeated
+%  :                  ,
+% I'm skipping whatever remains of this entry
+\cite{repeated}
 
-Other problems:
-\cite{missing-comma}
+% Warning--entry type for "nostyle" isn't style-file defined
+% --line 13 of file ref2.bib
+\cite{nostyle}
+
+% Warning--I didn't find a database entry for "undefined"
+\cite{undefined}
+
+% Warning--to sort, need author or key in empty
+% Warning--empty author in empty
+% Warning--empty title in empty
+% Warning--empty journal in empty
+\cite{empty}
 
 \bibliographystyle{plain}
 \bibliography{ref1,ref2}
