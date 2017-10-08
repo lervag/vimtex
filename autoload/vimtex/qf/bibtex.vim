@@ -45,7 +45,7 @@ function! s:bibtex.prepare() abort " {{{1
 
   " Set errorformat for BibTeX errors
   setlocal errorformat=%+WWarning--empty\ %.%#\ in\ %.%m
-  " setlocal errorformat+=%.%#---line\ %l\ of\ file\ %f
+  setlocal errorformat+=%+E%.%#---line\ %l\ of\ file\ %f
   " setlocal errorformat+=Sorry---you've\ exceeded\ BibTeX's\ %.%#
   " setlocal errorformat+=%.%#---this\ can't\ happen
   " setlocal errorformat+=I\ found\ %.%#---while\ reading\ file\ %f
@@ -97,6 +97,7 @@ endfunction
 "
 " Parsers for the various warning types
 "
+
 let s:type_empty = {
       \ 're' : '\vWarning--empty (\w+) in (\S*)',
       \}
@@ -124,6 +125,18 @@ function! s:type_empty.fix(ctx, entry) " {{{1
   endfor
 
   return 1
+endfunction
+
+" }}}1
+
+let s:type_expecting = {
+      \ 're' : 'I was expecting',
+      \}
+function! s:type_expecting.fix(ctx, entry) " {{{1
+  if a:entry.text =~# 'I was expecting'
+    let a:entry.text = split(a:entry.text, '---')[0]
+    return 1
+  endif
 endfunction
 
 " }}}1
