@@ -5,7 +5,7 @@
 "
 
 function! vimtex#qf#bibtex#addqflist() abort " {{{1
-  if !get(g:vimtex_quickfix_bibtex, 'enabled') | return | endif
+  if get(g:vimtex_quickfix_bibtex, 'disable') | return | endif
 
   call s:bibtex.init()
 
