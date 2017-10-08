@@ -43,7 +43,8 @@ function! s:bibtex.prepare() abort " {{{1
 
   let self.errorformat_saved = &l:errorformat
 
-  setlocal errorformat=%+E%.%#---line\ %l\ of\ file\ %f
+  setlocal errorformat=%+WRepeated\ entry---line\ %l\ of\ file\ %f
+  setlocal errorformat+=%+E%.%#---line\ %l\ of\ file\ %f
   setlocal errorformat+=%+WWarning--empty\ %.%#\ in\ %.%m
   setlocal errorformat+=%+WWarning--entry\ type\ for%m
   setlocal errorformat+=%-C--line\ %l\ of\ file\ %f
