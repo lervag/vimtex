@@ -90,7 +90,7 @@ function! s:create_map(map) " {{{1
   endif
 
   " Some wrappers use a context which must be made available to the wrapper
-  " function in run time.
+  " function at run time.
   if has_key(a:map, 'context')
     execute 'let l:key = "' . escape(l:lhs, '<') . '"'
     let l:key .= a:map.rhs
@@ -122,6 +122,10 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
+  let l:return = a:lhs
+  let l:cursor = vimtex#pos#val(vimtex#pos#get_cursor())
+  let l:value = 0
+
   for l:context in b:vimtex_context[a:lhs . a:rhs]
     if type(l:context) == type('')
       let l:envs = [l:context]
@@ -132,15 +136,17 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
     endif
 
     for l:env in l:envs
-      if vimtex#env#is_inside(l:env)[0] > 0
-        return l:rhs
+      let l:candidate_value = vimtex#pos#val(vimtex#env#is_inside(l:env))
+      if l:candidate_value > l:value
+        let l:value = l:candidate_value
+        let l:return = l:rhs
       endif
     endfor
 
     unlet l:context
   endfor
 
-  return a:lhs
+  return l:return
 endfunction
 
 " }}}1
