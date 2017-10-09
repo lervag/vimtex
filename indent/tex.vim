@@ -87,7 +87,7 @@ endfunction
 " }}}1
 function! s:is_verbatim(line, lnum) " {{{1
   return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
-        \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')
+        \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')[0]
 endfunction
 
 " }}}1
@@ -151,7 +151,7 @@ function! s:indent_tikz(lnum, prev) " {{{1
 
     " Decrease indent on tikz command end, i.e. on semicolon
     if ! l:prev_starts && l:prev_stops
-      let l:context = join(getline(l:env_lnum, a:lnum-1), '')
+      let l:context = join(getline(l:env_pos[0], a:lnum-1), '')
       return -s:sw*(l:context =~# s:tikz_commands)
     endif
   endif
