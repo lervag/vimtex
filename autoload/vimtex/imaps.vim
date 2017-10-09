@@ -132,7 +132,7 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
     endif
 
     for l:env in l:envs
-      if vimtex#env#is_inside(l:env)
+      if vimtex#env#is_inside(l:env)[0] > 0
         return l:rhs
       endif
     endfor

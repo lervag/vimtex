@@ -139,8 +139,8 @@ let s:re_close = join([
 function! s:indent_tikz(lnum, prev) " {{{1
   if !has_key(b:vimtex.packages, 'tikz') | return 0 | endif
 
-  let l:env_lnum = vimtex#env#is_inside('tikzpicture')
-  if l:env_lnum > 0 && l:env_lnum < a:lnum
+  let l:env_pos = vimtex#env#is_inside('tikzpicture')
+  if l:env_pos[0] > 0 && l:env_pos[0] < a:lnum
     let l:prev_starts = a:prev =~# s:tikz_commands
     let l:prev_stops  = a:prev =~# ';\s*$'
 
