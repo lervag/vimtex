@@ -202,7 +202,9 @@ function! vimtex#compiler#output() " {{{1
 
   " Set some mappings
   nnoremap <silent><buffer> q :bwipeout<cr>
-  nnoremap <silent><buffer> <esc> :bwipeout<cr>
+  if has('nvim') || has('gui_running')
+    nnoremap <silent><buffer> <esc> :bwipeout<cr>
+  endif
 
   " Set some buffer options
   setlocal autoread
