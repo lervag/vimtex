@@ -165,4 +165,23 @@ endfunction
 
 " }}}1
 
+let s:type_no_bibstyle = {}
+function! s:type_no_bibstyle.fix(ctx, entry) abort " {{{1
+  if a:entry.text =~# 'I found no \\bibstyle'
+    let a:entry.text = 'BibTeX found no \bibstyle command (missing \bibliographystyle?)'
+    let a:entry.filename = b:vimtex.tex
+    unlet a:entry.bufnr
+    for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
+      if l:line =~# g:vimtex#re#not_comment . '\\bibliography'
+        let a:entry.lnum = l:lnum
+        let a:entry.filename = l:file
+        break
+      endif
+    endfor
+    return 1
+  endif
+endfunction
+
+" }}}1
+
 " vim: fdm=marker sw=2
