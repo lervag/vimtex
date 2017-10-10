@@ -22,6 +22,10 @@ function! s:qf.init(state) abort dict "{{{1
   let self.config.packages.default = get(self.config.packages, 'default', 1)
   let self.config.fix_paths = get(self.config, 'fix_paths', 1)
 
+  let self.types = map(
+        \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
+        \ 'v:val[1]')
+
   call self.set_errorformat()
   unlet self.set_errorformat
 endfunction
@@ -143,12 +147,11 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
   " We use a temporary autocmd to fix some paths in the quickfix entry
   "
   if self.config.fix_paths
-    let s:main = l:tex
-    let s:root = b:vimtex.root
-    let s:title = 'Vimtex errors (' . self.name . ')'
+    let self.main = l:tex
+    let self.root = b:vimtex.root
     augroup vimtex_qf_tmp
       autocmd!
-      autocmd QuickFixCmdPost [cl]*file call s:fix_paths()
+      autocmd QuickFixCmdPost [cl]*file call b:vimtex.qf.fix_paths()
     augroup END
   endif
 
@@ -165,35 +168,31 @@ function! s:qf.pprint_items() abort dict " {{{1
 endfunction
 
 " }}}1
-
-function! s:log_contains_error(logfile) " {{{1
-  let lines = readfile(a:logfile)
-  let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
-  let lines = vimtex#util#uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
-  let lines = map(lines, 'fnamemodify(v:val, '':p'')')
-  let lines = filter(lines, 'filereadable(v:val)')
-  return len(lines) > 0
-endfunction
-
-" }}}1
-
-function! s:fix_paths() abort " {{{1
-  let w:quickfix_title = s:title
+function! s:qf.fix_paths() abort dict " {{{1
+  let w:quickfix_title = 'Vimtex errors (' . self.name . ')'
 
   let l:qflist = getqflist()
+
   for l:qf in l:qflist
+    " Apply local fixups for various messages (if applicable)
+    for l:type in self.types
+      if l:type.fix(self, l:qf) | break | endif
+    endfor
+
+    if get(l:qf, 'fixed') | continue | endif
+
     " For errors and warnings that don't supply a file, the basename of the
     " main file is used. However, if the working directory is not the root of
     " the LaTeX project, than this results in bufnr = 0.
     if l:qf.bufnr == 0
-      let l:qf.bufnr = bufnr(s:main)
+      let l:qf.bufnr = bufnr(self.main)
       continue
     endif
 
     " The buffer names of all file:line type errors are relative to the root of
     " the main LaTeX file.
     let l:file = fnamemodify(
-          \ simplify(s:root . '/' . bufname(l:qf.bufnr)), ':.')
+          \ simplify(self.root . '/' . bufname(l:qf.bufnr)), ':.')
     if !filereadable(l:file) | continue | endif
 
     if !bufexists(l:file)
@@ -207,9 +206,41 @@ function! s:fix_paths() abort " {{{1
   " Update qflist and set title if setqflist supports it
   call setqflist(l:qflist, 'r')
   try
-    call setqflist(l:qflist, 'r', {'title': s:title})
+    call setqflist(l:qflist, 'r', {'title': w:quickfix_title})
   catch
   endtry
+endfunction
+
+" }}}1
+
+let s:type_biblatex_not_found = {}
+function! s:type_biblatex_not_found.fix(ctx, entry) abort " {{{1
+  if a:entry.text =~# 'The following entry could not be found'
+    let l:entry = split(a:entry.text, ' ')[-1]
+
+    for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
+      if l:line =~# g:vimtex#re#not_comment . '\\\S*\V' . l:entry
+        let a:entry.lnum = l:lnum
+        let a:entry.filename = l:file
+        let a:entry.fixed = 1
+        unlet a:entry.bufnr
+        break
+      endif
+    endfor
+
+    return 1
+  endif
+endfunction
+
+" }}}1
+
+function! s:log_contains_error(logfile) " {{{1
+  let lines = readfile(a:logfile)
+  let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
+  let lines = vimtex#util#uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
+  let lines = map(lines, 'fnamemodify(v:val, '':p'')')
+  let lines = filter(lines, 'filereadable(v:val)')
+  return len(lines) > 0
 endfunction
 
 " }}}1
