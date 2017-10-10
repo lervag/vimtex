@@ -201,7 +201,7 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_quickfix_autojump', '0')
   call s:init_option('vimtex_quickfix_mode', '2')
   call s:init_option('vimtex_quickfix_open_on_warning', '1')
-  call s:init_option('vimtex_quickfix_bibtex', {})
+  call s:init_option('vimtex_quickfix_blgparser', {})
 
   call s:init_option('vimtex_text_obj_enabled', 1)
   call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])

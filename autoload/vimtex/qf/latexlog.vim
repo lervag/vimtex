@@ -129,16 +129,8 @@ function! s:qf.set_errorformat() abort dict "{{{1
 endfunction
 
 " }}}1
-function! s:qf.setqflist(base, jump) abort dict "{{{1
-  if empty(a:base)
-    let l:tex = b:vimtex.tex
-    let l:log = b:vimtex.log()
-  else
-    let l:tex = a:base
-    let l:log = fnamemodify(a:base, ':r') . '.log'
-  endif
-
-  if empty(l:log)
+function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
+  if empty(a:log) || !filereadable(a:log)
     call setqflist([])
     throw 'Vimtex: No log file found'
   endif
@@ -147,7 +139,7 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
   " We use a temporary autocmd to fix some paths in the quickfix entry
   "
   if self.config.fix_paths
-    let self.main = l:tex
+    let self.main = a:tex
     let self.root = b:vimtex.root
     augroup vimtex_qf_tmp
       autocmd!
@@ -155,7 +147,7 @@ function! s:qf.setqflist(base, jump) abort dict "{{{1
     augroup END
   endif
 
-  execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(l:log)
+  execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(a:log)
 
   if self.config.fix_paths
     autocmd! vimtex_qf_tmp
@@ -174,13 +166,6 @@ function! s:qf.fix_paths() abort dict " {{{1
   let l:qflist = getqflist()
 
   for l:qf in l:qflist
-    " Apply local fixups for various messages (if applicable)
-    for l:type in self.types
-      if l:type.fix(self, l:qf) | break | endif
-    endfor
-
-    if get(l:qf, 'fixed') | continue | endif
-
     " For errors and warnings that don't supply a file, the basename of the
     " main file is used. However, if the working directory is not the root of
     " the LaTeX project, than this results in bufnr = 0.
@@ -209,27 +194,6 @@ function! s:qf.fix_paths() abort dict " {{{1
     call setqflist(l:qflist, 'r', {'title': w:quickfix_title})
   catch
   endtry
-endfunction
-
-" }}}1
-
-let s:type_biblatex_not_found = {}
-function! s:type_biblatex_not_found.fix(ctx, entry) abort " {{{1
-  if a:entry.text =~# 'The following entry could not be found'
-    let l:entry = split(a:entry.text, ' ')[-1]
-
-    for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
-      if l:line =~# g:vimtex#re#not_comment . '\\\S*\V' . l:entry
-        let a:entry.lnum = l:lnum
-        let a:entry.filename = l:file
-        let a:entry.fixed = 1
-        unlet a:entry.bufnr
-        break
-      endif
-    endfor
-
-    return 1
-  endif
 endfunction
 
 " }}}1

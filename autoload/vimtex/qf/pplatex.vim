@@ -70,18 +70,14 @@ function! s:qf.init(state) abort dict "{{{1
   setlocal errorformat+=%-G
 endfunction
 
-function! s:qf.setqflist(base, jump) abort dict " {{{1
-  let l:log = empty(a:base)
-        \ ? b:vimtex.log()
-        \ : fnamemodify(a:base, ':r') . '.log'
-
-  if empty(l:log)
+function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
+  if empty(a:log) || !filereadable(a:log)
     call setqflist([])
     throw 'Vimtex: No log file found'
   endif
 
-  let l:tmp = fnameescape(fnamemodify(l:log, ':r') . '.pplatex')
-  let l:log = fnameescape(l:log)
+  let l:tmp = fnameescape(fnamemodify(a:log, ':r') . '.pplatex')
+  let l:log = fnameescape(a:log)
 
   silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
   execute (a:jump ? 'cfile' : 'cgetfile') l:tmp

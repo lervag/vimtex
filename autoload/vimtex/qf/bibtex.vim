@@ -4,13 +4,11 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#qf#bibtex#addqflist() abort " {{{1
-  if get(g:vimtex_quickfix_bibtex, 'disable') | return | endif
-
-  call s:bibtex.init()
+function! vimtex#qf#bibtex#addqflist(blg) abort " {{{1
+  if get(g:vimtex_quickfix_blgparser, 'disable') | return | endif
 
   try
-    call s:bibtex.prepare()
+    call s:bibtex.prepare(a:blg)
     call s:bibtex.addqflist()
     call s:bibtex.restore()
   catch /BibTeX Aborted/
@@ -24,17 +22,14 @@ let s:bibtex = {
       \ 'types' : [],
       \ 'db_files' : [],
       \}
-function! s:bibtex.init() abort " {{{1
+function! s:bibtex.prepare(blg) abort " {{{1
+  let self.file = a:blg
+  if empty(self.file) || !filereadable(self.file) | throw 'BibTeX Aborted' | endif
+
   let self.types = map(
         \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
         \ 'v:val[1]')
   let self.db_files = []
-endfunction
-
-" }}}1
-function! s:bibtex.prepare() abort " {{{1
-  let self.file = b:vimtex.ext('blg')
-  if empty(self.file) | throw 'BibTeX Aborted' | endif
 
   augroup vimtex_qf_tmp
     autocmd!

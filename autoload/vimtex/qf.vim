@@ -43,7 +43,7 @@ function! vimtex#qf#open(force) abort " {{{1
   if !exists('b:vimtex.qf.setqflist') | return | endif
 
   try
-    call b:vimtex.qf.setqflist('', g:vimtex_quickfix_autojump)
+    call vimtex#qf#setqflist()
   catch /Vimtex: No log file found/
     if a:force
       call vimtex#log#warning('No log file found')
@@ -51,9 +51,6 @@ function! vimtex#qf#open(force) abort " {{{1
     cclose
     return
   endtry
-
-  " Also parse bibtex errors
-  call vimtex#qf#bibtex#addqflist()
 
   if empty(getqflist())
     if a:force
@@ -84,15 +81,33 @@ function! vimtex#qf#open(force) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#qf#setqflist(...) abort " {{{1
+  if !exists('b:vimtex.qf.setqflist') | return | endif
+
+  if a:0 > 0
+    let l:tex = a:1
+    let l:log = fnamemodify(l:tex, ':r') . '.log'
+    let l:blg = fnamemodify(l:tex, ':r') . '.blg'
+    let l:jump = 0
+  else
+    let l:tex = b:vimtex.tex
+    let l:log = b:vimtex.log()
+    let l:blg = b:vimtex.ext('blg')
+    let l:jump = g:vimtex_quickfix_autojump
+  endif
+
+  call b:vimtex.qf.setqflist(l:tex, l:log, l:jump)
+
+  if has_key(b:vimtex.packages, 'biblatex')
+    call vimtex#qf#biblatex#addqflist(l:blg)
+  else
+    call vimtex#qf#bibtex#addqflist(l:blg)
+  endif
+endfunction
+
+" }}}1
 function! vimtex#qf#inquire(file) abort " {{{1
-  if !exists('b:vimtex.qf.setqflist') | return 0 | endif
-
-  try
-    call b:vimtex.qf.setqflist(a:file, 0)
-  catch /Vimtex: No log file found/
-    return 0
-  endtry
-
+  call vimtex#qf#setqflist(a:file)
   return s:qf_has_errors()
 endfunction
 
