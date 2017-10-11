@@ -1,0 +1,18 @@
+\documentclass{minimal}
+\begin{document}
+
+% This works as expected
+\begin{align}
+  x &= (x+5)(x+2)
+ \\ &= x^2 + 5x + 2x + 10
+ \\ &= x
+\end{align}
+
+% Expected
+\begin{align}
+  x &= (x+5)(x+2)
+       + x^2 + 5x + 2x + 10
+ \\ &= x
+\end{align}
+
+\end{document}
