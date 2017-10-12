@@ -96,19 +96,27 @@ function! vimtex#qf#setqflist(...) abort " {{{1
     let l:jump = g:vimtex_quickfix_autojump
   endif
 
-  call b:vimtex.qf.setqflist(l:tex, l:log, l:jump)
+  try
+    call b:vimtex.qf.setqflist(l:tex, l:log, l:jump)
 
-  if has_key(b:vimtex.packages, 'biblatex')
-    call vimtex#qf#biblatex#addqflist(l:blg)
-  else
-    call vimtex#qf#bibtex#addqflist(l:blg)
-  endif
+    if has_key(b:vimtex.packages, 'biblatex')
+      call vimtex#qf#biblatex#addqflist(l:blg)
+    else
+      call vimtex#qf#bibtex#addqflist(l:blg)
+    endif
+  catch /Vimtex: No log file found/
+    throw 'Vimtex: No log file found'
+  endtry
 endfunction
 
 " }}}1
 function! vimtex#qf#inquire(file) abort " {{{1
-  call vimtex#qf#setqflist(a:file)
-  return s:qf_has_errors()
+  try
+    call vimtex#qf#setqflist(a:file)
+    return s:qf_has_errors()
+  catch
+    return 0
+  endtry
 endfunction
 
 " }}}1
