@@ -201,6 +201,14 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
         \ matchgroup=Delimiter
         \ contained contains=texRefZone
 
+  " \label[xxx]{asd}
+  syntax match texStatement '\\label\[.\{-}\]'
+        \ nextgroup=texRefRangeStart skipwhite skipnl
+        \ contains=texLabelOpts
+  syntax region texLabelOpts contained matchgroup=Delimiter
+        \ start='\[' end=']'
+        \ contains=@texRefGroup,texRefZone
+
   highlight link texRefRangeStart texRefZone
   highlight link texRefRangeEnd   texRefZone
 endif
