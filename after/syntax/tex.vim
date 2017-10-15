@@ -218,6 +218,24 @@ syntax match texInputFile
 syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 
 " }}}1
+" {{{1 Add support for beamer package
+syntax match texBeamerDelimiter '<\|>' contained
+syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
+
+syntax match texStatementBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
+syntax match texStatementBeamer '\\item<[^>]*>' contains=texBeamerOpt
+
+syntax match texInputFile
+      \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
+      \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
+
+syntax cluster texDocGroup add=texStatementBeamer
+
+highlight link texStatementBeamer texStatement
+highlight link texBeamerOpt Identifier
+highlight link texBeamerDelimiter Delimiter
+
+" }}}1
 " {{{1 Nested syntax highlighting for dot
 unlet b:current_syntax
 syntax include @DOT syntax/dot.vim
