@@ -182,39 +182,31 @@ endif
 " }}}1
 " {{{1 Add support for cleveref package
 if get(g:, 'tex_fast', 'r') =~# 'r'
-  syntax region texRefZone matchgroup=texStatement
-        \ start="\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref{"
-        \ end="}\|%stopzone\>"
-        \ contains=@texRefGroup
+  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref'
+        \ nextgroup=texCRefZone
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
-  syntax match texStatement
-        \ '\\c\(page\)\?refrange\>'
-        \ nextgroup=texRefRangeStart skipwhite skipnl
-  syntax region texRefRangeStart
-        \ start="{"rs=s+1  end="}"
-        \ matchgroup=Delimiter
-        \ contained contains=texRefZone
-        \ nextgroup=texRefRangeEnd skipwhite skipnl
-  syntax region texRefRangeEnd
-        \ start="{"rs=s+1 end="}"
-        \ matchgroup=Delimiter
-        \ contained contains=texRefZone
+  syntax match texStatement '\\c\(page\)\?refrange\>'
+        \ nextgroup=texCRefZoneRange skipwhite skipnl
 
   " \label[xxx]{asd}
   syntax match texStatement '\\label\[.\{-}\]'
-        \ nextgroup=texLabelRef skipwhite skipnl
-        \ contains=texLabelOpts
-  syntax region texLabelOpts contained matchgroup=Delimiter
+        \ nextgroup=texCRefZone skipwhite skipnl
+        \ contains=texCRefLabelOpts
+
+  syntax region texCRefZone contained matchgroup=Delimiter
+        \ start="{" end="}"
+        \ contains=@texRefGroup,texRefZone
+  syntax region texCRefZoneRange contained matchgroup=Delimiter
+        \ start="{" end="}"
+        \ contains=@texRefGroup,texRefZone
+        \ nextgroup=texCRefZone skipwhite skipnl
+  syntax region texCRefLabelOpts contained matchgroup=Delimiter
         \ start='\[' end=']'
         \ contains=@texRefGroup,texRefZone
-  syntax region texLabelRef contained matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contains=@texRefGroup,texRefZone
 
-  highlight link texRefRangeStart texRefZone
-  highlight link texRefRangeEnd   texRefZone
-  highlight link texLabelRef      texRefZone
+  highlight link texCRefZone      texRefZone
+  highlight link texCRefZoneRange texRefZone
 endif
 
 " }}}1
