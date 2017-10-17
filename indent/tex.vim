@@ -21,12 +21,12 @@ setlocal indentexpr=VimtexIndentExpr()
 setlocal indentkeys&
 setlocal indentkeys+=[,(,{,),},],\&,=item
 
-function! VimtexIndentExpr() " {{{1
+function! VimtexIndentExpr() abort " {{{1
   return VimtexIndent(v:lnum)
 endfunction
 
 "}}}
-function! VimtexIndent(lnum) " {{{1
+function! VimtexIndent(lnum) abort " {{{1
   let s:sw = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
 
   let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
@@ -73,14 +73,14 @@ endfunction
 
 "}}}
 
-function! s:get_prev_line(lnum, ignore_amps) " {{{1
+function! s:get_prev_line(lnum, skip_amps) abort " {{{1
   let l:lnum = a:lnum
   let l:prev = getline(l:lnum)
 
   while l:lnum != 0
         \ && (l:prev =~# '^\s*%'
         \     || s:is_verbatim(l:prev, l:lnum)
-        \     || a:ignore_amps && match(l:prev, s:amper_align) >= 0)
+        \     || (a:skip_amps && l:prev =~# s:amper_align))
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:prev = getline(l:lnum)
   endwhile
@@ -92,14 +92,14 @@ let s:ampersand = g:vimtex#re#not_bslash . '\&'
 let s:amper_align = '^[ \t\\]*' . s:ampersand
 
 " }}}1
-function! s:is_verbatim(line, lnum) " {{{1
+function! s:is_verbatim(line, lnum) abort " {{{1
   return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
         \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')[0]
 endfunction
 
 " }}}1
 
-function! s:indent_envs(cur, prev) " {{{1
+function! s:indent_envs(cur, prev) abort " {{{1
   let l:ind = 0
 
   " First for general environments
@@ -124,7 +124,7 @@ let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
 let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
-function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
+function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
   return s:sw*(  max([  s:count(a:prev_line, s:re_open)
         \            - s:count(a:prev_line, s:re_close), 0])
         \     - max([  s:count(a:line, s:re_close)
@@ -143,7 +143,7 @@ let s:re_close = join([
       \], '\|')
 
 " }}}1
-function! s:indent_tikz(lnum, prev) " {{{1
+function! s:indent_tikz(lnum, prev) abort " {{{1
   if !has_key(b:vimtex.packages, 'tikz') | return 0 | endif
 
   let l:env_pos = vimtex#env#is_inside('tikzpicture')
@@ -177,7 +177,7 @@ let s:tikz_commands = '\v\\%(' . join([
 
 " }}}1
 
-function! s:count(line, pattern) " {{{1
+function! s:count(line, pattern) abort " {{{1
   let l:sum = 0
   let l:indx = match(a:line, a:pattern)
   while l:indx >= 0
