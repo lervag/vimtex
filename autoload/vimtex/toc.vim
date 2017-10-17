@@ -66,6 +66,7 @@ function! s:toc.new() abort dict " {{{1
         \ g:vimtex#toc#matchers#titlepage,
         \ g:vimtex#toc#matchers#bibliography,
         \ g:vimtex#toc#matchers#todos,
+        \ g:vimtex#toc#matchers#todonotes,
         \]
   let l:toc.matchers += g:vimtex_toc_custom_matchers
 

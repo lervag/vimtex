@@ -243,6 +243,21 @@ function! g:vimtex#toc#matchers#todos.get_entry(context) abort dict " {{{1
         \ }
 endfunction
 
+let g:vimtex#toc#matchers#todonotes = {
+      \ 're' : '\\todo\(\[.*\]\)\?{\zs.*\ze}',
+      \ 'in_preamble' : 0,
+      \}
+function! g:vimtex#toc#matchers#todonotes.get_entry(context) abort dict " {{{1
+  return {
+        \ 'title'  : printf('TODO: %s', matchstr(a:context.line, self.re)),
+        \ 'number' : deepcopy(a:context.level),
+        \ 'file'   : a:context.file,
+        \ 'line'   : a:context.lnum,
+        \ 'level'  : a:context.level.current,
+        \ 'todo'   : 1,
+        \ 'rank'   : a:context.lnum_total,
+        \ }
+endfunction
 " }}}1
 
 "
