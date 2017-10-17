@@ -42,14 +42,8 @@ function! VimtexIndent(lnum) abort " {{{1
   endif
 
   " Align on ampersands
-  if get(g:, 'vimtex_indent_on_ampersands', 1)
-        \ && l:line =~# s:amper_align
-        \ && l:prev_line =~# s:ampersand
-    let l:indent_prev = strdisplaywidth(strpart(l:prev_line, 0,
-      \ match(l:prev_line, s:ampersand)))
-    let l:indent_cur = strdisplaywidth(strpart(l:line, 0,
-      \ match(l:line, s:ampersand)))
-    return max([indent(a:lnum) - l:indent_cur + l:indent_prev, 0])
+  if s:indent_amps.check(a:lnum, l:line, l:prev_line)
+    return s:indent_amps.indent
   endif
 
   " Use previous indentation for comments
@@ -80,7 +74,7 @@ function! s:get_prev_line(lnum, skip_amps) abort " {{{1
   while l:lnum != 0
         \ && (l:prev =~# '^\s*%'
         \     || s:is_verbatim(l:prev, l:lnum)
-        \     || (a:skip_amps && l:prev =~# s:amper_align))
+        \     || (a:skip_amps && l:prev =~# s:indent_amps.re_align))
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:prev = getline(l:lnum)
   endwhile
@@ -88,13 +82,32 @@ function! s:get_prev_line(lnum, skip_amps) abort " {{{1
   return l:lnum
 endfunction
 
-let s:ampersand = g:vimtex#re#not_bslash . '\&'
-let s:amper_align = '^[ \t\\]*' . s:ampersand
-
 " }}}1
 function! s:is_verbatim(line, lnum) abort " {{{1
   return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
         \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')[0]
+endfunction
+
+" }}}1
+
+let s:indent_amps = {}
+let s:indent_amps.indent = 0
+let s:indent_amps.re_amp = g:vimtex#re#not_bslash . '\&'
+let s:indent_amps.re_align = '^[ \t\\]*' . s:indent_amps.re_amp
+function! s:indent_amps.check(lnum, cline, pline) abort dict " {{{1
+  if get(g:, 'vimtex_indent_on_ampersands', 1)
+        \ && a:cline =~# self.re_align
+        \ && a:pline =~# self.re_amp
+
+    let l:pre = strdisplaywidth(strpart(a:pline, 0, match(a:pline, self.re_amp)))
+    let l:cur = strdisplaywidth(strpart(a:cline, 0, match(a:cline, self.re_amp)))
+    let self.indent = max([indent(a:lnum) - l:cur + l:pre, 0])
+
+    return 1
+  endif
+
+  let self.indent = 0
+  return 0
 endfunction
 
 " }}}1
