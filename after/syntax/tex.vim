@@ -207,6 +207,7 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 
   highlight link texCRefZone      texRefZone
   highlight link texCRefZoneRange texRefZone
+  highlight link texCRefLabelOpts texCmdArgs
 endif
 
 " }}}1
