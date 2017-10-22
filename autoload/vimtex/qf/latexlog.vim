@@ -19,7 +19,8 @@ function! s:qf.init(state) abort dict "{{{1
   let self.config = get(g:, 'vimtex_quickfix_latexlog', {})
   let self.config.default = get(self.config, 'default', 1)
   let self.config.packages = get(self.config, 'packages', {})
-  let self.config.packages.default = get(self.config.packages, 'default', 1)
+  let self.config.packages.default = get(self.config.packages, 'default',
+        \ self.config.default)
   let self.config.fix_paths = get(self.config, 'fix_paths', 1)
 
   let self.types = map(
