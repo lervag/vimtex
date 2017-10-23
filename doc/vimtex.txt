@@ -1300,13 +1300,13 @@ Options~
 
   Default value: 'latexlog'
 
-*g:vimtex_quickfix_bibtex*
-  This controls the parsing of possible bibtex logs for errors (i.e. `blg`
-  files).  Parsing is enabled by default.  The option is a dictionary with the
+*g:vimtex_quickfix_blgparser*
+  This option controls the parsing of `blg` log files (created by bibtex or
+  biber) for warnings and errors.  The option is a dictionary with the
   following keys:
 
     disable~
-      Disable the parsing of bibtex entries.
+      Disable the parsing of `blg` entries.
 
   Default value: {}
 
