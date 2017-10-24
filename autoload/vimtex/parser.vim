@@ -243,7 +243,7 @@ endfunction
 " Utility functions
 "
 function! s:input_to_filename(input, root) abort " {{{1
-  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}')
+  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
 
   " Trim whitespaces and quotes from beginning/end of string
   let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
