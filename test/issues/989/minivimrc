@@ -7,3 +7,11 @@ syntax enable
 nnoremap q :qall!<cr>
 
 let g:vimtex_view_method = 'zathura'
+
+
+nnoremap <silent> <space>lv :call Start()<cr>
+
+function! Start()
+  silent execute '!zathura -x "/usr/bin/vim --servername VIM --remote +\%{line} \%{input}" --synctex-forward 1:1:minimal.tex minimal.pdf >/dev/null 2>&1 &'
+  redraw!
+endfunction
