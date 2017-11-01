@@ -5,9 +5,9 @@
 "
 
 function! vimtex#view#skim#new() " {{{1
-  " Check if the viewer is executable
-  if !executable(s:skim.path)
-    call vimtex#log#error('Skim is not executable!')
+  " Check if the displayline tool is executable
+  if !executable(s:skim.displayline)
+    call vimtex#log#error('Skim (displayline) is not executable!')
     return {}
   endif
 
@@ -18,7 +18,8 @@ endfunction
 
 let s:skim = {
       \ 'name' : 'Skim',
-      \ 'path' : '/Applications/Skim.app/Contents/SharedSupport/displayline',
+      \ 'displayline' : '/Applications/Skim.app/Contents/SharedSupport/displayline',
+      \ 'startskim' : 'open -a Skim',
       \}
 
 function! s:skim.view(file) dict " {{{1
@@ -36,7 +37,7 @@ function! s:skim.view(file) dict " {{{1
   if vimtex#view#common#not_readable(outfile) | return | endif
 
   let l:cmd = join([
-        \ self.path,
+        \ self.displayline,
         \ '-r',
         \ '-b',
         \ line('.'),
@@ -63,23 +64,27 @@ function! s:skim.compiler_callback(status) dict " {{{1
 
   if !filereadable(self.out()) | return | endif
 
-  let l:cmd = join([
-        \ self.path,
-        \ '-r' . (!empty(system('pgrep Skim')) ? ' -g' : ''),
-        \ line('.'),
-        \ vimtex#util#shellescape(self.out()),
-        \ vimtex#util#shellescape(expand('%:p'))
-        \])
+  " This opens the Skim viewer if it is not already open (and if
+  " g:vimtex_view_automatic is enabled). If a viewer is already open, we use
+  " some simple Osascript to make Skim reload the PDF file.
+  if empty(system('pgrep Skim'))
+    if g:vimtex_view_automatic
+      let l:cmd = join([self.startskim, vimtex#util#shellescape(self.out())])
+    endif
+  else
+    let l:cmd = 'osascript'
+          \ . ' -e ''tell application "Skim" to revert front document'''
+  endif
 
   let self.process = vimtex#process#start(l:cmd)
 endfunction
 
 " }}}1
 function! s:skim.latexmk_append_argument() dict " {{{1
-  if g:vimtex_view_use_temp_files
+  if g:vimtex_view_use_temp_files || g:vimtex_view_automatic
     return ' -view=none'
   else
-    return vimtex#compiler#latexmk#wrap_option('pdf_previewer', self.path)
+    return vimtex#compiler#latexmk#wrap_option('pdf_previewer', self.startskim)
   endif
 endfunction
 
