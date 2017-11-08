@@ -182,7 +182,7 @@ endif
 " }}}1
 " {{{1 Add support for cleveref package
 if get(g:, 'tex_fast', 'r') =~# 'r'
-  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref'
+  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref\>'
         \ nextgroup=texCRefZone
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
