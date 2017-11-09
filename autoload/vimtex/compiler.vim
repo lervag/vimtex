@@ -56,7 +56,7 @@ endfunction
 " }}}1
 
 function! vimtex#compiler#callback(status) abort " {{{1
-  if get(b:vimtex.compiler, 'silence_next_callback')
+  if exists('b:vimtex') && get(b:vimtex.compiler, 'silence_next_callback')
     let b:vimtex.compiler.silence_next_callback = 0
     return
   endif
@@ -74,7 +74,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
     call vimtex#log#warning('Compilation failed!')
   endif
 
-  if a:status
+  if a:status && exists('b:vimtex')
     call b:vimtex.parse_packages_from_fls()
   endif
 
