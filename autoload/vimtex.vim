@@ -363,6 +363,7 @@ function! s:init_default_mappings() " {{{1
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
   call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
+  call s:map('n', '<localleader>lX', '<plug>(vimtex-reload-state)')
   call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
   call s:map('n', '<localleader>lq', '<plug>(vimtex-log)')
 

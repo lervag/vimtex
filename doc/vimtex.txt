@@ -522,6 +522,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lC  |<plug>(vimtex-clean-full)|                     `n`
    <localleader>lm  |<plug>(vimtex-imaps-list)|                     `n`
    <localleader>lx  |<plug>(vimtex-reload)|                         `n`
+   <localleader>lX  |<plug>(vimtex-reload-state)|                   `n`
    <localleader>ls  |<plug>(vimtex-toggle-main)|                    `n`
    dse              |<plug>(vimtex-env-delete)|                     `n`
    dsc              |<plug>(vimtex-cmd-delete)|                     `n`
@@ -1942,6 +1943,10 @@ Commands~
                                              *<plug>(vimtex-reload)*
 :VimtexReload             Reload |vimtex| scripts. This is primarely useful
                           when developing and debugging |vimtex| itself.
+
+                                             *VimtexReloadState*
+                                             *<plug>(vimtex-reload-state)*
+:VimtexReloadState        Reload the state for the current buffer.
 
                                              *VimtexCountLetters*
                                              *VimtexCountWords*

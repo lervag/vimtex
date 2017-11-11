@@ -5,8 +5,11 @@
 "
 
 function! vimtex#state#init_buffer() " {{{1
-  command! -buffer VimtexToggleMain call vimtex#state#toggle_main()
-  nnoremap <buffer> <plug>(vimtex-toggle-main) :VimtexToggleMain<cr>
+  command! -buffer VimtexToggleMain  call vimtex#state#toggle_main()
+  command! -buffer VimtexReloadState call vimtex#state#reload()
+
+  nnoremap <buffer> <plug>(vimtex-toggle-main)  :VimtexToggleMain<cr>
+  nnoremap <buffer> <plug>(vimtex-reload-state) :VimtexReloadState<cr>
 endfunction
 
 " }}}1
@@ -53,6 +56,18 @@ function! vimtex#state#init_local() " {{{1
         \ 'main_id' : b:vimtex_id,
         \ 'sub_id' : l:vimtex_id,
         \}
+endfunction
+
+" }}}1
+function! vimtex#state#reload() " {{{1
+  let l:id = s:get_main_id(expand('%:p'))
+  if has_key(s:vimtex_states, l:id)
+    l:vimtex = remove(s:vimtex_states, l:id)
+    call l:vimtex.cleanup()
+  endif
+
+  call vimtex#state#init()
+  call vimtex#state#init_local()
 endfunction
 
 " }}}1
