@@ -71,17 +71,19 @@ function! s:skim.compiler_callback(status) dict " {{{1
 
   if !filereadable(self.out()) | return | endif
 
-  " This opens the Skim viewer if it is not already open (and if
-  " g:vimtex_view_automatic is enabled). If a viewer is already open, we use
-  " some simple Osascript to make Skim reload the PDF file.
-  if empty(system('pgrep Skim'))
-    if g:vimtex_view_automatic
-      let l:cmd = join([self.startskim, vimtex#util#shellescape(self.out())])
-    endif
-  else
-    let l:cmd = 'osascript'
-          \ . ' -e ''tell application "Skim" to revert front document'''
-  endif
+  let l:cmd = join([
+        \ 'osascript',
+        \ '-e ''set theFile to POSIX file "' . self.out() . '"''',
+        \ '-e ''set thePath to POSIX path of (theFile as alias)''',
+        \ '-e ''tell application "Skim"''',
+        \ '-e ''try''',
+        \ '-e ''set theDocs to get documents whose path is thePath''',
+        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
+        \ '-e ''end try''',
+        \ '-e ''open theFile''',
+        \ '-e ''end tell''',
+        \])
+  echom(l:cmd)
 
   let self.process = vimtex#process#start(l:cmd)
 endfunction
