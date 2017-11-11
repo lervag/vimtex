@@ -66,6 +66,11 @@ function! vimtex#state#reload() " {{{1
     call l:vimtex.cleanup()
   endif
 
+  if has_key(s:vimtex_states, get(b:, 'vimtex_id', -1))
+    let l:vimtex = remove(s:vimtex_states, b:vimtex_id)
+    call l:vimtex.cleanup()
+  endif
+
   call vimtex#state#init()
   call vimtex#state#init_local()
 endfunction
