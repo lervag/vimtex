@@ -62,7 +62,7 @@ endfunction
 function! vimtex#state#reload() " {{{1
   let l:id = s:get_main_id(expand('%:p'))
   if has_key(s:vimtex_states, l:id)
-    l:vimtex = remove(s:vimtex_states, l:id)
+    let l:vimtex = remove(s:vimtex_states, l:id)
     call l:vimtex.cleanup()
   endif
 
