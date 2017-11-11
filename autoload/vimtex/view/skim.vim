@@ -37,12 +37,19 @@ function! s:skim.view(file) dict " {{{1
   if vimtex#view#common#not_readable(outfile) | return | endif
 
   let l:cmd = join([
-        \ self.displayline,
-        \ '-r',
-        \ '-b',
-        \ line('.'),
-        \ vimtex#util#shellescape(outfile),
-        \ vimtex#util#shellescape(expand('%:p'))
+        \ 'osascript',
+        \ '-e ''set theLine to ' . line('.') . ' as integer''',
+        \ '-e ''set theFile to POSIX file "' . outfile . '"''',
+        \ '-e ''set thePath to POSIX path of (theFile as alias)''',
+        \ '-e ''set theSource to POSIX file "' . expand('%:p') . '"''',
+        \ '-e ''tell application "Skim"''',
+        \ '-e ''try''',
+        \ '-e ''set theDocs to get documents whose path is thePath''',
+        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
+        \ '-e ''end try''',
+        \ '-e ''open theFile''',
+        \ '-e ''tell front document to go to TeX line theLine from theSource showing reading bar true''',
+        \ '-e ''end tell''',
         \])
 
   let self.process = vimtex#process#start(l:cmd)
