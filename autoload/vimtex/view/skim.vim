@@ -83,8 +83,7 @@ function! s:skim.compiler_callback(status) dict " {{{1
         \ '-e ''open theFile''',
         \ '-e ''end tell''',
         \])
-  echom(l:cmd)
-
+  
   let self.process = vimtex#process#start(l:cmd)
 endfunction
 
