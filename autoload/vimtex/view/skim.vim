@@ -5,9 +5,15 @@
 "
 
 function! vimtex#view#skim#new() " {{{1
-  " Check if the displayline tool is executable
-  if !executable(s:skim.displayline)
-    call vimtex#log#error('Skim (displayline) is not executable!')
+  " Check if Skim is installed
+  let l:cmd = join([
+        \ 'osascript -e ',
+        \ '''tell application "Finder" to POSIX path of ',
+        \ '(get application file id (id of application "Skim") as alias)''',
+        \])
+  
+  if system(l:cmd)
+    call vimtex#log#error('Skim is not installed!')
     return {}
   endif
 
@@ -18,7 +24,6 @@ endfunction
 
 let s:skim = {
       \ 'name' : 'Skim',
-      \ 'displayline' : '/Applications/Skim.app/Contents/SharedSupport/displayline',
       \ 'startskim' : 'open -a Skim',
       \}
 
@@ -48,7 +53,8 @@ function! s:skim.view(file) dict " {{{1
         \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
         \ '-e ''end try''',
         \ '-e ''open theFile''',
-        \ '-e ''tell front document to go to TeX line theLine from theSource showing reading bar true''',
+        \ '-e ''tell front document to go to TeX line theLine from theSource',
+        \ '     showing reading bar true''',
         \ '-e ''end tell''',
         \])
 
