@@ -6,7 +6,6 @@
 
 function! vimtex#view#skim#new() " {{{1
   " Check if Skim is installed
-  
   let l:cmd = join([
         \ 'osascript -e ',
         \ '''tell application "Finder" to POSIX path of ',
