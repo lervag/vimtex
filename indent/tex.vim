@@ -129,7 +129,12 @@ endfunction
 
 let s:envs_ignored = '\v'
       \ . join(get(g:, 'vimtex_indent_ignored_envs', ['document']), '|')
-let s:envs_lists = 'itemize\|description\|enumerate\|thebibliography'
+let s:envs_lists = join(get(g:, 'vimtex_indent_lists', [
+      \ 'itemize',
+      \ 'description',
+      \ 'enumerate',
+      \ 'thebibliography',
+      \]), '\|')
 let s:envs_item = '^\s*\\item'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'
 let s:envs_endlist =   '\\end{\%(' . s:envs_lists . '\)'

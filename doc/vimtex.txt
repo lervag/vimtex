@@ -1193,6 +1193,16 @@ Options~
 
   Default value: ['document']
 
+*g:vimtex_indent_lists*
+  List of environments that act like lists with `\item` entries.
+
+  Default value: [
+      \ 'itemize',
+      \ 'description',
+      \ 'enumerate',
+      \ 'thebibliography',
+      \]
+
 *g:vimtex_indent_on_ampersands*
   By default, vimtex will align on ampersands e.g. in math aligned
   environments or in tabular environments. If this feature is not wanted it
@@ -2546,6 +2556,7 @@ Associated settings:
   |g:vimtex_indent_enabled|
   |g:vimtex_indent_bib_enabled|
   |g:vimtex_indent_ignored_envs|
+  |g:vimtex_indent_lists|
   |g:vimtex_indent_on_ampersands|
 
 ==============================================================================
