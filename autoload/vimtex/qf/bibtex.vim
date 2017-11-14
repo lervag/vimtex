@@ -114,7 +114,7 @@ endfunction
 " }}}1
 
 let s:type_empty = {
-      \ 're' : '\vWarning--empty (\w+) in (\S*)',
+      \ 're' : '\vWarning--empty (.*) in (\S*)',
       \}
 function! s:type_empty.fix(ctx, entry) abort " {{{1
   let l:matches = matchlist(a:entry.text, self.re)
