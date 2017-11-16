@@ -317,6 +317,29 @@ Expect tex:
   \end{proof}
   \end{document}
 
+Given tex (Indent: Open and close environments):
+  \documentclass{minimal}
+  \begin{document}
+
+  Hello
+      \begin{centering} centered \end{centering}
+    world
+
+  \end{document}
+
+Do:
+  gg=G
+
+Expect tex:
+  \documentclass{minimal}
+  \begin{document}
+
+  Hello
+  \begin{centering} centered \end{centering}
+  world
+
+  \end{document}
+
 Given:
 Execute (unlet g:vimtex_indent_...):
   unlet g:vimtex_indent_ignored_envs

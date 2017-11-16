@@ -116,8 +116,14 @@ function! s:indent_envs(cur, prev) abort " {{{1
   let l:ind = 0
 
   " First for general environments
-  let l:ind += s:sw*((a:prev =~# '\\begin{.*}') && (a:prev !~# s:envs_ignored))
-  let l:ind -= s:sw*((a:cur  =~# '\\end{.*}')   && (a:cur  !~# s:envs_ignored))
+  let l:ind += s:sw*(
+        \    a:prev =~# '\\begin{.*}'
+        \ && a:prev !~# '\\end{.*}'
+        \ && a:prev !~# s:envs_ignored)
+  let l:ind -= s:sw*(
+        \    a:cur !~# '\\begin{.*}'
+        \ && a:cur =~# '\\end{.*}'
+        \ && a:cur !~# s:envs_ignored)
 
   " Indentation for prolonged items in lists
   let l:ind += s:sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
