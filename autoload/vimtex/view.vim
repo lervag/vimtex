@@ -80,7 +80,7 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
   let l:winnr = bufwinnr(l:file)
   execute l:winnr >= 0
         \ ? l:winnr . 'wincmd w'
-        \ : execute 'buffer' l:bufnr
+        \ : 'buffer ' . l:bufnr
 
   execute 'normal!' a:line . 'G'
   normal! zMzvzz
