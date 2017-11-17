@@ -33,7 +33,8 @@ function! s:zathura.start(outfile) dict " {{{1
   let l:cmd  = 'zathura'
   let l:cmd .= ' -x "' . g:vimtex_compiler_progname
         \ . ' --servername ' . v:servername
-        \ . ' --remote +\%{line} \%{input}"'
+        \ . ' --remote-expr '
+        \ .     '\"vimtex\#view\#reverse_goto(\%{line}, ''\%{input}'')\""'
   if g:vimtex_view_forward_search_on_start
     let l:cmd .= ' --synctex-forward '
           \ .  line('.')

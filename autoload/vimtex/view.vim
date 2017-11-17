@@ -64,4 +64,28 @@ endfunction
 
 " }}}1
 
+function! vimtex#view#reverse_goto(line, filename) " {{{1
+  let l:file = resolve(a:filename)
+
+  if !bufexists(l:file)
+    if filereadable(l:file)
+      execute 'silent edit' l:file
+    else
+      call vimtex#log#warning("Reverse goto failed for file:\n" . l:file)
+      return
+    endif
+  endif
+
+  let l:bufnr = bufnr(l:file)
+  let l:winnr = bufwinnr(l:file)
+  execute l:winnr >= 0
+        \ ? l:winnr . 'wincmd w'
+        \ : execute 'buffer' l:bufnr
+
+  execute 'normal!' a:line . 'G'
+  normal! zMzvzz
+endfunction
+
+" }}}1
+
 " vim: fdm=marker sw=2
