@@ -211,6 +211,18 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 endif
 
 " }}}1
+" {{{1 Add support for varioref package
+if get(g:, 'tex_fast', 'r') =~# 'r'
+  syntax match texStatement '\\Vref\>' nextgroup=texVarioRefZone
+
+  syntax region texVarioRefZone contained matchgroup=Delimiter
+        \ start="{" end="}"
+        \ contains=@texRefGroup,texRefZone
+
+  highlight link texVarioRefZone texRefZone
+endif
+
+" }}}1
 " {{{1 Add support for listings package
 syntax region texZone
       \ start="\\begin{lstlisting}"rs=s
