@@ -24,6 +24,27 @@ function! vimtex#init() " {{{1
 endfunction
 
 " }}}1
+function! vimtex#check_plugin_clash() " {{{1
+  let l:scriptnames = vimtex#util#command('scriptnames')
+
+  let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
+  if l:latexbox
+    let l:polyglot = !empty(filter(copy(l:scriptnames), "v:val =~# 'polyglot'"))
+    call vimtex#log#warning([
+          \ 'Conflicting plugin detected: LaTeX-Box',
+          \ 'vimtex does not work as expected when LaTeX-Box is installed!',
+          \ 'Please disable or remove it to use vimtex!',
+          \])
+    if l:polyglot
+      call vimtex#log#warning([
+            \ 'LaTeX-Box is included with vim-polyglot and may be disabled with:',
+            \ 'let g:polyglot_disabled = [''latex'']',
+            \])
+    endif
+  endif
+endfunction
+
+" }}}1
 
 function! s:check_version() " {{{1
   if get(g:, 'vimtex_disable_version_warning', 0)

@@ -50,11 +50,6 @@ function! s:info.gather_system_info() abort dict " {{{1
     call add(l:lines, '  Has clientserver: false')
   endif
 
-  let l:clashes = s:get_plugin_clashes()
-  if !empty(l:clashes)
-    call add(l:lines, '  Plugin conflicts: ' . join(l:clashes, ', '))
-  endif
-
   return l:lines
 endfunction
 
@@ -216,19 +211,6 @@ function! s:get_vim_info() abort " {{{1
     let l:version .= matchstr(l:info[l:index], ':\s*\zs.*') . ')'
     return l:version
   endif
-endfunction
-
-" }}}1
-function! s:get_plugin_clashes() abort " {{{1
-  let l:results = []
-  let l:scriptnames = vimtex#util#command('scriptnames')
-
-  let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
-  if l:latexbox
-    call add(l:results, 'LaTeX-Box')
-  endif
-
-  return l:results
 endfunction
 
 " }}}1
