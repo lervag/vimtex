@@ -5,8 +5,6 @@
 "
 
 function! vimtex#init() " {{{1
-  call s:check_version()
-
   call s:init_options()
   call s:init_highlights()
   call s:init_state()
@@ -41,18 +39,6 @@ function! vimtex#check_plugin_clash() " {{{1
             \ 'let g:polyglot_disabled = [''latex'']',
             \])
     endif
-  endif
-endfunction
-
-" }}}1
-
-function! s:check_version() " {{{1
-  if get(g:, 'vimtex_disable_version_warning', 0)
-    return
-  endif
-
-  if v:version <= 703 && !has('patch544')
-    echoerr 'vimtex error: Please use Vim version 7.3.544 or newer!'
   endif
 endfunction
 

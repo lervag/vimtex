@@ -897,12 +897,6 @@ Options~
 
   Default value: 0
 
-*g:vimtex_disable_version_warning*
-  |vimtex| will warn you if you are using an unsupported version of Vim. This
-  warning may be disabled by setting this option to a nonzero value.
-
-  Default value: Undefined.
-
 *g:vimtex_doc_handlers*
   By default, package documentation is looked up online through
   http://texdoc.net/pkg/packagename. With this option, one may specify a list
