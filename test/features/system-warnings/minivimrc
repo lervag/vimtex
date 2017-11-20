@@ -1,0 +1,19 @@
+set nocompatible
+
+if !isdirectory('vim-polyglot')
+  call system('git clone https://github.com/sheerun/vim-polyglot')
+endif
+
+let &rtp = 'vim-polyglot,' . &rtp
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+edit minimal.tex
+
+quit
