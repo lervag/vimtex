@@ -91,6 +91,10 @@ function! s:skim.compiler_callback(status) dict " {{{1
         \])
   
   let self.process = vimtex#process#start(l:cmd)
+
+  if has_key(self, 'hook_callback')
+    call self.hook_callback()
+  endif
 endfunction
 
 " }}}1
