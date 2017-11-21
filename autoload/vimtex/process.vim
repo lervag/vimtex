@@ -35,7 +35,7 @@ let s:process = {
       \ 'continuous' : 0,
       \ 'output' : '',
       \ 'workdir' : '',
-      \ 'silent' : 0,
+      \ 'silent' : 1,
       \}
 
 function! s:process.run() abort dict " {{{1
