@@ -1,0 +1,23 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+let g:vimtex_view_automatic = 0
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+let g:vimtex_compiler_callback_hooks = ['CallbackHook']
+function! CallbackHook(status)
+  VimtexErrors
+endfunction
+
+silent edit test.tex
+silent VimtexCompile
