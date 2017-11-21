@@ -18,10 +18,10 @@ function! vimtex#motion#init_buffer() " {{{1
   onoremap <silent><buffer> <plug>(vimtex-%) :execute "normal \<sid>(v)\<sid>(vimtex-%)"<cr>
 
   " Sections
-  nnoremap <silent><buffer> <plug>(vimtex-]]) :call vimtex#motion#next_section(0,0,0)<cr>
-  nnoremap <silent><buffer> <plug>(vimtex-][) :call vimtex#motion#next_section(1,0,0)<cr>
-  nnoremap <silent><buffer> <plug>(vimtex-[]) :call vimtex#motion#next_section(1,1,0)<cr>
-  nnoremap <silent><buffer> <plug>(vimtex-[[) :call vimtex#motion#next_section(0,1,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-]]) :<c-u>call vimtex#motion#next_section(0,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-][) :<c-u>call vimtex#motion#next_section(1,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[]) :<c-u>call vimtex#motion#next_section(1,1,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[[) :<c-u>call vimtex#motion#next_section(0,1,0)<cr>
   xnoremap <silent><buffer>  <sid>(vimtex-]]) :<c-u>call vimtex#motion#next_section(0,0,1)<cr>
   xnoremap <silent><buffer>  <sid>(vimtex-][) :<c-u>call vimtex#motion#next_section(1,0,1)<cr>
   xnoremap <silent><buffer>  <sid>(vimtex-[]) :<c-u>call vimtex#motion#next_section(1,1,1)<cr>
@@ -96,37 +96,42 @@ endfunction
 
 " }}}1
 function! vimtex#motion#next_section(type, backwards, visual) " {{{1
-  " Restore visual mode if desired
-  if a:visual
-    normal! gv
-  endif
+  let l:count = v:count1
+  while l:count > 0
+    let l:count -= 1
 
-  " For the [] and ][ commands we move up or down before the search
-  if a:type == 1
-    if a:backwards
-      normal! k
-    else
-      normal! j
+    " Restore visual mode if desired
+    if a:visual
+      normal! gv
     endif
-  endif
 
-  " Define search pattern and do the search while preserving "/
-  let flags = 'W'
-  if a:backwards
-    let flags = 'b' . flags
-  endif
-
-  " Perform the search
-  call search(s:section, flags)
-
-  " For the [] and ][ commands we move down or up after the search
-  if a:type == 1
-    if a:backwards
-      normal! j
-    else
-      normal! k
+    " For the [] and ][ commands we move up or down before the search
+    if a:type == 1
+      if a:backwards
+        normal! k
+      else
+        normal! j
+      endif
     endif
-  endif
+
+    " Define search pattern and do the search while preserving "/
+    let flags = 'W'
+    if a:backwards
+      let flags = 'b' . flags
+    endif
+
+    " Perform the search
+    call search(s:section, flags)
+
+    " For the [] and ][ commands we move down or up after the search
+    if a:type == 1
+      if a:backwards
+        normal! j
+      else
+        normal! k
+      endif
+    endif
+  endwhile
 endfunction
 
 " }}}1

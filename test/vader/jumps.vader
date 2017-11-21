@@ -47,7 +47,7 @@ Execute (jumps: ]] ][ G[] [[):
   normal [[
   Assert line('.') == 28
 
-Execute (jumps: 3]] 2][ G2[] 3[[ (TODO)):
+Execute (jumps: 3]] 2][ G2[] 3[[):
   normal 3]]
   Assert line('.') == 16
 
