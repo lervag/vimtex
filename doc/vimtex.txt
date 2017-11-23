@@ -2099,16 +2099,16 @@ Map definitions~
   Find matching pair.
 
 *<plug>(vimtex-]])*
-  Section forward (inclusive).
+  [count] sections forward (inclusive).
 
 *<plug>(vimtex-][)*
-  Section forward (exclusive).
+  [count] sections forward (exclusive).
 
 *<plug>(vimtex-[])*
-  Section backward (inclusive).
+  [count] sections backward (inclusive).
 
 *<plug>(vimtex-[[)*
-  Section backward (exclusive).
+  [count] sections backward (exclusive).
 
 ------------------------------------------------------------------------------
 Insert mode mappings~
