@@ -197,6 +197,9 @@ function! s:init_options() " {{{1
   call s:init_option('vimtex_index_split_pos', 'vert leftabove')
   call s:init_option('vimtex_index_split_width', 30)
 
+  call s:init_option('vimtex_mappings_enabled', 1)
+  call s:init_option('vimtex_mappings_disable', {})
+
   call s:init_option('vimtex_matchparen_enabled', 1)
   call s:init_option('vimtex_motion_enabled', 1)
 
@@ -358,11 +361,12 @@ endfunction
 
 " }}}1
 function! s:init_default_mappings() " {{{1
-  if !get(g:,'vimtex_mappings_enabled', 1) | return | endif
+  if !g:vimtex_mappings_enabled | return | endif
 
   function! s:map(mode, lhs, rhs, ...)
     if !hasmapto(a:rhs, a:mode)
-          \ && ((a:0 > 0) || (maparg(a:lhs, a:mode) ==# ''))
+          \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
+          \ && (empty(maparg(a:lhs, a:mode)) || a:0 > 0)
       silent execute a:mode . 'map <silent><buffer>' a:lhs a:rhs
     endif
   endfunction

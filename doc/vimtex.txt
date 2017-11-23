@@ -1240,6 +1240,19 @@ Options~
 
   Default value: 1
 
+*g:vimtex_mappings_disable*
+  A dictionary that can be used to disable specific mappings.  The dictionary
+  keys are the mapping modes, and the values are lists of default mappings
+  that should be disabled.  The following example will ensure that the default
+  `tse` and `tsd` mappings are disabled: >
+
+    let g:vimtex_mappings_disable = {
+        \ 'n': ['tse', 'tsd'],
+        \ 'x': ['tsd'],
+        \}
+<
+  Default value: {}
+
 *g:vimtex_matchparen_enabled*
   Enable highlighting of matching delimiters.
 
