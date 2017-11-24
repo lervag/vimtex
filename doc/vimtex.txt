@@ -2078,50 +2078,46 @@ Map definitions~
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
 
-*<plug>(vimtex-ac)*
-  Text object for commands (inclusive).
 
+Note: The following describe text objects and motions. For the text objects,
+the usual convention is used where the "a" select "a"n object, including the
+whitespace/delimiters/etc, whereas the "i" selects the corresponding "inner"
+object, see |text-objects|.
+
+*<plug>(vimtex-ac)*
 *<plug>(vimtex-ic)*
-  Text object for commands (exclusive).
+  Text object for commands.
 
 *<plug>(vimtex-ad)*
-  Text object for delimiters (inclusive).
-
 *<plug>(vimtex-id)*
-  Text object for delimiters (exclusive).
+  Text object for delimiters.
 
 *<plug>(vimtex-ae)*
-  Text object for environments (inclusive).
-
 *<plug>(vimtex-ie)*
-  Text object for environments (exclusive).
+  Text object for environments.
 
 *<plug>(vimtex-a$)*
-  Text object for inline math (inclusive).
-
 *<plug>(vimtex-i$)*
-  Text object for inline math (exclusive).
+  Text object for inline math.
 
 *<plug>(vimtex-aP)*
-  Text object for sections (inclusive).
-
 *<plug>(vimtex-iP)*
-  Text object for sections (exclusive).
+  Text object for sections.
 
 *<plug>(vimtex-%)*
   Find matching pair.
 
 *<plug>(vimtex-]])*
-  [count] sections forward (inclusive).
+  [count] sections forward. Goes to next section command.
 
 *<plug>(vimtex-][)*
-  [count] sections forward (exclusive).
+  [count] sections forward. Goes to line before next section command.
 
 *<plug>(vimtex-[])*
-  [count] sections backward (inclusive).
+  [count] sections backward. Goes to line after previous section command.
 
 *<plug>(vimtex-[[)*
-  [count] sections backward (exclusive).
+  [count] sections backward. Goes to previous section command.
 
 ------------------------------------------------------------------------------
 Insert mode mappings~
