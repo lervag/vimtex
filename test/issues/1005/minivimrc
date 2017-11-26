@@ -1,0 +1,10 @@
+set nocompatible
+" set runtimepath=~/.vim,~/.vim/after,$VIM,$VIMRUNTIME
+set runtimepath=~/.vim,$VIM,$VIMRUNTIME,~/.vim/after
+call plug#begin('~/.vim/bundle')
+Plug 'lervag/vimtex'
+call plug#end()
+
+nnoremap q :qall!<cr>
+
+silent edit minimal.tex
