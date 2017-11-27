@@ -57,7 +57,7 @@ function! s:general.view(file) dict " {{{1
   let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
 
   " Start the view process
-  let self.process = vimtex#process#start(l:cmd)
+  let self.process = vimtex#process#start(l:cmd, {'silent': 0})
 
   if has_key(self, 'hook_view')
     call self.hook_view()
