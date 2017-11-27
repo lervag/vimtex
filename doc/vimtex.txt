@@ -2108,17 +2108,17 @@ object, see |text-objects|.
   Find matching pair.
 
 *<plug>(vimtex-]])*
-  [count] section forward. Goes to next section command.
+  [count] section forward (|exlusive|). Goes to next section command.
 
 *<plug>(vimtex-][)*
-  [count] section end forward. Goes to line before next section command or to
+  [count] section end forward (|exlusive|). Goes to line before next section command or to
   bottom of document or to bottom of file.
 
 *<plug>(vimtex-[])*
-  [count] section end backward. Goes to the end of the previous section.
+  [count] section end backward (|exlusive|). Goes to the end of the previous section.
 
 *<plug>(vimtex-[[)*
-  [count] section backward. Goes to previous section command.
+  [count] section backward (|exlusive|). Goes to previous section command.
 
 ------------------------------------------------------------------------------
 Insert mode mappings~
