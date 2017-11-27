@@ -1,4 +1,4 @@
-Given tex (LaTeX example):
+Given tex (LaTeX example 1):
   \documentclass{article}
   \begin{document}
 
@@ -42,10 +42,10 @@ Execute (jumps: ]] ][ G[] [[):
   Assert line('.') == 9
 
   normal G[]
-  Assert line('.') == 33
+  Assert line('.') == 27
 
   normal [[
-  Assert line('.') == 28
+  Assert line('.') == 22
 
 Execute (jumps: 3]] 2][ G2[] 3[[):
   normal 3]]
@@ -55,7 +55,49 @@ Execute (jumps: 3]] 2][ G2[] 3[[):
   Assert line('.') == 27
 
   normal G2[]
-  Assert line('.') == 27
+  Assert line('.') == 21
 
   normal 3[[
-  Assert line('.') == 10
+  Assert line('.') == 4
+
+Given tex (LaTeX example 2):
+  \chapter{section 1}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  \chapter{section 2}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+Execute (jumps: d][):
+  normal! j^
+  normal d][
+
+Expect tex (LaTeX example 2 - result):
+  \chapter{section 1}
+
+  \chapter{section 2}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+

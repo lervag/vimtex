@@ -30,10 +30,10 @@ function! vimtex#motion#init_buffer() " {{{1
   xmap     <silent><buffer> <plug>(vimtex-][) <sid>(vimtex-][)
   xmap     <silent><buffer> <plug>(vimtex-[]) <sid>(vimtex-[])
   xmap     <silent><buffer> <plug>(vimtex-[[) <sid>(vimtex-[[)
-  onoremap <silent><buffer> <plug>(vimtex-]]) :execute "normal \<sid>(v)\<sid>(vimtex-]])"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-][) :execute "normal \<sid>(v)\<sid>(vimtex-][)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[]) :execute "normal \<sid>(v)\<sid>(vimtex-[])"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<sid>(v)\<sid>(vimtex-[[)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]]) :execute "normal \<sid>(V)\<sid>(vimtex-]])"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-][) :execute "normal \<sid>(V)\<sid>(vimtex-][)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[]) :execute "normal \<sid>(V)\<sid>(vimtex-[])"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<sid>(V)\<sid>(vimtex-[[)"<cr>
 endfunction
 
 " }}}1
@@ -96,66 +96,46 @@ endfunction
 
 " }}}1
 function! vimtex#motion#next_section(type, backwards, visual) " {{{1
-  let l:up = search(s:re_sec, 'ncbW') > 0
-  let l:down = search(s:re_sec_bw, 'ncW') > 0
+  let l:top = search(s:re_sec, 'ncbW') == 0
+  let l:bottom = search(s:re_sec, 'ncW') == 0
 
-  if !a:backwards && a:type == 1 && l:up && !l:down
-    call cursor(line('$'), 1)
+  " Restore visual mode if desired
+  if a:visual
+    execute 'normal! g' . visualmode()
+  endif
+
+  if (l:top && a:backwards) || (l:bottom && !a:backwards && a:type == 0)
     return
   endif
 
-  let l:count = v:count1 + (!a:backwards && a:type == 1 && !l:up && l:down)
-  let l:save_pos = vimtex#pos#get_cursor()
-  while l:count > 0
-    let l:count -= 1
+  " Define search pattern and search flag
+  let l:re = (a:type == 0 || a:backwards) ? s:re_sec : s:re_sec_fw_t1
+  let l:flags = 'W'
+  if a:backwards
+    let l:flags .= 'b'
+  endif
 
-    " Restore visual mode if desired
-    if a:visual
-      normal! gv
-    endif
+  let l:count = v:count1 + (!a:backwards && a:type == 1 && l:top && !l:bottom)
+  for l:_ in range(l:count)
+    let l:save_pos = vimtex#pos#get_cursor()
 
-    " For the [] and ][ commands we move up or down before the search
-    if a:type == 1 && !a:backwards
-      normal! j
-    endif
-
-    " Define search pattern and do the search while preserving "/
-    let flags = 'W'
-    if a:backwards
-      let flags .= 'b'
-      if a:type == 1
-        let flags .= 'c'
-      endif
-    endif
-
-    let l:re = (a:type == 1) ? s:re_sec_bw : s:re_sec
-
-    " Perform the search
-    let l:lnum = search(l:re, flags)
-
-    " Handle end of file edge case
     if a:type == 1
-      if l:lnum == 0 && !a:backwards
-        if line('.') == line('$')
-          normal! k
+      call search('\S', 'W')
+    endif
+
+    call search(l:re, l:flags)
+
+    if a:type == 1
+      call search('\S\s*\n\zs', 'Wb')
+
+      if a:backwards
+        if search(s:re_sec, 'Wbn') == 0
+          call vimtex#pos#set_cursor(l:save_pos)
           break
         endif
       endif
-
-      " For the [] motion we move up after the search
-      normal! k
     endif
-
-    if a:type == 1 && a:backwards
-      let l:lnum = search(s:re_sec, flags . 'n')
-      if l:lnum == 0
-        call vimtex#pos#set_cursor(l:save_pos)
-        break
-      endif
-    endif
-
-    let l:save_pos = vimtex#pos#get_cursor()
-  endwhile
+  endfor
 endfunction
 
 " }}}1
@@ -164,10 +144,9 @@ endfunction
 " {{{1 Initialize module
 
 " Pattern to match section/chapter/...
-let s:re_sec = '\v%(%(\\<!%(\\\\)*)@<=\%.*)@<!'
-      \ . '\s*\\((sub)*section|chapter|part|'
+let s:re_sec = '\v\s*\\((sub)*section|chapter|part|'
       \ .        'appendix|(front|back|main)matter)>'
-let s:re_sec_bw = s:re_sec . '|\m^\s*\\end{document}'
+let s:re_sec_fw_t1 = '\(' . s:re_sec . '\m\|^\s*\%(\\end{document}\|\%$\)\)'
 
 " List of paragraph boundaries
 let s:paragraph_boundaries = [
