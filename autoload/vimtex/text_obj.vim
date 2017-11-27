@@ -218,6 +218,8 @@ function! s:get_sections_positions(is_inner, type) " {{{1
   if a:is_inner
     call vimtex#pos#set_cursor(l:pos_start[0]+1, l:pos_start[1])
     let l:pos_start = searchpos('\S', 'cnW')
+    call vimtex#pos#set_cursor(l:pos_end)
+    let l:pos_end = searchpos('\S', 'bcnW')
   elseif l:sec_val ==# 'document'
     let l:pos_start = [l:pos_start[0]+1, l:pos_start[1]]
   endif

@@ -21,4 +21,40 @@ Do (Delete environment (including)):
 
 Expect tex (Verify):
   
+Given tex (Define sections):
+  \chapter{section 1}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  \chapter{section 2}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  \chapter{section 3}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+Do (Delete sections):
+  daP
+  diP
+
+Expect tex (Verify):
+  \chapter{section 2}
+
+  \chapter{section 3}
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
 
