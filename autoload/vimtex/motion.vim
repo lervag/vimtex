@@ -104,36 +104,26 @@ function! vimtex#motion#next_section(type, backwards, visual) " {{{1
     execute 'normal! g' . visualmode()
   endif
 
-  if (l:top && a:backwards) || (l:bottom && !a:backwards && a:type == 0)
-    return
-  endif
-
   " Define search pattern and search flag
-  let l:re = (a:type == 0 || a:backwards) ? s:re_sec : s:re_sec_fw_t1
+  let l:re = a:type == 0 ? s:re_sec : s:re_sec_t1
   let l:flags = 'W'
   if a:backwards
     let l:flags .= 'b'
   endif
 
-  let l:count = v:count1 + (!a:backwards && a:type == 1 && l:top && !l:bottom)
-  for l:_ in range(l:count)
+  for l:_ in range(v:count1)
     let l:save_pos = vimtex#pos#get_cursor()
 
     if a:type == 1
       call search('\S', 'W')
     endif
 
-    call search(l:re, l:flags)
+    let l:lnum = search(l:re, l:flags)
 
     if a:type == 1
       call search('\S\s*\n\zs', 'Wb')
-
-      if a:backwards
-        if search(s:re_sec, 'Wbn') == 0
-          call vimtex#pos#set_cursor(l:save_pos)
-          break
-        endif
-      endif
+    elseif l:lnum == 0
+      call vimtex#pos#set_cursor([a:backwards ? 1 : line('$'), 1])
     endif
   endfor
 endfunction
@@ -146,7 +136,7 @@ endfunction
 " Pattern to match section/chapter/...
 let s:re_sec = '\v\s*\\((sub)*section|chapter|part|'
       \ .        'appendix|(front|back|main)matter)>'
-let s:re_sec_fw_t1 = '\(' . s:re_sec . '\m\|^\s*\%(\\end{document}\|\%$\)\)'
+let s:re_sec_t1 = '\(' . s:re_sec . '\m\|^\s*\%(\\end{document}\|\%$\)\)'
 
 " List of paragraph boundaries
 let s:paragraph_boundaries = [

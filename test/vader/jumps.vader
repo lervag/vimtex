@@ -42,10 +42,10 @@ Execute (jumps: ]] ][ G[] [[):
   Assert line('.') == 9
 
   normal G[]
-  Assert line('.') == 27
+  Assert line('.') == 33
 
   normal [[
-  Assert line('.') == 22
+  Assert line('.') == 28
 
 Execute (jumps: 3]] 2][ G2[] 3[[):
   normal 3]]
@@ -55,10 +55,10 @@ Execute (jumps: 3]] 2][ G2[] 3[[):
   Assert line('.') == 27
 
   normal G2[]
-  Assert line('.') == 21
+  Assert line('.') == 27
 
   normal 3[[
-  Assert line('.') == 4
+  Assert line('.') == 10
 
 Given tex (LaTeX example 2):
   \chapter{section 1}
