@@ -92,7 +92,7 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
     call filter(l:xwinids, '!empty(v:val)')
 
     if !empty(l:xwinids)
-      call system('xdotool windowactivate ' . l:xwinids[0] . ' --sync')
+      call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
     endif
   endif
 endfunction
