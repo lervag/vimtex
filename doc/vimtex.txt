@@ -584,7 +584,7 @@ Options~
   The compilation status must be taken as an argument. This allows users to
   add custom callback functionality.
 
-  Note: The Zathura and MuPDF viewers, if used, adds a hook to this list in
+  Note: The Zathura and MuPDF viewers, if used, add a hook to this list in
         order to store the viewer X window ID in order to prevent multiple
         viewer windows.
 
