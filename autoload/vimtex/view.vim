@@ -88,11 +88,11 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
   if executable('pstree') && executable('xdotool')
     let l:xwinids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
 
-    call map(l:xwinids, "system('xdotool search --pid ' . v:val)[:-2]")
+    call map(l:xwinids, "system('xdotool search --onlyvisible --pid ' . v:val)[:-2]")
     call filter(l:xwinids, '!empty(v:val)')
 
     if !empty(l:xwinids)
-      call system('xdotool windowactivate ' . l:xwinids[0] . ' --sync')
+      call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
     endif
   endif
 endfunction
