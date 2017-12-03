@@ -1,26 +1,65 @@
-set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
-filetype plugin indent on
-syntax enable
+" vimtex - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
 
-nnoremap q :qall!<cr>
+function! vimtex#profile#open() " {{{1
+  source ~/.vim/vimrc
+  silent edit prof.log
+endfunction
 
-let g:vimtex_fold_enabled = 1
+" }}}1
+function! vimtex#profile#print() " {{{1
+  for l:line in readfile('prof.log')
+    echo l:line
+  endfor
+  echo ''
+  quit!
+endfunction
 
-function! s:do_profile(filename) " {{{1
-  profile start test.log
+" }}}1
+
+function! vimtex#profile#file(filename) " {{{1
+  profile start prof.log
   profile func *
-  " profile file *
 
   execute 'silent edit' a:filename
 
   profile stop
+  call s:fix_sids()
 endfunction
 
 " }}}1
-function! s:change_sid_numbers() " {{{1
-  let l:lines = readfile('test.log')
+function! vimtex#profile#command(cmd) " {{{1
+  profile start prof.log
+  profile func *
+
+  execute a:cmd
+
+  profile stop
+  call s:fix_sids()
+endfunction
+
+" }}}1
+
+function! vimtex#profile#filter(sections) " {{{1
+  let l:lines = readfile('prof.log')
+  call filter(l:lines, 'v:val !~# ''FTtex''')
+  call filter(l:lines, 'v:val !~# ''LoadFTPlugin''')
+
+  let l:new = []
+  for l:sec in a:sections
+    call extend(l:new, s:get_section(l:sec, l:lines))
+  endfor
+
+  call writefile(l:new, 'prof.log')
+endfunction
+
+" }}}1
+
+function! s:fix_sids() " {{{1
+  let l:lines = readfile('prof.log')
   let l:new = []
   for l:line in l:lines
     let l:sid = matchstr(l:line, '\v\<SNR\>\zs\d+\ze_')
@@ -40,21 +79,7 @@ function! s:change_sid_numbers() " {{{1
       call add(l:new, l:line)
     endif
   endfor
-  call writefile(l:new, 'test.log')
-endfunction
-
-" }}}1
-function! s:filter(sections) " {{{1
-  let l:lines = readfile('test.log')
-  call filter(l:lines, 'v:val !~# ''FTtex''')
-  call filter(l:lines, 'v:val !~# ''LoadFTPlugin''')
-
-  let l:new = []
-  for l:sec in a:sections
-    call extend(l:new, s:get_section(l:sec, l:lines))
-  endfor
-
-  call writefile(l:new, 'test.log')
+  call writefile(l:new, 'prof.log')
 endfunction
 
 " }}}1
@@ -85,28 +110,5 @@ function! s:get_section(name, lines) " {{{1
 endfunction
 
 " }}}1
-function! s:open() " {{{1
-  source ~/.vim/vimrc
-  silent edit test.log
-endfunction
 
-" }}}1
-function! s:print() " {{{1
-  for l:line in readfile('test.log')
-    echo l:line
-  endfor
-  echo ''
-  quit!
-endfunction
-
-" }}}1
-
-call s:do_profile('~/sintef/papers/2017-08-23_rpt_spreading/paper-spreading.tex')
-call s:change_sid_numbers()
-call s:filter([
-      \ 'FUNCTIONS SORTED ON SELF',
-      \ 'FUNCTIONS SORTED ON TOTAL',
-      \ '105()',
-      \])
-call s:print()
-" call s:open()
+" vim: fdm=marker sw=2

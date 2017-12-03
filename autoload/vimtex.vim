@@ -355,6 +355,7 @@ function! s:init_buffer() " {{{1
     try
       call vimtex#{l:mod}#init_buffer()
     catch /E117.*#init_/
+    catch /E127.*vimtex#profile#/
     endtry
   endfor
 endfunction
