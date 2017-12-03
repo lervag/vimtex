@@ -324,7 +324,7 @@ function! s:compiler.stop() abort dict " {{{1
     endif
   else
     call vimtex#log#warning(
-          \ 'There is not process to stop (' . self.target . ')')
+          \ 'There is no process to stop (' . self.target . ')')
   endif
 endfunction
 

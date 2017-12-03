@@ -19,7 +19,7 @@ endfunction
 " }}}1
 function! vimtex#view#common#not_readable(output) " {{{1
   if !filereadable(a:output)
-    call vimtex#log#warning('Viewer can not read PDF file!', a:output)
+    call vimtex#log#warning('Viewer cannot read PDF file!', a:output)
     return 1
   else
     return 0
@@ -124,7 +124,7 @@ function! s:xwin_template.xwin_get_id() dict " {{{1
   let cmd = 'xdotool search --class ' . self.class
   let xwin_ids = split(system(cmd), '\n')
   if len(xwin_ids) == 0
-    call vimtex#log#warning('Viewer can not find ' . self.class . ' window ID!')
+    call vimtex#log#warning('Viewer cannot find ' . self.class . ' window ID!')
     let self.xwin_id = 0
   else
     let self.xwin_id = xwin_ids[-1]
