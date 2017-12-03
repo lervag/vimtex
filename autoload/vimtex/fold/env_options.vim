@@ -14,8 +14,7 @@ endfunction
 let s:folder = {
       \ 'name' : 'envs with options',
       \ 're' : {
-      \   'start' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \             . '\\begin\s*\{.{-}\}\[\s*($|\%)',
+      \   'start' : g:vimtex#re#not_comment . '\\begin\s*\{.{-}\}\[\s*($|\%)',
       \   'end' : '\s*\]\s*$',
       \ },
       \ 'opened' : 0,

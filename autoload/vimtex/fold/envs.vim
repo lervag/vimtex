@@ -14,10 +14,9 @@ endfunction
 let s:folder = {
       \ 'name' : 'environments',
       \ 're' : {
-      \   'start' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\begin\s*\{.{-}\}',
-      \   'end' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash . '\\end\s*\{.{-}\}',
-      \   'name' : g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \            . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
+      \   'start' : g:vimtex#re#not_comment . '\\begin\s*\{.{-}\}',
+      \   'end' : g:vimtex#re#not_comment . '\\end\s*\{.{-}\}',
+      \   'name' : g:vimtex#re#not_comment . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
       \ },
       \ 'whitelist' : [],
       \ 'blacklist' : [],
