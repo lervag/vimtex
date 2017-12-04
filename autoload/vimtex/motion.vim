@@ -51,6 +51,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
 
   let delim = vimtex#delim#get_matching(delim)
   if empty(delim) | return | endif
+  if empty(delim.match) | return | endif
 
   normal! m`
   call vimtex#pos#set_cursor(delim.lnum,

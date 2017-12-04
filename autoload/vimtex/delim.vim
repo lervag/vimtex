@@ -838,6 +838,17 @@ function! s:init_delim_lists() " {{{1
         \     ['\Big', '\Big'],
         \     ['\bigg', '\bigg'],
         \     ['\Bigg', '\Bigg'],
+        \   ],
+        \   're' : [
+        \     ['\\left', '\\right'],
+        \     ['\\bigl', '\\bigr'],
+        \     ['\\Bigl', '\\Bigr'],
+        \     ['\\biggl', '\\biggr'],
+        \     ['\\Biggl', '\\Biggr'],
+        \     ['\\big\>', '\\big\>'],
+        \     ['\\Big\>', '\\Big\>'],
+        \     ['\\bigg\>', '\\bigg\>'],
+        \     ['\\Bigg\>', '\\Bigg\>'],
         \   ]
         \ },
         \}

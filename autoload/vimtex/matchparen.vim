@@ -52,6 +52,7 @@ function! s:matchparen.highlight() abort dict " {{{1
 
   let l:corresponding = vimtex#delim#get_matching(l:current)
   if empty(l:corresponding) | return | endif
+  if empty(l:corresponding.match) | return | endif
 
   let [l:open, l:close] = l:current.is_open
         \ ? [l:current, l:corresponding]
