@@ -15,6 +15,8 @@ endfunction
 function! vimtex#format#formatexpr() " {{{1
   if mode() =~# '[iR]' | return -1 | endif
 
+  " Temporary disable folds and save view
+  let l:save_view = winsaveview()
   let l:foldenable = &l:foldenable
   setlocal nofoldenable
 
@@ -49,6 +51,10 @@ function! vimtex#format#formatexpr() " {{{1
     let l:tries -= 1
   endwhile
 
+  " Restore fold and view
+  let &l:foldenable = l:foldenable
+  call winrestview(l:save_view)
+
   " Set cursor at appropriate position
   execute 'normal!' l:bottom . 'G^'
 
@@ -57,8 +63,6 @@ function! vimtex#format#formatexpr() " {{{1
     silent! undo
     call vimtex#log#warning('Formatting of selected text failed!')
   endif
-
-  let &l:foldenable = l:foldenable
 endfunction
 
 " }}}1
