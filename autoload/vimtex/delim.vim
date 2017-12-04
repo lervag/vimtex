@@ -159,7 +159,7 @@ function! vimtex#delim#toggle_modifier_visual(...) " {{{1
     endif
 
     let l:close = vimtex#delim#get_matching(l:open)
-    if !empty(l:close)
+    if !empty(get(l:close, 'match'))
 
       if l:end_pos_val >= vimtex#pos#val(l:close) + strlen(l:close.match) - 1
         let l:newmods = vimtex#delim#toggle_modifier({
@@ -360,7 +360,7 @@ function! vimtex#delim#get_surrounding(type) " {{{1
   let l:pos_val_open = l:pos_val_cursor - 1
 
   while l:pos_val_open < l:pos_val_last
-    let l:open  = vimtex#delim#get_prev(a:type, 'open')
+    let l:open = vimtex#delim#get_prev(a:type, 'open')
     if empty(l:open) | break | endif
 
     let l:close = vimtex#delim#get_matching(l:open)
