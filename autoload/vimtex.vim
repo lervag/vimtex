@@ -60,12 +60,12 @@ function! s:init_options() " {{{1
 
   call s:init_option('vimtex_echo_ignore_wait', 0)
 
-  call s:init_option('vimtex_fold_enabled', 0)
   if &diff
-    let g:vimtex_fold_manual = 0
+    let g:vimtex_fold_enabled = 0
   else
-    call s:init_option('vimtex_fold_manual', 0)
+    call s:init_option('vimtex_fold_enabled', 0)
   endif
+  call s:init_option('vimtex_fold_manual', 0)
   call s:init_option('vimtex_fold_levelmarker', '*')
   call s:init_option('vimtex_fold_types', {})
   call s:init_option('vimtex_fold_types_defaults', {
