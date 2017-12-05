@@ -288,7 +288,13 @@ of its key features.  There are a couple of relevant FAQs for those who use
 
     If you use Vim under a terminal in Linux or OSX, then Vim must be
     started as a command server with the command line option `--servername`,
-    e.g. `vim --servername VIM`.  For different ways of ensuring this, see:
+    e.g. `vim --servername VIM`.  The simplest way to ensure this is to add an
+    alias to your `.bashrc` (or similar), that is, add: >
+
+      alias vim='vim --servername VIM'
+<
+    This should work in most cases.  For other methods of ensuring that Vim is
+    started with a servername, see:
     http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
 
 ------------------------------------------------------------------------------
