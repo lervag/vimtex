@@ -34,28 +34,39 @@ Given tex (LaTeX example 1):
 
   \end{document}
 
-Execute (jumps: ]] ][ G[] [[):
+Execute (jumps: ]]):
   normal ]]
   Assert line('.') == 4
 
+  normal gg3]]
+  Assert line('.') == 16
+
+Execute (jumps: ][):
   normal ][
   Assert line('.') == 9
 
+  normal 16G2][
+  Assert line('.') == 27
+
+  normal 28G][
+  Assert line('.') == 33
+
+  normal ][
+  Assert line('.') == 34
+
+Execute (jumps: []):
   normal G[]
   Assert line('.') == 33
 
-  normal [[
-  Assert line('.') == 28
-
-Execute (jumps: 3]] 2][ G2[] 3[[):
-  normal 3]]
-  Assert line('.') == 16
-
-  normal 2][
-  Assert line('.') == 27
-
   normal G2[]
   Assert line('.') == 27
+
+  normal 8G[]
+  Assert line('.') == 1
+
+Execute (jumps: [[):
+  normal 33G[[
+  Assert line('.') == 28
 
   normal 3[[
   Assert line('.') == 10

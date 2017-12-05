@@ -97,12 +97,18 @@ endfunction
 
 " }}}1
 function! vimtex#motion#next_section(type, backwards, visual) " {{{1
-  let l:top = search(s:re_sec, 'ncbW') == 0
-  let l:bottom = search(s:re_sec, 'ncW') == 0
-
   " Restore visual mode if desired
   if a:visual
     execute 'normal! g' . visualmode()
+  endif
+
+  " Check trivial cases
+  let l:top = search(s:re_sec, 'nbW') == 0
+  let l:bottom = search(a:type == 1 ? s:re_sec_t2 : s:re_sec, 'nW') == 0
+  if a:backwards && l:top
+    return vimtex#pos#set_cursor([1, 1])
+  elseif !a:backwards && l:bottom
+    return vimtex#pos#set_cursor([line('$'), 1])
   endif
 
   " Define search pattern and search flag
@@ -119,12 +125,25 @@ function! vimtex#motion#next_section(type, backwards, visual) " {{{1
       call search('\S', 'W')
     endif
 
+    let l:bottom = search(s:re_sec_t2, 'nW') == 0
+    if a:type == 1 && !a:backwards && l:bottom
+      return vimtex#pos#set_cursor([line('$'), 1])
+    endif
+
+    let l:top = search(s:re_sec, 'ncbW') == 0
     let l:lnum = search(l:re, l:flags)
+
+    if l:top && l:lnum > 0 && a:type == 1 && !a:backwards
+      let l:lnum = search(l:re, l:flags)
+    endif
 
     if a:type == 1
       call search('\S\s*\n\zs', 'Wb')
-    elseif l:lnum == 0
-      call vimtex#pos#set_cursor([a:backwards ? 1 : line('$'), 1])
+
+      " Move to start of file if cursor was moved to top part of document
+      if search(s:re_sec, 'ncbW') == 0
+        call vimtex#pos#set_cursor([1, 1])
+      endif
     endif
   endfor
 endfunction
@@ -138,6 +157,7 @@ endfunction
 let s:re_sec = '\v\s*\\((sub)*section|chapter|part|'
       \ .        'appendix|(front|back|main)matter)>'
 let s:re_sec_t1 = '\(' . s:re_sec . '\m\|^\s*\%(\\end{document}\|\%$\)\)'
+let s:re_sec_t2 = '\(' . s:re_sec . '\m\|^\s*\\end{document}\)'
 
 " List of paragraph boundaries
 let s:paragraph_boundaries = [
