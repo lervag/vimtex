@@ -4,6 +4,8 @@ let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
+set cmdheight=2
+
 nnoremap q :qall!<cr>
 
 let g:vimtex_view_method = 'zathura'
@@ -13,13 +15,18 @@ endif
 
 silent edit minimal.tex
 
-call vimtex#log#toggle_verbose()
-silent VimtexCompile
-execute 'sleep' $SLEEPTIME
+function! Test()
+  call vimtex#log#toggle_verbose()
+  silent VimtexCompile
+  execute 'sleep' $SLEEPTIME
 
-echo printf("%6s %8d %s\n", $SLEEPTIME, b:vimtex.viewer.xwin_id,
-      \ b:vimtex.viewer.xwin_id > 0
-      \ ? 'SUCCESS' : 'FAILED')
+  echo printf('%6s %8d %s', $SLEEPTIME, b:vimtex.viewer.xwin_id,
+        \ b:vimtex.viewer.xwin_id > 0
+        \ ? 'SUCCESS' : 'FAILED')
 
-call system('killall zathura')
-silent quit
+  call system('killall zathura')
+  if has('nvim') | echo '' | endif
+  silent quit
+endfunction
+
+call Test()
