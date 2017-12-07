@@ -183,7 +183,7 @@ function! s:get_os_info() abort " {{{1
   if l:os ==# 'linux'
     let l:result = executable('lsb_release')
           \ ? system('lsb_release -d')[12:-2]
-          \ : system('uname -a')[:-2]
+          \ : system('uname -sr')[:-2]
     return substitute(l:result, '^\s*', '', '')
   elseif l:os ==# 'mac'
     let l:name = system('sw_vers -productName')[:-2]
