@@ -1,32 +1,37 @@
+if $SLEEPTIME ==# 'Makefile' | quit | endif
+
 set nocompatible
 let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
-set cmdheight=2
-
-nnoremap q :qall!<cr>
-
 let g:vimtex_view_method = 'zathura'
 if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
-silent edit minimal.tex
+silent edit linked/minimal.tex
 
 function! Test()
   call vimtex#log#toggle_verbose()
-  silent VimtexCompile
+  VimtexCompile
   execute 'sleep' $SLEEPTIME
 
-  echo printf('%6s %8d %s', $SLEEPTIME, b:vimtex.viewer.xwin_id,
-        \ b:vimtex.viewer.xwin_id > 0
-        \ ? 'SUCCESS' : 'FAILED')
+  verbose echo printf("%6s %8d %s\n",
+        \ $SLEEPTIME,
+        \ b:vimtex.viewer.xwin_id,
+        \ b:vimtex.viewer.xwin_id > 0 ? 'SUCCESS' : 'FAILED')
 
   call system('killall zathura')
-  if has('nvim') | echo '' | endif
   silent quit
 endfunction
 
-call Test()
+if has('nvim')
+  call Test()
+else
+  augroup Testing
+    autocmd!
+    autocmd VimEnter * call Test()
+  augroup END
+endif
