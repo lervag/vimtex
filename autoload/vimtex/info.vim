@@ -181,7 +181,9 @@ function! s:get_os_info() abort " {{{1
   let l:os = vimtex#util#get_os()
 
   if l:os ==# 'linux'
-    let l:result = system('lsb_release -d')[12:-2]
+    let l:result = executable('lsb_release')
+          \ ? system('lsb_release -d')[12:-2]
+          \ : system('uname -ro')[:-2]
     return substitute(l:result, '^\s*', '', '')
   elseif l:os ==# 'mac'
     let l:name = system('sw_vers -productName')[:-2]
