@@ -1,0 +1,25 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_method = 'zathura'
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
+
+call vimtex#log#toggle_verbose()
+silent VimtexCompile
+execute 'sleep' $SLEEPTIME
+
+echo printf("%6s %8d %s\n", $SLEEPTIME, b:vimtex.viewer.xwin_id,
+      \ b:vimtex.viewer.xwin_id > 0
+      \ ? 'SUCCESS' : 'FAILED')
+
+call system('killall zathura')
+silent quit
