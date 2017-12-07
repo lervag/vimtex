@@ -1,11 +1,10 @@
-VIMEXE:=nvim
-times:=300m 400m 450m 470m 500m 550m 600m 800m 1000m 2
+VIMEXE:=vim
 
-.PHONY: all times
+.PHONY: all
 
-all: $(times)
+all: 300m 400m 450m 470m 500m 550m 600m 800m
 
-$(times): linked
+%: linked
 	@cd linked; \
 	  SLEEPTIME="$@" $(VIMEXE) -u minivimrc
 
