@@ -1,0 +1,18 @@
+if !isdirectory('vim-stay')
+  call system('git clone https://github.com/kopischke/vim-stay')
+endif
+
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+let &rtp  = 'vim-stay,' . &rtp
+
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_automatic=0
+let g:vimtex_quickfix_mode=2
+let g:vimtex_compiler_progname='nvr'
+
+silent edit minimal.tex
