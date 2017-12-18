@@ -44,6 +44,11 @@ syntax cluster texCmdGroup add=texDefParmNested
 syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
       \ contains=texStatement,texInputCurlies,texInputFileOpt
 
+" Allow subequations (fixes #1019)
+" - This should be temporary, as it seems subequations is erroneously part of
+"   texBadMath from Charles Campbell's syntax plugin.
+syn match texBeginEnd "\(\\begin\>\|\\end\>\)\ze{subequations}" nextgroup=texBeginEndName
+
 " {{{1 Italic font, bold font and conceals
 
 if get(g:, 'tex_fast', 'b') =~# 'b'
