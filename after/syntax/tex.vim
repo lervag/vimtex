@@ -240,6 +240,19 @@ syntax match texInputFile
 syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
 
 " }}}1
+" {{{1 Add support for moreverb package
+
+if exists('g:tex_verbspell')
+  syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"   contains=@Spell
+  syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>" contains=@Spell
+  syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>" contains=@Spell
+else
+  syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"
+  syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>"
+  syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>"
+endif
+
+" }}}1
 " {{{1 Add support for beamer package
 syntax match texBeamerDelimiter '<\|>' contained
 syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
@@ -256,6 +269,41 @@ syntax cluster texDocGroup add=texStatementBeamer
 highlight link texStatementBeamer texStatement
 highlight link texBeamerOpt Identifier
 highlight link texBeamerDelimiter Delimiter
+
+" }}}1
+" {{{1 Add support for amsmath package
+
+" This is based on Charles E. Campbell's amsmath.vba file dated 2017-10-12
+
+call TexNewMathZone('Z', 'align', 1)
+call TexNewMathZone('Y', 'alignat', 1)
+call TexNewMathZone('X', 'equation', 1)
+call TexNewMathZone('W', 'flalign', 1)
+call TexNewMathZone('V', 'gather', 1)
+call TexNewMathZone('U', 'multline', 1)
+call TexNewMathZone('T', 'xalignat', 1)
+call TexNewMathZone('S', 'xxalignat', 0)
+
+syntax match texBadMath '\\end\s*{\s*\(' . join([
+      \ 'align',
+      \ 'alignat',
+      \ 'equation',
+      \ 'flalign',
+      \ 'gather',
+      \ 'multline',
+      \ 'xalignat',
+      \ 'xxalignat']) . '\)\*\=\s*}'
+
+" Amsmath [lr][vV]ert  (Holger Mitschke)
+for s:texmath in [
+      \ ['\\lvert', '|'] ,
+      \ ['\\rvert', '|'] ,
+      \ ['\\lVert', '‖'] ,
+      \ ['\\rVert', '‖'] ,
+      \ ]
+  execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
+        \ . s:texmath[0] . "' contained conceal cchar=" . s:texmath[1]
+endfor
 
 " }}}1
 " {{{1 Nested syntax highlighting for dot
