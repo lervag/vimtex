@@ -284,7 +284,7 @@ call TexNewMathZone('U', 'multline', 1)
 call TexNewMathZone('T', 'xalignat', 1)
 call TexNewMathZone('S', 'xxalignat', 0)
 
-syntax match texBadMath '\\end\s*{\s*\(' . join([
+execute 'syntax match texBadMath ''\\end\s*{\s*\(' . join([
       \ 'align',
       \ 'alignat',
       \ 'equation',
@@ -292,7 +292,7 @@ syntax match texBadMath '\\end\s*{\s*\(' . join([
       \ 'gather',
       \ 'multline',
       \ 'xalignat',
-      \ 'xxalignat']) . '\)\*\=\s*}'
+      \ 'xxalignat'], '\|') . '\)\*\=\s*}'''
 
 " Amsmath [lr][vV]ert  (Holger Mitschke)
 for s:texmath in [
