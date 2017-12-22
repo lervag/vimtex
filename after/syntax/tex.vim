@@ -352,8 +352,10 @@ let b:current_syntax = 'tex'
 
 " }}}1
 " {{{1 Nested syntax highlighting for asymptote
-unlet b:current_syntax
-try
+
+let s:asypath = globpath(&runtimepath, 'syntax/asy.vim')
+if !empty(s:asypath)
+  unlet b:current_syntax
   syntax include @ASYMPTOTE syntax/asy.vim
   syntax cluster texDocGroup add=texZoneAsymptote
   syntax region texZoneAsymptote
@@ -368,9 +370,8 @@ try
         \ keepend
         \ transparent
         \ contains=texBeginEnd,texBeginEndModifier,@ASYMPTOTE
-catch /^Vim.*E484/
-endtry
-let b:current_syntax = 'tex'
+  let b:current_syntax = 'tex'
+endif
 
 " }}}1
 " {{{1 Nested syntax highlighting for minted
