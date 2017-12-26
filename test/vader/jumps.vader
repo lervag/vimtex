@@ -100,7 +100,6 @@ Execute (jumps: d][):
 
 Expect tex (LaTeX example 2 - result):
   \chapter{section 1}
-
   \chapter{section 2}
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
   tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
