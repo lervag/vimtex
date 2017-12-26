@@ -99,7 +99,7 @@ endfunction
 function! vimtex#motion#next_section(type, backwards, visual) " {{{1
   " Restore visual mode if desired
   if a:visual
-    execute 'normal! g' . visualmode()
+    normal! gv
   endif
 
   " Check trivial cases
