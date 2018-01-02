@@ -162,7 +162,7 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     let l:pos[2] += strlen(l:cmd) + 2
     execute 'normal! ciw\' . l:cmd . '{"}'
     silent! call repeat#set(
-          \ "\<plug>(vimtex-cmd-create-ask)" . l:cmd . '', v:count)
+          \ "\<plug>(vimtex-cmd-create)" . l:cmd . '', v:count)
     call setreg('"', l:save_reg)
     call vimtex#pos#set_cursor(l:pos)
   endif
