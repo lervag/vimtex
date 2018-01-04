@@ -375,6 +375,7 @@ let s:completer_cmd = {
       \ ],
       \ 'candidates_from_packages' : [],
       \ 'candidates_from_newcommands' : [],
+      \ 'candidates_from_lets' : [],
       \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
       \ 'inside_braces' : 0,
       \}
@@ -392,10 +393,12 @@ endfunction
 function! s:completer_cmd.gather_candidates() dict " {{{2
   call self.gather_candidates_from_packages()
   call self.gather_candidates_from_newcommands()
+  call self.gather_candidates_from_lets()
 
   return vimtex#util#uniq_unsorted(
-        \   copy(self.candidates_from_packages)
-        \ + copy(self.candidates_from_newcommands))
+        \   copy(self.candidates_from_newcommands)
+        \ + copy(self.candidates_from_lets)
+        \ + copy(self.candidates_from_packages))
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
@@ -461,6 +464,28 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict " {{{2
         \ }')
 
   let self.candidates_from_newcommands = l:candidates
+endfunction
+
+function! s:completer_cmd.gather_candidates_from_lets() dict " {{{2
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop': '\\begin{document}',
+        \ 'detailed': 0,
+        \})
+
+  let l:lets = filter(copy(l:preamble), 'v:val =~# ''\\let\>''')
+  let l:defs = filter(copy(l:preamble), 'v:val =~# ''\\def\>''')
+  let l:candidates = map(l:lets, '{
+        \ ''word'' : matchstr(v:val, ''\\let[^\\]*\\\zs\w*''),
+        \ ''mode'' : ''.'',
+        \ ''menu'' : ''[cmd: \let]'',
+        \ }')
+        \ + map(l:defs, '{
+        \ ''word'' : matchstr(v:val, ''\\def[^\\]*\\\zs\w*''),
+        \ ''mode'' : ''.'',
+        \ ''menu'' : ''[cmd: \def]'',
+        \ }')
+
+  let self.candidates_from_lets = l:candidates
 endfunction
 
 " }}}1
