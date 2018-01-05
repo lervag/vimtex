@@ -60,7 +60,9 @@ function! VimtexIndent(lnum) abort " {{{1
   " Indent environments, delimiters, and tikz
   let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
+  echom l:ind '-> '
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
+  echon l:ind
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
@@ -150,9 +152,9 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
   return s:sw*(  max([  s:count(a:prev_line, s:re_open)
-        \            - s:count(a:prev_line, s:re_close), 0])
-        \     - max([  s:count(a:line, s:re_close)
-        \            - s:count(a:line, s:re_open), 0]))
+        \             - s:count(a:prev_line, s:re_close), 0])
+        \      - max([  s:count(a:line, s:re_close)
+        \             - s:count(a:line, s:re_open), 0]))
 endfunction
 
 let s:re_open = join([
