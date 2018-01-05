@@ -80,5 +80,3 @@ function! s:general.latexmk_append_argument() dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

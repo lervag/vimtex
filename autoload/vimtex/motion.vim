@@ -172,5 +172,3 @@ let s:paragraph_boundaries = [
       \ ]
 
 " }}}1
-
-" vim: fdm=marker sw=2

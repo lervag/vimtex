@@ -186,5 +186,3 @@ function! s:mupdf.focus_vim() dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

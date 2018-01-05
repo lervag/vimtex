@@ -131,5 +131,3 @@ function! s:folder.refresh() abort dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

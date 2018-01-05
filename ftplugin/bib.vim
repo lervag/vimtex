@@ -29,5 +29,3 @@ nnoremap <buffer> <plug>(vimtex-toc-open)   :call vimtex#toc#open()<cr>
 nnoremap <buffer> <plug>(vimtex-toc-toggle) :call vimtex#toc#toggle()<cr>
 call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
 call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
-
-" vim: fdm=marker sw=2

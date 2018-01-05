@@ -262,5 +262,3 @@ let s:section_to_val = {
       \}
 
 " }}}1
-
-" vim: fdm=marker sw=2

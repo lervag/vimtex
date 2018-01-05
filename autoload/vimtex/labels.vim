@@ -132,5 +132,3 @@ function! s:labels.syntax() dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

@@ -185,5 +185,3 @@ function! s:xwin_template.xwin_send_keys(keys) dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

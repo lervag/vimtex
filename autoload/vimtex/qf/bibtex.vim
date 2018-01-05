@@ -178,5 +178,3 @@ function! s:type_no_bibstyle.fix(ctx, entry) abort " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

@@ -211,5 +211,3 @@ let s:border_end = '\v\\%(' . join([
       \ . '|^\s*%(\\\]|\$\$)\s*$'
 
 " }}}1
-
-" vim: fdm=marker sw=2

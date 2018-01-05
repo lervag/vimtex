@@ -550,5 +550,3 @@ function! s:base(n, k) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

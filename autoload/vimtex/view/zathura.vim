@@ -133,5 +133,3 @@ function! s:zathura.get_pid() dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

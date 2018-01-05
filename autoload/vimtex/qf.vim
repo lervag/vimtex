@@ -174,5 +174,3 @@ function! s:qf_has_errors() abort " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

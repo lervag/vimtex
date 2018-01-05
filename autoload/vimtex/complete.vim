@@ -848,5 +848,3 @@ let s:completers = map(
       \ 'v:val[1]')
 
 " }}}1
-
-" vim: fdm=marker sw=2

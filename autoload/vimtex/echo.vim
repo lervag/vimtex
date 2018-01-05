@@ -47,5 +47,3 @@ function! vimtex#echo#formatted(parts) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

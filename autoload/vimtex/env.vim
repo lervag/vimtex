@@ -152,5 +152,3 @@ function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

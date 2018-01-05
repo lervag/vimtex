@@ -209,5 +209,3 @@ else
 
   " }}}1
 endif
-
-" vim: fdm=marker sw=2

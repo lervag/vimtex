@@ -40,5 +40,3 @@ function! s:folder.text(line, level) abort dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

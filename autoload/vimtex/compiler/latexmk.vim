@@ -535,5 +535,3 @@ function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

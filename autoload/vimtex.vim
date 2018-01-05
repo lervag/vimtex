@@ -549,5 +549,3 @@ let s:modules = map(
       \ 'fnamemodify(v:val, '':t:r'')')
 
 " }}}1
-
-" vim: fdm=marker sw=2

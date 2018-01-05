@@ -348,5 +348,3 @@ function! s:text_between(p1, p2, ...) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

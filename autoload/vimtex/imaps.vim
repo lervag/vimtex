@@ -167,5 +167,3 @@ endfunction
 let s:created_maps = []
 
 " }}}1
-
-" vim: fdm=marker sw=2

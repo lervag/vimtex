@@ -209,5 +209,3 @@ function! s:log_contains_error(logfile) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

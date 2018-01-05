@@ -441,5 +441,3 @@ syntax match texMintedName '{\w\+}' contained
 highlight link texMintedName texBeginEndName
 
 " }}}1
-
-" vim: fdm=marker sw=2

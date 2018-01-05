@@ -168,5 +168,3 @@ function! s:folder.parse_caption_frame(line) abort dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

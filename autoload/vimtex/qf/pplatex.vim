@@ -90,5 +90,3 @@ function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

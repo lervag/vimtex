@@ -28,5 +28,3 @@ function! vimtex#kpsewhich#run(args) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

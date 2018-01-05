@@ -233,5 +233,3 @@ endfunction
 " }}}1
 
 let s:complete_dir = fnamemodify(expand('<sfile>'), ':h') . '/complete/'
-
-" vim: fdm=marker sw=2

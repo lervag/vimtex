@@ -91,5 +91,3 @@ function! s:parse_args(args) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

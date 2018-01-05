@@ -23,5 +23,3 @@ if !(!get(g:, 'vimtex_version_check', 1)
 endif
 
 call vimtex#init()
-
-" vim: fdm=marker sw=2

@@ -14,5 +14,3 @@ endif
 let b:did_ftplugin_vimtex = 1
 
 call vimtex#check_plugin_clash()
-
-" vim: fdm=marker sw=2

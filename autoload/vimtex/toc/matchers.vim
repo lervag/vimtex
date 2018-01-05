@@ -308,5 +308,3 @@ function! s:find_closing(start, string, count, type) abort " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

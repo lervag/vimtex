@@ -287,5 +287,3 @@ augroup vimtex_compiler
 augroup END
 
 " }}}1
-
-" vim: fdm=marker sw=2

@@ -79,5 +79,3 @@ endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-" vim: fdm=marker sw=2

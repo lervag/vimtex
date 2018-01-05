@@ -68,5 +68,3 @@ let g:vimtex#re#ncm = [
 let g:vimtex#re#youcompleteme = map(copy(g:vimtex#re#ncm), "'re!' . v:val")
 
 " }}}1
-
-" vim: fdm=marker sw=2

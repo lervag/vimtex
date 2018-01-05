@@ -110,5 +110,3 @@ function! s:get_section(name, lines) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2

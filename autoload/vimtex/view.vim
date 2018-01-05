@@ -98,5 +98,3 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
 endfunction
 
 " }}}1
-
-" vim: fdm=marker sw=2
