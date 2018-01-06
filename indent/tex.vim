@@ -60,9 +60,7 @@ function! VimtexIndent(lnum) abort " {{{1
   " Indent environments, delimiters, and tikz
   let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
-  echom l:ind '-> '
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
-  echon l:ind
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
