@@ -621,9 +621,14 @@ endfunction
 
 let s:completer_gls = {
       \ 'patterns' : ['\v\\(gls|Gls|GLS)(pl)?\s*\{[^}]*$'],
-      \ 'keywords' : ['newglossaryentry', 'longnewglossaryentry', 'newacronym', 
-                    \ 'newabbreviation', 'glsxtrnewsymbol'],
       \ 'candidates' : [],
+      \ 'key' : {
+      \   'newglossaryentry' : ' [gls]',
+      \   'longnewglossaryentry' : ' [gls]',
+      \   'newacronym' : ' [acr]',
+      \   'newabbreviation' : ' [abbr]',
+      \   'glsxtrnewsymbol' : ' [symbol]',
+      \ },
       \}
 
 function! s:completer_gls.complete(regex) dict " {{{2
@@ -635,16 +640,19 @@ endfunction
 function! s:completer_gls.parse_glossaries() dict " {{{2
   let self.candidates = []
 
+  let l:re_input = g:vimtex#re#tex_input . '|^\s*\\loadglsentries'
+  let l:re_commands = '\v\\(' . join(keys(self.key), '|') . ')'
+  let l:re_matcher = l:re_commands . '\s*%(\[.*\])=\s*\{([^{}]*)'
+
   for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
         \   'detailed' : 0,
-        \   'input_re' : g:vimtex#re#tex_input . '|^\s*\\loadglsentries',
-        \ }), 'v:val =~# ''\\\(' . join(self.keywords, '\|') . '\)''')
-    let l:entries = matchstr(l:line,
-        \ '\\\(' . join(self.keywords, '\|') . '\)\s*\(\[.*\]\)\=\s*{\zs[^{}]*')
+        \   'input_re' : l:re_input,
+        \ }), 'v:val =~# l:re_commands')
+    let l:matches = matchlist(l:line, l:re_matcher)
     call add(self.candidates, {
-          \ 'word' : l:entries,
-          \ 'abbr' : l:entries,
-          \ 'menu' : ' [gls]',
+          \ 'word' : l:matches[2],
+          \ 'abbr' : l:matches[2],
+          \ 'menu' : self.key[l:matches[1]],
           \})
   endfor
 
