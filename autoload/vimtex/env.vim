@@ -129,7 +129,7 @@ endfunction
 function! vimtex#env#is_inside(env) " {{{1
   let l:stopline = max([line('.') - 50, 1])
   return searchpairpos('\\begin\s*{' . a:env . '\*\?}', '',
-        \ '\\end\s*{' . a:env . '\*\?}', 'bnW', 0, l:stopline)
+        \ '\\end\s*{' . a:env . '\*\?}', 'bnW', '', l:stopline)
 endfunction
 
 " }}}1
