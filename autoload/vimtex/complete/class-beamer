@@ -21,7 +21,7 @@
 #include:pdftexcmds
 #include:pdfescape
 #include:bigintcalc
-#include:bitset
+#include: bitset
 #include:uniquecounter
 #include:letltxmacro
 #include:hopatch
@@ -213,3 +213,22 @@ useinnertheme
 useoutertheme
 usetheme
 visible
+\begin{actionenv}
+\begin{alertblock}
+\begin{alertenv}
+\begin{altenv}
+\begin{beamerboxesrounded}
+\begin{beamercolorbox}
+\begin{block}
+\begin{column}
+\begin{columns}
+\begin{definition}
+\begin{example}
+\begin{exampleblock}
+\begin{frame}
+\begin{onlyenv}
+\begin{overlayarea}
+\begin{overprint}
+\begin{proof}
+\begin{semiverbatim}
+\begin{structureenv}

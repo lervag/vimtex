@@ -3,3 +3,5 @@ multicolsep
 multicoltolerance
 postmulticols
 premulticols
+\begin{multicols}
+\begin{multicols*}

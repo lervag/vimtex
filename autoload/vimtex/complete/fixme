@@ -12,3 +12,11 @@ fxsetup*
 fxwarning
 fxwarning*
 listoffixmes
+\begin{anfxerror}
+\begin{anfxerror*}
+\begin{anfxfatal}
+\begin{anfxfatal*}
+\begin{anfxnote}
+\begin{anfxnote*}
+\begin{anfxwarning}
+\begin{anfxwarning*}

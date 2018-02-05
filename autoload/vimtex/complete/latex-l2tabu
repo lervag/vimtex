@@ -1,3 +1,7 @@
 centerline
 fussy
 sloppy
+\begin{appendix}
+\begin{eqnarray*}
+\begin{fussypar}
+\begin{sloppypar}

@@ -67,3 +67,6 @@ StandardFootnotes
 StandardMathComma
 tertio
 useshorthands
+\begin{hypenrules}
+\begin{otherlanguage}
+\begin{otherlanguage*}

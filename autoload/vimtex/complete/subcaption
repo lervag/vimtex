@@ -4,3 +4,5 @@ phantomsubcaption
 subcaption
 subcaption*
 subcaptionbox
+\begin{subfigure}
+\begin{subtable}

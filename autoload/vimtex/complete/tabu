@@ -15,3 +15,5 @@ tabureset
 taburowcolors
 taburulecolor
 usetabu
+\begin{longtabu}
+\begin{tabu}

@@ -4,3 +4,4 @@ excludecoment
 includecomment
 processcomment
 specialcomment
+\begin{comment}

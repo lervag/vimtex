@@ -8,12 +8,14 @@ height
 itemsep
 labelsep
 labelwidth
+LoadClassWithOptions
 marginparsep
 marginparwidth
 paperheight
 paperwidth
 parsep
 partopsep
+RequirePackageWithOptions
 textfloatsep
 topmargin
 topsep
