@@ -238,6 +238,48 @@ provided by vimtex, but that are instead provided by other plugins.
     [2]: https://github.com/machakann/vim-sandwich
     [3]: http://www.vim.org/scripts/script.php?script_id=3848
 
+  Enhanced matching and higlighting of delimiters~
+    |vimtex| highlights and allows navigation between matching pairs of
+    delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
+    the `\begin` and `\end` tags of environments.  However, it does not allow
+    matching of middle delimiters or `\item`s.
+
+    Alternatively, one may use the plugin |match-up| [0], which offers enhanced
+    |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
+    for a variety of file types.  For LaTeX douments, it:
+      - Extends highlighting and the `%` motion to a number of middle
+        delimiters including,
+          - `\bigm` and `\middle` marked delimiters
+          - `\item`s in `itemize` and `enumerate` environments
+          - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
+          - `\if`, `\else` and `\endif`
+      - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
+        between matching delimiters and operate on delimited text.
+
+    For example, with match-up enabled, >
+
+      \left( \frac{a}{b} \middle| q \right)
+<
+    the motion `%` will cycle through `\left(`, `\middle|`, and `\right)`, whereas
+    with vimtex only `\left(` and `\right)` will be matched.  The motion `g%`
+    will do the same, except in reverse.
+
+    To enable the plugin match-up after installation, add the following to
+    your vimrc: >
+
+      let g:matchup_override_vimtex = 1
+<
+    Matching may become computationally intensive for complex LaTeX documents.
+    If you experience slowdowns while moving the cursor, the following option
+    is recommended to delay highlighting slightly while navigating: >
+
+      let g:matchup_matchparen_deferred = 1
+<
+    Note: The exact set of delimiters recognized may differ between match-up
+    and vimtex.  For example, the mappings `da%` and `dad` will not in general
+    be identical, particularly if you have customized vimtex's delimiters.
+
+    [0]: https://github.com/andymass/vim-matchup
 
 ------------------------------------------------------------------------------
 Requirements~
