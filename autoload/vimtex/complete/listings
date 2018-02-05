@@ -10,3 +10,4 @@ lstname
 lstnewenvironment
 lstset
 thelstlisting
+\begin{lstlisting}

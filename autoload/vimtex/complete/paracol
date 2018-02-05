@@ -6,3 +6,12 @@ globalcounter
 switchcolumn
 syncallcounters
 synccounter
+\begin{column}
+\begin{column*}
+\begin{leftcolumn}
+\begin{leftcolumn*}
+\begin{nthcolumn}
+\begin{nthcolumn*}
+\begin{paracol}
+\begin{rightcolumn}
+\begin{rightcolumn*}

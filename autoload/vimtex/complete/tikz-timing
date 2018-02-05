@@ -43,3 +43,5 @@ twidth
 vertlines
 wscale
 zslope
+\begin{pgfonlayer}
+\begin{tikztimingtable}

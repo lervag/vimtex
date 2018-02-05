@@ -6,3 +6,5 @@ cvlabelskip
 cvlabelwidth
 cvlistheadingfont
 cvplace
+\begin{cv}
+\begin{cvlist}

@@ -9,3 +9,7 @@ tablelasttail
 tabletail
 topcaption
 xentryfraction
+\begin{mpxtabular}
+\begin{mpxtabular*}
+\begin{xtabular}
+\begin{xtabular*}

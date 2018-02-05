@@ -19,8 +19,8 @@ boxdot ⊡
 boxminus ⊟
 boxplus ⊞
 boxtimes ⊠
-Bumpeq ≎
 bumpeq ≏
+Bumpeq ≎
 centerdot ⋅
 checkmark ✓
 circeq ≗
@@ -104,10 +104,10 @@ ngeq ≱
 ngeqq 
 ngeqslant 
 ngtr ≯
-nLeftarrow ⇍
 nleftarrow ↚
-nLeftrightarrow ⇎
+nLeftarrow ⇍
 nleftrightarrow ↮
+nLeftrightarrow ⇎
 nleq ≰
 nleqq 
 nleqslant 
@@ -116,8 +116,8 @@ nmid ∤
 nparallel ∦
 nprec ⊀
 npreceq ⋠
-nRightarrow ⇏
 nrightarrow ↛
+nRightarrow ⇏
 nshortmid 
 nshortparallel 
 nsim ≁
@@ -131,10 +131,10 @@ ntriangleleft ⋪
 ntrianglelefteq ⋬
 ntriangleright ⋫
 ntrianglerighteq ⋭
+nvdash ⊬
+nvDash ⊭
 nVdash ⊮
 nVDash ⊯
-nvDash ⊭
-nvdash ⊬
 pitchfork ⋔
 precapprox ⪷
 preccurlyeq ≼
@@ -193,7 +193,7 @@ varsupsetneqq 
 vartriangle △
 vartriangleleft ⊲
 vartriangleright ⊳
-Vdash ⊩
 vDash ⊨
+Vdash ⊩
 veebar ⊻
 Vvdash ⊪

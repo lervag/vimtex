@@ -44,3 +44,5 @@ tikztonodes
 tikztotarget
 useasboundingbox
 usetikzlibrary
+\begin{scope}
+\begin{tikzpicture}

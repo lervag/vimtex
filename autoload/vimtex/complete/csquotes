@@ -23,6 +23,7 @@ hyphenblockquote*
 hyphenquote
 hyphenquote*
 hyphentextcquote
+hyphentextcquote*
 hyphentextquote
 hyphentextquote*
 MakeAutoQuote
@@ -49,3 +50,9 @@ textins*
 textquote
 textquote*
 VerbatimQuotes
+\begin{displaycquote}
+\begin{displayquote}
+\begin{foreigndisplaycquote}
+\begin{foreigndisplayquote}
+\begin{hyphendisplaycquote}
+\begin{hyphendisplayquote}

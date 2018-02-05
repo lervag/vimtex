@@ -2,16 +2,16 @@ dualslide
 email
 fontText
 fontTitle
-FromSlide
 fromSlide
+FromSlide
 fromSlide*
 hiddenitem
 institution
 Logo
 onlyInPDF
 onlyInPS
-OnlySlide
 onlySlide
+OnlySlide
 onlySlide*
 overlays
 PDForPS
@@ -26,3 +26,8 @@ untilSlide
 UntilSlide
 untilsSlide
 untilsSlide*
+\begin{enumstep}
+\begin{Itemize}
+\begin{itemstep}
+\begin{notes}
+\begin{slides}

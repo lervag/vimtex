@@ -6,10 +6,10 @@ skiplevel
 skiplevel*
 skiplevels
 skiplevels*
-TCircle
 Tcircle
-TCircle*
+TCircle
 Tcircle*
+TCircle*
 Tdia
 Tdia*
 Tdot
@@ -21,3 +21,4 @@ Toval*
 tspace
 Ttri
 Ttri*
+\begin{psTree}
