@@ -811,8 +811,8 @@ function! s:load_candidates_from_packages(packages) " {{{1
   if empty(l:packages) | return | endif
 
   let l:save_pwd = getcwd()
-  let l:localdir = exists('*haslocaldir') ? haslocaldir() : 0
-  execute l:localdir ? 'cd' : 'lcd' fnameescape(s:complete_dir)
+  let l:localdir = exists('*haslocaldir') ? haslocaldir() : 1
+  execute l:localdir ? 'lcd' : 'cd' fnameescape(s:complete_dir)
 
   for l:unreadable in filter(copy(l:packages), '!filereadable(v:val)')
     let s:candidates_from_packages[l:unreadable] = {}
@@ -859,7 +859,7 @@ function! s:load_candidates_from_packages(packages) " {{{1
     let s:candidates_from_packages[l:package].environments += l:candidates
   endfor
 
-  execute l:localdir ? 'cd' : 'lcd' fnameescape(l:save_pwd)
+  execute l:localdir ? 'lcd' : 'cd' fnameescape(l:save_pwd)
 endfunction
 
 let s:candidates_from_packages = {}
