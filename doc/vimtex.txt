@@ -47,7 +47,8 @@ CONTENTS                                                      *vimtex-contents*
   Completion                                    |vimtex-completion|
     Complete citations                          |vimtex-complete-cites|
     Complete labels                             |vimtex-complete-labels|
-    Complete commands                           |vimtex-complete-commands|
+    Complete commands and environments          |vimtex-complete-commands|
+                                                |vimtex-complete-environments|
     Complete image file names                   |vimtex-complete-images|
     Complete input file names                   |vimtex-complete-input|
     Complete PDF file names                     |vimtex-complete-pdf|
@@ -2401,14 +2402,20 @@ number.  The label completion matches:
         \eqref{eq 2<CTRL-X><CTRL-O>
 
 ------------------------------------------------------------------------------
-Complete commands~
+Complete commands and environments~
                                                      *vimtex-complete-commands*
+                                                 *vimtex-complete-environments*
 
 Command completion is available after `\` and should provide completion
 candidates for relevant LaTeX commands.  The document's preamble is analysed,
-and commands will be completed for the loaded packages. A lot of packages are
-supported, see the path `VIMTEX/autoload/vimtex/complete` for a relevant file
-listing.
+and commands will be completed for the loaded packages as well as those
+defined within the preamble using `\newcommand`, `\let` and `\def`.  Environment
+completion is also available after `\begin{` or `\end{`.  As with commands, the
+suggested environment names come from the loaded packages and `\newenvironment`
+definitions in the preamble.
+
+A lot of packages are supported, see the path `VIMTEX/autoload/vimtex/complete`
+for a relevant file listing.
 
 ------------------------------------------------------------------------------
 Complete file names for figures~

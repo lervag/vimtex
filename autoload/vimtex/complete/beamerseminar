@@ -5,3 +5,4 @@ ifportrait
 ifslide
 ifslidesonly
 overlay
+\begin{slide}

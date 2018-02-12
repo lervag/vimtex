@@ -17,3 +17,5 @@ newminted
 newmintedfile
 TestAppExists
 usemintedstyle
+\begin{listing}
+\begin{minted}

@@ -87,3 +87,6 @@ state
 stoppgfdecoration
 stoppgfmetadecoration
 stretto
+\begin{circuitikz}
+\begin{pgfdecoration}
+\begin{pgfmetadecoration}

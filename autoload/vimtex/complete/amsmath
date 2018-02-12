@@ -69,3 +69,25 @@ varUpsilon Υ
 varXi Ξ
 xleftarrow ←
 xrightarrow →
+\begin{align}
+\begin{align*}
+\begin{alignat}
+\begin{alignat*}
+\begin{aligned}
+\begin{alignedat}
+\begin{cases}
+\begin{equation*}
+\begin{flalign}
+\begin{flalign*}
+\begin{gather}
+\begin{gather*}
+\begin{gathered}
+\begin{multline}
+\begin{multline*}
+\begin{smallmatrix}
+\begin{split}
+\begin{subarray}
+\begin{subequations}
+\begin{xalignat}
+\begin{xalignat*}
+\begin{xxalignat}

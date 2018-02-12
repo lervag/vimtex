@@ -17,3 +17,5 @@ noappendicestocpagenum
 restoreapp
 setthesection
 setthesubsection
+\begin{appendices}
+\begin{subappendices}

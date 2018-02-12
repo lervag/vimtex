@@ -120,3 +120,5 @@ swapaxes
 translate
 uput
 uput*
+\begin{pspicture}
+\begin{pspicture*}

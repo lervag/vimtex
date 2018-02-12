@@ -59,8 +59,8 @@ KwTo
 lCase
 leIf
 lElse
-lElseIf
 lElseif
+lElseIf
 lFor
 lForAll
 lForEach
@@ -81,11 +81,11 @@ nllabel
 nlset
 nlSty
 NlSty
-NoCaptionOfAlgo
 nocaptionofalgo
+NoCaptionOfAlgo
 Other
-PrintSemicolon
 printsemicolon
+PrintSemicolon
 ProcArgFnt
 ProcArgSty
 procedureautorefname
@@ -152,10 +152,10 @@ SetKwSwitch
 setLeftLinesNumbers
 SetLine
 setnlskip
-SetNlSkip
 Setnlskip
-SetNlSty
+SetNlSkip
 Setnlsty
+SetNlSty
 SetNoFillComment
 SetNoLine
 SetNothing
@@ -196,3 +196,10 @@ uElse
 uElseIf
 vespace
 While
+\begin{algocf}
+\begin{algorithm}
+\begin{algorithm*}
+\begin{function}
+\begin{function*}
+\begin{procedure}
+\begin{procedure*}

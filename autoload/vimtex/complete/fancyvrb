@@ -1,3 +1,8 @@
 DefineShortVerb
+DefineVerbatimEnvironment
 UndefineShortVerb
 VerbatimFootnotes
+\begin{BVerbatim}
+\begin{BVerbatim*}
+\begin{Verbatim}
+\begin{Verbatim*}

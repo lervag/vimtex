@@ -5,12 +5,12 @@ ArrowBetweenLines
 ArrowBetweenLines*
 bigtimes ⨉
 clap
-Colonapprox
 colonapprox
-Coloneq ⩴
+Colonapprox
 coloneq ≔
-Coloneqq
+Coloneq ⩴
 coloneqq
+Coloneqq
 colonsim
 Colonsim
 cramped
@@ -22,10 +22,10 @@ DeclarePairedDelimiter
 DeclarePairedDelimiterX
 DeclarePairedDelimiterXPP
 endlinechar
-Eqcolon
 eqcolon ≕
-Eqqcolon
+Eqcolon
 eqqcolon
+Eqqcolon
 intertext
 LaTeXoverbrace
 LaTeXunderbrace
@@ -78,3 +78,31 @@ xRightarrow
 xrightharpoondown
 xrightharpoonup
 xrightleftharpoons
+\begin{bmatrix*}
+\begin{Bmatrix*}
+\begin{bsmallmatrix}
+\begin{Bsmallmatrix}
+\begin{bsmallmatrix*}
+\begin{Bsmallmatrix*}
+\begin{cases*}
+\begin{dcases}
+\begin{dcases*}
+\begin{drcases}
+\begin{drcases*}
+\begin{lgathered}
+\begin{matrix*}
+\begin{multlined}
+\begin{pmatrix*}
+\begin{psmallmatrix}
+\begin{psmallmatrix*}
+\begin{rcases}
+\begin{rcases*}
+\begin{rgathered}
+\begin{smallmatrix*}
+\begin{spreadlines}
+\begin{vmatrix*}
+\begin{Vmatrix*}
+\begin{vsmallmatrix}
+\begin{Vsmallmatrix}
+\begin{vsmallmatrix*}
+\begin{Vsmallmatrix*}

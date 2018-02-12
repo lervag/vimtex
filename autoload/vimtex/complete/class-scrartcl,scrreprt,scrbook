@@ -89,3 +89,7 @@ titlepagestyle
 typearea
 uppertitleback
 usekomafont
+\begin{addmargin}
+\begin{addmargin*}
+\begin{captionbeside}
+\begin{labeling}

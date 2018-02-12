@@ -1,3 +1,8 @@
 addplot
 legend
 pgfplotsset
+\begin{axis}
+\begin{loglogaxis}
+\begin{semilogxaxis}
+\begin{semilogyaxis}
+\begin{tikzpicture}

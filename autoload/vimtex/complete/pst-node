@@ -1,7 +1,7 @@
 circlenode
 circlenode*
-Cnode
 cnode
+Cnode
 cnode*
 Cnode*
 cnodeput
@@ -40,8 +40,8 @@ ncdiagg
 ncdiagg*
 ncline
 ncLine
-ncLine*
 ncline*
+ncLine*
 ncloop
 ncloop*
 ncput
@@ -75,8 +75,8 @@ pcloop*
 pczigzag
 pczigzag*
 pnode
-Rnode
 rnode
+Rnode
 Rnode*
 taput
 taput*

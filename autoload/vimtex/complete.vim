@@ -376,7 +376,6 @@ let s:completer_cmd = {
       \ 'candidates_from_packages' : [],
       \ 'candidates_from_newcommands' : [],
       \ 'candidates_from_lets' : [],
-      \ 'complete_dir' : fnamemodify(expand('<sfile>'), ':r') . '/',
       \ 'inside_braces' : 0,
       \}
 
@@ -402,43 +401,17 @@ function! s:completer_cmd.gather_candidates() dict " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_packages() dict " {{{2
-  if !empty(self.candidates_from_packages) | return | endif
-
-  let l:save_pwd = getcwd()
-  execute 'lcd' fnameescape(self.complete_dir)
-
   let l:packages = [
         \ 'default',
         \ 'class-' . get(b:vimtex, 'documentclass', ''),
         \] + keys(b:vimtex.packages)
-  call filter(l:packages, 'filereadable(v:val)')
+  call s:load_candidates_from_packages(l:packages)
 
-  let l:queue = copy(l:packages)
-  while !empty(l:queue)
-    let l:current = remove(l:queue, 0)
-    let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
-    if empty(l:includes) | continue | endif
-
-    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
-    call filter(l:includes, 'filereadable(v:val)')
-    call filter(l:includes, 'index(l:packages, v:val) < 0')
-
-    let l:packages += l:includes
-    let l:queue += l:includes
-  endwhile
-
-  for l:package in l:packages
-    let l:candidates = filter(readfile(l:package), 'v:val =~# ''^\a''')
-    call map(l:candidates, 'split(v:val)')
-    call map(l:candidates, '{
-          \ ''word'' : v:val[0],
-          \ ''mode'' : ''.'',
-          \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
-          \}')
-    let self.candidates_from_packages += l:candidates
+  let self.candidates_from_packages = []
+  for l:p in l:packages
+    let self.candidates_from_packages += get(
+          \ get(s:candidates_from_packages, l:p, {}), 'commands', [])
   endfor
-
-  execute 'lcd' fnameescape(l:save_pwd)
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_newcommands() dict " {{{2
@@ -709,6 +682,108 @@ function! s:completer_doc.gather_candidates() dict " {{{2
 endfunction
 
 " }}}1
+" {{{1 Environments (\begin/\end)
+
+let s:completer_env = {
+      \ 'patterns' : ['\v\\%(begin|end)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'candidates_from_newenvironments' : [],
+      \ 'candidates_from_packages' : [],
+      \}
+
+function! s:completer_env.complete(regex) dict " {{{2
+  if self.context =~# '^\\end\>'
+    " When completing \end{, search for an unmatched \begin{...}
+    let l:matching_env = ''
+    let l:save_pos = vimtex#pos#get_cursor()
+    let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
+
+    let l:lnum = l:save_pos[1] + 1
+    while l:lnum > 1
+      let l:open  = vimtex#delim#get_prev('env_tex', 'open')
+      if empty(l:open) || get(l:open, 'name', '') ==# 'document'
+        break
+      endif
+
+      let l:close = vimtex#delim#get_matching(l:open)
+      if empty(l:close.match)
+        let l:matching_env = l:close.name . (l:close.starred ? '*' : '')
+        break
+      endif
+
+      let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
+      if l:pos_val_try > l:pos_val_cursor
+        break
+      else
+        let l:lnum = l:open.lnum
+        call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+      endif
+    endwhile
+  
+    call vimtex#pos#set_cursor(l:save_pos)
+
+    if !empty(l:matching_env) && l:matching_env =~# a:regex
+      return [{
+            \ 'word': l:matching_env,
+            \ 'menu': '[env: matching]',
+            \}]
+    endif
+  endif
+
+  return filter(copy(self.gather_candidates()), 'v:val.word =~# a:regex')
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates() dict " {{{2
+  call self.gather_candidates_from_packages()
+  call self.gather_candidates_from_newenvironments()
+
+  return vimtex#util#uniq_unsorted(
+        \   copy(self.candidates_from_newenvironments)
+        \ + copy(self.candidates_from_packages))
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates_from_packages() dict " {{{2
+  let l:packages = [
+        \ 'default',
+        \ 'class-' . get(b:vimtex, 'documentclass', ''),
+        \] + keys(b:vimtex.packages)
+  call s:load_candidates_from_packages(l:packages)
+
+  let self.candidates_from_packages = []
+  for l:p in l:packages
+    let self.candidates_from_packages += get(
+          \ get(s:candidates_from_packages, l:p, {}), 'environments', [])
+  endfor
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates_from_newenvironments() dict " {{{2
+  " Simple caching
+  if !empty(self.candidates_from_newenvironments)
+    let l:modified_time = max(map(
+          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+          \ 'getftime(v:val)'))
+    if l:modified_time > get(self, 'newenvironments_updated')
+      let self.newenvironments_updated = l:modified_time
+    else
+      return
+    endif
+  endif
+
+  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
+
+  call filter(l:candidates, 'v:val =~# ''\v\\(re)?newenvironment''')
+  call map(l:candidates, '{
+        \ ''word'' : matchstr(v:val, ''\v\\(re)?newenvironment\*?\{\\?\zs[^}]*''),
+        \ ''mode'' : ''.'',
+        \ ''menu'' : ''[env: newenvironment]'',
+        \ }')
+
+  let self.candidates_from_newenvironments = l:candidates
+endfunction
+
+" }}}1
 
 "
 " Utility functions
@@ -728,6 +803,66 @@ function! s:get_texmf_candidates(filetype) " {{{1
 
   return l:candidates
 endfunction
+
+" }}}1
+function! s:load_candidates_from_packages(packages) " {{{1
+  let l:packages = filter(copy(a:packages),
+        \ '!has_key(s:candidates_from_packages, v:val)')
+  if empty(l:packages) | return | endif
+
+  let l:save_pwd = getcwd()
+  let l:localdir = exists('*haslocaldir') ? haslocaldir() : 0
+  execute l:localdir ? 'cd' : 'lcd' fnameescape(s:complete_dir)
+
+  for l:unreadable in filter(copy(l:packages), '!filereadable(v:val)')
+    let s:candidates_from_packages[l:unreadable] = {}
+    call remove(l:packages, index(l:packages, l:unreadable))
+  endfor
+
+  let l:queue = copy(l:packages)
+  while !empty(l:queue)
+    let l:current = remove(l:queue, 0)
+    let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
+    if empty(l:includes) | continue | endif
+
+    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
+    call filter(l:includes, 'filereadable(v:val)')
+    call filter(l:includes, 'index(l:packages, v:val) < 0')
+
+    let l:packages += l:includes
+    let l:queue += l:includes
+  endwhile
+
+  for l:package in l:packages
+    let s:candidates_from_packages[l:package] = {
+          \ 'commands':     [],
+          \ 'environments': [],
+          \}
+
+    let l:lines = readfile(l:package)
+
+    let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\a''')
+    call map(l:candidates, 'split(v:val)')
+    call map(l:candidates, '{
+          \ ''word'' : v:val[0],
+          \ ''mode'' : ''.'',
+          \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
+          \}')
+    let s:candidates_from_packages[l:package].commands += l:candidates
+
+    let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\\begin{''')
+    call map(l:candidates, '{
+          \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
+          \ ''mode'' : ''.'',
+          \ ''menu'' : ''[env: '' . l:package . ''] '',
+          \}')
+    let s:candidates_from_packages[l:package].environments += l:candidates
+  endfor
+
+  execute l:localdir ? 'cd' : 'lcd' fnameescape(l:save_pwd)
+endfunction
+
+let s:candidates_from_packages = {}
 
 " }}}1
 function! s:close_braces(candidates) " {{{1
@@ -857,5 +992,7 @@ let s:tex2unicode_list = map([
 let s:completers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^completer_'''),
       \ 'v:val[1]')
+
+let s:complete_dir = fnamemodify(expand('<sfile>'), ':r') . '/'
 
 " }}}1

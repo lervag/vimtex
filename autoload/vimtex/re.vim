@@ -30,6 +30,8 @@ let g:vimtex#re#neocomplete =
       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|usepackage%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|documentclass%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|begin%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|end%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|\a*'
       \ . ')'
 
@@ -46,6 +48,8 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|usepackage(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|begin(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|end(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|\w*'
       \ .')'
 
@@ -63,6 +67,8 @@ let g:vimtex#re#ncm = [
       \ '\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\begin(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\end(\s*\[[^]]*\])?\s*\{[^}]*',
       \]
 
 let g:vimtex#re#youcompleteme = map(copy(g:vimtex#re#ncm), "'re!' . v:val")
