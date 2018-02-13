@@ -1,4 +1,6 @@
 set nocompatible
+let &rtp = '~/.vim/bundle/vim-matchup,' . &rtp
+let &rtp .= ',~/.vim/bundle/vim-matchup/after'
 let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
@@ -11,5 +13,7 @@ set nowrap
 let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 0
 let g:vimtex_matchparen_enabled = 1
+let g:matchup_override_vimtex = 1
+let g:matchup_matchparen_deferred = 1
 
 silent edit mwe.tex
