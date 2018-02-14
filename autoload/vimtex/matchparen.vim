@@ -58,10 +58,17 @@ function! s:matchparen.highlight() abort dict " {{{1
         \ ? [l:current, l:corresponding]
         \ : [l:corresponding, l:current]
 
-  let w:vimtex_match_id1 = matchadd('MatchParen',
-        \ '\%' . l:open.lnum . 'l\%' . l:open.cnum . 'c' . l:open.re.this)
-  let w:vimtex_match_id2 = matchadd('MatchParen',
-        \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
+  if exists('*matchaddpos')
+    let w:vimtex_match_id1 = matchaddpos('MatchParen',
+          \ [[l:open.lnum, l:open.cnum, strlen(l:open.match)]])
+    let w:vimtex_match_id2 = matchaddpos('MatchParen',
+          \ [[l:close.lnum, l:close.cnum, strlen(l:close.match)]])
+  else
+    let w:vimtex_match_id1 = matchadd('MatchParen',
+          \ '\%' . l:open.lnum . 'l\%' . l:open.cnum . 'c' . l:open.re.this)
+    let w:vimtex_match_id2 = matchadd('MatchParen',
+          \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
+  endif
 endfunction
 
 " }}}1
