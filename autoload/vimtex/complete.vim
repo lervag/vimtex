@@ -868,7 +868,10 @@ let s:candidates_from_packages = {}
 function! s:close_braces(candidates) " {{{1
   if strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
     for l:cand in a:candidates
-      let l:cand.word .= '}'
+      if !has_key(l:cand, 'abbr')
+        let l:cand.abbr = l:cand.word
+      endif
+      let l:cand.word = substitute(l:cand.word, '}*$', '}', '')
     endfor
   endif
 
