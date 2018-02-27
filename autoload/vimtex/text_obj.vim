@@ -41,7 +41,8 @@ function! vimtex#text_obj#commands(is_inner, mode) " {{{1
     let l:pos_end.lnum = l:pos_start.lnum
     let l:pos_end.cnum = l:pos_start.cnum + strlen(l:cmd.name) - 1
     let l:pos_start.cnum += 1
-  elseif vimtex#pos#equal(l:pos_start, getpos("'<"))
+  elseif a:mode
+        \ && vimtex#pos#equal(l:pos_start, getpos("'<"))
         \ && vimtex#pos#equal(l:pos_end, getpos("'>"))
     let l:cursor = vimtex#pos#get_cursor()
     call vimtex#pos#set_cursor(vimtex#pos#next(l:cursor))
