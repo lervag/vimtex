@@ -13,12 +13,6 @@ function! vimtex#view#mupdf#new() " {{{1
     return {}
   endif
 
-  " Check if the xdotool is available
-  if !executable('xdotool')
-    call vimtex#log#error('MuPDF requires xdotool!')
-    return {}
-  endif
-
   " Use the xwin template
   return vimtex#view#common#apply_xwin_template('MuPDF',
         \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
