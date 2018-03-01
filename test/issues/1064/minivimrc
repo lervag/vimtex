@@ -1,0 +1,24 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let s:file = expand('<sfile>')
+execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+
+let g:tex_flavor = 'latex'
+
+silent edit minimal.tex
+
+VimtexTocToggle
+wincmd p
+
+for s:line in getline(9, '$')
+  echo substitute(strpart(s:line, 0, 40), '\s*$', '', '')
+endfor
+echo ''
+
+quitall
