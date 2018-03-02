@@ -116,7 +116,7 @@ function! s:xwin_template.xwin_get_id() dict " {{{1
   if self.xwin_id > 0 | return self.xwin_id | endif
 
   " Allow some time for the viewer to start properly
-  sleep 500m
+  sleep 50m
 
   "
   " Get the window ID

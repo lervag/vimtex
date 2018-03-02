@@ -30,20 +30,22 @@ let s:zathura = {
       \}
 
 function! s:zathura.start(outfile) dict " {{{1
-  let l:cmd  = 'zathura'
-  let l:cmd .= ' -x "' . g:vimtex_compiler_progname
-        \ . ' --servername ' . v:servername
-        \ . ' --remote-expr '
-        \ .     '\"vimtex#view#reverse_goto(%{line}, ''%{input}'')\""'
-  if g:vimtex_view_forward_search_on_start
-    let l:cmd .= ' --synctex-forward '
-          \ .  line('.')
-          \ .  ':' . col('.')
-          \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+  if g:vimtex_view_process_start
+    let l:cmd  = 'zathura'
+    let l:cmd .= ' -x "' . g:vimtex_compiler_progname
+          \ . ' --servername ' . v:servername
+          \ . ' --remote-expr '
+          \ .     '\"vimtex#view#reverse_goto(%{line}, ''%{input}'')\""'
+    if g:vimtex_view_forward_search_on_start
+      let l:cmd .= ' --synctex-forward '
+            \ .  line('.')
+            \ .  ':' . col('.')
+            \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+    endif
+    let l:cmd .= ' ' . g:vimtex_view_zathura_options
+    let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+    let self.process = vimtex#process#start(l:cmd)
   endif
-  let l:cmd .= ' ' . g:vimtex_view_zathura_options
-  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  let self.process = vimtex#process#start(l:cmd)
 
   call self.xwin_get_id()
   let self.outfile = a:outfile
@@ -82,7 +84,7 @@ function! s:zathura.compiler_callback(status) dict " {{{1
     "   recognized. Sometimes it is very quick, other times it may take
     "   a second. This way, we don't block longer than necessary.
     "
-    if !has_key(self, 'started_through_callback')
+    if !has_key(self, 'started_through_callback') && g:vimtex_view_xwin_exists
       for l:dummy in range(30)
         sleep 50m
         if self.xwin_exists() | break | endif
