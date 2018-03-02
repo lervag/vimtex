@@ -93,6 +93,7 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
 
     if !empty(l:xwinids)
       call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call feedkeys("\<c-l>", 'tn')
     endif
   endif
 endfunction
