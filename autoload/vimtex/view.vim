@@ -86,13 +86,17 @@ function! vimtex#view#reverse_goto(line, filename) " {{{1
   normal! zMzvzz
 
   if executable('pstree') && executable('xdotool')
-    let l:xwinids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
+    let l:pids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
 
-    call map(l:xwinids, "system('xdotool search --onlyvisible --pid ' . v:val)[:-2]")
+    let l:xwinids = []
+    call map(copy(l:pids), 'extend(l:xwinids, reverse(split('
+          \ . "system('xdotool search --onlyvisible --pid ' . v:val)"
+          \ . ')))')
     call filter(l:xwinids, '!empty(v:val)')
 
     if !empty(l:xwinids)
       call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call feedkeys("\<c-l>", 'tn')
     endif
   endif
 endfunction
