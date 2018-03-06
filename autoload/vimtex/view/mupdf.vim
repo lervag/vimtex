@@ -137,7 +137,7 @@ function! s:mupdf.compiler_callback(status) dict " {{{1
     endif
   endif
 
-  if g:vimtex_view_use_temp_files || b:vimtex.compiler.callback
+  if g:vimtex_view_use_temp_files || get(b:vimtex.compiler, 'callback')
     call self.xwin_send_keys('r')
   endif
 
