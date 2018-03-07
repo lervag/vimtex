@@ -54,7 +54,7 @@ let s:logger = {
       \   'warning' : 'VimtexWarning',
       \   'error' : 'VimtexError',
       \ },
-      \ 'verbose' : 1,
+      \ 'verbose' : get(g:, 'vimtex_log_verbose', 1),
       \}
 function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:msg_list = []
@@ -74,6 +74,12 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
   call add(self.entries, l:entry)
 
   if !self.verbose | return | endif
+
+  " Ignore message
+  let l:msg = join(l:msg_list)
+  for l:re in get(g:, 'vimtex_log_ignore', [])
+    if l:msg =~# l:re | return | endif
+  endfor
 
   call vimtex#echo#formatted([
         \ [self.type_to_highlight[a:type], 'vimtex:'],

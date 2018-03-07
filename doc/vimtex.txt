@@ -557,6 +557,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lT  |<plug>(vimtex-toc-toggle)|                     `n`
    <localleader>ly  |<plug>(vimtex-labels-open)|                    `n`
    <localleader>lY  |<plug>(vimtex-labels-toggle)|                  `n`
+   <localleader>lq  |<plug>(vimtex-log)|                            `n`
    <localleader>lv  |<plug>(vimtex-view)|                           `n`
    <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
    <localleader>ll  |<plug>(vimtex-compile)|                        `n`
@@ -1372,6 +1373,21 @@ Options~
 <
   Default value: 1
 
+*g:vimtex_log_ignore*
+  A list of regexes to filter info, warning, and error messages. If a logged
+  message matches any of the regexes in this list, the message will not be
+  printed to screen.
+
+  Note: All messages may still be viewed with |VimtexLog|.
+
+  Default: []
+
+*g:vimtex_log_verbose*
+  Whether or not to print messages to screen. Should generally be on, but may
+  be turned off e.g. for debugging or testing purposes.
+
+  Default: 1
+
 *g:vimtex_quickfix_enabled*
   Use this option to disable/enable the quickfix integration.
 
@@ -1961,6 +1977,11 @@ Commands~
                                              *VimtexLabelsToggle*
                                              *<plug>(vimtex-labels-toggle)*
 :VimtexLabelsToggle       Toggle table of labels.
+
+                                             *VimtexLog*
+                                             *<plug>(vimtex-log)*
+:VimtexLog                Show message log with timestamps and traces from
+                          where the messages were raised.
 
                                              *VimtexCompile*
                                              *<plug>(vimtex-compile)*
