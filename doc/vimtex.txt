@@ -1261,7 +1261,7 @@ Options~
           \ 'open' : ['{', '\\\@<!\\\['],
           \ 'close' : ['}', '\\\]'],
           \ 'include_modified_math' : 1,
-          \})
+          \}
 
 *g:vimtex_indent_ignored_envs*
   List of environments that should not add/reduce indentation.
