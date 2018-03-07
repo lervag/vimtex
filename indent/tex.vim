@@ -155,16 +155,17 @@ function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
         \             - s:count(a:line, s:re_open), 0]))
 endfunction
 
-let s:re_open = join([
-      \ g:vimtex#delim#re.delim_mod_math.open,
-      \ '{',
-      \ '\\\@<!\\\[',
-      \], '\|')
-let s:re_close = join([
-      \ g:vimtex#delim#re.delim_mod_math.close,
-      \ '}',
-      \ '\\\]',
-      \], '\|')
+let s:re_opt = extend({
+      \ 'open' : ['{', '\\\@<!\\\['],
+      \ 'close' : ['}', '\\\]'],
+      \ 'include_modified_math' : 1,
+      \}, get(g:, 'vimtex_indent_delims', {}))
+let s:re_open = join(s:re_opt.open, '\|')
+let s:re_close = join(s:re_opt.close, '\|')
+if s:re_opt.include_modified_math
+  let s:re_open .= '\|' . g:vimtex#delim#re.delim_mod_math.open
+  let s:re_close .= '\|' . g:vimtex#delim#re.delim_mod_math.close
+endif
 
 " }}}1
 function! s:indent_tikz(lnum, prev) abort " {{{1

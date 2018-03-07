@@ -1231,6 +1231,37 @@ Options~
 
   Default value: 1
 
+*g:vimtex_indent_delims*
+  A dictionary that defines the list of opening and closing delimiters (in
+  regex form) that should add/reduce indents.
+
+  The dictionary has three keys:
+
+    open~
+      List of regexes that defines opening delimiters that should add indents.
+
+    close~
+      List of regexes that defines closing delimiters that should reduce
+      indents.
+
+    include_modified_math~
+      Boolean (1 for True, 0 for False) that sets whether to indent on opening
+      and closing modified math delimiters such as `\left(` and `\right)`. If
+      this value is not set, it is assumed to be 1.
+
+  Note: Vimtex does not allow indents for parantheses only in math mode or any
+        similar kind of context aware delimiter indents.
+
+  Note: If one of the keys of the dictionary is not specified, the default
+        value is assumed.
+
+  Default value: >
+    let g:vimtex_indent_delims = {
+          \ 'open' : ['{', '\\\@<!\\\['],
+          \ 'close' : ['}', '\\\]'],
+          \ 'include_modified_math' : 1,
+          \})
+
 *g:vimtex_indent_ignored_envs*
   List of environments that should not add/reduce indentation.
 
@@ -2615,6 +2646,7 @@ for bibliography files (`.bib` files).
 Associated settings:
   |g:vimtex_indent_enabled|
   |g:vimtex_indent_bib_enabled|
+  |g:vimtex_indent_delims|
   |g:vimtex_indent_ignored_envs|
   |g:vimtex_indent_lists|
   |g:vimtex_indent_on_ampersands|
