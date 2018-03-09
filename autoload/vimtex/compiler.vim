@@ -90,9 +90,11 @@ endfunction
 function! vimtex#compiler#compile() abort " {{{1
   if get(b:vimtex.compiler, 'continuous')
     if b:vimtex.compiler.is_running()
-      call b:vimtex.compiler.stop()
+      call vimtex#compiler#stop()
     else
       call b:vimtex.compiler.start()
+      silent! let b:vimtex.compiler.check_timer =
+              \ timer_start(50, function('s:check_if_running'), {'repeat': 20})
     endif
   else
     call b:vimtex.compiler.start_single()
@@ -215,6 +217,7 @@ endfunction
 " }}}1
 function! vimtex#compiler#stop() " {{{1
   call b:vimtex.compiler.stop()
+  silent! call timer_stop(b:vimtex.compiler.check_timer)
 endfunction
 
 " }}}1
@@ -271,6 +274,18 @@ function! vimtex#compiler#status(detailed) " {{{1
     else
       call vimtex#log#warning('Compiler is not running!')
     endif
+  endif
+endfunction
+
+" }}}1
+
+
+function! s:check_if_running(...) abort " {{{1
+  if !b:vimtex.compiler.is_running()
+    call timer_stop(b:vimtex.compiler.check_timer)
+    unlet b:vimtex.compiler.check_timer
+    call vimtex#compiler#output()
+    call vimtex#log#error('Compiler did not start successfully!')
   endif
 endfunction
 
