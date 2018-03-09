@@ -3,11 +3,67 @@ function! health#vimtex#check() abort
 
   call health#report_start('vimtex')
 
+  call s:check_general()
+  call s:check_plugin_clash()
   call s:check_view()
+  call s:check_compiler()
 endfunction
 
+function! s:check_general() abort " {{{1
+  if !has('nvim') || v:version < 800
+    call health#report_warn('vimtex works best with Vim 8 or neovim')
+  else
+    call health#report_ok('Vim version should have full support!')
+  endif
+
+  if !executable('bibtex')
+    call health#report_warn('bibtex is not executable, so bibtex completions are disabled.')
+  endif
+
+  if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
+    call health#report_warn(
+          \ 'kpsewhich is not executable, and is required for recursive bib search')
+  endif
+endfunction
+
+" }}}1
+
+function! s:check_compiler() abort " {{{1
+  let l:ok = 1
+
+  if has('nvim') && g:vimtex_compiler_progname !=# 'nvr'
+    call health#report_warn('For compiler callbacks to work one needs to use')
+    call health#report_warn("g:vimtex_compiler_progname = 'nvr'")
+    let l:ok = 0
+  endif
+
+  if l:ok
+    call health#report_ok('Compiler should work!')
+  endif
+endfunction
+
+" }}}1
+
+function! s:check_plugin_clash() " {{{1
+  let l:scriptnames = split(execute('scriptnames'), "\n")
+
+  let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
+  if l:latexbox
+    call health#report_warn('Conflicting plugin detected: LaTeX-Box')
+    call health#report_info('vimtex does not work as expected when LaTeX-Box is installed!')
+    call health#report_info('Please disable or remove it to use vimtex!')
+
+    let l:polyglot = !empty(filter(copy(l:scriptnames), "v:val =~# 'polyglot'"))
+    if l:polyglot
+      call health#report_info('LaTeX-Box is included with vim-polyglot and may be disabled with:')
+      call health#report_info('let g:polyglot_disabled = [''latex'']')
+    endif
+  endif
+endfunction
+
+" }}}1
+
 function! s:check_view() abort " {{{1
-  call health#report_info('Viewer set to: ' . g:vimtex_view_method)
   call s:check_view_{g:vimtex_view_method}()
 
   if executable('xdotool') && !executable('pstree')
