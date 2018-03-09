@@ -14,6 +14,8 @@ endif
 " - This will enable spell checking e.g. in toplevel of included files
 syntax spell toplevel
 
+scriptencoding utf-8
+
 " {{{1 Improve handling of newcommand and newenvironment commands
 
 " Allow arguments in newenvironments
