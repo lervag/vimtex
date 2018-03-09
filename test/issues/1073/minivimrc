@@ -22,5 +22,8 @@ silent edit minimal.tex
 silent VimtexCompile
 
 sleep 250m
-VimtexStatus
+try
+  VimtexStatus
+catch /E492/
+endtry
 quitall!
