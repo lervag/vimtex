@@ -44,6 +44,7 @@ function! s:index.create() abort dict " {{{1
   endif
 
   let self.prev_winnr = bufwinnr(l:bufnr)
+  let self.prev_bufnr = l:bufnr
   let b:index = self
   let b:vimtex = l:vimtex
 
@@ -210,7 +211,11 @@ function! s:index.close() abort dict " {{{1
     silent exe 'set columns -=' . g:vimtex_index_split_width
   endif
 
-  silent execute 'bwipeout' . bufnr(self.name)
+  if g:vimtex_index_split_pos ==# 'full'
+    silent execute 'buffer' self.prev_bufnr
+  else
+    silent execute 'bwipeout' bufnr(self.name)
+  endif
 endfunction
 
 " }}}1
