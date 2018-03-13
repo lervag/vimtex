@@ -204,12 +204,12 @@ function! vimtex#delim#change(open, close, new) " {{{1
   if a:new ==# ''
     let [l:beg, l:end] = ['', '']
   else
-    let l:side = a:new =~# g:vimtex#delim#re.delim_math.close
-    let l:index = index(map(copy(g:vimtex#delim#lists.delim_math.name),
+    let l:side = a:new =~# g:vimtex#delim#re.delim_all.close
+    let l:index = index(map(copy(g:vimtex#delim#lists.delim_all.name),
           \   'v:val[' . l:side . ']'),
           \ a:new)
     if l:index >= 0
-      let [l:beg, l:end] = g:vimtex#delim#lists.delim_math.name[l:index]
+      let [l:beg, l:end] = g:vimtex#delim#lists.delim_all.name[l:index]
     else
       let [l:beg, l:end] = [a:new, a:new]
     endif
@@ -248,7 +248,7 @@ endfunction
 
 " }}}1
 function! vimtex#delim#change_prompt() " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
+  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_all')
   if empty(l:open) | return | endif
 
   let l:name = get(l:open, 'name', l:open.is_open
@@ -267,7 +267,7 @@ endfunction
 
 " }}}1
 function! vimtex#delim#change_input_complete(lead, cmdline, pos) " {{{1
-  let l:all = deepcopy(g:vimtex#delim#lists.delim_math.name)
+  let l:all = deepcopy(g:vimtex#delim#lists.delim_all.name)
   let l:open = map(copy(l:all), 'v:val[0]')
   let l:close = map(copy(l:all), 'v:val[1]')
 
