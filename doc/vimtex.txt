@@ -1232,6 +1232,17 @@ Options~
 
   Default value: 1
 
+*g:vimtex_indent_conditionals*
+  This is a dictionary that defines regexes for indenting conditionals. Set it
+  to an empty dictionary to disable this type of indentation.
+
+  Default value: >
+    let g:vimtex_indent_conditionals = {
+          \ 'open': '\v\\if%(num|false)?>',
+          \ 'else': '\\else\>',
+          \ 'close': '\\fi\>',
+          \}
+
 *g:vimtex_indent_delims*
   A dictionary that defines the list of opening and closing delimiters (in
   regex form) that should add/reduce indents.

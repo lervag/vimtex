@@ -61,6 +61,7 @@ function! VimtexIndent(lnum) abort " {{{1
   let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
+  let l:ind += s:indent_conditionals(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
@@ -166,6 +167,25 @@ if s:re_opt.include_modified_math
   let s:re_open .= '\|' . g:vimtex#delim#re.delim_mod_math.open
   let s:re_close .= '\|' . g:vimtex#delim#re.delim_mod_math.close
 endif
+
+" }}}1
+function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
+  if empty(g:vimtex_indent_conditionals) | return 0 | endif
+
+  if a:line =~# g:vimtex_indent_conditionals.close
+    silent! unlet s:conditional_opened
+    return -s:sw
+  elseif get(s:, 'conditional_opened')
+        \ && a:line =~# g:vimtex_indent_conditionals.else
+    return -s:sw
+  elseif get(s:, 'conditional_opened')
+        \ && a:prev_line =~# g:vimtex_indent_conditionals.else
+    return s:sw
+  elseif a:prev_line =~# g:vimtex_indent_conditionals.open
+    let s:conditional_opened = 1
+    return s:sw
+  endif
+endfunction
 
 " }}}1
 function! s:indent_tikz(lnum, prev) abort " {{{1
