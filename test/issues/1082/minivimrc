@@ -1,0 +1,25 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_index_split_pos = 'full'
+
+if has('vim_starting')
+  silent edit minimal.tex
+endif
+
+augroup Testing
+  autocmd!
+  autocmd VimEnter * call Test()
+augroup END
+
+function! Test() abort
+  vertical help vimtex
+  wincmd p
+  normal \lt
+  normal 
+endfunction
