@@ -149,7 +149,9 @@ function! s:index.activate(close) abort dict "{{{1
   let index_winnr = winnr()
 
   " Return to calling window
-  silent execute self.prev_winnr . 'wincmd w'
+  if self.prev_winnr >= 0
+    silent execute self.prev_winnr . 'wincmd w'
+  endif
 
   " Get buffer number, add buffer if necessary
   let bnr = bufnr(entry.file)
