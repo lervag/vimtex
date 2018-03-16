@@ -57,6 +57,9 @@ function! s:qf.init(state) abort dict "{{{1
   setlocal errorformat+=%E**\ Error\ in\ %f:\ %m
   setlocal errorformat+=%W**\ Warning\ in\ %f:\ %m
 
+  " Some errors are difficult even for pplatex
+  setlocal errorformat+=%E**\ Error\ \ :\ 
+
   " Anything that starts with three spaces is part of the message from a
   " previously started multiline error item.
   setlocal errorformat+=%C\ \ \ %m\ on\ input\ line\ %l.
