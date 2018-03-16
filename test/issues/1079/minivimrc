@@ -13,3 +13,5 @@ endif
 let g:vimtex_quickfix_method = 'pplatex'
 
 silent edit minimal.tex
+
+VimtexError
