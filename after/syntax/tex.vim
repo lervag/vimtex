@@ -4,6 +4,10 @@
 " Email:      karl.yngve@gmail.com
 "
 
+if !get(g:, 'vimtex_syntax_enabled', 1)
+  finish
+endif
+
 if !exists('b:current_syntax')
   let b:current_syntax = 'tex'
 elseif b:current_syntax !=# 'tex'
