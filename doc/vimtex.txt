@@ -1233,15 +1233,14 @@ Options~
   Default value: 1
 
 *g:vimtex_indent_conditionals*
-  This is a dictionary that defines regexes for indenting conditionals. To
-  disable this type of indentation, set the `disabled` key to 1.
+  This is a dictionary that defines regexes for indenting conditionals. Set it
+  to an empty dictionary to disable this type of indentation.
 
   Default value: >
     let g:vimtex_indent_conditionals = {
           \ 'open': '\v%(\\newif)@<!\\if%(field|name|numequal|thenelse)@!',
           \ 'else': '\\else\>',
           \ 'close': '\\fi\>',
-          \ 'disabled': 0,
           \}
 
 *g:vimtex_indent_delims*

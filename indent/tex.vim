@@ -170,16 +170,25 @@ endif
 
 " }}}1
 function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
-  if get(g:vimtex_indent_conditionals, 'disabled') | return 0 | endif
-
-  " Create script local regex dict based on user options
   if !exists('s:re_cond')
+    let l:cfg = {}
+
+    if exists('g:vimtex_indent_conditionals')
+      let l:cfg = g:vimtex_indent_conditionals
+      if empty(l:cfg)
+        let s:re_cond = {}
+        return 0
+      endif
+    endif
+
     let s:re_cond = extend({
           \ 'open': '\v(\\newif)@<!\\if(field|name|numequal|thenelse)@!',
           \ 'else': '\\else\>',
           \ 'close': '\\fi\>',
-          \}, g:vimtex_indent_conditionals)
+          \}, l:cfg)
   endif
+
+  if empty(s:re_cond) | return 0 | endif
 
   " Match for conditional indents
   if a:line =~# s:re_cond.close

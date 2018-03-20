@@ -170,9 +170,6 @@ function! vimtex#init_options() " {{{1
         \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
         \])
 
-  " Note: Default values are given in 'indent/tex.vim'
-  call s:init_option('vimtex_indent_conditionals', {})
-
   call s:init_option('vimtex_index_hide_line_numbers', 1)
   call s:init_option('vimtex_index_resize', 0)
   call s:init_option('vimtex_index_show_help', 1)
