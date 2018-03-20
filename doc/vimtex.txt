@@ -2707,6 +2707,10 @@ selectively enable or disable highlighting for specific groups.  If
 |g:tex_fast| is set, additional syntax highlighting for bold, italic, and
 reference groups are enabled only if they are explicitly allowed.
 
+Associated settings:
+  |g:vimtex_syntax_enabled|
+  |g:vimtex_syntax_minted|
+
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
                                                                  *vimtex-index*
