@@ -19,7 +19,7 @@ set cpoptions&vim
 setlocal autoindent
 setlocal indentexpr=VimtexIndentExpr()
 setlocal indentkeys&
-setlocal indentkeys+=[,(,{,),},],\&,=item
+setlocal indentkeys+=[,(,{,),},],\&,=item,=else,=fi
 
 function! VimtexIndentExpr() abort " {{{1
   return VimtexIndent(v:lnum)
