@@ -1515,6 +1515,11 @@ Options~
 
   Default value: 1
 
+*g:vimtex_syntax_enabled*
+  Use this option to disable/enable |vimtex| improved syntax highlighting.
+
+  Default value: 1.
+
 *g:vimtex_syntax_minted*
   A list that contains dictionaries for each supported language.  A language
   dictionary should be something similar to the following: >
