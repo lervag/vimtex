@@ -70,7 +70,8 @@ function! vimtex#qf#open(force) abort " {{{1
   " warnings (forced typically imply that the functions is called from the
   " normal mode mapping).  Else the behaviour is based on the settings.
   "
-  let l:errors_or_warnings = s:qf_has_errors() || g:vimtex_quickfix_open_on_warning
+  let l:errors_or_warnings = s:qf_has_errors()
+        \ || g:vimtex_quickfix_open_on_warning
 
   if a:force || (g:vimtex_quickfix_mode > 0 && l:errors_or_warnings)
     call s:window_save()
