@@ -1497,7 +1497,7 @@ Options~
   and/or warnings are found.  The recognized options are:
 
   Value  Effect ~
-  0      The quickfix window is never opened automatically.
+  0      The quickfix window is never opened/closed automatically.
   1      The quickfix window is opened automatically when there are errors,
          and it becomes the active window.
   2      The quickfix window is opened automatically when there are errors,

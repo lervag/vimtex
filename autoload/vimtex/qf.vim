@@ -48,11 +48,15 @@ function! vimtex#qf#open(force) abort " {{{1
     if a:force
       call vimtex#log#warning('No log file found')
     endif
-    cclose
+    if g:vimtex_quickfix_mode > 0
+      cclose
+    endif
     return
   catch
     call vimtex#log#error('Something went wrong when parsing log files!')
-    cclose
+    if g:vimtex_quickfix_mode > 0
+      cclose
+    endif
     return
   endtry
 
@@ -60,7 +64,9 @@ function! vimtex#qf#open(force) abort " {{{1
     if a:force
       call vimtex#log#info('No errors!')
     endif
-    cclose
+    if g:vimtex_quickfix_mode > 0
+      cclose
+    endif
     return
   endif
 
