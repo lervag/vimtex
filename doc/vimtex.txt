@@ -3130,18 +3130,10 @@ Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired 
 A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
    |vimtex| does not provide `yse` and `ysc`.  If you use |surround.vim|, then
    the asked for mappings may be easily added if one adds the following lines
-   to ones `vimrc` file: >
+   to `ftplugin/tex.vim` in your |runtimepath| file: >
 
-  augroup latexSurround
-     autocmd!
-     autocmd FileType tex call s:latexSurround()
-  augroup END
-
-  function! s:latexSurround()
-     let b:surround_{char2nr("e")}
-       \ = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
-     let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
-  endfunction
+   let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
+   let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
 <
                                                            *vimtex-faq-isfname*
 Q: Vim throws error when jumping to file with |gf|.
