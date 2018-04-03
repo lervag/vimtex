@@ -316,7 +316,7 @@ function! s:get_cmd_part(part, start_pos) " {{{1
   if empty(l:open)
         \ || l:open.match !=# a:part
         \ || strlen(substitute(
-        \             s:text_between(a:start_pos, l:open), ' ', '', 'g')) != 0
+        \        s:text_between(a:start_pos, l:open), '\_s', '', 'g')) != 0
     return {}
   endif
 
