@@ -90,9 +90,14 @@ endfunction
 " }}}1
 function! s:packages_from_usepackage(cmd) " {{{1
   try
+    " Gather and clean up candidate list
+    let l:candidates = substitute(a:cmd.args[0].text, '%.\{-}\n', '', 'g')
+    let l:candidates = substitute(l:candidates, '\s*', '', 'g')
+    let l:candidates = split(l:candidates, ',')
+
     let l:context = {
           \ 'type': 'usepackage',
-          \ 'candidates': split(a:cmd.args[0].text, ',\s*'),
+          \ 'candidates': l:candidates,
           \}
 
     let l:cword = expand('<cword>')

@@ -344,7 +344,7 @@ function! s:text_between(p1, p2, ...) " {{{1
     let lines[-1] = strpart(lines[-1], 0,
           \ l1 == l2 ? c2 - c1 : c2)
   endif
-  return join(lines, '')
+  return join(lines, "\n")
 endfunction
 
 " }}}1
