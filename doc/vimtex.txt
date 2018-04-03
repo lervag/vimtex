@@ -3128,9 +3128,9 @@ FAQ                                                                *vimtex-faq*
 Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
    |surround.vim|.  Does |vimtex| also provide the corresponding `yse` and `ysc`?
 A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
-   |vimtex| does not provide `yse` and `ysc`.  If you use |surround.vim|, then
-   the asked for mappings may be easily added if one adds the following lines
-   to `ftplugin/tex.vim` in your |runtimepath| file: >
+   |vimtex| does not provide `ys<text-object>e` and `ys<text-object>c`.  If you use
+   |surround.vim|, then the asked for mappings may be easily added if one adds
+   the following lines to `ftplugin/tex.vim` in your |runtimepath| file: >
 
    let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
    let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
