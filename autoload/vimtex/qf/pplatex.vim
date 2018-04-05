@@ -25,8 +25,7 @@ function! s:qf.init(state) abort dict "{{{1
   " Automatically remove the -file-line-error option if we use the latexmk
   " backend (for convenience)
   if a:state.compiler.name ==# 'latexmk'
-    let l:index = index(a:state.compiler.options,
-          \ '-file-line-error')
+    let l:index = index(a:state.compiler.options, '-file-line-error')
     if l:index >= 0
       call remove(a:state.compiler.options, l:index)
     endif
