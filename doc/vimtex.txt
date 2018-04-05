@@ -1412,16 +1412,19 @@ Options~
     |g:vimtex_quickfix_latexlog| for configuration.
 
   pplatex~
-    Uses `pplatex` [0] to parse the LaTeX output file. `pplatex` is a command line
-    utility used to pretify the output of the LaTeX compiler.
+    Uses `pplatex` (https://github.com/stefanhepp/pplatex) to parse the LaTeX
+    output file. `pplatex` is a command line utility used to pretify the
+    output of the LaTeX compiler.
 
-    [0]: https://github.com/stefanhepp/pplatex
+  pulp~
+    Uses `pulp` (https://github.com/dmwit/pulp) to parse the LaTeX output
+    file, similar to `pplatex`.
 
-    Note: `pplatex` requires that `-file-line-error` is NOT passed to the LaTeX
-    compiler. |g:vimtex_compiler_latexmk| will be updated automatically if one
-    uses `latexmk` through vimtex. However, if one uses other compiler
-    methods, either through vimtex (see |g:vimtex_compiler_method|) or
-    externally, this requirement must be ensured by the user.
+  Note: `pplatex` and `pulp` require that `-file-line-error` is NOT passed to the LaTeX
+  compiler. |g:vimtex_compiler_latexmk| will be updated automatically if one
+  uses `latexmk` through vimtex. However, if one uses other compiler
+  methods, either through vimtex (see |g:vimtex_compiler_method|) or
+  externally, this requirement must be ensured by the user.
 
   Default value: 'latexlog'
 
