@@ -205,16 +205,16 @@ provided by vimtex, but that are instead provided by other plugins.
     |vimtex| provides mappings that change, delete and toggle commands,
     delimiters and environments (see the `ds`, `cs` and `ts` family of
     mappings listed under |vimtex-default-mappings|).  These mappings are
-    inspired by the great `vim-surround` [0] (|surround.txt|) by Tim Pope,
+    inspired by the great `surround.vim` [0] (|surround.txt|) by Tim Pope,
     which provides mappings to manipulate surrounding delimiters such as `''`,
     `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
-    should work well together with, and as an extension of, `vim-surround`.
+    should work well together with, and as an extension of, `surround.vim`.
     Consider also the customization described under |vimtex-faq-surround|.
     The mappings may be repeated with the dot mapping |.| if one has
     `vim-repeat` [1].
 
     A different possibility is to use `vim-sandwich` [2] (|sandwich.txt|) by
-    Machakann, which may be considered a generalisation of `vim-surround` in
+    Machakann, which may be considered a generalisation of `surround.vim` in
     that it can handle much more complex sets of delimiters.  `vim-sandwich`
     is relatively easy to expand with custom surroundings and has built in
     support for LaTeX-specific surroundings such as quotations, ```text''`,
@@ -223,10 +223,10 @@ provided by vimtex, but that are instead provided by other plugins.
     `vim-repeat` in addition to `visualrepeat.vim` [3].
 
     Note: The default mappings of `vim-sandwich` differ from those of
-    `vim-surround`, in that the use `s` as the prefix.  E.g., to add
+    `surround.vim`, in that the use `s` as the prefix.  E.g., to add
     surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
     instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
-    the map variants from `vim-surround`, these are also available as an
+    the map variants from `surround.vim`, these are also available as an
     option, see |sandwich-miscellaneous|.  And it is also easy to define
     custom mappings, if one prefers that.
 
@@ -3140,6 +3140,10 @@ A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
       \ = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
   let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
 <
+   Note: An alternative is to use `vim-sandwich` (see |sandwich.txt| or
+         https://github.com/machakann/vim-sandwich), which has built-in
+         support for LaTeX-specific surroundings.
+
                                                          *vimtex-faq-isfname*
 Q: Vim throws error when jumping to file with |gf|.
 A: This might be due to the |isfname| setting, which by default contains `{,}`
