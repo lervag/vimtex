@@ -13,6 +13,26 @@ endfunction
 " }}}1
 
 function! vimtex#matchparen#enable() " {{{1
+  call s:matchparen.enable()
+endfunction
+
+" }}}1
+function! vimtex#matchparen#disable() " {{{1
+  call s:matchparen.disable()
+endfunction
+
+" }}}1
+function! vimtex#matchparen#popup_check(...) " {{{1
+  if pumvisible()
+    call s:matchparen.highlight()
+  endif
+endfunction
+
+" }}}1
+
+let s:matchparen = {}
+
+function! s:matchparen.enable() abort dict " {{{1
   " vint: -ProhibitAutocmdWithNoGroup
 
   execute 'augroup vimtex_matchparen' . bufnr('%')
@@ -21,21 +41,22 @@ function! vimtex#matchparen#enable() " {{{1
     autocmd CursorMovedI <buffer> call s:matchparen.highlight()
   augroup END
 
-  call s:matchparen.highlight()
+  silent! let self.timer =
+        \ timer_start(50, 'vimtex#matchparen#popup_check', {'repeat' : -1})
+
+  call self.highlight()
 
   " vint: +ProhibitAutocmdWithNoGroup
 endfunction
 
 " }}}1
-function! vimtex#matchparen#disable() " {{{1
-  call s:matchparen.clear()
+function! s:matchparen.disable() abort dict " {{{1
+  call self.clear()
   execute 'autocmd! vimtex_matchparen' . bufnr('%')
+  silent! call timer_stop(self.timer)
 endfunction
 
 " }}}1
-
-let s:matchparen = {}
-
 function! s:matchparen.clear() abort dict " {{{1
   silent! call matchdelete(w:vimtex_match_id1)
   silent! call matchdelete(w:vimtex_match_id2)
