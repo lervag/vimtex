@@ -107,6 +107,9 @@ function! s:toc.update(force) abort dict " {{{1
   "
   if self.todo_sorted
     let l:todos = filter(copy(self.entries), 'get(v:val, ''todo'')')
+    for l:t in l:todos[1:]
+      let l:t.level = self.max_level - 1
+    endfor
     call filter(self.entries, '!get(v:val, ''todo'')')
     let self.entries = l:todos + self.entries
   endif
@@ -442,7 +445,13 @@ endfunction
 
 " }}}1
 function! s:foldtext() abort " {{{1
-  return getline(v:foldstart)
+  let l:line = getline(v:foldstart)
+
+  if b:index.todo_sorted && l:line =~# 'TODO:'
+    return substitute(l:line, 'TODO\zs:.*', 's', '')
+  else
+    return l:line
+  endif
 endfunction
 
 " }}}1
