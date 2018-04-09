@@ -1,15 +1,63 @@
-\documentclass{article}
+\documentclass{book}
 \usepackage{biblatex}
+
+\begin{filecontents}{\jobname.bib}
+@Book{Saussure:1995,
+    Author    = {Ferdinand de Saussure},
+    Origyear  = {1916},
+    Publisher = {Payot},
+    Title     = {Cours de Linguistique G{\'e}n{\'e}rale},
+    Year      = {1995},
+}
+@Article{Thomson:1856,
+  Author      = {Thomson, W.},
+  Title       = {{Elements of a Mathematical Theory of Elasticity}},
+  Journal     = {Philosophical Transactions of the Royal Society of London},
+  Pages       = {481--498},
+  Volume      = {146},
+  Year        = {1856},
+}
+\end{filecontents}
+
+\addbibresource{\jobname.bib}
 
 \begin{document}
 
-\chapter{Introduction}
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+\tableofcontents
 
-\printbibheading[heading=bibintoc]
-\printbibliography[heading=subbibliography,type=article,title={Articles}]
-\printbibliography[heading=subbibliography,type=book,title={Monographs \& Textbooks}]
+\chapter {Introduction}
+\cite{Saussure:1995}, \cite{Thomson:1856}, \ldots
+
+\printbibliography[heading=bibintoc]
+\printbibliography[heading=subbibintoc]
+
+\printbibliography[heading=bibnumbered]
+\printbibliography[heading=subbibnumbered]
+
+\printbibliography[heading=bibintoc,title={My Bibliography}]
+\printbibliography[heading=subbibintoc,title={My Subbibliography}]
+
+\printbibliography[heading=bibnumbered,title={My Numbered Bibliography}]
+\printbibliography[heading=subbibnumbered,title={My Numbered Subbibliography}]
+
+% The following are not listed in the actual LaTeX ToC, and as such they
+% should probably not appear in the Vimtex ToC
+
+\printbibliography
+\printbibliography[heading=bibliography]
+\printbibliography[heading=subbibliography]
+\printbibliography[heading=none]
+\printbibliography[title={My Bibliography}]
+\printbibliography[heading=bibliography,title={My Bibliography}]
+\printbibliography[heading=subbibliography,title={My Subbibliography}]
+\printbibliography[heading=none,title={This will be ignored by biblatex}]
+\printbibheading
+\printbibheading[heading=bibliography]
+\printbibheading[heading=subbibliography]
+\printbibheading[heading=none]
+\printbibheading[title={My Bibliography}]
+\printbibheading[heading=bibliography,title={My Bibliography}]
+\printbibheading[heading=subbibliography,title={My Subbibliography}]
+\printbibheading[heading=none,title={This will be ignored by biblatex}]
 \end{document}
+
