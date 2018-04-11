@@ -243,6 +243,9 @@ function! g:vimtex#toc#matchers#todos.get_entry(context) abort dict " {{{1
         \ }
 endfunction
 
+" }}}1
+
+
 let g:vimtex#toc#matchers#todonotes = {
       \ 're' : '\\todo\(\[.*\]\)\?{\zs.*\ze}',
       \ 'in_preamble' : 0,
