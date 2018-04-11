@@ -42,6 +42,10 @@ possibilities provided by vimtex (see
 [here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
 vimtex`).
 
+Note: Vimtex supports neovim; see the [related wiki
+section](https://github.com/lervag/vimtex/wiki/introduction#neovim) or `:h
+vimtex-faq-neovim`.
+
 ![Quick start gif](media/quick_start.gif?raw=true)
 
 ## Features
