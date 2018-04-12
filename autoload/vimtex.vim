@@ -170,6 +170,7 @@ function! vimtex#init_options() " {{{1
         \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
         \])
 
+  call s:init_option('vimtex_index_mode', 1)
   call s:init_option('vimtex_index_hide_line_numbers', 1)
   call s:init_option('vimtex_index_resize', 0)
   call s:init_option('vimtex_index_show_help', 1)

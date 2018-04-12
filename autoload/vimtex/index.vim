@@ -24,7 +24,22 @@ function! s:index.open() abort dict " {{{1
     call self.update(0)
   endif
 
-  call self.create()
+  if g:vimtex_index_mode > 1
+    call setloclist(0, map(deepcopy(self.entries), '{
+          \ ''lnum'': v:val.line,
+          \ ''filename'': v:val.file,
+          \ ''text'': v:val.title,
+          \}'))
+    try
+      call setloclist(0, [], 'r', {'title': self.name})
+    catch
+    endtry
+    if g:vimtex_index_mode == 4 | lopen | endif
+  endif
+
+  if g:vimtex_index_mode < 3
+    call self.create()
+  endif
 endfunction
 
 " }}}1

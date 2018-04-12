@@ -1296,6 +1296,20 @@ Options~
 
   Default value: 1
 
+*g:vimtex_index_mode*
+  Set mode of the index feature. The index may either open a window for
+  selecting between candidates, or it may fill (and open) the location list,
+  or a combination.
+
+  The possible modes are:
+
+    1: Use index window.
+    2: Use index window, but also fill location list.
+    3: Fill location list.
+    4: Fill and open location.
+
+  Default value: 1
+
 *g:vimtex_index_hide_line_numbers*
   If enabled, then line numbers will be hidden in the index windows.  That is,
   |nonumber| and |norelativenumber| will be set locally.
@@ -2718,17 +2732,21 @@ Associated settings:
 NAVIGATION                                                  *vimtex-navigation*
                                                                  *vimtex-index*
 
-The |vimtex-index| is an interface that is used to display lists and indexes
-in vertically or horizontally split windows.  It supports custom keybindings
-inside the index window, including actions on the list elements.  The position
-of the window is controlled by |g:vimtex_index_split_pos|.  By default, the
-top of the buffer will display help text to explain the local keybindings.
-This may be turned off with |g:vimtex_index_show_help|.
+The |vimtex-index| is an interface for listing various LaTeX related lists,
+such as the table of contents |vimtex-toc| and table of labels
+|vimtex-labels|.
 
-The |vimtex-index| interface is used by the table of contents |vimtex-toc| and
-the table of labels |vimtex-labels|.
+The index may be in the form of a split window (default) or through
+a |location-list|, see |g:vimtex_index_mode|.
+
+The index window supports custom keybindings, including actions on the list
+elements.  The position of the window is controlled by
+|g:vimtex_index_split_pos|.  By default, the top of the buffer will display
+help text to explain the local keybindings. This may be turned off with
+|g:vimtex_index_show_help|.
 
 Associated settings:
+  |g:vimtex_index_mode|
   |g:vimtex_index_hide_line_numbers|
   |g:vimtex_index_resize|
   |g:vimtex_index_show_help|
@@ -2741,7 +2759,10 @@ Table of contents~
 
 |vimtex-toc| shows a table of contents (ToC) for the current LaTeX document.
 The ToC entries may be activated/jumped to with <cr> or <space>.  The local
-keybindings are described if |g:vimtex_index_show_help| is enabled.
+keybindings are described if |g:vimtex_index_show_help| is enabled. Note that
+some of the features described here are related to the specific index window,
+which may not be relevant if one uses the location lists, see
+|g:vimtex_index_mode|.
 
 One may force file input entries into the ToC through designated comments with
 the following syntax: >
@@ -2775,9 +2796,10 @@ Associated settings:
 Table of labels~
                                                                 *vimtex-labels*
 
-|vimtex-labels| shows a table of labels similar to the ToC.  The table entries
-may be filtered with the `f` keybinding.  Filters may be removed with the `c`
-keybinding.
+|vimtex-labels| shows a table of labels similar to the ToC.
+
+If the labels are displayed in an index window, the entries may be filtered
+with the `f` keybinding.  Filters may be removed with the `c` keybinding.
 
 Associated settings:
   |g:vimtex_labels_enabled|
