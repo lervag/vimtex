@@ -1,0 +1,26 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_automatic = 0
+let g:vimtex_view_method='mupdf'
+let g:vimtex_compiler_latexmk = {
+    \ 'options' : [
+    \   '-pdf',
+    \   '-pdflatex="xelatex --shell-escape %O %S"',
+    \   '-verbose',
+    \   '-file-line-error',
+    \   '-synctex=1',
+    \   '-interaction=nonstopmode',
+    \ ]
+    \}
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
