@@ -29,8 +29,15 @@ endfunction
 
 " }}}1
 
-function! vimtex#parser#toc(file) " {{{1
-  return vimtex#parser#toc#parse(a:file)
+function! vimtex#parser#toc(file, ...) " {{{1
+  let l:opts = a:0 > 0 ? a:1 : {}
+  let l:entries = vimtex#parser#toc#parse(a:file)
+
+  if has_key(l:opts, 'types')
+    call filter(l:entries, 'index(l:opts.types, v:val.type) >= 0')
+  endif
+
+  return l:entries
 endfunction
 
 " }}}1

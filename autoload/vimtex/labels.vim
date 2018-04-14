@@ -52,47 +52,14 @@ function! s:labels.update(force) abort dict " {{{1
     return self.entries
   endif
 
-  call self.parse()
+  let self.entries = vimtex#parser#toc(b:vimtex.tex, {'types': ['label']})
+  let self.all_entries = deepcopy(self.entries)
 
   if a:force && self.is_open()
     call self.refresh()
   endif
 
   return self.entries
-endfunction
-
-" }}}1
-function! s:labels.parse(...) abort dict " {{{1
-  if a:0 > 0
-    let l:file = a:1
-  elseif exists('b:vimtex')
-    let l:file = b:vimtex.tex
-  else
-    return []
-  endif
-
-  let self.entries = []
-  let l:preamble = 1
-  for [l:file, l:lnum, l:line] in vimtex#parser#tex(l:file)
-    if l:line =~# '\v^\s*\\begin\{document\}'
-      let l:preamble = 0
-      continue
-    endif
-
-    if l:preamble
-      continue
-    endif
-
-    if l:line =~# '\v\\label\{'
-      call add(self.entries, {
-            \ 'title' : matchstr(l:line, '\v\\label\{\zs.{-}\ze\}'),
-            \ 'file'  : l:file,
-            \ 'line'  : l:lnum,
-            \ })
-    endif
-  endfor
-
-  let self.all_entries = deepcopy(self.entries)
 endfunction
 
 " }}}1
@@ -116,7 +83,7 @@ endfunction
 " }}}1
 function! s:labels.filter() dict "{{{1
   let filter = input('filter by: ')
-  let self.entries = filter(self.entries, 'v:val.title =~# filter') 
+  let self.entries = filter(self.entries, 'v:val.title =~# filter')
   call self.refresh()
 endfunction
 

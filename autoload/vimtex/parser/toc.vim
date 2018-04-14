@@ -379,6 +379,27 @@ function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
 endfunction
 " }}}1
 
+let s:matcher_labels = {
+      \ 're' : '\v\\label\{\zs.{-}\ze\}',
+      \ 'in_preamble' : 0,
+      \}
+function! s:matcher_labels.get_entry(context) abort dict " {{{1
+  return {
+        \ 'title'  : matchstr(a:context.line, self.re),
+        \ 'number' : deepcopy(a:context.level),
+        \ 'file'   : a:context.file,
+        \ 'line'   : a:context.lnum,
+        \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'label',
+        \ }
+  return {
+        \ 'title'  : printf('TODO: %s', matchstr(a:context.line, self.re)),
+        \ }
+endfunction
+" }}}1
+
+
 let s:matchers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^matcher_'''),
       \ 'v:val[1]')
