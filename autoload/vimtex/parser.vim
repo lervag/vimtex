@@ -29,6 +29,12 @@ endfunction
 
 " }}}1
 
+function! vimtex#parser#toc(file) " {{{1
+  return vimtex#parser#toc#parse(a:file)
+endfunction
+
+" }}}1
+
 function! vimtex#parser#get_externalfiles() " {{{1
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
         \ 're_stop' : '\\begin{document}',

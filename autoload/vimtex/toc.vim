@@ -55,21 +55,6 @@ let s:toc = {
 function! s:toc.new() abort dict " {{{1
   let l:toc = deepcopy(self)
 
-  let l:toc.matchers = [
-        \ g:vimtex#toc#matchers#preamble,
-        \ g:vimtex#toc#matchers#vimtex_include,
-        \ g:vimtex#toc#matchers#bibinputs,
-        \ g:vimtex#toc#matchers#parts,
-        \ g:vimtex#toc#matchers#sections,
-        \ g:vimtex#toc#matchers#table_of_contents,
-        \ g:vimtex#toc#matchers#index,
-        \ g:vimtex#toc#matchers#titlepage,
-        \ g:vimtex#toc#matchers#bibliography,
-        \ g:vimtex#toc#matchers#todos,
-        \ g:vimtex#toc#matchers#todonotes,
-        \]
-  let l:toc.matchers += g:vimtex_toc_custom_matchers
-
   let l:toc.hotkeys = extend({
         \ 'enabled' : '0',
         \ 'leader' : ';',
@@ -86,31 +71,18 @@ function! s:toc.update(force) abort dict " {{{1
     return self.entries
   endif
 
-  let l:content = vimtex#parser#tex(b:vimtex.tex)
-
-  let self.entries = []
-  let self.max_level = 0
-  let self.topmatters = 0
-
-  "
-  " First iteration: Prepare total values
-  "
-  call self.parse_prepare(l:content)
-
-  "
-  " Main iteration: Generate entries
-  "
-  call self.parse(l:content)
+  let self.entries = vimtex#parser#toc(b:vimtex.tex)
+  let self.topmatters = vimtex#parser#toc#get_topmatters()
 
   "
   " Sort todo entries
   "
   if self.todo_sorted
-    let l:todos = filter(copy(self.entries), 'get(v:val, ''todo'')')
+    let l:todos = filter(copy(self.entries), 'v:val.type ==# ''todo''')
     for l:t in l:todos[1:]
-      let l:t.level = self.max_level - 1
+      let l:t.level = 1
     endfor
-    call filter(self.entries, '!get(v:val, ''todo'')')
+    call filter(self.entries, 'v:val.type !=# ''todo''')
     let self.entries = l:todos + self.entries
   endif
 
@@ -137,109 +109,6 @@ function! s:toc.update(force) abort dict " {{{1
   endif
 
   return self.entries
-endfunction
-
-" }}}1
-
-function! s:toc.parse_prepare(content) " {{{1
-  for [l:file, l:lnum, l:line] in a:content
-    if l:line =~# g:vimtex#toc#matchers#sections.re
-      let self.max_level = max([
-            \ self.max_level,
-            \ s:sec_to_value[matchstr(l:line, g:vimtex#toc#matchers#sections.re_level)]
-            \])
-    elseif l:line =~# '\v^\s*\\%(front|main|back)matter>'
-      let self.topmatters += 1
-    endif
-  endfor
-endfunction
-
-" }}}1
-function! s:toc.parse(content) abort dict " {{{1
-  "
-  " Parses tex project for TOC entries.  Each entry is a dictionary similar to
-  " the following:
-  "
-  "   entry = {
-  "     title  : "Some title",
-  "     number : "3.1.2",
-  "     file   : /path/to/file.tex,
-  "     line   : 142,
-  "     level  : 2,
-  "   }
-  "
-
-  call s:level.reset('preamble', self.max_level)
-
-  " Prepare included file matcher
-  let l:included = g:vimtex#toc#matchers#included.init(a:content[0][0])
-
-  " Parse project content for TOC entries
-  let l:lnum_total = 0
-  for [l:file, l:lnum, l:line] in a:content
-    let l:lnum_total += 1
-    let l:context = {
-          \ 'file' : l:file,
-          \ 'line' : l:line,
-          \ 'lnum' : l:lnum,
-          \ 'lnum_total' : l:lnum_total,
-          \ 'level' : s:level,
-          \ 'max_level' : self.max_level,
-          \ 'entry' : get(self.entries, -1, {}),
-          \ 'num_entries' : len(self.entries),
-          \}
-
-    " Detect end of preamble
-    if s:level.preamble && l:line =~# '\v^\s*\\begin\{document\}'
-      let s:level.preamble = 0
-      continue
-    endif
-
-    " Handle multi-line entries
-    if exists('s:matcher_continue')
-      call s:matcher_continue.continue(l:context)
-      continue
-    endif
-
-    " Add TOC entry for each included file
-    "
-    " Note: This is handled differently from other matchers. Every new file
-    "       will get an entry, and all such entries that are provided by other
-    "       means will be filtered out at the end.
-    if l:file !=# l:included.prev
-      let l:entry = l:included.get_entry(l:context)
-      if !empty(l:entry)
-        call add(self.entries, l:entry)
-      endif
-    endif
-
-    " Apply the registered TOC matchers
-    for l:matcher in self.matchers
-      if (s:level.preamble && !get(l:matcher, 'in_preamble'))
-            \ || (!s:level.preamble && !get(l:matcher, 'in_content', 1))
-            \ || l:line !~# l:matcher.re
-        continue
-      endif
-
-      if has_key(l:matcher, 'action')
-        call l:matcher.action(l:context)
-      else
-        let l:entry = call(
-              \ get(l:matcher, 'get_entry', function('vimtex#toc#matchers#general')),
-              \ [l:context],
-              \ l:matcher)
-
-        if !empty(l:entry)
-          call add(self.entries, l:entry)
-        endif
-      endif
-
-      break
-    endfor
-  endfor
-
-  " Remove superfluous TOC entries (cf. the "included files" section above)
-  call filter(self.entries, 'get(v:val, ''entries'', 1) == 1')
 endfunction
 
 " }}}1
@@ -312,11 +181,9 @@ endfunction
 
 " }}}1
 function! s:toc.print_entry(entry) abort dict " {{{1
-  let level = self.max_level - a:entry.level
-
   let output = ''
   if self.show_numbers
-    let number = level >= self.tocdepth + 2 ? ''
+    let number = a:entry.level >= self.tocdepth + 2 ? ''
           \ : strpart(self.print_number(a:entry.number),
           \           0, self.number_width - 1)
     let output .= printf(self.number_format, number)
@@ -326,7 +193,7 @@ function! s:toc.print_entry(entry) abort dict " {{{1
     let output .= printf('[%S] ', a:entry.hotkey)
   endif
 
-  let output .= printf('%-140S%s', a:entry.title, level)
+  let output .= printf('%-140S%s', a:entry.title, a:entry.level)
 
   call append('$', output)
 endfunction
@@ -484,72 +351,6 @@ function! s:int_to_roman(number) " {{{1
 endfunction
 
 " }}}1
-
-
-" Define simple type for TOC level
-let s:level = {}
-function! s:level.reset(part, level) abort dict " {{{1
-  let self.current = 0
-  let self.preamble = 0
-  let self.frontmatter = 0
-  let self.mainmatter = 0
-  let self.appendix = 0
-  let self.backmatter = 0
-  let self.part = 0
-  let self.chapter = 0
-  let self.section = 0
-  let self.subsection = 0
-  let self.subsubsection = 0
-  let self.subsubsubsection = 0
-  let self.current = a:level
-  let self[a:part] = 1
-endfunction
-
-" }}}1
-function! s:level.increment(level) abort dict " {{{1
-  let self.current = s:sec_to_value[a:level]
-
-  let self.part_toggle = 0
-
-  if a:level ==# 'part'
-    let self.part += 1
-    let self.part_toggle = 1
-  elseif a:level ==# 'chapter'
-    let self.chapter += 1
-    let self.section = 0
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'section'
-    let self.section += 1
-    let self.subsection = 0
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsection'
-    let self.subsection += 1
-    let self.subsubsection = 0
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsubsection'
-    let self.subsubsection += 1
-    let self.subsubsubsection = 0
-  elseif a:level ==# 'subsubsubsection'
-    let self.subsubsubsection += 1
-  endif
-endfunction
-
-" }}}1
-
-" Map for section hierarchy
-let s:sec_to_value = {
-      \ '_' : 0,
-      \ 'subsubsubsection' : 1,
-      \ 'subsubsection' : 2,
-      \ 'subsection' : 3,
-      \ 'section' : 4,
-      \ 'chapter' : 5,
-      \ 'part' : 6,
-      \ }
-
 function! s:base(n, k) " {{{1
   if a:n < a:k
     return [a:n]
