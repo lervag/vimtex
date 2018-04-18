@@ -8,7 +8,7 @@ let g:vimtex#re#not_bslash =  '\v%(\\@<!%(\\\\)*)@<='
 let g:vimtex#re#not_comment = '\v%(' . g:vimtex#re#not_bslash . '\%.*)@<!'
 
 let g:vimtex#re#tex_input_latex = '\v\\%(input|include|subfile)\s*\{'
-let g:vimtex#re#tex_input_import = 
+let g:vimtex#re#tex_input_import =
       \ '\v\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{'
 let g:vimtex#re#tex_input = '\v%(' . join([
       \   g:vimtex#re#tex_input_latex,
@@ -16,7 +16,7 @@ let g:vimtex#re#tex_input = '\v%(' . join([
       \ ], '|') . ')'
 
 " {{{1 Completion regexes
-let g:vimtex#re#neocomplete = 
+let g:vimtex#re#neocomplete =
       \ '\v\\%('
       \ .  '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|%(text|block)cquote\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
@@ -24,7 +24,7 @@ let g:vimtex#re#neocomplete =
       \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-      \ . '|%(include%(only)?|input)\s*\{[^}]*'
+      \ . '|%(include%(only)?|input|subfile)\s*\{[^}]*'
       \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -42,7 +42,7 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-      \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
+      \ . '|(?:include(?:only)?|input|subfile)\s*\{[^}]*'
       \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -61,7 +61,7 @@ let g:vimtex#re#ncm = [
       \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
       \ '\\hyperref\[[^]]*',
       \ '\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
-      \ '\\(include(only)?|input){[^}]*',
+      \ '\\(include(only)?|input|subfile){[^}]*',
       \ '\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
       \ '\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',

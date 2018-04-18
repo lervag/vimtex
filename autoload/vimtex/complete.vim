@@ -526,7 +526,7 @@ function! s:completer_img.gather_candidates() dict " {{{2
 endfunction
 
 " }}}1
-" {{{1 Filenames (\input and \include)
+" {{{1 Filenames (\input, \include, and \subfile)
 
 let s:completer_inc = {
       \ 'patterns' : [
