@@ -172,7 +172,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
         "   for neovim, see e.g. Github Issue #877
         for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
           let l:callback = has('win32')
-                \   ? '"vimtex#compiler#callback(' . l:val . ')"'
+                \   ? 'vimtex#compiler#callback\(' . l:val . '\)'
                 \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
           let l:func = vimtex#util#shellescape('""')
                 \ . g:vimtex_compiler_progname
