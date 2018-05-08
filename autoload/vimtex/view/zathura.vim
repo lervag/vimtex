@@ -11,6 +11,11 @@ function! vimtex#view#zathura#new() " {{{1
     return {}
   endif
 
+  if empty(system('ldd =zathura|grep libsynctex'))
+    call vimtex#log#warning('Zathura is not linked to libsynctex!')
+    let s:zathura.has_synctex = 0
+  endif
+
   " Check if the xdotool is available
   if !executable('xdotool')
     call vimtex#log#warning('Zathura requires xdotool for forward search!')
@@ -27,19 +32,22 @@ endfunction
 
 let s:zathura = {
       \ 'name' : 'Zathura',
+      \ 'has_synctex' : 1,
       \}
 
 function! s:zathura.start(outfile) dict " {{{1
   let l:cmd  = 'zathura'
-  let l:cmd .= ' -x "' . g:vimtex_compiler_progname
-        \ . ' --servername ' . v:servername
-        \ . ' --remote-expr '
-        \ .     '\"vimtex#view#reverse_goto(%{line}, ''%{input}'')\""'
-  if g:vimtex_view_forward_search_on_start
-    let l:cmd .= ' --synctex-forward '
-          \ .  line('.')
-          \ .  ':' . col('.')
-          \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+  if self.has_synctex
+    let l:cmd .= ' -x "' . g:vimtex_compiler_progname
+          \ . ' --servername ' . v:servername
+          \ . ' --remote-expr '
+          \ .     '\"vimtex#view#reverse_goto(%{line}, ''%{input}'')\""'
+    if g:vimtex_view_forward_search_on_start
+      let l:cmd .= ' --synctex-forward '
+            \ .  line('.')
+            \ .  ':' . col('.')
+            \ .  ':' . vimtex#util#shellescape(expand('%:p'))
+    endif
   endif
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
@@ -51,6 +59,7 @@ endfunction
 
 " }}}1
 function! s:zathura.forward_search(outfile) dict " {{{1
+  if !self.has_synctex | return | endif
   if !filereadable(self.synctex()) | return | endif
 
   let l:cmd  = 'zathura --synctex-forward '
@@ -105,12 +114,15 @@ function! s:zathura.latexmk_append_argument() dict " {{{1
   if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
-    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
-          \ 'zathura ' . g:vimtex_view_zathura_options
-          \ . ' -x \"' . g:vimtex_compiler_progname
+    let zathura = 'zathura ' . g:vimtex_view_zathura_options
+    if self.has_synctex
+      let zathura .= ' -x \"' . g:vimtex_compiler_progname
           \ . ' --servername ' . v:servername
-          \ . ' --remote +\%{line} \%{input}\" \%S')
+          \ . ' --remote +\%{line} \%{input}\" \%S'
+    endif
+
+    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer', zathura)
   endif
 
   return cmd
