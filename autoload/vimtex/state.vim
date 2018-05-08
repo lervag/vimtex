@@ -586,6 +586,10 @@ function! s:vimtex.pprint_items() abort dict " {{{1
     call add(l:items, ['source files', self.sources])
   endif
 
+  call add(l:items, ['compiler', get(self, 'compiler', {})])
+  call add(l:items, ['viewer', get(self, 'viewer', {})])
+  call add(l:items, ['qf', get(self, 'qf', {})])
+
   if exists('self.documentclass')
     call add(l:items, ['document class', self.documentclass])
   endif
@@ -593,10 +597,6 @@ function! s:vimtex.pprint_items() abort dict " {{{1
   if !empty(self.packages)
     call add(l:items, ['packages', sort(keys(self.packages))])
   endif
-
-  call add(l:items, ['compiler', get(self, 'compiler', {})])
-  call add(l:items, ['viewer', get(self, 'viewer', {})])
-  call add(l:items, ['qf', get(self, 'qf', {})])
 
   return [['vimtex project', l:items]]
 endfunction
