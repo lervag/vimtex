@@ -11,9 +11,13 @@ function! vimtex#view#zathura#new() " {{{1
     return {}
   endif
 
-  if empty(system('ldd =zathura|grep libsynctex'))
-    call vimtex#log#warning('Zathura is not linked to libsynctex!')
-    let s:zathura.has_synctex = 0
+  if executable('ldd')
+    let l:shared = split(system('ldd =zathura'))
+    if v:shell_error == 0
+          \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
+      call vimtex#log#warning('Zathura is not linked to libsynctex!')
+      let s:zathura.has_synctex = 0
+    endif
   endif
 
   " Check if the xdotool is available
