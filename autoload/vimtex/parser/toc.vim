@@ -124,8 +124,7 @@ endfunction
 
 " }}}1
 
-
-function! s:get_entry_general(context) abort dict " {{{1
+function! vimtex#parser#toc#get_entry_general(context) abort dict " {{{1
   return {
         \ 'title'  : self.title,
         \ 'number' : '',
@@ -138,6 +137,7 @@ function! s:get_entry_general(context) abort dict " {{{1
 endfunction
 
 " }}}1
+
 
 " Adds entry for each included file that does not contain other entries
 let s:included = {}
@@ -320,19 +320,19 @@ endfunction
 let s:matcher_table_of_contents = {
       \ 'title' : 'Table of contents',
       \ 're' : '\v^\s*\\tableofcontents',
-      \ 'get_entry' : function('s:get_entry_general'),
+      \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_index = {
       \ 'title' : 'Alphabetical index',
       \ 're' : '\v^\s*\\printindex\[?',
-      \ 'get_entry' : function('s:get_entry_general'),
+      \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_titlepage = {
       \ 'title' : 'Titlepage',
       \ 're' : '\v^\s*\\begin\{titlepage\}',
-      \ 'get_entry' : function('s:get_entry_general'),
+      \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_bibliography = {
@@ -341,7 +341,7 @@ let s:matcher_bibliography = {
       \        .  'printbib%(liography|heading)\s*(\{|\[)?'
       \        . '|begin\s*\{\s*thebibliography\s*\}'
       \        . '|bibliography\s*\{)',
-      \ 'get_entry' : function('s:get_entry_general'),
+      \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_todos = {
