@@ -32,10 +32,13 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     endif
   endfor
 
+  call s:level.reset('preamble', l:max_level)
+
+  " No more parsing if there is no content
+  if empty(l:content) | return l:entries | endif
+
   " Prepare included file matcher
   let l:included = s:included.init(l:content[0][0])
-
-  call s:level.reset('preamble', l:max_level)
 
   "
   " Begin parsing LaTeX files
