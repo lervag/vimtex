@@ -1330,9 +1330,10 @@ Options~
 
 *g:vimtex_index_split_pos*
   Define where index windows should be opened. This is a string that contains
-  either the word 'full' to open in the current window, or any of the position
-  commands, i.e. one or more of |:vertical|, |:leftabove|, |:rightbelow|, |:topleft|,
-  and |:botright|.
+  either the word 'full' to open in the current window, or a position command.
+  Use |:vert| if a vertical split is desired, and one of |:leftabove|,
+  |:rightbelow|, |:topleft|, and |:botright| to specify the desired split
+  position.
 
   Default value: 'vert leftabove'
 

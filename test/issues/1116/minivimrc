@@ -6,7 +6,8 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let g:vimtex_index_split_pos = 'topleft vsplit'
+" let g:vimtex_index_split_pos = 'topleft vsplit'
+let g:vimtex_index_split_pos = 'vert topleft'
 let g:vimtex_index_split_width = 20
 
 silent edit minimal.tex
