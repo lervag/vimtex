@@ -2725,6 +2725,10 @@ selectively enable or disable highlighting for specific groups.  If
 |g:tex_fast| is set, additional syntax highlighting for bold, italic, and
 reference groups are enabled only if they are explicitly allowed.
 
+Note: For people that are interested in improved conceal support, please check
+      out Keita Nakamura's plugin tex-conceal.vim:
+      https://github.com/KeitaNakamura/tex-conceal.vim
+
 Associated settings:
   |g:vimtex_syntax_enabled|
   |g:vimtex_syntax_minted|
