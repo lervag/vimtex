@@ -281,6 +281,8 @@ endfunction
 
 
 function! s:check_if_running(...) abort " {{{1
+  if !exists('b:vimtex') | return | endif
+
   if !b:vimtex.compiler.is_running()
     call timer_stop(b:vimtex.compiler.check_timer)
     unlet b:vimtex.compiler.check_timer
