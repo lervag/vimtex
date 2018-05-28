@@ -486,6 +486,11 @@ function! s:compiler_nvim.exec() abort dict " {{{1
     let l:shell.on_exit = function('s:callback_nvim_exit')
   endif
 
+  " Initialize output file
+  try
+    call writefile([], self.output)
+  endtry
+
   let self.job = jobstart(l:cmd, l:shell)
 endfunction
 
