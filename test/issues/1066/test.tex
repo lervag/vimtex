@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{pythontex}
+
+\begin{document}
+
+\begin{pycode}
+  print(r'\begin{center}')
+    print(r'\textit{A message from Python!}')
+  print(r'\end{center}')
+\end{pycode}
+
+\pyb{print('Python says hi!')}
+
+\begin{pyblock}
+  mytext = '$1 + 1 = {0}$'.format(1 + 1)
+\end{pyblock}
+
+\py{1+1}
+\py#1+1#
+\py@1+1@
+
+% Commands
+% \py[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+% \pyc[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+% \pys[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+% \pyv[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+% \pyb[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+% \pycon[⟨session⟩]⟨opening delim⟩⟨code⟩⟨closing delim⟩
+
+% Environments
+% pycode [⟨session⟩][⟨fancyvrb settings⟩]
+% pysub [⟨session⟩][⟨fancyvrb settings⟩]
+% pyverbatim [⟨session⟩][⟨fancyvrb settings⟩]
+% pyblock [⟨session⟩][⟨fancyvrb settings⟩]
+% pyconsole [⟨session⟩][⟨fancyvrb settings⟩]
+
+\end{document}
