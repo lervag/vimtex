@@ -359,24 +359,26 @@ let b:current_syntax = 'tex'
 " }}}1
 " {{{1 Nested syntax highlighting for asymptote
 
+syntax cluster texDocGroup add=texZoneAsymptote
+
 let s:asypath = globpath(&runtimepath, 'syntax/asy.vim')
 if !empty(s:asypath)
   unlet b:current_syntax
   syntax include @ASYMPTOTE syntax/asy.vim
-  syntax cluster texDocGroup add=texZoneAsymptote
   syntax region texZoneAsymptote
-        \ start='\\begin{asy}'rs=s
-        \ end='\\end{asy}'re=e
+        \ start='\\begin{asy\z(def\)\?}'rs=s
+        \ end='\\end{asy\z1}'re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,texBeginEndModifier,@ASYMPTOTE
-  syntax region texZoneAsymptote
-        \ start='\\begin{asydef}'rs=s
-        \ end='\\end{asydef}'re=e
-        \ keepend
-        \ transparent
-        \ contains=texBeginEnd,texBeginEndModifier,@ASYMPTOTE
+        \ contains=texBeginEnd,@ASYMPTOTE
   let b:current_syntax = 'tex'
+else
+  syntax region texZoneAsymptote
+        \ start='\\begin{asy\z(def\)\?}'rs=s
+        \ end='\\end{asy\z1}'re=e
+        \ keepend
+        \ contains=texBeginEnd
+  highlight def link texZoneAsymptote texZone
 endif
 
 " }}}1
