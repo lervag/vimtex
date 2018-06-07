@@ -481,12 +481,12 @@ function! s:vimtex.parse_engine() abort dict " {{{1
   let l:engine_regex =
         \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'
   let l:engine_list = {
-        \ 'pdflatex'         : '',
+        \ 'pdflatex'         : '-pdf',
         \ 'lualatex'         : '-lualatex',
         \ 'xelatex'          : '-xelatex',
-        \ 'context (pdftex)' : '-pdflatex=texexec',
-        \ 'context (luatex)' : '-pdflatex=context',
-        \ 'context (xetex)'  : '-pdflatex=''texexec --xtx''',
+        \ 'context (pdftex)' : '-pdf -pdflatex=texexec',
+        \ 'context (luatex)' : '-pdf -pdflatex=context',
+        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
         \}
 
   let l:engines = copy(self.preamble[:20])

@@ -680,7 +680,6 @@ Options~
         \ 'continuous' : 1,
         \ 'executable' : 'latexmk',
         \ 'options' : [
-        \   '-pdf',
         \   '-verbose',
         \   '-file-line-error',
         \   '-synctex=1',
@@ -753,6 +752,10 @@ Options~
           though, that options specified on the command line has priority, and
           so if one wants to override one of the above default options, then
           one has to set this key to a list that contains the desired options.
+
+    Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
+          engine. This may be changed on a per project basis with TeX
+          directives, see |vimtex-tex-program|.
 
 *g:vimtex_compiler_latexrun*
   This is a dictionary that allows customization of the |vimtex-latexrun|
