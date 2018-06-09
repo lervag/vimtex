@@ -323,22 +323,36 @@ of its key features.  There are a couple of relevant FAQs for those who use
     but where the compilation behaviour is typically defined in the preamble
     of the document.
 
-  |clientserver|
+  *vimtex-clientserver*
     |vimtex| requires the |clientserver| for the callback functionality to
     work.  The callbacks are used to provide feedback when compilation is
     finished, as well as to parse the log for errors and warnings and to open
     the |quickfix| window when necessary.
 
-    If you use Vim under a terminal in Linux or OSX, then Vim must be
-    started as a command server with the command line option `--servername`,
-    e.g. `vim --servername VIM`.  The simplest way to ensure this is to add an
-    alias to your `.bashrc` (or similar), that is, add: >
+    A server will be started automatically if Vim is running on Windows, or
+    if running in a GUI.  If you use Vim under a terminal in Linux or OSX,
+    a server will not be started by default.  Since Vim version 8.0.475,
+    |remote_startserver()| can be used to start a server from your `vimrc`
+    file.  The following will ensure Vim starts with a server, if it is
+    possible from vimscript: >
+
+      if empty(v:servername) && exists('*remote_startserver')
+        call remote_startserver('VIM')
+      endif
+<
+    Alternatively, Vim can be started with the command line option
+    `--servername`, e.g. `vim --servername VIM` .  The simplest way to ensure
+    this is to add an alias to your `.bashrc` (or similar), that is, add: >
 
       alias vim='vim --servername VIM'
 <
-    This should work in most cases.  For other methods of ensuring that Vim is
-    started with a servername, see:
+    For other methods of ensuring that Vim is started with a servername, see:
     http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
+
+    For setting up callback functionality in Neovim, see |vimtex-faq-neovim|.
+
+    To test whether a server was successfully started, |serverlist()| can be
+    used. E.g. `:echo serverlist()`
 
 ------------------------------------------------------------------------------
 Support for multi-file projects~
