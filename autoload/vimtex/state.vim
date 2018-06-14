@@ -493,7 +493,8 @@ function! s:vimtex.parse_engine() abort dict " {{{1
   call map(l:engines, 'matchstr(v:val, l:engine_regex)')
   call filter(l:engines, '!empty(v:val)')
 
-  let self.engine = get(l:engine_list, tolower(get(l:engines, -1, 'pdflatex')),
+  let self.engine = get(l:engine_list,
+        \ tolower(get(l:engines, -1, g:vimtex_compiler_engine)),
         \ get(get(b:, 'vimtex', {}), 'engine', ''))
 endfunction
 

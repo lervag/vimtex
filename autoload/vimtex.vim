@@ -25,6 +25,7 @@ endfunction
 " }}}1
 function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_compiler_enabled', 1)
+  call s:init_option('vimtex_compiler_engine', 'pdflatex')
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
         \ get(v:, 'progpath', get(v:, 'progname')))

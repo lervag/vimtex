@@ -483,7 +483,7 @@ Here `program` may be one of the following: >
   context (luatex)
   context (xetex)
 
-See also [0,1].
+See also [0,1]. The default may be changed with |g:vimtex_compiler_engine|.
 
 [0]: https://tex.stackexchange.com/q/78101/34697
 [1]: https://github.com/lervag/vimtex/issues/713
@@ -679,6 +679,13 @@ Options~
 
   Default value: 'latexmk'
 
+*g:vimtex_compiler_engine*
+  Set the default compiler engine. This is used by |vimtex-latexmk| and
+  |vimtex-latexrun| to set the default LaTeX program. See also
+  |vimtex-tex-program|.
+
+  Default value: 'pdflatex'
+
 *g:vimtex_compiler_latexmk*
   This is a dictionary that allows customization of the |vimtex-latexmk|
   compiler. The values set by the user will take precedence over the default
@@ -769,7 +776,8 @@ Options~
 
     Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
           engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program|.
+          directives, see |vimtex-tex-program|, or globally with
+          |g:vimtex_compiler_engine|.
 
 *g:vimtex_compiler_latexrun*
   This is a dictionary that allows customization of the |vimtex-latexrun|
@@ -803,6 +811,11 @@ Options~
   options~
     This is a list of options that are passed to `latexrun`. The default
     options should work well for most people.
+
+    Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
+          engine. This may be changed on a per project basis with TeX
+          directives, see |vimtex-tex-program|, or globally with
+          |g:vimtex_compiler_engine|.
 
 *g:vimtex_compiler_arara*
   This is a dictionary that allows customization of the |vimtex-arara|
