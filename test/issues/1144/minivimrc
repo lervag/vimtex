@@ -1,0 +1,28 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+cd WD
+
+silent edit minimal.tex
+echo substitute(expand('%:p'), '.*1144\/', '', '')
+      \ . ' -> ' . b:vimtex.name
+
+silent! normal! 4ggf{lgf
+echo substitute(expand('%:p'), '.*1144\/', '', '')
+      \ . ' -> ' . b:vimtex.name
+
+silent! normal! jgf
+echo substitute(expand('%:p'), '.*1144\/', '', '')
+      \ . ' -> ' . b:vimtex.name
+
+silent! normal! jgf
+echo substitute(expand('%:p'), '.*1144\/', '', '')
+      \ . ' -> ' . b:vimtex.name
+
+echo ''
+quit
