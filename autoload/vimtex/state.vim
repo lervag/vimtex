@@ -287,6 +287,15 @@ function! s:get_main_from_subfile() " {{{1
           let s:subfile_preserve_root = 1
           return fnamemodify(candidate, ':p')
         endif
+
+        " Check the alternate buffer. This seems sensible e.g. in cases where one
+        " enters an "outer" subfile through a 'gf' motion from the main file.
+        let l:vimtex = getbufvar('#', 'vimtex', {})
+        for l:file in get(l:vimtex, 'sources', [])
+          if expand('%:p') ==# simplify(l:vimtex.root . '/' . l:file)
+            return l:vimtex.tex
+          endif
+        endfor
       endif
     endif
   endfor
