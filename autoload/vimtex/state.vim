@@ -293,6 +293,7 @@ function! s:get_main_from_subfile() " {{{1
         let l:vimtex = getbufvar('#', 'vimtex', {})
         for l:file in get(l:vimtex, 'sources', [])
           if expand('%:p') ==# simplify(l:vimtex.root . '/' . l:file)
+            let s:subfile_preserve_root = 1
             return l:vimtex.tex
           endif
         endfor
@@ -424,7 +425,7 @@ function! s:vimtex.new(main, preserve_root) abort dict " {{{1
 
   if a:preserve_root && exists('b:vimtex')
     let l:new.root = b:vimtex.root
-    let l:new.base = strpart(a:main, len(b:vimtex.root) + 1)
+    let l:new.base = vimtex#paths#relative(a:main, l:new.root)
   endif
 
   if exists('s:disabled_modules')

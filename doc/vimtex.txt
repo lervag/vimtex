@@ -392,12 +392,25 @@ TeX root directive~
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
 Subfiles package~
-  |vimtex| also supports the `import` and the `subfiles` packages that can be used to
-  make it easier to work with multi-file projects. If one uses the `subfiles`
-  package, the |VimtexToggleMain| command is particularly useful.
+  |vimtex| also supports the `import` [0] and the `subfiles` [1] packages that
+  can be used to make it easier to work with multi-file projects. If one uses
+  the `subfiles` package, the |VimtexToggleMain| command is particularly
+  useful.
 
-    - https://www.ctan.org/pkg/import
-    - https://www.ctan.org/pkg/subfiles
+  With `subfiles`, included files will look like this: >
+
+    \documentclass[main.tex]{subfiles}
+    \begin{document}
+    ...
+    \end{document}
+<
+  Absolute paths for to the main file (e.g. `main.tex`) will work as expected,
+  but when using a relative path, one should note that vimtex assumes we start
+  compilation from the directory of the main file. Thus one should not write
+  e.g. `../main.tex`.
+
+  [0]: https://www.ctan.org/pkg/import
+  [1]: https://www.ctan.org/pkg/subfiles
 
 File .latexmain specifier~
   In some cases, it might be preferable to specify the main file by creating
