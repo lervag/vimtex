@@ -141,9 +141,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
     let l:cmd .= ' ' . l:opt
   endfor
 
-  if !empty(self.engine)
-    let l:cmd .= ' ' . self.engine
-  endif
+  let l:cmd .= ' ' . self.get_engine()
 
   if !empty(self.build_dir)
     let l:cmd .= ' -outdir=' . self.build_dir
@@ -188,6 +186,20 @@ function! s:compiler.build_cmd() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.get_engine() abort dict " {{{1
+  return get(extend(g:vimtex_compiler_latexmk_engines,
+        \ {
+        \  '_'                : '-pdf',
+        \  'pdflatex'         : '-pdf',
+        \  'lualatex'         : '-lualatex',
+        \  'xelatex'          : '-xelatex',
+        \  'context (pdftex)' : '-pdf -pdflatex=texexec',
+        \  'context (luatex)' : '-pdf -pdflatex=context',
+        \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
+        \ }, 'keep'), self.tex_program, '_')
+endfunction
+
+" }}}1
 function! s:compiler.cleanup() abort dict " {{{1
   if self.is_running()
     call self.kill()
@@ -209,6 +221,7 @@ function! s:compiler.pprint_items() abort dict " {{{1
     call add(l:configuration, ['build_dir', self.build_dir])
   endif
   call add(l:configuration, ['latexmk options', self.options])
+  call add(l:configuration, ['latexmk engine', self.get_engine()])
 
   let l:list = []
   call add(l:list, ['backend', self.backend])

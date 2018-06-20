@@ -56,13 +56,22 @@ function! s:compiler.build_cmd() abort dict " {{{1
     let l:cmd .= ' ' . l:opt
   endfor
 
-  if !empty(self.engine)
-    let l:cmd .= ' --latex-cmd ' . self.engine
-  endif
+  let l:cmd .= ' --latex-cmd ' . self.get_engine()
 
   let l:cmd .= ' -O ' . (empty(self.build_dir) ? '.' : self.build_dir)
 
   return l:cmd . ' ' . vimtex#util#shellescape(self.target)
+endfunction
+
+" }}}1
+function! s:compiler.get_engine() abort dict " {{{1
+  return get(extend(g:vimtex_compiler_latexrun_engines,
+        \ {
+        \  '_'                : 'pdflatex',
+        \  'pdflatex'         : 'pdflatex',
+        \  'lualatex'         : 'lualatex',
+        \  'xelatex'          : 'xelatex',
+        \ }, 'keep'), self.tex_program, '_')
 endfunction
 
 " }}}1
@@ -82,6 +91,7 @@ function! s:compiler.pprint_items() abort dict " {{{1
     call add(l:configuration, ['build_dir', self.build_dir])
   endif
   call add(l:configuration, ['latexrun options', self.options])
+  call add(l:configuration, ['latexrun engine', self.get_engine()])
 
   let l:list = []
   call add(l:list, ['backend', self.backend])

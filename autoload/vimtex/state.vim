@@ -443,7 +443,7 @@ function! s:vimtex.new(main, preserve_root) abort dict " {{{1
         \ 'root' : l:new.root,
         \})
 
-  call l:new.parse_engine()
+  call l:new.parse_tex_program()
   call l:new.parse_documentclass()
   call l:new.gather_sources()
 
@@ -487,25 +487,13 @@ function! s:vimtex.cleanup() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:vimtex.parse_engine() abort dict " {{{1
-  let l:engine_regex =
+function! s:vimtex.parse_tex_program() abort dict " {{{1
+  let l:lines = copy(self.preamble[:20])
+  let l:tex_program_re =
         \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'
-  let l:engine_list = {
-        \ 'pdflatex'         : '-pdf',
-        \ 'lualatex'         : '-lualatex',
-        \ 'xelatex'          : '-xelatex',
-        \ 'context (pdftex)' : '-pdf -pdflatex=texexec',
-        \ 'context (luatex)' : '-pdf -pdflatex=context',
-        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
-        \}
-
-  let l:engines = copy(self.preamble[:20])
-  call map(l:engines, 'matchstr(v:val, l:engine_regex)')
-  call filter(l:engines, '!empty(v:val)')
-
-  let self.engine = get(l:engine_list,
-        \ tolower(get(l:engines, -1, g:vimtex_compiler_engine)),
-        \ get(get(b:, 'vimtex', {}), 'engine', ''))
+  call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
+  call filter(l:lines, '!empty(v:val)')
+  let self.tex_program = tolower(get(l:lines, -1, '_'))
 endfunction
 
 " }}}1
@@ -589,8 +577,8 @@ function! s:vimtex.pprint_items() abort dict " {{{1
         \ ['fls', self.fls()],
         \]
 
-  if !empty(self.engine)
-    call add(l:items, ['engine', self.engine])
+  if self.tex_program !=# '_'
+    call add(l:items, ['tex program', self.tex_program])
   endif
 
   if len(self.sources) >= 2

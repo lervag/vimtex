@@ -25,11 +25,12 @@ endfunction
 " }}}1
 function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_compiler_enabled', 1)
-  call s:init_option('vimtex_compiler_engine', 'pdflatex')
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
         \ get(v:, 'progpath', get(v:, 'progname')))
   call s:init_option('vimtex_compiler_callback_hooks', [])
+  call s:init_option('vimtex_compiler_latexmk_engines', {})
+  call s:init_option('vimtex_compiler_latexrun_engines', {})
 
   call s:init_option('vimtex_complete_enabled', 1)
   call s:init_option('vimtex_complete_close_braces', 0)

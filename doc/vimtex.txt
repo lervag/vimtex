@@ -487,16 +487,8 @@ The syntax is best explained with an example: >
 
     %! TEX program = program
 
-Here `program` may be one of the following: >
-
-  pdflatex  [default]
-  lualatex
-  xelatex
-  context (pdftex)
-  context (luatex)
-  context (xetex)
-
-See also [0,1]. The default may be changed with |g:vimtex_compiler_engine|.
+Here `program` corresponds to a key in the |g:vimtex_compiler_latexmk_engines|
+or |g:vimtex_compiler_latexrun_engines| dictionaries. See also [0,1].
 
 [0]: https://tex.stackexchange.com/q/78101/34697
 [1]: https://github.com/lervag/vimtex/issues/713
@@ -692,13 +684,6 @@ Options~
 
   Default value: 'latexmk'
 
-*g:vimtex_compiler_engine*
-  Set the default compiler engine. This is used by |vimtex-latexmk| and
-  |vimtex-latexrun| to set the default LaTeX program. See also
-  |vimtex-tex-program|.
-
-  Default value: 'pdflatex'
-
 *g:vimtex_compiler_latexmk*
   This is a dictionary that allows customization of the |vimtex-latexmk|
   compiler. The values set by the user will take precedence over the default
@@ -781,16 +766,33 @@ Options~
     This is a list of options that are passed to `latexmk`. The default
     options should work well for most people.
 
+    Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
+          engine. This may be changed on a per project basis with TeX
+          directives, see |vimtex-tex-program| and |g:vimtex_compiler_engines|.
+          The latter option may also be used to change the default engine.
+
     Note: Options may also be specified indirectly to `latexmk` through both
           a global and a project specific `.latexmkrc` file. One should know,
           though, that options specified on the command line has priority, and
           so if one wants to override one of the above default options, then
           one has to set this key to a list that contains the desired options.
 
-    Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
-          engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program|, or globally with
-          |g:vimtex_compiler_engine|.
+*g:vimtex_compiler_latexmk_engines*
+  Defines a map between TeX program directive (|vimtex-tex-program|) and
+  compiler engine. This is used by |vimtex-latexmk| to define the LaTeX
+  program. The `_` key defines the default engine.
+
+  Default value: >
+
+    let g:vimtex_compiler_engines = {
+        \ '_'                : '-pdf'
+        \ 'pdflatex'         : '-pdf'
+        \ 'lualatex'         : '-lualatex'
+        \ 'xelatex'          : '-xelatex'
+        \ 'context (pdftex)' : '-pdf -pdflatex=texexec'
+        \ 'context (luatex)' : '-pdf -pdflatex=context'
+        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx'''
+        \}
 
 *g:vimtex_compiler_latexrun*
   This is a dictionary that allows customization of the |vimtex-latexrun|
@@ -827,8 +829,23 @@ Options~
 
     Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
           engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program|, or globally with
-          |g:vimtex_compiler_engine|.
+          directives, see |vimtex-tex-program| and |g:vimtex_compiler_engines|.
+          The latter option may also be used to change the default engine.
+
+*g:vimtex_compiler_latexrun_engines*
+  Defines a map between TeX program directive (|vimtex-tex-program|) and
+  compiler engine, i.e. as should be specified to the `--latex-cmd` argument
+  to `latexrun`. This is used by |vimtex-latexrun| to define the LaTeX
+  program. The `_` key defines the default engine.
+
+  Default value: >
+
+    let g:vimtex_compiler_engines = {
+        \ '_'                : 'pdflatex'
+        \ 'pdflatex'         : 'pdflatex'
+        \ 'lualatex'         : 'lualatex'
+        \ 'xelatex'          : 'xelatex'
+        \}
 
 *g:vimtex_compiler_arara*
   This is a dictionary that allows customization of the |vimtex-arara|

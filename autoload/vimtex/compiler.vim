@@ -40,7 +40,7 @@ function! vimtex#compiler#init_state(state) abort " {{{1
           \ 'root': a:state.root,
           \ 'target' : a:state.base,
           \ 'target_path' : a:state.tex,
-          \ 'engine' : a:state.engine,
+          \ 'tex_program' : a:state.tex_program,
           \}
     let a:state.compiler
           \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
@@ -117,7 +117,7 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
         \ 'target' : l:file.base,
         \ 'target_path' : l:file.tex,
         \ 'backend' : 'process',
-        \ 'engine' : b:vimtex.engine,
+        \ 'tex_program' : b:vimtex.tex_program,
         \ 'background' : 1,
         \ 'continuous' : 0,
         \ 'callback' : 0,
