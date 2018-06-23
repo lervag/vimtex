@@ -123,6 +123,7 @@ Feature overview~
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
+  - Move between environments with `[m`, `[M`, `]m`, `]M`
   - Move between matching delimiters with `%`
 - Text objects
   - `ic` `ac` Commands
@@ -622,6 +623,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ][               |<plug>(vimtex-][)|                             `nxo`
    []               |<plug>(vimtex-[])|                             `nxo`
    [[               |<plug>(vimtex-[[)|                             `nxo`
+   ]m               |<plug>(vimtex-]m)|                             `nxo`
+   ]M               |<plug>(vimtex-]M)|                             `nxo`
+   [m               |<plug>(vimtex-[m)|                             `nxo`
+   [M               |<plug>(vimtex-[M)|                             `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
   ---------------------------------------------------------------------~
 
@@ -2317,6 +2322,18 @@ object, see |text-objects|.
 
 *<plug>(vimtex-[[)*
   [count] section backward (|exlusive|). Goes to previous section command.
+
+*<plug>(vimtex-]m)*
+  [count] environment begin forward (|exlusive|). Goes to next `\begin` command.
+
+*<plug>(vimtex-]M)*
+  [count] environment end forward (|exlusive|). Goes to next `\end` command.
+
+*<plug>(vimtex-[m)*
+  [count] environment begin backward (|exlusive|). Goes to previous `\begin` command.
+
+*<plug>(vimtex-[M)*
+  [count] environment end backward (|exlusive|). Goes to previous `\end` command.
 
 ------------------------------------------------------------------------------
 Insert mode mappings~

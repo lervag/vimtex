@@ -111,3 +111,45 @@ Expect tex (LaTeX example 2 - result):
   vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
   no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
+Given tex (LaTeX example 3):
+  \documentclass[]{article}
+
+  \begin{document}                                % [m[m[m[m or 4[m
+
+  \begin{figure}                                  % [m[m[m or 3[m
+    \centering
+    \includegraphics[width=\linewidth]{file}
+    \caption{figure}
+    \label{fig:illustration}
+  \end{figure}                                    % [M
+
+  \begin{table}                                   % [m[m or 2[m
+    \centering
+    \begin{tabular}{c}                            % [m
+                                                  % CURSOR
+    \end{tabular}                                 % ]M
+    \caption{table}
+    \label{tab:listing}
+  \end{table}                                     % ]M]M or 2]M
+
+  \begin{figure}                                  % ]m
+    \centering
+    \includegraphics[width=\linewidth]{file}
+    \caption{figure}
+    \label{fig:illustration}
+  \end{figure}                                    % ]M]M]M or 3]M
+
+  \end{document}                                  % ]M]M]M]M or 4]M
+
+Execute (jumps: ]m, [m, ]M, [M):
+  normal 15G3[m
+  Assert line('.') == 5
+
+  normal 15G]m
+  Assert line('.') == 21
+
+  normal 15G[M
+  Assert line('.') == 10
+
+  normal 15G4]M
+  Assert line('.') == line('$')

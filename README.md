@@ -86,6 +86,7 @@ disabled if desired.
 - Word count (through `texcount`)
 - Motions
   - Move between sections with `[[`, `[]`, `][`, `]]`
+  - Move between environments with `[m`, `[M`, `]m`, `]M`
   - Move between matching delimiters with `%`
 - Text objects
   - `ic ac` Commands

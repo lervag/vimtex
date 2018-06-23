@@ -419,6 +419,11 @@ function! s:init_default_mappings() " {{{1
   endif
 
   if get(g:, 'vimtex_motion_enabled', 0)
+    " These are forced in order to overwrite matchit mappings
+    call s:map('n', '%', '<plug>(vimtex-%)', 1)
+    call s:map('x', '%', '<plug>(vimtex-%)', 1)
+    call s:map('o', '%', '<plug>(vimtex-%)', 1)
+
     call s:map('n', ']]', '<plug>(vimtex-]])')
     call s:map('n', '][', '<plug>(vimtex-][)')
     call s:map('n', '[]', '<plug>(vimtex-[])')
@@ -432,10 +437,18 @@ function! s:init_default_mappings() " {{{1
     call s:map('o', '[]', '<plug>(vimtex-[])')
     call s:map('o', '[[', '<plug>(vimtex-[[)')
 
-    " These are forced in order to overwrite matchit mappings
-    call s:map('n', '%', '<plug>(vimtex-%)', 1)
-    call s:map('x', '%', '<plug>(vimtex-%)', 1)
-    call s:map('o', '%', '<plug>(vimtex-%)', 1)
+    call s:map('n', ']M', '<plug>(vimtex-]M)')
+    call s:map('n', ']m', '<plug>(vimtex-]m)')
+    call s:map('n', '[M', '<plug>(vimtex-[M)')
+    call s:map('n', '[m', '<plug>(vimtex-[m)')
+    call s:map('x', ']M', '<plug>(vimtex-]M)')
+    call s:map('x', ']m', '<plug>(vimtex-]m)')
+    call s:map('x', '[M', '<plug>(vimtex-[M)')
+    call s:map('x', '[m', '<plug>(vimtex-[m)')
+    call s:map('o', ']M', '<plug>(vimtex-]M)')
+    call s:map('o', ']m', '<plug>(vimtex-]m)')
+    call s:map('o', '[M', '<plug>(vimtex-[M)')
+    call s:map('o', '[m', '<plug>(vimtex-[m)')
   endif
 
   if get(g:, 'vimtex_text_obj_enabled', 0)
