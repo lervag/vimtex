@@ -6,10 +6,17 @@
 
 function! vimtex#include#expr() " {{{1
   "
-  " First try \include or \input (or similar)
+  " First check if v:fname matches exactly
+  "
+  if filereadable(v:fname)
+    return v:fname
+  endif
+
+  "
+  " Next parse \include or \input style lines
   "
   let l:file = s:include()
-  for l:suffix in split(&l:suffixesadd, ',') + ['']
+  for l:suffix in [''] + split(&l:suffixesadd, ',')
     let l:candidate = l:file . l:suffix
     if filereadable(l:candidate)
       return l:candidate
