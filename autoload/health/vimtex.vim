@@ -29,11 +29,32 @@ endfunction
 " }}}1
 
 function! s:check_compiler() abort " {{{1
+  if !g:vimtex_compiler_enabled | return | endif
+
+  if !executable(g:vimtex_compiler_method)
+    let l:ind = '        '
+    call health#report_error(printf(
+          \ '|g:vimtex_compiler_method| (`%s`) is not executable!',
+          \ g:vimtex_compiler_method))
+    return
+  endif
+  let g:vimtex_compiler_progname = 'latexmkk'
+
+
   let l:ok = 1
+  if !executable(g:vimtex_compiler_progname)
+    call health#report_warn(printf(
+          \ '|g:vimtex_compiler_progname| (`%s`) is not executable!',
+          \ g:vimtex_compiler_progname))
+    let l:ok = 0
+  endif
 
   if has('nvim') && g:vimtex_compiler_progname !=# 'nvr'
-    call health#report_warn('For compiler callbacks to work one needs to use')
-    call health#report_warn("g:vimtex_compiler_progname = 'nvr'")
+    call health#report_warn('Compiler callbacks will not work!', [
+          \ '`neovim-remote` / `nvr` is required for callbacks to work with neovim',
+          \ "Please also set |g:vimtex_compiler_progname| = 'nvr'",
+          \ 'For more info, see :help |vimtex-faq-neovim|',
+          \])
     let l:ok = 0
   endif
 
