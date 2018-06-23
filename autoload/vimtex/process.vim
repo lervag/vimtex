@@ -156,7 +156,6 @@ if has('win32')
       else
         let l:cmd = 'cmd /c "' . l:cmd . '"'
       endif
-      let l:cmd = 'start /b "' . cmd . '"'
     endif
 
     let self.prepared_cmd = l:cmd
