@@ -773,8 +773,11 @@ Options~
 
     Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
           engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program| and |g:vimtex_compiler_engines|.
-          The latter option may also be used to change the default engine.
+          directives, see |vimtex-tex-program| or the two compiler-specific
+          options
+            |g:vimtex_compiler_latexmk_engines|
+            and |g:vimtex_compiler_latexrun_engines|.
+          The latter two options may also be used to change the default engine.
 
     Note: Options may also be specified indirectly to `latexmk` through both
           a global and a project specific `.latexmkrc` file. One should know,
@@ -789,7 +792,7 @@ Options~
 
   Default value: >
 
-    let g:vimtex_compiler_engines = {
+    let g:vimtex_compiler_latexmk_engines = {
         \ '_'                : '-pdf'
         \ 'pdflatex'         : '-pdf'
         \ 'lualatex'         : '-lualatex'
@@ -834,8 +837,11 @@ Options~
 
     Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
           engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program| and |g:vimtex_compiler_engines|.
-          The latter option may also be used to change the default engine.
+          directives, see |vimtex-tex-program| or the two compiler-specific
+          options
+            |g:vimtex_compiler_latexmk_engines|
+            and |g:vimtex_compiler_latexrun_engines|.
+          The latter two options may also be used to change the default engine.
 
 *g:vimtex_compiler_latexrun_engines*
   Defines a map between TeX program directive (|vimtex-tex-program|) and
@@ -845,7 +851,7 @@ Options~
 
   Default value: >
 
-    let g:vimtex_compiler_engines = {
+    let g:vimtex_compiler_latexrun_engines = {
         \ '_'                : 'pdflatex'
         \ 'pdflatex'         : 'pdflatex'
         \ 'lualatex'         : 'lualatex'
