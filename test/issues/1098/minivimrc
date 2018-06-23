@@ -1,0 +1,26 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_syntax_minted = [
+      \ {
+      \   'lang' : 'perl',
+      \   'commands' : ['perlinline', 'perl', 'perlwithspaces'],
+      \ },
+      \]
+
+function! SynNames()
+  return join(map(synstack(line('.'), col('.')),
+        \ 'synIDattr(v:val, ''name'')'), ' -> ')
+endfunction
+
+augroup Testing
+  autocmd!
+  autocmd CursorMoved * echo SynNames()
+augroup END
+
+silent edit minimal.tex
