@@ -38,8 +38,6 @@ function! s:check_compiler() abort " {{{1
           \ g:vimtex_compiler_method))
     return
   endif
-  let g:vimtex_compiler_progname = 'latexmkk'
-
 
   let l:ok = 1
   if !executable(g:vimtex_compiler_progname)
