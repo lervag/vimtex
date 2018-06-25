@@ -118,7 +118,10 @@ Feature overview~
 - Document navigation through
   - table of content
   - table of labels
-  - enhanced `gf` command
+  - proper settings for |'include'|, |'includeexpr'|, |'suffixesadd'| and
+    |'define'|, which among other things
+    - allow |include-search| and |definition-search|
+    - give enhanced |gf| command
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions

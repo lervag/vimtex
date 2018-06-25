@@ -81,7 +81,10 @@ disabled if desired.
 - Document navigation through
   - table of content
   - table of labels
-  - enhanced `gf` command
+  - proper settings for `'include'`, `'includexpr'`, `'suffixesadd'` and
+    `'define'`, which among other things
+    - allow `:h include-search` and `:h definition-search`
+    - give enhanced `gf` command
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions
