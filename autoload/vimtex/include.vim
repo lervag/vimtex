@@ -15,7 +15,7 @@ function! vimtex#include#expr() " {{{1
   "
   " Next parse \include or \input style lines
   "
-  let l:file = s:include()
+  let l:file = s:input()
   for l:suffix in [''] + split(&l:suffixesadd, ',')
     let l:candidate = l:file . l:suffix
     if filereadable(l:candidate)
@@ -40,7 +40,7 @@ endfunction
 
 " }}}1
 
-function! s:include() " {{{1
+function! s:input() " {{{1
   let [l:lnum, l:cnum] = searchpos(g:vimtex#re#tex_input, 'bcn', line('.'))
   if l:lnum == 0 | return '' | endif
 

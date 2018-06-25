@@ -333,7 +333,7 @@ function! s:init_buffer() " {{{1
   setlocal commentstring=%%s
   setlocal iskeyword+=:
   setlocal includeexpr=vimtex#include#expr()
-  let &l:include = g:vimtex#re#tex_input
+  let &l:include = g:vimtex#re#tex_include
   let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
   let &l:define .= '\|toks\)\=def\|\\font\|\\\(future\)\=let'
   let &l:define .= '\|\\new\(count\|dimen\|skip'
