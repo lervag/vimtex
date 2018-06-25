@@ -153,3 +153,33 @@ Execute (jumps: ]m, [m, ]M, [M):
 
   normal 15G4]M
   Assert line('.') == line('$')
+
+Given tex (LaTeX example 4):
+  \documentclass[]{article}
+
+  % Comment sec 1
+  %
+  %
+  %
+
+  \begin{document}
+
+  % Comment sec 2
+  %
+  %
+
+  \end{document}
+
+Execute (jumps: ]*, [*):
+  normal ]*
+  Assert line('.') == 3
+
+  normal ]*
+  Assert line('.') == 10
+
+  normal [*
+  Assert line('.') == 6
+
+  normal G[*
+  Assert line('.') == 12
+

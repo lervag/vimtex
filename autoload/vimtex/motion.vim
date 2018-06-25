@@ -60,6 +60,18 @@ function! vimtex#motion#init_buffer() " {{{1
         \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[m)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[M)
         \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[M)"<cr>
+
+  " Comments
+  nnoremap <silent><buffer> <plug>(vimtex-]*) :<c-u>call vimtex#motion#comment(0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[*) :<c-u>call vimtex#motion#comment(1,0)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-]*) :<c-u>call vimtex#motion#comment(0,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-[*) :<c-u>call vimtex#motion#comment(1,1)<cr>
+  xmap     <silent><buffer> <plug>(vimtex-]*) <sid>(vimtex-]*)
+  xmap     <silent><buffer> <plug>(vimtex-[*) <sid>(vimtex-[*)
+  onoremap <silent><buffer> <plug>(vimtex-]*)
+        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]*)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[*)
+        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[*)"<cr>
 endfunction
 
 " }}}1
@@ -176,13 +188,29 @@ endfunction
 
 " }}}1
 function! vimtex#motion#environment(begin, backwards, visual) " {{{1
-  echo v:count1 a:begin
   let l:count = v:count1
   if a:visual
     normal! gv
   endif
 
   let l:re = g:vimtex#re#not_comment . (a:begin ? '\\begin\s*\{' : '\\end\s*\{')
+  let l:flags = 'W' . (a:backwards ? 'b' : '')
+
+  for l:_ in range(l:count)
+    call search(l:re, l:flags)
+  endfor
+endfunction
+
+" }}}1
+function! vimtex#motion#comment(backwards, visual) " {{{1
+  let l:count = v:count1
+  if a:visual
+    normal! gv
+  endif
+
+  let l:re = a:backwards
+        \ ? '\v^\s*\%.*\n%(^\s*\%)@!'
+        \ : '\v%(^\s*\%.*\n)@<!\s*\%'
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)

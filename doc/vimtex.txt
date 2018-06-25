@@ -122,8 +122,9 @@ Feature overview~
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions
-  - Move between sections with `[[`, `[]`, `][`, `]]`
-  - Move between environments with `[m`, `[M`, `]m`, `]M`
+  - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
+  - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
+  - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
 - Text objects
   - `ic` `ac` Commands
@@ -627,6 +628,8 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ]M               |<plug>(vimtex-]M)|                             `nxo`
    [m               |<plug>(vimtex-[m)|                             `nxo`
    [M               |<plug>(vimtex-[M)|                             `nxo`
+   ]*               |<plug>(vimtex-]star|                           `nxo`
+   [*               |<plug>(vimtex-[star|                           `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
   ---------------------------------------------------------------------~
 
@@ -2317,29 +2320,44 @@ object, see |text-objects|.
   Find matching pair.
 
 *<plug>(vimtex-]])*
-  [count] section forward (|exlusive|). Goes to next section command.
+  go to [count] next end of a section.
+  |exlusive| motion.
 
 *<plug>(vimtex-][)*
-  [count] section end forward (|exlusive|). Goes to line before next section command or to
-  bottom of document or to bottom of file.
+  go to [count] next beginning of a section.
+  |exlusive| motion.
 
 *<plug>(vimtex-[])*
-  [count] section end backward (|exlusive|). Goes to the end of the previous section.
+  go to [count] previous end of a section.
+  |exlusive| motion.
 
 *<plug>(vimtex-[[)*
-  [count] section backward (|exlusive|). Goes to previous section command.
+  go to [count] previous beginning of a section.
+  |exlusive| motion.
 
 *<plug>(vimtex-]m)*
-  [count] environment begin forward (|exlusive|). Goes to next `\begin` command.
+  go to [count] next start of an environment `\begin`.
+  |exlusive| motion.
 
 *<plug>(vimtex-]M)*
-  [count] environment end forward (|exlusive|). Goes to next `\end` command.
+  go to [count] next end of an environment `\end`.
+  |exlusive| motion.
 
 *<plug>(vimtex-[m)*
-  [count] environment begin backward (|exlusive|). Goes to previous `\begin` command.
+  go to [count] previous start of an environment `\begin`.
+  |exlusive| motion.
 
 *<plug>(vimtex-[M)*
-  [count] environment end backward (|exlusive|). Goes to previous `\end` command.
+  go to [count] previous end of an environment `\end`.
+  |exlusive| motion.
+
+*<plug>(vimtex-]star)*
+  go to [count] next end of a LaTeX comment "%".
+  |exlusive| motion.
+
+*<plug>(vimtex-[star)*
+  go to [count] previous start of a LaTeX comment "%".
+  |exlusive| motion.
 
 ------------------------------------------------------------------------------
 Insert mode mappings~

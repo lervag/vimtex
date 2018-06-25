@@ -449,6 +449,13 @@ function! s:init_default_mappings() " {{{1
     call s:map('o', ']m', '<plug>(vimtex-]m)')
     call s:map('o', '[M', '<plug>(vimtex-[M)')
     call s:map('o', '[m', '<plug>(vimtex-[m)')
+
+    call s:map('n', ']*', '<plug>(vimtex-]*)')
+    call s:map('n', '[*', '<plug>(vimtex-[*)')
+    call s:map('x', ']*', '<plug>(vimtex-]*)')
+    call s:map('x', '[*', '<plug>(vimtex-[*)')
+    call s:map('o', ']*', '<plug>(vimtex-]*)')
+    call s:map('o', '[*', '<plug>(vimtex-[*)')
   endif
 
   if get(g:, 'vimtex_text_obj_enabled', 0)

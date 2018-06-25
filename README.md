@@ -85,8 +85,9 @@ disabled if desired.
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
 - Motions
-  - Move between sections with `[[`, `[]`, `][`, `]]`
-  - Move between environments with `[m`, `[M`, `]m`, `]M`
+  - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
+  - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
+  - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
 - Text objects
   - `ic ac` Commands
