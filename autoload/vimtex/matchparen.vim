@@ -39,10 +39,13 @@ function! s:matchparen.enable() abort dict " {{{1
     autocmd!
     autocmd CursorMoved  <buffer> call s:matchparen.highlight()
     autocmd CursorMovedI <buffer> call s:matchparen.highlight()
+    try
+      autocmd TextChangedP <buffer> call s:matchparen.highlight()
+    catch /E216/
+      silent! let self.timer =
+            \ timer_start(50, 'vimtex#matchparen#popup_check', {'repeat' : -1})
+    endtry
   augroup END
-
-  silent! let self.timer =
-        \ timer_start(50, 'vimtex#matchparen#popup_check', {'repeat' : -1})
 
   call self.highlight()
 
