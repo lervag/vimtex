@@ -2211,7 +2211,8 @@ Commands~
 <
                                 If `detailed` is 0, then it only returns the
                                 total count. This makes it possible to use for
-                                e.g. statusline functions.
+                                e.g. statusline functions. If the `opts` dict
+                                is not passed, then the defaults are assumed.
 
                                              *VimtexCountLetters!*
                                              *VimtexCountWords!*
