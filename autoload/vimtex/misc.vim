@@ -24,8 +24,10 @@ endfunction
 
 " }}}1
 
-function! vimtex#misc#wordcount(opts) abort " {{{1
-  let l:range = get(a:opts, 'range', [1, line('$')])
+function! vimtex#misc#wordcount(...) abort " {{{1
+  let l:opts = a:0 > 0 ? a:1 : {}
+
+  let l:range = get(l:opts, 'range', [1, line('$')])
   if l:range == [1, line('$')]
     let l:file = b:vimtex
   else
@@ -35,8 +37,8 @@ function! vimtex#misc#wordcount(opts) abort " {{{1
   let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
   let cmd .= has('win32') ? '& ' : '; '
   let cmd .= 'texcount -nosub -sum '
-  let cmd .= get(a:opts, 'count_letters') ? '-letter ' : ''
-  let cmd .= get(a:opts, 'detailed') ? '-inc ' : '-q -1 -merge '
+  let cmd .= get(l:opts, 'count_letters') ? '-letter ' : ''
+  let cmd .= get(l:opts, 'detailed') ? '-inc ' : '-q -1 -merge '
   let cmd .= g:vimtex_texcount_custom_arg . ' '
   let cmd .= vimtex#util#shellescape(l:file.base)
   let lines = split(system(cmd), '\n')
@@ -45,7 +47,7 @@ function! vimtex#misc#wordcount(opts) abort " {{{1
     call delete(l:file.tex)
   endif
 
-  if get(a:opts, 'detailed')
+  if get(l:opts, 'detailed')
     return lines
   else
     call filter(lines, 'v:val !~# ''ERROR\|^\s*$''')
