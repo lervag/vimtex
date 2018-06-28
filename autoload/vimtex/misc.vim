@@ -5,32 +5,64 @@
 "
 
 function! vimtex#misc#init_buffer() " {{{1
-  command! -buffer              VimtexReload                              call vimtex#misc#reload()
-  command! -buffer -bang        VimtexCountWords                          call vimtex#misc#wc('', <q-bang> == '!')
-  command! -buffer -bang        VimtexCountLetters                        call vimtex#misc#wc('', <q-bang> == '!', 1)
-  command! -buffer -bang -range VimtexCountSelectedWords   <line1>,<line2>call vimtex#misc#wc('cmd', <q-bang> == '!')
-  command! -buffer -bang -range VimtexCountSelectedLetters <line1>,<line2>call vimtex#misc#wc('cmd', <q-bang> == '!', 1)
+  command! -buffer                VimtexReload call vimtex#misc#reload()
+  command! -buffer -bang -range=% VimtexCountWords
+        \ call vimtex#misc#wordcount_display({
+        \   'range' : [<line1>, <line2>],
+        \   'detailed' : <q-bang> == '!',
+        \   'count_letters' : 0,
+        \ })
+  command! -buffer -bang -range=% VimtexCountLetters
+        \ call vimtex#misc#wordcount_display({
+        \   'range' : [<line1>, <line2>],
+        \   'detailed' : <q-bang> == '!',
+        \   'count_letters' : 1,
+        \ })
 
-  nnoremap <buffer> <plug>(vimtex-reload)    :VimtexReload<cr>
+  nnoremap <buffer> <plug>(vimtex-reload) :VimtexReload<cr>
 endfunction
 
 " }}}1
 
-function! vimtex#misc#wc(type, detailed, ...) abort range " {{{1
-  if empty(a:type)
+function! vimtex#misc#wordcount(opts) abort " {{{1
+  let l:range = get(a:opts, 'range', [1, line('$')])
+  if l:range == [1, line('$')]
     let l:file = b:vimtex
   else
-    let l:file = vimtex#parser#selection_to_texfile(a:type)
+    let l:file = vimtex#parser#selection_to_texfile('arg', l:range)
   endif
 
-  " Run texcount, save output to lines variable
   let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
   let cmd .= has('win32') ? '& ' : '; '
   let cmd .= 'texcount -nosub -sum '
-  let cmd .= a:0 > 0 ? '-letter ' : ''
-  let cmd .= a:detailed > 0 ? '-inc ' : '-merge '
+  let cmd .= get(a:opts, 'count_letters') ? '-letter ' : ''
+  let cmd .= get(a:opts, 'detailed') ? '-inc ' : '-q -1 -merge '
+  let cmd .= g:vimtex_texcount_custom_arg . ' '
   let cmd .= vimtex#util#shellescape(l:file.base)
   let lines = split(system(cmd), '\n')
+
+  if l:file.base !=# b:vimtex.base
+    call delete(l:file.tex)
+  endif
+
+  if get(a:opts, 'detailed')
+    return lines
+  else
+    call filter(lines, 'v:val !~# ''ERROR\|^\s*$''')
+    return join(lines, '')
+  endif
+endfunction
+
+" }}}1
+function! vimtex#misc#wordcount_display(opts) abort " {{{1
+  let output = vimtex#misc#wordcount(a:opts)
+
+  if !get(a:opts, 'detailed')
+    call vimtex#log#info('Counted '
+          \ . (get(a:opts, 'count_letters') ? 'letters: ' : 'words: ')
+          \ . output)
+    return
+  endif
 
   " Create wordcount window
   if bufnr('TeXcount') >= 0
@@ -39,7 +71,7 @@ function! vimtex#misc#wc(type, detailed, ...) abort range " {{{1
   split TeXcount
 
   " Add lines to buffer
-  for line in lines
+  for line in output
     call append('$', printf('%s', line))
   endfor
   0delete _

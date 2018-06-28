@@ -62,16 +62,19 @@ function! vimtex#parser#get_externalfiles() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#parser#selection_to_texfile(type) range " {{{1
+function! vimtex#parser#selection_to_texfile(type, ...) range " {{{1
   "
   " Get selected lines. Method depends on type of selection, which may be
   " either of
   "
-  " 1. Command range
-  " 2. Visual mapping
-  " 3. Operator mapping
+  " 1. range from argument
+  " 2. Command range
+  " 3. Visual mapping
+  " 4. Operator mapping
   "
-  if a:type ==# 'cmd'
+  if a:type ==# 'arg'
+    let l:lines = getline(a:1[0], a:1[1])
+  elseif a:type ==# 'cmd'
     let l:lines = getline(a:firstline, a:lastline)
   elseif a:type ==# 'visual'
     let l:lines = getline(line("'<"), line("'>"))

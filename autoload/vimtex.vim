@@ -195,6 +195,8 @@ function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_quickfix_open_on_warning', '1')
   call s:init_option('vimtex_quickfix_blgparser', {})
 
+  call s:init_option('vimtex_texcount_custom_arg', '')
+
   call s:init_option('vimtex_text_obj_enabled', 1)
   call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])
 

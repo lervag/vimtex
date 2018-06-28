@@ -1654,6 +1654,12 @@ Options~
           \ }
           \]
 
+*g:vimtex_texcount_custom_arg*
+  Option that makes it possible to add custom arguments to `texcount` for
+  |VimtexCountWords| and |VimtexCountLetters|.
+
+  Default value: ''
+
 *g:vimtex_text_obj_enabled*
   Use this option to disable the text object mappings.
 
@@ -2183,28 +2189,38 @@ Commands~
 
                                              *VimtexCountLetters*
                                              *VimtexCountWords*
+                                             *vimtex#misc#wordcount(opts)*
 :VimtexCountLetters       Shows the number of letters/characters or words in
-:VimtexCountWords         the current project. The count is created with
-                          `texcount` through a call on the main project file
-                          similar to: >
+:VimtexCountWords         the current project or in the selected region. The
+                          count is created with `texcount` through a call on
+                          the main project file similar to: >
 
-                            texcount -nosub -sum [-letter] -merge FILE
+                            texcount -nosub -sum [-letter] -merge -q -1 FILE
 <
+                          Note: Default arguments may be controlled with
+                                |g:vimtex_texcount_custom_arg|.
+
+                          Note: One may access the information through the
+                                function `vimtex#misc#wordcount(opts)`, where
+                                `opts` is a dictionary with the following
+                                keys (defaults indicated): >
+
+                                'range' : [1, line('$')]
+                                'count_letters' : 0/1
+                                'detailed' : 0
+<
+                                If `detailed` is 0, then it only returns the
+                                total count. This makes it possible to use for
+                                e.g. statusline functions.
+
                                              *VimtexCountLetters!*
                                              *VimtexCountWords!*
 :VimtexCountLetters!      Similar to |VimtexCountLetters|/|VimtexCountWords|, but
 :VimtexCountWords!        show separate reports for included files.  I.e.
-                          presents the result of >
+                          presents the result of: >
 
                             texcount -nosub -sum [-letter] -inc FILE
 <
-                                             *VimtexCountSelectedWords*
-                                             *VimtexCountSelectedWords!*
-                                             *VimtexCountSelectedLetters*
-                                             *VimtexCountSelectedLetters!*
-                          These commands are the same as the above, but they
-                          work on selections.
-
                                              *VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
 :VimtexImapsList          Show the list of insert mode mappings created by the
