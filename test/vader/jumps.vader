@@ -170,16 +170,16 @@ Given tex (LaTeX example 4):
 
   \end{document}
 
-Execute (jumps: ]*, [*):
+Execute (jumps: ]/, ]*, [/, [*):
   normal ]*
-  Assert line('.') == 3
-
-  normal ]*
-  Assert line('.') == 10
-
-  normal [*
   Assert line('.') == 6
 
-  normal G[*
+  normal ]*
   Assert line('.') == 12
+
+  normal 2[/
+  Assert line('.') == 3
+
+  normal ]/
+  Assert line('.') == 10
 

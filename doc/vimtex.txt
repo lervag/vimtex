@@ -631,7 +631,9 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ]M               |<plug>(vimtex-]M)|                             `nxo`
    [m               |<plug>(vimtex-[m)|                             `nxo`
    [M               |<plug>(vimtex-[M)|                             `nxo`
+   ]/               |<plug>(vimtex-]/|                              `nxo`
    ]*               |<plug>(vimtex-]star|                           `nxo`
+   [/               |<plug>(vimtex-[/|                              `nxo`
    [*               |<plug>(vimtex-[star|                           `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
   ---------------------------------------------------------------------~
@@ -2371,12 +2373,20 @@ object, see |text-objects|.
   go to [count] previous end of an environment `\end`.
   |exlusive| motion.
 
+*<plug>(vimtex-]/)*
+  go to [count] next start of a LaTeX comment "%".
+  |exlusive| motion.
+
 *<plug>(vimtex-]star)*
   go to [count] next end of a LaTeX comment "%".
   |exlusive| motion.
 
-*<plug>(vimtex-[star)*
+*<plug>(vimtex-[/)*
   go to [count] previous start of a LaTeX comment "%".
+  |exlusive| motion.
+
+*<plug>(vimtex-[star)*
+  go to [count] previous end of a LaTeX comment "%".
   |exlusive| motion.
 
 ------------------------------------------------------------------------------
