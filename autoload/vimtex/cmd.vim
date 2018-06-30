@@ -58,8 +58,12 @@ function! vimtex#cmd#change() " {{{1
         \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
 
-function! vimtex#cmd#delete() " {{{1
-  let l:cmd = vimtex#cmd#get_current()
+function! vimtex#cmd#delete(...) " {{{1
+  if a:0 > 0
+    let l:cmd = call('vimtex#cmd#get_at', a:000)
+  else
+    let l:cmd = vimtex#cmd#get_current()
+  endif
   if empty(l:cmd) | return | endif
 
   " Save current position
@@ -100,6 +104,20 @@ function! vimtex#cmd#delete() " {{{1
 
   " Create repeat hook
   silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
+endfunction
+
+function! vimtex#cmd#delete_all(...) " {{{1
+  if a:0 > 0
+    let l:cmd = call('vimtex#cmd#get_at', a:000)
+  else
+    let l:cmd = vimtex#cmd#get_current()
+  endif
+  if empty(l:cmd) | return | endif
+
+  call vimtex#pos#set_cursor(l:cmd.pos_start)
+  normal! v
+  call vimtex#pos#set_cursor(l:cmd.pos_end)
+  normal! d
 endfunction
 
 function! vimtex#cmd#create_insert() " {{{1
