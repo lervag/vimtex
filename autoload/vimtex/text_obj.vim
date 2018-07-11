@@ -64,79 +64,22 @@ endfunction
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
   if a:mode
-    let l:selection = getpos("'<")[1:2] + getpos("'>")[1:2]
-    call vimtex#pos#set_cursor(getpos("'>"))
-  endif
-
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
-  if empty(l:open)
-    if a:mode
+    let l:object = s:get_sel_delimited_visual(a:is_inner, a:type)
+    if empty(l:object)
       normal! gv
-    endif
-    return
-  endif
-
-  let [l1, c1, l2, c2] = [l:open.lnum, l:open.cnum, l:close.lnum, l:close.cnum]
-
-  " Determine if operator is linewise
-  let l:linewise = index(g:vimtex_text_obj_linewise_operators, v:operator) >= 0
-
-  " Adjust the borders
-  if a:is_inner
-    if has_key(l:open, 'env_cmd') && !empty(l:open.env_cmd)
-      let l1 = l:open.env_cmd.pos_end.lnum
-      let c1 = l:open.env_cmd.pos_end.cnum+1
-    else
-      let c1 += len(l:open.match)
-    endif
-    let c2 -= 1
-
-    let l:is_inline = (l2 - l1) > 1
-          \ && match(strpart(getline(l1),    c1), '^\s*$') >= 0
-          \ && match(strpart(getline(l2), 0, c2), '^\s*$') >= 0
-
-    if l:is_inline
-      let l1 += 1
-      let c1 = strlen(matchstr(getline(l1), '^\s*')) + 1
-      let l2 -= 1
-      let c2 = strlen(getline(l2))
-      if c2 == 0 && ! l:linewise
-        let l2 -= 1
-        let c2 = len(getline(l2)) + 1
-      endif
-    elseif c2 == 0
-      let l2 -= 1
-      let c2 = len(getline(l2)) + 1
+      return
     endif
   else
-    let c2 += len(l:close.match) - 1
-
-    " Select next pair if we reached the same selection
-    if a:mode && l:selection == [l1, c1, l2, c2]
-      call vimtex#pos#set_cursor(vimtex#pos#next([l2, c2]))
-      let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
-      if empty(l:open)
-        normal! gv
-        return
-      endif
-      let [l1, c1, l2, c2] = [l:open.lnum, l:open.cnum,
-            \ l:close.lnum, l:close.cnum + len(l:close.match) - 1]
-    endif
-
-    let l:is_inline = (l2 - l1) > 1
-          \ && match(strpart(getline(l1), 0, c1-1), '^\s*$') >= 0
-          \ && match(strpart(getline(l2), 0, c2),   '^\s*$') >= 0
+    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+    if empty(l:open) | return | endif
+    let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
   endif
 
-  " Determine the select mode
-  let l:select_mode = l:is_inline && l:linewise ? 'V'
-        \ : (v:operator ==# ':') ? visualmode() : 'v'
-
   " Apply selection
-  execute 'normal!' l:select_mode
-  call vimtex#pos#set_cursor(l1, c1)
+  execute 'normal!' l:object.select_mode
+  call vimtex#pos#set_cursor(l:object.pos_start)
   normal! o
-  call vimtex#pos#set_cursor(l2, c2)
+  call vimtex#pos#set_cursor(l:object.pos_end)
 endfunction
 
 " }}}1
@@ -146,7 +89,7 @@ function! vimtex#text_obj#sections(is_inner, mode) " {{{1
 
   " Get section border positions
   let [l:pos_start, l:pos_end, l:type]
-        \ = s:get_sections_positions(a:is_inner, '')
+        \ = s:get_sel_sections(a:is_inner, '')
   if empty(l:pos_start)
     call vimtex#pos#set_cursor(l:pos_save)
     return
@@ -158,7 +101,7 @@ function! vimtex#text_obj#sections(is_inner, mode) " {{{1
         \ && getpos("'<")[1] == l:pos_start[0]
         \ && getpos("'>")[1] == l:pos_end[0]
     let [l:pos_start_new, l:pos_end_new, l:type]
-          \ = s:get_sections_positions(a:is_inner, l:type)
+          \ = s:get_sel_sections(a:is_inner, l:type)
     if !empty(l:pos_start_new)
       let l:pos_start = l:pos_start_new
       let l:pos_end = l:pos_end_new
@@ -173,7 +116,103 @@ endfunction
 
 " }}}1
 
-function! s:get_sections_positions(is_inner, type) " {{{1
+function! s:get_sel_delimited_visual(is_inner, type) " {{{1
+  if a:is_inner
+    call vimtex#pos#set_cursor(vimtex#pos#next(getpos("'>")))
+    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+    if !empty(l:open)
+      let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
+
+      " Select next pair if we reached the same selection
+      if (l:object.select_mode ==# 'v'
+          \ && getpos("'<")[1:2] == l:object.pos_start
+          \ && getpos("'>")[1:2] == l:object.pos_end)
+          \ || (l:object.select_mode ==# 'V'
+          \     && getpos("'<")[1] == l:object.pos_start[0]
+          \     && getpos("'>")[1] == l:object.pos_end[0])
+        call vimtex#pos#set_cursor(vimtex#pos#prev(l:open.lnum, l:open.cnum))
+        let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+        if empty(l:open) | return {} | endif
+        return s:get_sel_delimited(l:open, l:close, a:is_inner)
+      endif
+    endif
+  endif
+
+  call vimtex#pos#set_cursor(getpos("'>"))
+  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  if empty(l:open) | return {} | endif
+  let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
+  if a:is_inner | return l:object | endif
+
+  " Select next pair if we reached the same selection
+  if (l:object.select_mode ==# 'v'
+      \ && getpos("'<")[1:2] == l:object.pos_start
+      \ && getpos("'>")[1:2] == l:object.pos_end)
+      \ || (l:object.select_mode ==# 'V'
+      \     && getpos("'<")[1] == l:object.pos_start[0]
+      \     && getpos("'>")[1] == l:object.pos_end[0])
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open.lnum, l:open.cnum))
+    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+    if empty(l:open) | return {} | endif
+    let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
+  endif
+
+  return l:object
+endfunction
+
+" }}}1
+function! s:get_sel_delimited(open, close, is_inner) " {{{1
+  " Determine if operator is linewise
+  let l:linewise = index(g:vimtex_text_obj_linewise_operators, v:operator) >= 0
+
+  let [l1, c1, l2, c2] = [a:open.lnum, a:open.cnum, a:close.lnum, a:close.cnum]
+
+  " Adjust the borders
+  if a:is_inner
+    if has_key(a:open, 'env_cmd') && !empty(a:open.env_cmd)
+      let l1 = a:open.env_cmd.pos_end.lnum
+      let c1 = a:open.env_cmd.pos_end.cnum+1
+    else
+      let c1 += len(a:open.match)
+    endif
+    let c2 -= 1
+
+    let l:is_inline = (l2 - l1) > 1
+          \ && match(strpart(getline(l1),    c1), '^\s*$') >= 0
+          \ && match(strpart(getline(l2), 0, c2), '^\s*$') >= 0
+
+    if l:is_inline
+      let l1 += 1
+      let c1 = strlen(matchstr(getline(l1), '^\s*')) + 1
+      let l2 -= 1
+      let c2 = strlen(getline(l2))
+      if c2 == 0 && !l:linewise
+        let l2 -= 1
+        let c2 = len(getline(l2)) + 1
+      endif
+    elseif c2 == 0
+      let l2 -= 1
+      let c2 = len(getline(l2)) + 1
+    endif
+  else
+    let c2 += len(a:close.match) - 1
+
+    let l:is_inline = (l2 - l1) > 1
+          \ && match(strpart(getline(l1), 0, c1-1), '^\s*$') >= 0
+          \ && match(strpart(getline(l2), 0, c2),   '^\s*$') >= 0
+  endif
+
+  return {
+        \ 'pos_start' : [l1, c1],
+        \ 'pos_end' : [l2, c2],
+        \ 'is_inline' : l:is_inline,
+        \ 'select_mode' : l:is_inline && l:linewise
+        \      ? 'V' : (v:operator ==# ':') ? visualmode() : 'v',
+        \}
+endfunction
+
+" }}}1
+function! s:get_sel_sections(is_inner, type) " {{{1
   let l:pos_save = vimtex#pos#get_cursor()
   let l:min_val = get(s:section_to_val, a:type)
 
