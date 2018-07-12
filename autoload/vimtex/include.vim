@@ -5,11 +5,13 @@
 "
 
 function! vimtex#include#expr() " {{{1
+  call s:visited.timeout()
+
   "
   " First check if v:fname matches exactly
   "
   if filereadable(v:fname)
-    return v:fname
+    return s:visited.check(v:fname)
   endif
 
   "
@@ -19,7 +21,7 @@ function! vimtex#include#expr() " {{{1
   for l:suffix in [''] + split(&l:suffixesadd, ',')
     let l:candidate = l:file . l:suffix
     if filereadable(l:candidate)
-      return l:candidate
+      return s:visited.check(l:candidate)
     endif
   endfor
 
@@ -30,12 +32,12 @@ function! vimtex#include#expr() " {{{1
     for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
       let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
       if filereadable(l:candidate)
-        return l:candidate
+        return s:visited.check(l:candidate)
       endif
     endfor
   endfor
 
-  return v:fname
+  return s:visited.check(v:fname)
 endfunction
 
 " }}}1
@@ -65,6 +67,29 @@ function! s:vfname_split() " {{{1
   endif
 
   return l:files + [v:fname]
+endfunction
+
+" }}}1
+
+let s:visited = {
+      \ 'time' : 0,
+      \ 'list' : [],
+      \}
+function! s:visited.timeout() abort dict " {{{1
+  if localtime() - self.time > 1.0
+    let self.time = localtime()
+    let self.list = [expand('%:p')]
+  endif
+endfunction
+
+" }}}1
+function! s:visited.check(fname) abort dict " {{{1
+  if index(self.list, fnamemodify(a:fname, ':p')) < 0
+    call add(self.list, fnamemodify(a:fname, ':p'))
+    return a:fname
+  endif
+
+  return ''
 endfunction
 
 " }}}1
