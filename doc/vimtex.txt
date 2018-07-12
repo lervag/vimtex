@@ -57,8 +57,9 @@ CONTENTS                                                      *vimtex-contents*
     Complete packages and documentclasses       |vimtex-complete-packages|
                                                 |vimtex-complete-classes|
     Autocomplete                                |vimtex-complete-auto|
-      Neocomplete                               |vimtex-complete-neocomplete|
       deoplete                                  |vimtex-complete-deoplete|
+      Neocomplete                               |vimtex-complete-neocomplete|
+      ncm2                                      |vimtex-complete-ncm2|
       nvim-completion-manager                   |vimtex-complete-ncm|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
       VimCompletesMe                            |vimtex-complete-vcm|
@@ -2702,16 +2703,31 @@ Autocomplete~
                                                          *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-four good plugins that provide this: |neocomplete|, |deoplete|,
-|nvim-completion-manager| and |youcompleteme|.  Moreover, there is
-|VimCompletesMe| that overrides <tab> to trigger different built-in
-completions, such as the omni-completion by vimtex, depending on the context.
-See below for descriptions on how to setup these with |vimtex|.
+four good plugins that provide this: ||deoplete|, |neocomplete|, |ncm2|,
+|nvim-completion-manager| and |youcompleteme|.  Moreover, there is |VimCompletesMe|
+that overrides <tab> to trigger different built-in completions, such as the
+omni-completion by vimtex, depending on the context. See below for
+descriptions on how to setup these with |vimtex|.
+
+deoplete~
+                                                     *vimtex-complete-deoplete*
+|deoplete| is a modern remake of |neocomplete|, and was originally written
+specifically for Neovim, see here: https://github.com/Shougo/deoplete.nvim. It
+is a highly customizable and flexible completion manager.
+
+To configure for `vimtex`, one may use: >
+
+  if !exists('g:deoplete#omni#input_patterns')
+      let g:deoplete#omni#input_patterns = {}
+  endif
+  let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
 
 neocomplete~
                                                   *vimtex-complete-neocomplete*
-|neocomplete| is my preferred choice for an automatic completion engine in vim.
-The plugin is available here: https://github.com/Shougo/neocomplete.vim.
+|neocomplete| is also a flexible automatic completion engine for vim, although
+active development has been stopped. Users are recommended to change to
+|deoplete|, see also |vimtex-complete-deoplete|. The plugin is available here:
+https://github.com/Shougo/neocomplete.vim.
 
 The following options may be used to enable automatic completion for LaTeX
 documents with |neocomplete| and |vimtex|s omni completion function: >
@@ -2722,19 +2738,42 @@ documents with |neocomplete| and |vimtex|s omni completion function: >
   let g:neocomplete#sources#omni#input_patterns.tex =
         \ g:vimtex#re#neocomplete
 
-deoplete~
-                                                     *vimtex-complete-deoplete*
-|deoplete| is similar to |neocomplete|, but is written specifically for Neovim, see
-here: https://github.com/Shougo/deoplete.nvim. To configure for `vimtex`, one
-may use: >
+ncm2~
+                                                         *vimtex-complete-ncm2*
+|ncm2| is a modern remake and replacement of |nvim-completion-manager| and is
+supposed to be a "Slim, Fast and Hackable Completion Framework for Neovim":
+https://github.com/ncm2/ncm2
 
-  if !exists('g:deoplete#omni#input_patterns')
-      let g:deoplete#omni#input_patterns = {}
-  endif
-  let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
+The following configuration should work well with `vimtex`: >
 
+  " include the following plugins (here using junnegun/vim-plug)
+  Plug 'roxma/nvim-yarp'
+  Plug 'ncm2/ncm2'
+
+  set completeopt=noinsert,menuone,noselect
+
+  augroup my_cm_setup
+    autocmd!
+    autocmd BufEnter * call ncm2#enable_for_buffer()
+    autocmd User Ncm2Plugin call ncm2#register_source({
+            \ 'name': 'vimtex',
+            \ 'priority': 9,
+            \ 'subscope_enable': 1,
+            \ 'complete_length': 1,
+            \ 'scope': ['tex'],
+            \ 'mark': 'tex',
+            \ 'word_pattern': '\w+',
+            \ 'complete_pattern': g:vimtex#re#ncm,
+            \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
+            \ })
+  augroup END
+<
 nvim-completion-manager~
                                                           *vimtex-complete-ncm*
+Note: |nvim-completion-manager| has been replaced by |ncm2|, and users are
+recommended to change. See |vimtex-complete-ncm2| for hints on how to setup
+|ncm2| for vimtex.
+
 |nvim-completion-manager| is a fast, extensible, async completion framework
 for neovim (and Vim version 8.0 and above).  The project is available here:
 https://github.com/roxma/nvim-completion-manager
