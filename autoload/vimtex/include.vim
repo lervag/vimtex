@@ -6,18 +6,19 @@
 
 function! vimtex#include#expr() " {{{1
   call s:visited.timeout()
+  let l:fname = substitute(v:fname, '^\s*\|\s*$', '', 'g')
 
   "
   " First check if v:fname matches exactly
   "
-  if filereadable(v:fname)
-    return s:visited.check(v:fname)
+  if filereadable(l:fname)
+    return s:visited.check(l:fname)
   endif
 
   "
   " Next parse \include or \input style lines
   "
-  let l:file = s:input()
+  let l:file = s:input(l:fname)
   for l:suffix in [''] + split(&l:suffixesadd, ',')
     let l:candidate = l:file . l:suffix
     if filereadable(l:candidate)
@@ -28,7 +29,7 @@ function! vimtex#include#expr() " {{{1
   "
   " Next search for file with kpsewhich
   "
-  for l:file in s:vfname_split()
+  for l:file in s:split(l:fname)
     for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
       let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
       if filereadable(l:candidate)
@@ -37,14 +38,14 @@ function! vimtex#include#expr() " {{{1
     endfor
   endfor
 
-  return s:visited.check(v:fname)
+  return s:visited.check(l:fname)
 endfunction
 
 " }}}1
 
-function! s:input() " {{{1
+function! s:input(fname) " {{{1
   let [l:lnum, l:cnum] = searchpos(g:vimtex#re#tex_input, 'bcn', line('.'))
-  if l:lnum == 0 | return '' | endif
+  if l:lnum == 0 | return a:fname | endif
 
   let l:cmd = vimtex#cmd#get_at(l:lnum, l:cnum)
   let l:file = join(map(
@@ -58,15 +59,15 @@ function! s:input() " {{{1
 endfunction
 
 " }}}1
-function! s:vfname_split() " {{{1
+function! s:split(fname) " {{{1
   let l:files = []
 
   let l:current = expand('<cword>')
-  if index(split(v:fname, ','), l:current) >= 0
+  if index(split(a:fname, ','), l:current) >= 0
     call add(l:files, l:current)
   endif
 
-  return l:files + [v:fname]
+  return l:files + [a:fname]
 endfunction
 
 " }}}1
