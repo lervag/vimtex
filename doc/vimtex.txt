@@ -2757,7 +2757,7 @@ The following configuration should work well with `vimtex`: >
     autocmd BufEnter * call ncm2#enable_for_buffer()
     autocmd User Ncm2Plugin call ncm2#register_source({
             \ 'name': 'vimtex',
-            \ 'priority': 9,
+            \ 'priority': 8,
             \ 'subscope_enable': 1,
             \ 'complete_length': 1,
             \ 'scope': ['tex'],
