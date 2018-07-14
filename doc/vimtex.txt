@@ -2761,6 +2761,7 @@ The following configuration should work well with `vimtex`: >
             \ 'subscope_enable': 1,
             \ 'complete_length': 1,
             \ 'scope': ['tex'],
+            \ 'matcher': {'name': 'prefix', 'key': 'word'},
             \ 'mark': 'tex',
             \ 'word_pattern': '\w+',
             \ 'complete_pattern': g:vimtex#re#ncm,
