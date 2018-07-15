@@ -252,7 +252,6 @@ function! s:completer_ref.complete(regex) dict " {{{2
   for m in self.get_matches(a:regex)
     call add(self.candidates, {
           \ 'word' : m[0],
-          \ 'abbr' : m[0],
           \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ })
   endfor
@@ -542,7 +541,6 @@ function! s:completer_inc.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
         \ ''menu'' : '' [input/include]'',
         \}')
   return self.candidates
@@ -562,7 +560,6 @@ function! s:completer_pdf.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
         \ ''menu'' : '' [includepdf]'',
         \}')
   return self.candidates
@@ -583,7 +580,6 @@ function! s:completer_sta.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
         \ ''menu'' : '' [includestandalone]'',
         \}')
   return self.candidates
@@ -624,7 +620,6 @@ function! s:completer_gls.parse_glossaries() dict " {{{2
     let l:matches = matchlist(l:line, l:re_matcher)
     call add(self.candidates, {
           \ 'word' : l:matches[2],
-          \ 'abbr' : l:matches[2],
           \ 'menu' : self.key[l:matches[1]],
           \})
   endfor
