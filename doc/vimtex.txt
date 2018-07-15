@@ -2804,7 +2804,7 @@ following setup instead: >
             \ 'matcher': {'name': 'combine',
             \             'matchers': [
             \               {'name': 'abbrfuzzy', 'key': 'word'},
-            \               {'name': 'abbrfuzzy', 'key': 'menu'},
+            \               {'name': 'abbrfuzzy', 'key': 'abbr'},
             \             ]},
             \ 'word_pattern': '\w+',
             \ 'complete_pattern': g:vimtex#re#ncm2#files,
