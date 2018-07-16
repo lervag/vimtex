@@ -2755,7 +2755,7 @@ The following simple configuration should work well with `vimtex`: >
   augroup my_cm_setup
     autocmd!
     autocmd BufEnter * call ncm2#enable_for_buffer()
-    autocmd Syntax tex call ncm2#register_source({
+    autocmd Filetype tex call ncm2#register_source({
             \ 'name': 'vimtex',
             \ 'priority': 8,
             \ 'scope': ['tex'],
@@ -2772,7 +2772,7 @@ following setup instead: >
   augroup my_cm_setup
     autocmd!
     autocmd BufEnter * call ncm2#enable_for_buffer()
-    autocmd Syntax tex call ncm2#register_source({
+    autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-cmds',
             \ 'priority': 8, 
             \ 'complete_length': -1,
@@ -2782,7 +2782,7 @@ following setup instead: >
             \ 'complete_pattern': g:vimtex#re#ncm2#cmds,
             \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
             \ })
-    autocmd Syntax tex call ncm2#register_source({
+    autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-labels',
             \ 'priority': 8, 
             \ 'complete_length': -1,
@@ -2796,7 +2796,7 @@ following setup instead: >
             \ 'complete_pattern': g:vimtex#re#ncm2#labels,
             \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
             \ })
-    autocmd Syntax tex call ncm2#register_source({
+    autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-files',
             \ 'priority': 8, 
             \ 'complete_length': -1,
@@ -2810,7 +2810,7 @@ following setup instead: >
             \ 'complete_pattern': g:vimtex#re#ncm2#files,
             \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
             \ })
-    autocmd Syntax tex call ncm2#register_source({
+    autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'bibtex',
             \ 'priority': 8, 
             \ 'complete_length': -1,
