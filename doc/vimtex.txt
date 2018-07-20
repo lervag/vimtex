@@ -2898,6 +2898,16 @@ selectively enable or disable highlighting for specific groups.  If
 |g:tex_fast| is set, additional syntax highlighting for bold, italic, and
 reference groups are enabled only if they are explicitly allowed.
 
+Note: The default syntax highlighting of vim maintained by Charles Campbell
+      does not support any package (:h tex-package). However, C. Campbell
+      provides syntax highlighting files on his website for
+      - `amsmath`
+      - `array`
+      - `lstlisting`
+      - `moreverb`
+      - `slide`
+      http://www.drchip.org/astronaut/vim/index.html#LATEXPKGS
+
 Note: For people that are interested in improved conceal support, please check
       out Keita Nakamura's plugin tex-conceal.vim:
       https://github.com/KeitaNakamura/tex-conceal.vim
