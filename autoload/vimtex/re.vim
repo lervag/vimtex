@@ -80,23 +80,6 @@ let g:vimtex#re#ncm = [
       \ '\\end(\s*\[[^]]*\])?\s*\{[^}]*',
       \]
 
-let g:vimtex#re#ncm2 = [
-      \ '\\[A-Za-z]*',
-      \ '\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
-      \ '\\(text|block)cquote\*?(\[[^]]*\]){0,2}{[^}]*',
-      \ '\\(for|hy)[A-Za-z]*cquote\*?{[^}]*}(\[[^]]*\]){0,2}{[^}]*',
-      \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
-      \ '\\hyperref\[[^]]*',
-      \ '\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
-      \ '\\(include(only)?|input|subfile){[^}]*',
-      \ '\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
-      \ '\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
-      \ '\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
-      \ '\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
-      \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
-      \ '\\begin(\s*\[[^]]*\])?\s*\{[^}]*',
-      \ '\\end(\s*\[[^]]*\])?\s*\{[^}]*',
-      \]
 let g:vimtex#re#ncm2#cmds = [
       \ '\\[A-Za-z]*',
       \ '\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
@@ -120,6 +103,11 @@ let g:vimtex#re#ncm2#files = [
       \ '\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
       \]
+
+let g:vimtex#re#ncm2 = g:vimtex#re#ncm2#cmds +
+            \ g:vimtex#re#ncm2#bibtex + 
+            \ g:vimtex#re#ncm2#labels + 
+            \ g:vimtex#re#ncm2#files
 
 let g:vimtex#re#youcompleteme = map(copy(g:vimtex#re#ncm), "'re!' . v:val")
 
