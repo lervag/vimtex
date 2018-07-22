@@ -2766,8 +2766,8 @@ The following simple configuration should work well with `vimtex`: >
             \ })
   augroup END
 <
-To have autocomplete behave more intelligently like omni-complete, use the
-following setup instead: >
+To have more intelligent autocompletion like omni-complete, use the following 
+setup (in your init.vim or a personal ftplugin) instead: >
 
   augroup my_cm_setup
     autocmd!
