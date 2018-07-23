@@ -252,7 +252,6 @@ function! s:completer_ref.complete(regex) dict " {{{2
   for m in self.get_matches(a:regex)
     call add(self.candidates, {
           \ 'word' : m[0],
-          \ 'abbr' : m[0],
           \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
           \ })
   endfor
@@ -433,7 +432,7 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict " {{{2
   call map(l:candidates, '{
         \ ''word'' : matchstr(v:val, ''\v\\(re)?newcommand\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
-        \ ''menu'' : ''[cmd: newcommand]'',
+        \ ''kind'' : ''[cmd: newcommand]'',
         \ }')
 
   let self.candidates_from_newcommands = l:candidates
@@ -450,12 +449,12 @@ function! s:completer_cmd.gather_candidates_from_lets() dict " {{{2
   let l:candidates = map(l:lets, '{
         \ ''word'' : matchstr(v:val, ''\\let[^\\]*\\\zs\w*''),
         \ ''mode'' : ''.'',
-        \ ''menu'' : ''[cmd: \let]'',
+        \ ''kind'' : ''[cmd: \let]'',
         \ }')
         \ + map(l:defs, '{
         \ ''word'' : matchstr(v:val, ''\\def[^\\]*\\\zs\w*''),
         \ ''mode'' : ''.'',
-        \ ''menu'' : ''[cmd: \def]'',
+        \ ''kind'' : ''[cmd: \def]'',
         \ }')
 
   let self.candidates_from_lets = l:candidates
@@ -519,7 +518,7 @@ function! s:completer_img.gather_candidates() dict " {{{2
       call add(self.candidates, {
             \ 'abbr': vimtex#paths#shorten_relative(l:file),
             \ 'word': vimtex#paths#relative(l:file, l:path),
-            \ 'menu': '[graphics]',
+            \ 'kind': '[graphics]',
             \})
     endfor
   endfor
@@ -542,8 +541,7 @@ function! s:completer_inc.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
-        \ ''menu'' : '' [input/include]'',
+        \ ''kind'' : '' [input/include]'',
         \}')
   return self.candidates
 endfunction
@@ -562,8 +560,7 @@ function! s:completer_pdf.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
-        \ ''menu'' : '' [includepdf]'',
+        \ ''kind'' : '' [includepdf]'',
         \}')
   return self.candidates
 endfunction
@@ -583,8 +580,7 @@ function! s:completer_sta.complete(regex) dict " {{{2
   call filter(self.candidates, 'v:val =~# a:regex')
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
-        \ ''abbr'' : v:val,
-        \ ''menu'' : '' [includestandalone]'',
+        \ ''kind'' : '' [includestandalone]'',
         \}')
   return self.candidates
 endfunction
@@ -624,7 +620,6 @@ function! s:completer_gls.parse_glossaries() dict " {{{2
     let l:matches = matchlist(l:line, l:re_matcher)
     call add(self.candidates, {
           \ 'word' : l:matches[2],
-          \ 'abbr' : l:matches[2],
           \ 'menu' : self.key[l:matches[1]],
           \})
   endfor
@@ -650,7 +645,7 @@ function! s:completer_pck.gather_candidates() dict " {{{2
   if empty(self.candidates)
     let self.candidates = map(s:get_texmf_candidates('sty'), '{
           \ ''word'' : v:val,
-          \ ''menu'' : '' [package]'',
+          \ ''kind'' : '' [package]'',
           \}')
   endif
 
@@ -674,7 +669,7 @@ function! s:completer_doc.gather_candidates() dict " {{{2
   if empty(self.candidates)
     let self.candidates = map(s:get_texmf_candidates('cls'), '{
           \ ''word'' : v:val,
-          \ ''menu'' : '' [documentclass]'',
+          \ ''kind'' : '' [documentclass]'',
           \}')
   endif
 
@@ -724,7 +719,7 @@ function! s:completer_env.complete(regex) dict " {{{2
     if !empty(l:matching_env) && l:matching_env =~# a:regex
       return [{
             \ 'word': l:matching_env,
-            \ 'menu': '[env: matching]',
+            \ 'kind': '[env: matching]',
             \}]
     endif
   endif
@@ -777,7 +772,7 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict " {{{2
   call map(l:candidates, '{
         \ ''word'' : matchstr(v:val, ''\v\\(re)?newenvironment\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
-        \ ''menu'' : ''[env: newenvironment]'',
+        \ ''kind'' : ''[env: newenvironment]'',
         \ }')
 
   let self.candidates_from_newenvironments = l:candidates
@@ -846,7 +841,8 @@ function! s:load_candidates_from_packages(packages) " {{{1
     call map(l:candidates, '{
           \ ''word'' : v:val[0],
           \ ''mode'' : ''.'',
-          \ ''menu'' : ''[cmd: '' . l:package . ''] '' . (get(v:val, 1, '''')),
+          \ ''kind'' : ''[cmd: '' . l:package . ''] '',
+          \ ''menu'' : (get(v:val, 1, '''')),
           \}')
     let s:candidates_from_packages[l:package].commands += l:candidates
 
@@ -854,7 +850,7 @@ function! s:load_candidates_from_packages(packages) " {{{1
     call map(l:candidates, '{
           \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
           \ ''mode'' : ''.'',
-          \ ''menu'' : ''[env: '' . l:package . ''] '',
+          \ ''kind'' : ''[env: '' . l:package . ''] '',
           \}')
     let s:candidates_from_packages[l:package].environments += l:candidates
   endfor
