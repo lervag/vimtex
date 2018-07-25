@@ -63,7 +63,7 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ .')'
 
 let g:vimtex#re#ncm2#cmds = [
-      \ '\\[A-Za-z]*',
+      \ '\\[A-Za-z]+',
       \ '\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\begin(\s*\[[^]]*\])?\s*\{[^}]*',
