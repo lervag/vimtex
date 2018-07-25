@@ -55,7 +55,7 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
-      \ . '|%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|(usepackage|RequirePackage)(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|begin(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|end(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -64,7 +64,7 @@ let g:vimtex#re#deoplete = '\\(?:'
 
 let g:vimtex#re#ncm2#cmds = [
       \ '\\[A-Za-z]+',
-      \ '\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\(usepackage|RequirePackage)(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\begin(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\end(\s*\[[^]]*\])?\s*\{[^}]*',
