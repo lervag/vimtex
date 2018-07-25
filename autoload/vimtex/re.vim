@@ -37,7 +37,7 @@ let g:vimtex#re#neocomplete =
       \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
-      \ . '|usepackage%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|documentclass%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|begin%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|end%(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -55,7 +55,7 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
-      \ . '|usepackage(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|documentclass(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|begin(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|end(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -64,7 +64,7 @@ let g:vimtex#re#deoplete = '\\(?:'
 
 let g:vimtex#re#ncm2#cmds = [
       \ '\\[A-Za-z]*',
-      \ '\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
+      \ '\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\begin(\s*\[[^]]*\])?\s*\{[^}]*',
       \ '\\end(\s*\[[^]]*\])?\s*\{[^}]*',
@@ -87,8 +87,8 @@ let g:vimtex#re#ncm2#files = [
       \]
 
 let g:vimtex#re#ncm2 = g:vimtex#re#ncm2#cmds +
-            \ g:vimtex#re#ncm2#bibtex + 
-            \ g:vimtex#re#ncm2#labels + 
+            \ g:vimtex#re#ncm2#bibtex +
+            \ g:vimtex#re#ncm2#labels +
             \ g:vimtex#re#ncm2#files
 
 let g:vimtex#re#ncm = copy(g:vimtex#re#ncm2)

@@ -632,7 +632,7 @@ endfunction
 " {{{1 Packages (\usepackage)
 
 let s:completer_pck = {
-      \ 'patterns' : ['\v\\usepackage%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'patterns' : ['\v\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
       \ 'candidates' : [],
       \}
 
