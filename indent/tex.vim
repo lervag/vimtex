@@ -164,8 +164,8 @@ let s:re_opt = extend({
 let s:re_open = join(s:re_opt.open, '\|')
 let s:re_close = join(s:re_opt.close, '\|')
 if s:re_opt.include_modified_math
-  let s:re_open .= '\|' . g:vimtex#delim#re.delim_mod_math.open
-  let s:re_close .= '\|' . g:vimtex#delim#re.delim_mod_math.close
+  let s:re_open .= empty(s:re_open ? '' : '\|') . g:vimtex#delim#re.delim_mod_math.open
+  let s:re_close .= empty(s:re_close ? '' : '\|') . g:vimtex#delim#re.delim_mod_math.close
 endif
 
 " }}}1
@@ -242,6 +242,8 @@ let s:tikz_commands = '\v\\%(' . join([
 " }}}1
 
 function! s:count(line, pattern) abort " {{{1
+  if empty(a:pattern) | return 0 | endif
+
   let l:sum = 0
   let l:indx = match(a:line, a:pattern)
   while l:indx >= 0
