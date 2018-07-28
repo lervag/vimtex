@@ -51,6 +51,7 @@ function! s:compiler.init(options) abort dict " {{{1
 
   call self.init_check_requirements()
   call self.init_build_dir_option()
+  call self.init_pdf_mode_option()
 
   call extend(self, deepcopy(s:compiler_{self.backend}))
 
@@ -110,6 +111,36 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
     endif
     let self.build_dir = l:out_dir
   endif
+endfunction
+
+" }}}1
+function! s:compiler.init_pdf_mode_option() abort dict " {{{1
+  "
+  " Check if .latexmkrc sets the pdf_mode - if so this should be respected
+
+  " Parse the pdf_mode option. If not found, it is set to -1.
+  let l:pdf_mode = self.init_parse_option('pdf_mode', 1, -1)
+
+  " If pdf_mode has a supported value (1: pdflatex, 4: lualatex, 5: xelatex),
+  " override the value of self.tex_program.
+  if l:pdf_mode == 1
+    let l:tex_program = 'pdflatex'
+  elseif l:pdf_mode == 4
+    let l:tex_program = 'lualatex'
+  elseif l:pdf_mode == 5
+    let l:tex_program = 'xelatex'
+  else
+    return
+  endif
+
+  if self.tex_program !=# '_' && self.tex_program !=# l:tex_program
+    call vimtex#log#warning(
+          \ 'Setting pdf_mode from latexmkrc overrides tex_program!',
+          \ 'Changed tex_program from: ' . self.tex_program,
+          \ 'Changed tex_program to: ' . l:tex_program)
+  endif
+
+  let self.tex_program = l:tex_program
 endfunction
 
 " }}}1
