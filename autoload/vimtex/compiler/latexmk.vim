@@ -99,30 +99,17 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
   "
   " Check if .latexmkrc sets the build_dir - if so this should be respected
   "
+  let l:out_dir = self.init_parse_option('out_dir', 0, '')
 
-  let l:pattern = '^\s*\$out_dir\s*=\s*[''"]\(.\+\)[''"]\s*;\?\s*$'
-  let l:files = [
-        \ self.root . '/latexmkrc',
-        \ self.root . '/.latexmkrc',
-        \ fnamemodify('~/.latexmkrc', ':p'),
-        \ expand('$XDG_CONFIG_HOME/latexmk/latexmkrc'),
-        \]
-
-  for l:file in l:files
-    if filereadable(l:file)
-      let l:out_dir = matchlist(readfile(l:file), l:pattern)
-      if len(l:out_dir) > 1
-        if !empty(self.build_dir)
-          call vimtex#log#warning(
-                \ 'Setting out_dir from latexmkrc overrides build_dir!',
-                \ 'Changed build_dir from: ' . self.build_dir,
-                \ 'Changed build_dir to: ' . l:out_dir[1])
-        endif
-        let self.build_dir = l:out_dir[1]
-        return
-      endif
+  if !empty(l:out_dir)
+    if !empty(self.build_dir)
+      call vimtex#log#warning(
+            \ 'Setting out_dir from latexmkrc overrides build_dir!',
+            \ 'Changed build_dir from: ' . self.build_dir,
+            \ 'Changed build_dir to: ' . l:out_dir)
     endif
-  endfor
+    let self.build_dir = l:out_dir
+  endif
 endfunction
 
 " }}}1
