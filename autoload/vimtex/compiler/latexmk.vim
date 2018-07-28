@@ -74,8 +74,8 @@ function! s:compiler.init_parse_option(option, is_integer, default) abort dict "
   " The option may represent an integer or a string value.
 
   let l:value_pattern = a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]'
-  let l:pattern =
-        \ '^\s*\$' . a:option . '\s*=\s*' . l:value_pattern . '\s*;\?\s*$'
+  let l:pattern = '^\s*\$' . a:option . '\s*=\s*' . l:value_pattern 
+              \ . '\s*;\?\s*\(#.*\)\?$'
   let l:files = [
         \ self.root . '/latexmkrc',
         \ self.root . '/.latexmkrc',
