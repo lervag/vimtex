@@ -66,6 +66,35 @@ function! s:compiler.init(options) abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.init_parse_option(option, is_integer, default) abort dict " {{{1
+  "
+  " Parse option from .latexmkrc, returning its value if the option was
+  " present or a default value if not.
+  " The option may represent an integer or a string value.
+
+  let l:value_pattern = a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]'
+  let l:pattern =
+        \ '^\s*\$' . a:option . '\s*=\s*' . l:value_pattern . '\s*;\?\s*$'
+  let l:files = [
+        \ self.root . '/latexmkrc',
+        \ self.root . '/.latexmkrc',
+        \ fnamemodify('~/.latexmkrc', ':p'),
+        \ expand('$XDG_CONFIG_HOME/latexmk/latexmkrc'),
+        \]
+
+  for l:file in l:files
+    if filereadable(l:file)
+      let l:match = matchlist(readfile(l:file), l:pattern)
+      if len(l:match) > 1
+        return l:match[1]
+      end
+    endif
+  endfor
+
+  return a:default
+endfunction
+
+" }}}1
 function! s:compiler.init_build_dir_option() abort dict " {{{1
   "
   " Check if .latexmkrc sets the build_dir - if so this should be respected
