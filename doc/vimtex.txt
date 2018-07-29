@@ -2054,7 +2054,8 @@ Options~
   Default value: ''
 
 *g:vimtex_view_skim_activate*
-  Use this option to enable/disable activate skim after VimtexView.
+  Set this option to 1 make Skim have focus after commond :VimtexView in
+  addition to being moved to the foreground.
 
   Default value: 0
 
