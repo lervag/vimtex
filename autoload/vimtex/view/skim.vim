@@ -11,7 +11,7 @@ function! vimtex#view#skim#new() " {{{1
         \ '''tell application "Finder" to POSIX path of ',
         \ '(get application file id (id of application "Skim") as alias)''',
         \])
-  
+
   if system(l:cmd)
     call vimtex#log#error('Skim is not installed!')
     return {}
@@ -41,42 +41,27 @@ function! s:skim.view(file) dict " {{{1
   endif
   if vimtex#view#common#not_readable(outfile) | return | endif
 
-  if !g:vimtex_view_skim_activate
-    let l:cmd = join([
-          \ 'osascript',
-          \ '-e ''set theLine to ' . line('.') . ' as integer''',
-          \ '-e ''set theFile to POSIX file "' . outfile . '"''',
-          \ '-e ''set thePath to POSIX path of (theFile as alias)''',
-          \ '-e ''set theSource to POSIX file "' . expand('%:p') . '"''',
-          \ '-e ''tell application "Skim"''',
-          \ '-e ''try''',
-          \ '-e ''set theDocs to get documents whose path is thePath''',
-          \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
-          \ '-e ''end try''',
-          \ '-e ''open theFile''',
-          \ '-e ''tell front document to go to TeX line theLine from theSource',
-          \ '     showing reading bar true''',
-          \ '-e ''end tell''',
-          \])
-  else
-    let l:cmd = join([
-          \ 'osascript',
-          \ '-e ''set theLine to ' . line('.') . ' as integer''',
-          \ '-e ''set theFile to POSIX file "' . outfile . '"''',
-          \ '-e ''set thePath to POSIX path of (theFile as alias)''',
-          \ '-e ''set theSource to POSIX file "' . expand('%:p') . '"''',
-          \ '-e ''tell application "Skim"''',
-          \ '-e ''try''',
-          \ '-e ''set theDocs to get documents whose path is thePath''',
-          \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
-          \ '-e ''end try''',
-          \ '-e ''open theFile''',
-          \ '-e ''tell front document to go to TeX line theLine from theSource',
-          \ '     showing reading bar true''',
-          \ '-e ''activate''',
-          \ '-e ''end tell''',
-          \])
+  let l:activate = ''
+  if g:vimtex_view_skim_activate
+    let l:activate = '-e ''activate'''
   endif
+  let l:cmd = join([
+        \ 'osascript',
+        \ '-e ''set theLine to ' . line('.') . ' as integer''',
+        \ '-e ''set theFile to POSIX file "' . outfile . '"''',
+        \ '-e ''set thePath to POSIX path of (theFile as alias)''',
+        \ '-e ''set theSource to POSIX file "' . expand('%:p') . '"''',
+        \ '-e ''tell application "Skim"''',
+        \ '-e ''try''',
+        \ '-e ''set theDocs to get documents whose path is thePath''',
+        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
+        \ '-e ''end try''',
+        \ '-e ''open theFile''',
+        \ '-e ''tell front document to go to TeX line theLine from theSource',
+        \ '     showing reading bar true''',
+        \ l:activate,
+        \ '-e ''end tell''',
+        \])
 
   let self.process = vimtex#process#start(l:cmd)
 
@@ -110,7 +95,7 @@ function! s:skim.compiler_callback(status) dict " {{{1
         \ '-e ''end tell''',
         \])
 
-  
+
   let self.process = vimtex#process#start(l:cmd)
 
   if has_key(self, 'hook_callback')
