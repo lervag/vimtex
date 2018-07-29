@@ -86,8 +86,8 @@ endfunction
 
 " }}}1
 function! s:compiler.init_pdf_mode_option() abort dict " {{{1
-  "
-  " Check if .latexmkrc sets the pdf_mode - if so this should be respected
+  " If the TeX program directive was not set, and if the pdf_mode is set in a
+  " .latexmkrc file, then deduce the compiler engine from the value of pdf_mode.
 
   " Parse the pdf_mode option. If not found, it is set to -1.
   let l:pdf_mode = s:parse_latexmkrc_option(self.root, 'pdf_mode', 1, -1)
@@ -104,14 +104,16 @@ function! s:compiler.init_pdf_mode_option() abort dict " {{{1
     return
   endif
 
-  if self.tex_program !=# '_' && self.tex_program !=# l:tex_program
+  if self.tex_program ==# '_'  " the TeX program directive was not specified
+      let self.tex_program = l:tex_program
+  elseif self.tex_program !=# l:tex_program
     call vimtex#log#warning(
-          \ 'Setting pdf_mode from latexmkrc overrides tex_program!',
-          \ 'Changed tex_program from: ' . self.tex_program,
-          \ 'Changed tex_program to: ' . l:tex_program)
+          \ 'Value of pdf_mode from latexmkrc is inconsistent with ' .
+          \ 'TeX program directive!',
+          \ 'TeX program: ' . self.tex_program,
+          \ 'pdf_mode:    ' . l:tex_program,
+          \ 'The value of pdf_mode will be ignored.')
   endif
-
-  let self.tex_program = l:tex_program
 endfunction
 
 " }}}1
