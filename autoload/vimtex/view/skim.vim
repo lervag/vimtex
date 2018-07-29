@@ -55,6 +55,7 @@ function! s:skim.view(file) dict " {{{1
         \ '-e ''open theFile''',
         \ '-e ''tell front document to go to TeX line theLine from theSource',
         \ '     showing reading bar true''',
+        \ '-e ''activate''',
         \ '-e ''end tell''',
         \])
 
