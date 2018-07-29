@@ -223,6 +223,7 @@ function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_view_general_options_latexmk', '')
   call s:init_option('vimtex_view_mupdf_options', '')
   call s:init_option('vimtex_view_mupdf_send_keys', '')
+  call s:init_option('vimtex_view_skim_activate', 0)
   call s:init_option('vimtex_view_zathura_options', '')
 endfunction
 

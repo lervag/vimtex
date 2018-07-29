@@ -2053,6 +2053,11 @@ Options~
 
   Default value: ''
 
+*g:vimtex_view_skim_activate*
+  Use this option to enable/disable activate skim after VimtexView.
+
+  Default value: 0
+
 *g:vimtex_view_zathura_options*
   Set options for zathura (|vimtex_viewer_zathura|).
 
