@@ -799,6 +799,12 @@ Options~
   compiler engine. This is used by |vimtex-latexmk| to define the LaTeX
   program. The `_` key defines the default engine.
 
+  Note: If the TeX program directive is not specified within the main project
+        file, and if `$pdf_mode` is added to a project-specific `.latexmkrc`
+        file, then the compiler engine will be deduced from the value of
+        `$pdf_mode`. The supported values of `$pdf_mode` are 0 (pdflatex), 4
+        (lualatex) and 5 (xelatex). See the latexmk documentation for details.
+
   Default value: >
 
     let g:vimtex_compiler_latexmk_engines = {
