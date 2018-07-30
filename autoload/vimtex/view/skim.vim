@@ -41,10 +41,6 @@ function! s:skim.view(file) dict " {{{1
   endif
   if vimtex#view#common#not_readable(outfile) | return | endif
 
-  let l:activate = ''
-  if g:vimtex_view_skim_activate
-    let l:activate = '-e ''activate'''
-  endif
   let l:cmd = join([
         \ 'osascript',
         \ '-e ''set theLine to ' . line('.') . ' as integer''',
@@ -58,8 +54,8 @@ function! s:skim.view(file) dict " {{{1
         \ '-e ''end try''',
         \ '-e ''open theFile''',
         \ '-e ''tell front document to go to TeX line theLine from theSource',
-        \ '     showing reading bar true''',
-        \ l:activate,
+        \ g:vimtex_view_skim_reading_bar ? 'showing reading bar true''' : '''',
+        \ g:vimtex_view_skim_activate ? '-e ''activate''' : '',
         \ '-e ''end tell''',
         \])
 
@@ -94,7 +90,6 @@ function! s:skim.compiler_callback(status) dict " {{{1
         \ '-e ''open theFile''',
         \ '-e ''end tell''',
         \])
-
 
   let self.process = vimtex#process#start(l:cmd)
 
