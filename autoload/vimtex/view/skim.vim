@@ -11,7 +11,7 @@ function! vimtex#view#skim#new() " {{{1
         \ '''tell application "Finder" to POSIX path of ',
         \ '(get application file id (id of application "Skim") as alias)''',
         \])
-  
+
   if system(l:cmd)
     call vimtex#log#error('Skim is not installed!')
     return {}
@@ -54,7 +54,8 @@ function! s:skim.view(file) dict " {{{1
         \ '-e ''end try''',
         \ '-e ''open theFile''',
         \ '-e ''tell front document to go to TeX line theLine from theSource',
-        \ '     showing reading bar true''',
+        \ g:vimtex_view_skim_reading_bar ? 'showing reading bar true''' : '''',
+        \ g:vimtex_view_skim_activate ? '-e ''activate''' : '',
         \ '-e ''end tell''',
         \])
 
@@ -89,7 +90,7 @@ function! s:skim.compiler_callback(status) dict " {{{1
         \ '-e ''open theFile''',
         \ '-e ''end tell''',
         \])
-  
+
   let self.process = vimtex#process#start(l:cmd)
 
   if has_key(self, 'hook_callback')
