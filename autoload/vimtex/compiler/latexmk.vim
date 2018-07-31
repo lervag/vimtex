@@ -623,7 +623,7 @@ function! s:parse_latexmkrc_option(root, opt, is_integer, default) abort " {{{1
     endif
   endfor
 
-  let l:output = [a:default, -1]
+  return [a:default, -1]
 endfunction
 
 " }}}1
