@@ -86,8 +86,9 @@ endfunction
 
 " }}}1
 function! s:compiler.init_pdf_mode_option() abort dict " {{{1
-  " If the TeX program directive was not set, and if the pdf_mode is set in a
-  " .latexmkrc file, then deduce the compiler engine from the value of pdf_mode.
+  " If the TeX program directive was not set, and if the pdf_mode is set in
+  " a .latexmkrc file, then deduce the compiler engine from the value of
+  " pdf_mode.
 
   " Parse the pdf_mode option. If not found, it is set to -1.
   let [l:pdf_mode, l:is_local] =
@@ -105,8 +106,9 @@ function! s:compiler.init_pdf_mode_option() abort dict " {{{1
     return
   endif
 
-  if self.tex_program ==# '_'  " the TeX program directive was not specified
-      let self.tex_program = l:tex_program
+  if self.tex_program ==# '_'
+    " The TeX program directive was not specified
+    let self.tex_program = l:tex_program
   elseif l:is_local && self.tex_program !=# l:tex_program
     call vimtex#log#warning(
           \ 'Value of pdf_mode from latexmkrc is inconsistent with ' .
@@ -573,22 +575,38 @@ function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:parse_latexmkrc_option(root, option, is_integer, default) abort " {{{1
+
+
+"
+" Utility functions
+"
+
+function! s:parse_latexmkrc_option(root, opt, is_integer, default) abort " {{{1
   "
   " Parse option from .latexmkrc.
-  " The option may represent an integer or a string value.
   "
-  " Returns a list containing the parsed option value, and an integer
-  " determining whether the latexmkrc file is local to the project or not.
+  " Arguments:
+  "   root         Root of LaTeX project
+  "   opt          Name of options
+  "   is_integer   If return type should be integer
+  "   default      Value to return if option not found in latexmkrc file
   "
-  " If the option is not found, returns the default value given as input.
+  " Output:
+  "   [value, location]
+  "
+  "   value        Option value (integer or string)
+  "   location     An integer that indicates where option was found
+  "                 -1: not found (default value returned)
+  "                  0: global latexmkrc file
+  "                  1: local latexmkrc file
+  "
 
-  let l:output = [a:default, 0]  " [option value, latexmkrc is local to project]
-  let l:value_pattern = a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]'
-  let l:pattern = '^\s*\$' . a:option . '\s*=\s*' . l:value_pattern
-              \ . '\s*;\?\s*\(#.*\)\?$'
+  let l:pattern = '^\s*\$' . a:opt . '\s*=\s*'
+        \ . (a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]')
+        \ . '\s*;\?\s*\(#.*\)\?$'
 
-  " Each element is a pair [path_to_file, is_local_rc_file].
+  " Candidate files
+  " - each element is a pair [path_to_file, is_local_rc_file].
   let l:files = [
         \ [a:root . '/latexmkrc', 1],
         \ [a:root . '/.latexmkrc', 1],
@@ -600,14 +618,12 @@ function! s:parse_latexmkrc_option(root, option, is_integer, default) abort " {{
     if filereadable(l:file)
       let l:match = matchlist(readfile(l:file), l:pattern)
       if len(l:match) > 1
-        let l:output[0] = l:match[1]
-        let l:output[1] = l:is_local
-        break
+        return [l:match[1], l:is_local]
       end
     endif
   endfor
 
-  return l:output
+  let l:output = [a:default, -1]
 endfunction
 
 " }}}1
