@@ -808,13 +808,13 @@ Options~
   Default value: >
 
     let g:vimtex_compiler_latexmk_engines = {
-        \ '_'                : '-pdf'
-        \ 'pdflatex'         : '-pdf'
-        \ 'lualatex'         : '-lualatex'
-        \ 'xelatex'          : '-xelatex'
-        \ 'context (pdftex)' : '-pdf -pdflatex=texexec'
-        \ 'context (luatex)' : '-pdf -pdflatex=context'
-        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx'''
+        \ '_'                : '-pdf',
+        \ 'pdflatex'         : '-pdf',
+        \ 'lualatex'         : '-lualatex',
+        \ 'xelatex'          : '-xelatex',
+        \ 'context (pdftex)' : '-pdf -pdflatex=texexec',
+        \ 'context (luatex)' : '-pdf -pdflatex=context',
+        \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
         \}
 
 *g:vimtex_compiler_latexrun*
@@ -867,10 +867,10 @@ Options~
   Default value: >
 
     let g:vimtex_compiler_latexrun_engines = {
-        \ '_'                : 'pdflatex'
-        \ 'pdflatex'         : 'pdflatex'
-        \ 'lualatex'         : 'lualatex'
-        \ 'xelatex'          : 'xelatex'
+        \ '_'                : 'pdflatex',
+        \ 'pdflatex'         : 'pdflatex',
+        \ 'lualatex'         : 'lualatex',
+        \ 'xelatex'          : 'xelatex',
         \}
 
 *g:vimtex_compiler_arara*
