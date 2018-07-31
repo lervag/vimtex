@@ -86,8 +86,6 @@ function! vimtex#qf#open(force) abort " {{{1
       call s:window_restore()
     endif
     redraw
-  elseif !l:errors_or_warnings
-    cclose
   endif
 endfunction
 
