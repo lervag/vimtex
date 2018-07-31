@@ -162,8 +162,6 @@ endfunction
 
 " }}}1
 function! s:qf.fix_paths() abort dict " {{{1
-  let w:quickfix_title = 'Vimtex errors (' . self.name . ')'
-
   let l:qflist = getqflist()
 
   for l:qf in l:qflist
@@ -189,10 +187,12 @@ function! s:qf.fix_paths() abort dict " {{{1
     let l:qf.bufnr = bufnr(l:file)
   endfor
 
-  " Update qflist and set title if setqflist supports it
+  " Update qflist
   call setqflist(l:qflist, 'r')
+
+  " Set title if supported
   try
-    call setqflist(l:qflist, 'r', {'title': w:quickfix_title})
+    call setqflist([], 'r', {'title': 'Vimtex errors (' . self.name . ')'})
   catch
   endtry
 endfunction

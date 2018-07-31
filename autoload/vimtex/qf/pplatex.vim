@@ -86,7 +86,7 @@ function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
   silent call system('rm ' . l:tmp)
 
   try
-    call setqflist(getqflist(), 'r', {'title': 'Vimtex errors (' . self.name . ')'})
+    call setqflist([], 'r', {'title': 'Vimtex errors (' . self.name . ')'})
   catch
   endtry
 endfunction

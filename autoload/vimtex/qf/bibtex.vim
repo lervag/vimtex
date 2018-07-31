@@ -60,6 +60,7 @@ endfunction
 " }}}1
 function! s:bibtex.fix_paths() abort " {{{1
   let l:qflist = getqflist()
+  let l:title = getqflist({'title': 1})
 
   for l:qf in l:qflist
     for l:type in self.types
@@ -68,6 +69,12 @@ function! s:bibtex.fix_paths() abort " {{{1
   endfor
 
   call setqflist(l:qflist, 'r')
+
+  " Set title if supported
+  try
+    call setqflist([], 'r', l:title)
+  catch
+  endtry
 endfunction
 
 " }}}1
