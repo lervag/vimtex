@@ -1,0 +1,14 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_automatic = 0
+let g:vimtex_compiler_latexmk = { 'build_dir'  : 'log' }
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
