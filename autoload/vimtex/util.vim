@@ -38,7 +38,7 @@ endfunction
 
 " }}}1
 function! vimtex#util#get_os() " {{{1
-  if has('win32')
+  if has('win32') || has('win32unix')
     return 'win'
   elseif has('unix')
     if system('uname') =~# 'Darwin'
