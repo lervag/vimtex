@@ -133,7 +133,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
 
   " Check for required executables
   let l:required = [self.executable]
-  if self.continuous && !has('win32')
+  if self.continuous && !(has('win32') || has('win32unix'))
     let l:required += ['pgrep']
   endif
   let l:missing = filter(l:required, '!executable(v:val)')
@@ -376,7 +376,7 @@ function! s:compiler_process.exec() abort dict " {{{1
   let l:process.cmd = self.build_cmd()
 
   if l:process.continuous
-    if has('win32')
+    if (has('win32') || has('win32unix'))
       " Not implemented
     else
       for l:pid in split(system(
@@ -391,7 +391,7 @@ function! s:compiler_process.exec() abort dict " {{{1
   endif
 
   function! l:process.set_pid() abort dict " {{{2
-    if has('win32')
+    if (has('win32') || has('win32unix'))
       let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
       let pidinfo = split(system(pidcmd), '\n')[-1]
       let self.pid = str2nr(split(pidinfo,'\s\+')[1])
