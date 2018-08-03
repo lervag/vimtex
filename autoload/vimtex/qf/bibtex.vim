@@ -80,9 +80,16 @@ endfunction
 " }}}1
 function! s:bibtex.get_db_files() abort " {{{1
   if empty(self.db_files)
-    let self.db_files = map(
+    let l:build_dir = fnamemodify(b:vimtex.ext('log'), ':.:h') . '/'
+    for l:file in map(
           \ filter(readfile(self.file), 'v:val =~# ''Database file #\d:'''),
           \ 'matchstr(v:val, '': \zs.*'')')
+      if filereadable(l:file)
+        call add(self.db_files, l:file)
+      elseif filereadable(l:build_dir . l:file)
+        call add(self.db_files, l:build_dir . l:file)
+      endif
+    endfor
   endif
 
   return self.db_files
