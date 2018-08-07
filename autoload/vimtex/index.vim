@@ -117,7 +117,9 @@ function! s:index.toggle() abort dict " {{{1
     call self.close()
   else
     call self.open()
-    call win_gotoid(self.prev_winid)
+    if has_key(self, 'prev_winid')
+      call win_gotoid(self.prev_winid)
+    endif
   endif
 endfunction
 
@@ -209,7 +211,7 @@ function! s:index.activate(close) abort dict "{{{1
   normal! zv
 
   " Keep or close index window (based on options)
-  if a:close
+  if a:close && g:vimtex_index_split_pos !=# 'full'
     call self.close()
   else
     " Return to index window
