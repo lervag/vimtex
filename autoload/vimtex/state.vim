@@ -339,14 +339,14 @@ function! s:get_main_recurse(...) " {{{1
     let l:tried[l:file] = [l:file]
   endif
 
+  let l:filter_re = g:vimtex#re#tex_input
+        \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
+        \ . '%(\.tex)?\s*\}'
+
   " Search through candidates found recursively upwards in the directory tree
   for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
-
-    let l:filter_re = g:vimtex#re#tex_input
-          \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
-          \ . '%(\.tex)?\}'
 
     if len(filter(readfile(l:cand), 'v:val =~# l:filter_re')) > 0
       let l:res = s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
