@@ -15,6 +15,7 @@
 "     rank   : cumulative line number,
 "     level  : 2,
 "     type   : [content | label | figure | table | todo],
+"     link   : [0 | 1],
 "   }
 "
 
@@ -251,6 +252,7 @@ function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
         \ 'level'  : 0,
         \ 'rank'   : a:context.lnum_total,
         \ 'type'   : 'content',
+        \ 'link'   : 1,
         \ }
 endfunction
 
