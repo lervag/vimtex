@@ -43,6 +43,8 @@ let s:toc = {
       \ 'help' : [
       \   '-:       decrease g:vimtex_toc_tocdepth',
       \   '+:       increase g:vimtex_toc_tocdepth',
+      \   'c:       clear filters',
+      \   'f:       filter',
       \   's:       hide numbering',
       \   't:       toggle sorted TODOs',
       \   'u:       update',
@@ -58,7 +60,7 @@ function! s:toc.new() abort dict " {{{1
   let l:toc.hotkeys = extend({
         \ 'enabled' : '0',
         \ 'leader' : ';',
-        \ 'keys' : 'abcdefghijklmnopqrstuvxyz',
+        \ 'keys' : 'abdeghijklmnoprvxyz',
         \}, g:vimtex_toc_hotkeys)
 
   unlet l:toc.new
@@ -86,20 +88,24 @@ function! s:toc.update(force) abort dict " {{{1
     let self.entries = l:todos + self.entries
   endif
 
+  let self.all_entries = deepcopy(self.entries)
+
   "
   " Add hotkeys to entries
   "
-  let k = strwidth(self.hotkeys.keys)
-  let n = len(self.entries)
-  let m = len(s:base(n, k))
-  let i = 0
-  for entry in self.entries
-    let keys = map(s:base(i, k), 'strcharpart(self.hotkeys.keys, v:val, 1)')
-    let keys = repeat([self.hotkeys.keys[0]], m - len(keys)) + keys
-    let i+=1
-    let entry.num = i
-    let entry.hotkey = join(keys, '')
-  endfor
+  if self.hotkeys.enabled
+    let k = strwidth(self.hotkeys.keys)
+    let n = len(self.entries)
+    let m = len(s:base(n, k))
+    let i = 0
+    for entry in self.entries
+      let keys = map(s:base(i, k), 'strcharpart(self.hotkeys.keys, v:val, 1)')
+      let keys = repeat([self.hotkeys.keys[0]], m - len(keys)) + keys
+      let i+=1
+      let entry.num = i
+      let entry.hotkey = join(keys, '')
+    endfor
+  endif
 
   "
   " Refresh if wanted
@@ -123,6 +129,8 @@ function! s:toc.hook_init_post() abort dict " {{{1
     let &l:foldlevel = get(self, 'fold_level', g:vimtex_toc_fold_level_start)
   endif
 
+  nnoremap <buffer> <silent> c :call b:index.clear_filter()<cr>
+  nnoremap <buffer> <silent> f :call b:index.filter()<cr>
   nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
   nnoremap <buffer> <silent> t :call b:index.toggle_sorted_todos()<cr>
   nnoremap <buffer> <silent> u :call b:index.update(1)<cr>
@@ -288,6 +296,19 @@ endfunction
 function! s:toc.activate_number(n) abort dict "{{{1
   execute printf('normal! %dG', self.help_nlines + a:n)
   call self.activate(1)
+endfunction
+
+" }}}1
+function! s:toc.clear_filter() dict "{{{1
+  let self.entries = copy(self.all_entries)
+  call self.refresh()
+endfunction
+
+" }}}1
+function! s:toc.filter() dict "{{{1
+  let filter = input('filter by: ')
+  let self.entries = filter(self.entries, 'v:val.title =~# filter')
+  call self.refresh()
 endfunction
 
 " }}}1
