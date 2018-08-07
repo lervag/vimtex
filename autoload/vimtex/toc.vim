@@ -145,12 +145,18 @@ endfunction
 " }}}1
 function! s:toc.get_closest_index() abort dict " {{{1
   let l:calling_rank = 0
+  let l:not_found = 1
   for [l:file, l:lnum, l:line] in vimtex#parser#tex(b:vimtex.tex)
     let l:calling_rank += 1
     if l:file ==# self.calling_file && l:lnum >= self.calling_line
+      let l:not_found = 0
       break
     endif
   endfor
+
+  if l:not_found
+    return [0, get(self, 'prev_index', self.help_nlines + 1), 0, 0]
+  endif
 
   let l:index = 0
   let l:dist = 0

@@ -158,6 +158,7 @@ function! s:index.activate(close) abort dict "{{{1
   let n = vimtex#pos#get_cursor_line() - 1
   if n < self.help_nlines | return | endif
   let entry = self.entries[n - self.help_nlines]
+  let self.prev_index = n + 1
   let l:vimtex_main = get(b:vimtex, 'tex', '')
 
   " Save index winnr info for later use
