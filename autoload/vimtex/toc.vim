@@ -88,8 +88,6 @@ function! s:toc.update(force) abort dict " {{{1
     let self.entries = l:todos + self.entries
   endif
 
-  let self.all_entries = deepcopy(self.entries)
-
   "
   " Add hotkeys to entries
   "
@@ -189,7 +187,9 @@ function! s:toc.print_entries() abort dict " {{{1
   let self.number_format = '%-' . self.number_width . 's'
 
   for entry in self.entries
-    call self.print_entry(entry)
+    if !get(entry, 'hidden')
+      call self.print_entry(entry)
+    endif
   endfor
 endfunction
 
@@ -300,14 +300,18 @@ endfunction
 
 " }}}1
 function! s:toc.clear_filter() dict "{{{1
-  let self.entries = copy(self.all_entries)
+  for entry in self.entries
+    let entry.hidden = 0
+  endfor
   call self.refresh()
 endfunction
 
 " }}}1
 function! s:toc.filter() dict "{{{1
-  let filter = input('filter by: ')
-  let self.entries = filter(self.entries, 'v:val.title =~# filter')
+  let re_filter = input('filter entry title by: ')
+  for entry in self.entries
+    let entry.hidden = get(entry, 'hidden') || entry.title !~# re_filter
+  endfor
   call self.refresh()
 endfunction
 
