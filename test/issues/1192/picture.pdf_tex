@@ -1,0 +1,62 @@
+%% Creator: Inkscape inkscape 0.92.2, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'picture.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{430.8984375bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.61700223)%
+    \put(0.04521349,0.57780587){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.39332335,0.40375095){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.95029917,0.36893996){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.16369444,0.29194942){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.88067719,0.5429949){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.77624423,0.33412897){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.88067719,0.12526302){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.6021893,0.36893996){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{test}}}}%
+    \put(0.52765498,0.01482185){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\textsl{This picture has a lot of text in it}}}}%
+  \end{picture}%
+\endgroup%

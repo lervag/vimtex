@@ -1,0 +1,16 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+silent edit test.tex
+let s:time = reltime()
+
+normal! GO
+
+echo printf("\nTiming: %7.4f", reltimefloat(reltime(s:time)))
+
+quit!
