@@ -129,18 +129,18 @@ function! s:toc.hook_init_post() abort dict " {{{1
     let &l:foldlevel = get(self, 'fold_level', g:vimtex_toc_fold_level_start)
   endif
 
-  nnoremap <buffer> <silent> c :call b:index.clear_filter()<cr>
-  nnoremap <buffer> <silent> f :call b:index.filter()<cr>
-  nnoremap <buffer> <silent> s :call b:index.toggle_numbers()<cr>
-  nnoremap <buffer> <silent> t :call b:index.toggle_sorted_todos()<cr>
-  nnoremap <buffer> <silent> u :call b:index.update(1)<cr>
-  nnoremap <buffer> <silent> - :call b:index.decrease_depth()<cr>
-  nnoremap <buffer> <silent> + :call b:index.increase_depth()<cr>
+  nnoremap <buffer><nowait><silent> f :call b:index.filter()<cr>
+  nnoremap <buffer><nowait><silent> F :call b:index.clear_filter()<cr>
+  nnoremap <buffer><nowait><silent> s :call b:index.toggle_numbers()<cr>
+  nnoremap <buffer><nowait><silent> t :call b:index.toggle_sorted_todos()<cr>
+  nnoremap <buffer><nowait><silent> u :call b:index.update(1)<cr>
+  nnoremap <buffer><nowait><silent> - :call b:index.decrease_depth()<cr>
+  nnoremap <buffer><nowait><silent> + :call b:index.increase_depth()<cr>
 
   if self.hotkeys.enabled
     for entry in self.entries
       execute printf(
-            \ 'nnoremap <buffer><silent> %s%s'
+            \ 'nnoremap <buffer><nowait><silent> %s%s'
             \ . ' :call b:index.activate_number(%d)<cr>',
             \ self.hotkeys.leader, entry.hotkey, entry.num)
     endfor
