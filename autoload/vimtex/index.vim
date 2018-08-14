@@ -141,7 +141,7 @@ function! s:index.refresh() abort dict " {{{1
 
   call self.position_save()
   setlocal modifiable
-  %delete
+  silent %delete
 
   call self.print_help()
   call self.print_entries()
