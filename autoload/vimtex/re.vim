@@ -18,7 +18,7 @@ let g:vimtex#re#tex_input = '\v%(' . join([
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
 
-let g:vimtex#re#tex_include = '\v%(' . join([
+let g:vimtex#re#tex_include = g:vimtex#re#not_comment . '%(' . join([
       \   g:vimtex#re#tex_input_root,
       \   g:vimtex#re#tex_input_latex . '\zs[^\}]*\ze\}?',
       \   g:vimtex#re#tex_input_import . '\zs[^\}]*\ze\}?',
