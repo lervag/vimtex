@@ -7,3 +7,21 @@ syntax enable
 nnoremap q :qall!<cr>
 
 let g:tex_flavor = 'latex'
+
+let g:vimtex_toc_layers = {
+      \ 'content': {
+      \   'key': '<c-c>',
+      \   'active': 1,
+      \ },
+      \ 'include': {
+      \   'active': 0,
+      \ },
+      \}
+
+augroup mytex
+  autocmd!
+  autocmd FileType tex nnoremap <silent> \ly :call b:vimtex.toc.open('label', 'todo')<cr>
+  autocmd FileType tex nnoremap <silent> \lu :call b:vimtex.toc.open('include')<cr>
+augroup END
+
+silent edit main.tex

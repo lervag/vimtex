@@ -14,7 +14,7 @@
 "     line   : 142,
 "     rank   : cumulative line number,
 "     level  : 2,
-"     type   : [content | label | figure | table | todo],
+"     type   : [content | label | todo | include],
 "     link   : [0 | 1],
 "   }
 "
@@ -127,7 +127,6 @@ function! vimtex#parser#toc#get_topmatters() abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#parser#toc#get_entry_general(context) abort dict " {{{1
   return {
         \ 'title'  : self.title,
@@ -170,7 +169,7 @@ function! s:included.get_entry(context) " {{{1
           \ 'line'    : 1,
           \ 'level'   : a:context.max_level - a:context.level.current,
           \ 'rank'    : a:context.lnum_total,
-          \ 'type'    : 'content',
+          \ 'type'    : 'include',
           \ 'entries' : 0,
           \ }
     return self.current
@@ -202,7 +201,7 @@ function! s:matcher_vimtex_include.get_entry(context) abort dict " {{{1
         \ 'file'   : l:file,
         \ 'level'  : a:context.max_level - a:context.level.current,
         \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'content',
+        \ 'type'   : 'include',
         \ 'link'   : 1,
         \ }
 endfunction
@@ -251,7 +250,7 @@ function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
         \ 'line'   : 0,
         \ 'level'  : 0,
         \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'content',
+        \ 'type'   : 'include',
         \ 'link'   : 1,
         \ }
 endfunction
