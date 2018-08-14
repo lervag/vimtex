@@ -68,7 +68,7 @@ CONTENTS                                                      *vimtex-contents*
   Syntax highlighting                           |vimtex-syntax|
   Navigation                                    |vimtex-navigation|
     Table of contents                           |vimtex-toc|
-    Unite sources                               |vimtex-unite|
+    Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
     Include expression (|gf| command)             |vimtex-includeexpr|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
@@ -3022,28 +3022,25 @@ Associated settings:
   |g:vimtex_toc_tocdepth|
 
 ------------------------------------------------------------------------------
-Unite sources~
+Denite/Unite source~
+                                                                *vimtex-denite*
                                                                  *vimtex-unite*
-                                                                   *vimtex_toc*
-                                                                *vimtex_labels*
 
+                                        https://github.com/Shougo/denite.nvim
                                           https://github.com/Shougo/unite.vim
-The |unite.vim| plugin is a popular interface for many things, including
-outlines. Although |vimtex| includes a simple interface for tables of contents
-and labels, it also makes sense to provide these as sources to |unite.vim|.
-The source names are:
+|denite.nvim| is is a popular interface for many things, including outlines.
+Although |vimtex| includes a simple interface for a tables of contents, it
+also makes sense to provide these as a source to |denite.nvim|. The source
+name is simply `vimtex`.
 
-  vimtex_toc       Table of contents
-  vimtex_labels    Table of labels
+|unite.vim| is the predecessor to |denite.nvim|. As for denite, there is
+a source called `vimtex`.
 
-The sources use similar syntax highlighting to the internal |vimtex|
-interfaces.
+If one prefers the |denite.nvim| or |unite.vim| source to the |vimtex|
+interface, one may override the default mapping, e.g.: >
 
-If one prefers the |unite.vim| sources to the |vimtex| interface, one may
-override the default mappings, e.g.: >
-
-  nnoremap <localleader>lt :<c-u>Unite vimtex_toc<cr>
-  nnoremap <localleader>ly :<c-u>Unite vimtex_labels<cr>
+  nnoremap <localleader>lt :<c-u>Denite vimtex<cr>
+  nnoremap <localleader>lt :<c-u>Unite vimtex<cr>
 
 ------------------------------------------------------------------------------
 Include expression~

@@ -8,7 +8,7 @@ class Source(Base):
     def __init__(self, vim):
         super().__init__(vim)
 
-        self.name = 'vimtex_toc'
+        self.name = 'vimtex'
         self.kind = 'file'
 
     @staticmethod
@@ -41,6 +41,6 @@ class Source(Base):
                 'action__line': e.get('line', 0)}
 
     def gather_candidates(self, context):
-        entries = self.vim.eval('vimtex#toc#get_entries()')
+        entries = self.vim.eval('vimtex#parser#toc(b:vimtex.tex)')
         depth = max([int(e['level']) for e in entries])
         return [Source.create_candidate(e, depth) for e in entries]
