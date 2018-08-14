@@ -68,7 +68,6 @@ CONTENTS                                                      *vimtex-contents*
   Syntax highlighting                           |vimtex-syntax|
   Navigation                                    |vimtex-navigation|
     Table of contents                           |vimtex-toc|
-    Table of labels                             |vimtex-labels|
     Unite sources                               |vimtex-unite|
     Include expression (|gf| command)             |vimtex-includeexpr|
   Compilation                                   |vimtex-compiler|
@@ -118,7 +117,6 @@ Feature overview~
   - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
   - table of content
-  - table of labels
   - proper settings for |'include'|, |'includeexpr'|, |'suffixesadd'| and
     |'define'|, which among other things
     - allow |include-search| and |definition-search|
@@ -580,8 +578,6 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lI  |<plug>(vimtex-info-full)|                      `n`
    <localleader>lt  |<plug>(vimtex-toc-open)|                       `n`
    <localleader>lT  |<plug>(vimtex-toc-toggle)|                     `n`
-   <localleader>ly  |<plug>(vimtex-labels-open)|                    `n`
-   <localleader>lY  |<plug>(vimtex-labels-toggle)|                  `n`
    <localleader>lq  |<plug>(vimtex-log)|                            `n`
    <localleader>lv  |<plug>(vimtex-view)|                           `n`
    <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
@@ -1462,29 +1458,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_labels_enabled*
-  Use this option to disable/enable table of labels.
-
-  Default value: 1
-
-*g:vimtex_labels_refresh_always*
-  Set to 0 to manually refresh entries in the table of labels. This may be
-  useful for very large projects where generating the entries becomes slow.
-
-  It may be useful to combine manually refreshing with a |BufWritePost|
-  autocommand, e.g.: >
-
-    augroup vimtex
-      autocmd!
-      autocmd BufWritePost *.tex call vimtex#labels#refresh()
-    augroup END
-<
-  Or, if preferred, one may use a mapping such as: >
-
-    nnoremap <silent> <localleader>lf :call vimtex#labels#refresh()
-<
-  Default value: 1
-
 *g:vimtex_log_ignore*
   A list of regexes to filter info, warning, and error messages. If a logged
   message matches any of the regexes in this list, the message will not be
@@ -2110,14 +2083,6 @@ Commands~
                                              *VimtexTocToggle*
                                              *<plug>(vimtex-toc-toggle)*
 :VimtexTocToggle          Toggle table of contents.
-
-                                             *VimtexLabelsOpen*
-                                             *<plug>(vimtex-labels-open)*
-:VimtexLabelsOpen         Open table of labels.
-
-                                             *VimtexLabelsToggle*
-                                             *<plug>(vimtex-labels-toggle)*
-:VimtexLabelsToggle       Toggle table of labels.
 
                                              *VimtexLog*
                                              *<plug>(vimtex-log)*
@@ -2998,8 +2963,7 @@ NAVIGATION                                                  *vimtex-navigation*
                                                                  *vimtex-index*
 
 The |vimtex-index| is an interface for listing various LaTeX related lists,
-such as the table of contents |vimtex-toc| and table of labels
-|vimtex-labels|.
+such as the table of contents |vimtex-toc|.
 
 The index may be in the form of a split window (default) or through
 a |location-list|, see |g:vimtex_index_mode|.
@@ -3056,18 +3020,6 @@ Associated settings:
   |g:vimtex_toc_show_preamble|
   |g:vimtex_toc_show_numbers|
   |g:vimtex_toc_tocdepth|
-
-------------------------------------------------------------------------------
-Table of labels~
-                                                                *vimtex-labels*
-
-|vimtex-labels| shows a table of labels similar to the ToC.
-
-If the labels are displayed in an index window, the entries may be filtered
-with the `f` keybinding.  Filters may be removed with the `c` keybinding.
-
-Associated settings:
-  |g:vimtex_labels_enabled|
 
 ------------------------------------------------------------------------------
 Unite sources~

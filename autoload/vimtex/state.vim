@@ -221,7 +221,7 @@ function! s:get_main() " {{{1
     if l:id >= 0
       return s:vimtex_states[l:id].tex
     else
-      let s:disabled_modules = ['latexmk', 'view', 'toc', 'labels']
+      let s:disabled_modules = ['latexmk', 'view', 'toc']
       return expand('%:p')
     endif
   endif
@@ -450,7 +450,6 @@ function! s:vimtex.new(main, preserve_root) abort dict " {{{1
   call vimtex#compiler#init_state(l:new)
   call vimtex#qf#init_state(l:new)
   call vimtex#toc#init_state(l:new)
-  call vimtex#labels#init_state(l:new)
   call vimtex#fold#init_state(l:new)
 
   " Parsing packages might depend on the compiler setting for build_dir
