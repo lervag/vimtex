@@ -344,7 +344,9 @@ function! s:toc.set_syntax() abort dict "{{{1
   endif
 
   syntax match VimtexTocNum /\v^(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
-  syntax match VimtexTocTodo /\s\zsTODO: / contained
+  execute 'syntax match VimtexTocTodo'
+        \ '/\v\s\zs%(' . toupper(join(g:vimtex_toc_todo_keywords, '|')) . '): /'
+        \ 'contained'
   syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
   syntax match VimtexTocTag
         \ /^\[.\]/ contained

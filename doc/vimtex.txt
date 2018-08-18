@@ -1825,6 +1825,12 @@ Options~
 
   Default value: 3
 
+*g:vimtex_toc_todo_keywords*
+  Set list of keywords that should be recognized in comments for the todo
+  layer.
+
+  Default value: `['todo', 'fixme']`
+
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
 
@@ -3090,6 +3096,7 @@ Associated settings:
   |g:vimtex_toc_show_preamble|
   |g:vimtex_toc_show_numbers|
   |g:vimtex_toc_tocdepth|
+  |g:vimtex_toc_todo_keywords|
 
 ------------------------------------------------------------------------------
 Denite/Unite source~
