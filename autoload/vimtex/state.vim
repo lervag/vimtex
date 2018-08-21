@@ -444,6 +444,7 @@ function! s:vimtex.new(main, preserve_root) abort dict " {{{1
 
   call l:new.parse_tex_program()
   call l:new.parse_documentclass()
+  call l:new.parse_graphicspath()
   call l:new.gather_sources()
 
   call vimtex#view#init_state(l:new)
@@ -501,6 +502,23 @@ function! s:vimtex.parse_documentclass() abort dict " {{{1
     let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
     if !empty(l:class)
       let self.documentclass = l:class
+      break
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:vimtex.parse_graphicspath() abort dict " {{{1
+  let self.graphicspath = []
+
+  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\v\\graphicspath\s*\{\s*\{\s*\zs.*\ze\s*\}\s*\}\s*$'
+
+  for l:line in self.preamble
+    let l:paths = matchstr(l:line, l:pat)
+    if !empty(l:paths)
+      let l:paths = split(l:paths, '\s*}\s*{\s*')
+      let self.graphicspath = l:paths
       break
     endif
   endfor
