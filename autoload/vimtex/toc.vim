@@ -413,6 +413,7 @@ function! s:toc.print_entries() abort dict " {{{1
 
   for entry in self.entries
     if get(entry, 'active', 1) && !get(entry, 'hidden')
+          \ && (entry.type !=# 'content' || entry.level <= self.tocdepth)
       call self.print_entry(entry)
     endif
   endfor
