@@ -178,6 +178,32 @@ endfunction
 
 " }}}1
 
+" Adds entries for included files
+let s:matcher_include_graphics = {
+      \ 're' : '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
+      \ 'in_preamble' : 1,
+      \}
+function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+  if l:file[0] !=# '/'
+    let l:file = vimtex#misc#get_graphicspath(l:file)
+  endif
+  let l:file = fnamemodify(l:file, ':~:.')
+  return {
+        \ 'title'  : 'fig incl: ' . (strlen(l:file) < 70
+        \               ? l:file
+        \               : l:file[0:30] . '...' . l:file[-36:]),
+        \ 'number' : '[i]',
+        \ 'file'   : l:file,
+        \ 'line'   : 1,
+        \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ }
+endfunction
+
+" }}}1
+
 " Adds entries for included files through vimtex specific syntax (this allows
 " to add entries for any filetype or file)
 let s:matcher_include_vimtex = {
