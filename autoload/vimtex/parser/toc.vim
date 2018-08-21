@@ -103,9 +103,6 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     endfor
   endfor
 
-  " Remove superfluous entries (cf. the "included files" section above)
-  call filter(l:entries, 'get(v:val, ''entries'', 1) == 1')
-
   return l:entries
 endfunction
 
@@ -163,7 +160,7 @@ function! s:included.get_entry(context) " {{{1
   if index(self.files, a:context.file) < 0
     let self.files += [a:context.file]
     let self.current = {
-          \ 'title'   : fnamemodify(a:context.file, ':t'),
+          \ 'title'   : 'tex incl: ' . fnamemodify(a:context.file, ':t'),
           \ 'number'  : '[i]',
           \ 'file'    : a:context.file,
           \ 'line'    : 1,
@@ -183,23 +180,52 @@ endfunction
 
 " Adds entries for included files through vimtex specific syntax (this allows
 " to add entries for any filetype or file)
-let s:matcher_vimtex_include = {
+let s:matcher_include_vimtex = {
       \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
       \ 'in_preamble' : 1,
       \}
-function! s:matcher_vimtex_include.get_entry(context) abort dict " {{{1
+function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
   if l:file[0] !=# '/'
     let l:file = b:vimtex.root . '/' . l:file
   endif
   let l:file = fnamemodify(l:file, ':~:.')
   return {
-        \ 'title'  : (strlen(l:file) < 70
+        \ 'title'  : 'vtx incl: ' . (strlen(l:file) < 70
         \               ? l:file
         \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '[v]',
+        \ 'number' : '[i]',
         \ 'file'   : l:file,
+        \ 'line'   : 1,
         \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ 'link'   : 1,
+        \ }
+endfunction
+
+" }}}1
+
+let s:matcher_bibinputs = {
+      \ 're' : g:vimtex#re#not_comment
+      \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
+      \        . '\m\s*{\zs[^}]\+\ze}',
+      \ 'in_preamble' : 1,
+      \}
+function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+
+  " Ensure that the file name has extension
+  if l:file !~# '\.bib$'
+    let l:file .= '.bib'
+  endif
+
+  return {
+        \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
+        \ 'number' : '[i]',
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'line'   : 1,
+        \ 'level'  : 0,
         \ 'rank'   : a:context.lnum_total,
         \ 'type'   : 'include',
         \ 'link'   : 1,
@@ -225,34 +251,6 @@ function! s:matcher_preamble.get_entry(context) " {{{1
         \   'type'   : 'content',
         \   }
         \ : {}
-endfunction
-
-" }}}1
-
-let s:matcher_bibinputs = {
-      \ 're' : g:vimtex#re#not_comment
-      \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-      \        . '\m\s*{\zs[^}]\+\ze}',
-      \ 'in_preamble' : 1,
-      \}
-function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
-  let l:file = matchstr(a:context.line, self.re)
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.bib$'
-    let l:file .= '.bib'
-  endif
-
-  return {
-        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[b]',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
-        \ 'line'   : 0,
-        \ 'level'  : 0,
-        \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'include',
-        \ 'link'   : 1,
-        \ }
 endfunction
 
 " }}}1
@@ -374,7 +372,7 @@ let s:matcher_todonotes = {
       \}
 function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
   return {
-        \ 'title'  : printf('TODO: %s', matchstr(a:context.line, self.re)),
+        \ 'title'  : 'TODO: ' . matchstr(a:context.line, self.re),
         \ 'number' : deepcopy(a:context.level),
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
