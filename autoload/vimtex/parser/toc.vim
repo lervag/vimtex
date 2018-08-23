@@ -181,7 +181,6 @@ endfunction
 " Adds entries for included files
 let s:matcher_include_graphics = {
       \ 're' : '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
-      \ 'in_preamble' : 1,
       \}
 function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -416,7 +415,7 @@ let s:matcher_labels = {
 function! s:matcher_labels.get_entry(context) abort dict " {{{1
   return {
         \ 'title'  : matchstr(a:context.line, self.re),
-        \ 'number' : deepcopy(a:context.level),
+        \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,
