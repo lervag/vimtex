@@ -136,7 +136,7 @@ function! s:input_to_filename(input, root) abort " {{{1
   let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
 
   " Ensure that the file name has extension
-  if l:file !~# '\.tex$'
+  if empty(fnamemodify(l:file, ':e'))
     let l:file .= '.tex'
   endif
 
