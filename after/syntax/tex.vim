@@ -47,7 +47,10 @@ syntax cluster texCmdGroup add=texDefParmNested
 " }}}1
 " {{{1 General match improvements
 
+" More commands (e.g. from packages) take file arguments
 syntax match texInputFile /\\includepdf\%(\[.\{-}\]\)\=\s*{.\{-}}/
+      \ contains=texStatement,texInputCurlies,texInputFileOpt
+syntax match texInputFile /\\subfile\s*\%(\[.\{-}\]\)\=\s*{.\{-}}/
       \ contains=texStatement,texInputCurlies,texInputFileOpt
 
 " Allow subequations (fixes #1019)
