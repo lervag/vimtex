@@ -18,10 +18,26 @@ let g:vimtex_toc_layers = {
       \ },
       \}
 
-augroup mytex
+augroup vimtex_customization
   autocmd!
-  autocmd FileType tex nnoremap <silent> \ly :call b:vimtex.toc.open('label', 'todo')<cr>
-  autocmd FileType tex nnoremap <silent> \lu :call b:vimtex.toc.open('include')<cr>
+  autocmd FileType tex call CreateTocs()
 augroup END
+
+function CreateTocs()
+  let g:custom_toc1 = vimtex#toc#new({
+      \ 'layers' : ['label', 'todo'],
+      \ 'todo_sorted' : 0,
+      \ 'show_help' : 0,
+      \ 'show_numbers' : 0,
+      \ 'mode' : 4,
+      \})
+  nnoremap <silent> \ly :call g:custom_toc1.open()<cr>
+
+  let g:custom_toc2 = vimtex#toc#new({
+      \ 'layers' : ['include'],
+      \ 'show_help' : 0,
+      \})
+  nnoremap <silent> \lY :call g:custom_toc2.open()<cr>
+endfunction
 
 silent edit main.tex
