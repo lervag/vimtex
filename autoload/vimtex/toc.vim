@@ -18,11 +18,20 @@ endfunction
 function! vimtex#toc#init_state(state) abort " {{{1
   if !g:vimtex_toc_enabled | return | endif
 
-  let a:state.toc = deepcopy(s:toc)
+  let a:state.toc = vimtex#toc#new()
 endfunction
 
 " }}}1
 
+function! vimtex#toc#new(...) abort " {{{1
+  return extend(
+        \ deepcopy(s:toc),
+        \ vimtex#util#extend_recursive(
+        \   deepcopy(g:vimtex_toc_config),
+        \   a:0 > 0 ? a:1 : {}))
+endfunction
+
+" }}}1
 function! vimtex#toc#get_entries() abort " {{{1
   if !has_key(b:vimtex, 'toc') | return [] | endif
 
@@ -38,46 +47,27 @@ endfunction
 
 " }}}1
 
-let s:toc = {
-      \ 'name' : 'Table of contents (vimtex)',
-      \ 'layers' : {},
-      \ 'default_layers' : g:vimtex_toc_layers,
-      \ 'show_help' : g:vimtex_toc_show_help,
-      \ 'show_numbers' : g:vimtex_toc_show_numbers,
-      \ 'tocdepth' : g:vimtex_toc_tocdepth,
-      \ 'hotkeys' : extend({
-      \     'enabled' : '0',
-      \     'leader' : ';',
-      \     'keys' : 'abcdegijklmnopuvxyz',
-      \   }, g:vimtex_toc_hotkeys),
-      \ 'todo_sorted' : 1,
-      \}
+let s:toc = {}
 
 "
 " Open and close TOC window
 "
-function! s:toc.open(...) abort dict " {{{1
+function! s:toc.open() abort dict " {{{1
   if self.is_open() | return | endif
+
+  if has_key(self, 'layers')
+    for l:key in keys(self.layer_status)
+      let self.layer_status[l:key] = index(self.layers, l:key) >= 0
+    endfor
+  endif
 
   let self.calling_file = expand('%:p')
   let self.calling_line = line('.')
 
-  " Set the active layers (either default or through passed argument, which may
-  " be a list of strings, or several string arguments
-  if a:0 > 0
-    let self.layers = deepcopy(self.default_layers)
-    let l:active = type(a:1) == type('') ? a:000 : a:1
-    for [l:type, l:cfg] in items(self.layers)
-      let l:cfg.active = index(l:active, l:type) >= 0
-    endfor
-  else
-    let self.layers = self.default_layers
-  endif
-
   call self.get_entries(0)
 
-  if g:vimtex_toc_mode > 1
-    call setloclist(0, map(deepcopy(self.entries), '{
+  if self.mode > 1
+    call setloclist(0, map(filter(deepcopy(self.entries), 'v:val.active'), '{
           \ ''lnum'': v:val.line,
           \ ''filename'': v:val.file,
           \ ''text'': v:val.title,
@@ -86,10 +76,10 @@ function! s:toc.open(...) abort dict " {{{1
       call setloclist(0, [], 'r', {'title': self.name})
     catch
     endtry
-    if g:vimtex_toc_mode == 4 | lopen | endif
+    if self.mode == 4 | lopen | endif
   endif
 
-  if g:vimtex_toc_mode < 3
+  if self.mode < 3
     call self.create()
   endif
 endfunction
@@ -104,7 +94,6 @@ function! s:toc.toggle() abort dict " {{{1
   if self.is_open()
     call self.close()
   else
-    call self.open(self.saved_layers)
     if has_key(self, 'prev_winid')
       call win_gotoid(self.prev_winid)
     endif
@@ -115,14 +104,11 @@ endfunction
 function! s:toc.close() abort dict " {{{1
   let self.fold_level = &l:foldlevel
 
-  " Save active layers in case of toggle
-  let self.saved_layers = filter(keys(self.layers), 'self.layers[v:val].active')
-
-  if g:vimtex_toc_resize
-    silent exe 'set columns -=' . g:vimtex_toc_split_width
+  if self.resize
+    silent exe 'set columns -=' . self.split_width
   endif
 
-  if g:vimtex_toc_split_pos ==# 'full'
+  if self.split_pos ==# 'full'
     silent execute 'buffer' self.prev_bufnr
   else
     silent execute 'bwipeout' bufnr(self.name)
@@ -144,7 +130,7 @@ endfunction
 " Get the TOC entries
 "
 function! s:toc.get_entries(force) abort dict " {{{1
-  if has_key(self, 'entries') && !g:vimtex_toc_refresh_always && !a:force
+  if has_key(self, 'entries') && !self.refresh_always && !a:force
     return self.entries
   endif
 
@@ -166,14 +152,14 @@ function! s:toc.get_entries(force) abort dict " {{{1
   "
   " Add hotkeys to entries
   "
-  if self.hotkeys.enabled
-    let k = strwidth(self.hotkeys.keys)
+  if self.hotkeys_enabled
+    let k = strwidth(self.hotkeys)
     let n = len(self.entries)
     let m = len(s:base(n, k))
     let i = 0
     for entry in self.entries
-      let keys = map(s:base(i, k), 'strcharpart(self.hotkeys.keys, v:val, 1)')
-      let keys = repeat([self.hotkeys.keys[0]], m - len(keys)) + keys
+      let keys = map(s:base(i, k), 'strcharpart(self.hotkeys, v:val, 1)')
+      let keys = repeat([self.hotkeys[0]], m - len(keys)) + keys
       let i+=1
       let entry.num = i
       let entry.hotkey = join(keys, '')
@@ -181,10 +167,10 @@ function! s:toc.get_entries(force) abort dict " {{{1
   endif
 
   "
-  " Parse layers
+  " Apply active layers
   "
   for entry in self.entries
-    let entry.active = self.layers[entry.type].active
+    let entry.active = self.layer_status[entry.type]
   endfor
 
   "
@@ -207,14 +193,14 @@ function! s:toc.create() abort dict " {{{1
   let l:winid = win_getid()
   let l:vimtex = get(b:, 'vimtex', {})
 
-  if g:vimtex_toc_split_pos ==# 'full'
+  if self.split_pos ==# 'full'
     silent execute 'edit' escape(self.name, ' ')
   else
-    if g:vimtex_toc_resize
-      silent exe 'set columns +=' . g:vimtex_toc_split_width
+    if self.resize
+      silent exe 'set columns +=' . self.split_width
     endif
     silent execute
-          \ g:vimtex_toc_split_pos g:vimtex_toc_split_width
+          \ self.split_pos self.split_width
           \ 'new' escape(self.name, ' ')
   endif
 
@@ -235,7 +221,7 @@ function! s:toc.create() abort dict " {{{1
   setlocal nowrap
   setlocal tabstop=8
 
-  if g:vimtex_toc_hide_line_numbers
+  if self.hide_line_numbers
     setlocal nonumber
     setlocal norelativenumber
   endif
@@ -243,13 +229,16 @@ function! s:toc.create() abort dict " {{{1
   call self.refresh()
   call self.set_syntax()
 
-  if g:vimtex_toc_fold
+  if self.fold_enable
     let self.foldexpr = function('s:foldexpr')
     let self.foldtext  = function('s:foldtext')
     setlocal foldmethod=expr
     setlocal foldexpr=b:toc.foldexpr(v:lnum)
     setlocal foldtext=b:toc.foldtext()
-    let &l:foldlevel = get(self, 'fold_level', g:vimtex_toc_fold_level_start)
+    let &l:foldlevel = get(self, 'fold_level',
+          \ (self.fold_level_start > 0
+          \ ? self.fold_level_start
+          \ : self.tocdepth))
   endif
 
   nnoremap <silent><nowait><buffer><expr> gg b:toc.show_help ? 'gg}}j' : 'gg'
@@ -271,19 +260,19 @@ function! s:toc.create() abort dict " {{{1
   nnoremap <buffer><nowait><silent> -             :call b:toc.decrease_depth()<cr>
   nnoremap <buffer><nowait><silent> +             :call b:toc.increase_depth()<cr>
 
-  for [type, cfg] in items(self.layers)
+  for [type, key] in items(self.layer_keys)
     execute printf(
           \ 'nnoremap <buffer><nowait><silent> %s'
           \ . ' :call b:toc.toggle_type(''%s'')<cr>',
-          \ cfg.key, type)
+          \ key, type)
   endfor
 
-  if self.hotkeys.enabled
+  if self.hotkeys_enabled
     for entry in self.entries
       execute printf(
             \ 'nnoremap <buffer><nowait><silent> %s%s'
             \ . ' :call b:toc.activate_hotkey(''%s'')<cr>',
-            \ self.hotkeys.leader, entry.hotkey, entry.hotkey)
+            \ self.hotkeys_leader, entry.hotkey, entry.hotkey)
     endfor
   endif
 
@@ -358,13 +347,21 @@ function! s:toc.set_syntax() abort dict "{{{1
   syntax match VimtexTocSec4 /^.*4$/ contains=@VimtexTocStuff
 
   syntax cluster VimtexTocStuff
-        \ contains=VimtexTocNum,VimtexTocTag,VimtexTocHotkey,VimtexTocTodo,@Tex
+        \ contains=VimtexTocNum,VimtexTocHotkey,VimtexTocTodo,@Tex
 
-  syntax match VimtexLabelsChap /^chap:.*$/ contains=@Tex
-  syntax match VimtexLabelsEq   /^eq:.*$/   contains=@Tex
-  syntax match VimtexLabelsFig  /^fig:.*$/  contains=@Tex
-  syntax match VimtexLabelsSec  /^sec:.*$/  contains=@Tex
-  syntax match VimtexLabelsTab  /^tab:.*$/  contains=@Tex
+  syntax match VimtexTocIncl /\v^(\[i\])?\s*(\[\w+\] )?\w+ incl:/
+        \ contains=VimtexTocTag,VimtexTocHotkey
+        \ nextgroup=VimtexTocInclPath
+  syntax match VimtexTocInclPath /.*/ contained
+
+  syntax match VimtexTocLabelsSecs /\v^\s*(\[\w+\] )?(chap|sec):.*$/
+        \ contains=VimtexTocHotkey
+  syntax match VimtexTocLabelsEq   /\v^\s*(\[\w+\] )?eq:.*$/
+        \ contains=VimtexTocHotkey
+  syntax match VimtexTocLabelsFig  /\v^\s*(\[\w+\] )?fig:.*$/
+        \ contains=VimtexTocHotkey
+  syntax match VimtexTocLabelsTab  /\v^\s*(\[\w+\] )?tab:.*$/
+        \ contains=VimtexTocHotkey
 endfunction
 
 " }}}1
@@ -384,19 +381,19 @@ function! s:toc.print_help() abort dict " {{{1
         \ '      s  Hide numbering',
         \ '      h  Toggle help text',
         \ '      t  Toggle sorted TODOs',
-        \ '    -/+  Decrease/increase g:vimtex_toc_tocdepth',
+        \ '    -/+  Decrease/increase ToC depth (for content layer)',
         \ '    f/F  Apply/clear filter',
         \ '',
         \]
 
   let l:first = 1
   let l:frmt = printf('%%-%ds',
-        \ max(map(values(self.layers), 'strlen(v:val.key)')) + 2)
-  for [type, cfg] in items(self.layers)
+        \ max(map(values(self.layer_keys), 'strlen(v:val)')) + 2)
+  for [layer, status] in items(self.layer_status)
     call add(help_text,
           \ (l:first ? 'Layers:  ' : '         ')
-          \ . printf(l:frmt, cfg.key)
-          \ . type . (cfg.active ? '+' : '- (hidden)'))
+          \ . printf(l:frmt, self.layer_keys[layer])
+          \ . layer . (status ? '+' : '- (hidden)'))
     let l:first = 0
   endfor
 
@@ -429,7 +426,7 @@ function! s:toc.print_entry(entry) abort dict " {{{1
     let output .= printf(self.number_format, number)
   endif
 
-  if self.hotkeys.enabled
+  if self.hotkeys_enabled
     let output .= printf('[%S] ', a:entry.hotkey)
   endif
 
@@ -560,7 +557,7 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
   normal! zv
 
   " Keep or close toc window (based on options)
-  if a:close_after && g:vimtex_toc_split_pos !=# 'full'
+  if a:close_after && self.split_pos !=# 'full'
     call self.close()
   else
     " Return to toc window
@@ -601,10 +598,10 @@ endfunction
 
 " }}}1
 function! s:toc.toggle_type(type) abort dict "{{{1
-  let self.layers[a:type].active = !self.layers[a:type].active
+  let self.layer_status[a:type] = !self.layer_status[a:type]
   for entry in self.entries
     if entry.type ==# a:type
-      let entry.active = self.layers[a:type].active
+      let entry.active = self.layer_status[a:type]
     endif
   endfor
   call self.refresh()
