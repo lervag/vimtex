@@ -18,25 +18,6 @@ function! vimtex#util#command(cmd) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#shellescape(cmd) " {{{1
-  "
-  " Path used in "cmd" only needs to be enclosed by double quotes.
-  " shellescape() on Windows with "shellslash" set will produce a path
-  " enclosed by single quotes, which "cmd" does not recognize and reports an
-  " error.
-  "
-  if has('win32')
-    let l:shellslash = &shellslash
-    set noshellslash
-    let l:cmd = escape(shellescape(a:cmd), '\')
-    let &shellslash = l:shellslash
-    return l:cmd
-  else
-    return escape(shellescape(a:cmd), '\')
-  endif
-endfunction
-
-" }}}1
 function! vimtex#util#get_os() " {{{1
   if has('win32') || has('win32unix')
     return 'win'
@@ -75,6 +56,47 @@ function! vimtex#util#in_syntax(name, ...) " {{{1
   return match(map(synstack(l:pos[0], l:pos[1]),
         \          "synIDattr(v:val, 'name')"),
         \      '^' . a:name) >= 0
+endfunction
+
+" }}}1
+function! vimtex#util#extend_recursive(dict1, dict2, ...) " {{{1
+  let l:option = a:0 > 0 ? a:1 : 'force'
+  if index(['force', 'keep', 'error'], l:option) < 0
+    throw 'E475: Invalid argument: ' . l:option
+  endif
+
+  for [l:key, l:value] in items(a:dict2)
+    if !has_key(a:dict1, l:key)
+      let a:dict1[l:key] = l:value
+    elseif type(l:value) == type({})
+      call vimtex#util#extend_recursive(a:dict1[l:key], l:value, l:option)
+    elseif l:option ==# 'error'
+      throw 'E737: Key already exists: ' . l:key
+    elseif l:option ==# 'force'
+      let a:dict1[l:key] = l:value
+    endif
+  endfor
+
+  return a:dict1
+endfunction
+
+" }}}1
+function! vimtex#util#shellescape(cmd) " {{{1
+  "
+  " Path used in "cmd" only needs to be enclosed by double quotes.
+  " shellescape() on Windows with "shellslash" set will produce a path
+  " enclosed by single quotes, which "cmd" does not recognize and reports an
+  " error.
+  "
+  if has('win32')
+    let l:shellslash = &shellslash
+    set noshellslash
+    let l:cmd = escape(shellescape(a:cmd), '\')
+    let &shellslash = l:shellslash
+    return l:cmd
+  else
+    return escape(shellescape(a:cmd), '\')
+  endif
 endfunction
 
 " }}}1

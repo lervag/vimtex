@@ -274,13 +274,7 @@ function! s:init_option(option, default) " {{{1
   if !exists(l:option)
     let {l:option} = a:default
   elseif type(a:default) == type({})
-    for [l:key, l:value] in items(a:default)
-      if type(l:value) == type({}) && has_key({l:option}, l:key)
-        call extend({l:option}[l:key], l:value, 'keep')
-      endif
-    endfor
-
-    call extend({l:option}, a:default, 'keep')
+    call vimtex#util#extend_recursive({l:option}, a:default, 'keep')
   endif
 endfunction
 
