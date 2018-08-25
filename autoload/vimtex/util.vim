@@ -75,6 +75,7 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) " {{{1
     elseif l:option ==# 'force'
       let a:dict1[l:key] = l:value
     endif
+    unlet l:value
   endfor
 
   return a:dict1
