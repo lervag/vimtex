@@ -1614,77 +1614,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_toc_mode*
-  Set mode of the index feature. The index may either open a window for
-  selecting between candidates, or it may fill (and open) the location list,
-  or a combination.
-
-  The possible modes are:
-
-    1: Use index window.
-    2: Use index window, but also fill location list.
-    3: Fill location list.
-    4: Fill and open location.
-
-  Default value: 1
-
-*g:vimtex_toc_layers*
-  Set which layers to activate by default and set the hotkeys for toggling the
-  different layers.
-
-  Default: >
-
-    let g:vimtex_toc_layers = {
-        \ 'content': {
-        \   'key': '<c-c>',
-        \   'active': 1,
-        \ },
-        \ 'label': {
-        \   'key': '<c-l>',
-        \   'active': 1,
-        \ },
-        \ 'todo': {
-        \   'key': '<c-t>',
-        \   'active': 1,
-        \ },
-        \ 'include': {
-        \   'key': '<c-i>',
-        \   'active': 1,
-        \ },
-        \}
-
-*g:vimtex_toc_hide_line_numbers*
-  If enabled, then line numbers will be hidden in the index windows.  That is,
-  |nonumber| and |norelativenumber| will be set locally.
-
-  Default value: 1
-
-*g:vimtex_toc_resize*
-  Whether or not to automatically resize vim when index windows are opened.
-
-  Note: This option makes sense if the index window is vertically split.
-
-  Default value: 0
-
-*g:vimtex_toc_show_help*
-  Whether to display the index help text.
-
-  Default value: 1
-
-*g:vimtex_toc_split_pos*
-  Define where index windows should be opened. This is a string that contains
-  either the word 'full' to open in the current window, or a position command.
-  Use |:vert| if a vertical split is desired, and one of |:leftabove|,
-  |:rightbelow|, |:topleft|, and |:botright| to specify the desired split
-  position.
-
-  Default value: 'vert leftabove'
-
-*g:vimtex_toc_split_width*
-  For vertically split windows: Set width of index window.
-
-  Default value: 30
-
 *g:vimtex_toc_custom_matchers*
   This option is a list of custom ToC matchers. A matcher is used to define
   the entries that are included in the ToC window. It is implemented as
@@ -1753,83 +1682,117 @@ Options~
       in matcher `g:vimtex#toc#matchers#sections` for an example on how to use
       this.
 
-*g:vimtex_toc_fold*
-  Turn on folding of ToC entries.
+*g:vimtex_toc_todo_keywords*
+  Set list of keywords that should be recognized in comments for the todo
+  layer.
 
-  Default value: 0
-
-*g:vimtex_toc_fold_level_start*
-  This option controls the initial fold level for the ToC window if folding is
-  enabled.
-
-  Default value: Same as |g:vimtex_toc_tocdepth|
-
-*g:vimtex_toc_hotkeys*
-  This option controls whether or not to activate individual hotkeys for the
-  ToC entries, and how these hotkeys should behave.  The option is
-  a dictionary with the following keys:
-
-    `enabled`  Set to 1 to enable individual hotkeys.
-    `leader`   The leader key for the hotkeys.
-    `keys`     The set of keys that are used for the hotkeys.
-
-  Default value: >
-
-    let g:vimtex_toc_hotkeys = {
-        \ 'enabled' : 0,
-        \ 'leader' : ';',
-        \ 'keys' : 'abcdefghijklmnopqrstuvxyz',
-        \}
-
-*g:vimtex_toc_refresh_always*
-  Set to 0 to manually refresh ToC entries. This may be useful for very large
-  projects where generating the ToC entries becomes slow.
-
-  It may be useful to combine manually refreshing with a |BufWritePost|
-  autocommand, e.g.: >
-
-    augroup vimtex
-      autocmd!
-      autocmd BufWritePost *.tex call vimtex#toc#refresh()
-    augroup END
-<
-  Or, if preferred, one may use a mapping such as: >
-
-    nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
-<
-  Default value: 1
+  Default value: `['todo', 'fixme']`
 
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
 
   Default value: 1
 
-*g:vimtex_toc_show_numbers*
-  Set whether or not to show section numbers in ToC.
+*g:vimtex_toc_config*
+  This is a dictionary that can be used to configure the ToC. Each key
+  specifies a configuration option that can be changed. In the following, the
+  various keys are explained briefly and the default value is indicated.
 
-  Note: The numbers may also be toggled inside the ToC window with the `s`
-        keybinding.
+    `name` : `Table of contents (vimtex)`
+      The name of the ToC buffer.
 
-  Default value: 1
+    `mode` : 1
+      The ToC display mode, one of:
+        1: Separate window.
+        2: Separate window and location list.
+        3: Location list (and don't open it).
+        4: Location list (and open it).
 
-*g:vimtex_toc_tocdepth*
-  Define the number of section levels to display.  Set level corresponding to
-  the desired latex variable `tocdepth`.  For more info on `tocdepth`, see:
-  http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+    `fold_enable` : 0
+      Wheter to enable folding in the ToC window.
 
-  Note: This will also change the width of the number column according to the
-        space needed to show the section numbers.
+    `fold_level_start` : -1
+      The starting fold level. The value -1 indicates that the start level is
+      the same as the `tocdepth` value.
 
-  Note: The variable may be updated inside the ToC window with the mappings
-        `+` and `-`.
+    `hide_line_numbers` : 1
+      If enabled, then line numbers will be hidden in the ToC window by
+      setting |nonumber| and |norelativenumber| locally.
 
-  Default value: 3
+    `hotkeys_enabled` : 0
+      Set to 1 to enable individual hotkeys for ToC entries.
 
-*g:vimtex_toc_todo_keywords*
-  Set list of keywords that should be recognized in comments for the todo
-  layer.
+    `hotkeys` : `abcdegijklmnopuvxyz`
+      A string of keys that are used to create individual hotkeys.
 
-  Default value: `['todo', 'fixme']`
+    `hotkeys_leader` : `;`
+      The hotkey leader. Set to empty string to disable the leader.
+
+    `layers` : Undefined
+    `layer_status` : Dictionary >
+        { 'content': 1,
+          'label': 1,
+          'todo': 1,
+          'include': 1 }
+<      The initial state of the layers (1 for active, 0 for inactive). The
+      `layers` key may be used as a shorthand: it accepts a list of layers
+      that should be active.
+
+    `layer_keys` : Dictionary >
+        { 'content': 'C',
+          'label': 'L',
+          'todo': 'T',
+          'include': 'I'}
+<      Specify hotkeys for enabling/disabling the different layers.
+
+    `resize` : 0
+      Whether or not to automatically resize vim when index windows are
+      opened.
+
+      Note: This option makes sense if the index window is vertically split.
+
+    `refresh_always` : 1
+      Set to 0 to manually refresh ToC entries. This may be useful for very
+      large projects where generating the ToC entries becomes slow.
+
+      It may be useful to combine manually refreshing with a |BufWritePost|
+      autocommand, e.g.: >
+
+        augroup vimtex
+          autocmd!
+          autocmd BufWritePost *.tex call vimtex#toc#refresh()
+        augroup END
+<
+      Or, if preferred, one may use a mapping such as: >
+
+        nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
+<
+    `show_help` : 1
+      Whether to display the index help text.
+
+    `show_numbers` : 1
+      Set whether or not to show section numbers in ToC.
+
+    `split_pos` : `vert leftabove`
+      Define where index windows should be opened. This is a string that
+      contains either the word 'full' to open in the current window, or
+      a position command. Use |:vert| if a vertical split is desired, and one
+      of |:leftabove|, |:rightbelow|, |:topleft|, and |:botright| to specify
+      the desired split position.
+
+    `split_width` : 30
+      For vertically split windows: Set width of index window.
+
+    `tocdepth` : 3
+      Define the depth of section levels to display. This attempts to mimic
+      the corresponding latex variable `tocdepth`. For more info, see:
+      http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+
+      Note: This will also change the width of the number column according to
+            the space needed to show the section numbers.
+
+    `todo_sorted` : 1
+      Whether or not to sort the TODOs at the top of the ToC window.
 
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
@@ -3037,17 +3000,17 @@ currently four different "layers" of entries:
 - label    This shows `\label{...}` commands
 - include  This shows included files
 
-Note: By setting |g:vimtex_toc_mode| > 2, the separate ToC window is not
-opened and most of the features mentioned here will be irrelevant.
-
-The position of the ToC window is controlled by |g:vimtex_toc_split_pos|. By
-default, the top of the buffer will display help text to explain the local
-keybindings. This may be turned off with |g:vimtex_toc_show_help|.
+The ToC is configured with |g:vimtex_toc_config|. One may change things from
+where the ToC window is positioned to which layers to show and more. Please
+read the option help for details.
 
 The ToC parser uses a list of matchers to parse the LaTeX project for the ToC
-entries. One may add custom matchers through |g:vimtex_toc_custom_matchers|.
-See also |toc_matcher_specification| for a specification of the matcher
-objects.
+entries. One may add custom matchers through the |g:vimtex_toc_custom_matchers|
+option. The syntax of a custom matcher is specified here:
+|toc_matcher_specification|.
+
+Note: By setting the `mode` configuration key to > 2, the separate ToC window
+is not opened and most of the features mentioned here will be irrelevant.
 
 One may force file input entries of the "include" type into the ToC through
 comments with the following syntax: >
@@ -3069,34 +3032,36 @@ mappings: >
 
   augroup vimtex_customization
     autocmd!
-    autocmd FileType tex nnoremap <silent> \ly
-        \ :call b:vimtex.toc.open('label', 'todo')<cr>
-    autocmd FileType tex nnoremap <silent> \lY
-        \ :call b:vimtex.toc.open('include')<cr>
+    autocmd FileType tex call CreateTocs()
   augroup END
 
-The `b:vimtex.toc.open` function takes one or more string arguments, or a list
-of strings, to indicate which layers that should be active when opening the
-ToC.
+  function CreateTocs()
+    let g:custom_toc1 = vimtex#toc#new({
+        \ 'layers' : ['label', 'todo'],
+        \ 'todo_sorted' : 0,
+        \ 'show_help' : 0,
+        \ 'show_numbers' : 0,
+        \ 'mode' : 4,
+        \})
+    nnoremap <silent> \ly :call g:custom_toc1.open()<cr>
+
+    let g:custom_toc2 = vimtex#toc#new({
+        \ 'layers' : ['include'],
+        \ 'show_help' : 0,
+        \})
+    nnoremap <silent> \lY :call g:custom_toc2.open()<cr>
+  endfunction
+
+The `vimtex#toc#new` function takes a dictionary argument that may be used to
+override the one main configuration (i.e. the combination of the default
+values and |g:vimtex_toc_config|).
 
 Associated settings:
   |g:vimtex_toc_enabled|
-  |g:vimtex_toc_mode|
-  |g:vimtex_toc_layers|
-  |g:vimtex_toc_hide_line_numbers|
-  |g:vimtex_toc_resize|
-  |g:vimtex_toc_show_help|
-  |g:vimtex_toc_split_pos|
-  |g:vimtex_toc_split_width|
   |g:vimtex_toc_custom_matchers|
-  |g:vimtex_toc_fold|
-  |g:vimtex_toc_fold_level_start|
-  |g:vimtex_toc_hotkeys|
-  |g:vimtex_toc_refresh_always|
-  |g:vimtex_toc_show_preamble|
-  |g:vimtex_toc_show_numbers|
-  |g:vimtex_toc_tocdepth|
   |g:vimtex_toc_todo_keywords|
+  |g:vimtex_toc_show_preamble|
+  |g:vimtex_toc_config|
 
 ------------------------------------------------------------------------------
 Denite/Unite source~
@@ -3634,15 +3599,23 @@ changelog.
 
 2018-08-15: Refactored the ToC interface~
 I've made a large update to the code for the ToC window in order to simplify
-and unify the interface. Some option names were changed:
+and unify the interface. In the new version, |g:vimtex_toc_config| replaces
+all of the following options:
 
-Deprecated options:
-  *g:vimtex_index_split_width*       ---> |g:vimtex_toc_split_width|
-  *g:vimtex_index_split_pos*         ---> |g:vimtex_toc_split_pos|
-  *g:vimtex_index_show_help*         ---> |g:vimtex_toc_show_help|
-  *g:vimtex_index_resize*            ---> |g:vimtex_toc_resize|
-  *g:vimtex_index_hide_line_numbers* ---> |g:vimtex_toc_hide_line_numbers|
-  *g:vimtex_index_mode*              ---> |g:vimtex_toc_mode|
+  *g:vimtex_index_split_width*
+  *g:vimtex_index_split_pos*
+  *g:vimtex_index_show_help*
+  *g:vimtex_index_resize*
+  *g:vimtex_index_hide_line_numbers*
+  *g:vimtex_index_mode*
+  *g:vimtex_toc_layers*
+  *g:vimtex_toc_fold*
+  *g:vimtex_toc_fold_level_start*
+  *g:vimtex_toc_hotkeys*
+  *g:vimtex_toc_refresh_always*
+  *g:vimtex_toc_show_numbers*
+  *g:vimtex_toc_tocdepth*
+
 
 2017-07-27: Major refactoring of the folding feature~
 I've made a large update to the code for folding. The configuration of the
