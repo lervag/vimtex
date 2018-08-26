@@ -38,9 +38,6 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
   " No more parsing if there is no content
   if empty(l:content) | return l:entries | endif
 
-  " Prepare included file matcher
-  let l:included = s:included.init(l:content[0][0])
-
   "
   " Begin parsing LaTeX files
   "
@@ -68,18 +65,6 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     if exists('s:matcher_continue')
       call s:matcher_continue.continue(l:context)
       continue
-    endif
-
-    " Add an entry for each included file
-    "
-    " Note: This is handled differently from other matchers. Every new file
-    "       will get an entry, and all such entries that are provided by other
-    "       means will be filtered out at the end.
-    if l:file !=# l:included.prev
-      let l:entry = l:included.get_entry(l:context)
-      if !empty(l:entry)
-        call add(l:entries, l:entry)
-      endif
     endif
 
     " Apply all matchers
@@ -139,48 +124,39 @@ endfunction
 " }}}1
 
 
-" Adds entry for each included file that does not contain other entries
-let s:included = {}
-function! s:included.init(file) " {{{1
-  let l:inc = deepcopy(self)
-  let l:inc.prev = a:file
-  let l:inc.files = [a:file]
-  let l:inc.current = { 'entries' : 0 }
-
-  unlet l:inc.init
-  return l:inc
-endfunction
-
-" }}}1
-function! s:included.get_entry(context) " {{{1
-  let self.prev = a:context.file
-  let self.current.entries = a:context.num_entries - get(self, 'toc_length')
-  let self.toc_length = a:context.num_entries
-
-  if index(self.files, a:context.file) < 0
-    let self.files += [a:context.file]
-    let self.current = {
-          \ 'title'   : 'tex incl: ' . fnamemodify(a:context.file, ':t'),
-          \ 'number'  : '[i]',
-          \ 'file'    : a:context.file,
-          \ 'line'    : 1,
-          \ 'level'   : a:context.max_level - a:context.level.current,
-          \ 'rank'    : a:context.lnum_total,
-          \ 'type'    : 'include',
-          \ 'entries' : 0,
-          \ }
-    return self.current
-  else
-    let self.current = { 'entries' : 0 }
-    return {}
-  endif
-endfunction
-
-" }}}1
-
 " Adds entries for included files
+let s:matcher_include = {
+      \ 're' : vimtex#re#tex_input . '\zs\f+',
+      \ 'in_preamble' : 1,
+      \}
+function! s:matcher_include.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+  if l:file[0] !=# '/'
+    let l:file = b:vimtex.root . '/' . l:file
+  endif
+  let l:file = fnamemodify(l:file, ':~:.')
+  if !filereadable(l:file)
+    let l:file .= '.tex'
+  endif
+  return {
+        \ 'title'  : 'tex incl: ' . (strlen(l:file) < 70
+        \               ? l:file
+        \               : l:file[0:30] . '...' . l:file[-36:]),
+        \ 'number' : '',
+        \ 'file'   : l:file,
+        \ 'line'   : 1,
+        \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ }
+endfunction
+
+" }}}1
+
+" Adds entries for included graphics files
 let s:matcher_include_graphics = {
-      \ 're' : '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
+      \ 're' : vimtex#re#not_comment
+      \   . '\v\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
       \}
 function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -192,12 +168,13 @@ function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
         \ 'title'  : 'fig incl: ' . (strlen(l:file) < 70
         \               ? l:file
         \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '[i]',
+        \ 'number' : '',
         \ 'file'   : l:file,
         \ 'line'   : 1,
         \ 'level'  : a:context.max_level - a:context.level.current,
         \ 'rank'   : a:context.lnum_total,
         \ 'type'   : 'include',
+        \ 'link'   : 1,
         \ }
 endfunction
 
@@ -206,7 +183,7 @@ endfunction
 " Adds entries for included files through vimtex specific syntax (this allows
 " to add entries for any filetype or file)
 let s:matcher_include_vimtex = {
-      \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
+      \ 're' : '^\s*%\s*vimtex-include:\?\s\+\zs\f\+',
       \ 'in_preamble' : 1,
       \}
 function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
@@ -219,7 +196,7 @@ function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
         \ 'title'  : 'vtx incl: ' . (strlen(l:file) < 70
         \               ? l:file
         \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '[i]',
+        \ 'number' : '',
         \ 'file'   : l:file,
         \ 'line'   : 1,
         \ 'level'  : a:context.max_level - a:context.level.current,
@@ -247,7 +224,7 @@ function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
 
   return {
         \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[i]',
+        \ 'number' : '',
         \ 'file'   : vimtex#kpsewhich#find(l:file),
         \ 'line'   : 1,
         \ 'level'  : 0,
@@ -392,7 +369,7 @@ endfunction
 " }}}1
 
 let s:matcher_todonotes = {
-      \ 're' : '\\\w*todo\w*\(\[.*\]\)\?{\zs.*\ze}',
+      \ 're' : g:vimtex#re#not_comment . '\\\w*todo\w*%(\[.*\])?\{\zs.*\ze\}',
       \ 'in_preamble' : 0,
       \}
 function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
@@ -409,7 +386,7 @@ endfunction
 " }}}1
 
 let s:matcher_labels = {
-      \ 're' : '\v\\label\{\zs.{-}\ze\}',
+      \ 're' : '\v^\s*\\label\{\zs.{-}\ze\}',
       \ 'in_preamble' : 0,
       \}
 function! s:matcher_labels.get_entry(context) abort dict " {{{1

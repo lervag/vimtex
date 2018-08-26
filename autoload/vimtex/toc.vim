@@ -337,8 +337,6 @@ function! s:toc.set_syntax() abort dict "{{{1
         \ '/\v\s\zs%(' . toupper(join(g:vimtex_toc_todo_keywords, '|')) . '): /'
         \ 'contained'
   syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
-  syntax match VimtexTocTag
-        \ /^\[.\]/ contained
 
   syntax match VimtexTocSec0 /^.*0$/ contains=@VimtexTocStuff
   syntax match VimtexTocSec1 /^.*1$/ contains=@VimtexTocStuff
@@ -350,7 +348,7 @@ function! s:toc.set_syntax() abort dict "{{{1
         \ contains=VimtexTocNum,VimtexTocHotkey,VimtexTocTodo,@Tex
 
   syntax match VimtexTocIncl /\v^(\[i\])?\s*(\[\w+\] )?\w+ incl:/
-        \ contains=VimtexTocTag,VimtexTocHotkey
+        \ contains=VimtexTocHotkey
         \ nextgroup=VimtexTocInclPath
   syntax match VimtexTocInclPath /.*/ contained
 
@@ -378,13 +376,16 @@ function! s:toc.print_help() abort dict " {{{1
         \ '<Space>  Jump',
         \ '<Enter>  Jump and close',
         \ '      r  Refresh',
-        \ '      s  Hide numbering',
         \ '      h  Toggle help text',
         \ '      t  Toggle sorted TODOs',
         \ '    -/+  Decrease/increase ToC depth (for content layer)',
         \ '    f/F  Apply/clear filter',
-        \ '',
         \]
+
+  if self.layer_status.content
+    call add(help_text, '      s  Hide numbering')
+  endif
+  call add(help_text, '')
 
   let l:first = 1
   let l:frmt = printf('%%-%ds',
@@ -405,7 +406,9 @@ endfunction
 
 " }}}1
 function! s:toc.print_entries() abort dict " {{{1
-  let self.number_width = max([0, 2*(self.tocdepth + 2)])
+  let self.number_width = self.layer_status.content
+        \ ? max([0, 2*(self.tocdepth + 2)])
+        \ : 0
   let self.number_format = '%-' . self.number_width . 's'
 
   for entry in self.entries

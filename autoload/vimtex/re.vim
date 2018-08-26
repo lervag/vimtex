@@ -13,11 +13,15 @@ let g:vimtex#re#tex_input_latex = '\v\\%(input|include|subfile)\s*\{'
 let g:vimtex#re#tex_input_import =
       \ '\v\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{'
 
-let g:vimtex#re#tex_input = '\v%(' . join([
+let g:vimtex#re#tex_input_prefilter =
+      \ '\v\\%(input|include|subfile|%(sub)?%(import|%(input|include)from))'
+let g:vimtex#re#tex_input = g:vimtex#re#not_comment . '\v%(' . join([
       \   g:vimtex#re#tex_input_latex,
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
 
+let g:vimtex#re#tex_include_prefilter =
+      \ '\v^\s*\%|' . g:vimtex#re#tex_input_prefilter
 let g:vimtex#re#tex_include = g:vimtex#re#not_comment . '%(' . join([
       \   g:vimtex#re#tex_input_root,
       \   g:vimtex#re#tex_input_latex . '\zs[^\}]*\ze\}?',

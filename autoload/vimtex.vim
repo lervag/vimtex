@@ -303,7 +303,6 @@ function! s:init_highlights() " {{{1
         \ ['VimtexTocSec2', 'helpVim'],
         \ ['VimtexTocSec3', 'NonText'],
         \ ['VimtexTocSec4', 'Comment'],
-        \ ['VimtexTocTag', 'Directory'],
         \ ['VimtexTocHotkey', 'Comment'],
         \ ['VimtexTocLabelsSecs', 'Statement'],
         \ ['VimtexTocLabelsEq', 'PreProc'],
