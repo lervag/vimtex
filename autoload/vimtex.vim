@@ -204,7 +204,7 @@ function! vimtex#init_options() " {{{1
         \ 'fold_level_start' : -1,
         \ 'hide_line_numbers' : 1,
         \ 'hotkeys_enabled' : 0,
-        \ 'hotkeys' : 'abcdegijklmnopuvxyz',
+        \ 'hotkeys' : 'abcdeilmnopuvxyz',
         \ 'hotkeys_leader' : ';',
         \ 'layer_status' : {
         \   'content': 1,

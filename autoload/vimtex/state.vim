@@ -511,10 +511,16 @@ endfunction
 function! s:vimtex.parse_graphicspath() abort dict " {{{1
   let self.graphicspath = []
 
-  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\v\\graphicspath\s*\{\s*\{\s*\zs.*\ze\s*\}\s*\}\s*$'
+  " This should first find potential graphicspath lines and then remove all
+  " commented lines (split into two filters because it seems to be faster)
+  let l:lines = filter(copy(self.preamble), 'v:val =~# ''\\graphicspath''')
+  let l:lines = filter(l:lines, 'v:val =~# g:vimtex#re#not_comment')
 
-  for l:line in self.preamble
+  " If more than one line is found, then we try each line consecutively with
+  " a more precise regexp
+  let l:pat = g:vimtex#re#not_bslash
+        \ . '\v\\graphicspath\s*\{\s*\{\s*\zs.*\ze\s*\}\s*\}\s*$'
+  for l:line in l:lines
     let l:paths = matchstr(l:line, l:pat)
     if !empty(l:paths)
       let l:paths = split(l:paths, '\s*}\s*{\s*')
