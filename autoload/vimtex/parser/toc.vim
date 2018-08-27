@@ -349,8 +349,8 @@ let s:matcher_bibliography = {
       \}
 
 let s:matcher_todos = {
-      \ 're' : g:vimtex#re#not_bslash . '\%\c\s*('
-      \   . join(g:vimtex_toc_todo_keywords, '|') . '>)\s*:?\s*(.*)',
+      \ 're' : g:vimtex#re#not_bslash . '\%\c\s+('
+      \   . join(g:vimtex_toc_todo_keywords, '|') . ')[ :]+\s*(.*)',
       \ 'in_preamble' : 1,
       \}
 function! s:matcher_todos.get_entry(context) abort dict " {{{1
