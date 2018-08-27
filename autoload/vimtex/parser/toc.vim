@@ -386,7 +386,7 @@ endfunction
 " }}}1
 
 let s:matcher_labels = {
-      \ 're' : '\v^\s*\\label\{\zs.{-}\ze\}',
+      \ 're' : '\v\\label\{\zs.{-}\ze\}',
       \ 'in_preamble' : 0,
       \}
 function! s:matcher_labels.get_entry(context) abort dict " {{{1
