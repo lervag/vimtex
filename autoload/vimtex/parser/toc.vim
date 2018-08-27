@@ -442,7 +442,7 @@ endfunction
 " }}}1
 
 let s:matcher_labels = {
-      \ 're' : '\v\\label\{\zs.{-}\ze\}',
+      \ 're' : g:vimtex#re#not_comment . '\\label\{\zs.{-}\ze\}',
       \ 'in_preamble' : 0,
       \ 'in_content' : 1,
       \}
