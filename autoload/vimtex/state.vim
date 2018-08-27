@@ -339,18 +339,15 @@ function! s:get_main_recurse(...) " {{{1
     let l:tried[l:file] = [l:file]
   endif
 
-  let l:re_prefilter = g:vimtex#re#tex_input_prefilter
   let l:re_filter = g:vimtex#re#tex_input
-        \ . '\s*((.*)\/)?' . fnamemodify(l:file, ':t:r')
-        \ . '%(\.tex)?\s*\}'
+        \ . '\s*\f*' . fnamemodify(l:file, ':t:r')
 
   " Search through candidates found recursively upwards in the directory tree
   for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
 
-    let l:lines = filter(readfile(l:cand), 'v:val =~# l:re_prefilter')
-    if len(filter(l:lines, 'v:val =~# l:re_filter')) > 0
+    if len(filter(readfile(l:cand), 'v:val =~# l:re_filter')) > 0
       let l:res = s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
       if !empty(l:res) | return l:res | endif
     endif
@@ -381,8 +378,7 @@ endfunction
 function! s:file_reaches_current(file) " {{{1
   if !filereadable(a:file) | return 0 | endif
 
-  for l:line in filter(readfile(a:file),
-        \ 'v:val =~# g:vimtex#re#tex_input_prefilter')
+  for l:line in filter(readfile(a:file), 'v:val =~# g:vimtex#re#tex_input')
     let l:file = matchstr(l:line, g:vimtex#re#tex_input . '\zs\f+')
     if empty(l:file) | continue | endif
 

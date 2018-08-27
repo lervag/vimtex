@@ -8,25 +8,18 @@ let g:vimtex#re#not_bslash =  '\v%(\\@<!%(\\\\)*)@<='
 let g:vimtex#re#not_comment = '\v%(' . g:vimtex#re#not_bslash . '\%.*)@<!'
 
 let g:vimtex#re#tex_input_root =
-      \ '^\v\s*\%\s*!?\s*[tT][eE][xX]\s+[rR][oO][oO][tT]\s*\=\s*\zs.*\ze\s*$'
+      \ '\v^\s*\%\s*!?\s*[tT][eE][xX]\s+[rR][oO][oO][tT]\s*\=\s*\zs.*\ze\s*$'
 let g:vimtex#re#tex_input_latex = '\v\\%(input|include|subfile)\s*\{'
 let g:vimtex#re#tex_input_import =
       \ '\v\\%(sub)?%(import|%(input|include)from)\*?\{[^\}]*\}\{'
 
-let g:vimtex#re#tex_input_prefilter =
-      \ '\v\\%(input|include|subfile|%(sub)?%(import|%(input|include)from))'
-let g:vimtex#re#tex_input = g:vimtex#re#not_comment . '\v%(' . join([
+let g:vimtex#re#tex_input = '\v^\s*%(' . join([
       \   g:vimtex#re#tex_input_latex,
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
 
-let g:vimtex#re#tex_include_prefilter =
-      \ '\v^\s*\%|' . g:vimtex#re#tex_input_prefilter
-let g:vimtex#re#tex_include = g:vimtex#re#not_comment . '%(' . join([
-      \   g:vimtex#re#tex_input_root,
-      \   g:vimtex#re#tex_input_latex . '\zs[^\}]*\ze\}?',
-      \   g:vimtex#re#tex_input_import . '\zs[^\}]*\ze\}?',
-      \ ], '|') . ')'
+let g:vimtex#re#tex_include = g:vimtex#re#tex_input_root
+      \ . '|' . g:vimtex#re#tex_input . '\zs[^\}]*\ze\}?'
 
 " {{{1 Completion regexes
 let g:vimtex#re#neocomplete =
