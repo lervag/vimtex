@@ -67,24 +67,23 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
       continue
     endif
 
-    " Apply all matchers
+    " Apply prefilter - this gives considerable speedup for large documents
+    if l:line !~# s:re_prefilter | continue | endif
+
+    " Apply the matchers
     for l:matcher in s:matchers
-      if (s:level.preamble && !get(l:matcher, 'in_preamble'))
-            \ || (!s:level.preamble && !get(l:matcher, 'in_content', 1))
-            \ || l:line !~# l:matcher.re
+      if (s:level.preamble && !l:matcher.in_preamble)
+            \ || (!s:level.preamble && !l:matcher.in_content)
         continue
       endif
 
-      if has_key(l:matcher, 'action')
-        call l:matcher.action(l:context)
-      else
+      if l:line =~# l:matcher.re
         let l:entry = l:matcher.get_entry(l:context)
         if !empty(l:entry)
           call add(l:entries, l:entry)
         endif
+        break
       endif
-
-      break
     endfor
   endfor
 
@@ -123,11 +122,45 @@ endfunction
 
 " }}}1
 
+" IMPORTANT: The following defines a prefilter for optimizing the toc parser.
+"            Any line that should be parsed has to be matched by this regexp!
+" {{{1 let s:re_prefilter = ...
+let s:re_prefilter = '\v%(\\' . join([
+      \ '%(front|main|back)matter',
+      \ 'add%(global|section)bib',
+      \ 'appendix',
+      \ 'begin',
+      \ 'bibliography',
+      \ 'chapter',
+      \ 'documentclass',
+      \ 'import',
+      \ 'include',
+      \ 'includegraphics',
+      \ 'input',
+      \ 'label',
+      \ 'part',
+      \ 'printbib',
+      \ 'printindex',
+      \ 'section',
+      \ 'subfile',
+      \ 'tableofcontents',
+      \ 'todo',
+      \], '|') . ')'
+      \ . '|\%\s*%(' . join(g:vimtex_toc_todo_keywords, '|') . ')'
+      \ . '|\%\s*vimtex-include'
+for s:m in g:vimtex_toc_custom_matchers
+  if has_key(s:m, 'prefilter')
+    let s:re_prefilter .= '|' . s:m.prefilter
+  endif
+endfor
+
+" }}}1
 
 " Adds entries for included files
 let s:matcher_include = {
       \ 're' : vimtex#re#tex_input . '\zs\f+',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_include.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -156,6 +189,8 @@ endfunction
 " Adds entries for included graphics files (filetype tikz, tex)
 let s:matcher_include_graphics = {
       \ 're' : '\v^\s*\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -188,6 +223,7 @@ endfunction
 let s:matcher_include_vimtex = {
       \ 're' : '^\s*%\s*vimtex-include:\?\s\+\zs\f\+',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -215,6 +251,7 @@ let s:matcher_bibinputs = {
       \ 're' : '\v^\s*\\(bibliography|add(bibresource|globalbib|sectionbib))'
       \        . '\m\s*{\zs[^}]\+\ze}',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
@@ -261,9 +298,14 @@ endfunction
 
 let s:matcher_parts = {
       \ 're' : '\v^\s*\\\zs((front|main|back)matter|appendix)>',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \}
-function! s:matcher_parts.action(context) abort dict " {{{1
-  call a:context.level.reset(matchstr(a:context.line, self.re), a:context.max_level)
+function! s:matcher_parts.get_entry(context) abort dict " {{{1
+  call a:context.level.reset(
+        \ matchstr(a:context.line, self.re),
+        \ a:context.max_level)
+  return {}
 endfunction
 
 " }}}1
@@ -272,6 +314,8 @@ let s:matcher_sections = {
       \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
       \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
       \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \}
 let s:matcher_sections.re_title = s:matcher_sections.re . '\zs.{-}\ze\%?\s*$'
 function! s:matcher_sections.get_entry(context) abort dict " {{{1
@@ -326,18 +370,24 @@ endfunction
 let s:matcher_table_of_contents = {
       \ 'title' : 'Table of contents',
       \ 're' : '\v^\s*\\tableofcontents',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_index = {
       \ 'title' : 'Alphabetical index',
       \ 're' : '\v^\s*\\printindex\[?',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_titlepage = {
       \ 'title' : 'Titlepage',
       \ 're' : '\v^\s*\\begin\{titlepage\}',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
@@ -347,6 +397,8 @@ let s:matcher_bibliography = {
       \        .  'printbib%(liography|heading)\s*(\{|\[)?'
       \        . '|begin\s*\{\s*thebibliography\s*\}'
       \        . '|bibliography\s*\{)',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
@@ -354,6 +406,7 @@ let s:matcher_todos = {
       \ 're' : g:vimtex#re#not_bslash . '\%\c\s+('
       \   . join(g:vimtex_toc_todo_keywords, '|') . ')[ :]+\s*(.*)',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_todos.get_entry(context) abort dict " {{{1
   let [l:type, l:text] = matchlist(a:context.line, self.re)[1:2]
@@ -373,6 +426,7 @@ endfunction
 let s:matcher_todonotes = {
       \ 're' : g:vimtex#re#not_comment . '\\\w*todo\w*%(\[.*\])?\{\zs.*\ze\}',
       \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
   return {
@@ -390,6 +444,7 @@ endfunction
 let s:matcher_labels = {
       \ 're' : '\v\\label\{\zs.{-}\ze\}',
       \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
       \}
 function! s:matcher_labels.get_entry(context) abort dict " {{{1
   return {

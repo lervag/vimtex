@@ -1647,21 +1647,31 @@ Options~
       This specifies a regular expression that should match the current line
       for the desired ToC entry.
 
+    prefilter~
+      Type: |String|
+      Required: `maybe`
+      This specifies a `simplified` regular expression that should match the
+      current line for the desired ToC entry. This is used in order to make
+      things faster. The `re` key may often be a complex and therefore slow
+      regular expression. This key should represent a simple and fast regular
+      expression that may match more then the desired entry.
+
+    in_preamble~
+      Type: 0 or 1
+      Required: `yes`
+      If the entry may appear in the preamble.
+
+    in_content~
+      Type: 0 or 1
+      Required: `yes`
+      If the entry may appear in the main content.
+
     title~
       Type: |String|
       Required: `no`
-      If the matcher does not have an `action` or `get_entry` key, then it
-      will use a simple, general matcher function to generate the entry. In
-      this case, the `title` key should be specified to give the title of the
-      ToC entry.
-
-    action~
-      Type: |Dictionary-function|
-      Arguments: `context`
-      Required: `no`
-      This key specifies a general action to be performed with the given
-      context on matching lines. It will not add entries to the ToC, and
-      is probably not useful for most people.
+      If the matcher does not have a `get_entry` key, then it will use
+      a simple, general matcher function to generate the entry. In this case,
+      the `title` key should be specified to give the title of the ToC entry.
 
     get_entry~
       Type: |Dictionary-function|
@@ -1669,8 +1679,8 @@ Options~
       Returns: `toc entry`
       Required: `no`
       This is the general way to define ToC entries. It allows to define the
-      ToC entry based on the context. See e.g.
-      `g:vimtex#toc#matchers#sections` for an example on how to use this.
+      ToC entry based on the context. See `autoload/vimtex/parser/toc.vim` for
+      examples on how to use this.
 
     continue~
       Type: |Dictionary-function|
@@ -1679,8 +1689,7 @@ Options~
       Required: `no`
       Some entries may be specified over several lines, in which case this key
       becomes necessary in combination with the `get_entry` key. See the built
-      in matcher `g:vimtex#toc#matchers#sections` for an example on how to use
-      this.
+      in `s:matcher_section` matcher for an example on how to use this.
 
 *g:vimtex_toc_todo_keywords*
   Set list of keywords that should be recognized in comments for the todo
