@@ -196,7 +196,7 @@ function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_toc_enabled', 1)
   call s:init_option('vimtex_toc_custom_matchers', [])
   call s:init_option('vimtex_toc_show_preamble', 1)
-  call s:init_option('vimtex_toc_todo_keywords', ['todo', 'fixme'])
+  call s:init_option('vimtex_toc_todo_keywords', ['TODO', 'FIXME'])
   call s:init_option('vimtex_toc_config', {
         \ 'name' : 'Table of contents (vimtex)',
         \ 'mode' : 1,

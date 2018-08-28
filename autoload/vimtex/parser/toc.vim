@@ -403,7 +403,7 @@ let s:matcher_bibliography = {
       \}
 
 let s:matcher_todos = {
-      \ 're' : g:vimtex#re#not_bslash . '\%\c\s+('
+      \ 're' : g:vimtex#re#not_bslash . '\%\s+('
       \   . join(g:vimtex_toc_todo_keywords, '|') . ')[ :]+\s*(.*)',
       \ 'in_preamble' : 1,
       \ 'in_content' : 1,
@@ -424,14 +424,14 @@ endfunction
 " }}}1
 
 let s:matcher_todonotes = {
-      \ 're' : g:vimtex#re#not_comment . '\\\w*todo\w*%(\[.*\])?\{\zs.*\ze\}',
+      \ 're' : g:vimtex#re#not_comment . '\\\w*todo\w*%(\[[^]]*\])?\{\zs.*\ze\}',
       \ 'in_preamble' : 0,
       \ 'in_content' : 1,
       \}
 function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
   return {
         \ 'title'  : 'TODO: ' . matchstr(a:context.line, self.re),
-        \ 'number' : deepcopy(a:context.level),
+        \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,

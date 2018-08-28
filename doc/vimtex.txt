@@ -1695,7 +1695,7 @@ Options~
   Set list of keywords that should be recognized in comments for the todo
   layer.
 
-  Default value: `['todo', 'fixme']`
+  Default value: `['TODO', 'FIXME']`
 
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
