@@ -448,7 +448,7 @@ function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
 
   let [l:end, l:count] = s:find_closing(0, title, 1, '{')
   if l:count == 0
-    let title = strpart(title, 0, l:end-1)
+    let title = strpart(title, 0, l:end)
   else
     let self.count = l:count
     let s:matcher_continue = deepcopy(self)
