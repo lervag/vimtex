@@ -332,34 +332,35 @@ function! s:toc.set_syntax() abort dict "{{{1
     highlight link VimtexTocHelpKeySeparator VimtexTocHelp
   endif
 
-  syntax match VimtexTocNum /\v^(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
+  syntax match VimtexTocNum /\v(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
   execute 'syntax match VimtexTocTodo'
         \ '/\v\s\zs%(' . toupper(join(g:vimtex_toc_todo_keywords, '|')) . '): /'
         \ 'contained'
   syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
 
-  syntax match VimtexTocSec0 /^.*0$/ contains=@VimtexTocStuff
-  syntax match VimtexTocSec1 /^.*1$/ contains=@VimtexTocStuff
-  syntax match VimtexTocSec2 /^.*2$/ contains=@VimtexTocStuff
-  syntax match VimtexTocSec3 /^.*3$/ contains=@VimtexTocStuff
-  syntax match VimtexTocSec4 /^.*4$/ contains=@VimtexTocStuff
-
+  syntax match VimtexTocSec0 /^L0.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec1 /^L1.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec2 /^L2.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec3 /^L3.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec4 /^L4.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSecLabel /^L\d / contained conceal
+        \ nextgroup=VimtexTocNum
   syntax cluster VimtexTocStuff
-        \ contains=VimtexTocNum,VimtexTocHotkey,VimtexTocTodo,@Tex
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey,VimtexTocTodo,@Tex
 
-  syntax match VimtexTocIncl /\v^(\[i\])?\s*(\[\w+\] )?\w+ incl:/
-        \ contains=VimtexTocHotkey
+  syntax match VimtexTocIncl /\v^L\d (\[i\])?\s*(\[\w+\] )?\w+ incl:/
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey
         \ nextgroup=VimtexTocInclPath
   syntax match VimtexTocInclPath /.*/ contained
 
-  syntax match VimtexTocLabelsSecs /\v^\s*(\[\w+\] )?(chap|sec):.*$/
-        \ contains=VimtexTocHotkey
-  syntax match VimtexTocLabelsEq   /\v^\s*(\[\w+\] )?eq:.*$/
-        \ contains=VimtexTocHotkey
-  syntax match VimtexTocLabelsFig  /\v^\s*(\[\w+\] )?fig:.*$/
-        \ contains=VimtexTocHotkey
-  syntax match VimtexTocLabelsTab  /\v^\s*(\[\w+\] )?tab:.*$/
-        \ contains=VimtexTocHotkey
+  syntax match VimtexTocLabelsSecs /\v^L\d \s*(\[\w+\] )?(chap|sec):.*$/
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey
+  syntax match VimtexTocLabelsEq   /\v^L\d \s*(\[\w+\] )?eq:.*$/
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey
+  syntax match VimtexTocLabelsFig  /\v^L\d \s*(\[\w+\] )?fig:.*$/
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey
+  syntax match VimtexTocLabelsTab  /\v^L\d \s*(\[\w+\] )?tab:.*$/
+        \ contains=VimtexTocSecLabel,VimtexTocHotkey
 endfunction
 
 " }}}1
@@ -421,7 +422,7 @@ endfunction
 
 " }}}1
 function! s:toc.print_entry(entry) abort dict " {{{1
-  let output = ''
+  let output = 'L' . a:entry.level . ' '
   if self.show_numbers
     let number = a:entry.level >= self.tocdepth + 2 ? ''
           \ : strpart(self.print_number(a:entry.number),
@@ -433,7 +434,7 @@ function! s:toc.print_entry(entry) abort dict " {{{1
     let output .= printf('[%S] ', a:entry.hotkey)
   endif
 
-  let output .= printf('%-140S%s', a:entry.title, a:entry.level)
+  let output .= a:entry.title
 
   call append('$', output)
 endfunction
@@ -698,9 +699,9 @@ function! s:foldexpr(lnum) abort " {{{1
   let pline = getline(a:lnum - 1)
   let cline = getline(a:lnum)
   let nline = getline(a:lnum + 1)
-  let l:pn = matchstr(pline, '\d$')
-  let l:cn = matchstr(cline, '\d$')
-  let l:nn = matchstr(nline, '\d$')
+  let l:pn = matchstr(pline, '^L\zs\d')
+  let l:cn = matchstr(cline, '^L\zs\d')
+  let l:nn = matchstr(nline, '^L\zs\d')
 
   " Don't fold options
   if cline =~# '^\s*$'
@@ -720,10 +721,10 @@ endfunction
 
 " }}}1
 function! s:foldtext() abort " {{{1
-  let l:line = getline(v:foldstart)
-
-  if b:toc.todo_sorted && l:line =~# 'TODO:'
-    return substitute(l:line, 'TODO\zs:.*', 's', '')
+  let l:line = getline(v:foldstart)[3:]
+  if b:toc.todo_sorted
+        \ && l:line =~# '\v%(' . join(g:vimtex_toc_todo_keywords, '|') . ')'
+    return substitute(l:line, '\w+\zs:.*', 's', '')
   else
     return l:line
   endif
