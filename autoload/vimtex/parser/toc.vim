@@ -502,13 +502,16 @@ endfunction
 " }}}1
 
 
+" Create the lists of matchers
 let s:matchers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^matcher_'''),
       \ 'v:val[1]')
       \ + g:vimtex_toc_custom_matchers
-call sort(s:matchers, {d1, d2 ->
-      \ d1.priority == d2.priority ? 0
-      \ : d1.priority > d2.priority ? 1 : -1})
+function! s:sort_by_priority(d1, d2) abort
+  return a:d1.priority >= a:d2.priority
+      \ ? a:d1.priority > a:d2.priority : -1
+endfunction
+call sort(s:matchers, function('s:sort_by_priority'))
 let s:matchers_preamble = filter(deepcopy(s:matchers), 'v:val.in_preamble')
 let s:matchers_content = filter(deepcopy(s:matchers), 'v:val.in_content')
 
