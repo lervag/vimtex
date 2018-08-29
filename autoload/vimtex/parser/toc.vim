@@ -125,7 +125,7 @@ endfunction
 " {{{1 let s:re_prefilter = ...
 let s:re_prefilter = '\v%(\\' . join([
       \ '%(front|main|back)matter',
-      \ 'add%(global|section)bib',
+      \ 'add%(global|section)?bib',
       \ 'appendix',
       \ 'begin',
       \ 'bibliography',
@@ -248,17 +248,16 @@ endfunction
 
 " }}}1
 
-let s:matcher_bibinputs = {
-      \ 're' : '\v^\s*\\(bibliography|add(bibresource|globalbib|sectionbib))'
-      \        . '\m\s*{\zs[^}]\+\ze}',
+let s:matcher_include_bibtex = {
+      \ 're' : '\v^\s*\\bibliography\s*\{\zs[^}]+\ze\}',
       \ 'in_preamble' : 1,
       \ 'in_content' : 1,
       \ 'priority' : 1,
       \}
-function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
+function! s:matcher_include_bibtex.get_entry(context) abort dict " {{{1
   let l:entries = []
 
-  for l:file in split(matchstr(a:context.line, self.re), ',\s*')
+  for l:file in split(matchstr(a:context.line, self.re), ',')
     " Ensure that the file name has extension
     if l:file !~# '\.bib$'
       let l:file .= '.bib'
@@ -277,6 +276,29 @@ function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
   endfor
 
   return l:entries
+endfunction
+
+" }}}1
+
+let s:matcher_include_biblatex = {
+      \ 're' : '\v^\s*\\add(bibresource|globalbib|sectionbib)\s*\{\zs[^}]+\ze\}',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 0,
+      \ 'priority' : 1,
+      \}
+function! s:matcher_include_biblatex.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+
+  return {
+        \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
+        \ 'number' : '',
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'line'   : 1,
+        \ 'level'  : 0,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ 'link'   : 1,
+        \}
 endfunction
 
 " }}}1

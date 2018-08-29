@@ -1,7 +1,8 @@
 \documentclass{book}
 
 \input{preamble}
-\bibliography{book.bib, test.bib}
+\addbibresource{book.bib}
+\addglobalbib{book.bib}
 
 \begin{document}
 
@@ -25,4 +26,5 @@
 % FIXME Be smarter
 \input{backmatter}
 
+\bibliography{book.bib,test}
 \end{document}
