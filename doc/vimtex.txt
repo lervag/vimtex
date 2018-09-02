@@ -67,10 +67,10 @@ CONTENTS                                                      *vimtex-contents*
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
   Navigation                                    |vimtex-navigation|
-    Table of contents                           |vimtex-toc|
-    Table of labels                             |vimtex-labels|
-    Unite sources                               |vimtex-unite|
     Include expression (|gf| command)             |vimtex-includeexpr|
+    Table of contents                           |vimtex-toc|
+      Custom mappings                           |vimtex-toc-custom-maps|
+    Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
@@ -118,7 +118,6 @@ Feature overview~
   - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
   - table of content
-  - table of labels
   - proper settings for |'include'|, |'includeexpr'|, |'suffixesadd'| and
     |'define'|, which among other things
     - allow |include-search| and |definition-search|
@@ -580,8 +579,6 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lI  |<plug>(vimtex-info-full)|                      `n`
    <localleader>lt  |<plug>(vimtex-toc-open)|                       `n`
    <localleader>lT  |<plug>(vimtex-toc-toggle)|                     `n`
-   <localleader>ly  |<plug>(vimtex-labels-open)|                    `n`
-   <localleader>lY  |<plug>(vimtex-labels-toggle)|                  `n`
    <localleader>lq  |<plug>(vimtex-log)|                            `n`
    <localleader>lv  |<plug>(vimtex-view)|                           `n`
    <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
@@ -1382,52 +1379,6 @@ Options~
 
   Default value: 1
 
-*g:vimtex_index_mode*
-  Set mode of the index feature. The index may either open a window for
-  selecting between candidates, or it may fill (and open) the location list,
-  or a combination.
-
-  The possible modes are:
-
-    1: Use index window.
-    2: Use index window, but also fill location list.
-    3: Fill location list.
-    4: Fill and open location.
-
-  Default value: 1
-
-*g:vimtex_index_hide_line_numbers*
-  If enabled, then line numbers will be hidden in the index windows.  That is,
-  |nonumber| and |norelativenumber| will be set locally.
-
-  Default value: 1
-
-*g:vimtex_index_resize*
-  Whether or not to automatically resize vim when index windows are opened.
-
-  Note: This option makes sense if the index window is vertically split.
-
-  Default value: 0
-
-*g:vimtex_index_show_help*
-  Whether to display the index help text.
-
-  Default value: 1
-
-*g:vimtex_index_split_pos*
-  Define where index windows should be opened. This is a string that contains
-  either the word 'full' to open in the current window, or a position command.
-  Use |:vert| if a vertical split is desired, and one of |:leftabove|,
-  |:rightbelow|, |:topleft|, and |:botright| to specify the desired split
-  position.
-
-  Default value: 'vert leftabove'
-
-*g:vimtex_index_split_width*
-  For vertically split windows: Set width of index window.
-
-  Default value: 30
-
 *g:vimtex_mappings_enabled*
   Control whether or not to load the default mappings.
 
@@ -1460,29 +1411,6 @@ Options~
   This option enables the motion mappings `%`, `[[`, `[]`, `][`, and `]]`. It
   also enables the highlighting of matching delimiters.
 
-  Default value: 1
-
-*g:vimtex_labels_enabled*
-  Use this option to disable/enable table of labels.
-
-  Default value: 1
-
-*g:vimtex_labels_refresh_always*
-  Set to 0 to manually refresh entries in the table of labels. This may be
-  useful for very large projects where generating the entries becomes slow.
-
-  It may be useful to combine manually refreshing with a |BufWritePost|
-  autocommand, e.g.: >
-
-    augroup vimtex
-      autocmd!
-      autocmd BufWritePost *.tex call vimtex#labels#refresh()
-    augroup END
-<
-  Or, if preferred, one may use a mapping such as: >
-
-    nnoremap <silent> <localleader>lf :call vimtex#labels#refresh()
-<
   Default value: 1
 
 *g:vimtex_log_ignore*
@@ -1687,14 +1615,14 @@ Options~
   Default value: 1
 
 *g:vimtex_toc_custom_matchers*
-  This option is a list of custom TOC matchers. A matcher is used to define
-  the entries that are included in the TOC window. It is implemented as
+  This option is a list of custom ToC matchers. A matcher is used to define
+  the entries that are included in the ToC window. It is implemented as
   a |Dictionary| with a specified set of keys, see below for the
   specification.
 
-  As an example, one can use this option to add TOC entries for a custom
+  As an example, one can use this option to add ToC entries for a custom
   environment. Say you have defined an environment `mycustomenv`, then
-  instances of this environment could be added to the TOC with the following
+  instances of this environment could be added to the ToC with the following
   configuration: >
 
     let g:vimtex_toc_custom_matchers = [
@@ -1705,7 +1633,7 @@ Options~
   Default value: []
 
                                                     *toc_matcher_specification*
-  A TOC matcher is defined as a |Dictionary| where the possible keys are
+  A ToC matcher is defined as a |Dictionary| where the possible keys are
   specified below. In order to write a matcher, one should also be aware of
   the `context` argument that is passed to the matcher functions, as well as
   the specification of the `toc entry` return value. However, since this kind
@@ -1717,32 +1645,42 @@ Options~
       Type: |String|
       Required: `yes`
       This specifies a regular expression that should match the current line
-      for the desired TOC entry.
+      for the desired ToC entry.
+
+    prefilter~
+      Type: |String|
+      Required: `maybe`
+      This specifies a `simplified` regular expression that should match the
+      current line for the desired ToC entry. This is used in order to make
+      things faster. The `re` key may often be a complex and therefore slow
+      regular expression. This key should represent a simple and fast regular
+      expression that may match more then the desired entry.
+
+    in_preamble~
+      Type: 0 or 1
+      Required: `yes`
+      If the entry may appear in the preamble.
+
+    in_content~
+      Type: 0 or 1
+      Required: `yes`
+      If the entry may appear in the main content.
 
     title~
       Type: |String|
       Required: `no`
-      If the matcher does not have an `action` or `get_entry` key, then it
-      will use a simple, general matcher function to generate the entry. In
-      this case, the `title` key should be specified to give the title of the
-      TOC entry.
-
-    action~
-      Type: |Dictionary-function|
-      Arguments: `context`
-      Required: `no`
-      This key specifies a general action to be performed with the given
-      context on matching lines. It will not add entries to the TOC, and
-      is probably not useful for most people.
+      If the matcher does not have a `get_entry` key, then it will use
+      a simple, general matcher function to generate the entry. In this case,
+      the `title` key should be specified to give the title of the ToC entry.
 
     get_entry~
       Type: |Dictionary-function|
       Arguments: `context`
       Returns: `toc entry`
       Required: `no`
-      This is the general way to define TOC entries. It allows to define the
-      TOC entry based on the context. See e.g.
-      `g:vimtex#toc#matchers#sections` for an example on how to use this.
+      This is the general way to define ToC entries. It allows to define the
+      ToC entry based on the context. See `autoload/vimtex/parser/toc.vim` for
+      examples on how to use this.
 
     continue~
       Type: |Dictionary-function|
@@ -1751,80 +1689,119 @@ Options~
       Required: `no`
       Some entries may be specified over several lines, in which case this key
       becomes necessary in combination with the `get_entry` key. See the built
-      in matcher `g:vimtex#toc#matchers#sections` for an example on how to use
-      this.
+      in `s:matcher_section` matcher for an example on how to use this.
 
-*g:vimtex_toc_fold*
-  Turn on folding of ToC entries.
+*g:vimtex_toc_todo_keywords*
+  Set list of keywords that should be recognized in comments for the todo
+  layer.
 
-  Default value: 0
-
-*g:vimtex_toc_fold_level_start*
-  This option controls the initial fold level for the TOC window if folding is
-  enabled.
-
-  Default value: Same as |g:vimtex_toc_tocdepth|
-
-*g:vimtex_toc_hotkeys*
-  This option controls whether or not to activate individual hotkeys for the
-  TOC entries, and how these hotkeys should behave.  The option is
-  a dictionary with the following keys:
-
-    `enabled`  Set to 1 to enable individual hotkeys.
-    `leader`   The leader key for the hotkeys.
-    `keys`     The set of keys that are used for the hotkeys.
-
-  Default value: >
-
-    let g:vimtex_toc_hotkeys = {
-        \ 'enabled' : 0,
-        \ 'leader' : ';',
-        \ 'keys' : 'abcdefghijklmnopqrstuvxyz',
-        \}
-
-*g:vimtex_toc_refresh_always*
-  Set to 0 to manually refresh ToC entries. This may be useful for very large
-  projects where generating the ToC entries becomes slow.
-
-  It may be useful to combine manually refreshing with a |BufWritePost|
-  autocommand, e.g.: >
-
-    augroup vimtex
-      autocmd!
-      autocmd BufWritePost *.tex call vimtex#toc#refresh()
-    augroup END
-<
-  Or, if preferred, one may use a mapping such as: >
-
-    nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
-<
-  Default value: 1
+  Default value: `['TODO', 'FIXME']`
 
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
 
   Default value: 1
 
-*g:vimtex_toc_show_numbers*
-  Set whether or not to show section numbers in ToC.
+*g:vimtex_toc_config*
+  This is a dictionary that can be used to configure the ToC. Each key
+  specifies a configuration option that can be changed. In the following, the
+  various keys are explained briefly and the default value is indicated.
 
-  Note: The numbers may also be toggled inside the ToC window with the `s`
-        keybinding.
+    `name` : `Table of contents (vimtex)`
+      The name of the ToC buffer.
 
-  Default value: 1
+    `mode` : 1
+      The ToC display mode, one of:
+        1: Separate window.
+        2: Separate window and location list.
+        3: Location list (and don't open it).
+        4: Location list (and open it).
 
-*g:vimtex_toc_tocdepth*
-  Define the number of section levels to display.  Set level corresponding to
-  the desired latex variable `tocdepth`.  For more info on `tocdepth`, see:
-  http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+    `fold_enable` : 0
+      Wheter to enable folding in the ToC window.
 
-  Note: This will also change the width of the number column according to the
-        space needed to show the section numbers.
+    `fold_level_start` : -1
+      The starting fold level. The value -1 indicates that the start level is
+      the same as the `tocdepth` value.
 
-  Note: The variable may be updated inside the ToC window with the mappings
-        `+` and `-`.
+    `hide_line_numbers` : 1
+      If enabled, then line numbers will be hidden in the ToC window by
+      setting |nonumber| and |norelativenumber| locally.
 
-  Default value: 3
+    `hotkeys_enabled` : 0
+      Set to 1 to enable individual hotkeys for ToC entries.
+
+    `hotkeys` : `abcdegijklmnopuvxyz`
+      A string of keys that are used to create individual hotkeys.
+
+    `hotkeys_leader` : `;`
+      The hotkey leader. Set to empty string to disable the leader.
+
+    `layers` : Undefined
+    `layer_status` : Dictionary >
+        { 'content': 1,
+          'label': 1,
+          'todo': 1,
+          'include': 1 }
+<      The initial state of the layers (1 for active, 0 for inactive). The
+      `layers` key may be used as a shorthand: it accepts a list of layers
+      that should be active.
+
+    `layer_keys` : Dictionary >
+        { 'content': 'C',
+          'label': 'L',
+          'todo': 'T',
+          'include': 'I'}
+<      Specify hotkeys for enabling/disabling the different layers.
+
+    `resize` : 0
+      Whether or not to automatically resize vim when index windows are
+      opened.
+
+      Note: This option makes sense if the index window is vertically split.
+
+    `refresh_always` : 1
+      Set to 0 to manually refresh ToC entries. This may be useful for very
+      large projects where generating the ToC entries becomes slow.
+
+      It may be useful to combine manually refreshing with a |BufWritePost|
+      autocommand, e.g.: >
+
+        augroup vimtex
+          autocmd!
+          autocmd BufWritePost *.tex call vimtex#toc#refresh()
+        augroup END
+<
+      Or, if preferred, one may use a mapping such as: >
+
+        nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
+<
+    `show_help` : 1
+      Whether to display the index help text.
+
+    `show_numbers` : 1
+      Set whether or not to show section numbers in ToC.
+
+    `split_pos` : `vert leftabove`
+      Define where index windows should be opened. This is a string that
+      contains either the word 'full' to open in the current window, or
+      a position command. Use |:vert| if a vertical split is desired, and one
+      of |:leftabove|, |:rightbelow|, |:topleft|, and |:botright| to specify
+      the desired split position.
+
+    `split_width` : 30
+      For vertically split windows: Set width of index window.
+
+    `tocdepth` : 3
+      Define the depth of section levels to display. This attempts to mimic
+      the corresponding latex variable `tocdepth`. For more info, see:
+      http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+
+      Note: This will also change the width of the number column according to
+            the space needed to show the section numbers.
+
+    `todo_sorted` : 1
+      Whether or not to sort the TODOs at the top of the ToC window.
 
 *g:vimtex_view_enabled*
   Use this option to disable/enable the |vimtex| viewer interface.
@@ -2110,14 +2087,6 @@ Commands~
                                              *VimtexTocToggle*
                                              *<plug>(vimtex-toc-toggle)*
 :VimtexTocToggle          Toggle table of contents.
-
-                                             *VimtexLabelsOpen*
-                                             *<plug>(vimtex-labels-open)*
-:VimtexLabelsOpen         Open table of labels.
-
-                                             *VimtexLabelsToggle*
-                                             *<plug>(vimtex-labels-toggle)*
-:VimtexLabelsToggle       Toggle table of labels.
 
                                              *VimtexLog*
                                              *<plug>(vimtex-log)*
@@ -2995,103 +2964,19 @@ Associated settings:
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
-                                                                 *vimtex-index*
 
-The |vimtex-index| is an interface for listing various LaTeX related lists,
-such as the table of contents |vimtex-toc| and table of labels
-|vimtex-labels|.
+Vim already has a lot of useful navigation related features, such as
+|tags-and-searches| and |include-search|. |vimtex| improves the latter feature
+by setting the 'include' and 'includeexpr' options, see |vimtex-includeexpr|.
 
-The index may be in the form of a split window (default) or through
-a |location-list|, see |g:vimtex_index_mode|.
+|vimtex| also provides a separate table-of-content feature. This works by
+parsing the LaTeX project and displaying a table of contents in a separate
+window. For more info, see |vimtex-toc|.
 
-The index window supports custom keybindings, including actions on the list
-elements.  The position of the window is controlled by
-|g:vimtex_index_split_pos|.  By default, the top of the buffer will display
-help text to explain the local keybindings. This may be turned off with
-|g:vimtex_index_show_help|.
-
-Associated settings:
-  |g:vimtex_index_mode|
-  |g:vimtex_index_hide_line_numbers|
-  |g:vimtex_index_resize|
-  |g:vimtex_index_show_help|
-  |g:vimtex_index_split_pos|
-  |g:vimtex_index_split_width|
-
-------------------------------------------------------------------------------
-Table of contents~
-                                                                   *vimtex-toc*
-
-|vimtex-toc| shows a table of contents (ToC) for the current LaTeX document.
-The ToC entries may be activated/jumped to with <cr> or <space>.  The local
-keybindings are described if |g:vimtex_index_show_help| is enabled. Note that
-some of the features described here are related to the specific index window,
-which may not be relevant if one uses the location lists, see
-|g:vimtex_index_mode|.
-
-One may force file input entries into the ToC through designated comments with
-the following syntax: >
-
-  % vimtex-include: /path/to/file
-
-The path may be absolute or relative. In the latter case, it will be relative
-to the current root (as printed by |:VimtexInfo|). This will add an entry in
-the ToC which makes it easy to open any file. Any file opened through the ToC
-that was included in this manner will be linked to the current vimtex project,
-and thus the ToC and similar commands will be available, even if the file is
-not a LaTeX file.
-
-The TOC parser uses a list of matchers to parse the LaTeX project for the TOC
-entries. One may add custom matchers through |g:vimtex_toc_custom_matchers|.
-See also |toc_matcher_specification| for a specification of the matcher
-objects.
-
-Associated settings:
-  |g:vimtex_toc_enabled|
-  |g:vimtex_toc_custom_matchers|
-  |g:vimtex_toc_fold|
-  |g:vimtex_toc_fold_level_start|
-  |g:vimtex_toc_hotkeys|
-  |g:vimtex_toc_refresh_always|
-  |g:vimtex_toc_show_preamble|
-  |g:vimtex_toc_show_numbers|
-  |g:vimtex_toc_tocdepth|
-
-------------------------------------------------------------------------------
-Table of labels~
-                                                                *vimtex-labels*
-
-|vimtex-labels| shows a table of labels similar to the ToC.
-
-If the labels are displayed in an index window, the entries may be filtered
-with the `f` keybinding.  Filters may be removed with the `c` keybinding.
-
-Associated settings:
-  |g:vimtex_labels_enabled|
-
-------------------------------------------------------------------------------
-Unite sources~
-                                                                 *vimtex-unite*
-                                                                   *vimtex_toc*
-                                                                *vimtex_labels*
-
-                                          https://github.com/Shougo/unite.vim
-The |unite.vim| plugin is a popular interface for many things, including
-outlines. Although |vimtex| includes a simple interface for tables of contents
-and labels, it also makes sense to provide these as sources to |unite.vim|.
-The source names are:
-
-  vimtex_toc       Table of contents
-  vimtex_labels    Table of labels
-
-The sources use similar syntax highlighting to the internal |vimtex|
-interfaces.
-
-If one prefers the |unite.vim| sources to the |vimtex| interface, one may
-override the default mappings, e.g.: >
-
-  nnoremap <localleader>lt :<c-u>Unite vimtex_toc<cr>
-  nnoremap <localleader>ly :<c-u>Unite vimtex_labels<cr>
+The "engine" for collecting the table-of-content entries may also be used as
+a backend for external plugins. There are sources for |denite.nvim| and
+|unite.vim| that should work well. The source code may be used as inspiration
+to write custom sources or sources for other, similar plugins.
 
 ------------------------------------------------------------------------------
 Include expression~
@@ -3110,6 +2995,103 @@ following example: >
 With the cursor on the documentclass name `article` or one of the package
 names, |gf| will take you to the TeX source files (typically `.cls` file for
 documentclass and `.sty` files for packages).
+
+------------------------------------------------------------------------------
+Table of contents~
+                                                                   *vimtex-toc*
+
+|vimtex-toc| displays a table of contents (ToC) for the current LaTeX document.
+The ToC entries may be activated/jumped to with <cr> or <space>. There are
+currently four different "layers" of entries:
+
+- content  This is the main part and the "real" ToC
+- todo     This shows TODOs from comments and `\todo{...}` commands
+- label    This shows `\label{...}` commands
+- include  This shows included files
+
+The ToC is configured with |g:vimtex_toc_config|. One may change things from
+where the ToC window is positioned to which layers to show and more. Please
+read the option help for details.
+
+The ToC parser uses a list of matchers to parse the LaTeX project for the ToC
+entries. One may add custom matchers through the |g:vimtex_toc_custom_matchers|
+option. The syntax of a custom matcher is specified here:
+|toc_matcher_specification|.
+
+Note: By setting the `mode` configuration key to > 2, the separate ToC window
+is not opened and most of the features mentioned here will be irrelevant.
+
+One may force file input entries of the "include" type into the ToC through
+comments with the following syntax: >
+
+  % vimtex-include: /path/to/file
+
+The path may be absolute or relative. In the latter case, it will be relative
+to the current root (as printed by |:VimtexInfo|). This will add an entry in
+the ToC which makes it easy to open any file. Any file opened through the ToC
+that was included in this manner will be linked to the current vimtex project,
+and thus the ToC and similar commands will be available, even if the file is
+not a LaTeX file.
+
+                                                       *vimtex-toc-custom-maps*
+Some people may want to have separate mappings for different ToC contents,
+e.g. one mapping to open a table of labels and todos and a different mapping
+to open a table of include files. This may be easily added with custom
+mappings: >
+
+  augroup vimtex_customization
+    autocmd!
+    autocmd FileType tex call CreateTocs()
+  augroup END
+
+  function CreateTocs()
+    let g:custom_toc1 = vimtex#toc#new({
+        \ 'layers' : ['label', 'todo'],
+        \ 'todo_sorted' : 0,
+        \ 'show_help' : 0,
+        \ 'show_numbers' : 0,
+        \ 'mode' : 4,
+        \})
+    nnoremap <silent> \ly :call g:custom_toc1.open()<cr>
+
+    let g:custom_toc2 = vimtex#toc#new({
+        \ 'layers' : ['include'],
+        \ 'show_help' : 0,
+        \})
+    nnoremap <silent> \lY :call g:custom_toc2.open()<cr>
+  endfunction
+
+The `vimtex#toc#new` function takes a dictionary argument that may be used to
+override the one main configuration (i.e. the combination of the default
+values and |g:vimtex_toc_config|).
+
+Associated settings:
+  |g:vimtex_toc_enabled|
+  |g:vimtex_toc_custom_matchers|
+  |g:vimtex_toc_todo_keywords|
+  |g:vimtex_toc_show_preamble|
+  |g:vimtex_toc_config|
+
+------------------------------------------------------------------------------
+Denite/Unite source~
+                                                                *vimtex-denite*
+                                                                 *vimtex-unite*
+
+                                        https://github.com/Shougo/denite.nvim
+                                          https://github.com/Shougo/unite.vim
+|denite.nvim| is is a popular interface for many things, including outlines.
+Although |vimtex| includes a simple interface for a tables of contents, it also
+makes sense to provide these as a source to |denite.nvim|. The source name is
+simply `vimtex`.
+
+|unite.vim| is the predecessor to |denite.nvim|. As for denite, there is a source
+called `vimtex`.
+
+If one prefers the |denite.nvim| or |unite.vim| source to the |vimtex| interface,
+one may override the default mapping, e.g.: >
+
+  nnoremap <localleader>lt :<c-u>Denite vimtex<cr>
+  nnoremap <localleader>lt :<c-u>Unite vimtex<cr>
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
@@ -3623,6 +3605,26 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2018-08-15: Refactored the ToC interface~
+I've made a large update to the code for the ToC window in order to simplify
+and unify the interface. In the new version, |g:vimtex_toc_config| replaces
+all of the following options:
+
+  *g:vimtex_index_split_width*
+  *g:vimtex_index_split_pos*
+  *g:vimtex_index_show_help*
+  *g:vimtex_index_resize*
+  *g:vimtex_index_hide_line_numbers*
+  *g:vimtex_index_mode*
+  *g:vimtex_toc_layers*
+  *g:vimtex_toc_fold*
+  *g:vimtex_toc_fold_level_start*
+  *g:vimtex_toc_hotkeys*
+  *g:vimtex_toc_refresh_always*
+  *g:vimtex_toc_show_numbers*
+  *g:vimtex_toc_tocdepth*
+
 
 2017-07-27: Major refactoring of the folding feature~
 I've made a large update to the code for folding. The configuration of the

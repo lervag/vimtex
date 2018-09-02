@@ -58,16 +58,16 @@ function! s:parser.parse(file) abort dict " {{{1
       break
     endif
 
-    if l:line =~# self.input_re
-      let l:file = self.input_parser(l:line, a:file, self.input_re)
-      call extend(l:parsed, self.parse(l:file))
-      continue
-    endif
-
     if self.detailed
       call add(l:parsed, [a:file, l:lnum, l:line])
     else
       call add(l:parsed, l:line)
+    endif
+
+    if l:line =~# self.input_re
+      let l:file = self.input_parser(l:line, a:file, self.input_re)
+      call extend(l:parsed, self.parse(l:file))
+      continue
     endif
   endfor
 
@@ -136,7 +136,7 @@ function! s:input_to_filename(input, root) abort " {{{1
   let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
 
   " Ensure that the file name has extension
-  if l:file !~# '\.tex$'
+  if empty(fnamemodify(l:file, ':e'))
     let l:file .= '.tex'
   endif
 

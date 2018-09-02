@@ -7,3 +7,33 @@ syntax enable
 nnoremap q :qall!<cr>
 
 let g:tex_flavor = 'latex'
+
+let g:vimtex_toc_config = {
+      \ 'layer_status' : {'include' : 0},
+      \ 'layer_keys' : {'content' : '<c-c>'},
+      \}
+let g:vimtex_toc_todo_keywords = ['TODO', 'FIXME', 'IMPORTANT', 'IMPORTANTE']
+
+augroup vimtex_customization
+  autocmd!
+  autocmd FileType tex call CreateTocs()
+augroup END
+
+function CreateTocs()
+  let g:custom_toc1 = vimtex#toc#new({
+      \ 'layers' : ['label', 'todo'],
+      \ 'todo_sorted' : 0,
+      \ 'show_help' : 0,
+      \ 'show_numbers' : 0,
+      \ 'mode' : 4,
+      \})
+  nnoremap <silent> \ly :call g:custom_toc1.open()<cr>
+
+  let g:custom_toc2 = vimtex#toc#new({
+      \ 'layers' : ['include'],
+      \ 'show_help' : 0,
+      \})
+  nnoremap <silent> \lY :call g:custom_toc2.open()<cr>
+endfunction
+
+silent edit main.tex

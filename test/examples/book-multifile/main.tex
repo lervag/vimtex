@@ -1,7 +1,8 @@
 \documentclass{book}
 
 \input{preamble}
-\bibliography{book.bib}
+\addbibresource{book.bib}
+\addglobalbib{book.bib}
 
 \begin{document}
 
@@ -9,14 +10,21 @@
 \input{ frontmatter }
 
 \mainmatter
-% Todo Should split chapters into parts
+% Todo This should NOT match
 \input{chapters}
+\todo[inline]{Match more things}
 
 \appendix
 \input{appendix}
 % TODO: This should be much better!
 
+% IMPORTANT: Mucho importante
+
+% IMPORTANTE: Very important
+
 \backmatter
+% FIXME Be smarter
 \input{backmatter}
 
+\bibliography{book.bib,test}
 \end{document}

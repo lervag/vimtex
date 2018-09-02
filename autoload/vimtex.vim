@@ -172,13 +172,6 @@ function! vimtex#init_options() " {{{1
         \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
         \])
 
-  call s:init_option('vimtex_index_mode', 1)
-  call s:init_option('vimtex_index_hide_line_numbers', 1)
-  call s:init_option('vimtex_index_resize', 0)
-  call s:init_option('vimtex_index_show_help', 1)
-  call s:init_option('vimtex_index_split_pos', 'vert leftabove')
-  call s:init_option('vimtex_index_split_width', 30)
-
   call s:init_option('vimtex_mappings_enabled', 1)
   call s:init_option('vimtex_mappings_disable', {})
 
@@ -202,13 +195,38 @@ function! vimtex#init_options() " {{{1
 
   call s:init_option('vimtex_toc_enabled', 1)
   call s:init_option('vimtex_toc_custom_matchers', [])
-  call s:init_option('vimtex_toc_fold', 0)
-  call s:init_option('vimtex_toc_refresh_always', 1)
-  call s:init_option('vimtex_toc_tocdepth', 3)
-  call s:init_option('vimtex_toc_fold_level_start', g:vimtex_toc_tocdepth)
-  call s:init_option('vimtex_toc_show_numbers', 1)
   call s:init_option('vimtex_toc_show_preamble', 1)
-  call s:init_option('vimtex_toc_hotkeys', {})
+  call s:init_option('vimtex_toc_todo_keywords', ['TODO', 'FIXME'])
+  call s:init_option('vimtex_toc_config', {
+        \ 'name' : 'Table of contents (vimtex)',
+        \ 'mode' : 1,
+        \ 'fold_enable' : 0,
+        \ 'fold_level_start' : -1,
+        \ 'hide_line_numbers' : 1,
+        \ 'hotkeys_enabled' : 0,
+        \ 'hotkeys' : 'abcdeilmnopuvxyz',
+        \ 'hotkeys_leader' : ';',
+        \ 'layer_status' : {
+        \   'content': 1,
+        \   'label': 1,
+        \   'todo': 1,
+        \   'include': 1,
+        \ },
+        \ 'layer_keys' : {
+        \   'content': 'C',
+        \   'label': 'L',
+        \   'todo': 'T',
+        \   'include': 'I',
+        \ },
+        \ 'resize' : 0,
+        \ 'refresh_always' : 1,
+        \ 'show_help' : 1,
+        \ 'show_numbers' : 1,
+        \ 'split_pos' : 'vert leftabove',
+        \ 'split_width' : 30,
+        \ 'tocdepth' : 3,
+        \ 'todo_sorted' : 1,
+        \})
 
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
@@ -255,6 +273,8 @@ function! s:init_option(option, default) " {{{1
   let l:option = 'g:' . a:option
   if !exists(l:option)
     let {l:option} = a:default
+  elseif type(a:default) == type({})
+    call vimtex#util#extend_recursive({l:option}, a:default, 'keep')
   endif
 endfunction
 
@@ -265,23 +285,17 @@ function! s:init_highlights() " {{{1
         \ ['VimtexImapsLhs', 'ModeMsg'],
         \ ['VimtexImapsRhs', 'ModeMsg'],
         \ ['VimtexImapsWrapper', 'Type'],
-        \ ['VimtexIndexHelp', 'helpVim'],
-        \ ['VimtexIndexLine', 'ModeMsg'],
         \ ['VimtexInfo', 'Question'],
         \ ['VimtexInfoTitle', 'PreProc'],
         \ ['VimtexInfoKey', 'Statement'],
         \ ['VimtexInfoValue', 'ModeMsg'],
         \ ['VimtexInfoOther', 'Normal'],
-        \ ['VimtexLabelsChap', 'PreProc'],
-        \ ['VimtexLabelsEq', 'Statement'],
-        \ ['VimtexLabelsFig', 'Identifier'],
-        \ ['VimtexLabelsHelp', 'helpVim'],
-        \ ['VimtexLabelsLine', 'Todo'],
-        \ ['VimtexLabelsSec', 'Type'],
-        \ ['VimtexLabelsTab', 'String'],
         \ ['VimtexMsg', 'ModeMsg'],
         \ ['VimtexSuccess', 'Statement'],
         \ ['VimtexTocHelp', 'helpVim'],
+        \ ['VimtexTocHelpKey', 'ModeMsg'],
+        \ ['VimtexTocHelpLayerOn', 'Statement'],
+        \ ['VimtexTocHelpLayerOff', 'Comment'],
         \ ['VimtexTocTodo', 'Todo'],
         \ ['VimtexTocNum', 'Number'],
         \ ['VimtexTocSec0', 'Title'],
@@ -289,8 +303,13 @@ function! s:init_highlights() " {{{1
         \ ['VimtexTocSec2', 'helpVim'],
         \ ['VimtexTocSec3', 'NonText'],
         \ ['VimtexTocSec4', 'Comment'],
-        \ ['VimtexTocTag', 'Directory'],
         \ ['VimtexTocHotkey', 'Comment'],
+        \ ['VimtexTocLabelsSecs', 'Statement'],
+        \ ['VimtexTocLabelsEq', 'PreProc'],
+        \ ['VimtexTocLabelsFig', 'Identifier'],
+        \ ['VimtexTocLabelsTab', 'String'],
+        \ ['VimtexTocIncl', 'Number'],
+        \ ['VimtexTocInclPath', 'Normal'],
         \ ['VimtexWarning', 'WarningMsg'],
         \ ['VimtexError', 'ErrorMsg'],
         \]
@@ -494,11 +513,6 @@ function! s:init_default_mappings() " {{{1
   if get(g:, 'vimtex_toc_enabled', 0)
     call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
     call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
-  endif
-
-  if get(g:, 'vimtex_labels_enabled', 0)
-    call s:map('n', '<localleader>ly', '<plug>(vimtex-labels-open)')
-    call s:map('n', '<localleader>lY', '<plug>(vimtex-labels-toggle)')
   endif
 
   if has_key(b:vimtex, 'viewer')

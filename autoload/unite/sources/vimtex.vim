@@ -8,7 +8,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:source = {
-      \ 'name' : 'vimtex_toc',
+      \ 'name' : 'vimtex',
       \ 'sorters' : 'sorter_nothing',
       \ 'default_kind' : 'jump_list',
       \ 'syntax' : 'uniteSource__vimtex',
@@ -19,7 +19,7 @@ let s:source = {
 
 function! s:source.gather_candidates(args, context) " {{{1
   if exists('b:vimtex')
-    let s:source.entries = vimtex#toc#get_entries()
+    let s:source.entries = vimtex#parser#toc(b:vimtex.tex)
     let s:source.maxlevel = max(map(copy(s:source.entries), 'v:val.level'))
   endif
   return map(copy(s:source.entries),
@@ -76,7 +76,7 @@ endfunction
 
 " }}}1
 
-function! unite#sources#vimtex_toc#define()
+function! unite#sources#vimtex#define()
   return s:source
 endfunction
 

@@ -14,7 +14,7 @@
 "     line   : 142,
 "     rank   : cumulative line number,
 "     level  : 2,
-"     type   : [content | label | figure | table | todo],
+"     type   : [content | label | todo | include],
 "     link   : [0 | 1],
 "   }
 "
@@ -38,13 +38,11 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
   " No more parsing if there is no content
   if empty(l:content) | return l:entries | endif
 
-  " Prepare included file matcher
-  let l:included = s:included.init(l:content[0][0])
-
   "
   " Begin parsing LaTeX files
   "
   let l:lnum_total = 0
+  let l:matchers = s:matchers_preamble
   for [l:file, l:lnum, l:line] in l:content
     let l:lnum_total += 1
     let l:context = {
@@ -61,6 +59,7 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     " Detect end of preamble
     if s:level.preamble && l:line =~# '\v^\s*\\begin\{document\}'
       let s:level.preamble = 0
+      let l:matchers = s:matchers_content
       continue
     endif
 
@@ -70,41 +69,21 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
       continue
     endif
 
-    " Add an entry for each included file
-    "
-    " Note: This is handled differently from other matchers. Every new file
-    "       will get an entry, and all such entries that are provided by other
-    "       means will be filtered out at the end.
-    if l:file !=# l:included.prev
-      let l:entry = l:included.get_entry(l:context)
-      if !empty(l:entry)
-        call add(l:entries, l:entry)
-      endif
-    endif
+    " Apply prefilter - this gives considerable speedup for large documents
+    if l:line !~# s:re_prefilter | continue | endif
 
-    " Apply all matchers
-    for l:matcher in s:matchers
-      if (s:level.preamble && !get(l:matcher, 'in_preamble'))
-            \ || (!s:level.preamble && !get(l:matcher, 'in_content', 1))
-            \ || l:line !~# l:matcher.re
-        continue
-      endif
-
-      if has_key(l:matcher, 'action')
-        call l:matcher.action(l:context)
-      else
+    " Apply the matchers
+    for l:matcher in l:matchers
+      if l:line =~# l:matcher.re
         let l:entry = l:matcher.get_entry(l:context)
-        if !empty(l:entry)
+        if type(l:entry) == type([])
+          call extend(l:entries, l:entry)
+        elseif !empty(l:entry)
           call add(l:entries, l:entry)
         endif
       endif
-
-      break
     endfor
   endfor
-
-  " Remove superfluous entries (cf. the "included files" section above)
-  call filter(l:entries, 'get(v:val, ''entries'', 1) == 1')
 
   return l:entries
 endfunction
@@ -127,7 +106,6 @@ function! vimtex#parser#toc#get_topmatters() abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#parser#toc#get_entry_general(context) abort dict " {{{1
   return {
         \ 'title'  : self.title,
@@ -142,69 +120,185 @@ endfunction
 
 " }}}1
 
+" IMPORTANT: The following defines a prefilter for optimizing the toc parser.
+"            Any line that should be parsed has to be matched by this regexp!
+" {{{1 let s:re_prefilter = ...
+let s:re_prefilter = '\v%(\\' . join([
+      \ '%(front|main|back)matter',
+      \ 'add%(global|section)?bib',
+      \ 'appendix',
+      \ 'begin',
+      \ 'bibliography',
+      \ 'chapter',
+      \ 'documentclass',
+      \ 'import',
+      \ 'include',
+      \ 'includegraphics',
+      \ 'input',
+      \ 'label',
+      \ 'part',
+      \ 'printbib',
+      \ 'printindex',
+      \ 'section',
+      \ 'subfile',
+      \ 'tableofcontents',
+      \ 'todo',
+      \], '|') . ')'
+      \ . '|\%\s*%(' . join(g:vimtex_toc_todo_keywords, '|') . ')'
+      \ . '|\%\s*vimtex-include'
+for s:m in g:vimtex_toc_custom_matchers
+  if has_key(s:m, 'prefilter')
+    let s:re_prefilter .= '|' . s:m.prefilter
+  endif
+endfor
 
-" Adds entry for each included file that does not contain other entries
-let s:included = {}
-function! s:included.init(file) " {{{1
-  let l:inc = deepcopy(self)
-  let l:inc.prev = a:file
-  let l:inc.files = [a:file]
-  let l:inc.current = { 'entries' : 0 }
+" }}}1
 
-  unlet l:inc.init
-  return l:inc
+" Adds entries for included files
+let s:matcher_include = {
+      \ 're' : vimtex#re#tex_input . '\zs\f+',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
+      \}
+function! s:matcher_include.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+  if l:file[0] !=# '/'
+    let l:file = b:vimtex.root . '/' . l:file
+  endif
+  let l:file = fnamemodify(l:file, ':~:.')
+  if !filereadable(l:file)
+    let l:file .= '.tex'
+  endif
+  return {
+        \ 'title'  : 'tex incl: ' . (strlen(l:file) < 70
+        \               ? l:file
+        \               : l:file[0:30] . '...' . l:file[-36:]),
+        \ 'number' : '',
+        \ 'file'   : l:file,
+        \ 'line'   : 1,
+        \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ }
 endfunction
 
 " }}}1
-function! s:included.get_entry(context) " {{{1
-  let self.prev = a:context.file
-  let self.current.entries = a:context.num_entries - get(self, 'toc_length')
-  let self.toc_length = a:context.num_entries
 
-  if index(self.files, a:context.file) < 0
-    let self.files += [a:context.file]
-    let self.current = {
-          \ 'title'   : fnamemodify(a:context.file, ':t'),
-          \ 'number'  : '[i]',
-          \ 'file'    : a:context.file,
-          \ 'line'    : 1,
-          \ 'level'   : a:context.max_level - a:context.level.current,
-          \ 'rank'    : a:context.lnum_total,
-          \ 'type'    : 'content',
-          \ 'entries' : 0,
-          \ }
-    return self.current
-  else
-    let self.current = { 'entries' : 0 }
-    return {}
+" Adds entries for included graphics files (filetype tikz, tex)
+let s:matcher_include_graphics = {
+      \ 're' : '\v^\s*\\includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{\zs[^}]*',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 2,
+      \}
+function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+  if l:file[0] !=# '/'
+    let l:file = vimtex#misc#get_graphicspath(l:file)
   endif
+  let l:file = fnamemodify(l:file, ':~:.')
+  let l:ext = fnamemodify(l:file, ':e')
+
+  return !filereadable(l:file) || index(['asy', 'tikz'], l:ext) < 0
+        \ ? {}
+        \ : {
+        \     'title'  : 'fig incl: ' . (strlen(l:file) < 70
+        \                   ? l:file
+        \                   : l:file[0:30] . '...' . l:file[-36:]),
+        \     'number' : '',
+        \     'file'   : l:file,
+        \     'line'   : 1,
+        \     'level'  : a:context.max_level - a:context.level.current,
+        \     'rank'   : a:context.lnum_total,
+        \     'type'   : 'include',
+        \     'link'   : 1,
+        \   }
 endfunction
 
 " }}}1
 
 " Adds entries for included files through vimtex specific syntax (this allows
 " to add entries for any filetype or file)
-let s:matcher_vimtex_include = {
-      \ 're' : '%\s*vimtex-include:\?\s\+\zs\f\+',
+let s:matcher_include_vimtex = {
+      \ 're' : '^\s*%\s*vimtex-include:\?\s\+\zs\f\+',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
+      \ 'priority' : 2,
       \}
-function! s:matcher_vimtex_include.get_entry(context) abort dict " {{{1
+function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
   if l:file[0] !=# '/'
     let l:file = b:vimtex.root . '/' . l:file
   endif
   let l:file = fnamemodify(l:file, ':~:.')
   return {
-        \ 'title'  : (strlen(l:file) < 70
+        \ 'title'  : 'vtx incl: ' . (strlen(l:file) < 70
         \               ? l:file
         \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '[v]',
+        \ 'number' : '',
         \ 'file'   : l:file,
+        \ 'line'   : 1,
         \ 'level'  : a:context.max_level - a:context.level.current,
         \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'content',
+        \ 'type'   : 'include',
         \ 'link'   : 1,
         \ }
+endfunction
+
+" }}}1
+
+let s:matcher_include_bibtex = {
+      \ 're' : '\v^\s*\\bibliography\s*\{\zs[^}]+\ze\}',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
+      \}
+function! s:matcher_include_bibtex.get_entry(context) abort dict " {{{1
+  let l:entries = []
+
+  for l:file in split(matchstr(a:context.line, self.re), ',')
+    " Ensure that the file name has extension
+    if l:file !~# '\.bib$'
+      let l:file .= '.bib'
+    endif
+
+    call add(l:entries, {
+          \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
+          \ 'number' : '',
+          \ 'file'   : vimtex#kpsewhich#find(l:file),
+          \ 'line'   : 1,
+          \ 'level'  : 0,
+          \ 'rank'   : a:context.lnum_total,
+          \ 'type'   : 'include',
+          \ 'link'   : 1,
+          \})
+  endfor
+
+  return l:entries
+endfunction
+
+" }}}1
+
+let s:matcher_include_biblatex = {
+      \ 're' : '\v^\s*\\add(bibresource|globalbib|sectionbib)\s*\{\zs[^}]+\ze\}',
+      \ 'in_preamble' : 1,
+      \ 'in_content' : 0,
+      \ 'priority' : 1,
+      \}
+function! s:matcher_include_biblatex.get_entry(context) abort dict " {{{1
+  let l:file = matchstr(a:context.line, self.re)
+
+  return {
+        \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
+        \ 'number' : '',
+        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'line'   : 1,
+        \ 'level'  : 0,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'include',
+        \ 'link'   : 1,
+        \}
 endfunction
 
 " }}}1
@@ -213,6 +307,7 @@ let s:matcher_preamble = {
       \ 're' : '\v^\s*\\documentclass',
       \ 'in_preamble' : 1,
       \ 'in_content' : 0,
+      \ 'priority' : 1,
       \}
 function! s:matcher_preamble.get_entry(context) " {{{1
   return g:vimtex_toc_show_preamble
@@ -230,39 +325,17 @@ endfunction
 
 " }}}1
 
-let s:matcher_bibinputs = {
-      \ 're' : g:vimtex#re#not_comment
-      \        . '\\(bibliography|add(bibresource|globalbib|sectionbib))'
-      \        . '\m\s*{\zs[^}]\+\ze}',
-      \ 'in_preamble' : 1,
-      \}
-function! s:matcher_bibinputs.get_entry(context) abort dict " {{{1
-  let l:file = matchstr(a:context.line, self.re)
-
-  " Ensure that the file name has extension
-  if l:file !~# '\.bib$'
-    let l:file .= '.bib'
-  endif
-
-  return {
-        \ 'title'  : printf('%-.78s', fnamemodify(l:file, ':t')),
-        \ 'number' : '[b]',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
-        \ 'line'   : 0,
-        \ 'level'  : 0,
-        \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'content',
-        \ 'link'   : 1,
-        \ }
-endfunction
-
-" }}}1
-
 let s:matcher_parts = {
       \ 're' : '\v^\s*\\\zs((front|main|back)matter|appendix)>',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \}
-function! s:matcher_parts.action(context) abort dict " {{{1
-  call a:context.level.reset(matchstr(a:context.line, self.re), a:context.max_level)
+function! s:matcher_parts.get_entry(context) abort dict " {{{1
+  call a:context.level.reset(
+        \ matchstr(a:context.line, self.re),
+        \ a:context.max_level)
+  return {}
 endfunction
 
 " }}}1
@@ -271,6 +344,9 @@ let s:matcher_sections = {
       \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
       \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
       \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \}
 let s:matcher_sections.re_title = s:matcher_sections.re . '\zs.{-}\ze\%?\s*$'
 function! s:matcher_sections.get_entry(context) abort dict " {{{1
@@ -325,18 +401,27 @@ endfunction
 let s:matcher_table_of_contents = {
       \ 'title' : 'Table of contents',
       \ 're' : '\v^\s*\\tableofcontents',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_index = {
       \ 'title' : 'Alphabetical index',
       \ 're' : '\v^\s*\\printindex\[?',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_titlepage = {
       \ 'title' : 'Titlepage',
       \ 're' : '\v^\s*\\begin\{titlepage\}',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
@@ -346,17 +431,24 @@ let s:matcher_bibliography = {
       \        .  'printbib%(liography|heading)\s*(\{|\[)?'
       \        . '|begin\s*\{\s*thebibliography\s*\}'
       \        . '|bibliography\s*\{)',
+      \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 1,
       \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
 
 let s:matcher_todos = {
-      \ 're' : g:vimtex#re#not_bslash . '\%\c\s*todo\s*:?\s*\zs.*',
+      \ 're' : g:vimtex#re#not_bslash . '\%\s+('
+      \   . join(g:vimtex_toc_todo_keywords, '|') . ')[ :]+\s*(.*)',
       \ 'in_preamble' : 1,
+      \ 'in_content' : 1,
+      \ 'priority' : 3,
       \}
 function! s:matcher_todos.get_entry(context) abort dict " {{{1
+  let [l:type, l:text] = matchlist(a:context.line, self.re)[1:2]
   return {
-        \ 'title'  : printf('TODO: %s', matchstr(a:context.line, self.re)),
-        \ 'number' : deepcopy(a:context.level),
+        \ 'title'  : toupper(l:type) . ': ' . l:text,
+        \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,
@@ -368,13 +460,25 @@ endfunction
 " }}}1
 
 let s:matcher_todonotes = {
-      \ 're' : '\\todo\(\[.*\]\)\?{\zs.*\ze}',
+      \ 're' : g:vimtex#re#not_comment . '\\\w*todo\w*%(\[[^]]*\])?\{\zs.*',
       \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 3,
       \}
 function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
+  let title = matchstr(a:context.line, self.re)
+
+  let [l:end, l:count] = s:find_closing(0, title, 1, '{')
+  if l:count == 0
+    let title = strpart(title, 0, l:end)
+  else
+    let self.count = l:count
+    let s:matcher_continue = deepcopy(self)
+  endif
+
   return {
-        \ 'title'  : printf('TODO: %s', matchstr(a:context.line, self.re)),
-        \ 'number' : deepcopy(a:context.level),
+        \ 'title'  : 'TODO: ' . title,
+        \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,
@@ -382,16 +486,31 @@ function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
         \ 'type'   : 'todo',
         \ }
 endfunction
+
+" }}}1
+function! s:matcher_todonotes.continue(context) abort dict " {{{1
+  let [l:end, l:count] = s:find_closing(0, a:context.line, self.count, '{')
+  if l:count == 0
+    let a:context.entry.title .= strpart(a:context.line, 0, l:end)
+    unlet! s:matcher_continue
+  else
+    let a:context.entry.title .= a:context.line
+    let self.count = l:count
+  endif
+endfunction
+
 " }}}1
 
 let s:matcher_labels = {
-      \ 're' : '\v\\label\{\zs.{-}\ze\}',
+      \ 're' : g:vimtex#re#not_comment . '\\label\{\zs.{-}\ze\}',
       \ 'in_preamble' : 0,
+      \ 'in_content' : 1,
+      \ 'priority' : 2,
       \}
 function! s:matcher_labels.get_entry(context) abort dict " {{{1
   return {
         \ 'title'  : matchstr(a:context.line, self.re),
-        \ 'number' : deepcopy(a:context.level),
+        \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,
@@ -405,10 +524,18 @@ endfunction
 " }}}1
 
 
+" Create the lists of matchers
 let s:matchers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^matcher_'''),
       \ 'v:val[1]')
       \ + g:vimtex_toc_custom_matchers
+function! s:sort_by_priority(d1, d2) abort
+  return a:d1.priority >= a:d2.priority
+      \ ? a:d1.priority > a:d2.priority : -1
+endfunction
+call sort(s:matchers, function('s:sort_by_priority'))
+let s:matchers_preamble = filter(deepcopy(s:matchers), 'v:val.in_preamble')
+let s:matchers_content = filter(deepcopy(s:matchers), 'v:val.in_content')
 
 "
 " Utility functions

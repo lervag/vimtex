@@ -24,6 +24,20 @@ endfunction
 
 " }}}1
 
+function! vimtex#misc#get_graphicspath(fname) abort " {{{1
+  for l:root in b:vimtex.graphicspath + ['.']
+    let l:candidate = simplify(b:vimtex.root . '/' . l:root . '/' . a:fname)
+    for l:suffix in ['', '.jpg', '.png', '.pdf']
+      if filereadable(l:candidate . l:suffix)
+        return l:candidate . l:suffix
+      endif
+    endfor
+  endfor
+
+  return a:fname
+endfunction
+
+" }}}1
 function! vimtex#misc#wordcount(...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
 
