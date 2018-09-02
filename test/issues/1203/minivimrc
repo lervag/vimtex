@@ -1,0 +1,27 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+if !isdirectory('bundle')
+  call mkdir('bundle')
+endif
+
+call plug#begin('./bundle')
+Plug 'Valloric/YouCompleteMe',
+      \ { 'do': 'PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin ./install.py' }
+call plug#end()
+
+if !isdirectory('bundle/YouCompleteMe')
+  finish
+endif
+
+nnoremap q :qall!<cr>
+
+if !exists('g:ycm_semantic_triggers')
+    let g:ycm_semantic_triggers = {}
+endif
+let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+
+silent edit minimal.tex
