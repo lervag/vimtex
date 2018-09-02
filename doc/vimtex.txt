@@ -1923,9 +1923,8 @@ Options~
             `latexmk` (or other build tools) from starting Skim and instead
             let vimtex start Skim through the callback feature.
 
-      Note: See the Skim wiki for documentation on how to get backward
-            search to work:
-            https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+      Note: See |vimtex-faq-skimviewer| for more info on how to properly set
+            up the Skim viewer for backward search.
 
     *vimtex_viewer_zathura*
       https://pwmt.org/projects/zathura/
@@ -3395,6 +3394,28 @@ that may be useful for debugging purposes.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
+
+                                                        *vimtex-faq-skimviewer*
+Q: How do I properly set up vimtex with Skim?
+A: First, set |g:vimtex_view_method| to `skim` (see also some relevant info at
+   |vimtex_viewer_skim|). This should already enable forward search. To get
+   backward search, open the settings panel in Skim, then go to the Sync tab
+   and create a custom preset for `PDF-TeX Sync support`. Use the following
+   settings: >
+
+     Command: /Applications/MacVim.app/Contents/bin/mvim
+     Args:    --remote-silent +"%line" "%file"
+<
+   Note: This assumes that you are using MacVim. Ensure that the `Command` path
+         is correct, e.g. by checking with `which mvim` in your shell.
+
+   Note: If you have multiple versions of Vim installed (e.g. default Vim, and
+         one or more versions of MacVim), then make sure that you are
+         consistent in which version of Vim you are running!
+
+   Note: Relevant references:
+         - https://github.com/lervag/vimtex/issues/1140
+         - https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
                                                           *vimtex-faq-surround*
 Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
