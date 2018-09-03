@@ -1,0 +1,16 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+silent edit minimal.tex
+
+normal! W
+call vimtex#delim#change_arg(']')
+echo getline(1) "\n"
+quitall!
