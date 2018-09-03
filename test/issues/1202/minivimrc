@@ -11,6 +11,6 @@ let g:tex_flavor = 'latex'
 silent edit minimal.tex
 
 normal! W
-call vimtex#delim#change_arg(']')
+call vimtex#delim#change(']')
 echo getline(1) "\n"
 quitall!
