@@ -26,7 +26,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#cmd#change() " {{{1
+function! vimtex#cmd#change(...) " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
@@ -35,9 +35,13 @@ function! vimtex#cmd#change() " {{{1
   let l:cnum = l:cmd.pos_start.cnum
 
   " Get new command name
-  let l:new_name = vimtex#echo#input({
-        \ 'info' : ['Change command: ', ['VimtexWarning', l:old_name]],
-        \})
+  if a:0 > 0
+    let l:new_name = a:1
+  else
+    let l:new_name = vimtex#echo#input({
+          \ 'info' : ['Change command: ', ['VimtexWarning', l:old_name]],
+          \})
+  endif
   let l:new_name = substitute(l:new_name, '^\\', '', '')
   if empty(l:new_name) | return | endif
 
