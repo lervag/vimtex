@@ -198,7 +198,7 @@ endfunction
 " }}}1
 
 function! vimtex#delim#change(...) " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_all')
+  let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
   if empty(l:open) | return | endif
 
   if a:0 > 0
@@ -226,13 +226,15 @@ function! vimtex#delim#change_with_args(open, close, new) " {{{1
   "
   if a:new ==# ''
     let [l:beg, l:end] = ['', '']
+  elseif index(['{', '}'], a:new) >= 0
+    let [l:beg, l:end] = ['{', '}']
   else
-    let l:side = a:new =~# g:vimtex#delim#re.delim_all.close
-    let l:index = index(map(copy(g:vimtex#delim#lists.delim_all.name),
+    let l:side = a:new =~# g:vimtex#delim#re.delim_math.close
+    let l:index = index(map(copy(g:vimtex#delim#lists.delim_math.name),
           \   'v:val[' . l:side . ']'),
           \ a:new)
     if l:index >= 0
-      let [l:beg, l:end] = g:vimtex#delim#lists.delim_all.name[l:index]
+      let [l:beg, l:end] = g:vimtex#delim#lists.delim_math.name[l:index]
     else
       let [l:beg, l:end] = [a:new, a:new]
     endif
