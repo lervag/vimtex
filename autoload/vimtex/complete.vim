@@ -478,36 +478,12 @@ function! s:completer_img.complete(regex) dict " {{{2
   return self.candidates
 endfunction
 
-function! s:completer_img.graphicspaths() dict " {{{2
-  " Get preamble text and remove comments
-  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
-        \ 're_stop': '\\begin{document}',
-        \ 'detailed': 0,
-        \})
-  call map(l:preamble, 'substitute(v:val, ''\\\@<!%.*'', '''', '''')')
-
-  " Parse preamble for graphicspaths
-  let l:graphicspaths = []
-  for l:path in split(matchstr(join(l:preamble, ' '),
-        \ '\\graphicspath{\s*{\s*\zs.\{-}\ze\s*}\s*}'), '}\s*{')
-    if l:path[0] ==# '/'
-      call add(l:graphicspaths, l:path[:-2])
-    else
-      call add(l:graphicspaths, simplify(b:vimtex.root . '/' . l:path[:-2]))
-    endif
-  endfor
-
-  " Project root is always valid
-  return l:graphicspaths + [b:vimtex.root]
-endfunction
-
-" }}}2
 function! s:completer_img.gather_candidates() dict " {{{2
   let l:added_files = []
   let l:generated_pdf = b:vimtex.out()
 
   let self.candidates = []
-  for l:path in self.graphicspaths()
+  for l:path in b:vimtex.graphicspath + [b:vimtex.root]
     for l:file in split(globpath(l:path, '**/*.*'), '\n')
       if l:file !~? self.ext_re
             \ || l:file ==# l:generated_pdf
