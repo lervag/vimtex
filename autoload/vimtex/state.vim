@@ -526,7 +526,6 @@ function! s:vimtex.parse_graphicspath() abort dict " {{{1
           \ ? l:path
           \ : simplify(self.root . '/' . l:path))
   endfor
-  echo self.graphicspath
 endfunction
 
 " }}}1
