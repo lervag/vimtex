@@ -18,6 +18,9 @@ endif
 " - This will enable spell checking e.g. in toplevel of included files
 syntax spell toplevel
 
+" Increase default value of maxlines
+syntax sync maxlines=500
+
 scriptencoding utf-8
 
 " {{{1 Improve handling of newcommand and newenvironment commands
