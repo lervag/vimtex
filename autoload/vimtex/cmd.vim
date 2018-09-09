@@ -167,13 +167,18 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     let l:pos_start = getpos("'<")
     let l:pos_end = getpos("'>")
 
-    normal! `>a}
-    normal! `<
-    execute 'normal! i\' . l:cmd . '{'
+    if visualmode() ==# ''
+      normal! gvA}
+      execute 'normal! gvI\' . l:cmd . '{'
 
-    let l:pos_end[2] += 1
-    if l:pos_end[1] == l:pos_start[1]
-      let l:pos_end[2] += strlen(l:cmd) + 2
+      let l:pos_end[2] += strlen(l:cmd) + 3
+    else
+      normal! `>a}
+      normal! `<
+      execute 'normal! i\' . l:cmd . '{'
+
+      let l:pos_end[2] +=
+            \ l:pos_end[1] == l:pos_start[1] ? strlen(l:cmd) + 3 : 1
     endif
 
     call vimtex#pos#set_cursor(l:pos_end)
