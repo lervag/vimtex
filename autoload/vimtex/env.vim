@@ -81,6 +81,7 @@ function! vimtex#env#change_prompt(type) " {{{1
         \ ? l:open.match . ' ... ' . l:open.corr
         \ : l:open.match . ' ... ' . l:open.corr)
 
+  let s:env_name = l:name
   let l:new_env = vimtex#echo#input({
         \ 'info' :
         \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
@@ -133,19 +134,20 @@ endfunction
 
 " }}}1
 function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
-  " Always include displaymath
-  let l:cands = ['\[']
-
   try
-    let l:cands += vimtex#util#uniq(sort(
+    let l:cands = vimtex#util#uniq(sort(
           \ map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
           \          'v:val =~# ''\\begin'''),
           \   'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
 
-    " Never include document
-    call remove(l:cands, index(l:cands, 'document'))
+    " Never include document and remove current env (place it first)
+    call filter(l:cands, 'index([''document'', s:env_name], v:val) < 0')
   catch
+    let l:cands = []
   endtry
+
+  " Always include current env and displaymath
+  let l:cands = [s:env_name] + l:cands + ['\[']
 
   return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')
 endfunction
