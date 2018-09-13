@@ -22,7 +22,7 @@ function! vimtex#util#get_os() " {{{1
   if has('win32') || has('win32unix')
     return 'win'
   elseif has('unix')
-    if system('uname') =~# 'Darwin'
+    if has('max') || system('uname') =~# 'Darwin'
       return 'mac'
     else
       return 'linux'
