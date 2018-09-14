@@ -613,7 +613,7 @@ function! s:parse_latexmkrc_option(root, opt, is_integer, default) abort " {{{1
         \ [fnamemodify('~/.latexmkrc', ':p'), 0],
         \]
   if !empty($XDG_CONFIG_HOME)
-    call add(l:files, $XDG_CONFIG_HOME . '/latexmk/latexmkrc')
+    call add(l:files, [$XDG_CONFIG_HOME . '/latexmk/latexmkrc', 0])
   endif
 
   for [l:file, l:is_local] in l:files
