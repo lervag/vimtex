@@ -172,9 +172,6 @@ function! vimtex#init_options() " {{{1
         \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
         \])
 
-  call s:init_option('vimtex_include_indicators',
-        \ ['input', 'include', 'subfile'])
-
   call s:init_option('vimtex_mappings_enabled', 1)
   call s:init_option('vimtex_mappings_disable', {})
 
