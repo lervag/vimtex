@@ -1305,6 +1305,13 @@ Options~
 
   Default value: See `autoload/vimtex.vim` (it's a long list)
 
+*g:vimtex_include_indicators*
+  Vimtex will recognize included files for a lot of different purposes. Most
+  of these come from e.g. `\input{file}` or `\include{file}`. This option
+  allows to add more commands that are used to include files.
+
+  Default value: ['input', 'include', 'subfile']
+
 *g:vimtex_indent_enabled*
   Use this option to disable/enable |vimtex| indentation.
 
