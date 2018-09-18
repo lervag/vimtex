@@ -17,8 +17,9 @@ function! vimtex#echo#input(opts) " {{{1
   endif
 
   let l:args = [get(a:opts, 'prompt', '> ')]
+  let l:args += [get(a:opts, 'default', '')]
   if has_key(a:opts, 'complete')
-    let l:args += ['', a:opts.complete]
+    let l:args += [a:opts.complete]
   endif
 
   echohl VimtexMsg

@@ -77,14 +77,12 @@ function! vimtex#env#change_prompt(type) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
-  let l:name = get(l:open, 'name', l:open.is_open
-        \ ? l:open.match . ' ... ' . l:open.corr
-        \ : l:open.match . ' ... ' . l:open.corr)
+  let l:name = get(l:open, 'name', l:open.match)
 
   let s:env_name = l:name
   let l:new_env = vimtex#echo#input({
-        \ 'info' :
-        \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
+        \ 'prompt' : 'Change surrounding environment: ',
+        \ 'default' : l:name,
         \ 'complete' : 'customlist,vimtex#env#input_complete',
         \})
 
