@@ -41,6 +41,8 @@ function! vimtex#init_options() " {{{1
 
   call s:init_option('vimtex_echo_ignore_wait', 0)
 
+  call s:init_option('vimtex_env_change_autofill', 0)
+
   if &diff
     let g:vimtex_fold_enabled = 0
   else

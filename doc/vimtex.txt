@@ -1082,6 +1082,17 @@ Options~
 
   Default value: 0
 
+*g:vimtex_env_change_autofill*
+  If enabled, the current environment value is used as a default input for
+  |<plug>(vimtex-env-change)| and |<plug>(vimtex-env-change-math)|. Some users
+  may find this useful in order to quickly change from things like `align` to
+  `aligned`.
+
+  Note: If enabled, one may erase the autofilled content with |c_CTRL-U| (i.e.
+        `<c-u>`).
+
+  Default: 0
+
 *g:vimtex_fold_enabled*
   Use this option to enable folding. More detailed info can be found in the
   section |vimtex-folding|.
@@ -2258,7 +2269,9 @@ Map definitions~
 *<plug>(vimtex-env-delete-math)*
 *<plug>(vimtex-env-change)*
 *<plug>(vimtex-env-change-math)*
-  Delete/Change surrounding environment.
+  Delete/Change surrounding environment. When changing, there will be
+  sensible completion candidates, see |cmdline-completion|. See also
+  |g:vimtex_env_change_autofill|.
 
 *<plug>(vimtex-cmd-delete)*
 *<plug>(vimtex-cmd-delete-math)*
