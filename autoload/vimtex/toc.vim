@@ -184,6 +184,17 @@ function! s:toc.get_entries(force) abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:toc.get_visible_entries() abort dict " {{{1
+  return filter(deepcopy(get(self, 'entries', [])), 'self.entry_is_visible(v:val)')
+endfunction
+
+" }}}1
+function! s:toc.entry_is_visible(entry) abort " {{{1
+  return get(a:entry, 'active', 1) && !get(a:entry, 'hidden')
+        \ && (a:entry.type !=# 'content' || a:entry.level <= self.tocdepth)
+endfunction
+
+" }}}1
 
 "
 " Creating, refreshing and filling the buffer
@@ -412,11 +423,8 @@ function! s:toc.print_entries() abort dict " {{{1
         \ : 0
   let self.number_format = '%-' . self.number_width . 's'
 
-  for entry in self.entries
-    if get(entry, 'active', 1) && !get(entry, 'hidden')
-          \ && (entry.type !=# 'content' || entry.level <= self.tocdepth)
-      call self.print_entry(entry)
-    endif
+  for entry in self.get_visible_entries()
+    call self.print_entry(entry)
   endfor
 endfunction
 
@@ -485,13 +493,11 @@ function! s:toc.activate_current(close_after) abort dict "{{{1
   if n < self.help_nlines | return {} | endif
 
   let l:count = 0
-  for l:entry in self.entries
-    if get(l:entry, 'active', 1) && !get(l:entry, 'hidden')
-      if l:count == n - self.help_nlines
-        return self.activate_entry(l:entry, a:close_after)
-      endif
-      let l:count += 1
+  for l:entry in self.get_visible_entries()
+    if l:count == n - self.help_nlines
+      return self.activate_entry(l:entry, a:close_after)
     endif
+    let l:count += 1
   endfor
 
   return {}
@@ -664,15 +670,13 @@ function! s:toc.get_closest_index() abort dict " {{{1
   let l:dist = 0
   let l:closest_index = 1
   let l:closest_dist = 10000
-  for l:entry in self.entries
-    if get(l:entry, 'active', 1) && !get(l:entry, 'hidden')
-      let l:index += 1
-      let l:dist = l:calling_rank - entry.rank
+  for l:entry in self.get_visible_entries()
+    let l:index += 1
+    let l:dist = l:calling_rank - entry.rank
 
-      if l:dist >= 0 && l:dist < l:closest_dist
-        let l:closest_dist = l:dist
-        let l:closest_index = l:index
-      endif
+    if l:dist >= 0 && l:dist < l:closest_dist
+      let l:closest_dist = l:dist
+      let l:closest_index = l:index
     endif
   endfor
 
