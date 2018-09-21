@@ -33,7 +33,8 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
           while l:pos > 0
             if l:line[l:pos - 1] =~# '{\|,\|\[\|\\'
                   \ || l:line[l:pos-2:l:pos-1] ==# ', '
-              let s:completer.context = matchstr(l:line, '\S*$')
+              let s:completer.context = matchstr(l:line,
+                    \ get(s:completer, 're_context', '\S*$'))
               return l:pos
             else
               let l:pos -= 1
@@ -242,6 +243,7 @@ let s:completer_ref = {
       \   '\\hyperref\s*\[[^]]*$',
       \   '\\subref\*\?{[^}]*$',
       \ ],
+      \ 're_context' : '\\\w*{[^}]*$',
       \ 'cache' : {},
       \ 'labels' : [],
       \}
