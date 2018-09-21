@@ -1559,6 +1559,17 @@ Options~
 
   Default value: 2
 
+*g:vimtex_quickfix_autoclose_after_keystrokes*
+  If set to value greater than zero, then the quickfix window will close after
+  this number of motions (i.e. |CursorMoved| and |CursorMovedI| events). This
+  is most useful if one sets |g:vimtex_quickfix_mode| to 2, in which case this
+  option allows one to continue editing and removing the distraction of the
+  quickfix window automatically.
+
+  Note: The count is reset when the quickfix window is entered.
+
+  Default value: 0
+
 *g:vimtex_quickfix_open_on_warning*
   Control whether or not to automatically open the |quickfix| window in case
   there are warning messages and no error messages.
