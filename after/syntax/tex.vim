@@ -508,3 +508,38 @@ highlight link texMintZoneUnknown texZone
 highlight link texMintedName texBeginEndName
 
 " }}}1
+" {{{1 Nested syntax highlighting for pythontex
+
+if exists('b:vimtex.packages.pythontex')
+  unlet b:current_syntax
+  syntax include @PYTHON syntax/python.vim
+  let b:current_syntax = 'tex'
+
+  syntax cluster PYTHON remove=pythonEscape
+  syntax cluster PYTHON remove=pythonBEscape
+  syntax cluster PYTHON remove=pythonBytesEscape
+
+  syntax match texStatement /\\py[bsc]\?/ contained nextgroup=texPythontexArg
+  syntax region texPythontexArg matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained contains=@PYTHON
+  syntax region texPythontexArg matchgroup=Delimiter
+        \ start='\z([#@]\)' end='\z1'
+        \ contained contains=@PYTHON
+
+  syntax cluster texDocGroup add=texZonePythontex
+  syntax region texZonePythontex
+        \ start='\\begin{pyblock}'rs=s
+        \ end='\\end{gnuplot}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,texBeginEndModifier,@PYTHON
+  syntax region texZonePythontex
+        \ start='\\begin{pycode}'rs=s
+        \ end='\\end{pycode}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,texBeginEndModifier,@PYTHON
+endif
+
+" }}}1

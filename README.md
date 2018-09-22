@@ -117,7 +117,7 @@ disabled if desired.
   - Support for `cleveref` package
   - Support for `listings` package
   - Nested syntax highlighting (`minted`, `dot2tex`, `lualatex`,
-    `gnuplottex`, `asymptote`)
+    `gnuplottex`, `asymptote`, `pythontex`)
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
