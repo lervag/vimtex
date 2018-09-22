@@ -100,8 +100,7 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   let self.prev_ind = a:plnum > 0 ? indent(a:plnum) : 0
   if !get(g:, 'vimtex_indent_on_ampersands', 1) | return self.prev_ind | endif
 
-  call self.parse_context(a:plnum, a:pline)
-  if self.amp_ind < 0 | return self.prev_ind | endif
+  call self.parse_context(a:lnum, a:cline)
 
   if a:cline =~# self.re_align
     let self.finished = 1
@@ -111,7 +110,7 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
     return self.amp_ind - l:ind_diff
   endif
 
-  if a:cline =~# '^\s*\\end' || a:cline =~# self.re_amp
+  if a:cline =~# '^\s*\\\%(end\|\]\)' || a:cline =~# self.re_amp
     let self.prev_lnum = self.init_lnum
     let self.prev_line = self.init_line
     return self.init_ind
@@ -121,27 +120,34 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:indent_amps.parse_context(plnum, pline) abort dict " {{{1
-  let l:lnum = a:plnum
-  let l:line = a:pline
-
-  if l:line =~# '^\s*\\end' | return | endif
+function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
+  let l:depth = 1 + (a:line =~# '^\s*\\\%(end\|\]\)')
+  let l:init_depth = l:depth
+  let l:lnum = prevnonblank(a:lnum - 1)
 
   while l:lnum >= 1
-    if self.amp_ind < 0 && l:line =~# self.re_amp
+    let l:line = getline(l:lnum)
+
+    if l:line =~# '^\s*\\\%(end\|\]\)'
+      let l:depth += 1
+    endif
+
+    if l:line =~# '\\\%(begin\S*\|\[\)$'
+      let l:depth -= 1
+      if l:depth == l:init_depth - 1
+        let self.init_lnum = l:lnum
+        let self.init_line = l:line
+        let self.init_ind = indent(l:lnum)
+        break
+      endif
+    endif
+
+    if self.amp_ind < 0 && l:depth == 1 && l:line =~# self.re_amp
       let self.amp_ind = strdisplaywidth(
             \ strpart(l:line, 0, match(l:line, self.re_amp)))
     endif
 
-    if l:line =~# '^\s*\\begin'
-      let self.init_lnum = l:lnum
-      let self.init_line = l:line
-      let self.init_ind = indent(l:lnum)
-      break
-    endif
-
     let l:lnum = prevnonblank(l:lnum - 1)
-    let l:line = getline(l:lnum)
   endwhile
 endfunction
 
