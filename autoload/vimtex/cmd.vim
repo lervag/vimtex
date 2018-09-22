@@ -298,6 +298,15 @@ function! s:get_cmd(direction) " {{{1
     let res.pos_end.cnum = arg.close.cnum
   endif
 
+  " Get overlay specification
+  echo 'start' res.name
+  let res.overlay = s:get_cmd_overlay(res.pos_end.lnum, res.pos_end.cnum)
+  echo res.overlay
+  if !empty(res.overlay)
+    let res.pos_end.lnum = res.overlay.close.lnum
+    let res.pos_end.cnum = res.overlay.close.cnum
+  endif
+
   " Get options
   let res.opt = s:get_cmd_part('[', res.pos_end)
   if !empty(res.opt)
@@ -357,6 +366,19 @@ function! s:get_cmd_part(part, start_pos) " {{{1
         \ 'close' : l:close,
         \ 'text' : s:text_between(l:open, l:close),
         \}
+endfunction
+
+" }}}1
+function! s:get_cmd_overlay(lnum, cnum) " {{{1
+  let l:match = matchstr(getline(a:lnum), '^\s*[^>]*>', a:cnum)
+
+  return empty(l:match)
+        \ ? {}
+        \ : {
+        \    'open' : {'lnum' : a:lnum, 'cnum' : a:cnum + 1},
+        \    'close' : {'lnum' : a:lnum, 'cnum' : a:cnum + strlen(l:match)},
+        \    'text' : l:match
+        \   }
 endfunction
 
 " }}}1
