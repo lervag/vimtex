@@ -6,6 +6,9 @@ syntax enable
 
 set shiftwidth=2
 set tabstop=2
+set expandtab
+set list
+set listchars=tab:▸\ ,nbsp:%
 
 nnoremap q :qall!<cr>
 nnoremap <space>t :call g:timer.toggle()<cr>
@@ -22,8 +25,10 @@ endfunction
 
 function! Refresh(time) abort
   silent! VimtexReload
+  silent! normal! ma
   silent! normal! gg=G
-  normal! 11gg==
+  silent! normal! `a
+  silent! normal! ==
 endfunction
 
 silent edit indent.tex
