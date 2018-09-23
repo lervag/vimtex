@@ -299,9 +299,7 @@ function! s:get_cmd(direction) " {{{1
   endif
 
   " Get overlay specification
-  echo 'start' res.name
   let res.overlay = s:get_cmd_overlay(res.pos_end.lnum, res.pos_end.cnum)
-  echo res.overlay
   if !empty(res.overlay)
     let res.pos_end.lnum = res.overlay.close.lnum
     let res.pos_end.cnum = res.overlay.close.cnum
