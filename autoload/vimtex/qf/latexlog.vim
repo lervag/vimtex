@@ -77,10 +77,12 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   if get(self.config, 'overfull', l:default)
     setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+    setlocal errorformat+=%+WOverfull\ %\\%\\vbox%.%#\ at\ line\ %l
   endif
 
   if get(self.config, 'underfull', l:default)
     setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+    setlocal errorformat+=%+WUnderfull\ %\\%\\vbox%.%#\ at\ line\ %l
   endif
 
   "
