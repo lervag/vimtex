@@ -189,6 +189,7 @@ function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_quickfix_mode', '2')
   call s:init_option('vimtex_quickfix_open_on_warning', '1')
   call s:init_option('vimtex_quickfix_blgparser', {})
+  call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', '0')
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 
