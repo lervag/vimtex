@@ -61,6 +61,11 @@ syntax match texInputFile /\\subfile\s*\%(\[.\{-}\]\)\=\s*{.\{-}}/
 "   texBadMath from Charles Campbell's syntax plugin.
 syn match texBeginEnd "\(\\begin\>\|\\end\>\)\ze{subequations}" nextgroup=texBeginEndName
 
+" I don't quite see why we can't match Math zones in the MatchNMGroup
+if !exists('g:tex_no_math')
+  syntax cluster texMatchNMGroup add=@texMathZones
+endif
+
 " {{{1 Italic font, bold font and conceals
 
 if get(g:, 'tex_fast', 'b') =~# 'b'
