@@ -47,6 +47,11 @@ function! vimtex#delim#close() " {{{1
       return l:open.corr
     endif
 
+    if vimtex#pos#val(l:open) == l:pos_val_cursor
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+      continue
+    endif
+
     let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
     if l:pos_val_try > l:pos_val_cursor
       call vimtex#pos#set_cursor(l:save_pos)
