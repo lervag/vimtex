@@ -29,21 +29,13 @@ endfunction
 function! VimtexIndent(lnum) abort " {{{1
   let s:sw = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
 
-  let l:prev_lnum = s:get_prev_line(prevnonblank(a:lnum - 1), 0)
+  let [l:prev_lnum, l:prev_line] = s:get_prev_lnum(prevnonblank(a:lnum - 1))
   if l:prev_lnum == 0 | return indent(a:lnum) | endif
-
-  " Get current and previous line and remove comments
-  let l:line = substitute(getline(a:lnum), '\\\@<!%.*', '', '')
-  let l:prev_line = substitute(getline(l:prev_lnum),   '\\\@<!%.*', '', '')
+  let l:line = s:clean_line(getline(a:lnum))
 
   " Check for verbatim modes
   if s:is_verbatim(l:line, a:lnum)
     return empty(l:line) ? indent(l:prev_lnum) : indent(a:lnum)
-  endif
-
-  " Align on ampersands
-  if s:indent_amps.check(a:lnum, l:line, l:prev_line)
-    return s:indent_amps.indent
   endif
 
   " Use previous indentation for comments
@@ -51,36 +43,41 @@ function! VimtexIndent(lnum) abort " {{{1
     return indent(a:lnum)
   endif
 
-  " Ensure previous line does not start with ampersand
-  let l:prev_lnum = s:get_prev_line(l:prev_lnum,
-        \ get(g:, 'vimtex_indent_on_ampersands', 1))
-  if l:prev_lnum == 0 | return 0 | endif
-  let l:prev_line = substitute(getline(l:prev_lnum), '\\\@<!%.*', '', '')
+  " Align on ampersands
+  let l:ind = s:indent_amps.check(a:lnum, l:line, l:prev_lnum, l:prev_line)
+  if s:indent_amps.finished | return l:ind | endif
+  let l:prev_lnum = s:indent_amps.prev_lnum
+  let l:prev_line = s:indent_amps.prev_line
 
   " Indent environments, delimiters, and tikz
-  let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_conditionals(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
+
   return l:ind
 endfunction
 
 "}}}
 
-function! s:get_prev_line(lnum, skip_amps) abort " {{{1
+function! s:get_prev_lnum(lnum) abort " {{{1
   let l:lnum = a:lnum
-  let l:prev = getline(l:lnum)
+  let l:line = getline(l:lnum)
 
-  while l:lnum != 0
-        \ && (l:prev =~# '^\s*%'
-        \     || s:is_verbatim(l:prev, l:lnum)
-        \     || (a:skip_amps && l:prev =~# s:indent_amps.re_align))
+  while l:lnum != 0 && (l:line =~# '^\s*%' || s:is_verbatim(l:line, l:lnum))
     let l:lnum = prevnonblank(l:lnum - 1)
-    let l:prev = getline(l:lnum)
+    let l:line = getline(l:lnum)
   endwhile
 
-  return l:lnum
+  return [
+        \ l:lnum,
+        \ l:lnum > 0 ? s:clean_line(l:line) : '',
+        \]
+endfunction
+
+" }}}1
+function! s:clean_line(line) abort " {{{1
+  return substitute(a:line, '\s*\\\@<!%.*', '', '')
 endfunction
 
 " }}}1
@@ -92,23 +89,66 @@ endfunction
 " }}}1
 
 let s:indent_amps = {}
-let s:indent_amps.indent = 0
 let s:indent_amps.re_amp = g:vimtex#re#not_bslash . '\&'
 let s:indent_amps.re_align = '^[ \t\\]*' . s:indent_amps.re_amp
-function! s:indent_amps.check(lnum, cline, pline) abort dict " {{{1
-  if get(g:, 'vimtex_indent_on_ampersands', 1)
-        \ && a:cline =~# self.re_align
-        \ && a:pline =~# self.re_amp
+function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
+  let self.finished = 0
+  let self.amp_ind = -1
+  let self.init_ind = -1
+  let self.prev_lnum = a:plnum
+  let self.prev_line = a:pline
+  let self.prev_ind = a:plnum > 0 ? indent(a:plnum) : 0
+  if !get(g:, 'vimtex_indent_on_ampersands', 1) | return self.prev_ind | endif
 
-    let l:pre = strdisplaywidth(strpart(a:pline, 0, match(a:pline, self.re_amp)))
-    let l:cur = strdisplaywidth(strpart(a:cline, 0, match(a:cline, self.re_amp)))
-    let self.indent = max([indent(a:lnum) - l:cur + l:pre, 0])
+  call self.parse_context(a:lnum, a:cline)
 
-    return 1
+  if a:cline =~# self.re_align
+    let self.finished = 1
+    let l:ind_diff =
+          \   strdisplaywidth(strpart(a:cline, 0, match(a:cline, self.re_amp)))
+          \ - strdisplaywidth(strpart(a:cline, 0, match(a:cline, '\S')))
+    return self.amp_ind - l:ind_diff
   endif
 
-  let self.indent = 0
-  return 0
+  if a:cline =~# '^\s*\\\%(end\|\]\)' || a:cline =~# self.re_amp
+    let self.prev_lnum = self.init_lnum
+    let self.prev_line = self.init_line
+    return self.init_ind
+  endif
+
+  return self.prev_ind
+endfunction
+
+" }}}1
+function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
+  let l:depth = 1 + (a:line =~# '^\s*\\\%(end\|\]\)')
+  let l:init_depth = l:depth
+  let l:lnum = prevnonblank(a:lnum - 1)
+
+  while l:lnum >= 1
+    let l:line = getline(l:lnum)
+
+    if l:line =~# '^\s*\\\%(end\|\]\)'
+      let l:depth += 1
+    endif
+
+    if l:line =~# '\\\%(begin\S*\|\[\)$'
+      let l:depth -= 1
+      if l:depth == l:init_depth - 1
+        let self.init_lnum = l:lnum
+        let self.init_line = l:line
+        let self.init_ind = indent(l:lnum)
+        break
+      endif
+    endif
+
+    if self.amp_ind < 0 && l:depth == 1 && l:line =~# self.re_amp
+      let self.amp_ind = strdisplaywidth(
+            \ strpart(l:line, 0, match(l:line, self.re_amp)))
+    endif
+
+    let l:lnum = prevnonblank(l:lnum - 1)
+  endwhile
 endfunction
 
 " }}}1

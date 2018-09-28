@@ -261,7 +261,6 @@ Given tex (Indent: ampersands 2):
       \end{aligned}
   \end{equation}
 
-
 Do:
   gg=G
 
@@ -289,6 +288,31 @@ Expect tex:
     &x(
     y)
   \end{align}
+
+Given:
+Execute (let g:vimtex_indent_on_ampersands = 1):
+  let g:vimtex_indent_on_ampersands = 1
+
+Given tex (Format: ampersands 4):
+  \begin{environ*}
+    A &= 10
+      \\&= \command{
+    something
+  }
+  \\&= 20
+  \end{environ*}
+
+Do:
+  gg=G
+
+Expect tex:
+  \begin{environ*}
+    A &= 10
+    \\&= \command{
+      something
+    }
+    \\&= 20
+  \end{environ*}
 
 Given:
 Execute (let g:vimtex_indent_ignored_envs = ...):
