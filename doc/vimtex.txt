@@ -30,11 +30,11 @@ License: MIT license {{{
 CONTENTS                                                      *vimtex-contents*
 
   Introduction                                  |vimtex-introduction|
-    Feature overview                            |vimtex-features|
-    Features provided by other plugins          |vimtex-non-features|
-    Requirements                                |vimtex-requirements|
-    Support for multi-file projects             |vimtex-multi-file|
     Comment on internal tex plugin              |vimtex-comment-internal|
+    Feature overview                            |vimtex-features|
+    Requirements                                |vimtex-requirements|
+    Features provided by other plugins          |vimtex-non-features|
+    Support for multi-file projects             |vimtex-multi-file|
     Support for TeX specifiers                  |vimtex-tex-directives|
     Package detection                           |vimtex-package-detection|
   Usage                                         |vimtex-usage|
@@ -93,9 +93,35 @@ INTRODUCTION                                              *vimtex-introduction*
 main goal of |vimtex| is to be simple, functional, and to be easy to customize
 and evolve.
 
+The documentation is understandably too long for a full read through. It is
+recommended that new users read or skim the entire introduction, as it should
+give a clear idea of what |vimtex| is and is not. The remaining part of the
+documentation should then be considered a reference for the various parts of
+the plugin.
+
+------------------------------------------------------------------------------
+COMMENT ON INTERNAL TEX PLUGIN                        *vimtex-comment-internal*
+
+Vim ships with some LaTeX support out of the box. In particular, it provides
+good syntax highlighting (|ft-tex-syntax|), indentation (see the source file
+$VIMRUNTIME/indent/tex.vim for the documentation), and some sensible options
+(|ft-tex-plugin|).
+
+When |vimtex| is active, it will be used as the main |ftplugin|. It will
+define the same set of sensible settings as the internal plugin. However,
+|vimtex| does not provide its own syntax, instead it adds a few minor
+improvements to |ft-tex-syntax|, see |vimtex-syntax|. |vimtex| also provides its
+own indentation plugin, see |vimtex-indent|.
+
+Vim will generally autodetect filetypes automatically. In most cases this
+works as expected, however, in some cases it will detect a file with the `tex`
+suffix as a |plaintex|. To prevent this, one may set the option
+|g:tex_flavor| in ones `vimrc` file, that is: >
+
+  let g:tex_flavor = 'latex'
+
 -----------------------------------------------------------------------------
-Feature overview~
-                                                              *vimtex-features*
+FEATURE OVERVIEW                                              *vimtex-features*
 
 - Document compilation with `latexmk`, `latexrun`, or `arara`
 - LaTeX log parsing for quickfix entries using
@@ -159,75 +185,156 @@ Feature overview~
   - `subfiles`
 
 ------------------------------------------------------------------------------
-Features provided by other plugins~
-                                                          *vimtex-non-features*
+REQUIREMENTS                                              *vimtex-requirements*
+
+The following is a list of specific requirements for running |vimtex| and some
+of its key features.  There are a couple of relevant FAQs for those who use
+|neovim| and those restricted to a Windows OS, see |vimtex-faq-neovim| and
+|vimtex-faq-windows|.
+
+Vim version~
+                                                         *vimtex_version_check*
+  |vimtex| supports Vim version 7.4.52 and neovim version 0.1.7.  It will not
+  load for older versions, unless one adds >
+
+    let g:vimtex_version_check = 0
+<
+  to one's `vimrc` file.  This might work, but issues due to older versions
+  than the mentioned here will be ignored.
+
+Compiler backend~
+
+  |vimtex| uses `latexmk`, `latexrun`, or `arara` to compile the LaTeX document.
+
+    `latexmk`: http://users.phys.psu.edu/~collins/software/latexmk-jcc
+    "a perl script for running LaTeX the correct number of times to resolve
+  cross references, etc; it also runs auxiliary programs (bibtex, makeindex if
+  necessary, and dvips and/or a previewer as requested).  It has a number of
+  other useful capabilities, for example to start a previewer and then run
+  latex whenever the source files are updated, so that the previewer gives an
+  up-to-date view of the document. The script runs on both UNIX and MS-WINDOWS
+  (XP, etc)." [Copied from the latexmk page.]  (|vimtex-latexmk|)
+
+    `latexrun`: https://github.com/aclements/latexrun
+    Similar to `latexmk` in that it runs the desired LaTeX engine an
+  appropriate number of times, including `bibtex`/`biber`. However, it differs
+  in philosophy in that it only does the build part. It does not support
+  continuous builds, nor automatic starting of the viewer. However, it does
+  parse the output log in order to provide a more concise list of relevant
+  warnings and error messages (this has currently not been adapted to vimtex,
+  as of yet). (|vimtex-latexrun|)
+
+    `arara`: https://github.com/cereda/arara
+    `arara` is a TeX automation tool similar to the above mentioned tools,
+  but where the compilation behaviour is typically defined in the preamble
+  of the document. (|vimtex-arara|)
+
+Clientserver~
+                                                          *vimtex-clientserver*
+  |vimtex| requires the |clientserver| for the callback functionality to work.
+  The callbacks are used to provide feedback when compilation is finished, as
+  well as to parse the log for errors and warnings and to open the |quickfix|
+  window when necessary.
+
+  A server will be started automatically if Vim is running on Windows, or if
+  running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
+  will not be started by default.  Since Vim version 8.0.475,
+  |remote_startserver()| can be used to start a server from your `vimrc` file.
+  The following will ensure Vim starts with a server, if it is possible from
+  vimscript: >
+
+    if empty(v:servername) && exists('*remote_startserver')
+      call remote_startserver('VIM')
+    endif
+<
+  Alternatively, Vim can be started with the command line option
+  `--servername`, e.g. `vim --servername VIM` .  The simplest way to ensure
+  this is to add an alias to your `.bashrc` (or similar), that is, add: >
+
+    alias vim='vim --servername VIM'
+<
+  For other methods of ensuring that Vim is started with a servername, see:
+  http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
+
+  For setting up callback functionality in Neovim, see |vimtex-faq-neovim|.
+
+  To test whether a server was successfully started, |serverlist()| can be
+  used. E.g. `:echo serverlist()`
+
+------------------------------------------------------------------------------
+FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
 
 The following is a short list of features that one might think should be
 provided by vimtex, but that are instead provided by other plugins.
 
-  Linting and syntax checking~
-    The following is a list of good plugins that have support for (La)TeX
-    syntax checking.
+Linting and syntax checking~
 
-      `ale`         https://github.com/w0rp/ale
-      `neomake`     https://github.com/neomake/neomake
-      `syntastic`   https://github.com/vim-syntastic/syntastic
+  The following is a list of good plugins that have support for (La)TeX
+  syntax checking.
 
-    All of the above plugins support `lacheck` [0], `chktex` [1], `proselint` [2].
-    `neomake` also supports `rubberinfo` [3].
+    `ale`         https://github.com/w0rp/ale
+    `neomake`     https://github.com/neomake/neomake
+    `syntastic`   https://github.com/vim-syntastic/syntastic
 
-    [0]: https://www.ctan.org/pkg/lacheck
-    [1]: http://www.nongnu.org/chktex/
-    [2]: http://proselint.com/
-    [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
+  All of the above plugins support `lacheck` [0], `chktex` [1], `proselint` [2].
+  `neomake` also supports `rubberinfo` [3].
 
-  Snippets/Templates~
-    Snippets and/or templates are provided by for instance `neosnippet` and
-    `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
+  [0]: https://www.ctan.org/pkg/lacheck
+  [1]: http://www.nongnu.org/chktex/
+  [2]: http://proselint.com/
+  [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
 
-  Syntax highlighting~
-    See |vimtex-comment-internal|.
+Snippets/Templates~
 
-  Tag navigation~
-    One may navigate by tags with the |CTRL-]| mapping, e.g. from
-    `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
-    this requires that a tag file has been generated with |ctags|. I recommend
-    that one uses the maintained version of ctags [0]. In addition,
-    I recommend that one uses a plugin that automatically generates the tag
-    files as necessary, e.g. |gutentags| [1].
+  Snippets and/or templates are provided by for instance `neosnippet` and
+  `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
 
-    Note: In order to support `bibtex`, one may add the following to one's
-          `~/.ctags` file: >
+Syntax highlighting~
 
-            --langdef=bib
-            --langmap=bib:.bib
-            --regex-bib=/^@[A-Za-z]+\{([^,]*)/\1/b,bib/
+  See |vimtex-comment-internal|.
+
+Tag navigation~
+
+  One may navigate by tags with the |CTRL-]| mapping, e.g. from
+  `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
+  this requires that a tag file has been generated with |ctags|. I recommend
+  that one uses the maintained version of ctags [0]. In addition,
+  I recommend that one uses a plugin that automatically generates the tag
+  files as necessary, e.g. |gutentags| [1].
+
+  Note: In order to support `bibtex`, one may add the following to one's
+        `~/.ctags` file: >
+
+          --langdef=bib
+          --langmap=bib:.bib
+          --regex-bib=/^@[A-Za-z]+\{([^,]*)/\1/b,bib/
 <
-    [0]: https://ctags.io/
-    [1]: https://github.com/ludovicchabant/vim-gutentags
+  [0]: https://ctags.io/
+  [1]: https://github.com/ludovicchabant/vim-gutentags
 
-  Manipulate surrounding commands/delimiters/environments~
-    |vimtex| provides mappings that change, delete and toggle commands,
-    delimiters and environments (see the `ds`, `cs` and `ts` family of
-    mappings listed under |vimtex-default-mappings|).  These mappings are
-    inspired by the great `surround.vim` [0] (|surround.txt|) by Tim Pope,
-    which provides mappings to manipulate surrounding delimiters such as `''`,
-    `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
-    should work well together with, and as an extension of, `surround.vim`.
-    Consider also the customization described under |vimtex-faq-surround|.
-    The mappings may be repeated with the dot mapping |.| if one has
-    `vim-repeat` [1].
+Manipulate surrounding commands/delimiters/environments~
 
-    A different possibility is to use `vim-sandwich` [2] (|sandwich.txt|) by
-    Machakann, which may be considered a generalisation of `surround.vim` in
-    that it can handle much more complex sets of delimiters.  `vim-sandwich`
-    is relatively easy to expand with custom surroundings and has built in
-    support for LaTeX-specific surroundings such as quotations, ```text''`,
-    and math delimiters, `$\left(a+b\right)$`.  For a list of supported
-    delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` also supports
-    `vim-repeat` in addition to `visualrepeat.vim` [3].
+  |vimtex| provides mappings that change, delete and toggle commands,
+  delimiters and environments (see the `ds`, `cs` and `ts` family of
+  mappings listed under |vimtex-default-mappings|).  These mappings are
+  inspired by the great `surround.vim` [0] (|surround.txt|) by Tim Pope,
+  which provides mappings to manipulate surrounding delimiters such as `''`,
+  `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
+  should work well together with, and as an extension of, `surround.vim`.
+  Consider also the customization described under |vimtex-faq-surround|.
+  The mappings may be repeated with the dot mapping |.| if one has
+  `vim-repeat` [1].
 
-    Note: The default mappings of `vim-sandwich` differ from those of
+  A different possibility is to use `vim-sandwich` [2] (|sandwich.txt|) by
+  Machakann, which may be considered a generalisation of `surround.vim` in
+  that it can handle much more complex sets of delimiters.  `vim-sandwich`
+  is relatively easy to expand with custom surroundings and has built in
+  support for LaTeX-specific surroundings such as quotations, ```text''`,
+  and math delimiters, `$\left(a+b\right)$`.  For a list of supported
+  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` also supports
+  `vim-repeat` in addition to `visualrepeat.vim` [3].
+
+  Note: The default mappings of `vim-sandwich` differ from those of
     `surround.vim`, in that the use `s` as the prefix.  E.g., to add
     surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
     instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
@@ -235,133 +342,61 @@ provided by vimtex, but that are instead provided by other plugins.
     option, see |sandwich-miscellaneous|.  And it is also easy to define
     custom mappings, if one prefers that.
 
-    Note: `vim-sandwich` actually consists of three plugins that work
+  Note: `vim-sandwich` actually consists of three plugins that work
     together.  One should make sure to read the docs for all of them:
     |sandwich.txt|, |operator-sandwich.txt|, and |textobj-sandwich.txt|.
 
-    [0]: https://github.com/tpope/vim-surround
-    [1]: https://github.com/tpope/vim-repeat
-    [2]: https://github.com/machakann/vim-sandwich
-    [3]: http://www.vim.org/scripts/script.php?script_id=3848
+  [0]: https://github.com/tpope/vim-surround
+  [1]: https://github.com/tpope/vim-repeat
+  [2]: https://github.com/machakann/vim-sandwich
+  [3]: http://www.vim.org/scripts/script.php?script_id=3848
 
-  Enhanced matching and higlighting of delimiters~
-    |vimtex| highlights and allows navigation between matching pairs of
-    delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
-    the `\begin` and `\end` tags of environments.  However, it does not allow
-    matching of middle delimiters or `\item`s.
+Enhanced matching and higlighting of delimiters~
 
-    Alternatively, one may use the plugin |match-up| [0], which offers enhanced
-    |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
-    for a variety of file types.  For LaTeX douments, it:
-      - Extends highlighting and the `%` motion to a number of middle
-        delimiters including,
-          - `\bigm` and `\middle` marked delimiters
-          - `\item`s in `itemize` and `enumerate` environments
-          - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
-          - `\if`, `\else` and `\endif`
-      - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
-        between matching delimiters and operate on delimited text.
+  |vimtex| highlights and allows navigation between matching pairs of
+  delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
+  the `\begin` and `\end` tags of environments.  However, it does not allow
+  matching of middle delimiters or `\item`s.
 
-    For example, with match-up enabled, >
+  Alternatively, one may use the plugin |match-up| [0], which offers enhanced
+  |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
+  for a variety of file types.  For LaTeX douments, it:
+    - Extends highlighting and the `%` motion to a number of middle
+      delimiters including,
+        - `\bigm` and `\middle` marked delimiters
+        - `\item`s in `itemize` and `enumerate` environments
+        - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
+        - `\if`, `\else` and `\endif`
+    - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
+      between matching delimiters and operate on delimited text.
 
-      \left( \frac{a}{b} \middle| q \right)
+  For example, with match-up enabled, >
+
+    \left( \frac{a}{b} \middle| q \right)
 <
-    the motion `%` will cycle through `\left(`, `\middle|`, and `\right)`, whereas
-    with vimtex only `\left(` and `\right)` will be matched.  The motion `g%`
-    will do the same, except in reverse.
+  the motion `%` will cycle through `\left(`, `\middle|`, and `\right)`, whereas
+  with vimtex only `\left(` and `\right)` will be matched.  The motion `g%`
+  will do the same, except in reverse.
 
-    To enable the plugin match-up after installation, add the following to
-    your vimrc: >
+  To enable the plugin match-up after installation, add the following to
+  your vimrc: >
 
-      let g:matchup_override_vimtex = 1
+    let g:matchup_override_vimtex = 1
 <
-    Matching may become computationally intensive for complex LaTeX documents.
-    If you experience slowdowns while moving the cursor, the following option
-    is recommended to delay highlighting slightly while navigating: >
+  Matching may become computationally intensive for complex LaTeX documents.
+  If you experience slowdowns while moving the cursor, the following option
+  is recommended to delay highlighting slightly while navigating: >
 
-      let g:matchup_matchparen_deferred = 1
+    let g:matchup_matchparen_deferred = 1
 <
-    Note: The exact set of delimiters recognized may differ between match-up
+  Note: The exact set of delimiters recognized may differ between match-up
     and vimtex.  For example, the mappings `da%` and `dad` will not in general
     be identical, particularly if you have customized vimtex's delimiters.
 
-    [0]: https://github.com/andymass/vim-matchup
+  [0]: https://github.com/andymass/vim-matchup
 
 ------------------------------------------------------------------------------
-Requirements~
-                                                          *vimtex-requirements*
-
-The following is a list of specific requirements for running |vimtex| and some
-of its key features.  There are a couple of relevant FAQs for those who use
-|neovim| and those restricted to a Windows OS, see |vimtex-faq-neovim| and
-|vimtex-faq-windows|.
-
-  *vimtex_version_check*
-    |vimtex| supports Vim version 7.4.52 and neovim version 0.1.7.  It will not
-    load for older versions, unless one adds >
-
-      let g:vimtex_version_check = 0
-<
-    to one's `vimrc` file.  This might work, but issues due to older versions
-    than the mentioned here will be ignored.
-
-  `latexmk`   http://users.phys.psu.edu/~collins/software/latexmk-jcc
-  `latexrun`  https://github.com/aclements/latexrun
-  `arara`     https://github.com/cereda/arara
-    |vimtex| uses `latexmk`, `latexrun`, or `arara` to compile the LaTeX document.
-      `latexmk` is "a perl script for running LaTeX the correct number of
-    times to resolve cross references, etc; it also runs auxiliary programs
-    (bibtex, makeindex if necessary, and dvips and/or a previewer as
-    requested).  It has a number of other useful capabilities, for example to
-    start a previewer and then run latex whenever the source files are
-    updated, so that the previewer gives an up-to-date view of the document.
-    The script runs on both UNIX and MS-WINDOWS (XP, etc)." [Copied from the
-    latexmk page.]  For more info, see |vimtex-latexmk|.
-      `latexrun` is similar to `latexmk` in that it runs the desired LaTeX
-    engine an appropriate number of times, including `bibtex`/`biber`.
-    However, it differs in philosophy in that it only does the build part. It
-    does not support continuous builds, nor automatic starting of the viewer.
-    However, it does parse the output log in order to provide a more concise
-    list of relevant warnings and error messages (this has currently not been
-    adapted to vimtex, as of yet).
-      `arara` is a TeX automation tool similar to the above mentioned tools,
-    but where the compilation behaviour is typically defined in the preamble
-    of the document.
-
-  *vimtex-clientserver*
-    |vimtex| requires the |clientserver| for the callback functionality to
-    work.  The callbacks are used to provide feedback when compilation is
-    finished, as well as to parse the log for errors and warnings and to open
-    the |quickfix| window when necessary.
-
-    A server will be started automatically if Vim is running on Windows, or
-    if running in a GUI.  If you use Vim under a terminal in Linux or OSX,
-    a server will not be started by default.  Since Vim version 8.0.475,
-    |remote_startserver()| can be used to start a server from your `vimrc`
-    file.  The following will ensure Vim starts with a server, if it is
-    possible from vimscript: >
-
-      if empty(v:servername) && exists('*remote_startserver')
-        call remote_startserver('VIM')
-      endif
-<
-    Alternatively, Vim can be started with the command line option
-    `--servername`, e.g. `vim --servername VIM` .  The simplest way to ensure
-    this is to add an alias to your `.bashrc` (or similar), that is, add: >
-
-      alias vim='vim --servername VIM'
-<
-    For other methods of ensuring that Vim is started with a servername, see:
-    http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
-
-    For setting up callback functionality in Neovim, see |vimtex-faq-neovim|.
-
-    To test whether a server was successfully started, |serverlist()| can be
-    used. E.g. `:echo serverlist()`
-
-------------------------------------------------------------------------------
-Support for multi-file projects~
-                                                            *vimtex-multi-file*
+SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
 
 |vimtex| supports most multi-file documents.  The main method uses a recursive
 search algorithm that should find the main LaTeX file in most cases.  For
@@ -452,30 +487,7 @@ Recursive search~
         through the option |g:vimtex_disable_recursive_main_file_detection|.
 
 ------------------------------------------------------------------------------
-Comment on internal tex plugin~
-                                                      *vimtex-comment-internal*
-
-Vim ships with some LaTeX support out of the box.  In particular, it provides
-good syntax highlighting (|ft-tex-syntax|), indentation (see the source file
-$VIMRUNTIME/indent/tex.vim for the documentation), and some sensible options
-(|ft-tex-plugin|).
-
-When |vimtex| is active, it will be used as the main |ftplugin|.  It will
-define the same set of sensible settings as the internal plugin.  However,
-|vimtex| does not provide its own syntax, instead it adds a few minor
-improvements to |ft-tex-syntax|, see |vimtex-syntax|.  |vimtex| also provides its
-own indentation plugin, see |vimtex-indent|.
-
-Vim will generally autodetect filetypes automatically.  In most cases this
-works as expected, however, in some cases it will detect a file with the `tex`
-suffix as a |plaintex|.  To prevent this, one may set the option
-|g:tex_flavor| in ones `vimrc` file, that is: >
-
-  let g:tex_flavor = 'latex'
-
-------------------------------------------------------------------------------
-Support for TeX directives~
-                                                        *vimtex-tex-directives*
+SUPPORT FOR TEX DIRECTIVES                              *vimtex-tex-directives*
 
 |vimtex| supports two of the commonly used TeX directives [0]: the TeX root and
 the TeX program directive. The TeX root directive was already described above,
@@ -499,20 +511,19 @@ or |g:vimtex_compiler_latexrun_engines| dictionaries. See also [0,1].
 [1]: https://github.com/lervag/vimtex/issues/713
 
 ------------------------------------------------------------------------------
-Package detection~
-                                                     *vimtex-package-detection*
+PACKAGE DETECTION                                    *vimtex-package-detection*
 
 vimtex maintains a list of latex packages that are required by the current
-project.  This list is used by vimtex for instance to determine which commands
+project. This list is used by vimtex for instance to determine which commands
 to suggest during command completion (see |vimtex-complete-commands|) and
-which packages to look up documentation for (see |vimtex-doc-package|).  The
+which packages to look up documentation for (see |vimtex-doc-package|). The
 list can be viewed with |:VimtexInfo|.
 
 The package list is determined in two ways: >
 
 1. If a `.fls` file exists having the name of the main file, it is scanned.
    This file is created by the tex program (e.g., pdflatex) during compilation
-   and might not be supported by all tex programs.  Parsing the `.fls` file is
+   and might not be supported by all tex programs. Parsing the `.fls` file is
    done both at vimtex initialization and after each successful compilation,
    if possible.
 
@@ -521,13 +532,13 @@ The package list is determined in two ways: >
             for |g:vimtex_compiler_latexmk|), or
          b) single-shot compilation with the `jobs` or `nvim` backend (see the
             `backend` option of |g:vimtex_compiler_latexmk| and
-            |g:vimtex_compiler_latexrun|).  If one uses the `process` backend
+            |g:vimtex_compiler_latexrun|). If one uses the `process` backend
             (e.g. on older Vim versions), one must either have the `callback`
             option also enabled or it must run in foreground.
 
-2. Otherwise, the preamble is parsed for `\usepackage` statements.  This is
-   slower and less accurate than `.fls` file parsing.  Therefore, it is only
-   done during vimtex initialization.  If desired, one may manually reload
+2. Otherwise, the preamble is parsed for `\usepackage` statements. This is
+   slower and less accurate than `.fls` file parsing. Therefore, it is only
+   done during vimtex initialization. If desired, one may manually reload
    vimtex to parse the preamble again during an editing session. See
    |VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
    `<localleader>lx`).
@@ -543,8 +554,7 @@ USAGE                                                            *vimtex-usage*
   Events                  |vimtex-events|
 
 ------------------------------------------------------------------------------
-Default mappings~
-                                                      *vimtex-default-mappings*
+DEFAULT MAPPINGS                                      *vimtex-default-mappings*
 
 |vimtex| is designed to be controlled by a selection of mappings.  Note,
 though, that most of the mappings are also available as commands, see
@@ -637,8 +647,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
   ---------------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
-Options~
-                                                               *vimtex-options*
+OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_enabled*
   Set to 0 to disable |vimtex|.
@@ -2082,8 +2091,7 @@ Options~
   Default value: ''
 
 ------------------------------------------------------------------------------
-Commands~
-                                                              *vimtex-commands*
+COMMANDS                                                      *vimtex-commands*
 
                                              *VimtexInfo*
                                              *<plug>(vimtex-info)*
@@ -2268,8 +2276,7 @@ Commands~
                                 see |vimtex-subfiles|.
 
 ------------------------------------------------------------------------------
-Map definitions~
-                                                              *vimtex-mappings*
+MAP DEFINITIONS                                               *vimtex-mappings*
 
 *vimtex-zx*
   When |vimtex| folding is enabled and when the manual mode is turned on
@@ -2408,8 +2415,7 @@ object, see |text-objects|.
   |exlusive| motion.
 
 ------------------------------------------------------------------------------
-Insert mode mappings~
-                                                                 *vimtex-imaps*
+INSERT MODE MAPPINGS                                             *vimtex-imaps*
 
 Some LaTeX commands are very common, and so it is both natural and convenient
 to have insert mode mappings/abbreviations for them. |vimtex| therefore
@@ -2521,8 +2527,7 @@ automatically, see |UltiSnips-autotrigger|. This allows nesting, and is
 therefore a better approach than using the anonymous snippet function.
 
 ------------------------------------------------------------------------------
-Events~
-                                                                *vimtex-events*
+EVENTS                                                          *vimtex-events*
 
 |vimtex| defines some events using the |User| autocmd that may be used for
 further customization.
@@ -2591,8 +2596,7 @@ Associated settings:
   |g:vimtex_complete_recursive_bib|
 
 ------------------------------------------------------------------------------
-Complete citations~
-                                                        *vimtex-complete-cites*
+COMPLETE CITATIONS                                      *vimtex-complete-cites*
 
 Citation completion is triggered by '\cite{' commands.  The completion parses
 included bibliography files (`*.bib`) and `thebibliography` environments to
@@ -2617,8 +2621,7 @@ In particular, note that regular expressions (or vim patterns) can be used
 after '\cite{' to search for candidates.
 
 ------------------------------------------------------------------------------
-Complete labels~
-                                                       *vimtex-complete-labels*
+COMPLETE LABELS                                        *vimtex-complete-labels*
 
 Label completion is triggered by '\ref{' commands.  The completion parses every
 relevant aux file to gather the completion candidates.  This is important,
@@ -2640,8 +2643,7 @@ number.  The label completion matches:
         \eqref{eq 2<CTRL-X><CTRL-O>
 
 ------------------------------------------------------------------------------
-Complete commands and environments~
-                                                     *vimtex-complete-commands*
+COMPLETE COMMANDS AND ENVIRONMENTS                   *vimtex-complete-commands*
                                                  *vimtex-complete-environments*
 
 Command completion is available after `\` and should provide completion
@@ -2656,8 +2658,7 @@ A lot of packages are supported, see the path `VIMTEX/autoload/vimtex/complete`
 for a relevant file listing.
 
 ------------------------------------------------------------------------------
-Complete file names for figures~
-                                                       *vimtex-complete-images*
+COMPLETE FILE NAMES FOR FIGURES                        *vimtex-complete-images*
 
 File name completion for figures is triggered by '\includegraphics{' commands.
 
@@ -2667,36 +2668,31 @@ complete only the tail part of file names. This is useful if one uses the
 `graphicx` package and the `\graphicspath` command.
 
 ------------------------------------------------------------------------------
-Complete input/include tex files~
-                                                        *vimtex-complete-input*
+COMPLETE INPUT OR INCLUDE TEX FILES                     *vimtex-complete-input*
 
 File name completion for input/include files is triggered by '\input{',
 '\include{', or '\includeonly{' commands.
 
 ------------------------------------------------------------------------------
-Complete include PDF files~
-                                                          *vimtex-complete-pdf*
+COMPLETE INCLUDE PDF FILES                                *vimtex-complete-pdf*
 
 File name completion for PDF files offered by the `pdfpages` package is
 triggered by '\includepdf{' commands.
 
 ------------------------------------------------------------------------------
-Complete include standalone files~
-                                                   *vimtex-complete-standalone*
+COMPLETE INCLUDE STANDALONE FILES                  *vimtex-complete-standalone*
 
 File name completion for standalone files offered by the package `standalone`
 is triggered by '\includestandalone{' commands.
 
 ------------------------------------------------------------------------------
-Complete include glossary entries~
-                                                     *vimtex-complete-glossary*
+COMPLETE INCLUDE GLOSSARY ENTRIES                    *vimtex-complete-glossary*
 
 Glossary entry completion from the `glossaries` package are triggered by the
 commands '\gls{', '\glspl{' and their variations.
 
 ------------------------------------------------------------------------------
-Complete packages and documentclasses~
-                                                     *vimtex-complete-packages*
+COMPLETE PACKAGES AND DOCUMENTCLASSES                *vimtex-complete-packages*
                                                       *vimtex-complete-classes*
 
 Package and documentclass completion are available for the `\usepackage{` and
@@ -2716,8 +2712,7 @@ Note: If you want to change the default value of `TEXMFHOME` in your shell
       read |vimtex-faq-texmfhome|.
 
 ------------------------------------------------------------------------------
-Autocomplete~
-                                                         *vimtex-complete-auto*
+AUTOCOMPLETE                                             *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
 four good plugins that provide this: ||deoplete|, |neocomplete|, |ncm2|,
@@ -3010,8 +3005,7 @@ a backend for external plugins. There are sources for |denite.nvim| and
 to write custom sources or sources for other, similar plugins.
 
 ------------------------------------------------------------------------------
-Include expression~
-                                                           *vimtex-includeexpr*
+INCLUDE EXPRESSION                                         *vimtex-includeexpr*
 
 |vimtex| provides an advanced |includeexpr| that makes it possible to open
 source files for e.g. packages and documentclasses with the |gf| command. The
@@ -3028,8 +3022,7 @@ names, |gf| will take you to the TeX source files (typically `.cls` file for
 documentclass and `.sty` files for packages).
 
 ------------------------------------------------------------------------------
-Table of contents~
-                                                                   *vimtex-toc*
+TABLE OF CONTENTS                                                  *vimtex-toc*
 
 |vimtex-toc| displays a table of contents (ToC) for the current LaTeX document.
 The ToC entries may be activated/jumped to with <cr> or <space>. There are
@@ -3104,8 +3097,7 @@ Associated settings:
   |g:vimtex_toc_config|
 
 ------------------------------------------------------------------------------
-Denite/Unite source~
-                                                                *vimtex-denite*
+DENITE AND UNITE SOURCES                                        *vimtex-denite*
                                                                  *vimtex-unite*
 
                                         https://github.com/Shougo/denite.nvim
@@ -3184,8 +3176,7 @@ Associated events:
   |VimtexEventCompileStopped|
 
 ------------------------------------------------------------------------------
-Latexmk~
-                                                               *vimtex-latexmk*
+LATEXMK                                                        *vimtex-latexmk*
 
                       http://users.phys.psu.edu/~collins/software/latexmk-jcc
 > latexmk is a perl script for running LaTeX the correct number of times to
@@ -3240,8 +3231,7 @@ Note: If you define these options similar to the above `xdotool` trick and
 Note: More info on `xdotool` here: http://www.semicomplete.com/projects/xdotool.
 
 ------------------------------------------------------------------------------
-Latexrun~
-                                                              *vimtex-latexrun*
+LATEXRUN                                                      *vimtex-latexrun*
 
                                         https://github.com/aclements/latexrun
 > See LaTeX run. Run latexrun.
@@ -3257,9 +3247,9 @@ The latter is supported by vimtex, though, through the callback.  See
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
+
 ------------------------------------------------------------------------------
-Arara~
-                                                                 *vimtex-arara*
+ARARA                                                            *vimtex-arara*
 
                                         https://github.com/cereda/arara
 > arara is a TeX automation tool based on rules and directives. It gives you
@@ -3295,8 +3285,7 @@ Associated settings:
   |g:vimtex_view_<viewer>_options|
 
 ------------------------------------------------------------------------------
-Synctex support~
-                                                               *vimtex-synctex*
+SYNCTEX SUPPORT                                                *vimtex-synctex*
 
 Synctex is a tool that enables synchronization of the text editor position and
 the pdf viewer position.  The tool may be used to add mappings in vim to go to
@@ -3314,8 +3303,7 @@ Alternatively, for |vimtex-latexmk|, one can put this in ones `~/.latexmkrc` fil
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
 ------------------------------------------------------------------------------
-Forward search~
-                                                *vimtex-synctex-forward-search*
+FORWARD SEARCH                                  *vimtex-synctex-forward-search*
 
 For supported viewers, |VimtexView| (<localleader>lv) will issue a forward
 search if the viewer is already opened.  The forward search will take you to
@@ -3323,8 +3311,7 @@ the page or position in the viewer that corresponds to the current line in
 your vim session.  See |g:vimtex_view_method| for a list of supported viewers.
 
 ------------------------------------------------------------------------------
-Backward search~
-                                               *vimtex-synctex-backward-search*
+BACKWARD SEARCH                                *vimtex-synctex-backward-search*
                                                 *vimtex-synctex-inverse-search*
 
 In supported viewers one may set up backward or inverse search.  When
@@ -3358,7 +3345,7 @@ In the following, I list some alternative and relevant options for access to
 LaTeX documentation, both online and offline.
 
 ------------------------------------------------------------------------------
-Online~
+ONLINE                                                 *vimtex-latexdoc-online*
 
 I recommend the LaTeX Wikibook [0] as a good source of documentation for
 LaTeX. One should also know about the Comprehensive TeX Archive Network, or
@@ -3368,7 +3355,7 @@ CTAN [1], which is the central place for all kinds of material around TeX.
 [1]: https://ctan.org/
 
 ------------------------------------------------------------------------------
-Offline~
+OFFLINE                                               *vimtex-latexdoc-offline*
 
 For offline documentation, I recommend the vim-latexrefman plugin [0] for
 accessing the well known LaTeX refman [1] from within Vim in the same style as
@@ -3595,9 +3582,11 @@ Suggested solution: Don't use vim-polyglot.
 
 [0]: https://github.com/sheerun/vim-polyglot
 
-Problem: Upon starting continuous compilation the status bar indicates~
-   'latexmk compile: started continuous mode' but compilation never terminates~
-   and the quickfix window does not load.~
+Problem: Continuous compilation seems to hang~
+
+Upon starting continuous compilation the status bar indicates "vimtex:
+Compiler started in continuous mode", but the compilation never terminates and
+the quickfix window does not load.
 
 Tips:
 1. Ensure that a latexmk process and a Perl process have started. If they have
@@ -3612,20 +3601,20 @@ Tips:
    through |g:vimtex_compiler_latexmk| (see the `option` key). In the latter
    case, the user must ensure that the said option is also provided.
 
-Problem: In Windows, environment text object commands, like `vae` and `vie`, do~
-  not select the entire body of the environment.~
+Problem: Text objects on Windows~
 
-  More specifically, given: >
+In Windows, environment text object commands, like `vae` and `vie`, do not
+select the entire body of the environment. More specifically, given: >
 
     \begin{someenv}
       some content
     \end{someenv}
 
-<  The command `dae` results in: >
+The command `dae` results in: >
 
     }
 
-<  and `die` results in: >
+and `die` results in: >
 
     \begin{someenv}
       t
@@ -3696,8 +3685,8 @@ Deprecated options:
   *g:vimtex_fold_commands*
   *g:vimtex_fold_commands_default*
 
-2017-06-05: Removed Lacheck support~
                                                                *vimtex-lacheck*
+2017-06-05: Removed Lacheck support~
 Removed support for using `lacheck` for checking LaTeX syntax. The reason is
 that there exist several (good) external plugins for syntax checking files.
 These are general purpose plugins that work for multiple file types. For more
@@ -3873,6 +3862,9 @@ The new names are, respectively:
   |g:vimtex_quickfix_mode|
 
 2013-10-05: First public release~
+|vimtex| was first released on github on this date. Initial version was named
+vim-latex, which conflicted with Vim LaTeX-Suite which is also known as
+vim-latex. Some time later, the plugin was renamed to |vimtex|.
 
 ==============================================================================
  vim:tw=78:ts=8:ft=help:norl:
