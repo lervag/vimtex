@@ -264,8 +264,8 @@ Clientserver~
 ------------------------------------------------------------------------------
 FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
 
-The following is a short list of features that one might think should be
-provided by vimtex, but that are instead provided by other plugins.
+The following is a list of features that one might think should be provided by
+vimtex, but that are instead better provided by other plugins.
 
 Linting and syntax checking~
 
@@ -394,6 +394,52 @@ Enhanced matching and higlighting of delimiters~
     be identical, particularly if you have customized vimtex's delimiters.
 
   [0]: https://github.com/andymass/vim-matchup
+
+Formatting~
+
+  vimtex has a custom |formatexpr| that may be enabled with the option
+  |g:vimtex_format_enabled|. However, there are a lot of different styles for
+  formatting LaTeX manuscripts. These are typically much more relevant when
+  writing in collaboration with others. A good reference on this topic is [0],
+  and note in particular the box "Directives for using LaTeX with version
+  control systems".
+
+  The most basic style is to hard wrap lines at a given column, e.g. 80
+  columns, and this is exactly the type of formatting that is supported by
+  vimtex. However, this is usually not very friendly when collaborating with
+  others, as it tends to mess up diffs between versions of the document.
+  Instead, one might want to consider one of these:
+
+    a) keeping each sentence on a line (use soft wrapping)
+    b) add additional indentation for split sentences [1]
+    c) use semantic line feeds [2]
+
+  In order to make it easier to use one of these styles of formatting, one may
+  want to use an external formatter:
+
+    - latexindent.pl [3]
+    - bibtool [4]
+    - vim-bucky [5] (note: this is an alpha version as of October 2018)
+
+  Further, there are a range of Vim plugins that can be used to format your
+  document with external tools. Some of these also allow autoformatting of
+  some kind. In no particular order:
+
+    - neoformat [6]
+    - vim-codefmt [7]
+    - vim-autoformat [8]
+    - ale [9]
+
+  [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
+  [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
+  [2]: http://rhodesmill.org/brandon/2012/one-sentence-per-line/
+  [3]: https://github.com/cmhughes/latexindent.pl
+  [4]: https://github.com/ge-ne/bibtool
+  [5]: https://github.com/dbmrq/vim-bucky
+  [6]: https://github.com/sbdchd/neoformat
+  [7]: https://github.com/google/vim-codefmt
+  [8]: https://github.com/Chiel92/vim-autoformat
+  [9]: https://github.com/w0rp/ale
 
 ------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
