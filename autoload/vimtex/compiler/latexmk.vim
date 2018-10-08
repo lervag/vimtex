@@ -15,11 +15,9 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#latexmk#wrap_option(name, value) abort " {{{1
-  if has('win32')
-    return ' -e "$' . a:name . ' = ''' . a:value . '''"'
-  else
-    return ' -e ''$' . a:name . ' = "' . a:value . '"'''
-  endif
+  return has('win32')
+        \ ? ' -e "$' . a:name . ' = ''' . a:value . '''"'
+        \ : ' -e ''$' . a:name . ' = "' . a:value . '"'''
 endfunction
 
 "}}}1
