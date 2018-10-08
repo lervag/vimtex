@@ -60,7 +60,11 @@ endfunction
 " }}}1
 function! s:bibtex.fix_paths() abort " {{{1
   let l:qflist = getqflist()
-  let l:title = getqflist({'title': 1})
+  try
+    let l:title = getqflist({'title': 1})
+  catch /E118/
+    let l:title = 'Vimtex errors'
+  endtry
 
   for l:qf in l:qflist
     for l:type in self.types
