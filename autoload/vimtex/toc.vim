@@ -304,7 +304,7 @@ function! s:toc.refresh() abort dict " {{{1
 
   call self.position_save()
   setlocal modifiable
-  silent %delete
+  silent %delete _
 
   call self.print_help()
   call self.print_entries()
