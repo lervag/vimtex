@@ -12,9 +12,6 @@ set expandtab
 silent edit minimal.tex
 
 silent normal! gg=G
-
-for s:line in getline(1, '$')
-  echon printf("%s\n", s:line)
-endfor
+silent write! indented.tex
 
 quitall!
