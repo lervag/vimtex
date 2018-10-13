@@ -5,7 +5,7 @@
 "
 
 function! vimtex#pos#set_cursor(...) " {{{1
-  call cursor(s:parse_args(a:000))
+  call cursor(map(s:parse_args(a:000), 'v:val < 0 ? 0 : v:val'))
 endfunction
 
 " }}}1
