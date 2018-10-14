@@ -6,22 +6,22 @@
 
 function! vimtex#cmd#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-delete)
-        \ :call vimtex#cmd#delete()<cr>
+        \ :<c-u>call vimtex#cmd#delete()<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-change)
-        \ :call vimtex#cmd#change()<cr>
+        \ :<c-u>call vimtex#cmd#change()<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ <c-r>=vimtex#cmd#create_insert()<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ :call vimtex#cmd#create_ask(0)<cr>
+        \ :<c-u>call vimtex#cmd#create_ask(0)<cr>
 
   xnoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
-        \ :call vimtex#cmd#toggle_star()<cr>
+        \ :<c-u>call vimtex#cmd#toggle_star()<cr>
 endfunction
 
 " }}}1
@@ -47,7 +47,12 @@ function! vimtex#cmd#change(...) " {{{1
 
   " Update current position
   let l:save_pos = vimtex#pos#get_cursor()
-  let l:save_pos[2] += strlen(l:new_name) - strlen(l:old_name) + 1
+  if strlen(l:new_name) < strlen(l:old_name)
+    let l:col = searchpos('\\\k', 'bcnW')[1] + strlen(l:new_name)
+    if l:col < l:save_pos[2]
+      let l:save_pos[2] = l:col
+    endif
+  endif
 
   " Perform the change
   let l:line = getline(l:lnum)
