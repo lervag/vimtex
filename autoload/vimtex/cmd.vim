@@ -6,27 +6,27 @@
 
 function! vimtex#cmd#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-delete)
-        \ :<c-u>call vimtex#cmd#delete()<cr>
+        \ :<c-u>call <sid>setup_operator('delete')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-change)
-        \ :<c-u>call vimtex#cmd#change()<cr>
+        \ :<c-u>call <sid>setup_operator('change')<bar>normal! g@l<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ <c-r>=vimtex#cmd#create_insert()<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-create)
-        \ :<c-u>call vimtex#cmd#create_ask(0)<cr>
+        \ :<c-u>call <sid>setup_operator('create_ask')<bar>normal! g@l<cr>
 
   xnoremap <silent><buffer> <plug>(vimtex-cmd-create)
         \ :<c-u>call vimtex#cmd#create_ask(1)<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
-        \ :<c-u>call vimtex#cmd#toggle_star()<cr>
+        \ :<c-u>call <sid>setup_operator('toggle_star')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
 
-function! vimtex#cmd#change(...) " {{{1
+function! vimtex#cmd#change(new_name) " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
@@ -35,14 +35,7 @@ function! vimtex#cmd#change(...) " {{{1
   let l:cnum = l:cmd.pos_start.cnum
 
   " Get new command name
-  if a:0 > 0
-    let l:new_name = a:1
-  else
-    let l:new_name = vimtex#echo#input({
-          \ 'info' : ['Change command: ', ['VimtexWarning', l:old_name]],
-          \})
-  endif
-  let l:new_name = substitute(l:new_name, '^\\', '', '')
+  let l:new_name = substitute(a:new_name, '^\\', '', '')
   if empty(l:new_name) | return | endif
 
   " Update current position
@@ -61,10 +54,8 @@ function! vimtex#cmd#change(...) " {{{1
         \ . l:new_name
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
-  " Restore cursor position and create repeat hook
+  " Restore cursor position
   cal vimtex#pos#set_cursor(l:save_pos)
-  silent! call repeat#set(
-        \ "\<plug>(vimtex-cmd-change)" . l:new_name . '', v:count)
 endfunction
 
 function! vimtex#cmd#delete(...) " {{{1
@@ -110,9 +101,6 @@ function! vimtex#cmd#delete(...) " {{{1
     endif
   endif
   cal vimtex#pos#set_cursor(l:save_pos)
-
-  " Create repeat hook
-  silent! call repeat#set("\<plug>(vimtex-cmd-delete)", v:count)
 endfunction
 
 function! vimtex#cmd#delete_all(...) " {{{1
@@ -157,11 +145,15 @@ endfunction
 
 " }}}1
 function! vimtex#cmd#create_ask(visualmode) " {{{1
-  let l:cmd = vimtex#echo#input({
-        \ 'info' :
-        \   ['Change command: ', ['VimtexWarning', '(empty to cancel)']],
-        \})
-  let l:cmd = substitute(l:cmd, '^\\', '', '')
+  if a:visualmode
+    let l:cmd = vimtex#echo#input({
+          \ 'info' :
+          \   ['Change command: ', ['VimtexWarning', '(empty to cancel)']],
+          \})
+    let l:cmd = substitute(l:cmd, '^\\', '', '')
+  else
+    let l:cmd = s:cmd_name_create_ask
+  endif
   if empty(l:cmd) | return | endif
 
   " Avoid autoindent (disable indentkeys)
@@ -192,8 +184,6 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
     let l:save_reg = getreg('"')
     let l:pos[2] += strlen(l:cmd) + 2
     execute 'normal! ciw\' . l:cmd . '{"}'
-    silent! call repeat#set(
-          \ "\<plug>(vimtex-cmd-create)" . l:cmd . '', v:count)
     call setreg('"', l:save_reg)
     call vimtex#pos#set_cursor(l:pos)
   endif
@@ -231,9 +221,38 @@ function! vimtex#cmd#toggle_star() " {{{1
         \ . l:new_name
         \ . strpart(l:line, l:cnum + strlen(l:old_name) - 1))
 
-  " Restore cursor position and create repeat hook
+  " Restore cursor position
   cal vimtex#pos#set_cursor(l:save_pos)
-  silent! call repeat#set("\<plug>(vimtex-cmd-toggle-star)", v:count)
+endfunction
+
+" }}}1
+
+function! s:setup_operator(operator) abort " {{{1
+  let &opfunc = s:snr().'opfunc'
+  let s:operator = a:operator
+  if s:operator isnot# 'change' && s:operator isnot# 'create_ask' | return | endif
+  if s:operator is# 'change' && empty(vimtex#cmd#get_current()) | return | endif
+  let s:cmd_name_{a:operator} = vimtex#echo#input({
+        \ 'info' : ['Change command: ',
+        \   ['VimtexWarning',
+        \     a:operator is# 'change' ? vimtex#cmd#get_current().name : '(empty to cancel)']],
+        \})
+  let s:cmd_name_{a:operator} = substitute(s:cmd_name_{a:operator}, '^\\', '', '')
+endfunction
+
+" }}}1
+function! s:opfunc(_) abort " {{{1
+  execute 'call vimtex#cmd#'.{
+        \   'change': 'change(get(s:, "cmd_name_change", ""))',
+        \   'create_ask': 'create_ask(0)',
+        \   'delete': 'delete()',
+        \   'toggle_star': 'toggle_star()',
+        \ }[s:operator]
+endfunction
+
+" }}}1
+function! s:snr() " {{{1
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
 " }}}1

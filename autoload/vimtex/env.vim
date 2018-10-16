@@ -6,71 +6,71 @@
 
 function! vimtex#env#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
-        \ :call vimtex#env#delete('env_tex')<cr>
+        \ :<c-u>call <sid>setup_operator('delete', 'env_tex')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
-        \ :call vimtex#env#change_prompt('env_tex')<cr>
+        \ :<c-u>call <sid>setup_operator('change', 'env_tex')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
-        \ :call vimtex#env#delete('env_math')<cr>
+        \ :<c-u>call <sid>setup_operator('delete', 'env_math')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-change-math)
-        \ :call vimtex#env#change_prompt('env_math')<cr>
+        \ :<c-u>call <sid>setup_operator('change', 'env_math')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
-        \ :call vimtex#env#toggle_star()<cr>
+        \ :<c-u>call <sid>setup_operator('toggle_star', '')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
 
-function! vimtex#env#change(open, close, new) " {{{1
+function! vimtex#env#change(...) " {{{1
+  if a:0
+    let [l:open, l:close, l:new] = a:000
+  else
+    let [l:open, l:close] = vimtex#delim#get_surrounding(s:type)
+    if empty(l:open) | return | endif
+    let l:new = s:new_env
+  endif
   "
   " Set target environment
   "
-  if a:new ==# ''
+  if l:new ==# ''
     let [l:beg, l:end] = ['', '']
-  elseif a:new ==# '$'
+  elseif l:new ==# '$'
     let [l:beg, l:end] = ['$', '$']
-  elseif a:new ==# '$$'
+  elseif l:new ==# '$$'
     let [l:beg, l:end] = ['$$', '$$']
-  elseif a:new ==# '\['
+  elseif l:new ==# '\['
     let [l:beg, l:end] = ['\[', '\]']
-  elseif a:new ==# '\('
+  elseif l:new ==# '\('
     let [l:beg, l:end] = ['\(', '\)']
   else
-    let l:beg = '\begin{' . a:new . '}'
-    let l:end = '\end{' . a:new . '}'
+    let l:beg = '\begin{' . l:new . '}'
+    let l:end = '\end{' . l:new . '}'
   endif
 
-  let l:line = getline(a:open.lnum)
-  call setline(a:open.lnum,
-        \   strpart(l:line, 0, a:open.cnum-1)
+  let l:line = getline(l:open.lnum)
+  call setline(l:open.lnum,
+        \   strpart(l:line, 0, l:open.cnum-1)
         \ . l:beg
-        \ . strpart(l:line, a:open.cnum + len(a:open.match) - 1))
+        \ . strpart(l:line, l:open.cnum + len(l:open.match) - 1))
 
-  let l:c1 = a:close.cnum
-  let l:c2 = a:close.cnum + len(a:close.match) - 1
-  if a:open.lnum == a:close.lnum
-    let n = len(l:beg) - len(a:open.match)
+  let l:c1 = l:close.cnum
+  let l:c2 = l:close.cnum + len(l:close.match) - 1
+  if l:open.lnum == l:close.lnum
+    let n = len(l:beg) - len(l:open.match)
     let l:c1 += n
     let l:c2 += n
     let pos = vimtex#pos#get_cursor()
-    if pos[2] > a:open.cnum + len(a:open.match) - 1
+    if pos[2] > l:open.cnum + len(l:open.match) - 1
       let pos[2] += n
       call vimtex#pos#set_cursor(pos)
     endif
   endif
 
-  let l:line = getline(a:close.lnum)
-  call setline(a:close.lnum,
+  let l:line = getline(l:close.lnum)
+  call setline(l:close.lnum,
         \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
-
-  if a:new ==# ''
-    silent! call repeat#set("\<plug>(vimtex-env-delete)", v:count)
-  else
-    silent! call repeat#set(
-          \ "\<plug>(vimtex-env-change)" . a:new . '', v:count)
-  endif
 endfunction
 
 function! vimtex#env#change_prompt(type) " {{{1
@@ -97,10 +97,7 @@ function! vimtex#env#change_prompt(type) " {{{1
           \ 'complete' : 'customlist,vimtex#env#input_complete',
           \})
   endif
-
-  if empty(l:new_env) | return | endif
-
-  call vimtex#env#change(l:open, l:close, l:new_env)
+  return l:new_env
 endfunction
 
 function! vimtex#env#delete(type) " {{{1
@@ -116,12 +113,6 @@ function! vimtex#env#delete(type) " {{{1
   if getline(l:open.lnum) =~# '^\s*$'
     execute l:open.lnum . 'd _'
   endif
-
-  if a:type ==# 'env_tex'
-    silent! call repeat#set("\<plug>(vimtex-env-delete)", v:count)
-  elseif a:type ==# 'env_math'
-    silent! call repeat#set("\<plug>(vimtex-env-delete-math)", v:count)
-  endif
 endfunction
 
 function! vimtex#env#toggle_star() " {{{1
@@ -130,8 +121,28 @@ function! vimtex#env#toggle_star() " {{{1
 
   call vimtex#env#change(l:open, l:close,
         \ l:open.starred ? l:open.name : l:open.name . '*')
+endfunction
 
-  silent! call repeat#set("\<plug>(vimtex-env-toggle-star)", v:count)
+" }}}1
+
+function! s:setup_operator(operator, type) abort " {{{1
+  let [s:operator, s:type] = [a:operator, a:type]
+  if s:operator is# 'change'
+    let l:new_env = vimtex#env#change_prompt(s:type)
+    if empty(l:new_env) | return | endif
+    let s:new_env = l:new_env
+  endif
+  let &opfunc = s:snr().'opfunc'
+endfunction
+
+" }}}1
+function! s:opfunc(_) abort " {{{1
+  call call('vimtex#env#' . s:operator, s:operator is# 'delete' ? [s:type] : [])
+endfunction
+
+" }}}1
+function! s:snr() abort " {{{1
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
 " }}}1
