@@ -4,8 +4,8 @@ Given tex (Delims: toggle in complicated math):
          & 1 \\
   \end{smallmatrix}\bigr)$
 
-Do (Toggle):
-  3jtsd
+Execute (Toggle):
+  execute 'normal 3jtsd'
 
 Expect tex (Verify):
   $(\begin{smallmatrix}
