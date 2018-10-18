@@ -222,7 +222,7 @@ endfunction
 " }}}1
 function! s:opfunc(_) abort " {{{1
   if s:operator ==# 'toggle_modifier'
-    call vimtex#delim#toggle_modifier[s:toggle_modifier_dir]
+    call vimtex#delim#toggle_modifier(s:toggle_modifier_dir)
   else
     execute 'call vimtex#delim#'
           \ . {'change': 'change(get(s:, "new_delim", ""))',
