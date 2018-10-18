@@ -200,7 +200,7 @@ endfunction
 " }}}1
 
 function! s:setup_operator(operator, ...) abort " {{{1
-  let &opfunc = s:snr().'opfunc'
+  let &opfunc = s:snr() . 'opfunc'
   let s:operator = a:operator
   if s:operator is# 'toggle_modifier'
     let s:toggle_modifier_dir = a:0 ? a:1 : {}
@@ -222,13 +222,13 @@ endfunction
 " }}}1
 function! s:opfunc(_) abort " {{{1
   if s:operator is# 'toggle_modifier'
-    call call('vimtex#delim#toggle_modifier', [s:toggle_modifier_dir])
+    call vimtex#delim#toggle_modifier[s:toggle_modifier_dir]
   else
-  execute 'call vimtex#delim#'
-        \ .{'change': 'change(get(s:, "new_delim", ""))',
-        \   'delete': 'delete()',
-        \   'toggle_modifier': 'toggle_modifier()',
-        \ }[s:operator]
+    execute 'call vimtex#delim#'
+          \ . {'change': 'change(get(s:, "new_delim", ""))',
+          \   'delete': 'delete()',
+          \   'toggle_modifier': 'toggle_modifier()',
+          \ }[s:operator]
   endif
 endfunction
 

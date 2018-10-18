@@ -132,7 +132,7 @@ function! s:setup_operator(operator, type) abort " {{{1
     if empty(l:new_env) | return | endif
     let s:new_env = l:new_env
   endif
-  let &opfunc = s:snr().'opfunc'
+  let &opfunc = s:snr() . 'opfunc'
 endfunction
 
 " }}}1
