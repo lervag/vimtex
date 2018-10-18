@@ -11,8 +11,8 @@ Expect tex (Cmd: verify):
   foobar
   foo
 
-Do (Cmd: dsc):
-  dsc
+Execute (Cmd: dsc):
+  execute "normal dsc"
 
 Expect tex (Cmd: verify):
   foo
