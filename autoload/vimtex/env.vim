@@ -127,7 +127,7 @@ endfunction
 
 function! s:setup_operator(operator, type) abort " {{{1
   let [s:operator, s:type] = [a:operator, a:type]
-  if s:operator is# 'change'
+  if s:operator ==# 'change'
     let l:new_env = vimtex#env#change_prompt(s:type)
     if empty(l:new_env) | return | endif
     let s:new_env = l:new_env
@@ -137,7 +137,7 @@ endfunction
 
 " }}}1
 function! s:opfunc(_) abort " {{{1
-  call call('vimtex#env#' . s:operator, s:operator is# 'delete' ? [s:type] : [])
+  call call('vimtex#env#' . s:operator, s:operator ==# 'delete' ? [s:type] : [])
 endfunction
 
 " }}}1

@@ -202,9 +202,9 @@ endfunction
 function! s:setup_operator(operator, ...) abort " {{{1
   let &opfunc = s:snr() . 'opfunc'
   let s:operator = a:operator
-  if s:operator is# 'toggle_modifier'
+  if s:operator ==# 'toggle_modifier'
     let s:toggle_modifier_dir = a:0 ? a:1 : {}
-  elseif s:operator is# 'change'
+  elseif s:operator ==# 'change'
     let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
     if empty(l:open) | return | endif
     let l:name = get(l:open, 'name', l:open.is_open
@@ -221,7 +221,7 @@ endfunction
 
 " }}}1
 function! s:opfunc(_) abort " {{{1
-  if s:operator is# 'toggle_modifier'
+  if s:operator ==# 'toggle_modifier'
     call vimtex#delim#toggle_modifier[s:toggle_modifier_dir]
   else
     execute 'call vimtex#delim#'
