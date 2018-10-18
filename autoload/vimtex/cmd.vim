@@ -228,7 +228,7 @@ endfunction
 " }}}1
 
 function! s:setup_operator(operator) abort " {{{1
-  let &opfunc = s:snr().'opfunc'
+  let &opfunc = s:snr() . 'opfunc'
   let s:operator = a:operator
   if s:operator isnot# 'change' && s:operator isnot# 'create_ask' | return | endif
   if s:operator is# 'change' && empty(vimtex#cmd#get_current()) | return | endif
@@ -242,7 +242,7 @@ endfunction
 
 " }}}1
 function! s:opfunc(_) abort " {{{1
-  execute 'call vimtex#cmd#'.{
+  execute 'call vimtex#cmd#' . {
         \   'change': 'change(get(s:, "cmd_name_change", ""))',
         \   'create_ask': 'create_ask(0)',
         \   'delete': 'delete()',
