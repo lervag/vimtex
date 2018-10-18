@@ -230,12 +230,12 @@ endfunction
 function! s:setup_operator(operator) abort " {{{1
   let &opfunc = s:snr() . 'opfunc'
   let s:operator = a:operator
-  if s:operator isnot# 'change' && s:operator isnot# 'create_ask' | return | endif
-  if s:operator is# 'change' && empty(vimtex#cmd#get_current()) | return | endif
+  if s:operator !=# 'change' && s:operator !=# 'create_ask' | return | endif
+  if s:operator ==# 'change' && empty(vimtex#cmd#get_current()) | return | endif
   let s:cmd_name_{a:operator} = vimtex#echo#input({
         \ 'info' : ['Change command: ',
         \   ['VimtexWarning',
-        \     a:operator is# 'change' ? vimtex#cmd#get_current().name : '(empty to cancel)']],
+        \     a:operator ==# 'change' ? vimtex#cmd#get_current().name : '(empty to cancel)']],
         \})
   let s:cmd_name_{a:operator} = substitute(s:cmd_name_{a:operator}, '^\\', '', '')
 endfunction
