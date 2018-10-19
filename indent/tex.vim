@@ -128,11 +128,11 @@ function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
   while l:lnum >= 1
     let l:line = getline(l:lnum)
 
-    if l:line =~# '^\s*\\\%(end\|\]\)'
+    if l:line =~# '\v^\s*\\%(end|])'
       let l:depth += 1
     endif
 
-    if l:line =~# '\\\%(begin\S*\|\[\)$'
+    if l:line =~# '\v^\s*\\%(begin|[)'
       let l:depth -= 1
       if l:depth == l:init_depth - 1
         let self.init_lnum = l:lnum
