@@ -6,11 +6,11 @@
 
 function! vimtex#delim#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
-        \ :<c-u>call <sid>setup_operator('toggle_modifier')
+        \ :<c-u>call <sid>operator_setup('toggle_modifier_next')
         \ <bar> normal! <c-r>=v:count ? v:count : ''<cr>g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier-reverse)
-        \ :<c-u>call <sid>setup_operator('toggle_modifier', {'dir': -1})
+        \ :<c-u>call <sid>operator_setup('toggle_modifier_prev')
         \ <bar> normal! <c-r>=v:count ? v:count : ''<cr>g@l<cr>
 
   xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
@@ -20,10 +20,10 @@ function! vimtex#delim#init_buffer() " {{{1
         \ :<c-u>call vimtex#delim#toggle_modifier_visual({'dir': -1})<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-change-math)
-        \ :<c-u>call <sid>setup_operator('change')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('change')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-delete)
-        \ :<c-u>call <sid>setup_operator('delete')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('delete')<bar>normal! g@l<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
         \ <c-r>=vimtex#delim#close()<cr>
@@ -195,46 +195,6 @@ function! vimtex#delim#toggle_modifier_visual(...) " {{{1
   if l:args.reselect
     normal! gv
   endif
-endfunction
-
-" }}}1
-
-function! s:setup_operator(operator, ...) abort " {{{1
-  let &opfunc = s:snr() . 'opfunc'
-  let s:operator = a:operator
-  if s:operator ==# 'toggle_modifier'
-    let s:toggle_modifier_dir = a:0 ? a:1 : {}
-  elseif s:operator ==# 'change'
-    let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
-    if empty(l:open) | return | endif
-    let l:name = get(l:open, 'name', l:open.is_open
-          \ ? l:open.match . ' ... ' . l:open.corr
-          \ : l:open.match . ' ... ' . l:open.corr)
-
-    let s:new_delim = vimtex#echo#input({
-          \ 'info' :
-          \   ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
-          \ 'complete' : 'customlist,vimtex#delim#change_input_complete',
-          \})
-  endif
-endfunction
-
-" }}}1
-function! s:opfunc(_) abort " {{{1
-  if s:operator ==# 'toggle_modifier'
-    call vimtex#delim#toggle_modifier(s:toggle_modifier_dir)
-  else
-    execute 'call vimtex#delim#'
-          \ . {'change': 'change(get(s:, "new_delim", ""))',
-          \   'delete': 'delete()',
-          \   'toggle_modifier': 'toggle_modifier()',
-          \ }[s:operator]
-  endif
-endfunction
-
-" }}}1
-function! s:snr() " {{{1
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
 " }}}1
@@ -421,6 +381,48 @@ function! vimtex#delim#get_surrounding(type) " {{{1
 endfunction
 
 " }}}1
+
+function! s:operator_setup(operator) abort " {{{1
+  let &opfunc = s:snr() . 'operator_function'
+
+  let s:operator = a:operator
+
+  " Ask for user input if necessary/relevant
+  if s:operator ==# 'change'
+    let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
+    if empty(l:open) | return | endif
+
+    let l:name = get(l:open, 'name', l:open.is_open
+          \ ? l:open.match . ' ... ' . l:open.corr
+          \ : l:open.match . ' ... ' . l:open.corr)
+
+    let s:operator_delim = vimtex#echo#input({
+          \ 'info' :
+          \   ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
+          \ 'complete' : 'customlist,vimtex#delim#change_input_complete',
+          \})
+  endif
+endfunction
+
+" }}}1
+function! s:operator_function(_) abort " {{{1
+  let l:delim = get(s:, 'operator_delim', '')
+
+  execute 'call vimtex#delim#' . {
+        \ 'change': 'change(l:delim)',
+        \ 'delete': 'delete()',
+        \ 'toggle_modifier_next': 'toggle_modifier()',
+        \ 'toggle_modifier_prev': "toggle_modifier({'dir': -1})",
+        \}[s:operator]
+endfunction
+
+" }}}1
+function! s:snr() " {{{1
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
+" }}}1
+"
 
 function! s:get_delim(opts) " {{{1
   "
