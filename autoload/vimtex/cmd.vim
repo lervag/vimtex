@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#cmd#init_buffer() " {{{1
+function! vimtex#cmd#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-delete)
         \ :<c-u>call <sid>setup_operator('delete')<bar>normal! g@l<cr>
 
@@ -26,7 +26,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#cmd#change(new_name) " {{{1
+function! vimtex#cmd#change(new_name) abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
@@ -58,7 +58,7 @@ function! vimtex#cmd#change(new_name) " {{{1
   cal vimtex#pos#set_cursor(l:save_pos)
 endfunction
 
-function! vimtex#cmd#delete(...) " {{{1
+function! vimtex#cmd#delete(...) abort " {{{1
   if a:0 > 0
     let l:cmd = call('vimtex#cmd#get_at', a:000)
   else
@@ -103,7 +103,7 @@ function! vimtex#cmd#delete(...) " {{{1
   cal vimtex#pos#set_cursor(l:save_pos)
 endfunction
 
-function! vimtex#cmd#delete_all(...) " {{{1
+function! vimtex#cmd#delete_all(...) abort " {{{1
   if a:0 > 0
     let l:cmd = call('vimtex#cmd#get_at', a:000)
   else
@@ -117,7 +117,7 @@ function! vimtex#cmd#delete_all(...) " {{{1
   normal! d
 endfunction
 
-function! vimtex#cmd#create_insert() " {{{1
+function! vimtex#cmd#create_insert() abort " {{{1
   if mode() !=# 'i' | return | endif
 
   let l:re = '\v%(^|\A)\zs\a+\ze%(\A|$)'
@@ -144,7 +144,7 @@ function! vimtex#cmd#create_insert() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#cmd#create_ask(visualmode) " {{{1
+function! vimtex#cmd#create_ask(visualmode) abort " {{{1
   if a:visualmode
     let l:cmd = vimtex#echo#input({
           \ 'info' :
@@ -193,7 +193,7 @@ function! vimtex#cmd#create_ask(visualmode) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#cmd#toggle_star() " {{{1
+function! vimtex#cmd#toggle_star() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
 
@@ -251,23 +251,23 @@ function! s:opfunc(_) abort " {{{1
 endfunction
 
 " }}}1
-function! s:snr() " {{{1
+function! s:snr() abort " {{{1
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
 " }}}1
 
-function! vimtex#cmd#get_next() " {{{1
+function! vimtex#cmd#get_next() abort " {{{1
   return s:get_cmd('next')
 endfunction
 
 " }}}1
-function! vimtex#cmd#get_prev() " {{{1
+function! vimtex#cmd#get_prev() abort " {{{1
   return s:get_cmd('prev')
 endfunction
 
 " }}}1
-function! vimtex#cmd#get_current() " {{{1
+function! vimtex#cmd#get_current() abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
@@ -292,7 +292,7 @@ function! vimtex#cmd#get_current() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#cmd#get_at(...) " {{{1
+function! vimtex#cmd#get_at(...) abort " {{{1
   let l:pos_saved = vimtex#pos#get_cursor()
   call call('vimtex#pos#set_cursor', a:000)
   let l:cmd = vimtex#cmd#get_current()
@@ -302,7 +302,7 @@ endfunction
 
 " }}}1
 
-function! s:get_cmd(direction) " {{{1
+function! s:get_cmd(direction) abort " {{{1
   let [lnum, cnum, match] = s:get_cmd_name(a:direction ==# 'next')
   if lnum == 0 | return {} | endif
 
@@ -352,14 +352,14 @@ function! s:get_cmd(direction) " {{{1
 endfunction
 
 " }}}1
-function! s:get_cmd_name(next) " {{{1
+function! s:get_cmd_name(next) abort " {{{1
   let [l:lnum, l:cnum] = searchpos('\v\\\a+\*?', a:next ? 'nW' : 'cbnW')
   let l:match = matchstr(getline(l:lnum), '^\v\\\a*\*?', l:cnum-1)
   return [l:lnum, l:cnum, l:match]
 endfunction
 
 " }}}1
-function! s:get_cmd_part(part, start_pos) " {{{1
+function! s:get_cmd_part(part, start_pos) abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   call vimtex#pos#set_cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
@@ -391,7 +391,7 @@ function! s:get_cmd_part(part, start_pos) " {{{1
 endfunction
 
 " }}}1
-function! s:get_cmd_overlay(lnum, cnum) " {{{1
+function! s:get_cmd_overlay(lnum, cnum) abort " {{{1
   let l:match = matchstr(getline(a:lnum), '^\s*[^>]*>', a:cnum)
 
   return empty(l:match)
@@ -405,7 +405,7 @@ endfunction
 
 " }}}1
 
-function! s:text_between(p1, p2, ...) " {{{1
+function! s:text_between(p1, p2, ...) abort " {{{1
   let [l1, c1] = [a:p1.lnum, a:p1.cnum - (a:0 > 0)]
   let [l2, c2] = [a:p2.lnum, a:p2.cnum - (a:0 <= 0)]
 
