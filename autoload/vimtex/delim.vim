@@ -6,10 +6,12 @@
 
 function! vimtex#delim#init_buffer() " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
-        \ :<c-u>call vimtex#delim#toggle_modifier()<cr>
+        \ :<c-u>call <sid>setup_operator('toggle_modifier')
+        \ <bar> normal! <c-r>=v:count ? v:count : ''<cr>g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier-reverse)
-        \ :<c-u>call vimtex#delim#toggle_modifier({'dir': -1})<cr>
+        \ :<c-u>call <sid>setup_operator('toggle_modifier', {'dir': -1})
+        \ <bar> normal! <c-r>=v:count ? v:count : ''<cr>g@l<cr>
 
   xnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
         \ :<c-u>call vimtex#delim#toggle_modifier_visual()<cr>
@@ -18,10 +20,10 @@ function! vimtex#delim#init_buffer() " {{{1
         \ :<c-u>call vimtex#delim#toggle_modifier_visual({'dir': -1})<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-change-math)
-        \ :call vimtex#delim#change()<cr>
+        \ :<c-u>call <sid>setup_operator('change')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-delim-delete)
-        \ :call vimtex#delim#delete()<cr>
+        \ :<c-u>call <sid>setup_operator('delete')<bar>normal! g@l<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
         \ <c-r>=vimtex#delim#close()<cr>
@@ -118,11 +120,6 @@ function! vimtex#delim#toggle_modifier(...) " {{{1
         \ . strpart(line, l:cnum + len(l:close.mod) - 1)
   call setline(l:close.lnum, line)
 
-  if l:args.repeat
-    silent! call repeat#set("\<plug>(vimtex-delim-toggle-modifier"
-          \ . (l:direction < 0 ? '-reverse' : '') .')', l:args.count)
-  endif
-
   return newmods
 endfunction
 
@@ -202,6 +199,46 @@ endfunction
 
 " }}}1
 
+function! s:setup_operator(operator, ...) abort " {{{1
+  let &opfunc = s:snr() . 'opfunc'
+  let s:operator = a:operator
+  if s:operator ==# 'toggle_modifier'
+    let s:toggle_modifier_dir = a:0 ? a:1 : {}
+  elseif s:operator ==# 'change'
+    let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
+    if empty(l:open) | return | endif
+    let l:name = get(l:open, 'name', l:open.is_open
+          \ ? l:open.match . ' ... ' . l:open.corr
+          \ : l:open.match . ' ... ' . l:open.corr)
+
+    let s:new_delim = vimtex#echo#input({
+          \ 'info' :
+          \   ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
+          \ 'complete' : 'customlist,vimtex#delim#change_input_complete',
+          \})
+  endif
+endfunction
+
+" }}}1
+function! s:opfunc(_) abort " {{{1
+  if s:operator ==# 'toggle_modifier'
+    call vimtex#delim#toggle_modifier(s:toggle_modifier_dir)
+  else
+    execute 'call vimtex#delim#'
+          \ . {'change': 'change(get(s:, "new_delim", ""))',
+          \   'delete': 'delete()',
+          \   'toggle_modifier': 'toggle_modifier()',
+          \ }[s:operator]
+  endif
+endfunction
+
+" }}}1
+function! s:snr() " {{{1
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
+" }}}1
+
 function! vimtex#delim#change(...) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
   if empty(l:open) | return | endif
@@ -267,13 +304,6 @@ function! vimtex#delim#change_with_args(open, close, new) " {{{1
   let l:line = getline(a:close.lnum)
   call setline(a:close.lnum,
         \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
-
-  if a:new ==# ''
-    silent! call repeat#set("\<plug>(vimtex-delim-delete)", v:count)
-  else
-    silent! call repeat#set(
-          \ "\<plug>(vimtex-delim-change-math)" . a:new . '', v:count)
-  endif
 endfunction
 
 " }}}1

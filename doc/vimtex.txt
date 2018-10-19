@@ -322,17 +322,16 @@ Manipulate surrounding commands/delimiters/environments~
   `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
   should work well together with, and as an extension of, `surround.vim`.
   Consider also the customization described under |vimtex-faq-surround|.
-  The mappings may be repeated with the dot mapping |.| if one has
-  `vim-repeat` [1].
+  The mappings may be repeated with the dot command |.|.
 
-  A different possibility is to use `vim-sandwich` [2] (|sandwich.txt|) by
+  A different possibility is to use `vim-sandwich` [1] (|sandwich.txt|) by
   Machakann, which may be considered a generalisation of `surround.vim` in
   that it can handle much more complex sets of delimiters.  `vim-sandwich`
   is relatively easy to expand with custom surroundings and has built in
   support for LaTeX-specific surroundings such as quotations, ```text''`,
   and math delimiters, `$\left(a+b\right)$`.  For a list of supported
-  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` also supports
-  `vim-repeat` in addition to `visualrepeat.vim` [3].
+  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` supports
+  `vim-repeat` [2] in addition to `visualrepeat.vim` [3].
 
   Note: The default mappings of `vim-sandwich` differ from those of
     `surround.vim`, in that the use `s` as the prefix.  E.g., to add
@@ -347,8 +346,8 @@ Manipulate surrounding commands/delimiters/environments~
     |sandwich.txt|, |operator-sandwich.txt|, and |textobj-sandwich.txt|.
 
   [0]: https://github.com/tpope/vim-surround
-  [1]: https://github.com/tpope/vim-repeat
-  [2]: https://github.com/machakann/vim-sandwich
+  [1]: https://github.com/machakann/vim-sandwich
+  [2]: https://github.com/tpope/vim-repeat
   [3]: http://www.vim.org/scripts/script.php?script_id=3848
 
 Enhanced matching and higlighting of delimiters~
