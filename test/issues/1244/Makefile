@@ -1,7 +1,5 @@
 PHONY: test
 
-test: indented.tex
-	diff indented.tex correct.tex
-
-indented.tex: minivimrc
+test:
 	nvim -u minivimrc
+	diff indented.tex correct.tex
