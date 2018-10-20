@@ -100,7 +100,11 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   let self.prev_ind = a:plnum > 0 ? indent(a:plnum) : 0
   if !get(g:, 'vimtex_indent_on_ampersands', 1) | return self.prev_ind | endif
 
-  call self.parse_context(a:lnum, a:cline)
+  if a:cline =~# self.re_align
+        \ || a:cline =~# self.re_amp
+        \ || a:cline =~# '^\s*\\\%(end\|\]\)'
+    call self.parse_context(a:lnum, a:cline)
+  endif
 
   if a:cline =~# self.re_align
     let self.finished = 1
