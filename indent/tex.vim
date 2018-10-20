@@ -102,7 +102,7 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
 
   if a:cline =~# self.re_align
         \ || a:cline =~# self.re_amp
-        \ || a:cline =~# '^\s*\\\%(end\|\]\)'
+        \ || a:cline =~# '^\v\s*\\%(end|])'
     call self.parse_context(a:lnum, a:cline)
   endif
 
@@ -114,7 +114,8 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
     return self.amp_ind - l:ind_diff
   endif
 
-  if a:cline =~# '^\s*\\\%(end\|\]\)' || a:cline =~# self.re_amp
+  if a:cline =~# '^\v\s*\\%(end|])'
+        \ || (a:cline =~# self.re_amp && self.amp_ind >= 0)
     let self.prev_lnum = self.init_lnum
     let self.prev_line = self.init_line
     return self.init_ind
@@ -125,7 +126,7 @@ endfunction
 
 " }}}1
 function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
-  let l:depth = 1 + (a:line =~# '^\s*\\\%(end\|\]\)')
+  let l:depth = 1
   let l:init_depth = l:depth
   let l:lnum = prevnonblank(a:lnum - 1)
 
@@ -146,9 +147,17 @@ function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
       endif
     endif
 
-    if self.amp_ind < 0 && l:depth == 1 && l:line =~# self.re_amp
-      let self.amp_ind = strdisplaywidth(
-            \ strpart(l:line, 0, match(l:line, self.re_amp)))
+    if l:depth == 1 && l:line =~# self.re_amp
+      if self.amp_ind < 0
+        let self.amp_ind = strdisplaywidth(
+              \ strpart(l:line, 0, match(l:line, self.re_amp)))
+      endif
+      if l:line !~# self.re_align
+        let self.init_lnum = l:lnum
+        let self.init_line = l:line
+        let self.init_ind = indent(l:lnum)
+        break
+      endif
     endif
 
     let l:lnum = prevnonblank(l:lnum - 1)
