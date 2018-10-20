@@ -1,0 +1,20 @@
+set nocompatible
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+set shiftwidth=2
+set expandtab
+
+let g:vimtex_indent_on_ampersands = 1
+
+silent edit thesis.tex
+" profile start prof.log
+" profile func *
+silent normal! gg=G
+" profile pause
+
+quitall!
