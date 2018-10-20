@@ -1,0 +1,80 @@
+\documentclass{minimal}
+\begin{document}
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+% Original 1
+\begin{equation*} 
+  \left \{ 
+    \begin{aligned}
+      -\Delta \theta &= u \quad \text{in } \Omega, \\
+      \theta &=0 \quad \text{on } \Gamma.
+    \end{aligned}
+  \right.
+\end{equation*}
+
+% Original 2
+\begin{equation} \label{eq:state2}
+  \left\{
+    \begin{aligned}
+      -\div [a_M(z)\nabla y + b(\nabla y)]  &= u \quad \text{in } \Omega, \\
+      y &=0 \quad \text{on } \Gamma.
+    \end{aligned}
+  \right.
+\end{equation}
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+\begin{center}
+  \begin{circuitikz}[american]
+    \draw (0,0) node[npn]{};
+  \end{circuitikz}
+\end{center}
+\begin{center}
+  \begin{circuitikz}[american, baseline=(VCC)]
+    \draw (0,0) node[npn]{};
+  \end{circuitikz}
+\end{center}
+
+\begin{equation}
+  \left\{
+    \begin{aligned}
+      \min_{u,y} &J(u,y) \\
+      \text{s.t.} \quad
+                 &\begin{center}
+                   -\Delta y = u \text{in } \Omega\\
+                   y = 0 \text{on } \partial\Omega.
+                 \end{center} \\
+                 &\begin{aligned}[t]
+                   -\Delta y &= u && \text{in } \Omega\\
+                   y &= 0 && \text{on } \partial\Omega.
+                 \end{aligned}
+    \end{aligned}
+  \right.
+\end{equation}
+
+\begin{equation}
+  f(x) =
+  \begin{cases}
+    0 & x>0\\
+    1 & x\le 0\\
+  \end{cases}
+\end{equation}
+
+\begin{tabular}{ccc}
+  $a$ & $b$ & $c$ \\
+  $d$ & $e$ & $f$
+\end{tabular}
+
+\begin{align}
+  a &= b && c &=d \\
+  e &= f && g &=h
+\end{align}
+
+\end{document}
