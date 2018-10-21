@@ -114,8 +114,8 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
     return self.amp_ind - l:ind_diff
   endif
 
-  if a:cline =~# '^\v\s*\\%(end|])'
-        \ || (a:cline =~# self.re_amp && self.amp_ind >= 0)
+  if self.amp_ind >= 0
+        \ && (a:cline =~# '^\v\s*\\%(end|])' || a:cline =~# self.re_amp)
     let self.prev_lnum = self.init_lnum
     let self.prev_line = self.init_line
     return self.init_ind
