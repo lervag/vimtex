@@ -11,7 +11,11 @@ set expandtab
 
 silent edit minimal.tex
 
-silent normal! gg=G
-silent write! indented.tex
+silent normal! =G
 
+for s:line in getline(1, '$')
+  echo s:line
+endfor
+
+echo ''
 quitall!
