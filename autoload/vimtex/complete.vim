@@ -55,6 +55,17 @@ function! vimtex#complete#omnifunc(findstart, base) " {{{1
 endfunction
 
 " }}}1
+function! vimtex#complete#complete(type, input, context) " {{{1
+  try
+    let s:completer = s:completer_{a:type}
+    let s:completer.context = a:context
+    return s:completer.complete(a:input)
+  catch /E121/
+    return []
+  endtry
+endfunction
+
+" }}}1
 
 "
 " Completers
@@ -694,7 +705,7 @@ function! s:completer_env.complete(regex) dict " {{{2
         call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
       endif
     endwhile
-  
+
     call vimtex#pos#set_cursor(l:save_pos)
 
     if !empty(l:matching_env) && l:matching_env =~# a:regex
