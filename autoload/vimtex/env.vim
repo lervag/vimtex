@@ -106,17 +106,10 @@ endfunction
 
 " }}}1
 function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
-  try
-    let l:cands = vimtex#util#uniq(sort(
-          \ map(filter(vimtex#parser#tex(b:vimtex.tex, { 'detailed' : 0 }),
-          \          'v:val =~# ''\\begin'''),
-          \   'matchstr(v:val, ''\\begin{\zs\k*\ze\*\?}'')')))
+  let l:cands = map(vimtex#complete#complete('env', '', '\begin'), 'v:val.word')
 
-    " Never include document and remove current env (place it first)
-    call filter(l:cands, 'index([''document'', s:env_name], v:val) < 0')
-  catch
-    let l:cands = []
-  endtry
+  " Never include document and remove current env (place it first)
+  call filter(l:cands, 'index([''document'', s:env_name], v:val) < 0')
 
   " Always include current env and displaymath
   let l:cands = [s:env_name] + l:cands + ['\[']
