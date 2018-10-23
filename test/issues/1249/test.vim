@@ -9,12 +9,15 @@ nnoremap q :qall!<cr>
 let g:tex_flavor = 'latex'
 
 silent edit input.tex
+for s:line in getline(4, '$') | echo s:line . '<' | endfor
 
-normal! 4gg
+echo "\n"
+normal 15ggds$
+normal 11ggds$
+normal 8ggf$ds$
+normal 5ggds$
 
-echo getline(4)
-normal ds$
-echo getline(4)
+for s:line in getline(4, '$') | echo s:line . '<' | endfor
 
 echo ''
 quitall!
