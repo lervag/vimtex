@@ -77,12 +77,18 @@ function! vimtex#env#delete(type) " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
-  call vimtex#cmd#delete_all(l:close)
+  if a:type ==# 'env_tex'
+    call vimtex#cmd#delete_all(l:close)
+    call vimtex#cmd#delete_all(l:open)
+  else
+    call l:close.remove()
+    call l:open.remove()
+  endif
+
   if getline(l:close.lnum) =~# '^\s*$'
     execute l:close.lnum . 'd _'
   endif
 
-  call vimtex#cmd#delete_all(l:open)
   if getline(l:open.lnum) =~# '^\s*$'
     execute l:open.lnum . 'd _'
   endif

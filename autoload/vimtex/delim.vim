@@ -459,6 +459,7 @@ function! s:get_delim(opts) " {{{1
   "       open  : regexp for the opening part
   "       close : regexp for the closing part
   "     }
+  "     remove  : method to remove the delimiter
   "   }
   "
   let l:save_pos = vimtex#pos#get_cursor()
@@ -495,6 +496,7 @@ function! s:get_delim(opts) " {{{1
         \ 'lnum' : l:lnum,
         \ 'cnum' : l:cnum,
         \ 'match' : l:match,
+        \ 'remove' : function('s:delim_remove'),
         \}
 
   for l:type in s:types
@@ -508,6 +510,28 @@ function! s:get_delim(opts) " {{{1
   endfor
 
   return empty(l:result.type) ? {} : l:result
+endfunction
+
+" }}}1
+
+function! s:delim_remove() dict abort " {{{1
+  let l:line = getline(self.lnum)
+  let l:l1 = strpart(l:line, 0, self.cnum-1)
+  let l:l2 = strpart(l:line, self.cnum + strlen(self.match) - 1)
+
+  if self.side ==# 'close'
+    let l:l1 = substitute(l:l1, '\s\+$', '', '')
+    if empty(l:l1)
+      let l:l2 = substitute(l:l2, '^\s\+', '', '')
+    endif
+  else
+    let l:l2 = substitute(l:l2, '^\s\+', '', '')
+    if empty(l:l2)
+      let l:l1 = substitute(l:l1, '\s\+$', '', '')
+    endif
+  endif
+
+  call setline(self.lnum, l:l1 . l:l2)
 endfunction
 
 " }}}1
