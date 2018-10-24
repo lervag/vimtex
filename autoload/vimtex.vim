@@ -371,7 +371,6 @@ function! s:init_buffer() " {{{1
 
   " Define autocommands
   augroup vimtex_buffers
-    autocmd!
     autocmd BufFilePre  <buffer> call s:filename_changed_pre()
     autocmd BufFilePost <buffer> call s:filename_changed_post()
     autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
