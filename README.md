@@ -38,9 +38,7 @@ Or use some other plugin manager:
 The following is a simple guide for how to use vimtex. It only displays the
 most basic features. Users are _strongly_ encouraged to read or at least skim
 through the documentation to learn about the different features and
-possibilities provided by vimtex (see
-[here](https://github.com/lervag/vimtex/blob/master/doc/vimtex.txt) or `:h
-vimtex`).
+possibilities provided by vimtex (see [`:h vimtex`](doc/vimtex.txt)).
 
 Note: Vimtex supports neovim; see the [related wiki
 section](https://github.com/lervag/vimtex/wiki/introduction#neovim) or `:h
