@@ -215,6 +215,7 @@ function! s:compiler.get_engine() abort dict " {{{1
         \  '_'                : '-pdf',
         \  'pdfdvi'           : '-pdfdvi',
         \  'pdflatex'         : '-pdf',
+        \  'luatex'           : '-lualatex',
         \  'lualatex'         : '-lualatex',
         \  'xelatex'          : '-xelatex',
         \  'context (pdftex)' : '-pdf -pdflatex=texexec',
