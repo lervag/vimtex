@@ -2791,6 +2791,12 @@ is a highly customizable and flexible completion manager.
 
 To configure for `vimtex`, one may use: >
 
+  " This is new style
+  call deoplete#custom#var('omni', 'input_patterns', {
+          \ 'tex': g:vimtex#re#deoplete
+          \})
+
+  " This is old style (deprecated)
   if !exists('g:deoplete#omni#input_patterns')
       let g:deoplete#omni#input_patterns = {}
   endif
