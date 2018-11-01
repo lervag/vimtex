@@ -956,6 +956,18 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_complete_smart_case*
+  If enabled, then vimtex will filter case sensitive if there is a capital
+  letter in the completion input. This is only relevant if
+  |g:vimtex_complete_ignore_case| is also enabled.
+
+  Default value: Same as your 'smartcase' value
+
+*g:vimtex_complete_ignore_case*
+  If enabled, then vimtex will filter case insensitive.
+
+  Default value: Same as your 'ignorecase' value
+
 *g:vimtex_complete_close_braces*
   This option controls whether to append a closing brace after a label or
   a citation has been completed.

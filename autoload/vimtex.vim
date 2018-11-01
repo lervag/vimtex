@@ -35,6 +35,8 @@ function! vimtex#init_options() " {{{1
   call s:init_option('vimtex_complete_enabled', 1)
   call s:init_option('vimtex_complete_close_braces', 0)
   call s:init_option('vimtex_complete_recursive_bib', 0)
+  call s:init_option('vimtex_complete_ignore_case', &ignorecase)
+  call s:init_option('vimtex_complete_smart_case', &smartcase)
 
   call s:init_option('vimtex_doc_enabled', 1)
   call s:init_option('vimtex_doc_handlers', [])

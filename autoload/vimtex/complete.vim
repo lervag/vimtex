@@ -113,11 +113,11 @@ function! s:completer_bib.init() dict " {{{2
   endif
 endfunction
 
-function! s:completer_bib.complete(regexp) dict " {{{2
+function! s:completer_bib.complete(regex) dict " {{{2
   let self.candidates = []
 
   let self.type_length = 4
-  for m in self.search(a:regexp)
+  for m in self.search(a:regex)
     let type = m['type']   ==# '' ? '[-]' : '[' . m['type']   . '] '
     let auth = m['author'] ==# '' ? ''    :       m['author'][:20] . ' '
     let year = m['year']   ==# '' ? ''    : '(' . m['year']   . ')'
@@ -137,7 +137,7 @@ function! s:completer_bib.complete(regexp) dict " {{{2
   return self.candidates
 endfunction
 
-function! s:completer_bib.search(regexp) dict " {{{2
+function! s:completer_bib.search(regex) dict " {{{2
   let res = []
 
   " The bibtex completion seems to require that we are in the project root
@@ -172,7 +172,7 @@ function! s:completer_bib.search(regexp) dict " {{{2
     let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
-    for line in filter(lines, 'v:val =~? a:regexp')
+    for line in s:filter_with_options(lines, a:regex)
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
@@ -199,9 +199,9 @@ function! s:completer_bib.search(regexp) dict " {{{2
   " Find data from 'thebibliography' environments
   let lines = readfile(b:vimtex.tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
-    for line in filter(filter(lines,
-          \   'v:val =~# ''\C\\bibitem'''),
-          \ 'v:val =~ a:regexp')
+    for line in s:filter_with_options(
+          \ filter(lines, 'v:val =~# ''\C\\bibitem'''),
+          \ a:regex)
       let matches = matchlist(line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
       if len(matches) > 1
         call add(res, {
@@ -395,7 +395,7 @@ function! s:completer_cmd.complete(regex) dict " {{{2
   let l:candidates = self.gather_candidates()
   let l:mode = vimtex#util#in_mathzone() ? 'm' : 'n'
 
-  call filter(l:candidates, 'v:val.word =~? ''^'' . a:regex')
+  call s:filter_with_options(l:candidates, a:regex)
   call filter(l:candidates, 'l:mode =~# v:val.mode')
 
   return l:candidates
@@ -486,9 +486,7 @@ let s:completer_img = {
 function! s:completer_img.complete(regex) dict " {{{2
   call self.gather_candidates()
 
-  call filter(self.candidates, 'v:val.word =~# a:regex')
-
-  return self.candidates
+  return s:filter_with_options(self.candidates, a:regex)
 endfunction
 
 function! s:completer_img.gather_candidates() dict " {{{2
@@ -527,7 +525,7 @@ function! s:completer_inc.complete(regex) dict " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.tex'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call filter(self.candidates, 'v:val =~# a:regex')
+  call s:filter_with_options(self.candidates, a:regex)
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''kind'' : '' [input/include]'',
@@ -546,7 +544,7 @@ function! s:completer_pdf.complete(regex) dict " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.pdf'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call filter(self.candidates, 'v:val =~# a:regex')
+  call s:filter_with_options(self.candidates, a:regex)
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''kind'' : '' [includepdf]'',
@@ -566,7 +564,7 @@ function! s:completer_sta.complete(regex) dict " {{{2
   let self.candidates = split(self.candidates, '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call filter(self.candidates, 'v:val =~# a:regex')
+  call s:filter_with_options(self.candidates, a:regex)
   let self.candidates = map(self.candidates, '{
         \ ''word'' : v:val,
         \ ''kind'' : '' [includestandalone]'',
@@ -592,7 +590,7 @@ let s:completer_gls = {
 function! s:completer_gls.complete(regex) dict " {{{2
   let l:candidates = self.parse_glossaries()
 
-  return filter(l:candidates, 'v:val.word =~? ''^'' . a:regex')
+  return s:filter_with_options(l:candidates, a:regex)
 endfunction
 
 function! s:completer_gls.parse_glossaries() dict " {{{2
@@ -629,8 +627,8 @@ let s:completer_pck = {
       \}
 
 function! s:completer_pck.complete(regex) dict " {{{2
-  return filter(copy(self.gather_candidates()),
-        \ 'v:val.word =~# a:regex')
+  call self.gather_candidates()
+  return s:filter_with_options(copy(self.candidates), a:regex)
 endfunction
 
 function! s:completer_pck.gather_candidates() dict " {{{2
@@ -640,8 +638,6 @@ function! s:completer_pck.gather_candidates() dict " {{{2
           \ ''kind'' : '' [package]'',
           \}')
   endif
-
-  return self.candidates
 endfunction
 
 " }}}1
@@ -716,7 +712,7 @@ function! s:completer_env.complete(regex) dict " {{{2
     endif
   endif
 
-  return filter(copy(self.gather_candidates()), 'v:val.word =~# a:regex')
+  return s:filter_with_options(copy(self.gather_candidates()), a:regex)
 endfunction
 
 " }}}2
@@ -775,6 +771,23 @@ endfunction
 "
 " Utility functions
 "
+function! s:filter_with_options(input, regex) abort " {{{1
+  if empty(a:input) | return a:input | endif
+
+  let l:expression = type(a:input[0]) == type({}) ? 'v:val.word' : 'v:val'
+
+  if g:vimtex_complete_ignore_case && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
+    let l:expression .= ' =~? '
+  else
+    let l:expression .= ' =~# '
+  endif
+
+  let l:expression .= '''^'' . a:regex'
+
+  return filter(a:input, l:expression)
+endfunction
+
+" }}}1
 function! s:get_texmf_candidates(filetype) " {{{1
   " First add the locally installed candidates
   let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, 'XX')
