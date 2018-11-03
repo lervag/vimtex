@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#kpsewhich#find(file) " {{{1
+function! vimtex#kpsewhich#find(file) abort " {{{1
   execute 'lcd' fnameescape(b:vimtex.root)
   let l:output = split(system('kpsewhich "' . a:file . '"'), '\n')
   lcd -
@@ -19,7 +19,7 @@ function! vimtex#kpsewhich#find(file) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#kpsewhich#run(args) " {{{1
+function! vimtex#kpsewhich#run(args) abort " {{{1
   execute 'lcd' fnameescape(b:vimtex.root)
   let l:output = split(system('kpsewhich ' . a:args), '\n')
   lcd -

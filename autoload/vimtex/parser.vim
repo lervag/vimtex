@@ -4,12 +4,12 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#parser#tex(file, ...) " {{{1
+function! vimtex#parser#tex(file, ...) abort " {{{1
   return vimtex#parser#general#parse(a:file, a:0 > 0 ? a:1 : {})
 endfunction
 
 " }}}1
-function! vimtex#parser#aux(file, ...) " {{{1
+function! vimtex#parser#aux(file, ...) abort " {{{1
   let l:options = extend(a:0 > 0 ? a:1 : {}, {
         \ 'detailed' : 0,
         \ 'type' : 'aux',
@@ -18,7 +18,7 @@ function! vimtex#parser#aux(file, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#parser#fls(file, ...) " {{{1
+function! vimtex#parser#fls(file, ...) abort " {{{1
   let l:options = extend(a:0 > 0 ? a:1 : {}, {
         \ 'detailed' : 0,
         \ 'type' : 'fls',
@@ -29,13 +29,13 @@ endfunction
 
 " }}}1
 
-function! vimtex#parser#toc(file) " {{{1
+function! vimtex#parser#toc(file) abort " {{{1
   return vimtex#parser#toc#parse(a:file)
 endfunction
 
 " }}}1
 
-function! vimtex#parser#get_externalfiles() " {{{1
+function! vimtex#parser#get_externalfiles() abort " {{{1
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
         \ 're_stop' : '\\begin{document}',
         \ 'detailed' : 0,
@@ -55,7 +55,7 @@ function! vimtex#parser#get_externalfiles() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#parser#selection_to_texfile(type, ...) range " {{{1
+function! vimtex#parser#selection_to_texfile(type, ...) range abort " {{{1
   "
   " Get selected lines. Method depends on type of selection, which may be
   " either of

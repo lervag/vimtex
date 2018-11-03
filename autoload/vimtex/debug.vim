@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#debug#stacktrace(...) " {{{1
+function! vimtex#debug#stacktrace(...) abort " {{{1
   "
   " This function builds on Luc Hermite's answer on Stack Exchange:
   " http://vi.stackexchange.com/a/6024/21

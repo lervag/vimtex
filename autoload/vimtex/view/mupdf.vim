@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#mupdf#new() " {{{1
+function! vimtex#view#mupdf#new() abort " {{{1
   " Check if the viewer is executable
   if !executable('mupdf')
     call vimtex#log#error(
@@ -24,7 +24,7 @@ let s:mupdf = {
       \ 'name': 'MuPDF',
       \}
 
-function! s:mupdf.start(outfile) dict " {{{1
+function! s:mupdf.start(outfile) dict abort " {{{1
   let l:cmd = 'mupdf ' .  g:vimtex_view_mupdf_options
         \ . ' ' . vimtex#util#shellescape(a:outfile)
   let self.process = vimtex#process#start(l:cmd)
@@ -38,7 +38,7 @@ function! s:mupdf.start(outfile) dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.forward_search(outfile) dict " {{{1
+function! s:mupdf.forward_search(outfile) dict abort " {{{1
   if !executable('xdotool') | return | endif
   if !executable('synctex') | return | endif
 
@@ -62,7 +62,7 @@ function! s:mupdf.forward_search(outfile) dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.reverse_search() dict " {{{1
+function! s:mupdf.reverse_search() dict abort " {{{1
   if !executable('xdotool') | return | endif
   if !executable('synctex') | return | endif
 
@@ -106,7 +106,7 @@ function! s:mupdf.reverse_search() dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.compiler_callback(status) dict " {{{1
+function! s:mupdf.compiler_callback(status) dict abort " {{{1
   if !a:status && g:vimtex_view_use_temp_files < 2
     return
   endif
@@ -147,7 +147,7 @@ function! s:mupdf.compiler_callback(status) dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.latexmk_append_argument() dict " {{{1
+function! s:mupdf.latexmk_append_argument() dict abort " {{{1
   if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
@@ -162,7 +162,7 @@ function! s:mupdf.latexmk_append_argument() dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.focus_viewer() dict " {{{1
+function! s:mupdf.focus_viewer() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_id > 0
@@ -172,7 +172,7 @@ function! s:mupdf.focus_viewer() dict " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.focus_vim() dict " {{{1
+function! s:mupdf.focus_vim() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
   silent call system('xdotool windowactivate ' . v:windowid . ' --sync')

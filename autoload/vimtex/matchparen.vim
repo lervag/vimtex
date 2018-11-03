@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#matchparen#init_buffer() " {{{1
+function! vimtex#matchparen#init_buffer() abort " {{{1
   if !g:vimtex_matchparen_enabled | return | endif
 
   call vimtex#matchparen#enable()
@@ -12,17 +12,17 @@ endfunction
 
 " }}}1
 
-function! vimtex#matchparen#enable() " {{{1
+function! vimtex#matchparen#enable() abort " {{{1
   call s:matchparen.enable()
 endfunction
 
 " }}}1
-function! vimtex#matchparen#disable() " {{{1
+function! vimtex#matchparen#disable() abort " {{{1
   call s:matchparen.disable()
 endfunction
 
 " }}}1
-function! vimtex#matchparen#popup_check(...) " {{{1
+function! vimtex#matchparen#popup_check(...) abort " {{{1
   if pumvisible()
     call s:matchparen.highlight()
   endif

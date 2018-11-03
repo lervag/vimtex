@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#paths#shorten_relative(path) " {{{1
+function! vimtex#paths#shorten_relative(path) abort " {{{1
   " Input: An absolute path
   " Output: Relative path with respect to the vimtex root, path relative to
   "         vimtex root (unless absolute path is shorter)
@@ -15,7 +15,7 @@ function! vimtex#paths#shorten_relative(path) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#paths#relative(path, current) " {{{1
+function! vimtex#paths#relative(path, current) abort " {{{1
   " Note: This algorithm is based on the one presented by @Offirmo at SO,
   "       http://stackoverflow.com/a/12498485/51634
   let l:target = substitute(a:path, '\\', '/', 'g')

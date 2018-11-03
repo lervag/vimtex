@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#general#new() " {{{1
+function! vimtex#view#general#new() abort " {{{1
   " Check if the viewer is executable
   if !executable(g:vimtex_view_general_viewer)
     call vimtex#log#warning(
@@ -31,7 +31,7 @@ let s:general = {
       \ 'name' : 'General'
       \}
 
-function! s:general.view(file) dict " {{{1
+function! s:general.view(file) dict abort " {{{1
   if empty(a:file)
     let outfile = self.out()
 
@@ -65,7 +65,7 @@ function! s:general.view(file) dict " {{{1
 endfunction
 
 " }}}1
-function! s:general.latexmk_append_argument() dict " {{{1
+function! s:general.latexmk_append_argument() dict abort " {{{1
   if g:vimtex_view_use_temp_files
     return ' -view=none'
   else

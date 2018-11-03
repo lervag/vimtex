@@ -142,7 +142,7 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
 endfunction
 
 " }}}1
-function! vimtex#compiler#output() " {{{1
+function! vimtex#compiler#output() abort " {{{1
   let l:file = get(b:vimtex.compiler, 'output', '')
   if empty(l:file)
     call vimtex#log#warning('No output exists!')
@@ -167,7 +167,7 @@ function! vimtex#compiler#output() " {{{1
   let s:output.name = l:file
   let s:output.bufnr = bufnr('%')
   let s:output.winnr = bufwinnr('%')
-  function! s:output.update() dict
+  function! s:output.update() dict abort
     if bufwinnr(self.name) != self.winnr
       return
     endif
@@ -184,7 +184,7 @@ function! vimtex#compiler#output() " {{{1
       execute 'keepalt' l:return . 'wincmd w'
     endif
   endfunction
-  function! s:output.destroy() dict
+  function! s:output.destroy() dict abort
     autocmd! vimtex_output_window
     augroup! vimtex_output_window
     unlet s:output
@@ -215,13 +215,13 @@ function! vimtex#compiler#output() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#compiler#stop() " {{{1
+function! vimtex#compiler#stop() abort " {{{1
   call b:vimtex.compiler.stop()
   silent! call timer_stop(b:vimtex.compiler.check_timer)
 endfunction
 
 " }}}1
-function! vimtex#compiler#stop_all() " {{{1
+function! vimtex#compiler#stop_all() abort " {{{1
   for l:state in vimtex#state#list_all()
     if exists('l:state.compiler.is_running')
           \ && l:state.compiler.is_running()
@@ -231,7 +231,7 @@ function! vimtex#compiler#stop_all() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#compiler#clean(full) " {{{1
+function! vimtex#compiler#clean(full) abort " {{{1
   call b:vimtex.compiler.clean(a:full)
 
   if empty(b:vimtex.compiler.build_dir) | return | endif
@@ -249,7 +249,7 @@ function! vimtex#compiler#clean(full) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#compiler#status(detailed) " {{{1
+function! vimtex#compiler#status(detailed) abort " {{{1
   if a:detailed
     let l:running = []
     for l:data in vimtex#state#list_all()

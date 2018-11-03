@@ -4,12 +4,12 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#common#apply_common_template(viewer) " {{{1
+function! vimtex#view#common#apply_common_template(viewer) abort " {{{1
   return extend(a:viewer, deepcopy(s:common_template))
 endfunction
 
 " }}}1
-function! vimtex#view#common#apply_xwin_template(class, viewer) " {{{1
+function! vimtex#view#common#apply_xwin_template(class, viewer) abort " {{{1
   let a:viewer.class = a:class
   let a:viewer.xwin_id = 0
   call extend(a:viewer, deepcopy(s:xwin_template))
@@ -17,7 +17,7 @@ function! vimtex#view#common#apply_xwin_template(class, viewer) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#common#not_readable(output) " {{{1
+function! vimtex#view#common#not_readable(output) abort " {{{1
   if !filereadable(a:output)
     call vimtex#log#warning('Viewer cannot read PDF file!', a:output)
     return 1
@@ -30,19 +30,19 @@ endfunction
 
 let s:common_template = {}
 
-function! s:common_template.out() dict " {{{1
+function! s:common_template.out() dict abort " {{{1
   return g:vimtex_view_use_temp_files
         \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
         \ : b:vimtex.out(1)
 endfunction
 
 " }}}1
-function! s:common_template.synctex() dict " {{{1
+function! s:common_template.synctex() dict abort " {{{1
   return fnamemodify(self.out(), ':r') . '.synctex.gz'
 endfunction
 
 " }}}1
-function! s:common_template.copy_files() dict " {{{1
+function! s:common_template.copy_files() dict abort " {{{1
   if !g:vimtex_view_use_temp_files | return | endif
 
   "
@@ -86,7 +86,7 @@ endfunction
 
 let s:xwin_template = {}
 
-function! s:xwin_template.view(file) dict " {{{1
+function! s:xwin_template.view(file) dict abort " {{{1
   if empty(a:file)
     let outfile = self.out()
   else
@@ -111,7 +111,7 @@ function! s:xwin_template.view(file) dict " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_get_id() dict " {{{1
+function! s:xwin_template.xwin_get_id() dict abort " {{{1
   if !executable('xdotool') | return 0 | endif
   if self.xwin_id > 0 | return self.xwin_id | endif
 
@@ -134,7 +134,7 @@ function! s:xwin_template.xwin_get_id() dict " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_exists() dict " {{{1
+function! s:xwin_template.xwin_exists() dict abort " {{{1
   if !executable('xdotool') | return 0 | endif
 
   "
@@ -174,7 +174,7 @@ function! s:xwin_template.xwin_exists() dict " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_send_keys(keys) dict " {{{1
+function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
   if !executable('xdotool') | return | endif
 
   if a:keys !=# ''

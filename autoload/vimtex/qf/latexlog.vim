@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#qf#latexlog#new() " {{{1
+function! vimtex#qf#latexlog#new() abort " {{{1
   return deepcopy(s:qf)
 endfunction
 
@@ -201,7 +201,7 @@ endfunction
 
 " }}}1
 
-function! s:log_contains_error(logfile) " {{{1
+function! s:log_contains_error(logfile) abort " {{{1
   let lines = readfile(a:logfile)
   let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
   let lines = vimtex#util#uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))

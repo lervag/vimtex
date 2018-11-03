@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#zathura#new() " {{{1
+function! vimtex#view#zathura#new() abort " {{{1
   " Check if the viewer is executable
   if !executable('zathura')
     call vimtex#log#error('Zathura is not executable!')
@@ -39,7 +39,7 @@ let s:zathura = {
       \ 'has_synctex' : 1,
       \}
 
-function! s:zathura.start(outfile) dict " {{{1
+function! s:zathura.start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
     let l:cmd .= ' -x "' . g:vimtex_compiler_progname
@@ -62,7 +62,7 @@ function! s:zathura.start(outfile) dict " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.forward_search(outfile) dict " {{{1
+function! s:zathura.forward_search(outfile) dict abort " {{{1
   if !self.has_synctex | return | endif
   if !filereadable(self.synctex()) | return | endif
 
@@ -77,7 +77,7 @@ function! s:zathura.forward_search(outfile) dict " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.compiler_callback(status) dict " {{{1
+function! s:zathura.compiler_callback(status) dict abort " {{{1
   if !a:status && g:vimtex_view_use_temp_files < 2
     return
   endif
@@ -114,7 +114,7 @@ function! s:zathura.compiler_callback(status) dict " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.latexmk_append_argument() dict " {{{1
+function! s:zathura.latexmk_append_argument() dict abort " {{{1
   if g:vimtex_view_use_temp_files
     let cmd = ' -view=none'
   else
@@ -133,7 +133,7 @@ function! s:zathura.latexmk_append_argument() dict " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.get_pid() dict " {{{1
+function! s:zathura.get_pid() dict abort " {{{1
   " First try to match full output file name
   let cmd = 'pgrep -nf "zathura.*'
         \ . escape(get(self, 'outfile', self.out()), '~\%.') . '"'

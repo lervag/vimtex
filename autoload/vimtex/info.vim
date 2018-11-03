@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#info#init_buffer() " {{{1
+function! vimtex#info#init_buffer() abort " {{{1
   command! -buffer -bang VimtexInfo call vimtex#info#open(<q-bang> == '!')
 
   nnoremap <buffer> <plug>(vimtex-info)      :VimtexInfo<cr>

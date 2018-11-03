@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#env#init_buffer() " {{{1
+function! vimtex#env#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
         \ :<c-u>call <sid>operator_setup('delete', 'env_tex')<bar>normal! g@l<cr>
 
@@ -23,7 +23,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#env#change(open, close, new) " {{{1
+function! vimtex#env#change(open, close, new) abort " {{{1
   "
   " Set target environment
   "
@@ -66,14 +66,14 @@ function! vimtex#env#change(open, close, new) " {{{1
         \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
 endfunction
 
-function! vimtex#env#change_surrounding_to(type, new) " {{{1
+function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
   return vimtex#env#change(l:open, l:close, a:new)
 endfunction
 
-function! vimtex#env#delete(type) " {{{1
+function! vimtex#env#delete(type) abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
@@ -94,7 +94,7 @@ function! vimtex#env#delete(type) " {{{1
   endif
 endfunction
 
-function! vimtex#env#toggle_star() " {{{1
+function! vimtex#env#toggle_star() abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
   if empty(l:open) | return | endif
 
@@ -104,14 +104,14 @@ endfunction
 
 " }}}1
 
-function! vimtex#env#is_inside(env) " {{{1
+function! vimtex#env#is_inside(env) abort " {{{1
   let l:stopline = max([line('.') - 50, 1])
   return searchpairpos('\\begin\s*{' . a:env . '\*\?}', '',
         \ '\\end\s*{' . a:env . '\*\?}', 'bnW', '', l:stopline)
 endfunction
 
 " }}}1
-function! vimtex#env#input_complete(lead, cmdline, pos) " {{{1
+function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
   let l:cands = map(vimtex#complete#complete('env', '', '\begin'), 'v:val.word')
 
   " Never include document and remove current env (place it first)
@@ -125,7 +125,7 @@ endfunction
 
 " }}}1
 
-function! s:change_prompt(type) " {{{1
+function! s:change_prompt(type) abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return | endif
 

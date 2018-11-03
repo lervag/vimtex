@@ -4,13 +4,13 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#profile#open() " {{{1
+function! vimtex#profile#open() abort " {{{1
   source ~/.vim/vimrc
   silent edit prof.log
 endfunction
 
 " }}}1
-function! vimtex#profile#print() " {{{1
+function! vimtex#profile#print() abort " {{{1
   for l:line in readfile('prof.log')
     echo l:line
   endfor
@@ -20,7 +20,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#profile#file(filename) " {{{1
+function! vimtex#profile#file(filename) abort " {{{1
   profile start prof.log
   profile func *
 
@@ -31,7 +31,7 @@ function! vimtex#profile#file(filename) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#profile#command(cmd) " {{{1
+function! vimtex#profile#command(cmd) abort " {{{1
   profile start prof.log
   profile func *
 
@@ -43,7 +43,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#profile#filter(sections) " {{{1
+function! vimtex#profile#filter(sections) abort " {{{1
   let l:lines = readfile('prof.log')
   call filter(l:lines, 'v:val !~# ''FTtex''')
   call filter(l:lines, 'v:val !~# ''LoadFTPlugin''')
@@ -58,7 +58,7 @@ endfunction
 
 " }}}1
 
-function! s:fix_sids() " {{{1
+function! s:fix_sids() abort " {{{1
   let l:lines = readfile('prof.log')
   let l:new = []
   for l:line in l:lines
@@ -83,7 +83,7 @@ function! s:fix_sids() " {{{1
 endfunction
 
 " }}}1
-function! s:get_section(name, lines) " {{{1
+function! s:get_section(name, lines) abort " {{{1
   let l:active = 0
   let l:section = []
   for l:line in a:lines

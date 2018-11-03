@@ -5,7 +5,7 @@
 " Email:        karl.yngve@gmail.com
 "
 
-function! vimtex#qf#pplatex#new() " {{{1
+function! vimtex#qf#pplatex#new() abort " {{{1
   return deepcopy(s:qf)
 endfunction
 

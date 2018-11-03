@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#include#expr() " {{{1
+function! vimtex#include#expr() abort " {{{1
   call s:visited.timeout()
   let l:fname = substitute(v:fname, '^\s*\|\s*$', '', 'g')
 
@@ -43,7 +43,7 @@ endfunction
 
 " }}}1
 
-function! s:input(fname) " {{{1
+function! s:input(fname) abort " {{{1
   let [l:lnum, l:cnum] = searchpos(g:vimtex#re#tex_input, 'bcn', line('.'))
   if l:lnum == 0 | return a:fname | endif
 
@@ -59,7 +59,7 @@ function! s:input(fname) " {{{1
 endfunction
 
 " }}}1
-function! s:split(fname) " {{{1
+function! s:split(fname) abort " {{{1
   let l:files = []
 
   let l:current = expand('<cword>')

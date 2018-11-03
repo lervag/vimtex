@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#init() " {{{1
+function! vimtex#init() abort " {{{1
   call vimtex#init_options()
 
   call s:init_highlights()
@@ -23,7 +23,7 @@ function! vimtex#init() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#init_options() " {{{1
+function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_compiler_enabled', 1)
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
@@ -252,7 +252,7 @@ function! vimtex#init_options() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#check_plugin_clash() " {{{1
+function! vimtex#check_plugin_clash() abort " {{{1
   let l:scriptnames = vimtex#util#command('scriptnames')
 
   let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
@@ -274,7 +274,7 @@ endfunction
 
 " }}}1
 
-function! s:init_option(option, default) " {{{1
+function! s:init_option(option, default) abort " {{{1
   let l:option = 'g:' . a:option
   if !exists(l:option)
     let {l:option} = a:default
@@ -284,7 +284,7 @@ function! s:init_option(option, default) " {{{1
 endfunction
 
 " }}}1
-function! s:init_highlights() " {{{1
+function! s:init_highlights() abort " {{{1
   for [l:name, l:target] in [
         \ ['VimtexImapsArrow', 'Comment'],
         \ ['VimtexImapsLhs', 'ModeMsg'],
@@ -325,13 +325,13 @@ function! s:init_highlights() " {{{1
 endfunction
 
 " }}}1
-function! s:init_state() " {{{1
+function! s:init_state() abort " {{{1
   call vimtex#state#init()
   call vimtex#state#init_local()
 endfunction
 
 " }}}1
-function! s:init_buffer() " {{{1
+function! s:init_buffer() abort " {{{1
   " Set Vim options
   for l:suf in [
         \ '.sty',
@@ -392,10 +392,10 @@ function! s:init_buffer() " {{{1
 endfunction
 
 " }}}1
-function! s:init_default_mappings() " {{{1
+function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
-  function! s:map(mode, lhs, rhs, ...)
+  function! s:map(mode, lhs, rhs, ...) abort
     if !hasmapto(a:rhs, a:mode)
           \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
           \ && (empty(maparg(a:lhs, a:mode)) || a:0 > 0)
@@ -537,12 +537,12 @@ endfunction
 
 " }}}1
 
-function! s:filename_changed_pre() " {{{1
+function! s:filename_changed_pre() abort " {{{1
   let s:filename_changed = expand('%:p') ==# b:vimtex.tex
 endfunction
 
 " }}}1
-function! s:filename_changed_post() " {{{1
+function! s:filename_changed_post() abort " {{{1
   if s:filename_changed
     let l:base_old = b:vimtex.base
     let b:vimtex.tex = fnamemodify(expand('%'), ':p')
@@ -565,7 +565,7 @@ function! s:filename_changed_post() " {{{1
 endfunction
 
 " }}}1
-function! s:buffer_deleted(reason) " {{{1
+function! s:buffer_deleted(reason) abort " {{{1
   "
   " We need a simple cache of buffer ids because a buffer unload might clear
   " buffer variables, so that a subsequent buffer wipe will not trigger a full
@@ -585,7 +585,7 @@ function! s:buffer_deleted(reason) " {{{1
 endfunction
 
 " }}}1
-function! s:quit() " {{{1
+function! s:quit() abort " {{{1
   for l:state in vimtex#state#list_all()
     call l:state.cleanup()
   endfor

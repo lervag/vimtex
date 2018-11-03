@@ -309,7 +309,7 @@ let s:matcher_preamble = {
       \ 'in_content' : 0,
       \ 'priority' : 1,
       \}
-function! s:matcher_preamble.get_entry(context) " {{{1
+function! s:matcher_preamble.get_entry(context) abort " {{{1
   return g:vimtex_toc_show_preamble
         \ ? {
         \   'title'  : 'Preamble',

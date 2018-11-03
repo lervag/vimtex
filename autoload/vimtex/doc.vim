@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#doc#init_buffer() " {{{1
+function! vimtex#doc#init_buffer() abort " {{{1
   command! -buffer -nargs=? VimtexDocPackage call vimtex#doc#package(<q-args>)
 
   nnoremap <buffer> <plug>(vimtex-doc-package) :VimtexDocPackage<cr>
@@ -12,7 +12,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#doc#package(word) " {{{1
+function! vimtex#doc#package(word) abort " {{{1
   let l:context = empty(a:word)
         \ ? s:packages_get_from_cursor()
         \ : {
@@ -33,7 +33,7 @@ function! vimtex#doc#package(word) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#doc#make_selection(context) " {{{1
+function! vimtex#doc#make_selection(context) abort " {{{1
   if has_key(a:context, 'selected') | return | endif
 
   if len(a:context.candidates) == 0
@@ -79,7 +79,7 @@ endfunction
 
 " }}}1
 
-function! s:packages_get_from_cursor() " {{{1
+function! s:packages_get_from_cursor() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return {} | endif
 
@@ -93,7 +93,7 @@ function! s:packages_get_from_cursor() " {{{1
 endfunction
 
 " }}}1
-function! s:packages_from_usepackage(cmd) " {{{1
+function! s:packages_from_usepackage(cmd) abort " {{{1
   try
     " Gather and clean up candidate list
     let l:candidates = substitute(a:cmd.args[0].text, '%.\{-}\n', '', 'g')
@@ -118,7 +118,7 @@ function! s:packages_from_usepackage(cmd) " {{{1
 endfunction
 
 " }}}1
-function! s:packages_from_documentclass(cmd) " {{{1
+function! s:packages_from_documentclass(cmd) abort " {{{1
   try
     return {
           \ 'type': 'documentclass',
@@ -131,7 +131,7 @@ function! s:packages_from_documentclass(cmd) " {{{1
 endfunction
 
 " }}}1
-function! s:packages_from_command(cmd) " {{{1
+function! s:packages_from_command(cmd) abort " {{{1
   let l:packages = [
         \ 'default',
         \ 'class-' . get(b:vimtex, 'documentclass', ''),
@@ -173,7 +173,7 @@ function! s:packages_from_command(cmd) " {{{1
 endfunction
 
 " }}}1
-function! s:packages_remove_invalid(context) " {{{1
+function! s:packages_remove_invalid(context) abort " {{{1
   let l:invalid_packages = filter(copy(a:context.candidates),
         \   'empty(vimtex#kpsewhich#find(v:val . ''.sty'')) && '
         \ . 'empty(vimtex#kpsewhich#find(v:val . ''.cls''))')
@@ -204,7 +204,7 @@ function! s:packages_remove_invalid(context) " {{{1
 endfunction
 
 " }}}1
-function! s:packages_open(context) " {{{1
+function! s:packages_open(context) abort " {{{1
   if !has_key(a:context, 'selected')
     call vimtex#doc#make_selection(a:context)
   endif

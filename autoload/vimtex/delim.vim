@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#delim#init_buffer() " {{{1
+function! vimtex#delim#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-toggle-modifier)
         \ :<c-u>call <sid>operator_setup('toggle_modifier_next')
         \ <bar> normal! <c-r>=v:count ? v:count : ''<cr>g@l<cr>
@@ -31,7 +31,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#close() " {{{1
+function! vimtex#delim#close() abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
 
@@ -69,7 +69,7 @@ function! vimtex#delim#close() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#toggle_modifier(...) " {{{1
+function! vimtex#delim#toggle_modifier(...) abort " {{{1
   let l:args = a:0 > 0 ? a:1 : {}
   call extend(l:args, {
       \ 'count': v:count1,
@@ -124,7 +124,7 @@ function! vimtex#delim#toggle_modifier(...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#toggle_modifier_visual(...) " {{{1
+function! vimtex#delim#toggle_modifier_visual(...) abort " {{{1
   let l:args = a:0 > 0 ? a:1 : {}
   call extend(l:args, {
       \ 'count': v:count1,
@@ -199,7 +199,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#change(...) " {{{1
+function! vimtex#delim#change(...) abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('delim_math')
   if empty(l:open) | return | endif
 
@@ -222,7 +222,7 @@ function! vimtex#delim#change(...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#change_with_args(open, close, new) " {{{1
+function! vimtex#delim#change_with_args(open, close, new) abort " {{{1
   "
   " Set target environment
   "
@@ -267,7 +267,7 @@ function! vimtex#delim#change_with_args(open, close, new) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#change_input_complete(lead, cmdline, pos) " {{{1
+function! vimtex#delim#change_input_complete(lead, cmdline, pos) abort " {{{1
   let l:all = deepcopy(g:vimtex#delim#lists.delim_all.name)
   let l:open = map(copy(l:all), 'v:val[0]')
   let l:close = map(copy(l:all), 'v:val[1]')
@@ -277,7 +277,7 @@ function! vimtex#delim#change_input_complete(lead, cmdline, pos) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#delete() " {{{1
+function! vimtex#delim#delete() abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('delim_modq_math')
   if empty(l:open) | return | endif
 
@@ -286,7 +286,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#delim#get_next(type, side, ...) " {{{1
+function! vimtex#delim#get_next(type, side, ...) abort " {{{1
   return s:get_delim(extend({
         \ 'direction' : 'next',
         \ 'type' : a:type,
@@ -295,7 +295,7 @@ function! vimtex#delim#get_next(type, side, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#get_prev(type, side, ...) " {{{1
+function! vimtex#delim#get_prev(type, side, ...) abort " {{{1
   return s:get_delim(extend({
         \ 'direction' : 'prev',
         \ 'type' : a:type,
@@ -304,7 +304,7 @@ function! vimtex#delim#get_prev(type, side, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#get_current(type, side, ...) " {{{1
+function! vimtex#delim#get_current(type, side, ...) abort " {{{1
   return s:get_delim(extend({
         \ 'direction' : 'current',
         \ 'type' : a:type,
@@ -313,7 +313,7 @@ function! vimtex#delim#get_current(type, side, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#get_matching(delim) " {{{1
+function! vimtex#delim#get_matching(delim) abort " {{{1
   if empty(a:delim) || !has_key(a:delim, 'lnum') | return {} | endif
 
   "
@@ -354,7 +354,7 @@ function! vimtex#delim#get_matching(delim) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#delim#get_surrounding(type) " {{{1
+function! vimtex#delim#get_surrounding(type) abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
   let l:pos_val_last = l:pos_val_cursor
@@ -417,14 +417,14 @@ function! s:operator_function(_) abort " {{{1
 endfunction
 
 " }}}1
-function! s:snr() " {{{1
+function! s:snr() abort " {{{1
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
 " }}}1
 "
 
-function! s:get_delim(opts) " {{{1
+function! s:get_delim(opts) abort " {{{1
   "
   " Arguments:
   "   opts = {
@@ -536,7 +536,7 @@ endfunction
 
 " }}}1
 
-function! s:parser_env(match, lnum, cnum, ...) " {{{1
+function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
   let result = {}
 
   let result.type = 'env'
@@ -566,7 +566,7 @@ function! s:parser_env(match, lnum, cnum, ...) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
+function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
   "
   " TeX shorthand are these
   "
@@ -622,7 +622,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_latex(match, lnum, cnum, ...) " {{{1
+function! s:parser_latex(match, lnum, cnum, ...) abort " {{{1
   let result = {}
 
   let result.type = 'env'
@@ -646,7 +646,7 @@ function! s:parser_latex(match, lnum, cnum, ...) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_delim(match, lnum, cnum, ...) " {{{1
+function! s:parser_delim(match, lnum, cnum, ...) abort " {{{1
   let result = {}
   let result.type = 'delim'
   let result.side =
@@ -697,7 +697,7 @@ function! s:parser_delim(match, lnum, cnum, ...) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_delim_unmatched(match, lnum, cnum, ...) " {{{1
+function! s:parser_delim_unmatched(match, lnum, cnum, ...) abort " {{{1
   let result = {}
   let result.type = 'delim'
   let result.side =
@@ -737,7 +737,7 @@ function! s:parser_delim_unmatched(match, lnum, cnum, ...) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_delim_get_regexp(delim, side, ...) " {{{1
+function! s:parser_delim_get_regexp(delim, side, ...) abort " {{{1
   let l:type = a:0 > 0 ? a:1 : 'delim_all'
 
   " First check for unmatched math delimiter
@@ -755,7 +755,7 @@ function! s:parser_delim_get_regexp(delim, side, ...) " {{{1
 endfunction
 
 " }}}1
-function! s:parser_delim_get_corr(delim, ...) " {{{1
+function! s:parser_delim_get_corr(delim, ...) abort " {{{1
   let l:type = a:0 > 0 ? a:1 : 'delim_all'
 
   for l:pair in g:vimtex#delim#lists[l:type].name
@@ -769,7 +769,7 @@ endfunction
 
 " }}}1
 
-function! s:get_matching_env() dict " {{{1
+function! s:get_matching_env() dict abort " {{{1
   let [re, flags, stopline] = self.is_open
         \ ? [self.re.close,  'nW', line('.') + s:stopline]
         \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
@@ -782,7 +782,7 @@ function! s:get_matching_env() dict " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_tex() dict " {{{1
+function! s:get_matching_tex() dict abort " {{{1
   let [re, flags, stopline] = self.is_open
         \ ? [self.re.open,  'nW', line('.') + s:stopline]
         \ : [self.re.open, 'bnW', max([line('.') - s:stopline, 1])]
@@ -794,7 +794,7 @@ function! s:get_matching_tex() dict " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_latex() dict " {{{1
+function! s:get_matching_latex() dict abort " {{{1
   let [re, flags, stopline] = self.is_open
         \ ? [self.re.close, 'nW', line('.') + s:stopline]
         \ : [self.re.open, 'bnW', max([line('.') - s:stopline, 1])]
@@ -806,7 +806,7 @@ function! s:get_matching_latex() dict " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_delim() dict " {{{1
+function! s:get_matching_delim() dict abort " {{{1
   let [re, flags, stopline] = self.is_open
         \ ? [self.re.close,  'nW', line('.') + s:stopline]
         \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
@@ -819,7 +819,7 @@ function! s:get_matching_delim() dict " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_delim_unmatched() dict " {{{1
+function! s:get_matching_delim_unmatched() dict abort " {{{1
   let [re, flags, stopline] = self.is_open
         \ ? [self.re.close,  'nW', line('.') + s:stopline]
         \ : [self.re.open,  'bnW', max([line('.') - s:stopline, 1])]
@@ -854,7 +854,7 @@ endfunction
 " }}}1
 
 
-function! s:init_delim_lists() " {{{1
+function! s:init_delim_lists() abort " {{{1
   " Define the default value
   let l:lists = {
         \ 'env_tex' : {
@@ -945,7 +945,7 @@ function! s:init_delim_lists() " {{{1
 endfunction
 
 " }}}1
-function! s:init_delim_regexes() " {{{1
+function! s:init_delim_regexes() abort " {{{1
   let l:re = {}
   let l:re.env_all = {}
   let l:re.delim_all = {}
@@ -1003,7 +1003,7 @@ function! s:init_delim_regexes() " {{{1
 endfunction
 
 " }}}1
-function! s:init_delim_regexes_generator(list_name) " {{{1
+function! s:init_delim_regexes_generator(list_name) abort " {{{1
   let l:list = g:vimtex#delim#lists[a:list_name]
   let l:open = join(map(copy(l:list.re), 'v:val[0]'), '\|')
   let l:close = join(map(copy(l:list.re), 'v:val[1]'), '\|')
