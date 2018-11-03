@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#text_obj#init_buffer() " {{{1
+function! vimtex#text_obj#init_buffer() abort " {{{1
   if !g:vimtex_text_obj_enabled | return | endif
 
   for [l:map, l:name, l:opt] in [
@@ -26,7 +26,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#text_obj#commands(is_inner, mode) " {{{1
+function! vimtex#text_obj#commands(is_inner, mode) abort " {{{1
   if a:mode
     call vimtex#pos#set_cursor(getpos("'>"))
   endif
@@ -62,7 +62,7 @@ function! vimtex#text_obj#commands(is_inner, mode) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
+function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
   if a:mode
     let l:object = s:get_sel_delimited_visual(a:is_inner, a:type)
     if empty(l:object)
@@ -83,7 +83,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#text_obj#sections(is_inner, mode) " {{{1
+function! vimtex#text_obj#sections(is_inner, mode) abort " {{{1
   let l:pos_save = vimtex#pos#get_cursor()
   call vimtex#pos#set_cursor(vimtex#pos#next(l:pos_save))
 
@@ -116,7 +116,7 @@ endfunction
 
 " }}}1
 
-function! s:get_sel_delimited_visual(is_inner, type) " {{{1
+function! s:get_sel_delimited_visual(is_inner, type) abort " {{{1
   if a:is_inner
     call vimtex#pos#set_cursor(vimtex#pos#next(getpos("'>")))
     let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
@@ -161,7 +161,7 @@ function! s:get_sel_delimited_visual(is_inner, type) " {{{1
 endfunction
 
 " }}}1
-function! s:get_sel_delimited(open, close, is_inner) " {{{1
+function! s:get_sel_delimited(open, close, is_inner) abort " {{{1
   " Determine if operator is linewise
   let l:linewise = index(g:vimtex_text_obj_linewise_operators, v:operator) >= 0
 
@@ -212,7 +212,7 @@ function! s:get_sel_delimited(open, close, is_inner) " {{{1
 endfunction
 
 " }}}1
-function! s:get_sel_sections(is_inner, type) " {{{1
+function! s:get_sel_sections(is_inner, type) abort " {{{1
   let l:pos_save = vimtex#pos#get_cursor()
   let l:min_val = get(s:section_to_val, a:type)
 

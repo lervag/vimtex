@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#state#init_buffer() " {{{1
+function! vimtex#state#init_buffer() abort " {{{1
   command! -buffer VimtexToggleMain  call vimtex#state#toggle_main()
   command! -buffer VimtexReloadState call vimtex#state#reload()
 
@@ -13,7 +13,7 @@ function! vimtex#state#init_buffer() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#state#init() " {{{1
+function! vimtex#state#init() abort " {{{1
   let l:main = s:get_main()
   let l:id   = s:get_main_id(l:main)
 
@@ -29,7 +29,7 @@ function! vimtex#state#init() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#state#init_local() " {{{1
+function! vimtex#state#init_local() abort " {{{1
   let l:filename = expand('%:p')
   let l:preserve_root = get(s:, 'subfile_preserve_root')
   unlet! s:subfile_preserve_root
@@ -59,7 +59,7 @@ function! vimtex#state#init_local() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#state#reload() " {{{1
+function! vimtex#state#reload() abort " {{{1
   let l:id = s:get_main_id(expand('%:p'))
   if has_key(s:vimtex_states, l:id)
     let l:vimtex = remove(s:vimtex_states, l:id)
@@ -77,7 +77,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#state#toggle_main() " {{{1
+function! vimtex#state#toggle_main() abort " {{{1
   if exists('b:vimtex_local')
     let b:vimtex_local.active = !b:vimtex_local.active
 
@@ -92,22 +92,22 @@ function! vimtex#state#toggle_main() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#state#list_all() " {{{1
+function! vimtex#state#list_all() abort " {{{1
   return values(s:vimtex_states)
 endfunction
 
 " }}}1
-function! vimtex#state#exists(id) " {{{1
+function! vimtex#state#exists(id) abort " {{{1
   return has_key(s:vimtex_states, a:id)
 endfunction
 
 " }}}1
-function! vimtex#state#get(id) " {{{1
+function! vimtex#state#get(id) abort " {{{1
   return s:vimtex_states[a:id]
 endfunction
 
 " }}}1
-function! vimtex#state#cleanup(id) " {{{1
+function! vimtex#state#cleanup(id) abort " {{{1
   if !vimtex#state#exists(a:id) | return | endif
 
   "
@@ -159,7 +159,7 @@ endfunction
 
 " }}}1
 
-function! s:get_main_id(main) " {{{1
+function! s:get_main_id(main) abort " {{{1
   for [l:id, l:state] in items(s:vimtex_states)
     if l:state.tex == a:main
       return str2nr(l:id)
@@ -169,7 +169,7 @@ function! s:get_main_id(main) " {{{1
   return -1
 endfunction
 
-function! s:get_main() " {{{1
+function! s:get_main() abort " {{{1
   if exists('s:disabled_modules')
     unlet s:disabled_modules
   endif
@@ -247,7 +247,7 @@ function! s:get_main() " {{{1
 endfunction
 
 " }}}1
-function! s:get_main_from_texroot() " {{{1
+function! s:get_main_from_texroot() abort " {{{1
   for l:line in getline(1, 5)
     let l:filename = matchstr(l:line, g:vimtex#re#tex_input_root)
     if len(l:filename) > 0
@@ -264,7 +264,7 @@ function! s:get_main_from_texroot() " {{{1
 endfunction
 
 " }}}1
-function! s:get_main_from_subfile() " {{{1
+function! s:get_main_from_subfile() abort " {{{1
   for l:line in getline(1, 5)
     let l:filename = matchstr(l:line,
           \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
@@ -304,7 +304,7 @@ function! s:get_main_from_subfile() " {{{1
 endfunction
 
 " }}}1
-function! s:get_main_latexmain(file) " {{{1
+function! s:get_main_latexmain(file) abort " {{{1
   for l:cand in s:findfiles_recursive('*.latexmain', expand('%:p:h'))
     let l:cand = fnamemodify(l:cand, ':p:r')
     if s:file_reaches_current(l:cand)
@@ -317,7 +317,7 @@ function! s:get_main_latexmain(file) " {{{1
   return ''
 endfunction
 
-function! s:get_main_recurse(...) " {{{1
+function! s:get_main_recurse(...) abort " {{{1
   " Either start the search from the original file, or check if the supplied
   " file is a main file (or invalid)
   if a:0 == 0
@@ -357,7 +357,7 @@ function! s:get_main_recurse(...) " {{{1
 endfunction
 
 " }}}1
-function! s:file_is_main(file) " {{{1
+function! s:file_is_main(file) abort " {{{1
   if !filereadable(a:file) | return 0 | endif
 
   "
@@ -375,7 +375,7 @@ function! s:file_is_main(file) " {{{1
 endfunction
 
 " }}}1
-function! s:file_reaches_current(file) " {{{1
+function! s:file_reaches_current(file) abort " {{{1
   if !filereadable(a:file) | return 0 | endif
 
   for l:line in filter(readfile(a:file), 'v:val =~# g:vimtex#re#tex_input')
@@ -400,7 +400,7 @@ function! s:file_reaches_current(file) " {{{1
 endfunction
 
 " }}}1
-function! s:findfiles_recursive(expr, path) " {{{1
+function! s:findfiles_recursive(expr, path) abort " {{{1
   let l:path = a:path
   let l:dirs = l:path
   while l:path != fnamemodify(l:path, ':h')

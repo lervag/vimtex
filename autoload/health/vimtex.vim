@@ -63,7 +63,7 @@ endfunction
 
 " }}}1
 
-function! s:check_plugin_clash() " {{{1
+function! s:check_plugin_clash() abort " {{{1
   let l:scriptnames = split(execute('scriptnames'), "\n")
 
   let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))

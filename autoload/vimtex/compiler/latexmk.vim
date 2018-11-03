@@ -417,7 +417,7 @@ function! s:compiler_process.start_single() abort dict " {{{1
 
   if self.continuous
     let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
-    function! VimtexSSCallback(status)
+    function! VimtexSSCallback(status) abort
       silent call vimtex#compiler#stop()
       call remove(g:vimtex_compiler_callback_hooks, 'VimtexSSCallback')
     endfunction

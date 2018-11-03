@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#init_buffer() " {{{1
+function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
   command! -buffer -nargs=? -complete=file VimtexView
@@ -23,7 +23,7 @@ function! vimtex#view#init_buffer() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#init_state(state) " {{{1
+function! vimtex#view#init_state(state) abort " {{{1
   if !g:vimtex_view_enabled | return | endif
   if has_key(a:state, 'viewer') | return | endif
 
@@ -64,7 +64,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#view#reverse_goto(line, filename) " {{{1
+function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   let l:file = resolve(a:filename)
 
   if !bufexists(l:file)

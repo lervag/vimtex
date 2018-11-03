@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#log#init_buffer() " {{{1
+function! vimtex#log#init_buffer() abort " {{{1
   command! -buffer -bang VimtexLog call vimtex#log#open()
 
   nnoremap <buffer> <plug>(vimtex-log) :VimtexLog<cr>

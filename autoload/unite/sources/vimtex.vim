@@ -17,7 +17,7 @@ let s:source = {
       \ 'hooks' : {},
       \}
 
-function! s:source.gather_candidates(args, context) " {{{1
+function! s:source.gather_candidates(args, context) abort " {{{1
   if exists('b:vimtex')
     let s:source.entries = vimtex#parser#toc(b:vimtex.tex)
     let s:source.maxlevel = max(map(copy(s:source.entries), 'v:val.level'))
@@ -27,7 +27,7 @@ function! s:source.gather_candidates(args, context) " {{{1
 endfunction
 
 " }}}1
-function! s:source.hooks.on_syntax(args, context) " {{{1
+function! s:source.hooks.on_syntax(args, context) abort " {{{1
   syntax match VimtexTocSecs /.* @\d$/
         \ contains=VimtexTocNum,VimtexTocTag,@Tex
         \ contained containedin=uniteSource__vimtex
@@ -61,7 +61,7 @@ endfunction
 
 " }}}1
 
-function! s:create_candidate(entry, maxlevel) " {{{1
+function! s:create_candidate(entry, maxlevel) abort " {{{1
   let level = a:maxlevel - a:entry.level
   let title = printf('%-65S%-10s',
         \ strpart(repeat(' ', 2*level) . a:entry.title, 0, 60),
@@ -76,7 +76,7 @@ endfunction
 
 " }}}1
 
-function! unite#sources#vimtex#define()
+function! unite#sources#vimtex#define() abort
   return s:source
 endfunction
 

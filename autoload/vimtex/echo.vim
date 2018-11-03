@@ -4,14 +4,14 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#echo#echo(message) " {{{1
+function! vimtex#echo#echo(message) abort " {{{1
   echohl VimtexMsg
   echo a:message
   echohl None
 endfunction
 
 " }}}1
-function! vimtex#echo#input(opts) " {{{1
+function! vimtex#echo#input(opts) abort " {{{1
   if has_key(a:opts, 'info')
     call vimtex#echo#formatted(a:opts.info)
   endif
@@ -29,7 +29,7 @@ function! vimtex#echo#input(opts) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#echo#formatted(parts) " {{{1
+function! vimtex#echo#formatted(parts) abort " {{{1
   echo ''
   try
     for part in a:parts

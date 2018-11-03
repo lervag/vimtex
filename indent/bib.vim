@@ -18,7 +18,7 @@ set cpo&vim
 setlocal autoindent
 setlocal indentexpr=VimtexIndentBib()
 
-function! VimtexIndentBib() " {{{1
+function! VimtexIndentBib() abort " {{{1
   " Find first non-blank line above the current line
   let lnum = prevnonblank(v:lnum - 1)
   if lnum == 0
@@ -64,7 +64,7 @@ function! VimtexIndentBib() " {{{1
   return ind
 endfunction
 
-function! s:count(pattern, line) " {{{1
+function! s:count(pattern, line) abort " {{{1
   let sum = 0
   let indx = match(a:line, a:pattern)
   while indx >= 0

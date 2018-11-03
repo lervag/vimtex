@@ -630,7 +630,7 @@ function! s:toc.increase_depth() abort dict "{{{1
 endfunction
 
 " }}}1
-function! s:toc.filter() dict "{{{1
+function! s:toc.filter() dict abort "{{{1
   let re_filter = input('filter entry title by: ')
   for entry in self.entries
     let entry.hidden = get(entry, 'hidden') || entry.title !~# re_filter
@@ -639,7 +639,7 @@ function! s:toc.filter() dict "{{{1
 endfunction
 
 " }}}1
-function! s:toc.clear_filter() dict "{{{1
+function! s:toc.clear_filter() dict abort "{{{1
   for entry in self.entries
     let entry.hidden = 0
   endfor
@@ -736,7 +736,7 @@ endfunction
 
 " }}}1
 
-function! s:int_to_roman(number) " {{{1
+function! s:int_to_roman(number) abort " {{{1
   let l:number = a:number
   let l:result = ''
   for [l:val, l:romn] in [
@@ -764,7 +764,7 @@ function! s:int_to_roman(number) " {{{1
 endfunction
 
 " }}}1
-function! s:base(n, k) " {{{1
+function! s:base(n, k) abort " {{{1
   if a:n < a:k
     return [a:n]
   else

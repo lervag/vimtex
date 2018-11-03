@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#util#command(cmd) " {{{1
+function! vimtex#util#command(cmd) abort " {{{1
   let l:a = @a
   try
     silent! redir @a
@@ -18,7 +18,7 @@ function! vimtex#util#command(cmd) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#get_os() " {{{1
+function! vimtex#util#get_os() abort " {{{1
   if has('win32') || has('win32unix')
     return 'win'
   elseif has('unix')
@@ -31,17 +31,17 @@ function! vimtex#util#get_os() " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#in_comment(...) " {{{1
+function! vimtex#util#in_comment(...) abort " {{{1
   return call('vimtex#util#in_syntax', ['texComment'] + a:000)
 endfunction
 
 " }}}1
-function! vimtex#util#in_mathzone(...) " {{{1
+function! vimtex#util#in_mathzone(...) abort " {{{1
   return call('vimtex#util#in_syntax', ['texMathZone'] + a:000)
 endfunction
 
 " }}}1
-function! vimtex#util#in_syntax(name, ...) " {{{1
+function! vimtex#util#in_syntax(name, ...) abort " {{{1
 
   " Usage: vimtex#util#in_syntax(name, [line, col])
 
@@ -59,7 +59,7 @@ function! vimtex#util#in_syntax(name, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#extend_recursive(dict1, dict2, ...) " {{{1
+function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
   let l:option = a:0 > 0 ? a:1 : 'force'
   if index(['force', 'keep', 'error'], l:option) < 0
     throw 'E475: Invalid argument: ' . l:option
@@ -82,7 +82,7 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#shellescape(cmd) " {{{1
+function! vimtex#util#shellescape(cmd) abort " {{{1
   "
   " Path used in "cmd" only needs to be enclosed by double quotes.
   " shellescape() on Windows with "shellslash" set will produce a path
@@ -101,7 +101,7 @@ function! vimtex#util#shellescape(cmd) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#uniq(list) " {{{1
+function! vimtex#util#uniq(list) abort " {{{1
   if exists('*uniq') | return uniq(a:list) | endif
   if len(a:list) <= 1 | return a:list | endif
 
@@ -115,7 +115,7 @@ function! vimtex#util#uniq(list) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#uniq_unsorted(list) " {{{1
+function! vimtex#util#uniq_unsorted(list) abort " {{{1
   if len(a:list) <= 1 | return a:list | endif
 
   let l:visited = [a:list[0]]

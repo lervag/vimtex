@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#imaps#init_buffer() " {{{1
+function! vimtex#imaps#init_buffer() abort " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
   "
@@ -27,7 +27,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#imaps#add_map(map) " {{{1
+function! vimtex#imaps#add_map(map) abort " {{{1
   let s:custom_maps = get(s:, 'custom_maps', []) + [a:map]
 
   if exists('s:created_maps')
@@ -36,7 +36,7 @@ function! vimtex#imaps#add_map(map) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#imaps#list() " {{{1
+function! vimtex#imaps#list() abort " {{{1
   silent new vimtex\ imaps
 
   for l:map in s:created_maps
@@ -75,7 +75,7 @@ endfunction
 "
 " The imap generator
 "
-function! s:create_map(map) " {{{1
+function! s:create_map(map) abort " {{{1
   let l:leader = get(a:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><nowait><buffer>' l:leader . l:leader l:leader
@@ -111,17 +111,17 @@ endfunction
 "
 " Wrappers
 "
-function! vimtex#imaps#wrap_trivial(lhs, rhs) " {{{1
+function! vimtex#imaps#wrap_trivial(lhs, rhs) abort " {{{1
   return a:rhs
 endfunction
 
 " }}}1
-function! vimtex#imaps#wrap_math(lhs, rhs) " {{{1
+function! vimtex#imaps#wrap_math(lhs, rhs) abort " {{{1
   return s:is_math() ? a:rhs : a:lhs
 endfunction
 
 " }}}1
-function! vimtex#imaps#wrap_environment(lhs, rhs) " {{{1
+function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   let l:return = a:lhs
   let l:cursor = vimtex#pos#val(vimtex#pos#get_cursor())
   let l:value = 0
@@ -154,7 +154,7 @@ endfunction
 "
 " Helpers
 "
-function! s:is_math() " {{{1
+function! s:is_math() abort " {{{1
   return match(map(synstack(line('.'), max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone[A-Z]S\?$') >= 0
 endfunction

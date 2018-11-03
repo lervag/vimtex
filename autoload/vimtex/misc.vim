@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#misc#init_buffer() " {{{1
+function! vimtex#misc#init_buffer() abort " {{{1
   command! -buffer                VimtexReload call vimtex#misc#reload()
   command! -buffer -bang -range=% VimtexCountWords
         \ call vimtex#misc#wordcount_display({

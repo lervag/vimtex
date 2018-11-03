@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#motion#init_buffer() " {{{1
+function! vimtex#motion#init_buffer() abort " {{{1
   if !g:vimtex_motion_enabled | return | endif
 
   " Utility map to avoid conflict with "normal" command
@@ -86,7 +86,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#motion#find_matching_pair(...) " {{{1
+function! vimtex#motion#find_matching_pair(...) abort " {{{1
   if a:0 > 0
     normal! gv
   endif
@@ -109,7 +109,7 @@ function! vimtex#motion#find_matching_pair(...) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#motion#paragraph(backwards, visual) " {{{1
+function! vimtex#motion#paragraph(backwards, visual) abort " {{{1
   if a:visual
     normal! gv
   endif
@@ -144,7 +144,7 @@ function! vimtex#motion#paragraph(backwards, visual) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#motion#section(type, backwards, visual) " {{{1
+function! vimtex#motion#section(type, backwards, visual) abort " {{{1
   let l:count = v:count1
   if a:visual
     normal! gv
@@ -197,7 +197,7 @@ function! vimtex#motion#section(type, backwards, visual) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#motion#environment(begin, backwards, visual) " {{{1
+function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1
   let l:count = v:count1
   if a:visual
     normal! gv
@@ -212,7 +212,7 @@ function! vimtex#motion#environment(begin, backwards, visual) " {{{1
 endfunction
 
 " }}}1
-function! vimtex#motion#comment(begin, backwards, visual) " {{{1
+function! vimtex#motion#comment(begin, backwards, visual) abort " {{{1
   let l:count = v:count1
   if a:visual
     normal! gv

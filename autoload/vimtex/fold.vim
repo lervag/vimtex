@@ -31,7 +31,7 @@ function! vimtex#fold#init_buffer() abort " {{{1
       " vint: +ProhibitAutocmdWithNoGroup
     augroup END
 
-    function! s:fold_manual_refresh()
+    function! s:fold_manual_refresh() abort
       call vimtex#fold#refresh('zx')
       if exists('b:fold_manual_augroup')
         execute 'autocmd!' b:fold_manual_augroup
