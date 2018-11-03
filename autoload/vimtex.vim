@@ -399,7 +399,7 @@ function! s:init_default_mappings() " {{{1
     if !hasmapto(a:rhs, a:mode)
           \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
           \ && (empty(maparg(a:lhs, a:mode)) || a:0 > 0)
-      silent execute a:mode . 'map <silent><buffer>' a:lhs a:rhs
+      silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
     endif
   endfunction
 

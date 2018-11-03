@@ -47,8 +47,8 @@ function! vimtex#imaps#list() " {{{1
   endfor
   0delete _
 
-  nnoremap <silent><buffer> q     :bwipeout<cr>
-  nnoremap <silent><buffer> <esc> :bwipeout<cr>
+  nnoremap <silent><nowait><buffer> q     :bwipeout<cr>
+  nnoremap <silent><nowait><buffer> <esc> :bwipeout<cr>
 
   setlocal bufhidden=wipe
   setlocal buftype=nofile
@@ -78,7 +78,7 @@ endfunction
 function! s:create_map(map) " {{{1
   let l:leader = get(a:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
-    silent execute 'inoremap <silent><buffer>' l:leader . l:leader l:leader
+    silent execute 'inoremap <silent><nowait><buffer>' l:leader . l:leader l:leader
   endif
   let l:lhs = l:leader . a:map.lhs
 
@@ -100,7 +100,7 @@ function! s:create_map(map) " {{{1
     let b:vimtex_context[l:key] = a:map.context
   endif
 
-  silent execute 'inoremap <expr><silent><buffer>' l:lhs
+  silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
         \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
 
   let s:created_maps += [a:map]
