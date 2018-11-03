@@ -36,11 +36,11 @@ function! s:scratch.open() abort dict " {{{1
   setlocal nowrap
   setlocal tabstop=8
 
-  nnoremap <silent><buffer> q     :call b:scratch.close()<cr>
-  nnoremap <silent><buffer> <esc> :call b:scratch.close()<cr>
-  nnoremap <silent><buffer> <c-6> :call b:scratch.close()<cr>
-  nnoremap <silent><buffer> <c-^> :call b:scratch.close()<cr>
-  nnoremap <silent><buffer> <c-e> :call b:scratch.close()<cr>
+  nnoremap <silent><nowait><buffer> q     :call b:scratch.close()<cr>
+  nnoremap <silent><nowait><buffer> <esc> :call b:scratch.close()<cr>
+  nnoremap <silent><nowait><buffer> <c-6> :call b:scratch.close()<cr>
+  nnoremap <silent><nowait><buffer> <c-^> :call b:scratch.close()<cr>
+  nnoremap <silent><nowait><buffer> <c-e> :call b:scratch.close()<cr>
 
   if has_key(self, 'syntax')
     call self.syntax()
