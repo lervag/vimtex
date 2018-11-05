@@ -41,8 +41,8 @@ Do (Complete):
 
 Expect tex (Verify):
   \input {preamble.tex}
-  \includeonly{chapter.tex,section.tex}
-  \include{section.tex}
+  \includeonly{chapter,section}
+  \include{section}
 
 Given tex (Completion: \includepdf):
 =================================================================================

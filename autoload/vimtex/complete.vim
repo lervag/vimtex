@@ -526,10 +526,19 @@ function! s:completer_inc.complete(regex) dict abort " {{{2
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
   call s:filter_with_options(self.candidates, a:regex)
-  let self.candidates = map(self.candidates, '{
-        \ ''word'' : v:val,
-        \ ''kind'' : '' [input/include]'',
-        \}')
+
+  if self.context =~# '\\include'
+    let self.candidates = map(self.candidates, '{
+          \ ''word'' : fnamemodify(v:val, '':r''),
+          \ ''kind'' : '' [include]'',
+          \}')
+  else
+    let self.candidates = map(self.candidates, '{
+          \ ''word'' : v:val,
+          \ ''kind'' : '' [input]'',
+          \}')
+  endif
+
   return self.candidates
 endfunction
 
