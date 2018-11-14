@@ -159,7 +159,11 @@ if has('win32')
       let l:cmd = 'start /b ' . cmd
     endif
 
-    let self.prepared_cmd = l:cmd
+    if self.silent && self.output ==# 'null'
+      let self.prepared_cmd = '"' . l:cmd . '"'
+    else
+      let self.prepared_cmd = l:cmd
+    endif
   endfunction
 
   " }}}1
