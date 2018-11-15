@@ -172,7 +172,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
     let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
-    for line in s:filter_with_options(lines, a:regex)
+    for line in s:filter_with_options(lines, a:regex, {'anchor': 0})
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
@@ -780,10 +780,11 @@ endfunction
 "
 " Utility functions
 "
-function! s:filter_with_options(input, regex) abort " {{{1
+function! s:filter_with_options(input, regex, ...) abort " {{{1
   if empty(a:input) | return a:input | endif
 
   let l:expression = type(a:input[0]) == type({}) ? 'v:val.word' : 'v:val'
+  let l:opts = a:0 > 0 ? a:1 : {}
 
   if g:vimtex_complete_ignore_case && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
     let l:expression .= ' =~? '
@@ -791,7 +792,11 @@ function! s:filter_with_options(input, regex) abort " {{{1
     let l:expression .= ' =~# '
   endif
 
-  let l:expression .= '''^'' . a:regex'
+  if get(l:opts, 'anchor', 1)
+    let l:expression .= '''^'' . '
+  endif
+
+  let l:expression .= 'a:regex'
 
   return filter(a:input, l:expression)
 endfunction
