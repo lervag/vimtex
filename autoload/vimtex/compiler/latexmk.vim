@@ -123,7 +123,7 @@ endfunction
 function! s:compiler.init_check_requirements() abort dict " {{{1
   " Check option validity
   if self.callback
-    if !(has('clientserver') || has('nvim'))
+    if !(has('clientserver') || has('nvim') || has('job'))
       let self.callback = 0
       call vimtex#log#warning(
             \ 'Can''t use callbacks without +clientserver',
@@ -184,23 +184,33 @@ function! s:compiler.build_cmd() abort dict " {{{1
     endif
 
     if self.callback
-      if empty(v:servername)
-        call vimtex#log#warning('Can''t use callbacks with empty v:servername')
-      else
-        " Some notes:
-        " - We excape the v:servername because this seems necessary on Windows
-        "   for neovim, see e.g. Github Issue #877
-        for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
-          let l:callback = has('win32')
-                \   ? '"vimtex#compiler#callback(' . l:val . ')"'
-                \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
+      if has('job')
+        for [l:opt, l:val] in items({'success_cmd' : 'vimtex_compiler_callback_success', 'failure_cmd' : 'vimtex_compiler_callback_failure'})
           let l:func = vimtex#util#shellescape('""')
-                \ . g:vimtex_compiler_progname
+                \ . 'echo '
                 \ . vimtex#util#shellescape('""')
-                \ . ' --servername ' . vimtex#util#shellescape(v:servername)
-                \ . ' --remote-expr ' . l:callback
+                \ . l:val
           let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
         endfor
+      else
+        if empty(v:servername)
+          call vimtex#log#warning('Can''t use callbacks with empty v:servername')
+        else
+          " Some notes:
+          " - We excape the v:servername because this seems necessary on Windows
+          "   for neovim, see e.g. Github Issue #877
+          for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
+            let l:callback = has('win32')
+                  \   ? '"vimtex#compiler#callback(' . l:val . ')"'
+                  \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
+            let l:func = vimtex#util#shellescape('""')
+                  \ . g:vimtex_compiler_progname
+                  \ . vimtex#util#shellescape('""')
+                  \ . ' --servername ' . vimtex#util#shellescape(v:servername)
+                  \ . ' --remote-expr ' . l:callback
+            let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+          endfor
+        endif
       endif
     endif
   endif
@@ -457,7 +467,10 @@ function! s:compiler_jobs.exec() abort dict " {{{1
         \ 'err_name' : self.output,
         \}
 
-  if !self.continuous
+  if self.continuous
+    let l:options.out_cb = function('s:continuous_callback')
+    let l:options.out_io = 'pipe'
+  else
     let s:cb_target = self.target_path !=# b:vimtex.tex
           \ ? self.target_path : ''
     let l:options.exit_cb = function('s:callback')
@@ -501,6 +514,16 @@ endfunction
 function! s:callback(ch, msg) abort " {{{1
   call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
 endfunction
+
+" }}}1
+func! s:continuous_callback(channel, msg) abort " {{{1
+    call writefile([a:msg], b:vimtex.compiler.output, 'a')
+    if a:msg == 'vimtex_compiler_callback_success'
+        call vimtex#compiler#callback(1)
+    elseif a:msg == 'vimtex_compiler_callback_failure'
+        call vimtex#compiler#callback(0)
+    endif
+endfunc
 
 " }}}1
 
