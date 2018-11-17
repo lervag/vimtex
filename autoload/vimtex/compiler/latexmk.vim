@@ -126,7 +126,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
     if !(has('clientserver') || has('nvim') || has('job'))
       let self.callback = 0
       call vimtex#log#warning(
-            \ 'Can''t use callbacks without +clientserver',
+            \ 'Can''t use callbacks without +job or +clientserver',
             \ 'Callback option has been disabled.')
     endif
   endif
@@ -192,25 +192,23 @@ function! s:compiler.build_cmd() abort dict " {{{1
           let l:func = 'echo ' . l:val
           let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
         endfor
+      elseif empty(v:servername)
+        call vimtex#log#warning('Can''t use callbacks with empty v:servername')
       else
-        if empty(v:servername)
-          call vimtex#log#warning('Can''t use callbacks with empty v:servername')
-        else
-          " Some notes:
-          " - We excape the v:servername because this seems necessary on Windows
-          "   for neovim, see e.g. Github Issue #877
-          for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
-            let l:callback = has('win32')
-                  \   ? '"vimtex#compiler#callback(' . l:val . ')"'
-                  \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
-            let l:func = vimtex#util#shellescape('""')
-                  \ . g:vimtex_compiler_progname
-                  \ . vimtex#util#shellescape('""')
-                  \ . ' --servername ' . vimtex#util#shellescape(v:servername)
-                  \ . ' --remote-expr ' . l:callback
-            let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
-          endfor
-        endif
+        " Some notes:
+        " - We excape the v:servername because this seems necessary on Windows
+        "   for neovim, see e.g. Github Issue #877
+        for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
+          let l:callback = has('win32')
+                \   ? '"vimtex#compiler#callback(' . l:val . ')"'
+                \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
+          let l:func = vimtex#util#shellescape('""')
+                \ . g:vimtex_compiler_progname
+                \ . vimtex#util#shellescape('""')
+                \ . ' --servername ' . vimtex#util#shellescape(v:servername)
+                \ . ' --remote-expr ' . l:callback
+          let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+        endfor
       endif
     endif
   endif
