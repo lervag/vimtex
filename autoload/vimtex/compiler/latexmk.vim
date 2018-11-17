@@ -185,11 +185,11 @@ function! s:compiler.build_cmd() abort dict " {{{1
 
     if self.callback
       if has('job')
-        for [l:opt, l:val] in items({'success_cmd' : 'vimtex_compiler_callback_success', 'failure_cmd' : 'vimtex_compiler_callback_failure'})
-          let l:func = vimtex#util#shellescape('""')
-                \ . 'echo '
-                \ . vimtex#util#shellescape('""')
-                \ . l:val
+        for [l:opt, l:val] in items({
+              \ 'success_cmd' : 'vimtex_compiler_callback_success',
+              \ 'failure_cmd' : 'vimtex_compiler_callback_failure',
+              \})
+          let l:func = 'echo ' . l:val
           let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
         endfor
       else
@@ -468,7 +468,7 @@ function! s:compiler_jobs.exec() abort dict " {{{1
         \}
 
   if self.continuous
-    let l:options.out_cb = function('s:continuous_callback')
+    let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.out_io = 'pipe'
   else
     let s:cb_target = self.target_path !=# b:vimtex.tex
@@ -516,14 +516,14 @@ function! s:callback(ch, msg) abort " {{{1
 endfunction
 
 " }}}1
-func! s:continuous_callback(channel, msg) abort " {{{1
-    call writefile([a:msg], b:vimtex.compiler.output, 'a')
-    if a:msg == 'vimtex_compiler_callback_success'
-        call vimtex#compiler#callback(1)
-    elseif a:msg == 'vimtex_compiler_callback_failure'
-        call vimtex#compiler#callback(0)
-    endif
-endfunc
+function! s:callback_continuous_output(channel, msg) abort " {{{1
+  call writefile([a:msg], b:vimtex.compiler.output, 'a')
+  if a:msg ==# 'vimtex_compiler_callback_success'
+    call vimtex#compiler#callback(1)
+  elseif a:msg ==# 'vimtex_compiler_callback_failure'
+    call vimtex#compiler#callback(0)
+  endif
+endfunction
 
 " }}}1
 
