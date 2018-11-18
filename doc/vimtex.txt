@@ -231,15 +231,15 @@ Compiler backend~
 
 Job~
                                                           *vimtex-job*
-  |vimtex| requires the |job| or |nvim| for the callback functionality to work.
-  The callbacks are used to provide feedback when compilation is finished,
-  as well as to parse the log for errors and warnings and to open the
-  |quickfix| window when necessary.
+  |vimtex| requires either |nvim|, Vim with |+job|, or |vimtex-clientserver| for the
+  callback functionality to work. The callbacks are used to provide feedback
+  when compilation is finished, as well as to parse the log for errors and
+  warnings and to open the |quickfix| window when necessary.
 
 Clientserver~
                                                           *vimtex-clientserver*
-  When the |job| or |nvim| is not available, |vimtex| requires the
-  |clientserver| for the callback functionality to work.
+  When not on |nvim| or |+job| is not available, then |vimtex| requires
+  |+clientserver| for the callback functionality to work.
 
   A server will be started automatically if Vim is running on Windows, or if
   running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
@@ -260,8 +260,6 @@ Clientserver~
 <
   For other methods of ensuring that Vim is started with a servername, see:
   http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
-
-  For setting up callback functionality in Neovim, see |vimtex-faq-neovim|.
 
   To test whether a server was successfully started, |serverlist()| can be
   used. E.g. `:echo serverlist()`
@@ -812,8 +810,8 @@ OPTIONS                                                        *vimtex-options*
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
     after compilation is finished.
 
-    Note 1: This feature requires |nvim|, |job| or |clientserver|.
-    Note 2: When using |clientserver| the callback is run with the vim
+    Note 1: This feature requires |nvim|, Vim with |+job| or |+clientserver|.
+    Note 2: When using |clientserver|, the callback is run with the vim
             executable defined by |g:vimtex_compiler_progname|.
     Note 3: Callbacks are only possible when the `backend` is one of `nvim` or
             `jobs`, or when `continuous` is also activated.
@@ -3265,10 +3263,10 @@ when source files have been changed.  |vimtex| uses the continuous mode by
 default, but `latexmk` also allows single shot compilations.  The compiler may
 be configured through the |g:vimtex_compiler_latexmk| option.
 
-If you use neovim or use Vim with |+job| or |+clientserver| option and if the
-`callback` key is enabled (which it is by default), then compilation errors
-will be parsed automatically.  This is done by utilizing the tricks explained
-below. Note that this only works for continuous compilation mode.
+If you use |nvim| or Vim with |+job| or |+clientserver|, and if the `callback`
+key is enabled (which it is by default), then compilation errors will be
+parsed automatically.  This is done by utilizing the tricks explained below.
+Note: This only works for continuous compilation mode.
 
 As stated, one may customize the `latexmk` options through
 |g:vimtex_compiler_latexmk|.  However, one may also configure `latexmk`
@@ -3536,20 +3534,23 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 <
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
-A: Yes. Most features work out of the box, but the compiler coupling and some
-   of the viewer functionality require the |--remote| options from the
-   |clientserver|. For some reason, these options have been removed from
-   neovim, see #1750 [0]. There does remain some hope that the options will be
-   reimplemented sometime in the future.
+A: Yes. Since 2018-11-18 [0], most features work out of the box.
 
-   In the meantime, there exists a workaround: `neovim-remote` [1] is a simple
+   `Deprecated`: The compiler coupling and some of the viewer functionality
+   require the |--remote| options from the |clientserver|. For some reason,
+   these options have been removed from neovim, see #1750 [1]. There does
+   remain some hope that the options will be reimplemented sometime in the
+   future.
+
+   In the meantime, there exists a workaround: `neovim-remote` [2] is a simple
    tool that implements the |--remote| options through a python script. If one
    downloads this tool and sets the option |g:vimtex_compiler_progname| to
    `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
    should work.
 
-   [0]: https://github.com/neovim/neovim/issues/1750
-   [1]: https://github.com/lervag/vimtex/issues/262
+   [0]: https://github.com/lervag/vimtex/issues/1258
+   [1]: https://github.com/neovim/neovim/issues/1750
+   [2]: https://github.com/lervag/vimtex/issues/262
 
                                                               *vimtex-faq-tags*
 Q: How can I jump from a `\ref{label}` to the corresponding label?
