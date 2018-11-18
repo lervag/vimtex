@@ -123,10 +123,10 @@ endfunction
 function! s:compiler.init_check_requirements() abort dict " {{{1
   " Check option validity
   if self.callback
-    if !(has('clientserver') || has('nvim'))
+    if !(has('clientserver') || has('nvim') || has('job'))
       let self.callback = 0
       call vimtex#log#warning(
-            \ 'Can''t use callbacks without +clientserver',
+            \ 'Can''t use callbacks without +job, +nvim or +clientserver',
             \ 'Callback option has been disabled.')
     endif
   endif
@@ -184,7 +184,15 @@ function! s:compiler.build_cmd() abort dict " {{{1
     endif
 
     if self.callback
-      if empty(v:servername)
+      if has('job') || has('nvim')
+        for [l:opt, l:val] in items({
+              \ 'success_cmd' : 'vimtex_compiler_callback_success',
+              \ 'failure_cmd' : 'vimtex_compiler_callback_failure',
+              \})
+          let l:func = 'echo ' . l:val
+          let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+        endfor
+      elseif empty(v:servername)
         call vimtex#log#warning('Can''t use callbacks with empty v:servername')
       else
         " Some notes:
@@ -457,7 +465,10 @@ function! s:compiler_jobs.exec() abort dict " {{{1
         \ 'err_name' : self.output,
         \}
 
-  if !self.continuous
+  if self.continuous
+    let l:options.out_cb = function('s:callback_continuous_output')
+    let l:options.out_io = 'pipe'
+  else
     let s:cb_target = self.target_path !=# b:vimtex.tex
           \ ? self.target_path : ''
     let l:options.exit_cb = function('s:callback')
@@ -500,6 +511,16 @@ endfunction
 " }}}1
 function! s:callback(ch, msg) abort " {{{1
   call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
+endfunction
+
+" }}}1
+function! s:callback_continuous_output(channel, msg) abort " {{{1
+  call writefile([a:msg], b:vimtex.compiler.output, 'a')
+  if a:msg ==# 'vimtex_compiler_callback_success'
+    call vimtex#compiler#callback(1)
+  elseif a:msg ==# 'vimtex_compiler_callback_failure'
+    call vimtex#compiler#callback(0)
+  endif
 endfunction
 
 " }}}1
@@ -567,6 +588,11 @@ endfunction
 function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   if !empty(a:data) && filewritable(self.output)
     call writefile(filter(a:data, '!empty(v:val)'), self.output, 'a')
+  endif
+  if match(a:data, 'vimtex_compiler_callback_success') != -1
+    call vimtex#compiler#callback(1)
+  elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
+    call vimtex#compiler#callback(0)
   endif
 endfunction
 

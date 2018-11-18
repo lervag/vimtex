@@ -229,12 +229,17 @@ Compiler backend~
   but where the compilation behaviour is typically defined in the preamble
   of the document. (|vimtex-arara|)
 
+Job~
+                                                          *vimtex-job*
+  |vimtex| requires the |job| or |nvim| for the callback functionality to work.
+  The callbacks are used to provide feedback when compilation is finished,
+  as well as to parse the log for errors and warnings and to open the
+  |quickfix| window when necessary.
+
 Clientserver~
                                                           *vimtex-clientserver*
-  |vimtex| requires the |clientserver| for the callback functionality to work.
-  The callbacks are used to provide feedback when compilation is finished, as
-  well as to parse the log for errors and warnings and to open the |quickfix|
-  window when necessary.
+  When the |job| or |nvim| is not available, |vimtex| requires the
+  |clientserver| for the callback functionality to work.
 
   A server will be started automatically if Vim is running on Windows, or if
   running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
@@ -807,9 +812,9 @@ OPTIONS                                                        *vimtex-options*
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
     after compilation is finished.
 
-    Note 1: This feature requires |clientserver|.
-    Note 2: The callback is run with the vim executable defined by
-            |g:vimtex_compiler_progname|.
+    Note 1: This feature requires |nvim|, |job| or |clientserver|.
+    Note 2: When using |clientserver| the callback is run with the vim
+            executable defined by |g:vimtex_compiler_progname|.
     Note 3: Callbacks are only possible when the `backend` is one of `nvim` or
             `jobs`, or when `continuous` is also activated.
 
@@ -3260,10 +3265,10 @@ when source files have been changed.  |vimtex| uses the continuous mode by
 default, but `latexmk` also allows single shot compilations.  The compiler may
 be configured through the |g:vimtex_compiler_latexmk| option.
 
-If vim is compiled with the |+clientserver| option and if the `callback` key
-is enabled (which it is by default), then compilation errors will be parsed
-automatically.  This is done by utilizing the tricks explained below.  Note
-that this only works for continuous compilation mode.
+If you use neovim or use Vim with |+job| or |+clientserver| option and if the
+`callback` key is enabled (which it is by default), then compilation errors
+will be parsed automatically.  This is done by utilizing the tricks explained
+below. Note that this only works for continuous compilation mode.
 
 As stated, one may customize the `latexmk` options through
 |g:vimtex_compiler_latexmk|.  However, one may also configure `latexmk`
