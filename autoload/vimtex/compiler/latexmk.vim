@@ -126,7 +126,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
     if !(has('clientserver') || has('nvim') || has('job'))
       let self.callback = 0
       call vimtex#log#warning(
-            \ 'Can''t use callbacks without +job or +clientserver',
+            \ 'Can''t use callbacks without +job, +nvim or +clientserver',
             \ 'Callback option has been disabled.')
     endif
   endif
@@ -184,7 +184,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
     endif
 
     if self.callback
-      if has('job')
+      if has('job') || has('nvim')
         for [l:opt, l:val] in items({
               \ 'success_cmd' : 'vimtex_compiler_callback_success',
               \ 'failure_cmd' : 'vimtex_compiler_callback_failure',
@@ -588,6 +588,11 @@ endfunction
 function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   if !empty(a:data) && filewritable(self.output)
     call writefile(filter(a:data, '!empty(v:val)'), self.output, 'a')
+  endif
+  if match(a:data, 'vimtex_compiler_callback_success') != -1
+    call vimtex#compiler#callback(1)
+  elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
+    call vimtex#compiler#callback(0)
   endif
 endfunction
 
