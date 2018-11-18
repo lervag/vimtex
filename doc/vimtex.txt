@@ -238,8 +238,9 @@ Job~
 
 Clientserver~
                                                           *vimtex-clientserver*
-  When not on |nvim| or |+job| is not available, then |vimtex| requires
-  |+clientserver| for the callback functionality to work.
+  |+clientserver| is necessary for backward search from PDF viewer to Vim.
+  Further, when not on |nvim| or when |+job| is not available, then |vimtex|
+  may use |+clientserver| for the callback functionality to work.
 
   A server will be started automatically if Vim is running on Windows, or if
   running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
