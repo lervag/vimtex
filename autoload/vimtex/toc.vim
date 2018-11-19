@@ -94,6 +94,7 @@ function! s:toc.toggle() abort dict " {{{1
   if self.is_open()
     call self.close()
   else
+    call self.open()
     if has_key(self, 'prev_winid')
       call win_gotoid(self.prev_winid)
     endif
