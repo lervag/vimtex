@@ -118,19 +118,23 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 
   let self.type_length = 4
   for m in self.search(a:regex)
-    let type = m['type']   ==# '' ? '[-]' : '[' . m['type']   . '] '
-    let auth = m['author'] ==# '' ? ''    :       m['author'][:20] . ' '
-    let year = m['year']   ==# '' ? ''    : '(' . m['year']   . ')'
-
-    " Align the type entry and fix minor annoyance in author list
-    let type = printf('%-' . self.type_length . 's', type)
+    let auth = empty(m['author']) ? '' : m['author'][:20]
     let auth = substitute(auth, '\~', ' ', 'g')
-    let auth = substitute(auth, ',.*\ze', ' et al. ', '')
+    let auth = substitute(auth, ',.*\ze', ' et al.', '')
+
+    let menu_string = auth
+    let menu_string .= empty(m['year']) ? ''
+          \ : (empty(menu_string) ? '' : ' ') . '(' . m['year']   . ')'
+    let menu_string .= empty(m['title']) ? ''
+          \ : (empty(menu_string) ? '' : ', ') . '"' . m['title'] . '"'
+
+    let type = empty(m['type']) ? '[-]' : '[' . m['type']   . ']'
+    let menu_string = printf('%-' . self.type_length . 's%s', type, menu_string)
 
     call add(self.candidates, {
           \ 'word': m['key'],
-          \ 'abbr': type . auth . year,
-          \ 'menu': m['title']
+          \ 'abbr': m['key'],
+          \ 'menu': menu_string,
           \ })
   endfor
 
