@@ -134,6 +134,10 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
           \ })
   endfor
 
+  if g:vimtex_complete_bib_simple
+    call s:filter_with_options(self.candidates, a:regex)
+  endif
+
   return self.candidates
 endfunction
 
@@ -172,7 +176,11 @@ function! s:completer_bib.search(regex) dict abort " {{{2
     let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
-    for line in s:filter_with_options(lines, a:regex, {'anchor': 0})
+    if !g:vimtex_complete_bib_simple
+      call s:filter_with_options(lines, a:regex, {'anchor': 0})
+    endif
+
+    for line in lines
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
@@ -199,9 +207,13 @@ function! s:completer_bib.search(regex) dict abort " {{{2
   " Find data from 'thebibliography' environments
   let lines = readfile(b:vimtex.tex)
   if match(lines, '\C\\begin{thebibliography}') >= 0
-    for line in s:filter_with_options(
-          \ filter(lines, 'v:val =~# ''\C\\bibitem'''),
-          \ a:regex)
+    call filter(lines, 'v:val =~# ''\C\\bibitem''')
+
+    if !g:vimtex_complete_bib_simple
+      call s:filter_with_options(lines, a:regex)
+    endif
+
+    for line in lines
       let matches = matchlist(line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
       if len(matches) > 1
         call add(res, {

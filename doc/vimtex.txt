@@ -985,6 +985,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_complete_bib_simple*
+  If enabled, then cite completion only searches on the bib keys. This may
+  work better e.g. if one uses an autocomplete plugin.
+
+  Default value: 0
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub
@@ -2657,9 +2663,12 @@ filenames. If desired, one may set |g:vimtex_complete_close_braces|, which
 makes the completion include closing braces.
 
 Associated settings:
-  |g:vimtex_complete_enabled|
-  |g:vimtex_complete_close_braces|
-  |g:vimtex_complete_recursive_bib|
+- |g:vimtex_complete_enabled|
+- |g:vimtex_complete_close_braces|
+- |g:vimtex_complete_recursive_bib|
+- |g:vimtex_complete_ignore_case|
+- |g:vimtex_complete_smart_case|
+- |g:vimtex_complete_bib_simple|
 
 ------------------------------------------------------------------------------
 COMPLETE CITATIONS                                      *vimtex-complete-cites*
@@ -2668,8 +2677,9 @@ Citation completion is triggered by '\cite{' commands.  The completion parses
 included bibliography files (`*.bib`) and `thebibliography` environments to
 gather the completion candidates.
 
-As an example, assume that a bibliography file is included with the following
-entry: >
+By default, cite completion is "smart" in that it allows to complete on
+author name, title and similar. As an example, assume that a bibliography file
+is included with the following entry: >
 
         @book { knuth1981,
                 author = "Donald E. Knuth",
@@ -2685,6 +2695,10 @@ Then the bibliography key `knuth1981` will be completed with e.g.: >
 
 In particular, note that regular expressions (or vim patterns) can be used
 after '\cite{' to search for candidates.
+
+However, if one prefers, one may set |g:vimtex_complete_bib_simple| to only
+allow completion on the bibkeys directly. This should typically work better
+with autocomplete plugins.
 
 ------------------------------------------------------------------------------
 COMPLETE LABELS                                        *vimtex-complete-labels*

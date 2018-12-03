@@ -3,7 +3,7 @@ let &rtp = '~/.vim/bundle/vimtex,' . &rtp
 filetype plugin indent on
 syntax enable
 
-nnoremap q :qall<cr>
+nnoremap q :qall!<cr>
 inoremap jk <esc>
 
 set completeopt=longest,menu,preview
@@ -14,6 +14,7 @@ execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 let g:tex_flavor = 'latex'
 let g:vimtex_echo_ignore_wait = 1
 let g:vimtex_view_automatic = 0
+" let g:vimtex_complete_bib_simple = 1
 
 if has('vim_starting')
   silent edit main.tex
