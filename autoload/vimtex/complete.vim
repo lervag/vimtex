@@ -97,7 +97,7 @@ function! s:completer_bib.init() dict abort " {{{2
   endif
 
   " Check if kpsewhich is required and available
-  if g:vimtex_complete_recursive_bib && !executable('kpsewhich')
+  if g:vimtex_complete_bib.recursive && !executable('kpsewhich')
     let self.enabled = 0
     call vimtex#log#warning(
           \ 'kpsewhich is not executable!',
@@ -118,9 +118,12 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 
   let self.type_length = 1
   for m in self.search(a:regex)
+    let cand = {'word': m['key']}
+
     let auth = empty(m['author']) ? 'Unknown' : m['author'][:20]
     let auth = substitute(auth, '\~', ' ', 'g')
     let substitutes = {
+          \ '@key' : m['key'],
           \ '@title' : empty(m['title']) ? 'No title' : m['title'],
           \ '@year' : empty(m['year']) ? '?' : m['year'],
           \ '@author_all' : auth,
@@ -129,18 +132,25 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
           \}
 
     " Create menu string
-    let menu_string = copy(g:vimtex_complete_bib_menu_fmt)
-    for [key, val] in items(substitutes)
-      let menu_string = substitute(menu_string, key, escape(val, '&'), '')
-    endfor
+    if !empty(g:vimtex_complete_bib.menu_fmt)
+      let cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
+      for [key, val] in items(substitutes)
+        let cand.menu = substitute(cand.menu, key, escape(val, '&'), '')
+      endfor
+    endif
 
-    call add(self.candidates, {
-          \ 'word': m['key'],
-          \ 'menu': menu_string,
-          \ })
+    " Create abbreviation string
+    if !empty(g:vimtex_complete_bib.abbr_fmt)
+      let cand.abbr = copy(g:vimtex_complete_bib.abbr_fmt)
+      for [key, val] in items(substitutes)
+        let cand.abbr = substitute(cand.abbr, key, escape(val, '&'), '')
+      endfor
+    endif
+
+    call add(self.candidates, cand)
   endfor
 
-  if g:vimtex_complete_bib_simple
+  if g:vimtex_complete_bib.simple
     call s:filter_with_options(self.candidates, a:regex)
   endif
 
@@ -182,7 +192,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
     let lines = split(substitute(join(lines, "\n"),
           \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
 
-    if !g:vimtex_complete_bib_simple
+    if !g:vimtex_complete_bib.simple
       call s:filter_with_options(lines, a:regex, {'anchor': 0})
     endif
 
@@ -215,7 +225,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
   if match(lines, '\C\\begin{thebibliography}') >= 0
     call filter(lines, 'v:val =~# ''\C\\bibitem''')
 
-    if !g:vimtex_complete_bib_simple
+    if !g:vimtex_complete_bib.simple
       call s:filter_with_options(lines, a:regex)
     endif
 
@@ -242,7 +252,6 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   " * Parse commands such as \bibliography{file1,file2.bib,...}
   " * This also removes the .bib extensions
   "
-  "
 
   " Handle local file editing (e.g. subfiles package)
   let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
@@ -250,7 +259,7 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
 
   let l:lines = vimtex#parser#tex(l:file, {
         \ 'detailed' : 0,
-        \ 'recursive' : g:vimtex_complete_recursive_bib,
+        \ 'recursive' : g:vimtex_complete_bib.recursive,
         \ })
 
   let l:bibfiles = []
