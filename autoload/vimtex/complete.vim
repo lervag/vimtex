@@ -118,19 +118,18 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 
   let self.type_length = 1
   for m in self.search(a:regex)
-    " Prepare substitutions
     let auth = empty(m['author']) ? 'Unknown' : m['author'][:20]
     let auth = substitute(auth, '\~', ' ', 'g')
-    let auth = substitute(auth, ',.*\ze', ' et al.', '')
     let substitutes = {
-          \ '@type' : empty(m['type']) ? '-' : m['type'],
-          \ '@author' : auth,
-          \ '@year' : empty(m['year']) ? '?' : m['year'],
           \ '@title' : empty(m['title']) ? 'No title' : m['title'],
+          \ '@year' : empty(m['year']) ? '?' : m['year'],
+          \ '@author_all' : auth,
+          \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
+          \ '@type' : empty(m['type']) ? '-' : m['type'],
           \}
 
     " Create menu string
-    let menu_string = '[@type] @author (@year), "@title"'
+    let menu_string = copy(g:vimtex_complete_bib_menu_fmt)
     for [key, val] in items(substitutes)
       let menu_string = substitute(menu_string, key, escape(val, '&'), '')
     endfor

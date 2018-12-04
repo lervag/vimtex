@@ -991,6 +991,18 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_complete_bib_menu_fmt*
+  The format used for the menu entries for bib completion candidates. The
+  possible keys that may be used are:
+
+    @title         Title
+    @year          Publication year
+    @author_all    Full author list
+    @author_short  Shortened author list
+    @type          Type of entry
+
+  Default value: '[@type] @author_short (@year), "@title"'
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub
@@ -2669,6 +2681,7 @@ Associated settings:
 - |g:vimtex_complete_ignore_case|
 - |g:vimtex_complete_smart_case|
 - |g:vimtex_complete_bib_simple|
+- |g:vimtex_complete_bib_menu_fmt|
 
 ------------------------------------------------------------------------------
 COMPLETE CITATIONS                                      *vimtex-complete-cites*
