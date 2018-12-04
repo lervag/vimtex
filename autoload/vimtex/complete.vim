@@ -137,7 +137,6 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 
     call add(self.candidates, {
           \ 'word': m['key'],
-          \ 'abbr': m['key'],
           \ 'menu': menu_string,
           \ })
   endfor
