@@ -79,7 +79,9 @@ function! vimtex#compiler#callback(status) abort " {{{1
   endif
 
   for l:hook in g:vimtex_compiler_callback_hooks
-    execute 'call' l:hook . '(' . a:status . ')'
+    if exists('*' . l:hook)
+      execute 'call' l:hook . '(' . a:status . ')'
+    endif
   endfor
 
   return ''
