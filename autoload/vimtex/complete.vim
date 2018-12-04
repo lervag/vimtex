@@ -116,20 +116,24 @@ endfunction
 function! s:completer_bib.complete(regex) dict abort " {{{2
   let self.candidates = []
 
-  let self.type_length = 4
+  let self.type_length = 1
   for m in self.search(a:regex)
-    let auth = empty(m['author']) ? '' : m['author'][:20]
+    " Prepare substitutions
+    let auth = empty(m['author']) ? 'Unknown' : m['author'][:20]
     let auth = substitute(auth, '\~', ' ', 'g')
     let auth = substitute(auth, ',.*\ze', ' et al.', '')
+    let substitutes = {
+          \ '@type' : empty(m['type']) ? '-' : m['type'],
+          \ '@author' : auth,
+          \ '@year' : empty(m['year']) ? '?' : m['year'],
+          \ '@title' : empty(m['title']) ? 'No title' : m['title'],
+          \}
 
-    let menu_string = auth
-    let menu_string .= empty(m['year']) ? ''
-          \ : (empty(menu_string) ? '' : ' ') . '(' . m['year']   . ')'
-    let menu_string .= empty(m['title']) ? ''
-          \ : (empty(menu_string) ? '' : ', ') . '"' . m['title'] . '"'
-
-    let type = empty(m['type']) ? '[-]' : '[' . m['type']   . ']'
-    let menu_string = printf('%-' . self.type_length . 's%s', type, menu_string)
+    " Create menu string
+    let menu_string = '[@type] @author (@year), "@title"'
+    for [key, val] in items(substitutes)
+      let menu_string = substitute(menu_string, key, escape(val, '&'), '')
+    endfor
 
     call add(self.candidates, {
           \ 'word': m['key'],
@@ -188,7 +192,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
       let matches = matchlist(line,
             \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
       if !empty(matches) && !empty(matches[1])
-        let self.type_length = max([self.type_length, len(matches[2]) + 3])
+        let self.type_length = max([self.type_length, len(matches[2])])
         call add(res, {
               \ 'key':    matches[1],
               \ 'type':   matches[2],
