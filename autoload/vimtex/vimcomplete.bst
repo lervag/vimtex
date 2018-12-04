@@ -5,7 +5,7 @@
 %
 
 ENTRY
-  { address author booktitle chapter doi edition editor eid howpublished institution isbn issn journal key month note number organization pages publisher school series title type volume year }
+  { address author booktitle chapter date doi edition editor eid howpublished institution isbn issn journal key month note number organization pages publisher school series title type volume year }
   {}
   { label }
 STRINGS { s t}
@@ -113,6 +113,7 @@ FUNCTION {format.title}
     { "t" change.case$ }
   if$
 }
+
 FUNCTION {output.label}
 { newline$
   %"{" cite$ * write$
@@ -120,12 +121,19 @@ FUNCTION {output.label}
   ""
 }
 
+FUNCTION {year.or.date}
+{
+    year empty$
+    {date} 
+    {year}
+    if$    
+}    
 
 FUNCTION {format.date}
 {
   ""
   duplicate$ empty$
-  year  duplicate$ empty$
+  year.or.date duplicate$ empty$
     { swap$ 'skip$
         { "there's a month but no year in " cite$ * warning$ }
       if$
