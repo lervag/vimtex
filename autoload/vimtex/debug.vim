@@ -49,7 +49,7 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
     else
       let l:filename = matchstr(
             \ vimtex#util#command('verbose function ' . l:name)[1],
-            \ 'Last set from \zs\f\+')
+            \ '\f\+\.vim')
     endif
 
     let l:filename = fnamemodify(l:filename, ':p')
