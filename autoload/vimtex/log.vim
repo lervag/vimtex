@@ -95,7 +95,15 @@ function! s:logger.print_content() abort dict " {{{1
   for l:entry in self.entries
     call append('$', printf('%s: %s', l:entry.time, l:entry.type))
     for l:stack in l:entry.callstack
-      call append('$', printf('  from: %s', l:stack.function))
+      if l:stack.lnum > 0
+        call append('$', printf('  #%d %s:%d', l:stack.nr, l:stack.filename, l:stack.lnum))
+      else
+        call append('$', printf('  #%d %s', l:stack.nr, l:stack.filename))
+      endif
+      call append('$', printf('  In %s', l:stack.function))
+      if !empty(l:stack.text)
+        call append('$', printf('    %s', l:stack.text))
+      endif
     endfor
     for l:msg in l:entry.msg
       call append('$', printf('  %s', l:msg))
@@ -107,7 +115,13 @@ endfunction
 " }}}1
 function! s:logger.syntax() abort dict " {{{1
   syntax match VimtexInfoOther /.*/
-  syntax match VimtexInfoKey /^.*:/ nextgroup=VimtexInfoValue
+
+  syntax include @VIM syntax/vim.vim
+  syntax match VimtexInfoVimCode /^    .*/ transparent contains=@VIM
+
+  syntax match VimtexInfoKey /^\S*:/ nextgroup=VimtexInfoValue
+  syntax match VimtexInfoKey /^  #\d\+/ nextgroup=VimtexInfoValue
+  syntax match VimtexInfoKey /^  In/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoValue /.*/ contained
 endfunction
 
