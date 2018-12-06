@@ -72,7 +72,7 @@ endfunction
 
 " }}}1
 function! s:folder.parse_title(string, type) abort dict " {{{1
-  let l:idx = 0
+  let l:idx = -1
   let l:length = strlen(a:string)
   let l:level = 1
   while l:level >= 1
@@ -85,7 +85,9 @@ function! s:folder.parse_title(string, type) abort dict " {{{1
       let l:level += 1
     endif
   endwhile
-  return strpart(a:string, 0, l:idx)
+  let l:parsed = strpart(a:string, 0, l:idx)
+  return empty(l:parsed)
+        \ ? '<untitled>' : l:parsed
 endfunction
 
 " }}}1
