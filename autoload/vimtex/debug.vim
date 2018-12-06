@@ -47,10 +47,9 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
             \ vimtex#util#command('scriptnames'),
             \ 'split(v:val, "\\v:=\\s+")[1]')[l:sid-1]
     else
-      let l:name = l:name
       let l:filename = matchstr(
             \ vimtex#util#command('verbose function ' . l:name)[1],
-            \ '.\{-}\s\+\zs\f\+$')
+            \ '\f\+$')
     endif
 
     let l:filename = fnamemodify(l:filename, ':p')
