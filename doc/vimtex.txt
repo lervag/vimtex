@@ -3029,10 +3029,9 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
       methods, e.g. https://github.com/Konfekt/FastFold.
 
 In order to get slightly cleaner fold text, I recommend setting the global
-'fillchars' option.  To preserve the default vertical separator and only
-change the fold filler, use e.g.: >
+'fillchars' option: >
 
-  set fillchars=vert:|,fold:\
+  set fillchars=fold:\ 
 
 Associated settings:
   |g:vimtex_fold_enabled|
