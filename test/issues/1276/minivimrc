@@ -1,0 +1,22 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+let g:xwindow_id = system('xdotool getactivewindow')
+let g:vimtex_view_method = 'zathura'
+let g:vimtex_view_zathura_hook_view = 'MyHook'
+let g:vimtex_view_zathura_hook_callback = 'MyHook'
+
+function! MyHook()
+  silent call system('xdotool windowactivate ' . g:xwindow_id . ' --sync')
+endfunction
+
+silent edit minimal.tex
