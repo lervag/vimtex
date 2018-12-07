@@ -67,7 +67,8 @@ function! s:folder.text(line, level) abort dict " {{{1
     let l:title = matchstr(a:line, self.re.fake_sections)
   endif
 
-  return printf('%-5s %-73s', a:level, strpart(l:title, 0, 73))
+  return printf('%-5s %-s', a:level,
+        \ substitute(strpart(l:title, 0, winwidth(0) - 7), '\s\+$', '', ''))
 endfunction
 
 " }}}1
