@@ -1238,8 +1238,14 @@ OPTIONS                                                        *vimtex-options*
     <preamble>          Fold the preamble.
 
     <sections>          Fold sections and parts of documents. Can be
-                        configured with a list of sections and parts that
-                        should be folded.
+                        configured with the following extra keys:
+                        - `parse_levels`: Whether to use detailed parsing to
+                                        set fold text levels similar to how
+                                        they are displayed in |vimtex-toc|.
+                                        Disabled by default, because it uses
+                                        more resources and may be slow.
+                        - `sections`:     List of sections that should be folded.
+                        - `parts`:        List of parts that should be folded.
 
                         When a LaTeX document is opened, the document is
                         parsed in order to define the highest fold level based
@@ -1340,6 +1346,7 @@ OPTIONS                                                        *vimtex-options*
           \ 'env_options' : {},
           \ 'markers' : {},
           \ 'sections' : {
+          \   'parse_levels' : 0,
           \   'sections' : [      !!! This is a list of regexes
           \     'part',
           \     'chapter',

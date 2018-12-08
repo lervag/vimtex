@@ -13,6 +13,7 @@ endfunction
 
 let s:folder = {
       \ 'name' : 'sections',
+      \ 'parse_levels' : 0,
       \ 're' : {},
       \ 'folds' : [],
       \ 'sections' : [],
@@ -67,8 +68,45 @@ function! s:folder.text(line, level) abort dict " {{{1
     let l:title = matchstr(a:line, self.re.fake_sections)
   endif
 
-  return printf('%-5s %-s', a:level,
+  let l:level = self.parse_level(v:foldstart, a:level)
+
+  return printf('%-5s %-s', l:level,
         \ substitute(strpart(l:title, 0, winwidth(0) - 7), '\s\+$', '', ''))
+endfunction
+
+" }}}1
+function! s:folder.parse_level(lnum, level) abort dict " {{{1
+  if !self.parse_levels | return a:level | endif
+
+  if !has_key(self, 'toc')
+    let self.toc = vimtex#toc#new({
+        \ 'name' : 'Fold text ToC',
+        \ 'layers' : ['content'],
+        \ 'refresh_always' : 0,
+        \})
+    let self.toc_updated = 0
+    let self.file_updated = {}
+  endif
+
+  let l:file = expand('%')
+  let l:ftime = getftime(l:file)
+
+  if l:ftime > get(self.file_updated, l:file)
+        \ || localtime() > self.toc_updated + 300
+    call self.toc.get_entries(1)
+    let self.toc_entries = filter(
+          \ self.toc.get_visible_entries(),
+          \ '!empty(v:val.number)')
+    let self.file_updated[l:file] = l:ftime
+    let self.toc_updated = localtime()
+  endif
+
+  let l:entries = filter(deepcopy(self.toc_entries), 'v:val.line == a:lnum')
+  if len(l:entries) > 1
+    call filter(l:entries, "v:val.file ==# expand('%:p')")
+  endif
+
+  return empty(l:entries) ? '' : self.toc.print_number(l:entries[0].number)
 endfunction
 
 " }}}1

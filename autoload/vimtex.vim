@@ -68,6 +68,7 @@ function! vimtex#init_options() abort " {{{1
         \ 'env_options' : {},
         \ 'markers' : {},
         \ 'sections' : {
+        \   'parse_levels' : 0,
         \   'sections' : [
         \     'part',
         \     'chapter',
