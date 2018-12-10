@@ -1992,8 +1992,8 @@ OPTIONS                                                        *vimtex-options*
           should work for Vim and neovim (Note: see |vimtex_faq_neovim|),
           respectively: >
 
-            vim --remote-silent %f -c %l
-            nvr --remote-silent %f -c %l
+            vim --remote-silent +%l "%f"
+            nvr --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
                 "shift + click", not "ctrl + click" as in most other viewers.
