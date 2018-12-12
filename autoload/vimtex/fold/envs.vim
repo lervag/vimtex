@@ -79,7 +79,8 @@ function! s:folder.text(line, level) abort dict " {{{1
   endif
 
   let width_ind = len(matchstr(a:line, '^\s*'))
-  let width = winwidth(0) - 4 - width_ind
+  let width = winwidth(0) - (&number ? &numberwidth : 0) - 4 - width_ind
+
   let width_env = 19
   let width_lab = len(label) + 2 > width - width_env
         \ ? width - width_env
@@ -91,7 +92,9 @@ function! s:folder.text(line, level) abort dict " {{{1
   endif
 
   if !empty(caption)
-    let caption = strcharpart(caption, 0, width_cap)
+    if strchars(caption) > width_cap
+      let caption = strpart(caption, 0, width_cap - 4) . '...'
+    endif
   else
     let width_env += width_cap
     let width_cap = 0
