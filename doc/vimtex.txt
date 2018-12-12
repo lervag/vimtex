@@ -3666,14 +3666,16 @@ A: Yes and no.  I personally don't use Windows, and as such, it is difficult
 
    * The full executable path for `gvim.exe` might include spaces, which might
      lead to problems, see e.g. [0].  A workaround is to put the default
-     installation path of Vim (or neovim) to your PATH variable and set
-     |g:vimtex_compiler_progname| to |v:progname|.
+     installation path of Vim (or neovim) to your %PATH% variable and set
+     |g:vimtex_compiler_progname| to |v:progname|. See [3] for a convenient
+     tool to adapt %PATH%.
 
    Also, see [1-2] for some relevant issues that might be of interest.
 
    [0]: https://github.com/lervag/vimtex/issues/966
    [1]: https://github.com/lervag/vimtex/issues/736
    [2]: https://github.com/lervag/vimtex/issues/882
+   [3]: https://www.rapidee.com/en/path-variable
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
