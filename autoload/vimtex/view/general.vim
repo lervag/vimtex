@@ -54,6 +54,10 @@ function! s:general.view(file) dict abort " {{{1
   let l:cmd = substitute(l:cmd, '@col', col('.'), 'g')
   let l:cmd = substitute(l:cmd, '@tex',
         \ vimtex#util#shellescape(expand('%:p')), 'g')
+  " Check if we are inside Cygwin and call the viewer with a Windows path
+  if executable('cygpath')
+    let outfile = substitute(system('cygpath -aw '.outfile), '\n', '', 'g')
+  endif
   let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
 
   " Start the view process
