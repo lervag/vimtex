@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{minted}
+\usepackage{tabularx}
 \usepackage[inline]{asymptote}
 
 %
@@ -220,6 +221,17 @@ const double pi = 3.1415926535
 \end{asydef}
 
 Here is a venn diagram produced with Asymptote, drawn to width 4cm:
+
+\begin{tabular}{l*{4}{m{1cm}}}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+\begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
 
 \def\A{A}
 \def\B{\V{B}}

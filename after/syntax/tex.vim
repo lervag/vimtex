@@ -59,7 +59,9 @@ syntax match texInputFile /\\subfile\s*\%(\[.\{-}\]\)\=\s*{.\{-}}/
 " Allow subequations (fixes #1019)
 " - This should be temporary, as it seems subequations is erroneously part of
 "   texBadMath from Charles Campbell's syntax plugin.
-syn match texBeginEnd "\(\\begin\>\|\\end\>\)\ze{subequations}" nextgroup=texBeginEndName
+syntax match texBeginEnd
+      \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
+      \ nextgroup=texBeginEndName
 
 " I don't quite see why we can't match Math zones in the MatchNMGroup
 if !exists('g:tex_no_math')
@@ -84,6 +86,60 @@ if get(g:, 'tex_fast', 'b') =~# 'b'
     endfor
     execute 'syntax cluster texMatchGroup add=' . s:style
   endfor
+endif
+
+" }}}1
+" {{{1 Add syntax highlighting of tabular specifications
+
+if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
+  syntax cluster texDocGroup add=texTabular
+  syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
+        \ contains=texBeginEnd
+        \ nextgroup=texTabularArg
+  syntax region texTabularArg matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained
+
+  syntax match texTabularCol /[lcr]/
+        \ containedin=texTabularArg
+  syntax match texTabularCol /[pmb]/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularLength
+  syntax match texTabularCol /\*/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularMulti
+  syntax region texTabularMulti matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularArg
+
+  syntax match texTabularAtSep /@/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularLength
+  syntax match texTabularVertline /||\?/
+        \ containedin=texTabularArg
+  syntax match texTabularPostPre /[<>]/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularPostPreArg
+
+  syntax region texTabularPostPreArg matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ contains=texLength,texStatement,texMathDelimSingle
+
+  syntax region texTabularLength matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ contains=texLength,texStatement
+
+  syntax match texMathDelimSingle /\$\$\?/
+        \ containedin=texTabularPostPreArg
+
+  highlight def link texTabularCol        Directory
+  highlight def link texTabularAtSep      Type
+  highlight def link texTabularVertline   Type
+  highlight def link texTabularPostPre    Type
+  highlight def link texMathDelimSingle   Delimiter
 endif
 
 " }}}1
