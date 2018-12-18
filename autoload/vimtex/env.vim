@@ -155,13 +155,17 @@ endfunction
 function! s:operator_setup(operator, type) abort " {{{1
   let &opfunc = s:snr() . 'operator_function'
 
+  let s:operator_abort = 0
   let s:operator = a:operator
   let s:operator_type = a:type
 
   " Ask for user input if necessary/relevant
   if s:operator ==# 'change'
     let l:new_env = s:change_prompt(s:operator_type)
-    if empty(l:new_env) | return | endif
+    if empty(l:new_env)
+      let s:operator_abort = 1
+      return
+    endif
 
     let s:operator_name = l:new_env
   endif
@@ -169,6 +173,8 @@ endfunction
 
 " }}}1
 function! s:operator_function(_) abort " {{{1
+  if get(s:, 'operator_abort', 0) | return | endif
+
   let l:type = get(s:, 'operator_type', '')
   let l:name = get(s:, 'operator_name', '')
 
