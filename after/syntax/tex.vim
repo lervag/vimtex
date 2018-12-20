@@ -108,10 +108,12 @@ if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
   syntax match texTabularCol /\*/
         \ containedin=texTabularArg
         \ nextgroup=texTabularMulti
+        \ contained
   syntax region texTabularMulti matchgroup=Delimiter
         \ start='{' end='}'
         \ containedin=texTabularArg
         \ nextgroup=texTabularArg
+        \ contained
 
   syntax match texTabularAtSep /@/
         \ containedin=texTabularArg
@@ -126,11 +128,13 @@ if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
         \ start='{' end='}'
         \ containedin=texTabularArg
         \ contains=texLength,texStatement,texMathDelimSingle
+        \ contained
 
   syntax region texTabularLength matchgroup=Delimiter
         \ start='{' end='}'
         \ containedin=texTabularArg
         \ contains=texLength,texStatement
+        \ contained
 
   syntax match texMathDelimSingle /\$\$\?/
         \ containedin=texTabularPostPreArg
