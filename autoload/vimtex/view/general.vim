@@ -43,6 +43,12 @@ function! s:general.view(file) dict abort " {{{1
   else
     let outfile = a:file
   endif
+
+  " Update the path for Windows on cygwin
+  if executable('cygpath')
+    let outfile = substitute(system('cygpath -aw '.outfile), '\n', '', 'g')
+  endif
+
   if vimtex#view#common#not_readable(outfile) | return | endif
 
   " Parse options
