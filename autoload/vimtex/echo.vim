@@ -12,7 +12,8 @@ endfunction
 
 " }}}1
 function! vimtex#echo#input(opts) abort " {{{1
-  if has_key(a:opts, 'info')
+  if g:vimtex_echo_verbose_input
+        \ && has_key(a:opts, 'info')
     call vimtex#echo#formatted(a:opts.info)
   endif
 

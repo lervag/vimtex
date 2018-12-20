@@ -47,6 +47,7 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_doc_handlers', [])
 
   call s:init_option('vimtex_echo_ignore_wait', 0)
+  call s:init_option('vimtex_echo_verbose_input', 1)
 
   call s:init_option('vimtex_env_change_autofill', 0)
 

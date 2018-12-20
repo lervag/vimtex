@@ -1180,6 +1180,21 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_echo_verbose_input*
+  For the set of operator mappings that change a surrounding type [0],
+  |vimtex| by default prints some information about what you are doing while
+  waiting for user input. For advanced/experienced users, one will not need
+  this info and can get a slightly clearner UI by disabling this feature (set
+  the option 0).
+
+  Default value: 1
+
+  [0]: This affects the following mappings:
+    |<plug>(vimtex-env-change)|        (default map: `cse`)
+    |<plug>(vimtex-env-change-math)|   (default map: `cs$`)
+    |<plug>(vimtex-cmd-change)|        (default map: `csc`)
+    |<plug>(vimtex-delim-change-math)| (default map: `csd`)
+
 *g:vimtex_env_change_autofill*
   If enabled, the current environment value is used as a default input for
   |<plug>(vimtex-env-change)| and |<plug>(vimtex-env-change-math)|. Some users
@@ -2389,16 +2404,17 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-env-change-math)*
   Delete/Change surrounding environment. When changing, there will be
   sensible completion candidates, see |cmdline-completion|. See also
-  |g:vimtex_env_change_autofill|.
+  |g:vimtex_env_change_autofill| and |g:vimtex_echo_verbose_input|.
 
 *<plug>(vimtex-cmd-delete)*
 *<plug>(vimtex-cmd-delete-math)*
 *<plug>(vimtex-cmd-change)*
-  Delete/Change surrounding command.
+  Delete/Change surrounding command. See also |g:vimtex_echo_verbose_input|.
 
 *<plug>(vimtex-delim-delete)*
 *<plug>(vimtex-delim-change-math)*
-  Delete/Change surrounding (math) delimiter.
+  Delete/Change surrounding (math) delimiter. See also
+  |g:vimtex_echo_verbose_input|.
 
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
