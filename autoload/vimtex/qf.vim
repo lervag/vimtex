@@ -85,7 +85,7 @@ function! vimtex#qf#open(force) abort " {{{1
     if g:vimtex_quickfix_mode == 2
       call s:window_restore()
     endif
-    if g:vimtex_quickfix_autoclose_after_keystrokes >= 0
+    if g:vimtex_quickfix_autoclose_after_keystrokes > 0
       augroup vimtex_qf_autoclose
         autocmd!
         autocmd CursorMoved,CursorMovedI * call s:qf_autoclose_check()
@@ -190,14 +190,17 @@ function! s:qf_autoclose_check() abort " {{{1
   if get(s:, 'keystroke_counter') == 0
     let s:keystroke_counter = g:vimtex_quickfix_autoclose_after_keystrokes
   endif
+
   redir => l:bufstring
   silent! ls!
   redir END
-  if filter(split(l:bufstring, '\n'), 'v:val =~# ''%a- .*Quickfix''') == []
+
+  if empty(filter(split(l:bufstring, '\n'), 'v:val =~# ''%a- .*Quickfix'''))
     let s:keystroke_counter -= 1
   else
     let s:keystroke_counter = g:vimtex_quickfix_autoclose_after_keystrokes + 1
   endif
+
   if s:keystroke_counter == 0
     cclose
     autocmd! vimtex_qf_autoclose
