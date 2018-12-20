@@ -96,15 +96,18 @@ if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
   syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
         \ contains=texBeginEnd
         \ nextgroup=texTabularArg
+        \ contained
   syntax region texTabularArg matchgroup=Delimiter
         \ start='{' end='}'
         \ contained
 
   syntax match texTabularCol /[lcr]/
         \ containedin=texTabularArg
+        \ contained
   syntax match texTabularCol /[pmb]/
         \ containedin=texTabularArg
         \ nextgroup=texTabularLength
+        \ contained
   syntax match texTabularCol /\*/
         \ containedin=texTabularArg
         \ nextgroup=texTabularMulti
@@ -118,11 +121,14 @@ if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
   syntax match texTabularAtSep /@/
         \ containedin=texTabularArg
         \ nextgroup=texTabularLength
+        \ contained
   syntax match texTabularVertline /||\?/
         \ containedin=texTabularArg
+        \ contained
   syntax match texTabularPostPre /[<>]/
         \ containedin=texTabularArg
         \ nextgroup=texTabularPostPreArg
+        \ contained
 
   syntax region texTabularPostPreArg matchgroup=Delimiter
         \ start='{' end='}'
@@ -138,6 +144,7 @@ if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
 
   syntax match texMathDelimSingle /\$\$\?/
         \ containedin=texTabularPostPreArg
+        \ contained
 
   highlight def link texTabularCol        Directory
   highlight def link texTabularAtSep      Type
