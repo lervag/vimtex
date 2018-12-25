@@ -306,12 +306,7 @@ Tag navigation~
   I recommend that one uses a plugin that automatically generates the tag
   files as necessary, e.g. |gutentags| [1].
 
-  Note: In order to support `bibtex`, one may add the following to one's
-        `~/.ctags` file: >
-
-          --langdef=bib
-          --langmap=bib:.bib
-          --regex-bib=/^@[A-Za-z]+\{([^,]*)/\1/b,bib/
+  See |vimtex-faq-tags| and |vimtex-faq-tags-bibtex| for concrete examples.
 <
   [0]: https://ctags.io/
   [1]: https://github.com/ludovicchabant/vim-gutentags
@@ -3616,7 +3611,8 @@ Q: How can I jump from a `\ref{label}` to the corresponding label?
 A: This is not a feature provided by |vimtex| itself, but vim has very good
    support for tag navigation, see |tags-and-searches|. It is worth mentioning
    that the |ctags| support for LaTeX is somewhat lacking. This can be amended
-   by adding some lines to your `~/.ctags` configuration file, e.g.: >
+   by adding some lines to your `~/.ctags` configuration file (or
+   `.ctags.d/default.ctags` if you use Universal ctags), e.g.: >
 
     --langdef=tex2
     --langmap=tex2:.tex
@@ -3633,13 +3629,14 @@ A: This is not a feature provided by |vimtex| itself, but vim has very good
 Q: How can I jump from a `\cite{key}` to the corresponding bibtex entry?
 A: This is not a feature provided by |vimtex| itself. Similar to
    |vimtex-faq-tags|, the feature is available through |tags-and-searches|.
-   The following `~/.ctags` configuration will be useful: >
+   The following `~/.ctags` configuration will be useful (or
+   `.ctags.d/default.ctags` if you use Universal ctags): >
 
-    --langdef=bibtex
-    --langmap=bibtex:.bib
-    --regex-bibtex=/@string\{([^ "#%')(,=}{]+)/\1/s,BibTeX-Strings/i
-    --regex-bibtex=/@(article|book|booklet|inbook|incollection|inproceedings|manual|masterthesis|misc|phdthesis|proceedings|techreport|unpublished)\{([^,]+),/\2/e,BibTeX-Entries/i
-    --regex-bibtex=/[[:space:]]*author[[:space:]]*=[[:space:]]*("([^"]+)"|\{([^\}]+)\})[[:space:]]*,?[[:space:]]*$/\2\3/a,BibTeX-Authors/i
+    --langdef=bib
+    --langmap=bib:.bib
+    --regex-bib=/^@[A-Za-z]+\{([^,]+),/\1/e,BibTeX-Entries/i
+    --regex-bib=/^@string\{([^ "#%')(,=}{]+)/\1/s,BibTeX-Strings/i
+    --regex-bib=/author[[:space:]]*=[[:space:]]*("([^"]+)"|\{([^\}]+)\})[[:space:]]*,?[[:space:]]*$/\2\3/a,BibTeX-Authors/i
 
 <   See [0] for references.
 
