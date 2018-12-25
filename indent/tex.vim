@@ -235,7 +235,7 @@ function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
     endif
 
     let s:re_cond = extend({
-          \ 'open': '\v(\\newif)@<!\\if(field|name|numequal|thenelse)@!',
+          \ 'open': '\v(\\newif\s*)@<!\\if(f|field|name|numequal|thenelse)@!',
           \ 'else': '\\else\>',
           \ 'close': '\\fi\>',
           \}, l:cfg)
