@@ -416,28 +416,48 @@ Formatting~
   want to use an external formatter:
 
     - latexindent.pl [3]
-    - bibtool [4]
-    - vim-bucky [5] (note: this is an alpha version as of October 2018)
+    - vim-bucky [4] (note: this is an alpha version as of October 2018)
 
   Further, there are a range of Vim plugins that can be used to format your
   document with external tools. Some of these also allow autoformatting of
   some kind. In no particular order:
 
-    - neoformat [6]
-    - vim-codefmt [7]
-    - vim-autoformat [8]
-    - ale [9]
+    - neoformat [5]
+    - vim-codefmt [6]
+    - vim-autoformat [7]
+    - ale [8]
 
   [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
   [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
   [2]: http://rhodesmill.org/brandon/2012/one-sentence-per-line/
   [3]: https://github.com/cmhughes/latexindent.pl
-  [4]: https://github.com/ge-ne/bibtool
-  [5]: https://github.com/dbmrq/vim-bucky
-  [6]: https://github.com/sbdchd/neoformat
-  [7]: https://github.com/google/vim-codefmt
-  [8]: https://github.com/Chiel92/vim-autoformat
-  [9]: https://github.com/w0rp/ale
+  [4]: https://github.com/dbmrq/vim-bucky
+  [5]: https://github.com/sbdchd/neoformat
+  [6]: https://github.com/google/vim-codefmt
+  [7]: https://github.com/Chiel92/vim-autoformat
+  [8]: https://github.com/w0rp/ale
+
+Filetype plugin for bib files~
+
+  |vimtex| is not a filetype plugin for bibliography (`.bib`) files. However,
+  it does include a couple of minor things, such as setting the 'comments' and
+  'commentstring' options and a simple indentation expression, see
+  |g:vimtex_indent_bib_enabled|.
+
+  Here are a couple of other related Vim plugins and external tools that might
+  be of interest:
+
+  - `bibtool`
+    An external tool for formatting, sorting, filtering, merging, and more of
+    `.bib` files.
+    http://www.gerd-neugebauer.de/software/TeX/BibTool/
+  - `tbibtools`
+    A set of ruby-based bibtex-related utilities for sorting, reformatting,
+    listing contents, and so on. Has optional Vim integration.
+    https://www.vim.org/scripts/script.php?script_id=1915
+
+  See also https://github.com/lervag/vimtex/issues/1293 for some related
+  discussions.
 
 ------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
