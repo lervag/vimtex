@@ -2024,9 +2024,23 @@ OPTIONS                                                        *vimtex-options*
 
             vim --remote-silent +%l "%f"
             nvr --remote-silent +%l "%f"
+
+            " Or with arguably more convenient reverse goto function:
+            vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
+
+            " For neovim it may be convenient to specify servername
+            nvr --servername /tmp/nvimserver --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
                 "shift + click", not "ctrl + click" as in most other viewers.
+
+            " or, for neovim, if the servername is specified
+            nvr --servername /tmp/nvimserver --remote-silent +%l "%f"
+
+          Note: With |neovim|, it is useful to start the LaTeX editing session
+                with `nvim --listen /tmp/nvimserver` (e.g. by using an alias)
+                so as to use a predictable servername. Then one may specify
+                the servername in the "Custom Text Editor" as indicated above.
 
         *vimtex_viewer_qpdfview*
           https://launchpad.net/qpdfview
@@ -3447,6 +3461,11 @@ Alternatively, for |vimtex-latexmk|, one can put this in ones `~/.latexmkrc` fil
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
+Note: For |neovim| users, one must use `neovim-remote` (see link below) for
+      backward search. This is done by installing `neovim-remote` and setting
+      |g:vimtex_compiler_progname| to `'nvr'`
+      https://github.com/mhinz/neovim-remote
+
 ------------------------------------------------------------------------------
 FORWARD SEARCH                                  *vimtex-synctex-forward-search*
 
@@ -3608,7 +3627,9 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 <
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
-A: Yes. Since 2018-11-18 [0], most features work out of the box.
+A: Yes. Since 2018-11-18 [0], most features work out of the box. However, for
+   backward search from PDF viewer to neovim, one needs the `neovim-remote`
+   tool as described below.
 
    `Deprecated`: The compiler coupling and some of the viewer functionality
    require the |--remote| options from the |clientserver|. For some reason,
