@@ -357,16 +357,15 @@ highlight link texBeamerDelimiter Delimiter
 " }}}1
 " {{{1 Add support for amsmath package
 
-" This is based on Charles E. Campbell's amsmath.vba file dated 2017-10-12
+" This is based on Charles E. Campbell's amsmath.vba file dated 2018-06-29
 
-call TexNewMathZone('Z', 'align', 1)
-call TexNewMathZone('Y', 'alignat', 1)
-call TexNewMathZone('X', 'equation', 1)
-call TexNewMathZone('W', 'flalign', 1)
-call TexNewMathZone('V', 'gather', 1)
-call TexNewMathZone('U', 'multline', 1)
-call TexNewMathZone('T', 'xalignat', 1)
-call TexNewMathZone('S', 'xxalignat', 0)
+call TexNewMathZone('E', 'align', 1)
+call TexNewMathZone('F', 'alignat', 1)
+call TexNewMathZone('H', 'flalign', 1)
+call TexNewMathZone('I', 'gather', 1)
+call TexNewMathZone('J', 'multline', 1)
+call TexNewMathZone('K', 'xalignat', 1)
+call TexNewMathZone('L', 'xxalignat', 0)
 
 execute 'syntax match texBadMath ''\\end\s*{\s*\(' . join([
       \ 'align',
