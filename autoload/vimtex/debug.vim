@@ -74,6 +74,7 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
     else
       let l:filename = ''
       let l:lnum = 0
+      let l:text = ''
     endif
 
     call add(l:qflist, {
