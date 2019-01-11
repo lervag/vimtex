@@ -176,6 +176,12 @@ highlight link texHref         texUrl
 highlight link texHyperref     texRefZone
 
 " }}}1
+" {{{1 Add syntax highlighting for \todo
+
+syntax match texStatement '\\todo\w*' contains=texTodo
+syntax match texTodo '\\todo\w*'
+
+" }}}1
 " {{{1 Add support for biblatex and csquotes packages (cite commands)
 
 if get(g:, 'tex_fast', 'r') =~# 'r'
