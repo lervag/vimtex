@@ -43,14 +43,15 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
     if l:name =~# '\v(\<SNR\>|^)\d+_'
       let l:sid = matchstr(l:name, '\v(\<SNR\>|^)\zs\d+\ze_')
       let l:name  = substitute(l:name, '\v(\<SNR\>|^)\d+_', 's:', '')
-      let l:filename = map(
-            \ vimtex#util#command('scriptnames'),
-            \ 'split(v:val, "\\v:=\\s+")[1]')[l:sid-1]
+      let l:filename = substitute(
+            \ vimtex#util#command('scriptnames')[l:sid-1],
+            \ '^\s*\d\+:\s*', '', '')
     else
       let l:func_name = l:name =~# '^\d\+$' ? '{' . l:name . '}' : l:name
       let l:filename = matchstr(
             \ vimtex#util#command('verbose function ' . l:func_name)[1],
-            \ '\f\+\.vim')
+            \ v:lang[0:1] ==# 'en'
+            \   ? 'Last set from \zs.*\.vim' : '\f\+\.vim')
     endif
 
     let l:filename = fnamemodify(l:filename, ':p')
