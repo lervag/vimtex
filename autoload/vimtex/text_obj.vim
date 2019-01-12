@@ -7,6 +7,7 @@
 function! vimtex#text_obj#init_buffer() abort " {{{1
   if !g:vimtex_text_obj_enabled | return | endif
 
+  " Note: I've permitted myself long lines here to make this more readable.
   for [l:map, l:name, l:opt] in [
         \ ['c', 'commands', ''],
         \ ['d', 'delimited', 'delim_all'],
@@ -14,13 +15,11 @@ function! vimtex#text_obj#init_buffer() abort " {{{1
         \ ['$', 'delimited', 'env_math'],
         \ ['P', 'sections', ''],
         \]
-    let l:p1 = 'noremap <silent><buffer> <plug>(vimtex-'
-    let l:p2 = l:map . ') :<c-u>call vimtex#text_obj#' . l:name
-    let l:p3 = empty(l:opt) ? ')<cr>' : ',''' . l:opt . ''')<cr>'
-    execute 'x' . l:p1 . 'i' . l:p2 . '(1, 1' . l:p3
-    execute 'x' . l:p1 . 'a' . l:p2 . '(0, 1' . l:p3
-    execute 'o' . l:p1 . 'i' . l:p2 . '(1, 0' . l:p3
-    execute 'o' . l:p1 . 'a' . l:p2 . '(0, 0' . l:p3
+    let l:optional = empty(l:opt) ? '' : ',''' . l:opt . ''''
+    execute printf('xnoremap <silent><buffer> <plug>(vimtex-i%s) :<c-u>call vimtex#text_obj#%s(1, 1%s)<cr>', l:map, l:name, l:optional)
+    execute printf('xnoremap <silent><buffer> <plug>(vimtex-a%s) :<c-u>call vimtex#text_obj#%s(0, 1%s)<cr>', l:map, l:name, l:optional)
+    execute printf('onoremap <silent><buffer> <plug>(vimtex-i%s) :<c-u>call vimtex#text_obj#%s(1, 0%s)<cr>', l:map, l:name, l:optional)
+    execute printf('onoremap <silent><buffer> <plug>(vimtex-a%s) :<c-u>call vimtex#text_obj#%s(0, 0%s)<cr>', l:map, l:name, l:optional)
   endfor
 endfunction
 
