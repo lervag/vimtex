@@ -62,17 +62,48 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
-  if a:mode
-    let l:object = s:get_sel_delimited_visual(a:is_inner, a:type)
+  let l:object = {}
+  let l:prev_object = {}
+  let l:pos_save = vimtex#pos#get_cursor()
+  let l:startpos = getpos("'>")
+
+  " Get the delimited text object positions
+  for l:count in range(v:count1)
+    if !empty(l:object)
+      let l:pos_next = vimtex#pos#prev(
+            \ a:is_inner ? l:object.open : l:object.pos_start)
+
+      if a:mode
+        let l:startpos = l:pos_next
+      else
+        call vimtex#pos#set_cursor(l:pos_next)
+      endif
+    endif
+
+    if a:mode
+      let l:object = s:get_sel_delimited_visual(a:is_inner, a:type, l:startpos)
+    else
+      let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+      let l:object = empty(l:open)
+            \ ? {} : s:get_sel_delimited(l:open, l:close, a:is_inner)
+    endif
+
     if empty(l:object)
-      normal! gv
+      if !empty(l:prev_object)
+        let l:object = l:prev_object
+        break
+      endif
+
+      if a:mode
+        normal! gv
+      else
+        call vimtex#pos#set_cursor(l:pos_save)
+      endif
       return
     endif
-  else
-    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
-    if empty(l:open) | return | endif
-    let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
-  endif
+
+    let l:prev_object = l:object
+  endfor
 
   " Apply selection
   execute 'normal!' l:object.select_mode
@@ -115,9 +146,9 @@ endfunction
 
 " }}}1
 
-function! s:get_sel_delimited_visual(is_inner, type) abort " {{{1
+function! s:get_sel_delimited_visual(is_inner, type, startpos) abort " {{{1
   if a:is_inner
-    call vimtex#pos#set_cursor(vimtex#pos#next(getpos("'>")))
+    call vimtex#pos#set_cursor(vimtex#pos#next(a:startpos))
     let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
     if !empty(l:open)
       let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
@@ -137,7 +168,7 @@ function! s:get_sel_delimited_visual(is_inner, type) abort " {{{1
     endif
   endif
 
-  call vimtex#pos#set_cursor(getpos("'>"))
+  call vimtex#pos#set_cursor(a:startpos)
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
   if empty(l:open) | return {} | endif
   let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
@@ -153,7 +184,7 @@ function! s:get_sel_delimited_visual(is_inner, type) abort " {{{1
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:open.lnum, l:open.cnum))
     let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
     if empty(l:open) | return {} | endif
-    let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
+    return s:get_sel_delimited(l:open, l:close, a:is_inner)
   endif
 
   return l:object
@@ -202,6 +233,8 @@ function! s:get_sel_delimited(open, close, is_inner) abort " {{{1
   endif
 
   return {
+        \ 'open' : a:open,
+        \ 'close' : a:close,
         \ 'pos_start' : [l1, c1],
         \ 'pos_end' : [l2, c2],
         \ 'is_inline' : l:is_inline,
