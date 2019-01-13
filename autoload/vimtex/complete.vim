@@ -292,7 +292,9 @@ function! s:completer_ref.complete(regex) dict abort " {{{2
   for m in self.get_matches(a:regex)
     call add(self.candidates, {
           \ 'word' : m[0],
-          \ 'menu' : printf('%7s [p. %s]', '('.m[1].')', m[2])
+          \ 'menu' : !empty(m[2])
+          \   ? printf('%7s [p. %s]', '('.m[1].')', m[2])
+          \   : printf('%7s',         '('.m[1].')')
           \ })
   endfor
 
@@ -383,7 +385,11 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
     let l:context = remove(l:tree, 0)
     if type(l:context) == type([]) && len(l:context) > 1
       let l:number = self.parse_number(l:context[0])
-      let l:page = l:context[1][0]
+      try
+        let l:page = l:context[1][0]
+      catch
+        let l:page = ''
+      endtry
       call add(l:labels, [l:name, l:number, l:page])
     endif
   endfor
