@@ -26,33 +26,71 @@ endfunction
 " }}}1
 
 function! vimtex#text_obj#commands(is_inner, mode) abort " {{{1
+  let l:obj = {}
+  let l:pos_save = vimtex#pos#get_cursor()
   if a:mode
     call vimtex#pos#set_cursor(getpos("'>"))
   endif
 
-  let l:cmd = vimtex#cmd#get_current()
-  if empty(l:cmd) | return | endif
+  " Get the delimited text object positions
+  for l:count in range(v:count1)
+    if !empty(l:obj)
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:obj.cmd_start))
+    endif
 
-  let l:pos_start = l:cmd.pos_start
-  let l:pos_end = l:cmd.pos_end
-
-  if a:is_inner
-    let l:pos_end.lnum = l:pos_start.lnum
-    let l:pos_end.cnum = l:pos_start.cnum + strlen(l:cmd.name) - 1
-    let l:pos_start.cnum += 1
-  elseif a:mode
-        \ && vimtex#pos#equal(l:pos_start, getpos("'<"))
-        \ && vimtex#pos#equal(l:pos_end, getpos("'>"))
-    let l:cursor = vimtex#pos#get_cursor()
-    call vimtex#pos#set_cursor(vimtex#pos#next(l:cursor))
+    let l:obj_prev = l:obj
+    let l:obj = {}
 
     let l:cmd = vimtex#cmd#get_current()
-    if empty(l:cmd) | return | endif
+    if empty(l:cmd) | break | endif
 
-    if vimtex#pos#smaller(l:cmd.pos_start, l:cursor)
-      let l:pos_start = l:cmd.pos_start
-      let l:pos_end = l:cmd.pos_end
+    let l:pos_start = copy(l:cmd.pos_start)
+    let l:pos_end = l:cmd.pos_end
+
+    if a:is_inner
+      let l:pos_end.lnum = l:pos_start.lnum
+      let l:pos_end.cnum = l:pos_start.cnum + strlen(l:cmd.name) - 1
+      let l:pos_start.cnum += 1
     endif
+
+    if a:mode
+          \ && vimtex#pos#equal(l:pos_start, getpos("'<"))
+          \ && vimtex#pos#equal(l:pos_end, getpos("'>"))
+      let l:pos_old = l:cmd.pos_start
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:pos_old))
+
+      let l:cmd = vimtex#cmd#get_current()
+      if empty(l:cmd) | break | endif
+
+      if vimtex#pos#smaller(l:pos_old, l:cmd.pos_end)
+        let l:pos_start = l:cmd.pos_start
+        let l:pos_end = l:cmd.pos_end
+
+        if a:is_inner
+          let l:pos_end.lnum = l:pos_start.lnum
+          let l:pos_end.cnum = l:pos_start.cnum + strlen(l:cmd.name) - 1
+          let l:pos_start.cnum += 1
+        endif
+      endif
+    endif
+
+    let l:obj = {
+          \ 'pos_start' : l:pos_start,
+          \ 'pos_end' : l:pos_end,
+          \ 'cmd_start' : l:cmd.pos_start,
+          \}
+  endfor
+
+  if empty(l:obj)
+    if empty(l:obj_prev)
+      if a:mode
+        normal! gv
+      else
+        call vimtex#pos#set_cursor(l:pos_save)
+      endif
+      return
+    endif
+    let l:obj = l:obj_prev
   endif
 
   call vimtex#pos#set_cursor(l:pos_start)
