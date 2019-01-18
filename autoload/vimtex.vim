@@ -31,7 +31,6 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_compiler_callback_hooks', [])
   call s:init_option('vimtex_compiler_latexmk_engines', {})
   call s:init_option('vimtex_compiler_latexrun_engines', {})
-  call s:init_option('vimtex_compiler_tectonic_engines', {})
 
   call s:init_option('vimtex_complete_enabled', 1)
   call s:init_option('vimtex_complete_close_braces', 0)
