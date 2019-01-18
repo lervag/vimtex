@@ -224,7 +224,8 @@ Order of "syntax on" and "filetype plugin on"~
 
 Compiler backend~
 
-  |vimtex| uses `latexmk`, `latexrun`, `tectonic`, or `arara` to compile the LaTeX document.
+  |vimtex| uses `latexmk`, `latexrun`, `tectonic`, or `arara` to compile the LaTeX
+  document.
 
     `latexmk`: http://users.phys.psu.edu/~collins/software/latexmk-jcc
     "a perl script for running LaTeX the correct number of times to resolve
@@ -246,9 +247,9 @@ Compiler backend~
 
     `tectonic`: https://tectonic-typesetting.github.io
     `tectonic` is a modernized, complete, self-contained TeX/LaTeX engine,
-    powered by XeTeX and TeXLive. The engine has a automatically loops TeX and
-    BibTeX as needed, and only as much as needed, like the latexmk and others.
-    (||vimtex-tectonic||)
+    powered by XeTeX and TeXLive. Similar to e.g. `latexmk`, `tectonic`
+    automatically compiles TeX/LaTeX and BibTeX as many times as neede (but
+    not more). (|vimtex-tectonic|)
 
     `arara`: https://github.com/cereda/arara
     `arara` is a TeX automation tool similar to the above mentioned tools,
