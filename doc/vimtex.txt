@@ -962,6 +962,32 @@ OPTIONS                                                        *vimtex-options*
     This is a list of options that are passed to `arara`. The default options
     should work well for most people.
 
+*g:vimtex_compiler_tectonic*
+  This is a dictionary that allows customization of the |vimtex-tectonic|
+  compiler. The values set by the user will take precedense over the default
+  values.
+
+  Default value: >
+
+    let g:vimtex_compiler_tectonic = {
+        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+        \ 'background' : 1,
+        \ 'options' : ['--log'],
+        \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  backend~
+    Same as |g:vimtex_compiler_latexmk| / `backend`.
+
+  background~
+    Same as |g:vimtex_compiler_latexmk| / `background`.
+
+  options~
+    This is a list of options that are passed to `tectonic`. The default options
+    should work well for most people.
+
 *g:vimtex_complete_enabled*
   Use this option to disable/enable |vimtex| completion.
 
