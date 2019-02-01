@@ -58,3 +58,42 @@ Expect tex (Verify):
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
   tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
 
+Given tex (Define nested environments):
+  \begin{document}
+    \begin{center}
+        \begin{align}
+          a = b
+        \end{align}
+    \end{center}
+  \end{document}
+
+Do (Delete two outer environments):
+  4j$
+  d2ae
+
+Expect tex (Verify):
+  \begin{document}
+    
+  \end{document}
+
+Given tex (Define nested command):
+  a + \bar{\mathit{c + d}} =
+
+Do (Delete two outer commands):
+  02f+
+  d2ac
+
+Expect tex (Verify):
+  a +  =
+
+Given tex (Define nested delimiters):
+  a + \left(b + \left[c + d \right] + e\right) + f
+
+Do (Delete two outer delimiters):
+  fd
+  d2ad
+
+Expect tex (Verify):
+  a +  + f
+
+
