@@ -31,3 +31,4 @@ Execute (fold: verify):
 Given:
 Execute (Cleanup):
   unlet g:vimtex_fold_enabled
+  setlocal nofoldenable
