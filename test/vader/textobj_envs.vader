@@ -96,4 +96,27 @@ Do (Delete two outer delimiters):
 Expect tex (Verify):
   a +  + f
 
+Given tex (Define nested sections):
+  Hello world.
+
+  \section{Outer}
+  Some text here
+
+  \subsection{Inner 1}
+  Some text here
+
+  \subsection{Inner 2}
+  Some text here
+
+  \subsection{Inner 3}
+  Some text here
+
+
+Do (Delete two outer delimiters):
+  6j
+  d2aP
+
+Expect tex (Verify):
+  Hello world.
+  
 

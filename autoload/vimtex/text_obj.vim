@@ -163,7 +163,7 @@ function! vimtex#text_obj#sections(is_inner, mode) abort " {{{1
     return
   endif
 
-  " Increase visual area
+  " Increase visual area if applicable
   if a:mode
         \ && visualmode() ==# 'V'
         \ && getpos("'<")[1] == l:pos_start[0]
@@ -175,6 +175,16 @@ function! vimtex#text_obj#sections(is_inner, mode) abort " {{{1
       let l:pos_end = l:pos_end_new
     endif
   endif
+
+  " Repeat for count
+  for l:count in range(v:count1 - 1)
+    let [l:pos_start_new, l:pos_end_new, l:type]
+          \ = s:get_sel_sections(a:is_inner, l:type)
+
+    if empty(l:pos_start_new) | break | endif
+    let l:pos_start = l:pos_start_new
+    let l:pos_end = l:pos_end_new
+  endfor
 
   " Apply selection
   call vimtex#pos#set_cursor(l:pos_start)
