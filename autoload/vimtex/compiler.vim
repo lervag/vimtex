@@ -174,6 +174,10 @@ function! vimtex#compiler#output() abort " {{{1
       return
     endif
 
+    if mode() ==# 'v' || mode() ==# 'V' || mode() ==# ''
+      return
+    endif
+
     " Try to enforce a file read
     execute 'checktime' self.name
     redraw
