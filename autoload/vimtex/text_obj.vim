@@ -143,6 +143,17 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
     let l:prev_object = l:object
   endfor
 
+  " Handle empty inner objects
+  if vimtex#pos#smaller(l:object.pos_end, l:object.pos_start)
+    if index(['c', 'd'], v:operator) >= 0
+      call vimtex#pos#set_cursor(l:object.pos_start)
+      normal! ix
+    endif
+
+    let l:object.pos_end = l:object.pos_start
+  endif
+
+
   " Apply selection
   execute 'normal!' l:object.select_mode
   call vimtex#pos#set_cursor(l:object.pos_start)
