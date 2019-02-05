@@ -145,6 +145,10 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
 
   " Handle empty inner objects
   if vimtex#pos#smaller(l:object.pos_end, l:object.pos_start)
+    if v:operator ==# 'y' && !a:mode
+      return
+    endif
+
     if index(['c', 'd'], v:operator) >= 0
       call vimtex#pos#set_cursor(l:object.pos_start)
       normal! ix
@@ -152,7 +156,6 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
 
     let l:object.pos_end = l:object.pos_start
   endif
-
 
   " Apply selection
   execute 'normal!' l:object.select_mode
