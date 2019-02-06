@@ -174,7 +174,7 @@ function! vimtex#compiler#output() abort " {{{1
       return
     endif
 
-    if mode() ==? 'v' || mode() ==# ''
+    if mode() ==? 'v' || mode() ==# "\<c-v>"
       return
     endif
 
