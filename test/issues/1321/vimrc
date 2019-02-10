@@ -1,0 +1,43 @@
+set nocompatible
+if $OLD
+  let &rtp = 'vimtex-old,' . &rtp
+  let &rtp .= ',vimtex-old/after'
+else
+  let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+  let &rtp .= ',~/.vim/bundle/vimtex/after'
+endif
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+let g:vimtex_view_automatic = 0
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+let g:vimtex_compiler_callback_hooks = ['MyTestHook']
+
+silent edit minimal.tex
+
+VimtexCompile
+" let s:count = 0
+
+" call s:timer.check()
+
+" function! MyTestHook(status)
+"   unsilent echom "testing"
+"   unsilent echom "test:" s:timer.check()
+"   let s:count += 1
+"   " if s:count > 2
+"   "   quitall!
+"   " endif
+" endfunction
+
+" augroup Testing
+"   autocmd!
+"   autocmd VimEnter * VimtexCompile
+" augroup END
