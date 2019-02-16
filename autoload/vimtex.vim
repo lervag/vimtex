@@ -200,6 +200,12 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_quickfix_blgparser', {})
   call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', '0')
 
+  call s:init_option('vimtex_rnoweb_formats', [
+        \     {'ext': ['.Rnw', '.Rtex'],
+        \      'beforeincl': '\<\<.*child\s*\=\s*''',
+        \      'afterincl' : '''\s*\>\>\=',},
+        \])
+
   call s:init_option('vimtex_texcount_custom_arg', '')
 
   call s:init_option('vimtex_text_obj_enabled', 1)
@@ -363,7 +369,7 @@ function! s:init_buffer() abort " {{{1
         \ ]
     execute 'set suffixes+=' . l:suf
   endfor
-  setlocal suffixesadd=.tex,.sty,.cls
+  setlocal suffixesadd=join(vimtex#state#doc_formats(), ",") + ".sty,.cls"
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
   setlocal commentstring=%%s
   setlocal iskeyword+=:
