@@ -46,7 +46,8 @@ function! s:general.view(file) dict abort " {{{1
 
   " Update the path for Windows on cygwin
   if executable('cygpath')
-    let outfile = substitute(system('cygpath -aw '.outfile), '\n', '', 'g')
+    let outfile = substitute(
+          \ system('cygpath -aw "' . outfile . '"'), '\n', '', 'g')
   endif
 
   if vimtex#view#common#not_readable(outfile) | return | endif
