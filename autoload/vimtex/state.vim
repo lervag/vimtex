@@ -175,13 +175,6 @@ function! s:get_main() abort " {{{1
   endif
 
   "
-  " Check if the current file is a main file
-  "
-  if s:file_is_main(expand('%:p'))
-    return expand('%:p')
-  endif
-
-  "
   " Use buffer variable if it exists
   "
   if exists('b:vimtex_main') && filereadable(b:vimtex_main)
@@ -195,6 +188,13 @@ function! s:get_main() abort " {{{1
   let l:candidate = s:get_main_from_texroot()
   if !empty(l:candidate)
     return l:candidate
+  endif
+
+  "
+  " Check if the current file is a main file
+  "
+  if s:file_is_main(expand('%:p'))
+    return expand('%:p')
   endif
 
   "
