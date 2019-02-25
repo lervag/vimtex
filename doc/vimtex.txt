@@ -1027,6 +1027,20 @@ OPTIONS                                                        *vimtex-options*
     The format used for the `abbr` entry for bib completion candidates. See
     `menu_fmt` for further description.
 
+  custom_patterns~
+    Default value: []
+    List of custom trigger patterns for bibliography completion. May be used
+    to allow bibliography completion for custom macros.
+
+*g:vimtex_complete_ref*
+  This option is a dictionary for controlling the label completion. The
+  keys each control a different thing:
+
+  custom_patterns~
+    Default value: []
+    List of custom trigger patterns for bibliography completion. May be used
+    to allow bibliography completion for custom macros.
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub

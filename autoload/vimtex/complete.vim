@@ -83,10 +83,14 @@ let s:completer_bib = {
       \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
       \ 'type_length' : 0,
-      \ 'bstfile' :  expand('<sfile>:p:h') . '/vimcomplete',
+      \ 'bstfile' : expand('<sfile>:p:h') . '/vimcomplete',
+      \ 'initialized' : 0,
       \}
 
 function! s:completer_bib.init() dict abort " {{{2
+  if self.initialized | return | endif
+  let self.initialized = 1
+
   " Check if bibtex is executable
   if !executable('bibtex')
     let self.enabled = 0
@@ -111,6 +115,9 @@ function! s:completer_bib.init() dict abort " {{{2
     let self.bstfile = tempname()
     call writefile(readfile(l:oldbst), self.bstfile . '.bst')
   endif
+
+  " Add custom patterns
+  let self.patterns += g:vimtex_complete_bib.custom_patterns
 endfunction
 
 function! s:completer_bib.complete(regex) dict abort " {{{2
@@ -284,7 +291,16 @@ let s:completer_ref = {
       \ 're_context' : '\\\w*{[^}]*$',
       \ 'cache' : {},
       \ 'labels' : [],
+      \ 'initialized' : 0,
       \}
+
+function! s:completer_ref.init() dict abort " {{{2
+  if self.initialized | return | endif
+  let self.initialized = 1
+
+  " Add custom patterns
+  let self.patterns += g:vimtex_complete_ref.custom_patterns
+endfunction
 
 function! s:completer_ref.complete(regex) dict abort " {{{2
   let self.candidates = []

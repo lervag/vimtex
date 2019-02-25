@@ -41,6 +41,10 @@ function! vimtex#init_options() abort " {{{1
         \ 'recursive': 0,
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
         \ 'abbr_fmt': '',
+        \ 'custom_patterns': [],
+        \})
+  call s:init_option('vimtex_complete_ref', {
+        \ 'custom_patterns': [],
         \})
 
   call s:init_option('vimtex_doc_enabled', 1)
