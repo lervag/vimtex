@@ -1029,8 +1029,8 @@ OPTIONS                                                        *vimtex-options*
 
   custom_patterns~
     Default value: []
-    List of custom trigger patterns for bibliography completion. May be used
-    to allow bibliography completion for custom macros.
+    List of custom trigger patterns that may be used to allow completion for
+    e.g. custom macros.
 
 *g:vimtex_complete_ref*
   This option is a dictionary for controlling the label completion. The
@@ -1038,8 +1038,8 @@ OPTIONS                                                        *vimtex-options*
 
   custom_patterns~
     Default value: []
-    List of custom trigger patterns for bibliography completion. May be used
-    to allow bibliography completion for custom macros.
+    List of custom trigger patterns that may be used to allow completion for
+    e.g. custom macros.
 
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
