@@ -159,26 +159,26 @@ endfunction
 " }}}1
 function! s:folder.parse_caption_frame(line) abort dict " {{{1
   " Test simple variants first
-  let caption1 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+\ze}')
-  let caption2 = matchstr(a:line,'\\begin\*\?{.*}{\zs.\+')
-
-  if len(caption1) > 0
+  let caption1 = matchstr(a:line,'\\begin\*\?{.*}\(\[[^]]*\]\)\?{\zs.\+\ze}')
+  let caption2 = matchstr(a:line,'\\begin\*\?{.*}\(\[[^]]*\]\)\?{\zs.\+')
+  if !empty(caption1)
     return caption1
-  elseif len(caption2) > 0
+  elseif !empty(caption2)
     return caption2
-  else
-    let i = v:foldstart
-    while i <= v:foldend
-      if getline(i) =~# '^\s*\\frametitle'
-        return matchstr(getline(i),
-              \ '^\s*\\frametitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
-      end
-      let i += 1
-    endwhile
-
-    " If no caption found, check for a caption comment
-    return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
   endif
+
+  " Search for \frametitle command
+  let i = v:foldstart
+  while i <= v:foldend
+    if getline(i) =~# '^\s*\\frametitle'
+      return matchstr(getline(i),
+            \ '^\s*\\frametitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
+    end
+    let i += 1
+  endwhile
+
+  " If no caption found, check for a caption comment
+  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
 endfunction
 
 " }}}1
