@@ -47,7 +47,8 @@ function! s:check_compiler() abort " {{{1
     let l:ok = 0
   endif
 
-  if has('nvim') && g:vimtex_compiler_progname !=# 'nvr'
+  if has('nvim')
+        \ && fnamemodify(g:vimtex_compiler_progname, ':t') !=# 'nvr'
     call health#report_warn('Compiler callbacks will not work!', [
           \ '`neovim-remote` / `nvr` is required for callbacks to work with neovim',
           \ "Please also set |g:vimtex_compiler_progname| = 'nvr'",
