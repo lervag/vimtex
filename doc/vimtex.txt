@@ -915,7 +915,7 @@ OPTIONS                                                        *vimtex-options*
     Same as |g:vimtex_compiler_latexmk| / `background`.
 
   build_dir~
-    Same as |g:vimtex_compiler_latexmk| / `background`.
+    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
 
   options~
     This is a list of options that are passed to `latexrun`. The default
