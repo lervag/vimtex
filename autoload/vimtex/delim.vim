@@ -887,6 +887,7 @@ function! s:init_delim_lists() abort " {{{1
         \     ['[', ']'],
         \     ['\{', '\}'],
         \     ['\langle', '\rangle'],
+        \     ['\lbrace', '\rbrace'],
         \     ['\lvert', '\rvert'],
         \     ['\lVert', '\rVert'],
         \     ['\lfloor', '\rfloor'],
