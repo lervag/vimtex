@@ -397,7 +397,12 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
   for l:line in l:lines
     let l:line = s:tex2unicode(l:line)
     let l:tree = s:tex2tree(l:line)[1:]
-    let l:name = a:prefix . remove(l:tree, 0)[0]
+    let l:name = get(remove(l:tree, 0), 0, '')
+    if empty(l:name)
+      continue
+    else
+      let l:name = a:prefix . l:name
+    endif
     let l:context = remove(l:tree, 0)
     if type(l:context) == type([]) && len(l:context) > 1
       let l:number = self.parse_number(l:context[0])
