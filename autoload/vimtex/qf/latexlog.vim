@@ -90,8 +90,10 @@ function! s:qf.set_errorformat() abort dict "{{{1
   " Define package related warnings
   "
   let l:default = self.config.packages.default
-  if get(self.config.packages, 'natbib', l:default)
-    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+
+  if get(self.config.packages, 'babel', l:default)
+    setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
+    setlocal errorformat+=%-C(babel)%m
   endif
 
   if get(self.config.packages, 'biblatex', l:default)
@@ -102,9 +104,9 @@ function! s:qf.set_errorformat() abort dict "{{{1
     setlocal errorformat+=%-C(biblatex)%m
   endif
 
-  if get(self.config.packages, 'babel', l:default)
-    setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
-    setlocal errorformat+=%-C(babel)%m
+  if get(self.config.packages, 'fixltx2e', l:default)
+    setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
+    setlocal errorformat+=%-C(fixltx2e)%m
   endif
 
   if get(self.config.packages, 'hyperref', l:default)
@@ -113,14 +115,17 @@ function! s:qf.set_errorformat() abort dict "{{{1
     setlocal errorformat+=%-C(hyperref)%m
   endif
 
+  if get(self.config.packages, 'natbib', l:default)
+    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+  endif
+
+  if get(self.config.packages, 'refcheck', l:default)
+    setlocal errorformat+=%+WPackage\ refcheck\ Warning:\ %m\ on\ input\ line\ %l%.
+  endif
+
   if get(self.config.packages, 'scrreprt', l:default)
     setlocal errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
     setlocal errorformat+=%-C(scrreprt)%m
-  endif
-
-  if get(self.config.packages, 'fixltx2e', l:default)
-    setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
-    setlocal errorformat+=%-C(fixltx2e)%m
   endif
 
   if get(self.config.packages, 'titlesec', l:default)

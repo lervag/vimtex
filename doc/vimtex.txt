@@ -1685,12 +1685,13 @@ OPTIONS                                                        *vimtex-options*
           \ 'font' : 1,
           \ 'packages' : {
           \   'default' : 1,
-          \   'natbib' : 1,
-          \   'biblatex' : 1,
           \   'babel' : 1,
-          \   'hyperref' : 1,
-          \   'scrreprt' : 1,
+          \   'biblatex' : 1,
           \   'fixltx2e' : 1,
+          \   'hyperref' : 1,
+          \   'natbib' : 1,
+          \   'refcheck' : 1,
+          \   'scrreprt' : 1,
           \   'titlesec' : 1,
           \ },
           \}
