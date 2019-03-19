@@ -1656,6 +1656,15 @@ OPTIONS                                                        *vimtex-options*
   and have to be specifically disabled. However, it is possible to use the
   entry `disable` to disable either all warnings, or all package warnings, if
   so desired.
+  Warnings by following packages can be disabled individually:
+  `babel`, `biblatex`, `fixltx2e`, `hyperref`, `natbib`, `scrreprt`, and `titlesec`.
+  The entry `general` under packages can be used to turn off messages of
+  packages matching the pattern >
+
+    Package .* Warning: %m on input line %l.
+<
+  Note: Messages by `natbib` follow also this pattern but have to be turned
+        off with the entry `natbib`.
 
   Some examples may be helpful: >
 
@@ -1685,12 +1694,13 @@ OPTIONS                                                        *vimtex-options*
           \ 'font' : 1,
           \ 'packages' : {
           \   'default' : 1,
-          \   'natbib' : 1,
-          \   'biblatex' : 1,
+          \   'general' : 1,
           \   'babel' : 1,
-          \   'hyperref' : 1,
-          \   'scrreprt' : 1,
+          \   'biblatex' : 1,
           \   'fixltx2e' : 1,
+          \   'hyperref' : 1,
+          \   'natbib' : 1,
+          \   'scrreprt' : 1,
           \   'titlesec' : 1,
           \ },
           \}
