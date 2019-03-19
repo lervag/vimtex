@@ -91,7 +91,9 @@ function! s:qf.set_errorformat() abort dict "{{{1
   "
   let l:default = self.config.packages.default
   if get(self.config.packages, 'natbib', l:default)
-    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l%.
+    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l.
+  else
+    setlocal errorformat+=%-WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l.
   endif
 
   if get(self.config.packages, 'biblatex', l:default)
@@ -126,6 +128,10 @@ function! s:qf.set_errorformat() abort dict "{{{1
   if get(self.config.packages, 'titlesec', l:default)
     setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
     setlocal errorformat+=%-C(titlesec)%m
+  endif
+
+  if get(self.config.packages, 'general', l:default)
+    setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m\ on\ input\ line\ %l.
   endif
 
   " Ignore unmatched lines
