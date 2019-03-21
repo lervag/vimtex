@@ -1,0 +1,33 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:tex_flavor = 'latex'
+
+autocmd! User VimtexEventInitPost call PerformTest()
+
+function! PerformTest() abort
+  setlocal path+=~/.texmf/tex/latex/*
+  setlocal path+=/usr/share/texmf-dist/tex/latex/*
+
+  call MacroSearch('test')
+  call MacroSearch('Declare')
+endfunction
+
+function! MacroSearch(keyword) abort
+  unsilent echo 'dlist /' . a:keyword . '/'
+  try
+    unsilent echo execute('dlist /' . a:keyword . '/')
+  catch /E388/
+    unsilent echo v:exception
+  endtry
+endfunction
+
+silent edit minimal.tex
+unsilent echo ''
+
+quitall
