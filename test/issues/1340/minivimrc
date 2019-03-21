@@ -11,11 +11,13 @@ let g:tex_flavor = 'latex'
 autocmd! User VimtexEventInitPost call PerformTest()
 
 function! PerformTest() abort
+  let &l:include = &include . '|\s*\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?s*\{\zs[^\}]*\ze\}'
+
   setlocal path+=~/.texmf/tex/latex/*
   setlocal path+=/usr/share/texmf-dist/tex/latex/*
 
   call MacroSearch('test')
-  call MacroSearch('Declare')
+  call MacroSearch('DeclarePairedDelimiter')
 endfunction
 
 function! MacroSearch(keyword) abort
