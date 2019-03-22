@@ -1,0 +1,30 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+set expandtab
+set shiftwidth=2
+
+let g:tex_flavor = 'latex'
+
+let g:vimtex_indent_conditionals = {
+      \ 'open': '\v%(\\newif)@<!\\if%(field|name|numequal|thenelse)@!|\\pgfscope>',
+      \ 'else': '\\else\>',
+      \ 'close': '\\fi\>\|\\endpgfscope\>',
+      \}
+
+if empty($MAKELEVEL)
+  silent edit bad.tex
+else
+  silent edit test.tex
+endif
+
+silent! normal! gg=G
+
+if !empty($MAKELEVEL)
+  silent! wq
+endif
