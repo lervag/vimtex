@@ -1,0 +1,17 @@
+Execute (Setup):
+  setfiletype tex
+  cfile ../examples/quickfix/main.log
+
+Execute (Verify captured LaTeX logfile warnings: total number):
+  Log len(getqflist())
+  AssertEqual 2, len(getqflist())
+
+Execute (Verify captured LaTeX logfile warnings: package natbib):
+  AssertEqual 'Package natbib Warning: Citation `Einstein:1905'' on page 1 undefined on input line 99.', getqflist()[0]['text']
+  AssertEqual 99, getqflist()[0]['lnum']
+  AssertEqual 'W', getqflist()[0]['type']
+
+Execute (Verify captured LaTeX logfile warnings: package refcheck (general pattern)):
+  AssertEqual 'Package refcheck Warning: Unused label `eq:my_equation_label'' on input line 12.', getqflist()[1]['text']
+  AssertEqual 12, getqflist()[1]['lnum']
+  AssertEqual 'W', getqflist()[1]['type']
