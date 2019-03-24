@@ -105,6 +105,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
   endif
 
   if get(self.config.packages, 'babel', l:default)
+    setlocal errorformat+=%+WPackage\ babel\ Warning:\ %m
     setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
     setlocal errorformat+=%-C(babel)%m
   endif
