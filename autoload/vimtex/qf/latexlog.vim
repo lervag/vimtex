@@ -102,37 +102,52 @@ function! s:qf.set_errorformat() abort dict "{{{1
     setlocal errorformat+=%-C(biblatex)%.%#Please\ v%.%#
     setlocal errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
     setlocal errorformat+=%-C(biblatex)%m
+  else
+    setlocal errorformat+=%-WPackage\ biblatex\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'babel', l:default)
     setlocal errorformat+=%+WPackage\ babel\ Warning:\ %m
     setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
     setlocal errorformat+=%-C(babel)%m
+  else
+    setlocal errorformat+=%-WPackage\ babel\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'hyperref', l:default)
     setlocal errorformat+=%+WPackage\ hyperref\ Warning:\ %m
     setlocal errorformat+=%-C(hyperref)%m\ on\ input\ line\ %l.
     setlocal errorformat+=%-C(hyperref)%m
+  else
+    setlocal errorformat+=%-WPackage\ hyperref\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'scrreprt', l:default)
     setlocal errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
     setlocal errorformat+=%-C(scrreprt)%m
+  else
+    setlocal errorformat+=%-WPackage\ scrreprt\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'fixltx2e', l:default)
     setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
     setlocal errorformat+=%-C(fixltx2e)%m
+  else
+    setlocal errorformat+=%-WPackage\ fixltx2e\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'titlesec', l:default)
     setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
     setlocal errorformat+=%-C(titlesec)%m
+  else
+    setlocal errorformat+=%-WPackage\ titlesec\ Warning:\ %m
   endif
 
   if get(self.config.packages, 'general', l:default)
     setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m\ on\ input\ line\ %l.
+    setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m
+    setlocal errorformat+=%-Z(%.%#)\ %m\ on\ input\ line\ %l.
+    setlocal errorformat+=%-C(%.%#)\ %m
   endif
 
   " Ignore unmatched lines
