@@ -13,3 +13,14 @@ Package biblatex Warning: Data encoding is 'utf8'.
 Package babel Warning: No hyphenation patterns were loaded for
 (babel)                the language `Latin'
 (babel)                I will use the patterns loaded for \language=0 instead.
+Package onlyamsmath Warning: Environment eqnarray or eqnarray* used, please use
+(onlyamsmath) only the environments provided by the amsmath
+(onlyamsmath) package on input line 18.
+Package typearea Warning: \typearea used at group level 2.
+(typearea)                Using \typearea inside any group, e.g.
+(typearea)                environments, math mode, boxes, etc. may result in
+(typearea)                many type setting problems.
+(typearea)                You should move the command \typearea
+(typearea)                outside all groups on input line 21.
+Package caption Warning: Unsupported document class (or package) detected,
+(caption) usage of the caption package is not recommended.
