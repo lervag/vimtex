@@ -4,6 +4,19 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#fzf#run()
+  " The --with-nth 3.. option hides the first two words from the 
+  " fzf window which we used to pass on the file name and line number
+  call fzf#run({  'source':  <sid>parse_toc(),
+        \   'sink':    function('vimtex#fzf#open_selection'),
+        \   'options': '--ansi --with-nth 3..'  
+        \ })
+endfunction
+
+function! vimtex#fzf#open_selection(sel)
+  execute printf('edit +%s %s', split(a:sel)[0], split(a:sel)[1])
+endfunction
+
 function! s:parse_toc()
 " Parsing is mostly adapted from the Denite source
 " (see rplugin/python3/denite/source/vimtex.py)
@@ -53,17 +66,3 @@ EOF
 
   return candidates
 endfunction
-
-function! vimtex#fzf#open_selection(sel)
-  execute printf('edit +%s %s', split(a:sel)[0], split(a:sel)[1])
-endfunction
-
-function! vimtex#fzf#run()
-  " The --with-nth 3.. option hides the first two words from the 
-  " fzf window which we used to pass on the file name and line number
-  call fzf#run({  'source':  <sid>parse_toc(),
-        \   'sink':    function('vimtex#fzf#open_selection'),
-        \   'options': '--ansi --with-nth 3..'  
-        \ })
-endfunction
-
