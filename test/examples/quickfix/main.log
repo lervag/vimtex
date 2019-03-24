@@ -1,2 +1,7 @@
 Package natbib Warning: Citation `Einstein:1905' on page 1 undefined on input line 99.
 Package refcheck Warning: Unused label `eq:my_equation_label' on input line 12.
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\gamma' on input line 9.
+Package hyperref Warning: Composite letter `\textdotbelow+u'
+(hyperref)                not defined in PD1 encoding,
+(hyperref)                removing `\textdotbelow' on input line 5.

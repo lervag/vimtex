@@ -111,7 +111,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   if get(self.config.packages, 'hyperref', l:default)
     setlocal errorformat+=%+WPackage\ hyperref\ Warning:\ %m
-    setlocal errorformat+=%-C(hyperref)%.%#on\ input\ line\ %l.
+    setlocal errorformat+=%-C(hyperref)%m\ on\ input\ line\ %l.
     setlocal errorformat+=%-C(hyperref)%m
   endif
 
