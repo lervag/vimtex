@@ -7,10 +7,11 @@
 function! vimtex#fzf#run() abort " {{{1
   " The --with-nth 3.. option hides the first two words from the 
   " fzf window which we used to pass on the file name and line number
-  call fzf#run({  'source':  <sid>parse_toc(),
-        \   'sink':    function('vimtex#fzf#open_selection'),
-        \   'options': '--ansi --with-nth 3..'  
-        \ })
+  call fzf#run({
+      \ 'source': <sid>parse_toc(),
+      \ 'sink': function('vimtex#fzf#open_selection'),
+      \ 'options': '--ansi --with-nth 3..',
+      \})
 endfunction
 
 " }}}1
