@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#fzf#run()
+function! vimtex#fzf#run() abort " {{{1
   " The --with-nth 3.. option hides the first two words from the 
   " fzf window which we used to pass on the file name and line number
   call fzf#run({  'source':  <sid>parse_toc(),
@@ -13,11 +13,15 @@ function! vimtex#fzf#run()
         \ })
 endfunction
 
-function! vimtex#fzf#open_selection(sel)
+" }}}1
+
+function! vimtex#fzf#open_selection(sel) abort " {{{1
   execute printf('edit +%s %s', split(a:sel)[0], split(a:sel)[1])
 endfunction
 
-function! s:parse_toc()
+" }}}1
+
+function! s:parse_toc() abort " {{{1
 " Parsing is mostly adapted from the Denite source
 " (see rplugin/python3/denite/source/vimtex.py)
 python3 << EOF
@@ -66,3 +70,5 @@ EOF
 
   return candidates
 endfunction
+
+" }}}1
