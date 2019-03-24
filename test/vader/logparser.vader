@@ -8,7 +8,7 @@ Execute (Setup):
 
 Execute (Verify captured LaTeX logfile warnings: total number):
   Log len(getqflist())
-  AssertEqual 8, len(getqflist())
+  AssertEqual 9, len(getqflist())
 
 After:
   let counter += 1
@@ -53,5 +53,10 @@ Execute (Verify captured LaTeX logfile warnings: Package biblatex):
 
 Execute (Verify captured LaTeX logfile warnings: Package biblatex (two lines)):
   AssertEqual "Package biblatex Warning: Data encoding is 'utf8'.\n                Use backend=biber.", getqflist()[counter]['text']
+  AssertEqual 0, getqflist()[counter]['lnum']
+  AssertEqual 'W', getqflist()[counter]['type']
+
+Execute (Verify captured LaTeX logfile warnings: Package babel (three lines)):
+  AssertEqual "Package babel Warning: No hyphenation patterns were loaded for\n                the language `Latin'\n                I will use the patterns loaded for \\language=0 instead.", getqflist()[counter]['text']
   AssertEqual 0, getqflist()[counter]['lnum']
   AssertEqual 'W', getqflist()[counter]['type']

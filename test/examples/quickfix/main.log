@@ -10,3 +10,6 @@ Overfull \hbox (22.0021pt too wide) in paragraph at lines 9--9
 Package biblatex warning: No "backend" specified, using Biber backend. To use BibTex, load biblatex with the "backend=bibtex" option.
 Package biblatex Warning: Data encoding is 'utf8'.
 (biblatex)                Use backend=biber.
+Package babel Warning: No hyphenation patterns were loaded for
+(babel)                the language `Latin'
+(babel)                I will use the patterns loaded for \language=0 instead.
