@@ -3312,6 +3312,19 @@ define a mapping to vimtex#fzf#run() in your .vimrc, e.g.
 
   nnoremap <localleader>lt :call vimtex#fzf#run()<cr>
 
+You can also choose to only show certain entry "layers", according to 
+this table (see |vimtex-toc| for detailed explanation of the "layers")
+
+  c:  content: 
+  t:  todo: 
+  l:  label: 
+  i:  include: 
+
+E.g. to only show Content and Labels use
+  :call vimtex#fzf#run('ct')<cr>
+
+The default behavior is to show all layers, i.e. 'ctli'
+
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
 
