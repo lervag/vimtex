@@ -25,7 +25,15 @@ endfunction
 " }}}1
 
 function! vimtex#fzf#open_selection(sel) abort " {{{1
-  execute printf('edit +%s %s', split(a:sel)[0], split(a:sel)[1])
+  let line = split(a:sel)[0]
+  let file = split(a:sel)[1]
+  let curr_file = expand('%:p')
+
+  if curr_file == file
+    execute "normal! " . line . "gg" 
+  else
+    execute printf('edit +%s %s', line, file)
+  endif
 endfunction
 
 " }}}1
