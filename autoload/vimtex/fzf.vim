@@ -1,5 +1,12 @@
-" Parsing is mostly adapted from the Denite source
+" vimtex - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
 function! s:parse_toc()
+" Parsing is mostly adapted from the Denite source
+" (see rplugin/python3/denite/source/vimtex.py)
 python3 << EOF
 import vim
 import json
