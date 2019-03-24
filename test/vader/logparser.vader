@@ -3,9 +3,12 @@ Execute (Setup):
   cfile ../examples/quickfix/main.log
   let counter = 0
 
+# NOTE: Update the total number when additional messages are added
+#       to '../examples/quickfix/main.log'
+
 Execute (Verify captured LaTeX logfile warnings: total number):
   Log len(getqflist())
-  AssertEqual 4, len(getqflist())
+  AssertEqual 8, len(getqflist())
 
 After:
   let counter += 1
@@ -31,4 +34,24 @@ Execute (Verify captured LaTeX logfile warnings: Package hyperref (two lines)):
 Execute (Verify captured LaTeX logfile warnings: Package hyperref (three lines)):
   AssertEqual "Package hyperref Warning: Composite letter `\\textdotbelow+u'\n                not defined in PD1 encoding,\n                removing `\\textdotbelow'", getqflist()[counter]['text']
   AssertEqual 5, getqflist()[counter]['lnum']
+  AssertEqual 'W', getqflist()[counter]['type']
+
+Execute (Verify captured LaTeX logfile warnings: Undefined reference):
+  AssertEqual 'LaTeX Warning: Reference `fig:my_picture'' on page 37 undefined on input line 477.', getqflist()[counter]['text']
+  AssertEqual 477, getqflist()[counter]['lnum']
+  AssertEqual 'W', getqflist()[counter]['type']
+
+Execute (Verify captured LaTeX logfile warnings: Overfull \hbox):
+  AssertEqual 'Overfull \hbox (22.0021pt too wide) in paragraph at lines 9--9', getqflist()[counter]['text']
+  AssertEqual 9, getqflist()[counter]['lnum']
+  AssertEqual 'W', getqflist()[counter]['type']
+
+Execute (Verify captured LaTeX logfile warnings: Package biblatex):
+  AssertEqual 'Package biblatex warning: No "backend" specified, using Biber backend. To use BibTex, load biblatex with the "backend=bibtex" option.', getqflist()[counter]['text']
+  AssertEqual 0, getqflist()[counter]['lnum']
+  AssertEqual 'W', getqflist()[counter]['type']
+
+Execute (Verify captured LaTeX logfile warnings: Package biblatex (two lines)):
+  AssertEqual "Package biblatex Warning: Data encoding is 'utf8'.\n                Use backend=biber.", getqflist()[counter]['text']
+  AssertEqual 0, getqflist()[counter]['lnum']
   AssertEqual 'W', getqflist()[counter]['type']

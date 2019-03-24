@@ -5,3 +5,8 @@ Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 Package hyperref Warning: Composite letter `\textdotbelow+u'
 (hyperref)                not defined in PD1 encoding,
 (hyperref)                removing `\textdotbelow' on input line 5.
+LaTeX Warning: Reference `fig:my_picture' on page 37 undefined on input line 477.
+Overfull \hbox (22.0021pt too wide) in paragraph at lines 9--9
+Package biblatex warning: No "backend" specified, using Biber backend. To use BibTex, load biblatex with the "backend=bibtex" option.
+Package biblatex Warning: Data encoding is 'utf8'.
+(biblatex)                Use backend=biber.
