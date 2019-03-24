@@ -2,6 +2,8 @@
 function! s:parse_toc()
 python3 << EOF
 import vim
+import json
+from colorama import Fore, Style
 
 def format_number(n):
   if not n or not type(n) is dict or not 'chapter' in n:
@@ -19,15 +21,27 @@ def format_number(n):
 
   return '.'.join(num)
 
+def get_color(type):
+  colors = {
+    'include' : Fore.BLUE,
+    'content' : Fore.WHITE,
+    'label' : Fore.GREEN,
+    'todo' : Fore.RED,
+  }
+  return colors[type]
+
 def create_candidate(e, depth):
   number = format_number(dict(e['number']))
 
-  return f"{e.get('line', 0)} {e['file']} {e['title']:65} {number}"
+  return f"{e.get('line', 0)} {e['file']} {get_color(e['type'])}{e['title']:65}{Style.RESET_ALL} {number}"
 
 entries = vim.eval('vimtex#parser#toc(b:vimtex.tex)')
 depth = max([int(e['level']) for e in entries])
 candidates = [create_candidate(e, depth) for e in entries]
-vim.command(f"let candidates = {candidates}")
+
+# json.dumps will convert single quotes to double quotes
+# so that vim understands the ansi escape sequences
+vim.command(f"let candidates = {json.dumps(candidates)}") 
 EOF
 
   return candidates
