@@ -71,6 +71,7 @@ CONTENTS                                                      *vimtex-contents*
     Table of contents                           |vimtex-toc|
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
+    fzf.vim integration                         |vimtex-fzf| 
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
@@ -3183,8 +3184,8 @@ parsing the LaTeX project and displaying a table of contents in a separate
 window. For more info, see |vimtex-toc|.
 
 The "engine" for collecting the table-of-content entries may also be used as
-a backend for external plugins. There are sources for |denite.nvim| and
-|unite.vim| that should work well. The source code may be used as inspiration
+a backend for external plugins. There are sources for |denite.nvim|, |unite.vim| 
+and |fzf.vim| that should work well. The source code may be used as inspiration
 to write custom sources or sources for other, similar plugins.
 
 ------------------------------------------------------------------------------
@@ -3298,6 +3299,18 @@ one may override the default mapping, e.g.: >
 
   nnoremap <localleader>lt :<c-u>Denite vimtex<cr>
   nnoremap <localleader>lt :<c-u>Unite vimtex<cr>
+
+------------------------------------------------------------------------------
+FZF INTEGRATION                                                   *vimtex-fzf*
+
+                                           https://github.com/junegunn/fzf.vim
+                                               https://github.com/junegunn/fzf
+|fzf.vim| integrates the general-purpose command-line fuzzy finder |fzf| into 
+vim and neovim. Similar to the |denite.vim| and |unite.vim| source it may be 
+used to quickly navigate |vimtex|' built-in ToC feature. To use it, just
+define a mapping to vimtex#fzf#run() in your .vimrc, e.g.
+
+  nnoremap <localleader>lt :call vimtex#fzf#run()<cr>
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
