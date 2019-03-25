@@ -3184,7 +3184,7 @@ parsing the LaTeX project and displaying a table of contents in a separate
 window. For more info, see |vimtex-toc|.
 
 The "engine" for collecting the table-of-content entries may also be used as
-a backend for external plugins. There are sources for |denite.nvim|, |unite.vim| 
+a backend for external plugins. There are sources for |denite.nvim|, |unite.vim|
 and |fzf.vim| that should work well. The source code may be used as inspiration
 to write custom sources or sources for other, similar plugins.
 
@@ -3305,25 +3305,25 @@ FZF INTEGRATION                                                   *vimtex-fzf*
 
                                            https://github.com/junegunn/fzf.vim
                                                https://github.com/junegunn/fzf
-|fzf.vim| integrates the general-purpose command-line fuzzy finder |fzf| into 
-vim and neovim. Similar to the |denite.vim| and |unite.vim| source it may be 
-used to quickly navigate |vimtex|' built-in ToC feature. To use it, just
-define a mapping to vimtex#fzf#run() in your .vimrc, e.g.
+|fzf.vim| integrates the general-purpose command-line fuzzy finder |fzf| into vim
+and neovim. Similar to the |denite.vim| and |unite.vim| source it may be used to
+quickly navigate |vimtex|'s built-in ToC feature. To use it, just define a
+mapping to `vimtex#fzf#run()` in your .vimrc, e.g.: >
 
   nnoremap <localleader>lt :call vimtex#fzf#run()<cr>
 
-You can also choose to only show certain entry "layers", according to 
-this table (see |vimtex-toc| for detailed explanation of the "layers")
+You can also choose to only show certain entry "layers", according to this
+table (see |vimtex-toc| for detailed explanation of the "layers"):
 
-  c:  content
-  t:  todo
-  l:  label 
-  i:  include 
+  `c`:  content
+  `t`:  todo
+  `l`:  label
+  `i`:  include
 
-E.g. to only show Content and Labels use
+The default behavior is to show all layers, i.e. 'ctli'. To only show
+`content` and `label`s use: >
+
   :call vimtex#fzf#run('ct')
-
-The default behavior is to show all layers, i.e. 'ctli'
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
