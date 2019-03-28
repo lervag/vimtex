@@ -2909,7 +2909,7 @@ Visual Studio Code. The project is here: https://github.com/neoclide/coc.nvim.
 
   Plug 'neoclide/coc.nvim'
 
-To configure for `vimtex`, ony should use the extension plugin |coc-vimtex|,
+To configure for `vimtex`, one should use the extension plugin |coc-vimtex|,
 which may be found here: https://github.com/neoclide/coc-vimtex. To use it,
 first make sure you have |coc.nvim| installed, then just run: >
 
