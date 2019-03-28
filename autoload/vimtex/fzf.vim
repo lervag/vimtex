@@ -71,7 +71,8 @@ def colorize(e):
     return f"{color}{e['title']:65}{Style.RESET_ALL}"
   except ModuleNotFoundError:
     import os
-    if os.name  == 'nt': #Windows...
+    if os.name  == 'nt':
+      # Colour support on Windows requires Colorama
       return f"{e['title']:65}"
     else:
       color = {'content' : "\u001b[37m",
