@@ -67,10 +67,10 @@ def colorize(e):
     color = {'content' : Fore.WHITE,
              'include' : Fore.BLUE,
              'label' : Fore.GREEN,
-             'todo' : Fore.RED}[entry['type']]
-    return f"{color}{entry['title']:65}{Style.RESET_ALL}"
+             'todo' : Fore.RED}[e['type']]
+    return f"{color}{e['title']:65}{Style.RESET_ALL}"
   except ModuleNotFoundError:
-    return f"{entry['title']:65}"
+    return f"{e['title']:65}"
 
 def create_candidate(e, depth):
   number = format_number(dict(e['number']))
