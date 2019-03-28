@@ -3325,6 +3325,9 @@ The default behavior is to show all layers, i.e. 'ctli'. To only show
 
   :call vimtex#fzf#run('ct')
 
+If the python package Colorama is available, it will be used to provide some
+colors to the listings.
+
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
 
