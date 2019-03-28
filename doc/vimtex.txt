@@ -57,6 +57,7 @@ CONTENTS                                                      *vimtex-contents*
     Complete packages and documentclasses       |vimtex-complete-packages|
                                                 |vimtex-complete-classes|
     Autocomplete                                |vimtex-complete-auto|
+      coc.nvim                                  |vimtex-complete-coc.nvim|
       deoplete                                  |vimtex-complete-deoplete|
       Neocomplete                               |vimtex-complete-neocomplete|
       ncm2                                      |vimtex-complete-ncm2|
@@ -2892,11 +2893,30 @@ Note: If you want to change the default value of `TEXMFHOME` in your shell
 AUTOCOMPLETE                                             *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-four good plugins that provide this: ||deoplete|, |neocomplete|, |ncm2|,
+several good plugins that provide this: |coc.nvim|, ||deoplete|, |neocomplete|, |ncm2|,
 |nvim-completion-manager| and |youcompleteme|.  Moreover, there is |VimCompletesMe|
 that overrides <tab> to trigger different built-in completions, such as the
 omni-completion by vimtex, depending on the context. See below for
 descriptions on how to setup these with |vimtex|.
+
+coc.nvim~
+                                                     *vimtex-complete-coc.nvim*
+|coc.nvim| is an intellisense engine for Vim8 & Neovim. It's a completion 
+framework and language server client which supports extension features of VSCode.
+The project is here: https://github.com/neoclide/coc.nvim.
+
+|coc-vimtex| is the plugin which provides `vimtex` integration for |coc.nvim|.
+see https://github.com/neoclide/coc-vimtex. To use it, just run >
+
+  :CocInstall coc-vimtex
+
+Additionally, you can configure code completion for TeX by setting these
+options in |coc.nvim|'s configuration file `coc-settings.json` >
+
+  coc.source.vimtex.disableSyntaxes // disabled syntax names
+  coc.source.vimtex.enable          // set to false to disable this source
+  coc.source.vimtex.priority        // priority of source, default 99
+  coc.source.vimtex.shortcut        // shortcut used in menu of completion item
 
 deoplete~
                                                      *vimtex-complete-deoplete*
