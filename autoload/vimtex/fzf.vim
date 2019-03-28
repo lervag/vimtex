@@ -70,7 +70,15 @@ def colorize(e):
              'todo' : Fore.RED}[e['type']]
     return f"{color}{e['title']:65}{Style.RESET_ALL}"
   except ModuleNotFoundError:
-    return f"{e['title']:65}"
+    import os
+    if os.name  == 'nt': #Windows...
+      return f"{e['title']:65}"
+    else:
+      color = {'content' : "\u001b[37m",
+               'include' : "\u001b[34m",
+               'label' : "\u001b[32m",
+               'todo' : "\u001b[31m"}[e['type']]
+      return f"{color}{e['title']:65}\u001b[0m"
 
 def create_candidate(e, depth):
   number = format_number(dict(e['number']))
