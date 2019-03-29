@@ -2909,6 +2909,10 @@ Visual Studio Code. The project is here: https://github.com/neoclide/coc.nvim.
 
   Plug 'neoclide/coc.nvim'
 
+However, it does require some more steps, and users are recommended to read
+the installation instructions in the `coc.nvim` wiki:
+https://github.com/neoclide/coc.nvim/wiki/Install-coc.nvim
+
 To configure for `vimtex`, one should use the extension plugin |coc-vimtex|,
 which may be found here: https://github.com/neoclide/coc-vimtex. To use it,
 first make sure you have |coc.nvim| installed, then just run: >
