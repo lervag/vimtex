@@ -65,8 +65,11 @@ endfunction
 " }}}1
 
 function! vimtex#view#reverse_goto(line, filename) abort " {{{1
+  if mode() ==# 'i' | stopinsert | endif
+
   let l:file = resolve(a:filename)
 
+  " Open file if necessary
   if !bufexists(l:file)
     if filereadable(l:file)
       execute 'silent edit' l:file
@@ -76,6 +79,7 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
     endif
   endif
 
+  " Go to correct buffer and line
   let l:bufnr = bufnr(l:file)
   let l:winnr = bufwinnr(l:file)
   execute l:winnr >= 0
@@ -85,6 +89,7 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   execute 'normal!' a:line . 'G'
   normal! zMzvzz
 
+  " Attempt to focus Vim
   if executable('pstree') && executable('xdotool')
     let l:pids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
 
