@@ -1472,6 +1472,9 @@ OPTIONS                                                        *vimtex-options*
   of these come from e.g. `\input{file}` or `\include{file}`. This option
   allows to add more commands that are used to include files.
 
+  Note: This option is read during initialization of vimtex, and so it must be
+        set early. I.e., it can not be set in `after/ftplugin/tex.vim`.
+
   Default value: ['input', 'include', 'subfile']
 
 *g:vimtex_indent_enabled*
