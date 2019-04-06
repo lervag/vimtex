@@ -1477,6 +1477,19 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ['input', 'include', 'subfile']
 
+*g:vimtex_include_search_enabled*
+  Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
+  in the current directory, Vimtex uses `kpsewhich` to search for it in the
+  system TeX distribution. However, some plugins (such as Supertab) will
+  search included files for completion possibilities, and shelling out to
+  `kpsewhich` several times when the user presses |i_<Tab>| can introduce a
+  significant delay; this option lets the user disable searching for included
+  files with `kpsewhich` specifically.
+
+  Supertab: https://github.com/ervandew/supertab
+
+  Default value: 1
+
 *g:vimtex_indent_enabled*
   Use this option to disable/enable |vimtex| indentation.
 
@@ -3887,6 +3900,13 @@ in the vimrc file. One of these has been reported to be `:behave mswin` (see
   2) Add `:set selection=inclusive` to your vimrc file.
 
 See also: https://github.com/lervag/vimtex/issues/408
+
+Problem: Pressing <Tab> causes Vim to hang when using Supertab or similar~
+
+Vimtex may be scanning included files with `kpsewhich`; try disabling this
+feature by setting |g:vimtex_include_search_enabled| to 0 in your |vimrc|: >
+
+    let g:vimtex_include_search_enabled=0
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
