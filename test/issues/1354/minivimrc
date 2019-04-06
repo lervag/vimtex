@@ -1,0 +1,9 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+syntax enable
+filetype plugin indent on
+
+nnoremap q :qall!<cr>
+
+silent edit minimal.tex

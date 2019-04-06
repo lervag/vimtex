@@ -206,6 +206,8 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_quickfix_blgparser', {})
   call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', '0')
 
+  call s:init_option('vimtex_syntax_enabled', 1)
+
   call s:init_option('vimtex_texcount_custom_arg', '')
 
   call s:init_option('vimtex_text_obj_enabled', 1)

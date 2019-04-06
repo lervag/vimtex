@@ -4,9 +4,15 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if !get(g:, 'vimtex_syntax_enabled', 1)
+if !exists('g:vimtex_syntax_enabled')
+  unsilent call vimtex#log#warning([
+        \ 'It seems "syntax on" was applied too soon.',
+        \ 'Please see ":help vimtex_syntax_filetype".'
+        \])
   finish
 endif
+
+if !g:vimtex_syntax_enabled | finish | endif
 
 if !exists('b:current_syntax')
   let b:current_syntax = 'tex'
