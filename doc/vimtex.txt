@@ -217,6 +217,11 @@ Order of "syntax on" and "filetype plugin on"~
   Note: Many plugin managers, like |vim-plug|, will automatically add these
         lines in the correct order.
 
+  Note: If you do not have a vimrc file, |defaults.vim| may be loaded and will
+        source the mentioned lines in the wrong order. If one wants to source
+        |defaults.vim|, it is suggested to do it manually and to add the lines
+        above in the correct order first.
+
 Compiler backend~
 
   |vimtex| uses `latexmk`, `latexrun`, or `arara` to compile the LaTeX document.
