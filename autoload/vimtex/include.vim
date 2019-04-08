@@ -37,14 +37,16 @@ function! vimtex#include#expr() abort " {{{1
   "
   " Search for file with kpsewhich
   "
-  for l:file in s:split(l:fname)
-    for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
-      let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
-      if filereadable(l:candidate)
-        return s:visited.check(l:candidate)
-      endif
+  if g:vimtex_include_search_enabled
+    for l:file in s:split(l:fname)
+      for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
+        let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
+        if filereadable(l:candidate)
+          return s:visited.check(l:candidate)
+        endif
+      endfor
     endfor
-  endfor
+  endif
 
   return s:visited.check(l:fname)
 endfunction
