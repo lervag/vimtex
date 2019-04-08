@@ -122,6 +122,8 @@ endfunction
 
 " }}}1
 function! s:biblatex.get_key_lnum(key, filename) abort " {{{1
+  if !filereadable(a:filename) | return 0 | endif
+
   let l:lines = readfile(a:filename)
   let l:lnums = range(len(l:lines))
   let l:annotated_lines = map(l:lnums, '[v:val, l:lines[v:val]]')
