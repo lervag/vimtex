@@ -24,6 +24,7 @@ let s:biblatex = {
       \}
 function! s:biblatex.prepare(blg) abort " {{{1
   let self.file = a:blg
+  let self.root = fnamemodify(a:blg, ':h')
   if empty(self.file) | throw 'biblatex Aborted' | endif
 
   let self.types = map(
@@ -109,6 +110,20 @@ function! s:biblatex.get_db_files() abort " {{{1
 endfunction
 
 " }}}1
+function! s:biblatex.get_filename(name) abort " {{{1
+  if !filereadable(a:name)
+    for l:root in [self.root, b:vimtex.root]
+      let l:candidate = fnamemodify(simplify(l:root . '/' . a:name), ':.')
+      if filereadable(l:candidate)
+        return l:candidate
+      endif
+    endfor
+  endif
+
+  return a:name
+endfunction
+
+" }}}1
 function! s:biblatex.get_key_pos(key) abort " {{{1
   for l:file in self.get_db_files()
     let l:lnum = self.get_key_lnum(a:key, l:file)
@@ -156,7 +171,7 @@ let s:type_parse_error = {}
 function! s:type_parse_error.fix(ctx, entry) abort " {{{1
   if a:entry.text =~# 'ERROR - BibTeX subsystem.*expected end of entry'
     let l:matches = matchlist(a:entry.text, '\v(\S*\.bib).*line (\d+)')
-    let a:entry.filename = fnamemodify(l:matches[1], ':t')
+    let a:entry.filename = a:ctx.get_filename(fnamemodify(l:matches[1], ':t'))
     let a:entry.lnum = l:matches[2]
 
     " Use filename and line number to get entry name
@@ -175,7 +190,7 @@ function! s:type_duplicate.fix(ctx, entry) abort " {{{1
   if a:entry.text =~# 'WARN - Duplicate entry'
     let l:matches = matchlist(a:entry.text, '\v: ''(\S*)'' in file ''(.{-})''')
     let l:key = l:matches[1]
-    let a:entry.filename = l:matches[2]
+    let a:entry.filename = a:ctx.get_filename(l:matches[2])
     let a:entry.lnum = a:ctx.get_key_lnum(l:key, a:entry.filename)
     let a:entry.text = 'biblatex: Duplicate entry key "' . l:key . '"'
     return 1
@@ -192,7 +207,7 @@ function! s:type_no_driver.fix(ctx, entry) abort " {{{1
 
     let l:pos = a:ctx.get_key_pos(l:key)
     if !empty(l:pos)
-      let a:entry.filename = l:pos[0]
+      let a:entry.filename = a:ctx.get_filename(l:pos[0])
       let a:entry.lnum = l:pos[1]
       if has_key(a:entry, 'bufnr')
         unlet a:entry.bufnr
@@ -234,7 +249,7 @@ function! s:type_encoding.fix(ctx, entry) abort " {{{1
 
     let l:pos = a:ctx.get_key_pos(l:key)
     if !empty(l:pos)
-      let a:entry.filename = l:pos[0]
+      let a:entry.filename = a:ctx.get_filename(l:pos[0])
       let a:entry.lnum = l:pos[1]
       if has_key(a:entry, 'bufnr')
         unlet a:entry.bufnr
