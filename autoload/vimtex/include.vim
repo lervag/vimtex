@@ -36,13 +36,11 @@ function! vimtex#include#expr() abort " {{{1
   "
   " Search for file with kpsewhich
   "
-  for l:file in s:split(l:fname)
-    for l:suffix in split(&l:suffixesadd, ',') + ['']
-      let l:candidate = s:kpsewhich_find(l:file . l:suffix)
-      if !empty(l:candidate)
-        return s:visited.check(l:candidate)
-      endif
-    endfor
+  for l:file in s:gather_candidates(l:fname)
+    let l:candidate = s:kpsewhich_find(l:file)
+    if !empty(l:candidate)
+      return s:visited.check(l:candidate)
+    endif
   endfor
 
   return s:visited.check(l:fname)
@@ -66,9 +64,10 @@ function! s:input(fname, type) abort " {{{1
 endfunction
 
 " }}}1
-function! s:split(fname) abort " {{{1
+function! s:gather_candidates(fname) abort " {{{1
+  " Split input list on commas, and if applicable, ensure that the entry that
+  " the cursor is on is placed first in the queue
   let l:files = split(a:fname, '\s*,\s*')
-
   let l:current = expand('<cword>')
   let l:index = index(l:files, l:current)
   if l:index >= 0
@@ -76,7 +75,17 @@ function! s:split(fname) abort " {{{1
     let l:files = [l:current] + l:files
   endif
 
-  return l:files
+  " Add file extensions to create the final list of candidate files
+  let l:candidates = []
+  for l:file in l:files
+    if !empty(fnamemodify(l:file, ':e'))
+      call add(l:candidates, l:file)
+    else
+      call extend(l:candidates, map(split(&l:suffixesadd, ','), 'l:file . v:val'))
+    endif
+  endfor
+
+  return l:candidates
 endfunction
 
 " }}}1
