@@ -7,11 +7,18 @@
 function! vimtex#kpsewhich#find(file) abort " {{{1
   let l:output = vimtex#kpsewhich#run(fnameescape(a:file))
 
+  " Remove warning lines from output
+  call filter(l:output, 'stridx(v:val, "kpsewhich: warning: ") == -1')
   if empty(l:output) | return '' | endif
   let l:filename = l:output[0]
 
+  let l:abs_re = '^/'
+  if has('win32')
+    let l:abs_re = '^[A-Z]:[\\/]'
+  endif
+
   " If path is already absolute, return it
-  return l:filename[0] ==# '/'
+  return l:filename =~# l:abs_re
         \ ? l:filename
         \ : simplify(b:vimtex.root . '/' . l:filename)
 endfunction
