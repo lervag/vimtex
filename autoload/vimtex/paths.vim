@@ -42,3 +42,11 @@ function! vimtex#paths#relative(path, current) abort " {{{1
 endfunction
 
 " }}}1
+
+function! vimtex#paths#is_abs(path) abort
+  let l:abs_re = '^/'
+  if has('win32')
+    let l:abs_re = '^[A-Z]:[\\/]'
+  endif
+  return a:path =~# l:abs_re
+endfunction

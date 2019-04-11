@@ -334,7 +334,7 @@ function! s:compiler.start(...) abort dict " {{{1
     call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
     call vimtex#util#uniq(sort(filter(l:dirs, "v:val !=# ''")))
     call map(l:dirs,
-          \ (self.build_dir[0] !=# '/' ? "self.root . '/' . " : '')
+          \ (vimtex#paths#is_abs(self.build_dir) ? '' : "self.root . '/' . ")
           \ . "self.build_dir . '/' . v:val")
     call filter(l:dirs, '!isdirectory(v:val)')
 
