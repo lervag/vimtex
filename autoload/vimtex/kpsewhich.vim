@@ -12,13 +12,8 @@ function! vimtex#kpsewhich#find(file) abort " {{{1
   if empty(l:output) | return '' | endif
   let l:filename = l:output[0]
 
-  let l:abs_re = '^/'
-  if has('win32')
-    let l:abs_re = '^[A-Z]:[\\/]'
-  endif
-
   " If path is already absolute, return it
-  return l:filename =~# l:abs_re
+  return vimtex#paths#is_abs(l:filename)
         \ ? l:filename
         \ : simplify(b:vimtex.root . '/' . l:filename)
 endfunction

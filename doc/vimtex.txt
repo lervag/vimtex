@@ -1498,9 +1498,10 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_include_search_enabled*
   Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
   in the current directory, Vimtex uses `kpsewhich` to search for it in the
-  system TeX distribution. However, some plugins (such as Supertab) will
+  system TeX distribution. However, invoking keyword completion with
+  |i_CTRL-N| (or through a plugin like Supertab bound to |i_<Tab>|) will
   search included files for completion possibilities, and shelling out to
-  `kpsewhich` several times when the user presses |i_<Tab>| can introduce a
+  `kpsewhich` several times when the user presses can introduce a
   significant delay; this option lets the user disable searching for included
   files with `kpsewhich` specifically.
 
@@ -3911,7 +3912,7 @@ and `die` results in: >
 
 Solution: It seems that vim for Windows comes with some options set by default
 in the vimrc file. One of these has been reported to be `:behave mswin` (see
-|:behave)| which, among other things, sets the 'selection' option to
+|:behave|) which, among other things, sets the 'selection' option to
 "exclusive". This can be ameliorated by pursuing one of two options:
 
   1) Add `:behave xterm` to your vimrc file.
@@ -3919,7 +3920,7 @@ in the vimrc file. One of these has been reported to be `:behave mswin` (see
 
 See also: https://github.com/lervag/vimtex/issues/408
 
-Problem: Pressing <Tab> causes Vim to hang when using Supertab or similar~
+Problem: Typing <Tab> or <C-n> causes Vim to hang before making a completion~
 
 Vimtex may be scanning included files with `kpsewhich`; try disabling this
 feature by setting |g:vimtex_include_search_enabled| to 0 in your |vimrc|: >
