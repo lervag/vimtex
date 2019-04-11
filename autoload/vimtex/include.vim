@@ -19,8 +19,7 @@ function! vimtex#include#expr() abort " {{{1
   " Parse \include or \input style lines
   "
   let l:file = s:input(l:fname, 'tex')
-  for l:suffix in [''] + split(&l:suffixesadd, ',')
-    let l:candidate = l:file . l:suffix
+  for l:candidate in [l:file, l:file . '.tex']
     if filereadable(l:candidate)
       return s:visited.check(l:candidate)
     endif
@@ -39,13 +38,13 @@ function! vimtex#include#expr() abort " {{{1
   "
   if g:vimtex_include_search_enabled
     for l:file in s:split(l:fname)
-      for l:suffix in  reverse(split(&l:suffixesadd, ',')) + ['']
-        let l:candidate = vimtex#kpsewhich#find(l:file . l:suffix)
-        if filereadable(l:candidate)
+      for l:suffix in split(&l:suffixesadd, ',') + ['']
+        let l:candidate = s:kpsewhich_find(l:file . l:suffix)
+        if !empty(l:candidate)
           return s:visited.check(l:candidate)
         endif
       endfor
-    endfor
+    endif
   endif
 
   return s:visited.check(l:fname)
@@ -70,14 +69,29 @@ endfunction
 
 " }}}1
 function! s:split(fname) abort " {{{1
-  let l:files = []
+  let l:files = split(a:fname, '\s*,\s*')
 
   let l:current = expand('<cword>')
-  if index(split(a:fname, ','), l:current) >= 0
-    call add(l:files, l:current)
+  let l:index = index(l:files, l:current)
+  if l:index >= 0
+    call remove(l:files, l:index)
+    let l:files = [l:current] + l:files
   endif
 
-  return l:files + [a:fname]
+  return l:files
+endfunction
+
+" }}}1
+function! s:kpsewhich_find(fname) abort " {{{1
+  if !has_key(s:kpsewhich_cache, a:fname)
+    let l:file = vimtex#kpsewhich#find(a:fname)
+    if filereadable(l:file)
+      let s:kpsewhich_cache[a:fname] = l:file
+    else
+      let s:kpsewhich_cache[a:fname] = ''
+    endif
+  endif
+  return s:kpsewhich_cache[a:fname]
 endfunction
 
 " }}}1
@@ -104,3 +118,5 @@ function! s:visited.check(fname) abort dict " {{{1
 endfunction
 
 " }}}1
+
+let s:kpsewhich_cache = {}

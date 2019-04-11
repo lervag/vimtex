@@ -124,7 +124,18 @@ if get(s:, 'reload_guard', 1)
       execute 'source' l:file
     endfor
 
+    " Temporarily unset b:current_syntax (if active)
+    let l:reload_syntax = get(b:, 'current_syntax', '') ==# 'tex'
+    if l:reload_syntax
+      unlet b:current_syntax
+    endif
+
     call vimtex#init()
+
+    " Reload syntax
+    if l:reload_syntax
+      runtime! syntax/tex.vim
+    endif
 
     " Reload indent file
     if exists('b:did_vimtex_indent')

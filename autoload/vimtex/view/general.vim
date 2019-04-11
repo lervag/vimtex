@@ -93,7 +93,7 @@ function! s:general.compiler_callback(status) dict abort " {{{1
   endif
 
   if g:vimtex_view_use_temp_files
-    call self.view()
+    call self.view('')
   endif
 
   if has_key(self, 'hook_callback')
