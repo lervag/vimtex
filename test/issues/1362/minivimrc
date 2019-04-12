@@ -1,0 +1,23 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_use_temp_files = 1
+let g:vimtex_view_automatic = 0
+
+if has('win32')
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+
+  if has('nvim')
+     let g:vimtex_compiler_progname = 'C:\Users\xliot\Miniconda3\Scripts\nvr.exe'
+  endif
+elseif has('nvim')
+  let g:vimtex_view_general_viewer = 'zathura'
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
