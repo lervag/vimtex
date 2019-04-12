@@ -93,7 +93,12 @@ function! s:general.compiler_callback(status) dict abort " {{{1
   endif
 
   if g:vimtex_view_use_temp_files
-    call self.view('')
+    call self.copy_files()
+  endif
+
+  if g:vimtex_view_automatic && !get(self, 'started_through_callback')
+    let self.started_through_callback = 1
+    call self.view(self.out())
   endif
 
   if has_key(self, 'hook_callback')
