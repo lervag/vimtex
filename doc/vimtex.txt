@@ -1495,6 +1495,21 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ['input', 'include', 'subfile']
 
+*g:vimtex_include_search_enabled*
+  Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
+  in the current directory, Vimtex uses `kpsewhich` to search for it in the
+  system TeX distribution. If the 'complete' option includes "i", invoking
+  keyword completion with |i_CTRL-N| will search included files for completion
+  possibilities. In this case, there may be a lot of calls to `kpsewhich`
+  while scanning for included files during the first invocation of keyword
+  completion, and this may introduce a significant delay. Subsequent keyword
+  completions should be faster, as the calls to `kpsewhich` are cached.
+
+  This option allows to disable searching for included files with `kpsewhich`,
+  and with that prevent the above explained delay.
+
+  Default value: 1
+
 *g:vimtex_indent_enabled*
   Use this option to disable/enable |vimtex| indentation.
 
@@ -3898,13 +3913,27 @@ and `die` results in: >
 
 Solution: It seems that vim for Windows comes with some options set by default
 in the vimrc file. One of these has been reported to be `:behave mswin` (see
-|:behave)| which, among other things, sets the 'selection' option to
+|:behave|) which, among other things, sets the 'selection' option to
 "exclusive". This can be ameliorated by pursuing one of two options:
 
   1) Add `:behave xterm` to your vimrc file.
   2) Add `:set selection=inclusive` to your vimrc file.
 
 See also: https://github.com/lervag/vimtex/issues/408
+
+Problem: Typing <Tab> or <C-n> causes Vim to hang before making a completion~
+
+Vimtex may be scanning included files with `kpsewhich` while collecting
+completion candidates for keyword completion. Try disabling this feature by
+setting |g:vimtex_include_search_enabled| to 0 in your |vimrc|: >
+
+    let g:vimtex_include_search_enabled = 0
+
+Note: Plugins like |supertab| [0], which often maps the |i_<Tab>| key, will
+      typically use keyword completion "behind the scenes" to gather
+      completion candidates.
+
+      [0]: https://github.com/ervandew/supertab
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*

@@ -23,6 +23,12 @@ endfunction
 
 " }}}1
 
+function! vimtex#paths#is_abs(path) abort " {{{1
+  return a:path =~# s:re_abs
+endfunction
+
+" }}}1
+
 function! vimtex#paths#shorten_relative(path) abort " {{{1
   " Input: An absolute path
   " Output: Relative path with respect to the vimtex root, path relative to
@@ -62,7 +68,10 @@ endfunction
 
 " }}}1
 
+
 let s:cd = exists('*haslocaldir') && haslocaldir()
       \ ? 'lcd'
       \ : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
 let s:qpath = get(s:, 'qpath', [])
+
+let s:re_abs = has('win32') ? '^[A-Z]:[\\/]' : '^/'

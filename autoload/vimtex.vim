@@ -47,6 +47,8 @@ function! vimtex#init_options() abort " {{{1
         \ 'custom_patterns': [],
         \})
 
+  call s:init_option('vimtex_include_search_enabled', 1)
+
   call s:init_option('vimtex_doc_enabled', 1)
   call s:init_option('vimtex_doc_handlers', [])
 

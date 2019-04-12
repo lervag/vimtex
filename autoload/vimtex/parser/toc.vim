@@ -163,7 +163,7 @@ let s:matcher_include = {
       \}
 function! s:matcher_include.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
-  if l:file[0] !=# '/'
+  if !vimtex#paths#is_abs(l:file[0])
     let l:file = b:vimtex.root . '/' . l:file
   endif
   let l:file = fnamemodify(l:file, ':~:.')
@@ -194,7 +194,7 @@ let s:matcher_include_graphics = {
       \}
 function! s:matcher_include_graphics.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
-  if l:file[0] !=# '/'
+  if !vimtex#paths#is_abs(l:file)
     let l:file = vimtex#misc#get_graphicspath(l:file)
   endif
   let l:file = fnamemodify(l:file, ':~:.')
@@ -228,7 +228,7 @@ let s:matcher_include_vimtex = {
       \}
 function! s:matcher_include_vimtex.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
-  if l:file[0] !=# '/'
+  if !vimtex#paths#is_abs(l:file)
     let l:file = b:vimtex.root . '/' . l:file
   endif
   let l:file = fnamemodify(l:file, ':~:.')

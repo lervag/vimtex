@@ -36,12 +36,14 @@ function! vimtex#include#expr() abort " {{{1
   "
   " Search for file with kpsewhich
   "
-  for l:file in s:gather_candidates(l:fname)
-    let l:candidate = s:kpsewhich_find(l:file)
-    if !empty(l:candidate)
-      return s:visited.check(l:candidate)
-    endif
-  endfor
+  if g:vimtex_include_search_enabled
+    for l:file in s:gather_candidates(l:fname)
+      let l:candidate = s:kpsewhich_find(l:file)
+      if !empty(l:candidate)
+        return s:visited.check(l:candidate)
+      endif
+    endfor
+  endif
 
   return s:visited.check(l:fname)
 endfunction
