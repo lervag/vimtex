@@ -168,8 +168,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
   let res = []
 
   " The bibtex completion seems to require that we are in the project root
-  let l:save_pwd = getcwd()
-  execute 'lcd ' . fnameescape(b:vimtex.root)
+  call vimtex#paths#pushd(b:vimtex.root)
 
   " Find data from external bib files
   let bibfiles = join(self.find_bibs(), ',')
@@ -225,7 +224,7 @@ function! s:completer_bib.search(regex) dict abort " {{{2
   endif
 
   " Return to previous working directory
-  execute 'lcd' fnameescape(l:save_pwd)
+  call vimtex#paths#popd()
 
   " Find data from 'thebibliography' environments
   let lines = readfile(b:vimtex.tex)
@@ -878,9 +877,7 @@ function! s:load_candidates_from_packages(packages) abort " {{{1
         \ '!has_key(s:candidates_from_packages, v:val)')
   if empty(l:packages) | return | endif
 
-  let l:save_pwd = getcwd()
-  let l:localdir = exists('*haslocaldir') ? haslocaldir() : 1
-  execute l:localdir ? 'lcd' : 'cd' fnameescape(s:complete_dir)
+  call vimtex#paths#pushd(s:complete_dir)
 
   for l:unreadable in filter(copy(l:packages), '!filereadable(v:val)')
     let s:candidates_from_packages[l:unreadable] = {}
@@ -928,7 +925,7 @@ function! s:load_candidates_from_packages(packages) abort " {{{1
     let s:candidates_from_packages[l:package].environments += l:candidates
   endfor
 
-  execute l:localdir ? 'lcd' : 'cd' fnameescape(l:save_pwd)
+  call vimtex#paths#popd()
 endfunction
 
 let s:candidates_from_packages = {}

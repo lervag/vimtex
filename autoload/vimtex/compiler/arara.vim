@@ -167,14 +167,9 @@ function! s:compiler_jobs.exec() abort dict " {{{1
   let s:cb_target = self.target_path !=# b:vimtex.tex ? self.target_path : ''
   let l:options.exit_cb = function('s:callback')
 
-  if !empty(self.root)
-    let l:save_pwd = getcwd()
-    execute 'lcd' fnameescape(self.root)
-  endif
+  call vimtex#paths#pushd(self.root)
   let self.job = job_start(l:cmd, l:options)
-  if !empty(self.root)
-    execute 'lcd' fnameescape(l:save_pwd)
-  endif
+  call vimtex#paths#popd()
 endfunction
 
 " }}}1

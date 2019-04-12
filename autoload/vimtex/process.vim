@@ -91,10 +91,7 @@ function! s:process._pre_run() abort dict " {{{1
     let self.output = 'null'
   endif
 
-  if !empty(self.workdir)
-    let self.save_pwd = getcwd()
-    execute 'lcd' fnameescape(self.workdir)
-  endif
+  call vimtex#paths#pushd(self.workdir)
 endfunction
 
 " }}}1
@@ -118,9 +115,7 @@ endfunction
 
 " }}}1
 function! s:process._post_run() abort dict " {{{1
-  if !empty(self.workdir)
-    execute 'lcd' fnameescape(self.save_pwd)
-  endif
+  call vimtex#paths#popd()
 endfunction
 
 " }}}1

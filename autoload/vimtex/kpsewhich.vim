@@ -18,19 +18,10 @@ endfunction
 
 " }}}1
 function! vimtex#kpsewhich#run(args) abort " {{{1
-  " Ensure that we run kpsewhich at the project root directory
-  let l:cwd = getcwd()
-  let l:change_dir = l:cwd !=# b:vimtex.root
-  if l:change_dir
-    execute 'lcd' fnameescape(b:vimtex.root)
-  endif
-
+  " kpsewhich should be run at the project root directory
+  call vimtex#paths#pushd(b:vimtex.root)
   let l:output = split(system('kpsewhich ' . a:args), '\n')
-
-  " Restore local CWD
-  if l:change_dir
-    execute 'lcd' l:cwd
-  endif
+  call vimtex#paths#popd()
 
   return l:output
 endfunction
