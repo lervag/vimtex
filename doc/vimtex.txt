@@ -1498,14 +1498,15 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_include_search_enabled*
   Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
   in the current directory, Vimtex uses `kpsewhich` to search for it in the
-  system TeX distribution. However, invoking keyword completion with
-  |i_CTRL-N| (or through a plugin like Supertab bound to |i_<Tab>|) will
-  search included files for completion possibilities, and shelling out to
-  `kpsewhich` several times when the user presses can introduce a
-  significant delay; this option lets the user disable searching for included
-  files with `kpsewhich` specifically.
+  system TeX distribution. If the 'complete' option includes "i", invoking
+  keyword completion with |i_CTRL-N| will search included files for completion
+  possibilities. In this case, there may be a lot of calls to `kpsewhich`
+  while scanning for included files during the first invocation of keyword
+  completion, and this may introduce a significant delay. Subsequent keyword
+  completions should be faster, as the calls to `kpsewhich` are cached.
 
-  Supertab: https://github.com/ervandew/supertab
+  This option allows to disable searching for included files with `kpsewhich`,
+  and with that prevent the above explained delay.
 
   Default value: 1
 
@@ -3922,10 +3923,17 @@ See also: https://github.com/lervag/vimtex/issues/408
 
 Problem: Typing <Tab> or <C-n> causes Vim to hang before making a completion~
 
-Vimtex may be scanning included files with `kpsewhich`; try disabling this
-feature by setting |g:vimtex_include_search_enabled| to 0 in your |vimrc|: >
+Vimtex may be scanning included files with `kpsewhich` while collecting
+completion candidates for keyword completion. Try disabling this feature by
+setting |g:vimtex_include_search_enabled| to 0 in your |vimrc|: >
 
-    let g:vimtex_include_search_enabled=0
+    let g:vimtex_include_search_enabled = 0
+
+Note: Plugins like |supertab| [0], which often maps the |i_<Tab>| key, will
+      typically use keyword completion "behind the scenes" to gather
+      completion candidates.
+
+      [0]: https://github.com/ervandew/supertab
 
 ==============================================================================
 CREDITS                                                        *vimtex-credits*
