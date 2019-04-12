@@ -167,7 +167,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
   let l:cmd .= ' ' . self.get_engine()
 
   if !empty(self.build_dir)
-    let l:cmd .= ' -outdir=' . self.build_dir
+    let l:cmd .= ' -outdir=' . fnameescape(self.build_dir)
   endif
 
   if self.continuous
@@ -304,7 +304,7 @@ function! s:compiler.clean(full) abort dict " {{{1
         \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
         \ . self.executable . ' ' . (a:full ? '-C ' : '-c ')
   if !empty(self.build_dir)
-    let l:cmd .= printf(' -outdir=%s ', self.build_dir)
+    let l:cmd .= printf(' -outdir=%s ', fnameescape(self.build_dir))
   endif
   let l:cmd .= vimtex#util#shellescape(self.target)
   call vimtex#process#run(l:cmd)

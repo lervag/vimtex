@@ -58,7 +58,8 @@ function! s:compiler.build_cmd() abort dict " {{{1
 
   let l:cmd .= ' --latex-cmd ' . self.get_engine()
 
-  let l:cmd .= ' -O ' . (empty(self.build_dir) ? '.' : self.build_dir)
+  let l:cmd .= ' -O '
+        \ . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
 
   return l:cmd . ' ' . vimtex#util#shellescape(self.target)
 endfunction
@@ -124,7 +125,8 @@ function! s:compiler.clean(...) abort dict " {{{1
         \   ? 'cd /D "' . self.root . '" & '
         \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
         \ . 'latexrun --clean-all'
-        \ . ' -O ' . (empty(self.build_dir) ? '.' : self.build_dir)
+        \ . ' -O '
+        \   . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
   call vimtex#process#run(l:cmd)
 
   call vimtex#log#info('Compiler clean finished')

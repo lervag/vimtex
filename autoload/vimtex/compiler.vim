@@ -244,7 +244,9 @@ function! vimtex#compiler#clean(full) abort " {{{1
   sleep 100m
 
   " Remove auxilliary output directories if they are empty
-  let l:build_dir = b:vimtex.root . '/' . b:vimtex.compiler.build_dir
+  let l:build_dir = (vimtex#paths#is_abs(b:vimtex.compiler.build_dir)
+        \ ? '' : b:vimtex.root . '/')
+        \ . b:vimtex.compiler.build_dir
   let l:tree = glob(l:build_dir . '/**/*', 0, 1)
   let l:files = filter(copy(l:tree), 'filereadable(v:val)')
   if !empty(l:files) | return | endif
