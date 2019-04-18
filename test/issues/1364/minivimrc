@@ -1,0 +1,17 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_general_viewer = 'okular'
+let g:vimtex_view_general_options = '--noraise --unique @pdf\#src:@line@tex'
+let g:vimtex_view_general_options_latexmk = '--unique'
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
