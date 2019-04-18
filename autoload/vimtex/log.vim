@@ -76,17 +76,16 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
   if !self.verbose | return | endif
 
   " Ignore message
-  let l:msg = join(l:msg_list)
   for l:re in get(g:, 'vimtex_log_ignore', [])
-    if l:msg =~# l:re | return | endif
+    if join(l:msg_list) =~# l:re | return | endif
   endfor
 
   call vimtex#echo#formatted([
         \ [self.type_to_highlight[a:type], 'vimtex:'],
         \ ' ' . l:msg_list[0]
         \])
-  for l:msg in l:msg_list[1:]
-    call vimtex#echo#echo('        ' . l:msg)
+  for l:line in l:msg_list[1:]
+    call vimtex#echo#echo('        ' . l:line)
   endfor
 endfunction
 
