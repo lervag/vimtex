@@ -175,13 +175,13 @@ endfunction
 
 " }}}1
 function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
-  if !executable('xdotool') | return | endif
-
-  if a:keys !=# ''
-    let cmd  = 'xdotool key --window ' . self.xwin_id
-    let cmd .= ' ' . a:keys
-    silent call system(cmd)
+  if a:keys ==# '' || !executable('xdotool') || self.xwin_id <= 0
+    return
   endif
+
+  let cmd  = 'xdotool key --window ' . self.xwin_id
+  let cmd .= ' ' . a:keys
+  silent call system(cmd)
 endfunction
 
 " }}}1
