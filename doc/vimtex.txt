@@ -3869,7 +3869,7 @@ This is a problem, because vim-polyglot [0] includes and enables LaTeX-Box by
 default. LaTeX-Box will not work well with vimtex, e.g. because of conflicting
 mappings.
 
-Suggested solution: Don't use vim-polyglot.
+Suggested solution: use |g:polyglot_disabled = ['latex'] in your .vimrc|
 
 [0]: https://github.com/sheerun/vim-polyglot
 
