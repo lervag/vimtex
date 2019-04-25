@@ -1456,8 +1456,9 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_format_enabled*
   If enabled, |vimtex| uses a custom |formatexpr| that should handle inline
-  comments. That is, if it is enabled, comments at end of lines will not be
-  joined with the |gq| command.
+  comments and environments. That is, if it is enabled, comments at end of
+  lines will not be joined with the |gq| command, and environments like
+  `equation` will not be joined/changed.
 
   Default value: 0
 
