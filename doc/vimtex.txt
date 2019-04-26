@@ -3868,9 +3868,17 @@ Problem: The user wants to use vim-polyglot~
 
 This is a problem, because vim-polyglot [0] includes and enables LaTeX-Box by
 default. LaTeX-Box will not work well with vimtex, e.g. because of conflicting
-mappings.
+mappings. There are two solutions.
 
-Suggested solution: Don't use vim-polyglot.
+Solution 1: Avoid vim-polyglot. This is recommended, because vim-polyglot
+  installs a bunch of filetype plugins that you will not use anyway. Further,
+  one should aim to know which plugins are installed in ones system. It is not
+  a lot of extra work to install whichever extra filetype plugins one need.
+
+Solution 2: If one insists on using vim-polyglot, then one may use
+  |g:polyglot_disabled| to disable LaTeX-Box with: >
+
+  let g:polyglot_disabled = ['latex']
 
 [0]: https://github.com/sheerun/vim-polyglot
 
