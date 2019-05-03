@@ -586,8 +586,11 @@ endfunction
 
 " }}}1
 function! s:callback_nvim_output(id, data, event) abort dict " {{{1
-  if !empty(a:data) && filewritable(self.output)
-    call writefile(filter(a:data, '!empty(v:val)'), self.output, 'a')
+  " Filter out unwanted newlines
+  let l:data = split(substitute(join(a:data, 'QQ'), '^QQ\|QQ$', '', ''), 'QQ')
+
+  if !empty(l:data) && filewritable(self.output)
+    call writefile(l:data, self.output, 'a')
   endif
 
   if match(a:data, 'vimtex_compiler_callback_success') != -1
