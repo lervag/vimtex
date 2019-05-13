@@ -23,6 +23,7 @@ let s:compiler = {
       \ 'target' : '',
       \ 'target_path' : '',
       \ 'background' : 1,
+      \ 'build_dir' : '',
       \ 'output' : tempname(),
       \ 'options' : [
       \   '--keep-logs',
@@ -100,7 +101,21 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  call vimtex#log#warning('Clean not implemented for tectonic')
+  if empty(self.options)
+    " TODO: add relevant section in doc
+    call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermidiets. See :help tectonic-intermidiets')
+    return
+  endif
+  let l:target_basename = fnamemodify(self.target_path, ':r')
+  let l:intermidiets = [
+      \ 'synctex.gz',
+      \ 'toc',
+      \ 'out',
+      \ 'aux',
+      \]
+  let l:cmd = printf('rm -f %s.%s', l:target_basename, join(l:intermidiets, " " . l:target_basename . "."))
+  call vimtex#process#run(l:cmd)
+  call vimtex#log#info('Compiler clean finished')
 endfunction
 
 " }}}1
