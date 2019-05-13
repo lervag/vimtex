@@ -56,7 +56,8 @@ disabled if desired.
 
 - Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/),
-  [latexrun](https://github.com/aclements/latexrun), or
+  [latexrun](https://github.com/aclements/latexrun),
+  [tectonic](https://tectonic-typesetting.github.io), or
   [arara](https://github.com/cereda/arara)
 - LaTeX log parsing for quickfix entries using
   - internal method
@@ -177,8 +178,8 @@ The following are some alternative LaTeX plugins for Vim:
     - vimtex builds upon Vim principles: It provides text objects for
       environments, inline math, it provides motions for sections and
       paragraphs
-    - vimtex uses `latexrun` or `latexmk` for compilation with a callback
-      feature to get instant feedback on compilation errors
+    - vimtex uses `latexmk`, `latexrun`, `tectonic` or `arara` for compilation
+      with a callback feature to get instant feedback on compilation errors
     - vimtex is very modular: if you don't like a feature, you can turn it off.
 
 - [AutomaticTexPlugin](http://atp-vim.sourceforge.net)
