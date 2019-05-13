@@ -24,7 +24,10 @@ let s:compiler = {
       \ 'target_path' : '',
       \ 'background' : 1,
       \ 'output' : tempname(),
-      \ 'options' : ['--log'],
+      \ 'options' : [
+      \   '--keep-logs',
+      \   '--synctex'
+      \ ],
       \}
 
 function! s:compiler.init(options) abort dict " {{{1
