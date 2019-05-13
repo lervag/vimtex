@@ -235,7 +235,7 @@ function! s:packages_open(context) abort " {{{1
         \         ? '!xdg-open'
         \         : (l:os ==# 'mac'
         \            ? '!open'
-        \            : '!start'))
+        \            : '!start /b'))
         \ . ' ' . l:url
         \ . (l:os ==# 'win' ? '' : ' &')
 
