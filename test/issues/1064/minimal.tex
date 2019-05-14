@@ -25,8 +25,12 @@
 
 \tableofcontents
 
-\chapter {Introduction}
+\chapter{Chapter 1}
 \cite{Saussure:1995}, \cite{Thomson:1856}, \ldots
+
+\section{Section 1.1}
+
+\section{Section 1.2}
 
 \printbibliography[heading=bibintoc]
 \printbibliography[heading=subbibintoc]
@@ -34,8 +38,14 @@
 \printbibliography[heading=bibnumbered]
 \printbibliography[heading=subbibnumbered]
 
+\chapter{Chapter 2}
+
+\section{Section 2.1}
+
 \printbibliography[heading=bibintoc,title={My Bibliography}]
-\printbibliography[heading=subbibintoc,title={My Subbibliography}]
+\printbibliography[
+  heading=subbibintoc,
+  title={My Subbibliography}]
 
 \printbibliography[heading=bibnumbered,title={My Numbered Bibliography}]
 \printbibliography[heading=subbibnumbered,title={My Numbered Subbibliography}]
@@ -48,7 +58,10 @@
 \printbibliography[heading=subbibliography]
 \printbibliography[heading=none]
 \printbibliography[title={My Bibliography}]
-\printbibliography[heading=bibliography,title={My Bibliography}]
+\printbibliography[
+  heading=bibliography,
+  title={My Bibliography}
+  ]
 \printbibliography[heading=subbibliography,title={My Subbibliography}]
 \printbibliography[heading=none,title={This will be ignored by biblatex}]
 \printbibheading

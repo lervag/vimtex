@@ -85,6 +85,8 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     endfor
   endfor
 
+  call filter(l:entries, '!get(v:val, "remove")')
+
   return l:entries
 endfunction
 
@@ -431,11 +433,85 @@ let s:matcher_bibliography = {
       \        .  'printbib%(liography|heading)\s*(\{|\[)?'
       \        . '|begin\s*\{\s*thebibliography\s*\}'
       \        . '|bibliography\s*\{)',
+      \ 're_opt' : '\v^\s*\\printbib%(liography|heading)\s*\[\zs.*',
       \ 'in_preamble' : 0,
       \ 'in_content' : 1,
       \ 'priority' : 1,
-      \ 'get_entry' : function('vimtex#parser#toc#get_entry_general'),
       \}
+function! s:matcher_bibliography.get_entry(context) abort dict " {{{1
+  let l:entry = call('vimtex#parser#toc#get_entry_general', [a:context], self)
+
+  if a:context.line !~# self.re_opt
+    return l:entry
+  endif
+
+  let self.options = matchstr(a:context.line, self.re_opt)
+
+  let [l:end, l:count] = s:find_closing(0, self.options, 1, '[')
+  if l:count == 0
+    let self.options = strpart(self.options, 0, l:end)
+    call self.parse_options(a:context, l:entry)
+  else
+    let self.count = l:count
+    let s:matcher_continue = deepcopy(self)
+  endif
+
+  return l:entry
+endfunction
+
+" }}}1
+function! s:matcher_bibliography.continue(context) abort dict " {{{1
+  let [l:end, l:count] = s:find_closing(0, a:context.line, self.count, '[')
+  if l:count == 0
+    let self.options .= strpart(a:context.line, 0, l:end)
+    unlet! s:matcher_continue
+    call self.parse_options(a:context, a:context.entry)
+  else
+    let self.options .= a:context.line
+    let self.count = l:count
+  endif
+endfunction
+
+" }}}1
+function! s:matcher_bibliography.parse_options(context, entry) abort dict " {{{1
+  " Parse the options
+  let l:opt_pairs = map(split(self.options, ','), 'split(v:val, ''='')')
+  let l:opts = {}
+  for [l:key, l:val] in l:opt_pairs
+    let l:key = substitute(l:key, '^\s*\|\s*$', '', 'g')
+    let l:val = substitute(l:val, '^\s*\|\s*$', '', 'g')
+    let l:val = substitute(l:val, '{\|}', '', 'g')
+    let l:opts[l:key] = l:val
+  endfor
+
+  " Check if entry should appear in the TOC
+  let l:heading = get(l:opts, 'heading')
+  if l:heading !~# 'intoc\|numbered'
+    let a:entry.remove = 1
+    return
+  endif
+
+  " Check if entry should be numbered  
+  if l:heading =~# '\v%(sub)?bibnumbered'
+    if a:context.level.chapter > 0
+      let l:levels = ['chapter', 'section']
+    else
+      let l:levels = ['section', 'subsection']
+    endif
+    call a:context.level.increment(l:levels[l:heading =~# '^sub'])
+    let a:entry.level = a:context.max_level - a:context.level.current
+    let a:entry.number = deepcopy(a:context.level)
+  endif
+
+  " Parse title
+  try
+    let a:entry.title = remove(l:opts, 'title')
+  catch /E716/
+    let a:entry.title = l:heading =~# '^sub' ? 'References' : 'Bibliography'
+  endtry
+endfunction
+
+" }}}1
 
 let s:matcher_todos = {
       \ 're' : g:vimtex#re#not_bslash . '\%\s+('
