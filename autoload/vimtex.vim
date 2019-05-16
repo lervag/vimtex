@@ -525,18 +525,10 @@ function! s:init_default_mappings() abort " {{{1
   endif
 
   if get(g:, 'vimtex_text_obj_enabled', 0)
-    call s:map('x', 'ic', '<plug>(vimtex-ic)')
-    call s:map('x', 'ac', '<plug>(vimtex-ac)')
-    call s:map('o', 'ic', '<plug>(vimtex-ic)')
-    call s:map('o', 'ac', '<plug>(vimtex-ac)')
     call s:map('x', 'id', '<plug>(vimtex-id)')
     call s:map('x', 'ad', '<plug>(vimtex-ad)')
     call s:map('o', 'id', '<plug>(vimtex-id)')
     call s:map('o', 'ad', '<plug>(vimtex-ad)')
-    call s:map('x', 'ie', '<plug>(vimtex-ie)')
-    call s:map('x', 'ae', '<plug>(vimtex-ae)')
-    call s:map('o', 'ie', '<plug>(vimtex-ie)')
-    call s:map('o', 'ae', '<plug>(vimtex-ae)')
     call s:map('x', 'i$', '<plug>(vimtex-i$)')
     call s:map('x', 'a$', '<plug>(vimtex-a$)')
     call s:map('o', 'i$', '<plug>(vimtex-i$)')
@@ -545,6 +537,40 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('x', 'aP', '<plug>(vimtex-aP)')
     call s:map('o', 'iP', '<plug>(vimtex-iP)')
     call s:map('o', 'aP', '<plug>(vimtex-aP)')
+
+    if exists('g:loaded_targets') && (
+          \ (type(g:loaded_targets) == 0 && g:loaded_targets != 0)  ||
+          \ (type(g:loaded_targets) == 1 && !empty(g:loaded_targets))
+          \ ) && (
+          \ get(g:, 'vimtex_text_obj_variant', 'auto') == 'auto' ||
+          \ get(g:, 'vimtex_text_obj_variant', 'auto') == 'targets'
+          \ )
+      let g:vimtex_text_obj_variant = 'targets'
+      augroup targets_tex
+        autocmd User targets#sources call targets#sources#register(
+              \ 'tex_env', function('vimtex#text_obj#envtargets#new'))
+        autocmd User targets#sources call targets#sources#register(
+              \ 'tex_cmd', function('vimtex#text_obj#cmdtargets#new'))
+        autocmd User targets#mappings#plugin call targets#mappings#extend(
+              \ {'e': {'tex_env': [{}]}})
+        autocmd User targets#mappings#plugin call targets#mappings#extend(
+              \ {'c': {'tex_cmd': [{}]}})
+      augroup END
+    else
+      if get(g:, 'vimtex_text_obj_variant', 'auto') == 'targets'
+        echom "Ignoring g:vimtex_text_obj_variant = 'targets'".
+              \ " because 'g:loaded_targets' does not exist or is 0."
+      endif
+      let g:vimtex_text_obj_variant = 'vimtex'
+      call s:map('x', 'ie', '<plug>(vimtex-ie)')
+      call s:map('x', 'ae', '<plug>(vimtex-ae)')
+      call s:map('o', 'ie', '<plug>(vimtex-ie)')
+      call s:map('o', 'ae', '<plug>(vimtex-ae)')
+      call s:map('x', 'ic', '<plug>(vimtex-ic)')
+      call s:map('x', 'ac', '<plug>(vimtex-ac)')
+      call s:map('o', 'ic', '<plug>(vimtex-ic)')
+      call s:map('o', 'ac', '<plug>(vimtex-ac)')
+    endif
   endif
 
   if get(g:, 'vimtex_toc_enabled', 0)

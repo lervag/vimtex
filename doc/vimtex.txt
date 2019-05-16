@@ -1937,6 +1937,22 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ['d', 'y']
 
+*g:vimtex_text_obj_variant*
+  Selects variant of text objects.
+
+    1. `'auto'`      selects `'targets'` if targets.vim is installed otherwise
+                   `'vimtex'`
+    2. `'vimtex'`
+    3. `'targets'`   (currently only for commands and environments)
+
+  When using `'targets'`, following additional kinds are available
+  - prefix `I` and `A` instead of `i` and `a` for excluding inner whitespace or
+    including outer whitespace, respectively.
+  - modifier `n` and `l` for next or previous (mnemonic: last).
+  For more details see `cheatsheet.md`.
+
+  Default value: `'auto'`
+
 *g:vimtex_toc_enabled*
   Use this option to disable/enable table of contents (ToC).
 
