@@ -85,7 +85,12 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     endfor
   endfor
 
-  call filter(l:entries, '!get(v:val, "remove")')
+  for l:matcher in s:matchers
+    try
+      call l:matcher.filter(l:entries)
+    catch /E716/
+    endtry
+  endfor
 
   return l:entries
 endfunction
@@ -433,7 +438,7 @@ let s:matcher_bibliography = {
       \        .  'printbib%(liography|heading)\s*(\{|\[)?'
       \        . '|begin\s*\{\s*thebibliography\s*\}'
       \        . '|bibliography\s*\{)',
-      \ 're_opt' : '\v^\s*\\printbib%(liography|heading)\s*\[\zs.*',
+      \ 're_biblatex' : '\v^\s*\\printbib%(liography|heading)',
       \ 'in_preamble' : 0,
       \ 'in_content' : 1,
       \ 'priority' : 1,
@@ -441,13 +446,14 @@ let s:matcher_bibliography = {
 function! s:matcher_bibliography.get_entry(context) abort dict " {{{1
   let l:entry = call('vimtex#parser#toc#get_entry_general', [a:context], self)
 
-  if a:context.line !~# self.re_opt
+  if a:context.line !~# self.re_biblatex
     return l:entry
   endif
 
-  let self.options = matchstr(a:context.line, self.re_opt)
+  let self.options = matchstr(a:context.line, self.re_biblatex . '\s*\[\zs.*')
 
-  let [l:end, l:count] = s:find_closing(0, self.options, 1, '[')
+  let [l:end, l:count] = s:find_closing(
+        \ 0, self.options, !empty(self.options), '[')
   if l:count == 0
     let self.options = strpart(self.options, 0, l:end)
     call self.parse_options(a:context, l:entry)
@@ -486,12 +492,9 @@ function! s:matcher_bibliography.parse_options(context, entry) abort dict " {{{1
 
   " Check if entry should appear in the TOC
   let l:heading = get(l:opts, 'heading')
-  if l:heading !~# 'intoc\|numbered'
-    let a:entry.remove = 1
-    return
-  endif
+  let a:entry.added_to_toc = l:heading =~# 'intoc\|numbered'
 
-  " Check if entry should be numbered  
+  " Check if entry should be numbered
   if l:heading =~# '\v%(sub)?bibnumbered'
     if a:context.level.chapter > 0
       let l:levels = ['chapter', 'section']
@@ -509,6 +512,14 @@ function! s:matcher_bibliography.parse_options(context, entry) abort dict " {{{1
   catch /E716/
     let a:entry.title = l:heading =~# '^sub' ? 'References' : 'Bibliography'
   endtry
+endfunction
+
+" }}}1
+function! s:matcher_bibliography.filter(entries) abort dict " {{{1
+  if !empty(
+        \ filter(deepcopy(a:entries), 'get(v:val, "added_to_toc")'))
+    call filter(a:entries, 'get(v:val, "added_to_toc", 1)')
+  endif
 endfunction
 
 " }}}1
