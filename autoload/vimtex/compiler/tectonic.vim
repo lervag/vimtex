@@ -76,6 +76,10 @@ function! s:compiler.build_cmd() abort dict " {{{1
   if empty(self.build_dir)
     let self.build_dir = fnamemodify(self.target_path, ':p:h')
   endif
+  if !isdirectory(self.build_dir)
+    call vimtex#log#warning("build_dir doesn't exist, it will be created: " . self.build_dir)
+    call mkdir(self.build_dir, "p")
+  endif
   let l:cmd = l:cmd . ' --outdir=' . self.build_dir
   return l:cmd . ' ' . vimtex#util#shellescape(self.target)
 endfunction
