@@ -132,7 +132,8 @@ function! s:compiler.clean(...) abort dict " {{{1
     call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermidiets. See :help tectonic-intermidiets')
     return
   endif
-  let l:target_basename = fnamemodify(self.target_path, ':r')
+  let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path, ':t:r')
+  " TODO: should we remove the log and the pdf output as well?
   let l:intermidiets = [
       \ 'synctex.gz',
       \ 'toc',
