@@ -58,17 +58,17 @@ function! s:compiler.build_cmd() abort dict " {{{1
       continue
     endif
     if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' || l:opt =~ '^--keep-intermidiets$'
-      let l:logs_used = 1
+      let self.saving_logs = 1
     endif
     if l:opt =~ '^--synctex$'
-      let l:synctex_used = 1
+      let self.saving_synctex = 1
     endif
     let l:cmd .= ' ' . l:opt
   endfor
-  if !get(l:, 'synctex_used')
+  if !get(self, 'saving_synctex')
     call vimtex#log#warning("--synctex wasn't used in compiler options so this feature won't be available")
   endif
-  if !get(l:, 'logs_used')
+  if !get(self, 'saving_logs')
     " TODO: make sure documentation corresponds to what's written in this
     " message
     call vimtex#log#warning("no logs are saved by tectonic with current options defined for it so errors / warnings won't be available in Quick Fix.\nread :help tectonic-compiler for more details on this feature")
@@ -126,8 +126,7 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  " TODO: Make this condition smarter
-  if empty(self.options)
+  if !get(self, 'saving_synctex') && !get(self, 'saving_logs')
     " TODO: add relevant section in doc
     call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermidiets. See :help tectonic-intermidiets')
     return
