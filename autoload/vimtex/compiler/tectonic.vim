@@ -53,9 +53,30 @@ function! s:compiler.build_cmd() abort dict " {{{1
   let l:cmd = 'tectonic'
 
   for l:opt in self.options
+    if l:opt =~ '^\-\-outdir[ =]' || (l:opt =~ '^-o')
+      call vimtex#log#warning("Don't use --outdir or -o in compiler options, use build_dir instead")
+      continue
+    endif
+    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' || l:opt =~ '^--keep-intermidiets$'
+      let l:logs_used = 1
+    endif
+    if l:opt =~ '^--synctex$'
+      let l:synctex_used = 1
+    endif
     let l:cmd .= ' ' . l:opt
   endfor
-
+  if !get(l:, 'synctex_used')
+    call vimtex#log#warning("--synctex wasn't used in compiler options so this feature won't be available")
+  endif
+  if !get(l:, 'logs_used')
+    " TODO: make sure documentation corresponds to what's written in this
+    " message
+    call vimtex#log#warning("no logs are saved by tectonic with current options defined for it so errors / warnings won't be available in Quick Fix.\nread :help tectonic-compiler for more details on this feature")
+  endif
+  if empty(self.build_dir)
+    let self.build_dir = fnamemodify(self.target_path, ':p:h')
+  endif
+  let l:cmd = l:cmd . ' --outdir=' . self.build_dir
   return l:cmd . ' ' . vimtex#util#shellescape(self.target)
 endfunction
 
@@ -101,6 +122,7 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
+  " TODO: Make this condition smarter
   if empty(self.options)
     " TODO: add relevant section in doc
     call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermidiets. See :help tectonic-intermidiets')
