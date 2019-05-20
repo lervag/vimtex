@@ -133,22 +133,25 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  if !get(self, 'saving_synctex') && !get(self, 'saving_logs')
+  if !get(self, 'saving_synctex') && !get(self, 'saving_logs') && !a:1
     " TODO: add relevant section in doc
     call vimtex#log#warning('Nothing to clean since vimtex is configured to run'
-        \ . 'tectonic without keeping intermediate. See :help '
-        \ . 'tectonic-intermediate')
+        \ . ' tectonic without keeping intermediate. See :help'
+        \ . ' tectonic-intermediate')
     return
   endif
   let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path,
       \ ':t:r')
-  " TODO: should we remove the log and the pdf output as well?
   let l:intermediate = [
       \ 'synctex.gz',
       \ 'toc',
       \ 'out',
       \ 'aux',
       \]
+  " If a full clean is required 
+  if a:1
+    call extend(l:intermediate, ['pdf', 'log'])
+  endif
   let l:cmd = printf('rm -f %s.%s', l:target_basename,
       \ join(l:intermediate, " " . l:target_basename . "."))
   call vimtex#process#run(l:cmd)
