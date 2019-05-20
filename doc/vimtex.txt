@@ -3603,18 +3603,14 @@ TECTONIC                                                      *vimtex-tectonic*
                                       https://tectonic-typesetting.github.io/
 > Tectonic is a modernized, complete, self-contained TeX/LaTeX engine, powered
 > by XeTeX and TeXLive.
->
-Tectonic is complete, self-contained TeX/LaTeX engine, powered by XeTeX and
-TeXLive. It doesn't support continuous build like |vimtex-latexmk| but it
-presents other worth mentioning features such as automatic support file
-downloading along with reproduceable builds and full Unicode and OpenType
-fonts support thanks to the power of XeTeX.
 
-`tectonic` does not do continuous compilation, and so the only relevant commands
-are |VimtexCompile| to start (single shot) compilation, and
-|VimtexCompileOutput| to see the compilation output. As for |vimtex-latexrun|
-and |vimtex-arara|, the viewer can be started automatically with
-|g:vimtex_view_automatic|.
+`tectonic` is a compiler backend that features automatic support file
+downloading along with reproduceable builds and full Unicode and OpenType
+fonts support thanks to the power of XeTeX. It does not support continuous
+compilation, like |vimtex-latexmk| and so the only relevant commands are
+|VimtexCompile| to start (single shot) compilation, and |VimtexCompileOutput|
+to see the compilation output. As for |vimtex-latexrun| and |vimtex-arara|,
+the viewer can be started automatically with |g:vimtex_view_automatic|.
 
 `tectonic` cleans up intermediate files like `.aux` and log files by default.
 However, |Vimtex|'s backend, invoke it with the flags `--keep-logs` and
