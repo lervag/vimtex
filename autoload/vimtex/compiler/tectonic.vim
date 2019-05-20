@@ -54,10 +54,12 @@ function! s:compiler.build_cmd() abort dict " {{{1
 
   for l:opt in self.options
     if l:opt =~ '^\-\-outdir[ =]' || (l:opt =~ '^-o')
-      call vimtex#log#warning("Don't use --outdir or -o in compiler options, use build_dir instead")
+      call vimtex#log#warning("Don't use --outdir or -o in compiler options, "
+          \ . "use build_dir instead")
       continue
     endif
-    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' || l:opt =~ '^--keep-intermediates$'
+    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' ||
+        \ l:opt =~ '^--keep-intermediates$'
       let self.saving_logs = 1
     endif
     if l:opt =~ '^--synctex$'
@@ -66,18 +68,23 @@ function! s:compiler.build_cmd() abort dict " {{{1
     let l:cmd .= ' ' . l:opt
   endfor
   if !get(self, 'saving_synctex')
-    call vimtex#log#warning("--synctex wasn't used in compiler options so this feature won't be available")
+    call vimtex#log#warning("--synctex wasn't used in compiler options so this"
+        \ . " feature won't be available")
   endif
   if !get(self, 'saving_logs')
     " TODO: make sure documentation corresponds to what's written in this
     " message
-    call vimtex#log#warning("no logs are saved by tectonic with current options defined for it so errors / warnings won't be available in Quick Fix.\nread :help tectonic-compiler for more details on this feature")
+    call vimtex#log#warning("no logs are saved by tectonic with current options"
+        \ . " defined for it so errors / warnings won't be available in Quick"
+        \ . " Fix.\nread :help tectonic-compiler for more details on this"
+        \ . " feature")
   endif
   if empty(self.build_dir)
     let self.build_dir = fnamemodify(self.target_path, ':p:h')
   endif
   if !isdirectory(self.build_dir)
-    call vimtex#log#warning("build_dir doesn't exist, it will be created: " . self.build_dir)
+    call vimtex#log#warning("build_dir doesn't exist, it will be created: "
+        \ . self.build_dir)
     call mkdir(self.build_dir, "p")
   endif
   let l:cmd = l:cmd . ' --outdir=' . self.build_dir
@@ -128,10 +135,13 @@ endfunction
 function! s:compiler.clean(...) abort dict " {{{1
   if !get(self, 'saving_synctex') && !get(self, 'saving_logs')
     " TODO: add relevant section in doc
-    call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermediate. See :help tectonic-intermediate')
+    call vimtex#log#warning('Nothing to clean since vimtex is configured to run'
+        \ . 'tectonic without keeping intermediate. See :help '
+        \ . 'tectonic-intermediate')
     return
   endif
-  let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path, ':t:r')
+  let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path,
+      \ ':t:r')
   " TODO: should we remove the log and the pdf output as well?
   let l:intermediate = [
       \ 'synctex.gz',
@@ -139,7 +149,8 @@ function! s:compiler.clean(...) abort dict " {{{1
       \ 'out',
       \ 'aux',
       \]
-  let l:cmd = printf('rm -f %s.%s', l:target_basename, join(l:intermediate, " " . l:target_basename . "."))
+  let l:cmd = printf('rm -f %s.%s', l:target_basename,
+      \ join(l:intermediate, " " . l:target_basename . "."))
   call vimtex#process#run(l:cmd)
   call vimtex#log#info('Compiler clean finished')
 endfunction
