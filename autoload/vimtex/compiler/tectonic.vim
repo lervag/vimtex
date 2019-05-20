@@ -57,7 +57,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
       call vimtex#log#warning("Don't use --outdir or -o in compiler options, use build_dir instead")
       continue
     endif
-    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' || l:opt =~ '^--keep-intermidiets$'
+    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' || l:opt =~ '^--keep-intermediates$'
       let self.saving_logs = 1
     endif
     if l:opt =~ '^--synctex$'
@@ -128,18 +128,18 @@ endfunction
 function! s:compiler.clean(...) abort dict " {{{1
   if !get(self, 'saving_synctex') && !get(self, 'saving_logs')
     " TODO: add relevant section in doc
-    call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermidiets. See :help tectonic-intermidiets')
+    call vimtex#log#warning('Nothing to clean since vimtex is configured to run tectonic without keeping intermediate. See :help tectonic-intermediate')
     return
   endif
   let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path, ':t:r')
   " TODO: should we remove the log and the pdf output as well?
-  let l:intermidiets = [
+  let l:intermediate = [
       \ 'synctex.gz',
       \ 'toc',
       \ 'out',
       \ 'aux',
       \]
-  let l:cmd = printf('rm -f %s.%s', l:target_basename, join(l:intermidiets, " " . l:target_basename . "."))
+  let l:cmd = printf('rm -f %s.%s', l:target_basename, join(l:intermediate, " " . l:target_basename . "."))
   call vimtex#process#run(l:cmd)
   call vimtex#log#info('Compiler clean finished')
 endfunction
