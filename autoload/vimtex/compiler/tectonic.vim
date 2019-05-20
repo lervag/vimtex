@@ -54,8 +54,9 @@ function! s:compiler.build_cmd() abort dict " {{{1
 
   for l:opt in self.options
     if l:opt =~ '^\-\-outdir[ =]' || (l:opt =~ '^-o')
-      call vimtex#log#warning("Don't use --outdir or -o in compiler options, "
-          \ . "use build_dir instead")
+      call vimtex#log#warning("Don't use --outdir or -o in compiler options,"
+          \ . " use build_dir instead, see :help g:vimtex_compiler_tectonic"
+          \ . " for more details")
       continue
     endif
     if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' ||
@@ -72,12 +73,10 @@ function! s:compiler.build_cmd() abort dict " {{{1
         \ . " feature won't be available")
   endif
   if !get(self, 'saving_logs')
-    " TODO: make sure documentation corresponds to what's written in this
-    " message
     call vimtex#log#warning("no logs are saved by tectonic with current options"
         \ . " defined for it so errors / warnings won't be available in Quick"
-        \ . " Fix.\nread :help tectonic-compiler for more details on this"
-        \ . " feature")
+        \ . " Fix.\nread :help g:vimtex_compiler_tectonic for more details on"
+        \ . " this feature")
   endif
   if empty(self.build_dir)
     let self.build_dir = fnamemodify(self.target_path, ':p:h')
@@ -134,10 +133,9 @@ endfunction
 
 function! s:compiler.clean(...) abort dict " {{{1
   if !get(self, 'saving_synctex') && !get(self, 'saving_logs') && !a:1
-    " TODO: add relevant section in doc
     call vimtex#log#warning('Nothing to clean since vimtex is configured to run'
         \ . ' tectonic without keeping intermediate. See :help'
-        \ . ' tectonic-intermediate')
+        \ . ' g:vimtex_compiler_tectonic')
     return
   endif
   let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path,
