@@ -1,0 +1,13 @@
+set nocompatible
+" let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+" let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax on
+" vim-plug
+call plug#begin('~/.vim/bundle')
+Plug 'lervag/vimtex', {'for': ['tex', 'plaintex', 'bst']}
+call plug#end()
+
+nnoremap q :qall!<cr>
+
+" silent edit minimal.tex
