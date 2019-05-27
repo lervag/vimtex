@@ -1,0 +1,22 @@
+set nocompatible
+let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_automatic = 0
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
+silent edit minimal.tex
+
+VimtexTocOpen
+for s:line in getline(15, '$')
+  echo s:line
+endfor
+echo ''
+quitall
