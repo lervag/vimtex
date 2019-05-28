@@ -28,7 +28,6 @@ function! s:qf.init(state) abort dict "{{{1
         \ 'v:val[1]')
 
   call self.set_errorformat()
-  unlet self.set_errorformat
 endfunction
 
 " }}}1

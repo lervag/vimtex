@@ -31,6 +31,10 @@ function! s:qf.init(state) abort dict "{{{1
     endif
   endif
 
+  call self.set_errorformat()
+endfunction
+
+function! s:qf.set_errorformat() abort dict "{{{1
   " Each new item starts with two asterics followed by the file, potentially
   " a line number and sometimes even the message itself is on the same line.
   " Please note that the trailing whitspaces in the error formats are
@@ -72,6 +76,7 @@ function! s:qf.init(state) abort dict "{{{1
   setlocal errorformat+=%-G
 endfunction
 
+" }}}1
 function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
   if empty(a:log) || !filereadable(a:log)
     call setqflist([])

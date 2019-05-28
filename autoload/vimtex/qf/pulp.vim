@@ -30,7 +30,10 @@ function! s:qf.init(state) abort dict "{{{1
     endif
   endif
 
-  " Set errorformat
+  call self.set_errorformat()
+endfunction
+
+function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat=
   setlocal errorformat+=%-G%*[^\ ])\ %.%#
   setlocal errorformat+=%-G%.%#For\ some\ reason%.%#
@@ -41,6 +44,7 @@ function! s:qf.init(state) abort dict "{{{1
   setlocal errorformat+=%-G%.%#
 endfunction
 
+" }}}1
 function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
   if empty(a:log) || !filereadable(a:log)
     call setqflist([])
