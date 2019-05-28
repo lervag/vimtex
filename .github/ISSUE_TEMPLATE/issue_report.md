@@ -1,6 +1,7 @@
 ---
 name: General issue
-about: Create an issue report to help us improve
+about: Report a bug, a problem or any kind of issue
+labels: bug
 ---
 
 <!-- Tips for debugging and issue reporting
