@@ -594,7 +594,7 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   endif
 
   if match(a:data, 'vimtex_compiler_callback_success') != -1
-    call vimtex#compiler#callback(1)
+    call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
   elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
     call vimtex#compiler#callback(0)
   endif
