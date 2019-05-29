@@ -1052,6 +1052,12 @@ OPTIONS                                                        *vimtex-options*
     List of custom trigger patterns that may be used to allow completion for
     e.g. custom macros.
 
+  If one wants to overwrite one of the keys, e.g. the `simple` entry, one can do: >
+
+    let g:vimtex_complete_bib = { 'simple': 1 }
+<
+  This does not modify the other keys and their default values.
+
 *g:vimtex_complete_ref*
   This option is a dictionary for controlling the label completion. The
   keys each control a different thing:
