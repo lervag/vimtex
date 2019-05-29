@@ -1014,8 +1014,8 @@ OPTIONS                                                        *vimtex-options*
     - Without `--keep-logs` or alternatively `--keep-intermediates` (or `-k)`,
       you won't see errors / warnings on your Quick Fix when compilation will
       finish.
-    - By default,`tectonic`cleans all kinds of intermediate files such as
-      `.aux`,`.toc`etc. If you modify the options and omit all options that
+    - By default, `tectonic` cleans all kinds of intermediate files such as
+      `.aux` , `.toc` etc. If you modify the options and omit all options that
       save any of these files (listed above),|<plug>(vimtex-clean)|and
       |VimtexClean|Won't do anything and a warning will be printed.
 
