@@ -59,25 +59,8 @@ function! s:compiler.build_cmd() abort dict " {{{1
           \ . " for more details")
       continue
     endif
-    if l:opt =~ '^--keep-logs$' || l:opt =~ '^-k$' ||
-        \ l:opt =~ '^--keep-intermediates$'
-      let self.saving_logs = 1
-    endif
-    if l:opt =~ '^--synctex$'
-      let self.saving_synctex = 1
-    endif
     let l:cmd .= ' ' . l:opt
   endfor
-  if !get(self, 'saving_synctex')
-    call vimtex#log#warning("--synctex wasn't used in compiler options so this"
-        \ . " feature won't be available")
-  endif
-  if !get(self, 'saving_logs')
-    call vimtex#log#warning("no logs are saved by tectonic with current options"
-        \ . " defined for it so errors / warnings won't be available in Quick"
-        \ . " Fix.\nread :help g:vimtex_compiler_tectonic for more details on"
-        \ . " this feature")
-  endif
   if empty(self.build_dir)
     let self.build_dir = fnamemodify(self.target_path, ':p:h')
   endif
