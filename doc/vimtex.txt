@@ -1067,6 +1067,13 @@ OPTIONS                                                        *vimtex-options*
     List of custom trigger patterns that may be used to allow completion for
     e.g. custom macros.
 
+  For example, if one has defined the command `\figref`, one could add following
+  custom pattern >
+
+     let g:vimtex_complete_ref = {
+        \ 'custom_patterns' = ['\\figref\*\?{[^}]*$']
+        \ }
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub
@@ -2805,11 +2812,12 @@ filenames. If desired, one may set |g:vimtex_complete_close_braces|, which
 makes the completion include closing braces.
 
 Associated settings:
-- |g:vimtex_complete_enabled|
-- |g:vimtex_complete_close_braces|
-- |g:vimtex_complete_ignore_case|
-- |g:vimtex_complete_smart_case|
 - |g:vimtex_complete_bib|
+- |g:vimtex_complete_close_braces|
+- |g:vimtex_complete_enabled|
+- |g:vimtex_complete_ignore_case|
+- |g:vimtex_complete_ref|
+- |g:vimtex_complete_smart_case|
 
 ------------------------------------------------------------------------------
 COMPLETE CITATIONS                                      *vimtex-complete-cites*
