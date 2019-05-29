@@ -129,7 +129,7 @@ function! s:compiler.clean(...) abort dict " {{{1
       \ 'out',
       \ 'aux',
       \]
-  " If a full clean is required 
+  " If a full clean is required
   if a:1
     call extend(l:intermediate, ['pdf', 'log'])
   endif

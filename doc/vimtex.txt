@@ -72,7 +72,7 @@ CONTENTS                                                      *vimtex-contents*
     Table of contents                           |vimtex-toc|
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
-    fzf.vim integration                         |vimtex-fzf| 
+    fzf.vim integration                         |vimtex-fzf|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
@@ -1280,7 +1280,7 @@ OPTIONS                                                        *vimtex-options*
     name~
       If the type is `command`, this is the name of the command. Else it is
       not defined.
-  
+
   Each handler in the list will be tried until a handler provides a return
   value of 1. One may add handlers that only makes minor modifications of the
   context and passes it on to the default handler, as well as handlers that
@@ -2126,7 +2126,7 @@ OPTIONS                                                        *vimtex-options*
   If enabled, the viewer will open automatically when compilation has started
   in `continuous` mode and if `callback` is enabled, or if `continuous` mode
   is disabled and one uses either the `jobs` or the `nvim` backend.
-  
+
   `latexmk` will typically start the viewer directly.  However, with this
   option enabled, |vimtex| will also start the viewer through callbacks also
   for the `latexrun`, `arara` and `tectonic` compilers.
@@ -3111,7 +3111,7 @@ The following simple configuration should work well with `vimtex`: >
             \ })
   augroup END
 <
-For more lenient, omni-complete-like, filtering of completion candidates, 
+For more lenient, omni-complete-like, filtering of completion candidates,
 use the following setup (in your init.vim or a personal ftplugin) instead: >
 
   augroup my_cm_setup
@@ -3119,7 +3119,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
     autocmd BufEnter * call ncm2#enable_for_buffer()
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-cmds',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'prefix', 'key': 'word'},
@@ -3129,7 +3129,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-labels',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3143,7 +3143,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-files',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3157,7 +3157,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'bibtex',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3258,7 +3258,7 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option to a single space for folds: >
 
-  set fillchars=fold:\ 
+  set fillchars=fold:\
 
 Note: Remember to include the whitespace after backslash!
 
@@ -3475,7 +3475,7 @@ The default behavior is to show all layers, i.e. 'ctli'. To only show
 
   :call vimtex#fzf#run('ct')
 
-On Windows the python package Colorama is required for colored output. 
+On Windows the python package Colorama is required for colored output.
 For Linux and MacOS colors should work out-of-the-box, even without Colorama.
 
 ==============================================================================
