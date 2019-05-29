@@ -115,12 +115,6 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  if !get(self, 'saving_synctex') && !get(self, 'saving_logs') && !a:1
-    call vimtex#log#warning('Nothing to clean since vimtex is configured to run'
-        \ . ' tectonic without keeping intermediate. See :help'
-        \ . ' g:vimtex_compiler_tectonic')
-    return
-  endif
   let l:target_basename = self.build_dir . "/" . fnamemodify(self.target_path,
       \ ':t:r')
   let l:intermediate = [
