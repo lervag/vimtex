@@ -1011,7 +1011,7 @@ OPTIONS                                                        *vimtex-options*
     options should work well for most people. But for anyone who wishes to
     modify these, a few notes should be given:
     - Don't use `--outdir` or `-o` here. Use the `build_dir` option instead.
-    - Without `--keep-logs` or alternatively `--keep-intermediates` (or `-k`,
+    - Without `--keep-logs` or alternatively `--keep-intermediates` (or `-k)`,
       you won't see errors / warnings on your Quick Fix when compilation will
       finish.
     - By default,`tectonic`cleans all kinds of intermediate files such as
