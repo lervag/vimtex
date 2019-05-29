@@ -1017,7 +1017,7 @@ OPTIONS                                                        *vimtex-options*
     - By default, `tectonic` cleans all kinds of intermediate files such as
       `.aux` , `.toc` etc. If you modify the options and omit all options that
       save any of these files (listed above),|<plug>(vimtex-clean)|and
-      |VimtexClean|Won't do anything and a warning will be printed.
+      |VimtexClean|Won't delete anything.
 
 *g:vimtex_compiler_latexrun_engines*
   Defines a map between TeX program directive (|vimtex-tex-program|) and
