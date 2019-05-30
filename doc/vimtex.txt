@@ -1008,31 +1008,15 @@ OPTIONS                                                        *vimtex-options*
 
   options~
     This is a list of options that are passed to `tectonic`. The default
-    options should work well for most people. But for anyone who wishes to
-    modify these, a few notes should be given:
+    options should work well for most people. For anyone who wishes to modify
+    these, please note:
     - Don't use `--outdir` or `-o` here. Use the `build_dir` option instead.
-    - Without `--keep-logs` or alternatively `--keep-intermediates` (or `-k)`,
-      you won't see errors / warnings on your Quick Fix when compilation will
-      finish.
-    - By default, `tectonic` cleans all kinds of intermediate files such as
-      `.aux` , `.toc` etc. If you modify the options and omit all options that
-      save any of these files (listed above),|<plug>(vimtex-clean)|and
-      |VimtexClean|Won't delete anything.
-
-*g:vimtex_compiler_latexrun_engines*
-  Defines a map between TeX program directive (|vimtex-tex-program|) and
-  compiler engine, i.e. as should be specified to the `--latex-cmd` argument
-  to `latexrun`. This is used by |vimtex-latexrun| to define the LaTeX
-  program. The `_` key defines the default engine.
-
-  Default value: >
-
-    let g:vimtex_compiler_latexrun_engines = {
-        \ '_'                : 'pdflatex',
-        \ 'pdflatex'         : 'pdflatex',
-        \ 'lualatex'         : 'lualatex',
-        \ 'xelatex'          : 'xelatex',
-        \}
+    - Without `--keep-logs` (or `--keep-intermediates` or `-k)`, you won't see
+      errors/warnings in the quickfix list when compilations finish.
+    - By default, `tectonic` cleans all auxiliary files (such as `.aux`,
+      `.toc`, etc.). If you omit the `--keep-logs` (or similar) options that
+      specify to keep these files, |VimtexClean| and |<plug>(vimtex-clean)|
+      won't delete anything (as there is nothing to delete).
 
 *g:vimtex_compiler_arara*
   This is a dictionary that allows customization of the |vimtex-arara|
@@ -2128,8 +2112,8 @@ OPTIONS                                                        *vimtex-options*
   is disabled and one uses either the `jobs` or the `nvim` backend.
 
   `latexmk` will typically start the viewer directly.  However, with this
-  option enabled, |vimtex| will also start the viewer through callbacks also
-  for the `latexrun`, `arara` and `tectonic` compilers.
+  option enabled, |vimtex| will start the viewer through callbacks also for
+  the |vimtex-latexrun|, |vimtex-arara| and |vimtex-tectonic| compilers.
 
   Default value: 1
 
@@ -3529,7 +3513,9 @@ Associated settings:
   |g:vimtex_compiler_enabled|
   |g:vimtex_compiler_method|
   |g:vimtex_compiler_latexmk|
+  |g:vimtex_compiler_latexmk_engines|
   |g:vimtex_compiler_latexrun|
+  |g:vimtex_compiler_latexrun_engines|
   |g:vimtex_compiler_tectonic|
   |g:vimtex_compiler_arara|
   |g:vimtex_compiler_progname|
@@ -3628,9 +3614,9 @@ to see the compilation output. As for |vimtex-latexrun| and |vimtex-arara|,
 the viewer can be started automatically with |g:vimtex_view_automatic|.
 
 `tectonic` cleans up intermediate files like `.aux` and log files by default.
-However, |Vimtex|'s backend, invoke it with the flags `--keep-logs` and
-`--keep-synctex` which enables us to see the errors on the Quick Fix and it
-gives us synctex support. Therefor, by default, |<plug>(vimtex-clean-full)|
+However, |vimtex|'s backend invoke it with the flags `--keep-logs` and
+`--keep-synctex` which enables us to see the errors on the quickfix and it
+gives us synctex support. Therefor, by default, |<plug>(vimtex-clean)|
 and |VimtexClean| clean these files.
 
 The compiler may be configured through the |g:vimtex_compiler_tectonic| option.
