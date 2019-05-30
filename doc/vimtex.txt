@@ -72,10 +72,11 @@ CONTENTS                                                      *vimtex-contents*
     Table of contents                           |vimtex-toc|
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
-    fzf.vim integration                         |vimtex-fzf| 
+    fzf.vim integration                         |vimtex-fzf|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-latexmk|
     Latexrun                                    |vimtex-latexrun|
+    Tectonic                                    |vimtex-tectonic|
     Arara                                       |vimtex-arara|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
@@ -125,7 +126,7 @@ suffix as a |plaintex|. To prevent this, one may set the option
 -----------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
 
-- Document compilation with `latexmk`, `latexrun`, or `arara`
+- Document compilation with `latexmk`, `latexrun`, `tectonic` or `arara`
 - LaTeX log parsing for quickfix entries using
   - internal method
   - `pplatex`
@@ -224,7 +225,7 @@ Order of "syntax on" and "filetype plugin on"~
 
 Compiler backend~
 
-  |vimtex| uses `latexmk`, `latexrun`, or `arara` to compile the LaTeX document.
+  |vimtex| uses `latexmk`, `latexrun`, `tectonic` or `arara` to compile the LaTeX document.
 
     `latexmk`: http://users.phys.psu.edu/~collins/software/latexmk-jcc
     "a perl script for running LaTeX the correct number of times to resolve
@@ -243,6 +244,13 @@ Compiler backend~
   parse the output log in order to provide a more concise list of relevant
   warnings and error messages (this has currently not been adapted to vimtex,
   as of yet). (|vimtex-latexrun|)
+
+    `tectonic`: https://tectonic-typesetting.github.io/
+    `tectonic` is a complete, self-contained TeX/LaTeX engine, powered by XeTeX
+  and TeXLive. It doesn't support continuous build like `latexmk` but it
+  presents other worth mentioning features such as automatic support file
+  downloading along with reproduceable builds and full Unicode and OpenType
+  fonts support thanks to the power of XeTeX. (|vimtex-tectonic|)
 
     `arara`: https://github.com/cereda/arara
     `arara` is a TeX automation tool similar to the above mentioned tools,
@@ -782,6 +790,10 @@ OPTIONS                                                        *vimtex-options*
       See |vimtex-latexrun| for more details, and |g:vimtex_compiler_latexrun|
       for customization.
 
+    tectonic~
+      See |vimtex-tectonic| for more details, and |g:vimtex_compiler_tectonic|
+      for customization.
+
     arara~
       See |vimtex-arara| for more details, and |g:vimtex_compiler_arara| for
       customization.
@@ -963,6 +975,48 @@ OPTIONS                                                        *vimtex-options*
         \ 'lualatex'         : 'lualatex',
         \ 'xelatex'          : 'xelatex',
         \}
+
+*g:vimtex_compiler_tectonic*
+  This is a dictionary that allows customization of the |vimtex-tectonic|
+  compiler. The values set by the user will take precedense over the default
+  values.
+
+  Default value: >
+
+    let g:vimtex_compiler_tectonic = {
+        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
+        \ 'background' : 1,
+        \ 'build_dir' : '',
+        \ 'options' : [
+        \   '--keep-logs',
+        \   '--synctex'
+        \ ],
+        \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  backend~
+    Same as |g:vimtex_compiler_latexmk| / `backend`.
+
+  background~
+    Same as |g:vimtex_compiler_latexmk| / `background`.
+
+  build_dir~
+    Same as |g:vimtex_compiler_latexmk| / `build_dir`. This will be created if
+    needed, since tectonic won't build anything unless it exists.
+
+  options~
+    This is a list of options that are passed to `tectonic`. The default
+    options should work well for most people. For anyone who wishes to modify
+    these, please note:
+    - Don't use `--outdir` or `-o` here. Use the `build_dir` option instead.
+    - Without `--keep-logs` (or `--keep-intermediates` or `-k)`, you won't see
+      errors/warnings in the quickfix list when compilations finish.
+    - By default, `tectonic` cleans all auxiliary files (such as `.aux`,
+      `.toc`, etc.). If you omit the `--keep-logs` (or similar) options that
+      specify to keep these files, |VimtexClean| and |<plug>(vimtex-clean)|
+      won't delete anything (as there is nothing to delete).
 
 *g:vimtex_compiler_arara*
   This is a dictionary that allows customization of the |vimtex-arara|
@@ -1210,7 +1264,7 @@ OPTIONS                                                        *vimtex-options*
     name~
       If the type is `command`, this is the name of the command. Else it is
       not defined.
-  
+
   Each handler in the list will be tried until a handler provides a return
   value of 1. One may add handlers that only makes minor modifications of the
   context and passes it on to the default handler, as well as handlers that
@@ -2056,10 +2110,10 @@ OPTIONS                                                        *vimtex-options*
   If enabled, the viewer will open automatically when compilation has started
   in `continuous` mode and if `callback` is enabled, or if `continuous` mode
   is disabled and one uses either the `jobs` or the `nvim` backend.
-  
+
   `latexmk` will typically start the viewer directly.  However, with this
-  option enabled, |vimtex| will also start the viewer through callbacks also
-  for the `latexrun` and `arara` compilers.
+  option enabled, |vimtex| will start the viewer through callbacks also for
+  the |vimtex-latexrun|, |vimtex-arara| and |vimtex-tectonic| compilers.
 
   Default value: 1
 
@@ -3041,7 +3095,7 @@ The following simple configuration should work well with `vimtex`: >
             \ })
   augroup END
 <
-For more lenient, omni-complete-like, filtering of completion candidates, 
+For more lenient, omni-complete-like, filtering of completion candidates,
 use the following setup (in your init.vim or a personal ftplugin) instead: >
 
   augroup my_cm_setup
@@ -3049,7 +3103,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
     autocmd BufEnter * call ncm2#enable_for_buffer()
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-cmds',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'prefix', 'key': 'word'},
@@ -3059,7 +3113,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-labels',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3073,7 +3127,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'vimtex-files',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3087,7 +3141,7 @@ use the following setup (in your init.vim or a personal ftplugin) instead: >
             \ })
     autocmd Filetype tex call ncm2#register_source({
             \ 'name' : 'bibtex',
-            \ 'priority': 8, 
+            \ 'priority': 8,
             \ 'complete_length': -1,
             \ 'scope': ['tex'],
             \ 'matcher': {'name': 'combine',
@@ -3188,7 +3242,7 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option to a single space for folds: >
 
-  set fillchars=fold:\ 
+  set fillchars=fold:\
 
 Note: Remember to include the whitespace after backslash!
 
@@ -3405,7 +3459,7 @@ The default behavior is to show all layers, i.e. 'ctli'. To only show
 
   :call vimtex#fzf#run('ct')
 
-On Windows the python package Colorama is required for colored output. 
+On Windows the python package Colorama is required for colored output.
 For Linux and MacOS colors should work out-of-the-box, even without Colorama.
 
 ==============================================================================
@@ -3416,6 +3470,7 @@ backends:
 
   |vimtex-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
   |vimtex-latexrun|  https://github.com/aclements/latexrun
+  |vimtex-tectonic|  https://tectonic-typesetting.github.io/
   |vimtex-arara|     https://github.com/cereda/arara
 
 The interface is implemented in a general way, which makes it relatively easy
@@ -3458,7 +3513,10 @@ Associated settings:
   |g:vimtex_compiler_enabled|
   |g:vimtex_compiler_method|
   |g:vimtex_compiler_latexmk|
+  |g:vimtex_compiler_latexmk_engines|
   |g:vimtex_compiler_latexrun|
+  |g:vimtex_compiler_latexrun_engines|
+  |g:vimtex_compiler_tectonic|
   |g:vimtex_compiler_arara|
   |g:vimtex_compiler_progname|
   |g:vimtex_compiler_callback_hooks|
@@ -3541,6 +3599,29 @@ The latter is supported by vimtex, though, through the callback.  See
 The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
 
 ------------------------------------------------------------------------------
+TECTONIC                                                      *vimtex-tectonic*
+
+                                      https://tectonic-typesetting.github.io/
+> Tectonic is a modernized, complete, self-contained TeX/LaTeX engine, powered
+> by XeTeX and TeXLive.
+
+`tectonic` is a compiler backend that features automatic support file
+downloading along with reproduceable builds and full Unicode and OpenType
+fonts support thanks to the power of XeTeX. It does not support continuous
+compilation, like |vimtex-latexmk| and so the only relevant commands are
+|VimtexCompile| to start (single shot) compilation, and |VimtexCompileOutput|
+to see the compilation output. As for |vimtex-latexrun| and |vimtex-arara|,
+the viewer can be started automatically with |g:vimtex_view_automatic|.
+
+`tectonic` cleans up intermediate files like `.aux` and log files by default.
+However, |vimtex|'s backend invoke it with the flags `--keep-logs` and
+`--keep-synctex` which enables us to see the errors on the quickfix and it
+gives us synctex support. Therefor, by default, |<plug>(vimtex-clean)|
+and |VimtexClean| clean these files.
+
+The compiler may be configured through the |g:vimtex_compiler_tectonic| option.
+
+------------------------------------------------------------------------------
 ARARA                                                            *vimtex-arara*
 
                                         https://github.com/cereda/arara
@@ -3553,8 +3634,9 @@ http://ctan.uib.no/support/arara/doc/arara-usermanual.pdf
 
 `arara` does not do continuous compilation, and so the only relevant commands
 are |VimtexCompile| to start (single shot) compilation, and
-|VimtexCompileOutput| to see the compilation output. As for |vimtex-latexrun|,
-the viewer can be started automatically with |g:vimtex_view_automatic|.
+|VimtexCompileOutput| to see the compilation output. As for |vimtex-latexrun|
+and |vimtex-tectonic|, the viewer can be started automatically with
+|g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_arara| option.
 
