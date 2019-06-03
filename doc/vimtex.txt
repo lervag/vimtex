@@ -2172,6 +2172,24 @@ OPTIONS                                                        *vimtex-options*
                 so as to use a predictable servername. Then one may specify
                 the servername in the "Custom Text Editor" as indicated above.
 
+        *vimtex_viewer_evince*
+          https://wiki.gnome.org/Apps/Evince
+          > Evince is a document viewer for multiple document formats. The
+          > goal of evince is to replace the multiple document viewers that
+          > exist on the GNOME Desktop with a single simple application.
+
+          Recommended settings are: >
+
+            let g:vimtex_view_general_viewer = 'evince'
+<
+          Note: It is not so easy to setup forward and backward search with
+                Evince [0]. If anyone has a good setup that could be
+                documented here, please open an issue or email me. In the
+                meantime, I can recommend to look into the other alternative
+                viewers.
+
+          [0]: https://github.com/lervag/vimtex/issues/179
+
         *vimtex_viewer_qpdfview*
           https://launchpad.net/qpdfview
           qpdfview is a tabbed document viewer.  It supports forward search.
