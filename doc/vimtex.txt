@@ -1619,22 +1619,23 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_indent_delims*
-  A dictionary that defines the list of opening and closing delimiters (in
-  regex form) that should add/reduce indents.
-
-  The dictionary has three keys:
+  A dictionary that specifies how to indent delimiters. The dictionary has
+  four keys:
 
     open~
-      List of regexes that defines opening delimiters that should add indents.
+      List of regexes for opening delimiters that should add indents.
 
     close~
-      List of regexes that defines closing delimiters that should reduce
-      indents.
+      List of regexes for closing delimiters that should reduce indents.
 
     include_modified_math~
-      Boolean (1 for True, 0 for False) that sets whether to indent on opening
-      and closing modified math delimiters such as `\left(` and `\right)`. If
-      this value is not set, it is assumed to be 1.
+      Set this to 0 if you do not want modified math delimiters such as
+      `\left(` and `\right)` to add/reduce indents.
+
+    reduce_on_closing~
+      Set this to 0 if you do not want to reduce indent on the line that
+      contains the closing delimiter (default), but instead want to reduce the
+      indent on the following line.
 
   Note: Vimtex does not allow indents for parantheses only in math mode or any
         similar kind of context aware delimiter indents.
@@ -1647,6 +1648,7 @@ OPTIONS                                                        *vimtex-options*
           \ 'open' : ['{', '\\\@<!\\\['],
           \ 'close' : ['}', '\\\]'],
           \ 'include_modified_math' : 1,
+          \ 'reduce_on_closing' : 1,
           \}
 
 *g:vimtex_indent_ignored_envs*
