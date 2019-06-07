@@ -469,7 +469,10 @@ function! s:compiler_jobs.exec() abort dict " {{{1
         \}
   if self.continuous
     let l:options.out_io = 'pipe'
+    let l:options.err_io = 'pipe'
     let l:options.out_cb = function('s:callback_continuous_output')
+    let l:options.err_cb = function('s:callback_continuous_output')
+    call writefile([], self.output, 'a')
   else
     let s:cb_target = self.target_path !=# b:vimtex.tex
           \ ? self.target_path : ''
