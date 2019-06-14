@@ -21,6 +21,7 @@ function! s:qf.init(state) abort dict "{{{1
   let self.config.packages = get(self.config, 'packages', {})
   let self.config.packages.default = get(self.config.packages, 'default',
         \ self.config.default)
+  let self.config.ignore_filters = get(self.config, 'ignore_filters', [])
 
   let self.types = map(
         \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
@@ -165,6 +166,13 @@ function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
   let self.main = a:tex
   let self.root = b:vimtex.root
   call self.fix_paths()
+  if !empty(self.config.ignore_filters)
+    let l:qflist = getqflist()
+    for l:re in self.config.ignore_filters
+      call filter(l:qflist, 'v:val.text !~# l:re')
+    endfor
+    call setqflist(l:qflist, 'r')
+  endif
 
   " Set title if supported
   try

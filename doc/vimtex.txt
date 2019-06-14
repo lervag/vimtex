@@ -1772,6 +1772,9 @@ OPTIONS                                                        *vimtex-options*
   Note: Messages by `natbib` follow also this pattern but have to be turned
         off with the entry `natbib`.
 
+  One may provide a list of |regular-expression|s with the key `ignore_filters`
+  to further customize which entries to include.
+
   Some examples may be helpful: >
 
     " Disable all warnings
@@ -1788,11 +1791,17 @@ OPTIONS                                                        *vimtex-options*
           \   'default' : 0,
           \ },
           \}
+
+    " Disable custom warnings based on regexp
+    let g:vimtex_quickfix_latexlog = {
+          \ 'ignore_filters' : ['Marginpar on page'],
+          \}
 <
   Default value: >
 
     let g:vimtex_quickfix_latexlog = {
           \ 'default' : 1,
+          \ 'ignore_filters' : [],
           \ 'general' : 1,
           \ 'references' : 1,
           \ 'overfull' : 1,
