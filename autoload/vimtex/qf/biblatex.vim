@@ -8,9 +8,7 @@ function! vimtex#qf#biblatex#addqflist(blg) abort " {{{1
   if get(g:vimtex_quickfix_blgparser, 'disable') | return | endif
 
   try
-    call s:biblatex.prepare(a:blg)
-    call s:biblatex.addqflist()
-    call s:biblatex.restore()
+    call s:biblatex.addqflist(a:blg)
   catch /biblatex Aborted/
   endtry
 endfunction
@@ -22,7 +20,7 @@ let s:biblatex = {
       \ 'types' : [],
       \ 'db_files' : [],
       \}
-function! s:biblatex.prepare(blg) abort " {{{1
+function! s:biblatex.addqflist(blg) abort " {{{1
   let self.file = a:blg
   let self.root = fnamemodify(a:blg, ':h')
   if empty(self.file) | throw 'biblatex Aborted' | endif
@@ -32,28 +30,15 @@ function! s:biblatex.prepare(blg) abort " {{{1
         \ 'v:val[1]')
   let self.db_files = []
 
-  augroup vimtex_qf_tmp
-    autocmd!
-    autocmd QuickFixCmdPost [cl]*file call s:biblatex.fix_paths()
-  augroup END
-
   let self.errorformat_saved = &l:errorformat
-
   setlocal errorformat=%+E%.%#\>\ ERROR%m
   setlocal errorformat+=%+W%.%#\>\ WARN\ -\ Duplicate\ entry%m
   setlocal errorformat+=%+W%.%#\>\ WARN\ -\ The\ entry%.%#cannot\ be\ encoded%m
   setlocal errorformat+=%-G%.%#
-endfunction
-
-" }}}1
-function! s:biblatex.addqflist() abort " {{{1
   execute 'caddfile' fnameescape(self.file)
-endfunction
-
-" }}}1
-function! s:biblatex.restore() abort " {{{1
   let &l:errorformat = self.errorformat_saved
-  autocmd! vimtex_qf_tmp
+
+  call self.fix_paths()
 endfunction
 
 " }}}1

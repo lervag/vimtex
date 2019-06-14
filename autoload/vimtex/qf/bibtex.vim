@@ -8,9 +8,7 @@ function! vimtex#qf#bibtex#addqflist(blg) abort " {{{1
   if get(g:vimtex_quickfix_blgparser, 'disable') | return | endif
 
   try
-    call s:bibtex.prepare(a:blg)
-    call s:bibtex.addqflist()
-    call s:bibtex.restore()
+    call s:bibtex.addqflist(a:blg)
   catch /BibTeX Aborted/
   endtry
 endfunction
@@ -22,7 +20,7 @@ let s:bibtex = {
       \ 'types' : [],
       \ 'db_files' : [],
       \}
-function! s:bibtex.prepare(blg) abort " {{{1
+function! s:bibtex.addqflist(blg) abort " {{{1
   let self.file = a:blg
   if empty(self.file) || !filereadable(self.file) | throw 'BibTeX Aborted' | endif
 
@@ -31,30 +29,17 @@ function! s:bibtex.prepare(blg) abort " {{{1
         \ 'v:val[1]')
   let self.db_files = []
 
-  augroup vimtex_qf_tmp
-    autocmd!
-    autocmd QuickFixCmdPost [cl]*file call s:bibtex.fix_paths()
-  augroup END
-
   let self.errorformat_saved = &l:errorformat
-
   setlocal errorformat=%+E%.%#---line\ %l\ of\ file\ %f
   setlocal errorformat+=%+EI\ found\ %.%#---while\ reading\ file\ %f
   setlocal errorformat+=%+WWarning--empty\ %.%#\ in\ %.%m
   setlocal errorformat+=%+WWarning--entry\ type\ for%m
   setlocal errorformat+=%-C--line\ %l\ of\ file\ %f
   setlocal errorformat+=%-G%.%#
-endfunction
-
-" }}}1
-function! s:bibtex.addqflist() abort " {{{1
   execute 'caddfile' fnameescape(self.file)
-endfunction
-
-" }}}1
-function! s:bibtex.restore() abort " {{{1
   let &l:errorformat = self.errorformat_saved
-  autocmd! vimtex_qf_tmp
+
+  call self.fix_paths()
 endfunction
 
 " }}}1
