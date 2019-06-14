@@ -21,7 +21,6 @@ function! s:qf.init(state) abort dict "{{{1
   let self.config.packages = get(self.config, 'packages', {})
   let self.config.packages.default = get(self.config.packages, 'default',
         \ self.config.default)
-  let self.config.fix_paths = get(self.config, 'fix_paths', 1)
 
   let self.types = map(
         \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
@@ -165,9 +164,7 @@ function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
   " Apply some post processing of the quickfix list (if configured)
   let self.main = a:tex
   let self.root = b:vimtex.root
-  if self.config.fix_paths
-    call self.fix_paths()
-  endif
+  call self.fix_paths()
 
   " Set title if supported
   try
