@@ -6,9 +6,6 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let s:file = expand('<sfile>')
-execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
-
 let g:tex_flavor = 'latex'
 
 let g:vimtex_view_automatic = 0
@@ -17,24 +14,14 @@ if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
-if has('win32')
-  let g:vimtex_view_general_viewer = 'SumatraPDF'
-  let g:vimtex_view_general_options =
-        \ '-reuse-instance -forward-search @line @pdf @tex'
-  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
-endif
+silent edit minimal.tex
 
-if has('vim_starting')
-  silent edit minimal.tex
-else
-  silent VimtexStop
-  silent VimtexClean
-  silent VimtexReload
-  redraw!
-  sleep 500m
-endif
-
-" augroup Testing
-"   autocmd!
-"   autocmd VimEnter * VimtexCompile
-" augroup END
+" Functions for profiling
+" call vimtex#profile#file('some_file')
+" call vimtex#profile#filter([
+"       \ 'FUNCTIONS SORTED ON SELF',
+"       \ 'FUNCTIONS SORTED ON TOTAL',
+"       \ 'FUNCTION  vimtex#fold#level',
+"       \])
+" call vimtex#profile#print()
+" call vimtex#profile#open()
