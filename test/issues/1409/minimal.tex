@@ -1,11 +1,54 @@
+\documentclass{minimal}
+\begin{document}
+
+\part{testing}
+
 \begin{dot2tex}[circo,tikzedgelabels,options=-t raw]
   digraph G {
     edge [lblstyle="above, sloped"];
     b1[label="$B1$",shape="box"];
-    b2[label="$B2$"];
     b3[label="$B3$",shape="doublecircle"];
-
-    b1 -> b2[label="$5$"]
-    b2 -> b3[label="$6$"]
   }
 \end{dot2tex}
+
+\chapter{testing}
+
+\begin{dot2tex}[circo,tikzedgelabels,options=-t raw]
+  digraph G {
+    edge [lblstyle="above, sloped"];
+    b1[label="$B1$",shape="box"];
+    b3[label="$B3$",shape="doublecircle"];
+  }
+\end{dot2tex}
+
+\section{testing}
+
+\begin{dot2tex}[circo,tikzedgelabels,options=-t raw]
+  digraph G {
+    edge [lblstyle="above, sloped"];
+    b1[label="$B1$",shape="box"];
+    b3[label="$B3$",shape="doublecircle"];
+  }
+\end{dot2tex}
+
+\subsection{testing}
+
+\begin{dot2tex}[circo,tikzedgelabels,options=-t raw]
+  digraph G {
+    edge [lblstyle="above, sloped"];
+    b1[label="$B1$",shape="box"];
+    b3[label="$B3$",shape="doublecircle"];
+  }
+\end{dot2tex}
+
+\subsubsection{testing}
+
+\begin{dot2tex}[circo,tikzedgelabels,options=-t raw]
+  digraph G {
+    edge [lblstyle="above, sloped"];
+    b1[label="$B1$",shape="box"];
+    b3[label="$B3$",shape="doublecircle"];
+  }
+\end{dot2tex}
+
+\end{document}
