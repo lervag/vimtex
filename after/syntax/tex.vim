@@ -21,6 +21,20 @@ syntax sync maxlines=500
 
 scriptencoding utf-8
 
+function! s:add_to_clusters(group) abort " {{{1
+  for l:cluster in [
+        \ 'texPartGroup',
+        \ 'texChapterGroup',
+        \ 'texSectionGroup',
+        \ 'texSubSectionGroup',
+        \ 'texSubSubSectionGroup',
+        \]
+    execute printf('syntax cluster %s add=%s', l:cluster, a:group)
+  endfor
+endfunction
+
+" }}}1
+
 " {{{1 Improve handling of newcommand and newenvironment commands
 
 " Allow arguments in newenvironments
@@ -90,7 +104,7 @@ endif
 " {{{1 Add syntax highlighting of tabular specifications
 
 if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
-  syntax cluster texDocGroup add=texTabular
+  call s:add_to_clusters('texTabular')
   syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
         \ contains=texBeginEnd
         \ nextgroup=texTabularArg
@@ -352,7 +366,7 @@ syntax match texInputFile
       \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
       \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
 
-syntax cluster texDocGroup add=texStatementBeamer
+call s:add_to_clusters('texStatementBeamer')
 
 highlight link texStatementBeamer texStatement
 highlight link texBeamerOpt Identifier
@@ -397,7 +411,7 @@ endfor
 " {{{1 Nested syntax highlighting for dot
 unlet b:current_syntax
 syntax include @DOT syntax/dot.vim
-syntax cluster texDocGroup add=texZoneDot
+call s:add_to_clusters('texZoneDot')
 syntax region texZoneDot
       \ start="\\begin{dot2tex}"rs=s
       \ end="\\end{dot2tex}"re=e
@@ -410,7 +424,7 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for lualatex
 unlet b:current_syntax
 syntax include @LUA syntax/lua.vim
-syntax cluster texDocGroup add=texZoneLua
+call s:add_to_clusters('texZoneLua')
 syntax region texZoneLua
       \ start='\\begin{luacode\*\?}'rs=s
       \ end='\\end{luacode\*\?}'re=e
@@ -429,7 +443,7 @@ let b:current_syntax = 'tex'
 " {{{1 Nested syntax highlighting for gnuplottex
 unlet b:current_syntax
 syntax include @GNUPLOT syntax/gnuplot.vim
-syntax cluster texDocGroup add=texZoneGnuplot
+call s:add_to_clusters('texZoneGnuplot')
 syntax region texZoneGnuplot
       \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
       \ end='\\end{gnuplot}'re=e
@@ -441,7 +455,7 @@ let b:current_syntax = 'tex'
 " }}}1
 " {{{1 Nested syntax highlighting for asymptote
 
-syntax cluster texDocGroup add=texZoneAsymptote
+call s:add_to_clusters('texZoneAsymptote')
 
 let s:asypath = globpath(&runtimepath, 'syntax/asy.vim')
 if !empty(s:asypath)
@@ -603,7 +617,7 @@ if exists('b:vimtex.packages.pythontex')
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@PYTHON
 
-  syntax cluster texDocGroup add=texZonePythontex
+  call s:add_to_clusters('texZonePythontex')
   syntax region texZonePythontex
         \ start='\\begin{pyblock}'rs=s
         \ end='\\end{gnuplot}'re=e
