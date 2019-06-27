@@ -11,5 +11,5 @@ set shiftwidth=2
 
 silent edit minimal.tex
 silent normal! gg=G
-write out.tex
-quitall
+silent write! out.tex
+quitall!
