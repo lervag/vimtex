@@ -435,9 +435,7 @@ endfunction
 " {{{1 Commands
 
 let s:completer_cmd = {
-      \ 'patterns' : [
-      \   '\v\\\a*$',
-      \ ],
+      \ 'patterns' : [g:vimtex#re#not_bslash . '\\\a*$'],
       \ 'candidates_from_packages' : [],
       \ 'candidates_from_newcommands' : [],
       \ 'candidates_from_lets' : [],
