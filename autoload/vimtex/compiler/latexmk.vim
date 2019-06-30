@@ -524,6 +524,11 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
   elseif a:msg ==# 'vimtex_compiler_callback_failure'
     call vimtex#compiler#callback(0)
   endif
+
+  for l:Hook in g:vimtex_compiler_callback_hooks_cont
+      call l:Hook(a:msg)
+  endfor
+
 endfunction
 
 " }}}1
