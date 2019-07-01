@@ -814,6 +814,7 @@ OPTIONS                                                        *vimtex-options*
         \ 'callback' : 1,
         \ 'continuous' : 1,
         \ 'executable' : 'latexmk',
+        \ 'hooks' : [],
         \ 'options' : [
         \   '-verbose',
         \   '-file-line-error',
@@ -877,6 +878,10 @@ OPTIONS                                                        *vimtex-options*
 
   executable~
     The name/path to the `latexmk` executable.
+
+  hooks~
+    A list of funcrefs. If running in continuous mode, each hook will be
+    called for each line of output from `latexmk`, with that line as argument.
 
   options~
     This is a list of options that are passed to `latexmk`. The default
