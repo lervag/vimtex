@@ -47,6 +47,7 @@ let s:compiler = {
 
 function! s:compiler.init(options) abort dict " {{{1
   call extend(self, a:options)
+
   call self.init_check_requirements()
   call self.init_build_dir_option()
   call self.init_pdf_mode_option()
@@ -525,9 +526,12 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
     call vimtex#compiler#callback(0)
   endif
 
-  for l:Hook in b:vimtex.compiler.hooks
-    call l:Hook(a:msg)
-  endfor
+  try
+    for l:Hook in b:vimtex.compiler.hooks
+      call l:Hook(a:msg)
+    endfor
+  catch /E716/
+  endtry
 endfunction
 
 " }}}1
@@ -605,9 +609,13 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
     call vimtex#compiler#callback(0)
   endif
-  for l:Hook in b:vimtex.compiler.hooks
-    call l:Hook(a:data)
-  endfor
+
+  try
+    for l:Hook in b:vimtex.compiler.hooks
+      call l:Hook(join(a:data, "\n"))
+    endfor
+  catch /E716/
+  endtry
 endfunction
 
 " }}}1
