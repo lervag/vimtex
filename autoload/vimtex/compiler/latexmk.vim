@@ -41,12 +41,12 @@ let s:compiler = {
       \   '-synctex=1',
       \   '-interaction=nonstopmode',
       \ ],
+      \ 'hooks' : [],
       \ 'shell' : fnamemodify(&shell, ':t'),
       \}
 
 function! s:compiler.init(options) abort dict " {{{1
   call extend(self, a:options)
-
   call self.init_check_requirements()
   call self.init_build_dir_option()
   call self.init_pdf_mode_option()
@@ -525,10 +525,9 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
     call vimtex#compiler#callback(0)
   endif
 
-  for l:Hook in g:vimtex_compiler_callback_hooks_cont
-      call l:Hook(a:msg)
+  for l:Hook in b:vimtex.compiler.hooks
+    call l:Hook(a:msg)
   endfor
-
 endfunction
 
 " }}}1
