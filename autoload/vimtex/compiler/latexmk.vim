@@ -41,6 +41,7 @@ let s:compiler = {
       \   '-synctex=1',
       \   '-interaction=nonstopmode',
       \ ],
+      \ 'hooks' : [],
       \ 'shell' : fnamemodify(&shell, ':t'),
       \}
 
@@ -524,6 +525,13 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
   elseif a:msg ==# 'vimtex_compiler_callback_failure'
     call vimtex#compiler#callback(0)
   endif
+
+  try
+    for l:Hook in b:vimtex.compiler.hooks
+      call l:Hook(a:msg)
+    endfor
+  catch /E716/
+  endtry
 endfunction
 
 " }}}1
@@ -601,6 +609,13 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
     call vimtex#compiler#callback(0)
   endif
+
+  try
+    for l:Hook in b:vimtex.compiler.hooks
+      call l:Hook(join(a:data, "\n"))
+    endfor
+  catch /E716/
+  endtry
 endfunction
 
 " }}}1
