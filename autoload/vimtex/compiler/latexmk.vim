@@ -605,6 +605,9 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
     call vimtex#compiler#callback(0)
   endif
+  for l:Hook in b:vimtex.compiler.hooks
+    call l:Hook(a:data)
+  endfor
 endfunction
 
 " }}}1
