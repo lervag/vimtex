@@ -882,7 +882,17 @@ OPTIONS                                                        *vimtex-options*
   hooks~
     A list of |Funcref|s. If running in continuous mode, each hook will be
     called for each line of output from `latexmk`, with that line as argument.
+    E.g., to show information about the compilation run numbers, one could do
+    this: >
 
+      function! Callback(msg)
+        let l:m = matchlist(a:msg, '\vRun number (\d+) of rule ''(.*)''')
+        if !empty(l:m)
+          echomsg l:m[2] . ' (' . l:m[1] . ')'
+        endif
+      endfunction
+      let g:vimtex_compiler_latexmk = { 'hooks': [function('Callback')] }
+<
   options~
     This is a list of options that are passed to `latexmk`. The default
     options should work well for most people.
