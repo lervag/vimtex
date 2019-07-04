@@ -23,7 +23,9 @@ let s:folder = {
 function! s:folder.init() abort dict " {{{1
   let self.re.parts = '\v^\s*\\%(' . join(self.parts, '|') . ')'
   let self.re.sections = '\v^\s*\\%(' . join(self.sections, '|') . ')'
-  let self.re.fake_sections = '\v^\s*\% \vFake%('
+  let self.re.fake_sections = '\v^\s*\% Fake%('
+        \ . join(self.sections, '|') . ').*'
+  let self.re.any_sections = '\v^\s*%(\\|\% Fake)%('
         \ . join(self.sections, '|') . ').*'
 
   let self.re.start = self.re.parts
@@ -158,7 +160,7 @@ function! s:folder.refresh() abort dict " {{{1
   endif
 
   " Parse section commands (part, chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.sections . '''')
+  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.any_sections . '''')
   for part in self.sections
     let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
     for line in lines
