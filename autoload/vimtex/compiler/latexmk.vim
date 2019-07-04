@@ -597,6 +597,10 @@ endfunction
 
 " }}}1
 function! s:callback_nvim_output(id, data, event) abort dict " {{{1
+  if !exists('b:vimtex.compiler.hooks')
+    return
+  endif
+
   " Filter out unwanted newlines
   let l:data = split(substitute(join(a:data, 'QQ'), '^QQ\|QQ$', '', ''), 'QQ')
 
