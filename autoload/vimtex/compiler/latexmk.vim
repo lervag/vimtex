@@ -527,7 +527,7 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
   endif
 
   try
-    for l:Hook in b:vimtex.compiler.hooks
+    for l:Hook in get(get(get(b:, 'vimtex', {}), 'compiler', {}), 'hooks', [])
       call l:Hook(a:msg)
     endfor
   catch /E716/
@@ -611,7 +611,7 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   endif
 
   try
-    for l:Hook in b:vimtex.compiler.hooks
+    for l:Hook in get(get(get(b:, 'vimtex', {}), 'compiler', {}), 'hooks', [])
       call l:Hook(join(a:data, "\n"))
     endfor
   catch /E716/
