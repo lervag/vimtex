@@ -133,6 +133,7 @@ function! vimtex#init_options() abort " {{{1
         \ { 'lhs' : '*',  'rhs' : '\times' },
         \ { 'lhs' : '<',  'rhs' : '\langle' },
         \ { 'lhs' : '>',  'rhs' : '\rangle' },
+        \ { 'lhs' : 'H',  'rhs' : '\hbar' },
         \ { 'lhs' : '[',  'rhs' : '\subseteq' },
         \ { 'lhs' : ']',  'rhs' : '\supseteq' },
         \ { 'lhs' : '(',  'rhs' : '\subset' },
