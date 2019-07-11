@@ -454,6 +454,7 @@ Formatting~
     - vim-codefmt [6]
     - vim-autoformat [7]
     - ale [8]
+    - vim-sentence-chopper [9]
 
   [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
   [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
@@ -464,6 +465,7 @@ Formatting~
   [6]: https://github.com/google/vim-codefmt
   [7]: https://github.com/Chiel92/vim-autoformat
   [8]: https://github.com/w0rp/ale
+  [9]: https://github.com/Konfekt/vim-sentence-chopper
 
 Filetype plugin for bib files~
 
