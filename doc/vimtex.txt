@@ -3786,36 +3786,33 @@ CTAN [1], which is the central place for all kinds of material around TeX.
 ------------------------------------------------------------------------------
 OFFLINE                                               *vimtex-latexdoc-offline*
 
-For offline documentation, I recommend the vim-latexrefman plugin [0] for
-accessing the well known LaTeX refman [1] from within Vim in the same style as
-normal Vim help pages.
+One may use a more dedicated offline documentation system. On OSX, Dash [0] is
+a non-free but high-quality system. On Linux, one may use Zeal [1] or dasht
+[2], both of which access the Dash documentation sets. Zeal should also work
+well on Windows.
 
-Alternatively, one may also use a more dedicated offline documentation system.
-On OSX, Dash [2] is a non-free but high-quality system. On Linux, one may use
-Zeal [3] or dasht [4], both of which access the Dash documentation sets. Zeal
-should also work well on Windows.
+The above systems may be accessed from vim through dash.vim [3], zeavim.vim
+[4] or vim-dasht [5], respectively. Other alternative vim plugins include
+investigate.vim [6].
 
-The above systems may be accessed from vim through dash.vim [5], zeavim.vim
-[6] or vim-dasht [7], respectively. Other alternative vim plugins include
-investigate.vim [8].
-
-A different option is to rely on texdoc [9]. If you specify e.g. in your
+A different option is to rely on texdoc [7]. If you specify e.g. in your
 `~/.vim/after/ftplugin/tex.vim` to use `setlocal keywordprg=texdoc`, then
 press |K| on a package name in `\usepackage{name}`, this will open the
 documentation pdf of this package. Note, though, that this assumes that the
 documentation is available offline, which it might not be (e.g. on Arch Linux
 it is not available through the texlive packages).
 
-[0]: https://github.com/poppyschmo/vim-latexrefman
-[1]: http://home.gna.org/latexrefman
-[2]: https://kapeli.com/dash
-[3]: https://zealdocs.org/
-[4]: https://github.com/sunaku/dasht
-[5]: https://github.com/rizzatti/dash.vim
-[6]: https://github.com/sunaku/vim-dasht
-[7]: https://github.com/KabbAmine/zeavim.vim
-[8]: https://github.com/keith/investigate.vim
-[9]: https://www.tug.org/texdoc/doc/texdoc.pdf
+The LaTeX refman [8] should also be mentioned as a relevant reference.
+
+[0]: https://kapeli.com/dash
+[1]: https://zealdocs.org/
+[2]: https://github.com/sunaku/dasht
+[3]: https://github.com/rizzatti/dash.vim
+[4]: https://github.com/sunaku/vim-dasht
+[5]: https://github.com/KabbAmine/zeavim.vim
+[6]: https://github.com/keith/investigate.vim
+[7]: https://www.tug.org/texdoc/doc/texdoc.pdf
+[8]: https://puszcza.gnu.org.ua/projects/latexrefman/
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
