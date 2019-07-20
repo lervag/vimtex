@@ -3252,7 +3252,7 @@ To enable automatic completion with |youcompleteme|, use the following options: 
   if !exists('g:ycm_semantic_triggers')
     let g:ycm_semantic_triggers = {}
   endif
-  let g:ycm_semantic_triggers.tex = g:vimtex#re#youcompleteme
+  au VimEnter * let g:ycm_semantic_triggers.tex=g:vimtex#re#youcompleteme
 
 VimCompletesMe~
                                                           *vimtex-complete-vcm*
