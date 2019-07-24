@@ -3798,8 +3798,8 @@ ONLINE                                                 *vimtex-latexdoc-online*
 I recommend the LaTeX Wikibook [0] as a good source of documentation for
 LaTeX. One should also know about the Comprehensive TeX Archive Network, or
 CTAN [1], which is the central place for all kinds of material around TeX.
-The long-existing unofficial LaTeX(2e) reference manual (latexref) can be found
-online at [2].
+The long-existing unofficial LaTeX(2e) reference manual (latexref) can be
+found online at [2].
 
 [0]: https://en.wikibooks.org/wiki/LaTeX
 [1]: https://ctan.org/
@@ -3824,8 +3824,8 @@ documentation pdf of this package. Note, though, that this assumes that the
 documentation is available offline, which it might not be (e.g. on Arch Linux
 it is not available through the texlive packages).
 
-The LaTeX refman [8] should also be mentioned as a relevant reference and can be
-easily downloaded from [9].
+The unofficial LaTeX(2e) reference manual (latexref) should also be mentioned,
+since it may be easily downloaded in various formats from [8].
 
 [0]: https://kapeli.com/dash
 [1]: https://zealdocs.org/
@@ -3835,8 +3835,7 @@ easily downloaded from [9].
 [5]: https://github.com/KabbAmine/zeavim.vim
 [6]: https://github.com/keith/investigate.vim
 [7]: https://www.tug.org/texdoc/doc/texdoc.pdf
-[8]: https://puszcza.gnu.org.ua/projects/latexrefman/
-[9]: https://latexref.xyz/dev/latex2e.txt
+[8]: https://latexref.xyz/dev
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
