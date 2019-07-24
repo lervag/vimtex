@@ -335,7 +335,7 @@ Tag navigation~
   files as necessary, e.g. |gutentags| [1].
 
   See |vimtex-faq-tags| and |vimtex-faq-tags-bibtex| for concrete examples.
-<
+
   [0]: https://ctags.io/
   [1]: https://github.com/ludovicchabant/vim-gutentags
 
@@ -349,7 +349,9 @@ Manipulate surrounding commands/delimiters/environments~
   `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from vimtex
   should work well together with, and as an extension of, `surround.vim`.
   Consider also the customization described under |vimtex-faq-surround|.
-  The mappings may be repeated with the dot command |.|.
+  The mappings may be repeated with the dot (|.|) command. See also
+  |g:vimtex_delim_list| if you are interested in customizing the delimiter
+  pairs that are recognized.
 
   A different possibility is to use `vim-sandwich` [1] (|sandwich.txt|) by
   Machakann, which may be considered a generalisation of `surround.vim` in
@@ -1189,6 +1191,23 @@ OPTIONS                                                        *vimtex-options*
   generated based on the `name` entry. The remaining four entries will remain
   the default value.
 
+  Some people may be interested in adding support for e.g. german or french
+  quotation marks. These may be added by extending the default `delim_tex`
+  entries, like this: >
+
+    let g:vimtex_delim_list = {
+        \ 'delim_tex' : {
+        \   'name' : [
+        \     ['[', ']'],
+        \     ['{', '}'],
+        \     ['\glq', '\grq'],
+        \     ['\glqq', '\grqq'],
+        \     ['\flq', '\frq'],
+        \     ['\flqq', '\frqq'],
+        \    ]
+        \  }
+        \}
+<
                                                          *g:vimtex#delim#lists*
                                                          *g:vimtex#delim#re*
   Note: This option is parsed on plugin initialization into a new variable,
