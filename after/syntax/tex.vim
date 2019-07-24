@@ -330,18 +330,6 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 endif
 
 " }}}1
-" {{{1 Add support for listings package
-syntax region texZone
-      \ start="\\begin{lstlisting}"rs=s
-      \ end="\\end{lstlisting}\|%stopzone\>"re=e
-      \ keepend
-      \ contains=texBeginEnd
-syntax match texInputFile
-      \ "\\lstinputlisting\s*\(\[.*\]\)\={.\{-}}"
-      \ contains=texStatement,texInputCurlies,texInputFileOpt
-syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
-
-" }}}1
 " {{{1 Add support for moreverb package
 
 if exists('g:tex_verbspell')
@@ -596,6 +584,24 @@ syntax match texMintedName '{\w\+}' contained
 
 highlight link texMintZoneUnknown texZone
 highlight link texMintedName texBeginEndName
+
+" }}}1
+" {{{1 Nested syntax highlighting for listings package
+
+if exists('b:vimtex.packages.listings')
+  " First some general support
+  syntax match texInputFile
+        \ "\\lstinputlisting\s*\(\[.*\]\)\={.\{-}}"
+        \ contains=texStatement,texInputCurlies,texInputFileOpt
+  syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
+  syntax region texZone
+        \ start="\\begin{lstlisting}"rs=s
+        \ end="\\end{lstlisting}\|%stopzone\>"re=e
+        \ keepend
+        \ contains=texBeginEnd
+endif
+
+""" WIP: nested syntax
 
 " }}}1
 " {{{1 Nested syntax highlighting for pythontex
