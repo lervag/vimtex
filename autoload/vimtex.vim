@@ -301,15 +301,6 @@ endfunction
 
 " }}}1
 function! s:init_highlights() abort " {{{1
-  " Check for wrong load order for syntax vs filetype
-  if get(b:, 'current_syntax', '') ==# 'tex'
-    unsilent call vimtex#log#warning([
-          \ '"syntax on" seems to be applied before "filetype plugin on".',
-          \ 'This is suboptimal, because some syntax features require an initialized state.',
-          \ 'Please see ":help vimtex_syntax_filetype".'
-          \])
-  endif
-
   for [l:name, l:target] in [
         \ ['VimtexImapsArrow', 'Comment'],
         \ ['VimtexImapsLhs', 'ModeMsg'],

@@ -6,6 +6,19 @@
 
 if !get(g:, 'vimtex_syntax_enabled', 1) | finish | endif
 
+" The following ensures that this syntax addon is not sourced until after the
+" filetype plugin has been sourced. See e.g. #1428 for more info.
+if !exists('b:vimtex')
+  let s:file = expand('<sfile>')
+
+  augroup vimtex_syntax
+    autocmd!
+    autocmd User VimtexEventInitPost execute 'source' s:file
+  augroup END
+
+  finish
+endif
+
 if !exists('b:current_syntax')
   let b:current_syntax = 'tex'
 elseif b:current_syntax !=# 'tex'

@@ -205,24 +205,6 @@ Vim version~
   to one's `vimrc` file.  This might work, but issues due to older versions
   than the mentioned here will be ignored.
 
-Order of "syntax on" and "filetype plugin on"~
-                                                       *vimtex_syntax_filetype*
-  |vimtex| provides an `after/syntax/tex.vim` that improves syntax highlighting,
-  see |vimtex-syntax|. Some of the improvements require that the filetype
-  plugin has been loaded first. This means one must have the following lines
-  in the following order in ones `vimrc` file: >
-
-    filetype plugin indent on
-    syntax on
-<
-  Note: Many plugin managers, like |vim-plug|, will automatically add these
-        lines in the correct order.
-
-  Note: If you do not have a vimrc file, |defaults.vim| may be loaded and will
-        source the mentioned lines in the wrong order. If one wants to source
-        |defaults.vim|, it is suggested to do it manually and to add the lines
-        above in the correct order first.
-
 Compiler backend~
 
   |vimtex| uses `latexmk`, `latexrun`, `tectonic` or `arara` to compile the LaTeX document.
