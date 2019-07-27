@@ -33,6 +33,8 @@ Or use some other plugin manager:
 - [neobundle](https://github.com/Shougo/neobundle.vim)
 - [pathogen](https://github.com/tpope/vim-pathogen)
 
+If you use the new package feature in Vim, please note that it does not always put the runtimepaths in the right order. This may lead to an issue where vimtex does not seem to load. See [this comment in #1413](https://github.com/lervag/vimtex/issues/1413#issuecomment-513253660) for a suggested solution.
+
 ## Quick Start
 
 The following is a simple guide for how to use vimtex. It only displays the
