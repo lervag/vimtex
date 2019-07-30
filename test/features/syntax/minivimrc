@@ -33,6 +33,7 @@ let g:vimtex_syntax_minted = [
       \   ],
       \ }
       \]
+let g:vimtex_syntax_listings = g:vimtex_syntax_minted
 
 function! SynNames()
   return join(map(synstack(line('.'), col('.')),

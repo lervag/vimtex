@@ -114,100 +114,58 @@ if get(g:, 'tex_fast', 'b') =~# 'b'
 endif
 
 " }}}1
-" {{{1 Add syntax highlighting of tabular specifications
-
-if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
-  call s:add_to_clusters('texTabular')
-  syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
-        \ contains=texBeginEnd
-        \ nextgroup=texTabularArg
-        \ contained
-  syntax region texTabularArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contained
-
-  syntax match texTabularCol /[lcr]/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularCol /[pmb]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularCol /\*/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularMulti
-        \ contained
-  syntax region texTabularMulti matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularArg
-        \ contained
-
-  syntax match texTabularAtSep /@/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularVertline /||\?/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularPostPre /[<>]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularPostPreArg
-        \ contained
-
-  syntax region texTabularPostPreArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texStatement,texMathDelimSingle
-        \ contained
-
-  syntax region texTabularLength matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texStatement
-        \ contained
-
-  syntax match texMathDelimSingle /\$\$\?/
-        \ containedin=texTabularPostPreArg
-        \ contained
-
-  highlight def link texTabularCol        Directory
-  highlight def link texTabularAtSep      Type
-  highlight def link texTabularVertline   Type
-  highlight def link texTabularPostPre    Type
-  highlight def link texMathDelimSingle   Delimiter
-endif
-
-" }}}1
-" {{{1 Add syntax highlighting for \url, \href, \hyperref
-
-syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
-syntax region texUrlVerb matchgroup=Delimiter
-      \ start='\z([^\ta-zA-Z]\)' end='\z1' contained
-
-syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
-syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
-
-syntax match texStatement '\\href' nextgroup=texHref
-syntax region texHref matchgroup=Delimiter start='{' end='}' contained
-      \ nextgroup=texMatcher
-
-syntax match texStatement '\\hyperref' nextgroup=texHyperref
-syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
-
-highlight link texUrl          Function
-highlight link texUrlVerb      texUrl
-highlight link texHref         texUrl
-highlight link texHyperref     texRefZone
-
-" }}}1
 " {{{1 Add syntax highlighting for \todo
 
 syntax match texStatement '\\todo\w*' contains=texTodo
 syntax match texTodo '\\todo\w*'
 
 " }}}1
-" {{{1 Add support for biblatex and csquotes packages (cite commands)
+" {{{1 Documentclass support: beamer
+
+if b:vimtex.documentclass ==# 'beamer'
+  syntax match texBeamerDelimiter '<\|>' contained
+  syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
+
+  syntax match texStatementBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
+  syntax match texStatementBeamer '\\item<[^>]*>' contains=texBeamerOpt
+
+  syntax match texInputFile
+        \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
+        \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
+
+  call s:add_to_clusters('texStatementBeamer')
+
+  highlight link texStatementBeamer texStatement
+  highlight link texBeamerOpt Identifier
+  highlight link texBeamerDelimiter Delimiter
+endif
+
+" }}}1
+" {{{1 Package support: hyperref and url
+
+if exists('b:vimtex.packages.hyperref') || exists('b:vimtex.packages.url')
+  syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
+  syntax region texUrlVerb matchgroup=Delimiter
+        \ start='\z([^\ta-zA-Z]\)' end='\z1' contained
+
+  syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
+  syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
+
+  syntax match texStatement '\\href' nextgroup=texHref
+  syntax region texHref matchgroup=Delimiter start='{' end='}' contained
+        \ nextgroup=texMatcher
+
+  syntax match texStatement '\\hyperref' nextgroup=texHyperref
+  syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
+
+  highlight link texUrl          Function
+  highlight link texUrlVerb      texUrl
+  highlight link texHref         texUrl
+  highlight link texHyperref     texRefZone
+endif
+
+" }}}1
+" {{{1 Package support: biblatex and csquotes (cite commands)
 
 if get(g:, 'tex_fast', 'r') =~# 'r'
 
@@ -279,29 +237,9 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 endif
 
 " }}}1
-" {{{1 Add support for array package
+" {{{1 Package support: cleveref
 
-"
-" The following code changes inline math so as to support the column
-" specifiers [0], e.g.
-"
-"   \begin{tabular}{*{3}{>{$}c<{$}}}
-"
-" [0]: https://en.wikibooks.org/wiki/LaTeX/Tables#Column_specification_using_.3E.7B.5Ccmd.7D_and_.3C.7B.5Ccmd.7D
-"
-
-if exists('b:vimtex.packages.array') && get(g:, 'tex_fast', 'M') =~# 'M'
-  syntax clear texMathZoneX
-  if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
-    syntax region texMathZoneX matchgroup=Delimiter start="\([<>]{\)\@<!\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$" end="%stopzone\>" concealends contains=@texMathZoneGroup
-  else
-    syntax region texMathZoneX matchgroup=Delimiter start="\([<>]{\)\@<!\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$" end="%stopzone\>" contains=@texMathZoneGroup
-  endif
-endif
-
-" }}}1
-" {{{1 Add support for cleveref package
-if get(g:, 'tex_fast', 'r') =~# 'r'
+if exists('b:vimtex.packages.cleveref') && get(g:, 'tex_fast', 'r') =~# 'r'
   syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref\>'
         \ nextgroup=texCRefZone
 
@@ -331,8 +269,92 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 endif
 
 " }}}1
-" {{{1 Add support for varioref package
-if get(g:, 'tex_fast', 'r') =~# 'r'
+" {{{1 Package support: tabularx and array
+
+"
+" The following code changes inline math so as to support the column
+" specifiers [0], e.g.
+"
+"   \begin{tabular}{*{3}{>{$}c<{$}}}
+"
+" [0]: https://en.wikibooks.org/wiki/LaTeX/Tables#Column_specification_using_.3E.7B.5Ccmd.7D_and_.3C.7B.5Ccmd.7D
+"
+
+if exists('b:vimtex.packages.array') && get(g:, 'tex_fast', 'M') =~# 'M'
+  syntax clear texMathZoneX
+  if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
+    syntax region texMathZoneX matchgroup=Delimiter start="\([<>]{\)\@<!\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$" end="%stopzone\>" concealends contains=@texMathZoneGroup
+  else
+    syntax region texMathZoneX matchgroup=Delimiter start="\([<>]{\)\@<!\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$" end="%stopzone\>" contains=@texMathZoneGroup
+  endif
+endif
+
+if exists('b:vimtex.packages.tabularx') || exists('b:vimtex.packages.array')
+  call s:add_to_clusters('texTabular')
+  syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
+        \ contains=texBeginEnd
+        \ nextgroup=texTabularArg
+        \ contained
+  syntax region texTabularArg matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained
+
+  syntax match texTabularCol /[lcr]/
+        \ containedin=texTabularArg
+        \ contained
+  syntax match texTabularCol /[pmb]/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularLength
+        \ contained
+  syntax match texTabularCol /\*/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularMulti
+        \ contained
+  syntax region texTabularMulti matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularArg
+        \ contained
+
+  syntax match texTabularAtSep /@/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularLength
+        \ contained
+  syntax match texTabularVertline /||\?/
+        \ containedin=texTabularArg
+        \ contained
+  syntax match texTabularPostPre /[<>]/
+        \ containedin=texTabularArg
+        \ nextgroup=texTabularPostPreArg
+        \ contained
+
+  syntax region texTabularPostPreArg matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ contains=texLength,texStatement,texMathDelimSingle
+        \ contained
+
+  syntax region texTabularLength matchgroup=Delimiter
+        \ start='{' end='}'
+        \ containedin=texTabularArg
+        \ contains=texLength,texStatement
+        \ contained
+
+  syntax match texMathDelimSingle /\$\$\?/
+        \ containedin=texTabularPostPreArg
+        \ contained
+
+  highlight def link texTabularCol        Directory
+  highlight def link texTabularAtSep      Type
+  highlight def link texTabularVertline   Type
+  highlight def link texTabularPostPre    Type
+  highlight def link texMathDelimSingle   Delimiter
+endif
+
+" }}}1
+" {{{1 Package support: varioref
+
+if exists('b:vimtex.packages.varioref') && get(g:, 'tex_fast', 'r') =~# 'r'
   syntax match texStatement '\\Vref\>' nextgroup=texVarioRefZone
 
   syntax region texVarioRefZone contained matchgroup=Delimiter
@@ -343,263 +365,140 @@ if get(g:, 'tex_fast', 'r') =~# 'r'
 endif
 
 " }}}1
-" {{{1 Add support for moreverb package
+" {{{1 Package support: moreverb
 
-if exists('g:tex_verbspell')
-  syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"   contains=@Spell
-  syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>" contains=@Spell
-  syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>" contains=@Spell
-else
-  syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"
-  syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>"
-  syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>"
+if exists('b:vimtex.packages.moreverb')
+  if exists('g:tex_verbspell')
+    syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"   contains=@Spell
+    syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>" contains=@Spell
+    syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>" contains=@Spell
+  else
+    syntax region texZone start="\\begin{verbatimtab}"   end="\\end{verbatimtab}\|%stopzone\>"
+    syntax region texZone start="\\begin{verbatimwrite}" end="\\end{verbatimwrite}\|%stopzone\>"
+    syntax region texZone start="\\begin{boxedverbatim}" end="\\end{boxedverbatim}\|%stopzone\>"
+  endif
 endif
 
 " }}}1
-" {{{1 Add support for beamer package
-syntax match texBeamerDelimiter '<\|>' contained
-syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
-
-syntax match texStatementBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
-syntax match texStatementBeamer '\\item<[^>]*>' contains=texBeamerOpt
-
-syntax match texInputFile
-      \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
-      \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
-
-call s:add_to_clusters('texStatementBeamer')
-
-highlight link texStatementBeamer texStatement
-highlight link texBeamerOpt Identifier
-highlight link texBeamerDelimiter Delimiter
-
-" }}}1
-" {{{1 Add support for amsmath package
+" {{{1 Package support: amsmath
 
 " This is based on Charles E. Campbell's amsmath.vba file dated 2018-06-29
 
-call TexNewMathZone('E', 'align', 1)
-call TexNewMathZone('F', 'alignat', 1)
-call TexNewMathZone('H', 'flalign', 1)
-call TexNewMathZone('I', 'gather', 1)
-call TexNewMathZone('J', 'multline', 1)
-call TexNewMathZone('K', 'xalignat', 1)
-call TexNewMathZone('L', 'xxalignat', 0)
-call TexNewMathZone('M', 'mathpar', 1)
+if exists('b:vimtex.packages.amsmath')
+  call TexNewMathZone('E', 'align', 1)
+  call TexNewMathZone('F', 'alignat', 1)
+  call TexNewMathZone('H', 'flalign', 1)
+  call TexNewMathZone('I', 'gather', 1)
+  call TexNewMathZone('J', 'multline', 1)
+  call TexNewMathZone('K', 'xalignat', 1)
+  call TexNewMathZone('L', 'xxalignat', 0)
+  call TexNewMathZone('M', 'mathpar', 1)
 
-execute 'syntax match texBadMath ''\\end\s*{\s*\(' . join([
-      \ 'align',
-      \ 'alignat',
-      \ 'equation',
-      \ 'flalign',
-      \ 'gather',
-      \ 'multline',
-      \ 'xalignat',
-      \ 'xxalignat'], '\|') . '\)\*\=\s*}'''
+  execute 'syntax match texBadMath ''\\end\s*{\s*\(' . join([
+        \ 'align',
+        \ 'alignat',
+        \ 'equation',
+        \ 'flalign',
+        \ 'gather',
+        \ 'multline',
+        \ 'xalignat',
+        \ 'xxalignat'], '\|') . '\)\*\=\s*}'''
 
-" Amsmath [lr][vV]ert  (Holger Mitschke)
-for s:texmath in [
-      \ ['\\lvert', '|'] ,
-      \ ['\\rvert', '|'] ,
-      \ ['\\lVert', '‖'] ,
-      \ ['\\rVert', '‖'] ,
-      \ ]
-  execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
-        \ . s:texmath[0] . "' contained conceal cchar=" . s:texmath[1]
-endfor
-
-" }}}1
-" {{{1 Nested syntax highlighting for dot
-unlet b:current_syntax
-syntax include @DOT syntax/dot.vim
-call s:add_to_clusters('texZoneDot')
-syntax region texZoneDot
-      \ start="\\begin{dot2tex}"rs=s
-      \ end="\\end{dot2tex}"re=e
-      \ keepend
-      \ transparent
-      \ contains=texBeginEnd,@DOT
-let b:current_syntax = 'tex'
-
-" }}}1
-" {{{1 Nested syntax highlighting for lualatex
-unlet b:current_syntax
-syntax include @LUA syntax/lua.vim
-call s:add_to_clusters('texZoneLua')
-syntax region texZoneLua
-      \ start='\\begin{luacode\*\?}'rs=s
-      \ end='\\end{luacode\*\?}'re=e
-      \ keepend
-      \ transparent
-      \ contains=texBeginEnd,@LUA
-syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLuaArg
-syntax region texZoneLuaArg matchgroup=Delimiter
-      \ start='{'
-      \ end='}'
-      \ contained
-      \ contains=@LUA
-let b:current_syntax = 'tex'
-
-" }}}1
-" {{{1 Nested syntax highlighting for gnuplottex
-unlet b:current_syntax
-syntax include @GNUPLOT syntax/gnuplot.vim
-call s:add_to_clusters('texZoneGnuplot')
-syntax region texZoneGnuplot
-      \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
-      \ end='\\end{gnuplot}'re=e
-      \ keepend
-      \ transparent
-      \ contains=texBeginEnd,texBeginEndModifier,@GNUPLOT
-let b:current_syntax = 'tex'
-
-" }}}1
-" {{{1 Nested syntax highlighting for asymptote
-
-call s:add_to_clusters('texZoneAsymptote')
-
-let s:asypath = globpath(&runtimepath, 'syntax/asy.vim')
-if !empty(s:asypath)
-  unlet b:current_syntax
-  syntax include @ASYMPTOTE syntax/asy.vim
-  syntax region texZoneAsymptote
-        \ start='\\begin{asy\z(def\)\?}'rs=s
-        \ end='\\end{asy\z1}'re=e
-        \ keepend
-        \ transparent
-        \ contains=texBeginEnd,@ASYMPTOTE
-  let b:current_syntax = 'tex'
-else
-  syntax region texZoneAsymptote
-        \ start='\\begin{asy\z(def\)\?}'rs=s
-        \ end='\\end{asy\z1}'re=e
-        \ keepend
-        \ contains=texBeginEnd
-  highlight def link texZoneAsymptote texZone
+  " Amsmath [lr][vV]ert  (Holger Mitschke)
+  for s:texmath in [
+        \ ['\\lvert', '|'] ,
+        \ ['\\rvert', '|'] ,
+        \ ['\\lVert', '‖'] ,
+        \ ['\\rVert', '‖'] ,
+        \ ]
+    execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
+          \ . s:texmath[0] . "' contained conceal cchar=" . s:texmath[1]
+  endfor
 endif
 
 " }}}1
-" {{{1 Nested syntax highlighting for minted
+" {{{1 Package support: dot2texi (nested syntax)
 
-" First set all minted environments to listings
-syntax cluster texFoldGroup add=texZoneMinted
-syntax region texZoneMinted
-      \ start="\\begin{minted}\_[^}]\{-}{\w\+}"rs=s
-      \ end="\\end{minted}"re=e
-      \ keepend
-      \ contains=texMinted
-
-" Highlight "unknown" statements
-syntax region texMintArgUnknown matchgroup=Delimiter
-      \ start='{'
-      \ end='}'
-      \ contained
-      \ nextgroup=texMintZoneUnknown
-syntax region texMintZoneUnknown matchgroup=Delimiter
-      \ start='\z([|+/]\)'
-      \ end='\z1'
-      \ contained
-syntax region texMintZoneUnknown matchgroup=Delimiter
-      \ start='{'
-      \ end='}'
-      \ contained
-
-" Next add nested syntax support for desired languages
-for s:entry in get(g:, 'vimtex_syntax_minted', [])
-  let s:lang = s:entry.lang
-  let s:syntax = get(s:entry, 'syntax', s:lang)
-
-  let s:cap_name = toupper(s:lang[0]) . s:lang[1:]
-  let s:group_name = 'texZoneMinted' . s:cap_name
-  execute 'syntax cluster texFoldGroup add=' . s:group_name
-
+if exists('b:vimtex.packages.dot2texi')
   unlet b:current_syntax
-  execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
-
-  if has_key(s:entry, 'ignore')
-    execute 'syntax cluster' toupper(s:lang)
-          \ 'remove=' . join(s:entry.ignore, ',')
-  endif
-
-  " Add statement variants
-  " - \mint[]{lang}|...|
-  " - \mint[]{lang}{...}
-  " - \mintinline[]{lang}|...|
-  " - \mintinline[]{lang}{...}
-  execute 'syntax match texMintArg' . s:cap_name  '''{' . s:lang . '}'''
-        \ 'contained'
-        \ 'nextgroup=texMintZone' . s:cap_name
-  execute 'syntax region texMintZone' . s:cap_name
-        \ 'matchgroup=Delimiter'
-        \ 'start=''\z([|+/]\)'''
-        \ 'end=''\z1'''
-        \ 'contained'
-        \ 'contains=@' . toupper(s:lang)
-  execute 'syntax region texMintZone' . s:cap_name
-        \ 'matchgroup=Delimiter'
-        \ 'start=''{'''
-        \ 'end=''}'''
-        \ 'contained'
-        \ 'contains=@' . toupper(s:lang)
-
-  " Add main minted environment
-  execute 'syntax region' s:group_name
-        \ 'start="\\begin{minted}\_[^}]\{-}{' . s:lang . '}"rs=s'
-        \ 'end="\\end{minted}"re=e'
-        \ 'keepend'
-        \ 'transparent'
-        \ 'contains=texMinted,@' . toupper(s:lang)
-
-  " Support for custom environment names
-  for s:env in get(s:entry, 'environments', [])
-    execute 'syntax region' s:group_name
-          \ 'start="\\begin{' . s:env . '}"rs=s'
-          \ 'end="\\end{' . s:env . '}"re=e'
-          \ 'keepend'
-          \ 'transparent'
-          \ 'contains=texBeginEnd,@' . toupper(s:lang)
-
-    " Match starred environments with options
-    execute 'syntax region' s:group_name
-          \ 'start="\\begin{' . s:env . '\*}\s*{\_.\{-}}"rs=s'
-          \ 'end="\\end{' . s:env . '\*}"re=e'
-          \ 'keepend'
-          \ 'transparent'
-          \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(s:lang)
-    execute 'syntax match texMintedStarred'
-          \ '"\\begin{' . s:env . '\*}\s*{\_.\{-}}"'
-          \ 'contains=texBeginEnd,texDelimiter'
-  endfor
-
-  " Support for custom commands
-  for s:cmd in sort(get(s:entry, 'commands', []))
-    execute 'syntax match texStatement'
-          \ '''\\' . s:cmd . ''''
-          \ 'nextgroup=texMintZone' . s:cap_name
-  endfor
-endfor
-let b:current_syntax = 'tex'
-
-" Main matcher for the minted statements/commands (must come last to allow
-" nextgroup patterns)
-syntax match texStatement '\\mint\(inline\)\?' nextgroup=texMintOptArg,texMintArg.*
-syntax region texMintOptArg matchgroup=Delimiter
-      \ start='\['
-      \ end='\]'
-      \ contained
-      \ nextgroup=texMintArg.*
-
-syntax match texMinted '\\begin{minted}\_[^}]\{-}{\w\+}'
-      \ contains=texBeginEnd,texMintedName
-syntax match texMinted '\\end{minted}'
-      \ contains=texBeginEnd
-syntax match texMintedName '{\w\+}' contained
-
-highlight link texMintZoneUnknown texZone
-highlight link texMintedName texBeginEndName
+  syntax include @DOT syntax/dot.vim
+  call s:add_to_clusters('texZoneDot')
+  syntax region texZoneDot
+        \ start="\\begin{dot2tex}"rs=s
+        \ end="\\end{dot2tex}"re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,@DOT
+  let b:current_syntax = 'tex'
+endif
 
 " }}}1
-" {{{1 Nested syntax highlighting for listings package
+" {{{1 Package support: luacode (nested syntax)
+
+if exists('b:vimtex.packages.luacode')
+  unlet b:current_syntax
+  syntax include @LUA syntax/lua.vim
+  call s:add_to_clusters('texZoneLua')
+  syntax region texZoneLua
+        \ start='\\begin{luacode\*\?}'rs=s
+        \ end='\\end{luacode\*\?}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,@LUA
+  syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLuaArg
+  syntax region texZoneLuaArg matchgroup=Delimiter
+        \ start='{'
+        \ end='}'
+        \ contained
+        \ contains=@LUA
+  let b:current_syntax = 'tex'
+endif
+
+" }}}1
+" {{{1 Package support: gnuplottex (nested syntax)
+
+if exists('b:vimtex.packages.gnuplottex')
+  unlet b:current_syntax
+  syntax include @GNUPLOT syntax/gnuplot.vim
+  call s:add_to_clusters('texZoneGnuplot')
+  syntax region texZoneGnuplot
+        \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
+        \ end='\\end{gnuplot}'re=e
+        \ keepend
+        \ transparent
+        \ contains=texBeginEnd,texBeginEndModifier,@GNUPLOT
+  let b:current_syntax = 'tex'
+endif
+
+" }}}1
+" {{{1 Package support: asymptote (nested syntax)
+
+if exists('b:vimtex.packages.asymptote')
+  call s:add_to_clusters('texZoneAsymptote')
+
+  let s:asypath = globpath(&runtimepath, 'syntax/asy.vim')
+  if !empty(s:asypath)
+    unlet b:current_syntax
+    syntax include @ASYMPTOTE syntax/asy.vim
+    syntax region texZoneAsymptote
+          \ start='\\begin{asy\z(def\)\?}'rs=s
+          \ end='\\end{asy\z1}'re=e
+          \ keepend
+          \ transparent
+          \ contains=texBeginEnd,@ASYMPTOTE
+    let b:current_syntax = 'tex'
+  else
+    syntax region texZoneAsymptote
+          \ start='\\begin{asy\z(def\)\?}'rs=s
+          \ end='\\end{asy\z1}'re=e
+          \ keepend
+          \ contains=texBeginEnd
+    highlight def link texZoneAsymptote texZone
+  endif
+endif
+
+" }}}1
+" {{{1 Package support: listings package (nested syntax)
 
 if exists('b:vimtex.packages.listings')
   " First some general support
@@ -617,7 +516,129 @@ endif
 """ WIP: nested syntax
 
 " }}}1
-" {{{1 Nested syntax highlighting for pythontex
+" {{{1 Package support: minted (nested syntax)
+
+if exists('b:vimtex.packages.minted')
+  " First set all minted environments to listings
+  syntax cluster texFoldGroup add=texZoneMinted
+  syntax region texZoneMinted
+        \ start="\\begin{minted}\_[^}]\{-}{\w\+}"rs=s
+        \ end="\\end{minted}"re=e
+        \ keepend
+        \ contains=texMinted
+
+  " Highlight "unknown" statements
+  syntax region texMintArgUnknown matchgroup=Delimiter
+        \ start='{'
+        \ end='}'
+        \ contained
+        \ nextgroup=texMintZoneUnknown
+  syntax region texMintZoneUnknown matchgroup=Delimiter
+        \ start='\z([|+/]\)'
+        \ end='\z1'
+        \ contained
+  syntax region texMintZoneUnknown matchgroup=Delimiter
+        \ start='{'
+        \ end='}'
+        \ contained
+
+  " Next add nested syntax support for desired languages
+  for s:entry in get(g:, 'vimtex_syntax_minted', [])
+    let s:lang = s:entry.lang
+    let s:syntax = get(s:entry, 'syntax', s:lang)
+
+    let s:cap_name = toupper(s:lang[0]) . s:lang[1:]
+    let s:group_name = 'texZoneMinted' . s:cap_name
+    execute 'syntax cluster texFoldGroup add=' . s:group_name
+
+    unlet b:current_syntax
+    execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
+
+    if has_key(s:entry, 'ignore')
+      execute 'syntax cluster' toupper(s:lang)
+            \ 'remove=' . join(s:entry.ignore, ',')
+    endif
+
+    " Add statement variants
+    " - \mint[]{lang}|...|
+    " - \mint[]{lang}{...}
+    " - \mintinline[]{lang}|...|
+    " - \mintinline[]{lang}{...}
+    execute 'syntax match texMintArg' . s:cap_name  '''{' . s:lang . '}'''
+          \ 'contained'
+          \ 'nextgroup=texMintZone' . s:cap_name
+    execute 'syntax region texMintZone' . s:cap_name
+          \ 'matchgroup=Delimiter'
+          \ 'start=''\z([|+/]\)'''
+          \ 'end=''\z1'''
+          \ 'contained'
+          \ 'contains=@' . toupper(s:lang)
+    execute 'syntax region texMintZone' . s:cap_name
+          \ 'matchgroup=Delimiter'
+          \ 'start=''{'''
+          \ 'end=''}'''
+          \ 'contained'
+          \ 'contains=@' . toupper(s:lang)
+
+    " Add main minted environment
+    execute 'syntax region' s:group_name
+          \ 'start="\\begin{minted}\_[^}]\{-}{' . s:lang . '}"rs=s'
+          \ 'end="\\end{minted}"re=e'
+          \ 'keepend'
+          \ 'transparent'
+          \ 'contains=texMinted,@' . toupper(s:lang)
+
+    " Support for custom environment names
+    for s:env in get(s:entry, 'environments', [])
+      execute 'syntax region' s:group_name
+            \ 'start="\\begin{' . s:env . '}"rs=s'
+            \ 'end="\\end{' . s:env . '}"re=e'
+            \ 'keepend'
+            \ 'transparent'
+            \ 'contains=texBeginEnd,@' . toupper(s:lang)
+
+      " Match starred environments with options
+      execute 'syntax region' s:group_name
+            \ 'start="\\begin{' . s:env . '\*}\s*{\_.\{-}}"rs=s'
+            \ 'end="\\end{' . s:env . '\*}"re=e'
+            \ 'keepend'
+            \ 'transparent'
+            \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(s:lang)
+      execute 'syntax match texMintedStarred'
+            \ '"\\begin{' . s:env . '\*}\s*{\_.\{-}}"'
+            \ 'contains=texBeginEnd,texDelimiter'
+    endfor
+
+    " Support for custom commands
+    for s:cmd in sort(get(s:entry, 'commands', []))
+      execute 'syntax match texStatement'
+            \ '''\\' . s:cmd . ''''
+            \ 'nextgroup=texMintZone' . s:cap_name
+    endfor
+  endfor
+  let b:current_syntax = 'tex'
+
+  " Main matcher for the minted statements/commands (must come last to allow
+  " nextgroup patterns)
+  syntax match texStatement '\\mint\(inline\)\?' nextgroup=texMintOptArg,texMintArg.*
+  syntax region texMintOptArg matchgroup=Delimiter
+        \ start='\['
+        \ end='\]'
+        \ contained
+        \ nextgroup=texMintArg.*
+
+  syntax match texMinted '\\begin{minted}\_[^}]\{-}{\w\+}'
+        \ contains=texBeginEnd,texMintedName
+  syntax match texMinted '\\end{minted}'
+        \ contains=texBeginEnd
+  syntax match texMintedName '{\w\+}' contained
+
+  highlight link texMintZoneUnknown texZone
+  highlight link texMintedName texBeginEndName
+endif
+
+" }}}1
+" {{{1 Package support: pythontex (nested syntax)
 
 if exists('b:vimtex.packages.pythontex')
   unlet b:current_syntax
