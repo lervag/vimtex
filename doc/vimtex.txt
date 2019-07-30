@@ -181,8 +181,8 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package
   - Support for `listings` package
-  - Nested syntax highlighting (`minted`, `dot2tex`, `lualatex`,
-    `gnuplottex`, `asymptote`, `pythontex`)
+  - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
+    `asymptote`, `pythontex`, `listings`, and `minted`
 - Support for multi-file project packages
   - `import`
   - `subfiles`
@@ -1877,6 +1877,37 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
+*g:vimtex_syntax_listings*
+  A list that contains dictionaries for each supported language.  A language
+  dictionary should be something similar to the following: >
+
+    {
+      'lang'    : NAME,
+      'syntax'  : SYNTAX-FILE-NAME,
+      'ignored' : IGNORED-GROUPS
+    }
+<
+  If the `syntax` entry is not present, then the `lang` entry is used as name of
+  the syntax file.  The `ignored` entry is also optional, and is used to name
+  syntax groups to ignore in the minted region.
+
+  Default value: []
+
+  Example for some languages: >
+
+    let g:vimtex_syntax_listings = [
+          \ {
+          \   'lang' : 'C',
+          \ },
+          \ {
+          \   'lang' : 'python',
+          \   'ignore' : [
+          \     'pythonEscape',
+          \     'pythonBEscape',
+          \     ],
+          \ }
+          \]
+
 *g:vimtex_syntax_minted*
   A list that contains dictionaries for each supported language.  A language
   dictionary should be something similar to the following: >
@@ -3329,9 +3360,9 @@ highlighting.  However, |vimtex| does add some minor improvements:
 - Support for `biblatex` and `natbib` package
 - Support for `cleveref` package
 - Improved highlighting of `listings` package
-- Nested syntax highlighting for `dot2tex`
 - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
-  `asymptote`, `pythontex`, and `minted` (see |g:vimtex_syntax_minted|)
+  `asymptote`, `pythontex`, `listings` (see |g:vimtex_syntax_listings|),
+  and `minted` (see |g:vimtex_syntax_minted|)
 
 Before enabling additional syntax highlighting, |vimtex| also checks the
 |g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
@@ -3355,6 +3386,7 @@ Note: For people that are interested in improved conceal support, please check
 
 Associated settings:
   |g:vimtex_syntax_enabled|
+  |g:vimtex_syntax_listings|
   |g:vimtex_syntax_minted|
 
 ==============================================================================
