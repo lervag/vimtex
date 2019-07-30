@@ -506,14 +506,43 @@ if exists('b:vimtex.packages.listings')
         \ "\\lstinputlisting\s*\(\[.*\]\)\={.\{-}}"
         \ contains=texStatement,texInputCurlies,texInputFileOpt
   syntax match texZone "\\lstinline\s*\(\[.*\]\)\={.\{-}}"
-  syntax region texZone
-        \ start="\\begin{lstlisting}"rs=s
+
+  " Set all listings environments to listings
+  syntax cluster texFoldGroup add=texZoneListings
+  syntax region texZoneListings
+        \ start="\\begin{lstlisting}\(\_s*\[\_[\]]\{-}\]\)\?"rs=s
         \ end="\\end{lstlisting}\|%stopzone\>"re=e
         \ keepend
         \ contains=texBeginEnd
-endif
 
-""" WIP: nested syntax
+  " Next add nested syntax support for desired languages
+  for s:entry in get(g:, 'vimtex_syntax_listings', [])
+    let s:lang = s:entry.lang
+    let s:syntax = get(s:entry, 'syntax', s:lang)
+
+    let s:cap_name = toupper(s:lang[0]) . s:lang[1:]
+    let s:group_name = 'texZoneListings' . s:cap_name
+    execute 'syntax cluster texFoldGroup add=' . s:group_name
+
+    unlet b:current_syntax
+    execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
+
+    if has_key(s:entry, 'ignore')
+      execute 'syntax cluster' toupper(s:lang)
+            \ 'remove=' . join(s:entry.ignore, ',')
+    endif
+
+    execute 'syntax region' s:group_name
+          \ 'start="\c\\begin{lstlisting}\s*\[language=' . s:lang . '\]"rs=s'
+          \ 'end="\\end{lstlisting}"re=e'
+          \ 'keepend'
+          \ 'transparent'
+          \ 'contains=texBeginEnd,@' . toupper(s:lang)
+  endfor
+  let b:current_syntax = 'tex'
+
+  highlight link texZoneListings texZone
+endif
 
 " }}}1
 " {{{1 Package support: minted (nested syntax)
@@ -633,6 +662,7 @@ if exists('b:vimtex.packages.minted')
         \ contains=texBeginEnd
   syntax match texMintedName '{\w\+}' contained
 
+  highlight link texMinted texZone
   highlight link texMintZoneUnknown texZone
   highlight link texMintedName texBeginEndName
 endif
