@@ -275,7 +275,7 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
     let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
   endfor
 
-  return l:bibfiles
+  return vimtex#util#uniq(l:bibfiles)
 endfunction
 
 " }}}1
