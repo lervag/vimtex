@@ -1,6 +1,14 @@
-\documentclass{article}
-\usepackage{minted}
+\documentclass{beamer}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{amsmath}
 \usepackage{tabularx}
+\usepackage{cleveref}
+\usepackage{varioref}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{dot2texi}
+\usepackage{gnuplottex}
 \usepackage[inline]{asymptote}
 
 %
@@ -31,22 +39,85 @@
 
 \begin{document}
 
-\begin{lstlisting}
-testing
-\end{lstlisting}
+\section{Miscellaneous}
+\def\A{A}
+\def\B{\V{B}}
+
+\section{Documentclass: beamer}
+\begin{frame}[asd]
+  \includegraphics[height=0.5062\linewidth]{test.png}
+  \includegraphics<2>[height=0.5062\linewidth]{test.png}
+
+  \only{asd}
+  \only<2>{asd}
+
+  \item asdasd
+  \item<1-3> asdasd
+\end{frame}
+
+\section{Package: hyperref and url}
+\url{http://www.google.com}
+\url+http://www.google.com+
+\href{http://example.com}{Title text $with math$}
+\urldef{\mysite}\url{http://example.com}
+\hyperref[asdasd]{asd}
+
+\section{Package: biblatex and csquotes}
+\cite{}
+\citet*{}
+\citep{bibtexkey1}
+\citep[e.g.][]{bibtexkey2}
+\citealt{}
+\citealt*{}
+\citealp{}
+\citealp*{}
+\citenum{}
+\citetext{}
+\citeauthor{}
+\citeauthor*{}
+\citeyear{}
+\citeyearpar{}
+\bibentry{}
+
+\section{Package: cleveref}
+\label[asd]{sec:cleveref}
+
+\crefname{equation}{Eq}{Eqs}
+\cref{eq:test}
+\crefrange{eq:test}{eq:test2}
+
+\section{Package: tabularx and array}
+\begin{tabular}{*{3}{>{$}c<{$}}}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+\begin{tabular}{l*{4}{m{1cm}}}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+\begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+\section{Package: varioref}
+\Vref{sec_one} does what you need. Still \vref{sec_one} works.
+
+\section{Package: amsmath}
+\begin{equation}
+  f(x) = 0
+\end{equation}
 
 \begin{align}
   f(x) = 0
 \end{align}
 
-\begin{equation}
-  f(x) = 0
-\end{equation}
-
-\begin{quote}
-  test
-\end{quote}
-
+\section{Package: dot2texi}
 \begin{dot2tex}
   graph graphname {
     a -- b;
@@ -56,10 +127,90 @@ testing
   }
 \end{dot2tex}
 
+\section{Package: luacode}
+\directlua{
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+}
+
+\begin{luacode}
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+\end{luacode}
+
+\section{Package: gnuplottex}
 \begin{gnuplot}[terminal=..., terminaloptions=...]
     plot file using 1:2 with lines
 \end{gnuplot}
 
+\section{Package: asymptote}
+Here is a venn diagram produced with Asymptote, drawn to width 4cm:
+
+\begin{asy}
+  size(4cm,0);
+  pen colour1=red;
+  pen colour2=green;
+
+  pair z0=(0,0);
+  pair z1=(-1,0);
+  pair z2=(1,0);
+  real r=1.5;
+  path c1=circle(z1,r);
+  path c2=circle(z2,r);
+  fill(c1,colour1);
+  fill(c2,colour2);
+
+  picture intersection=new picture;
+  fill(intersection,c1,colour1+colour2);
+  clip(intersection,c2);
+
+  add(intersection);
+
+  draw(c1);
+  draw(c2);
+
+  // draw("$\A$",box,z1);              // Requires [inline] package option.
+  // draw(Label("$\B$","$B$"),box,z2); // Requires [inline] package option.
+  draw("$A$",box,z1);
+  draw("$\V{B}$",box,z2);
+
+  pair z=(0,-2);
+  real m=3;
+  margin BigMargin=Margin(0,m*dot(unit(z1-z),unit(z0-z)));
+
+  draw(Label("$A\cap B$",0),conj(z)--z0,Arrow,BigMargin);
+  draw(Label("$A\cup B$",0),z--z0,Arrow,BigMargin);
+  draw(z--z1,Arrow,Margin(0,m));
+  draw(z--z2,Arrow,Margin(0,m));
+
+  shipout(bbox(0.25cm));
+\end{asy}
+
+\begin{asydef}
+  // Global Asymptote definitions can be put here.
+  import three;
+  usepackage("bm");
+  texpreamble("\def\V#1{\bm{#1}}");
+  // One can globally override the default toolbar settings here:
+  // settings.toolbar=true;
+\end{asydef}
+
+\section{Package: listings}
+\begin{lstlisting}
+testing
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+#include<stdio.h>
+main() {
+  int i = 0;
+  printf("Hello World");
+}
+\end{lstlisting}
+
+\section{Package: minted}
 \begin{minted}{python}
 def function(arg):
     pass
@@ -114,166 +265,5 @@ circle of diameter $d$.
 */
 const double pi = 3.1415926535
 \end{minted}
-
-% Urls and hrep
-\url{http://www.google.com}
-\url+http://www.google.com+
-\href{http://example.com}{Title text $with math$}
-\urldef{\mysite}\url{http://example.com}
-\hyperref[asdasd]{asd}
-
-% Cite commands
-\cite{}
-\citet*{}
-\citep{bibtexkey1}
-\citep[e.g.][]{bibtexkey2}
-\citealt{}
-\citealt*{}
-\citealp{}
-\citealp*{}
-\citenum{}
-\citetext{}
-\citeauthor{}
-\citeauthor*{}
-\citeyear{}
-\citeyearpar{}
-\bibentry{}
-
-\directlua{
-  if pdf.getminorversion() \string~= 7 then
-    print "pfd version 1.7"
-  end
-}
-
-\begin{luacode}
-  if pdf.getminorversion() \string~= 7 then
-    print "pfd version 1.7"
-  end
-\end{luacode}
-
-\begin{asy}
-  size(4cm,0);
-  pen colour1=red;
-  pen colour2=green;
-
-  pair z0=(0,0);
-  pair z1=(-1,0);
-  pair z2=(1,0);
-  real r=1.5;
-  path c1=circle(z1,r);
-  path c2=circle(z2,r);
-  fill(c1,colour1);
-  fill(c2,colour2);
-
-  picture intersection=new picture;
-  fill(intersection,c1,colour1+colour2);
-  clip(intersection,c2);
-
-  add(intersection);
-
-  draw(c1);
-  draw(c2);
-
-  // draw("$\A$",box,z1);              // Requires [inline] package option.
-  // draw(Label("$\B$","$B$"),box,z2); // Requires [inline] package option.
-  draw("$A$",box,z1);
-  draw("$\V{B}$",box,z2);
-
-  pair z=(0,-2);
-  real m=3;
-  margin BigMargin=Margin(0,m*dot(unit(z1-z),unit(z0-z)));
-
-  draw(Label("$A\cap B$",0),conj(z)--z0,Arrow,BigMargin);
-  draw(Label("$A\cup B$",0),z--z0,Arrow,BigMargin);
-  draw(z--z1,Arrow,Margin(0,m));
-  draw(z--z2,Arrow,Margin(0,m));
-
-  shipout(bbox(0.25cm));
-\end{asy}
-
-\begin{frame}[asd]
-  \includegraphics[height=0.5062\linewidth]{test.png}
-  \includegraphics<2>[height=0.5062\linewidth]{test.png}
-
-  \only{asd}
-  \only<2>{asd}
-
-  \item asdasd
-  \item<1-3> asdasd
-\end{frame}
-
-\begin{equation}
-  f(x) = asdasd
-  \label[asd]{eq:test}
-\end{equation}
-
-\crefname{equation}{Eq}{Eqs}
-\cref{eq:test}
-\crefrange{eq:test}{eq:test2}
-
-\begin{asydef}
-  // Global Asymptote definitions can be put here.
-  import three;
-  usepackage("bm");
-  texpreamble("\def\V#1{\bm{#1}}");
-  // One can globally override the default toolbar settings here:
-  // settings.toolbar=true;
-\end{asydef}
-
-Here is a venn diagram produced with Asymptote, drawn to width 4cm:
-
-\begin{tabular}{l*{4}{m{1cm}}}
-  \hline
-  Hello world !\tabularnewline
-  \hline
-\end{tabular}
-\begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
-  \hline
-  Hello world !\tabularnewline
-  \hline
-\end{tabular}
-
-\def\A{A}
-\def\B{\V{B}}
-
-\begin{asy}
-  size(4cm,0);
-  pen colour1=red;
-  pen colour2=green;
-
-  pair z0=(0,0);
-  pair z1=(-1,0);
-  pair z2=(1,0);
-  real r=1.5;
-  path c1=circle(z1,r);
-  path c2=circle(z2,r);
-  fill(c1,colour1);
-  fill(c2,colour2);
-
-  picture intersection=new picture;
-  fill(intersection,c1,colour1+colour2);
-  clip(intersection,c2);
-
-  add(intersection);
-
-  draw(c1);
-  draw(c2);
-
-  // draw("$\A$",box,z1);              // Requires [inline] package option.
-  // draw(Label("$\B$","$B$"),box,z2); // Requires [inline] package option.
-  draw("$A$",box,z1);
-  draw("$\V{B}$",box,z2);
-
-  pair z=(0,-2);
-  real m=3;
-  margin BigMargin=Margin(0,m*dot(unit(z1-z),unit(z0-z)));
-
-  draw(Label("$A\cap B$",0),conj(z)--z0,Arrow,BigMargin);
-  draw(Label("$A\cup B$",0),z--z0,Arrow,BigMargin);
-  draw(z--z1,Arrow,Margin(0,m));
-  draw(z--z2,Arrow,Margin(0,m));
-
-  shipout(bbox(0.25cm));
-\end{asy}
 
 \end{document}
