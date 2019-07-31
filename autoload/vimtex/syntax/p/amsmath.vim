@@ -4,11 +4,20 @@
 " Email:      karl.yngve@gmail.com
 "
 
+scriptencoding utf-8
+
 function! vimtex#syntax#p#amsmath#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'amsmath') | return | endif
   let b:vimtex_syntax.amsmath = 1
 
-  " This is based on Charles E. Campbell's amsmath.vba file dated 2018-06-29
+  " Allow subequations (fixes #1019)
+  " - This should be temporary, as it seems subequations is erroneously part of
+  "   texBadMath from Charles Campbell's syntax plugin.
+  syntax match texBeginEnd
+        \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
+        \ nextgroup=texBeginEndName
+
+  " The following is based on Charles E. Campbell's amsmath.vba file 2018-06-29
 
   call TexNewMathZone('E', 'align', 1)
   call TexNewMathZone('F', 'alignat', 1)

@@ -12,7 +12,7 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
   syntax include @GNUPLOT syntax/gnuplot.vim
   let b:current_syntax = 'tex'
 
-  call vimtex#syntax#add_to_clusters('texZoneGnuplot')
+  call vimtex#syntax#misc#add_to_section_clusters('texZoneGnuplot')
   syntax region texZoneGnuplot
         \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
         \ end='\\end{gnuplot}'re=e

@@ -12,7 +12,7 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
   syntax include @LUA syntax/lua.vim
   let b:current_syntax = 'tex'
 
-  call vimtex#syntax#add_to_clusters('texZoneLua')
+  call vimtex#syntax#misc#add_to_section_clusters('texZoneLua')
   syntax region texZoneLua
         \ start='\\begin{luacode\*\?}'rs=s
         \ end='\\end{luacode\*\?}'re=e

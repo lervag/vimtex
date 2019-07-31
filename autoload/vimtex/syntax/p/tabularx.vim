@@ -8,7 +8,7 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'tabularx') | return | endif
   let b:vimtex_syntax.tabularx = 1
 
-  call vimtex#syntax#add_to_clusters('texTabular')
+  call vimtex#syntax#misc#add_to_section_clusters('texTabular')
 
   syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
         \ contains=texBeginEnd

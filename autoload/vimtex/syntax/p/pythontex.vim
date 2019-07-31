@@ -24,10 +24,10 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@PYTHON
 
-  call vimtex#syntax#add_to_clusters('texZonePythontex')
+  call vimtex#syntax#misc#add_to_section_clusters('texZonePythontex')
   syntax region texZonePythontex
         \ start='\\begin{pyblock}'rs=s
-        \ end='\\end{gnuplot}'re=e
+        \ end='\\end{pyblock}'re=e
         \ keepend
         \ transparent
         \ contains=texBeginEnd,texBeginEndModifier,@PYTHON

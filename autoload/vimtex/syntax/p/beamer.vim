@@ -18,7 +18,7 @@ function! vimtex#syntax#p#beamer#load() abort " {{{1
         \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
         \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
 
-  call vimtex#syntax#add_to_clusters('texStatementBeamer')
+  call vimtex#syntax#misc#add_to_section_clusters('texStatementBeamer')
 
   highlight link texStatementBeamer texStatement
   highlight link texBeamerOpt Identifier

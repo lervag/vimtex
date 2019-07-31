@@ -12,7 +12,7 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
   syntax include @DOT syntax/dot.vim
   let b:current_syntax = 'tex'
 
-  call vimtex#syntax#add_to_clusters('texZoneDot')
+  call vimtex#syntax#misc#add_to_section_clusters('texZoneDot')
   syntax region texZoneDot
         \ start="\\begin{dot2tex}"rs=s
         \ end="\\end{dot2tex}"re=e

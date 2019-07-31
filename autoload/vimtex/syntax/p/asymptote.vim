@@ -8,7 +8,7 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'asymptote') | return | endif
   let b:vimtex_syntax.asymptote = 1
 
-  call vimtex#syntax#add_to_clusters('texZoneAsymptote')
+  call vimtex#syntax#misc#add_to_section_clusters('texZoneAsymptote')
 
   let l:asypath = globpath(&runtimepath, 'syntax/asy.vim')
   if !empty(l:asypath)

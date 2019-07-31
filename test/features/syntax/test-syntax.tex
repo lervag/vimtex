@@ -1,4 +1,7 @@
 \documentclass{beamer}
+\usepackage{subfile}
+\usepackage{includegraphics}
+\usepackage{pdfpages}
 \usepackage{hyperref}
 \usepackage{testx} " Package does not exist - test try catch block
 \usepackage{biblatex}
@@ -12,26 +15,22 @@
 \usepackage{luacode}
 \usepackage{gnuplottex}
 \usepackage[inline]{asymptote}
+\usepackage{pythontex}
 \usepackage{listings}
 \usepackage{minted}
 
-%
-% Test (re)newcommand and (re)newenvironment
-%
-\newcommand{\testA}[1]{Test #1}
-\renewcommand{\testA}[1]{Test #1}
+\begin{document}
+
+\section{General}
+\todostuff \todocommand \todo{content}
+
+This text is \emph{emphasized}, \textit{italized}, \textbf{bolded}.
+
+\def\A{A}
+\def\B{\V{B}}
+
 \newenvironment{example}[1][]{Start #1}{Stop}
 \renewenvironment{example}[1][]{Start #1}{Stop}
-
-%
-% Test nested (re)newcommand and (re)newenvironment
-%
-\newcommand{\mycommand}[1]{%
-  \renewcommand{\myothercommand}[1]{%
-    \dosomethingwithouterarg{#1}%
-    \dosomethingwithinnerarg{##1}%
-  }%
-}
 \newenvironment{nestedexample}[1][]{%
   \renewenvironment{nested}[1][0]{%
     Outerarg #1}{%
@@ -41,11 +40,14 @@
   \end{nested}%
 }
 
-\begin{document}
-
-\section{Miscellaneous}
-\def\A{A}
-\def\B{\V{B}}
+\newcommand{\testA}[1]{Test #1}
+\renewcommand{\testA}[1]{Test #1}
+\newcommand{\mycommand}[1]{%
+  \renewcommand{\myothercommand}[1]{%
+    \dosomethingwithouterarg{#1}%
+    \dosomethingwithinnerarg{##1}%
+  }%
+}
 
 \section{Documentclass: beamer}
 \begin{frame}[asd]
@@ -58,6 +60,13 @@
   \item asdasd
   \item<1-3> asdasd
 \end{frame}
+
+\section{Package: minor stuff}
+% subfile
+\subfile{test-syntax.tex}
+
+% pdfpages
+\includepdf{test.pdf}
 
 \section{Package: hyperref and url}
 \url{http://www.google.com}
@@ -103,6 +112,7 @@
   \hline
 \end{tabular}
 
+% Array specific math separators
 \begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
   \hline
   Hello world !\tabularnewline
@@ -118,7 +128,8 @@
 \end{equation}
 
 \begin{align}
-  f(x) = 0
+  f(x) &= \bigg\lvert 0 \bigg\rvert \\
+  f(x) &= \Bigg\lVert 0 \Bigg\rVert \\
 \end{align}
 
 \section{Package: dot2texi}
@@ -200,6 +211,28 @@ Here is a venn diagram produced with Asymptote, drawn to width 4cm:
   // One can globally override the default toolbar settings here:
   // settings.toolbar=true;
 \end{asydef}
+
+\section{Package: pythontex}
+\py{1+1}
+\pyb#1+1#
+\pyc@1+1@
+\pys#1+1#
+
+\pyb{print('Python says hi!')}
+
+\begin{pycode}
+  print(r'\begin{center}')
+    print(r'\textit{A message from Python!}')
+  print(r'\end{center}')
+\end{pycode}
+
+\begin{pyblock}
+  mytext = '$1 + 1 = {0}$'.format(1 + 1)
+
+  def myfunction(arg1, arg2):
+      """docstring"""
+      pass
+\end{pyblock}
 
 \section{Package: listings}
 \begin{lstlisting}
