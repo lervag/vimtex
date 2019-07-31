@@ -27,21 +27,14 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
     let l:lang = l:entry.lang
     let l:syntax = get(l:entry, 'syntax', l:lang)
 
-    let l:cap_name = toupper(l:lang[0]) . l:lang[1:]
-    let l:group_main = 'texZoneListings' . l:cap_name
+    let l:cluster = vimtex#syntax#misc#include(l:syntax)
+    if empty(l:cluster) | continue | endif
+
+    let l:group_main = 'texZoneListings' . toupper(l:lang[0]) . l:lang[1:]
     let l:group_lstset = l:group_main . 'Lstset'
     let l:group_contained = l:group_main . 'Contained'
     execute 'syntax cluster texFoldGroup add=' . l:group_main
     execute 'syntax cluster texFoldGroup add=' . l:group_lstset
-
-    unlet b:current_syntax
-    execute 'syntax include @' . toupper(l:lang) 'syntax/' . l:syntax . '.vim'
-    let b:current_syntax = 'tex'
-
-    if has_key(l:entry, 'ignore')
-      execute 'syntax cluster' toupper(l:lang)
-            \ 'remove=' . join(l:entry.ignore, ',')
-    endif
 
     execute 'syntax region' l:group_main
           \ 'start="\c\\begin{lstlisting}\s*'
@@ -49,7 +42,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'end="\\end{lstlisting}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texBeginEnd,@' . toupper(l:lang)
+          \ 'contains=texBeginEnd,@' . l:cluster
 
     execute 'syntax match' l:group_lstset
           \ '"\c\\lstset{.*language=' . l:lang . '\%(\s*,\|}\)"'
@@ -64,7 +57,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'keepend'
           \ 'transparent'
           \ 'containedin=' . l:group_lstset
-          \ 'contains=texStatement,texBeginEnd,@' . toupper(l:lang)
+          \ 'contains=texStatement,texBeginEnd,@' . l:cluster
   endfor
 
   highlight link texZoneListings texZone

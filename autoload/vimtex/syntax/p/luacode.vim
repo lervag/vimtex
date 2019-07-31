@@ -8,23 +8,20 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'luacode') | return | endif
   let b:vimtex_syntax.luacode = 1
 
-  unlet b:current_syntax
-  syntax include @LUA syntax/lua.vim
-  let b:current_syntax = 'tex'
-
+  call vimtex#syntax#misc#include('lua')
   call vimtex#syntax#misc#add_to_section_clusters('texZoneLua')
   syntax region texZoneLua
         \ start='\\begin{luacode\*\?}'rs=s
         \ end='\\end{luacode\*\?}'re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,@LUA
+        \ contains=texBeginEnd,@vimtex_nested_lua
   syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLuaArg
   syntax region texZoneLuaArg matchgroup=Delimiter
         \ start='{'
         \ end='}'
         \ contained
-        \ contains=@LUA
+        \ contains=@vimtex_nested_lua
 endfunction
 
 " }}}1

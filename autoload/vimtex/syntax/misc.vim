@@ -17,3 +17,34 @@ function! vimtex#syntax#misc#add_to_section_clusters(group) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#syntax#misc#include(name) abort " {{{1
+  let l:inc_name = 'vimtex_nested_' . a:name
+
+  if !has_key(s:included, l:inc_name)
+    let s:included[l:inc_name] = s:include(l:inc_name, a:name)
+  endif
+
+  return s:included[l:inc_name] ? l:inc_name : ''
+endfunction
+
+let s:included = {}
+
+" }}}1
+
+function! s:include(cluster, name) abort " {{{1
+  let l:path = 'syntax/' . a:name . '.vim'
+
+  if empty(globpath(&runtimepath, l:path)) | return 0 | endif
+
+  unlet b:current_syntax
+  execute 'syntax include @' . a:cluster l:path
+  let b:current_syntax = 'tex'
+
+  for l:ignored_group in get(g:vimtex_syntax_nested_ignored, a:name, [])
+    execute 'syntax cluster' a:cluster 'remove=' . l:ignored_group
+  endfor
+
+  return 1
+endfunction
+
+" }}}1

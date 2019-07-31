@@ -1877,6 +1877,21 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
+*g:vimtex_syntax_nested_ignored*
+  A dictionary to specify groups that should be ignored when including nested
+  syntaxes. This is useful in order to ignore some groups that may match in
+  e.g. the `\begin{...}` or `\end{...}` part of the nested syntax regions.
+
+  Default value: >
+
+    let g:vimtex_syntax_nested_ignored = {
+          \ 'python' : [
+          \   'pythonEscape',
+          \   'pythonBEscape',
+          \   'pythonBytesEscape',
+          \ ],
+          \}
+
 *g:vimtex_syntax_listings*
   A list that contains dictionaries for each supported language.  A language
   dictionary should be something similar to the following: >
@@ -1884,55 +1899,17 @@ OPTIONS                                                        *vimtex-options*
     {
       'lang'    : NAME,
       'syntax'  : SYNTAX-FILE-NAME,
-      'ignored' : IGNORED-GROUPS
     }
 <
   If the `syntax` entry is not present, then the `lang` entry is used as name of
-  the syntax file.  The `ignored` entry is also optional, and is used to name
-  syntax groups to ignore in the minted region.
-
-  Default value: []
+  the syntax file.
 
   Example for some languages: >
 
     let g:vimtex_syntax_listings = [
           \ {
           \   'lang' : 'C',
-          \ },
-          \ {
-          \   'lang' : 'python',
-          \   'ignore' : [
-          \     'pythonEscape',
-          \     'pythonBEscape',
-          \     ],
-          \ }
-          \]
-
-*g:vimtex_syntax_minted*
-  A list that contains dictionaries for each supported language.  A language
-  dictionary should be something similar to the following: >
-
-    {
-      'lang'    : NAME,
-      'syntax'  : SYNTAX-FILE-NAME,
-      'ignored' : IGNORED-GROUPS
-    }
-<
-  If the `syntax` entry is not present, then the `lang` entry is used as name of
-  the syntax file.  The `ignored` entry is also optional, and is used to name
-  syntax groups to ignore in the minted region.
-
-  Default value: []
-
-  Example for some languages: >
-
-    let g:vimtex_syntax_minted = [
-          \ {
-          \   'lang' : 'c',
-          \ },
-          \ {
-          \   'lang' : 'cpp',
-          \   'environments' : ['cppcode', 'cppcode_test'],
+          \   'syntax' : 'c',
           \ },
           \ {
           \   'lang' : 'csharp',
@@ -1940,12 +1917,25 @@ OPTIONS                                                        *vimtex-options*
           \ },
           \ {
           \   'lang' : 'python',
-          \   'ignore' : [
-          \     'pythonEscape',
-          \     'pythonBEscape',
-          \     ],
           \ }
           \]
+<
+  Default value: []
+
+*g:vimtex_syntax_minted*
+  A list that contains dictionaries for each supported language, similar to
+  |g:vimtex_syntax_listings|.
+
+  Example for some languages: >
+
+    let g:vimtex_syntax_minted = [
+          \ {
+          \   'lang' : 'cpp',
+          \   'environments' : ['cppcode', 'cppcode_test'],
+          \ },
+          \]
+<
+  Default value: []
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
@@ -3386,6 +3376,7 @@ Note: For people that are interested in improved conceal support, please check
 
 Associated settings:
   |g:vimtex_syntax_enabled|
+  |g:vimtex_syntax_nested_ignored|
   |g:vimtex_syntax_listings|
   |g:vimtex_syntax_minted|
 

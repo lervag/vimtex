@@ -17,16 +17,16 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contains=texMinted
 
   " Highlight "unknown" statements
-  syntax region texMintArgUnknown matchgroup=Delimiter
+  syntax region texArgMintedUnknown matchgroup=Delimiter
         \ start='{'
         \ end='}'
         \ contained
-        \ nextgroup=texMintZoneUnknown
-  syntax region texMintZoneUnknown matchgroup=Delimiter
+        \ nextgroup=texArgZoneMintedUnknown
+  syntax region texArgZoneMintedUnknown matchgroup=Delimiter
         \ start='\z([|+/]\)'
         \ end='\z1'
         \ contained
-  syntax region texMintZoneUnknown matchgroup=Delimiter
+  syntax region texArgZoneMintedUnknown matchgroup=Delimiter
         \ start='{'
         \ end='}'
         \ contained
@@ -36,64 +36,60 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     let l:lang = l:entry.lang
     let l:syntax = get(l:entry, 'syntax', l:lang)
 
-    let l:cap_name = toupper(l:lang[0]) . l:lang[1:]
-    let l:group_name = 'texZoneMinted' . l:cap_name
-    execute 'syntax cluster texFoldGroup add=' . l:group_name
+    let l:cluster = vimtex#syntax#misc#include(l:syntax)
+    if empty(l:cluster) | continue | endif
 
-    unlet b:current_syntax
-    execute 'syntax include @' . toupper(l:lang) 'syntax/' . l:syntax . '.vim'
-    let b:current_syntax = 'tex'
-
-    if has_key(l:entry, 'ignore')
-      execute 'syntax cluster' toupper(l:lang)
-            \ 'remove=' . join(l:entry.ignore, ',')
-    endif
+    let l:name = 'Minted' . toupper(l:lang[0]) . l:lang[1:]
+    let l:group_main = 'texZone' . l:name
+    let l:group_arg = 'texArg' . l:name
+    let l:group_arg_zone = 'texArgZone' . l:name
+    execute 'syntax cluster texFoldGroup add=' . l:group_main
 
     " Add statement variants
     " - \mint[]{lang}|...|
     " - \mint[]{lang}{...}
     " - \mintinline[]{lang}|...|
     " - \mintinline[]{lang}{...}
-    execute 'syntax match texMintArg' . l:cap_name  '''{' . l:lang . '}'''
+    execute 'syntax match' l:group_arg '''{' . l:lang . '}'''
           \ 'contained'
-          \ 'nextgroup=texMintZone' . l:cap_name
-    execute 'syntax region texMintZone' . l:cap_name
+          \ 'nextgroup=' . l:group_arg_zone
+    execute 'syntax region' l:group_arg_zone
           \ 'matchgroup=Delimiter'
           \ 'start=''\z([|+/]\)'''
           \ 'end=''\z1'''
           \ 'contained'
-          \ 'contains=@' . toupper(l:lang)
-    execute 'syntax region texMintZone' . l:cap_name
+          \ 'contains=@' . l:cluster
+    execute 'syntax region' l:group_arg_zone
           \ 'matchgroup=Delimiter'
           \ 'start=''{'''
           \ 'end=''}'''
           \ 'contained'
-          \ 'contains=@' . toupper(l:lang)
+          \ 'contains=@' . l:cluster
 
     " Add main minted environment
-    execute 'syntax region' l:group_name
+    execute 'syntax region' l:group_main
           \ 'start="\\begin{minted}\_[^}]\{-}{' . l:lang . '}"rs=s'
           \ 'end="\\end{minted}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texMinted,@' . toupper(l:lang)
+          \ 'contains=texMinted,@' . l:cluster
 
     " Support for custom environment names
     for l:env in get(l:entry, 'environments', [])
-      execute 'syntax region' l:group_name
+      execute 'syntax region' l:group_main
             \ 'start="\\begin{' . l:env . '}"rs=s'
             \ 'end="\\end{' . l:env . '}"re=e'
             \ 'keepend'
             \ 'transparent'
-            \ 'contains=texBeginEnd,@' . toupper(l:lang)
+            \ 'contains=texBeginEnd,@' . l:cluster
 
       " Match starred environments with options
-      execute 'syntax region' l:group_name
+      execute 'syntax region' l:group_main
             \ 'start="\\begin{' . l:env . '\*}\s*{\_.\{-}}"rs=s'
             \ 'end="\\end{' . l:env . '\*}"re=e'
             \ 'keepend'
             \ 'transparent'
-            \ 'contains=texMintedStarred,texBeginEnd,@' . toupper(l:lang)
+            \ 'contains=texMintedStarred,texBeginEnd,@' . l:cluster
       execute 'syntax match texMintedStarred'
             \ '"\\begin{' . l:env . '\*}\s*{\_.\{-}}"'
             \ 'contains=texBeginEnd,texDelimiter'
@@ -103,18 +99,18 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     for l:cmd in sort(get(l:entry, 'commands', []))
       execute 'syntax match texStatement'
             \ '''\\' . l:cmd . ''''
-            \ 'nextgroup=texMintZone' . l:cap_name
+            \ 'nextgroup=' . l:group_arg_zone
     endfor
   endfor
 
   " Main matcher for the minted statements/commands (must come last to allow
   " nextgroup patterns)
-  syntax match texStatement '\\mint\(inline\)\?' nextgroup=texMintOptArg,texMintArg.*
-  syntax region texMintOptArg matchgroup=Delimiter
+  syntax match texStatement '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
+  syntax region texArgOptMinted matchgroup=Delimiter
         \ start='\['
         \ end='\]'
         \ contained
-        \ nextgroup=texMintArg.*
+        \ nextgroup=texArgMinted.*
 
   syntax match texMinted '\\begin{minted}\_[^}]\{-}{\w\+}'
         \ contains=texBeginEnd,texMintedName
@@ -123,7 +119,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax match texMintedName '{\w\+}' contained
 
   highlight link texMinted texZone
-  highlight link texMintZoneUnknown texZone
+  highlight link texArgZoneMintedUnknown texZone
   highlight link texMintedName texBeginEndName
 endfunction
 

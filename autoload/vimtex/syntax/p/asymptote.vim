@@ -10,18 +10,13 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
 
   call vimtex#syntax#misc#add_to_section_clusters('texZoneAsymptote')
 
-  let l:asypath = globpath(&runtimepath, 'syntax/asy.vim')
-  if !empty(l:asypath)
-    unlet b:current_syntax
-    syntax include @ASYMPTOTE syntax/asy.vim
-    let b:current_syntax = 'tex'
-
+  if !empty(vimtex#syntax#misc#include('asy'))
     syntax region texZoneAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s
           \ end='\\end{asy\z1}'re=e
           \ keepend
           \ transparent
-          \ contains=texBeginEnd,@ASYMPTOTE
+          \ contains=texBeginEnd,@vimtex_nested_asy
   else
     syntax region texZoneAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s
