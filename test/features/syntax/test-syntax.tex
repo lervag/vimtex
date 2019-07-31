@@ -202,7 +202,10 @@ Here is a venn diagram produced with Asymptote, drawn to width 4cm:
 testing
 \end{lstlisting}
 
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[directivestyle={\color{black}},
+                   language=C,
+                   emph={int,char,double,float,unsigned},
+                   emphstyle={\color{blue}}]
 #include<stdio.h>
 main() {
   int i = 0;
@@ -215,7 +218,6 @@ def function(arg):
     pass
 \end{lstlisting}
 
-% Not sure if this will be supported
 \lstset{language=rust,numbers=none}
 \begin{lstlisting}
 fn main() {

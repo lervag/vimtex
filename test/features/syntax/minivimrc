@@ -36,7 +36,10 @@ let g:vimtex_syntax_minted = [
       \]
 let g:vimtex_syntax_listings = [
       \ {
-      \   'lang' : 'C',
+      \   'lang' : 'c',
+      \ },
+      \ {
+      \   'lang' : 'rust',
       \ },
       \ {
       \   'lang' : 'python',
