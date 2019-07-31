@@ -510,7 +510,7 @@ if exists('b:vimtex.packages.listings')
   " Set all listings environments to listings
   syntax cluster texFoldGroup add=texZoneListings
   syntax region texZoneListings
-        \ start="\\begin{lstlisting}\(\_s*\[\_[\]]\{-}\]\)\?"rs=s
+        \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"rs=s
         \ end="\\end{lstlisting}\|%stopzone\>"re=e
         \ keepend
         \ contains=texBeginEnd
@@ -521,8 +521,11 @@ if exists('b:vimtex.packages.listings')
     let s:syntax = get(s:entry, 'syntax', s:lang)
 
     let s:cap_name = toupper(s:lang[0]) . s:lang[1:]
-    let s:group_name = 'texZoneListings' . s:cap_name
-    execute 'syntax cluster texFoldGroup add=' . s:group_name
+    let s:group_main = 'texZoneListings' . s:cap_name
+    let s:group_lstset = s:group_main . 'Lstset'
+    let s:group_contained = s:group_main . 'Contained'
+    execute 'syntax cluster texFoldGroup add=' . s:group_main
+    execute 'syntax cluster texFoldGroup add=' . s:group_lstset
 
     unlet b:current_syntax
     execute 'syntax include @' . toupper(s:lang) 'syntax/' . s:syntax . '.vim'
@@ -532,12 +535,28 @@ if exists('b:vimtex.packages.listings')
             \ 'remove=' . join(s:entry.ignore, ',')
     endif
 
-    execute 'syntax region' s:group_name
-          \ 'start="\c\\begin{lstlisting}\s*\[language=' . s:lang . '\]"rs=s'
+    execute 'syntax region' s:group_main
+          \ 'start="\c\\begin{lstlisting}\s*'
+          \ . '\[\_[^\]]\{-}language=' . s:lang . '\%(\s*,\_[^\]]\{-}\)\?\]"rs=s'
           \ 'end="\\end{lstlisting}"re=e'
           \ 'keepend'
           \ 'transparent'
           \ 'contains=texBeginEnd,@' . toupper(s:lang)
+
+    execute 'syntax match' s:group_lstset
+          \ '"\c\\lstset{.*language=' . s:lang . '\%(\s*,\|}\)"'
+          \ 'transparent'
+          \ 'contains=texStatement,texMatcher'
+          \ 'skipwhite skipempty'
+          \ 'nextgroup=' . s:group_contained
+
+    execute 'syntax region' s:group_contained
+          \ 'start="\\begin{lstlisting}"rs=s'
+          \ 'end="\\end{lstlisting}"re=e'
+          \ 'keepend'
+          \ 'transparent'
+          \ 'containedin=' . s:group_lstset
+          \ 'contains=texStatement,texBeginEnd,@' . toupper(s:lang)
   endfor
   let b:current_syntax = 'tex'
 
