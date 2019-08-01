@@ -1877,65 +1877,54 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
-*g:vimtex_syntax_nested_ignored*
-  A dictionary to specify groups that should be ignored when including nested
-  syntaxes. This is useful in order to ignore some groups that may match in
-  e.g. the `\begin{...}` or `\end{...}` part of the nested syntax regions.
+*g:vimtex_syntax_nested*
+  A dictionary for configuring nested syntaxes. Has two keys: `aliases` and
+  `ignored`.
+
+  The `aliases` key holds a dictionary of aliases, such as mapping `C` to `c`.
+  This is useful e.g. because the Vim syntax files are case sensitive.
+
+  The `ignored` key holds a dictionary of ignore lists for each language. This
+  is useful to ignore some groups that may conflict in e.g. the `\begin{...}`
+  or `\end{...}` part of the nested syntax regions.
 
   Default value: >
 
-    let g:vimtex_syntax_nested_ignored = {
-          \ 'python' : [
-          \   'pythonEscape',
-          \   'pythonBEscape',
-          \   'pythonBytesEscape',
-          \ ],
-          \}
-
-*g:vimtex_syntax_listings*
-  A list that contains dictionaries for each supported language.  A language
-  dictionary should be something similar to the following: >
-
-    {
-      'lang'    : NAME,
-      'syntax'  : SYNTAX-FILE-NAME,
-    }
-<
-  If the `syntax` entry is not present, then the `lang` entry is used as name of
-  the syntax file.
-
-  Example for some languages: >
-
-    let g:vimtex_syntax_listings = [
-          \ {
-          \   'lang' : 'C',
-          \   'syntax' : 'c',
-          \ },
-          \ {
-          \   'lang' : 'csharp',
-          \   'syntax' : 'cs'
-          \ },
-          \ {
-          \   'lang' : 'python',
-          \ }
-          \]
-<
-  Default value: []
+    let g:vimtex_syntax_nested = {
+        \ 'aliases' : {
+        \   'C' : 'c',
+        \   'csharp' : 'cs',
+        \ },
+        \ 'ignored' : {
+        \   'python' : [
+        \     'pythonEscape',
+        \     'pythonBEscape',
+        \     'pythonBytesEscape',
+        \   ]
+        \ }
+        \})
 
 *g:vimtex_syntax_minted*
-  A list that contains dictionaries for each supported language, similar to
-  |g:vimtex_syntax_listings|.
+  A dictionary for configuring nested syntaxes for the minted package. Each
+  key represent a language that should be supported, and the values are
+  dictionaries that may hold some additional configuration for that language:
 
-  Example for some languages: >
+    `environments`: Specify additional nested syntax environments.
+    `commands`: Specify commands that define nested syntax region.
 
-    let g:vimtex_syntax_minted = [
-          \ {
-          \   'lang' : 'cpp',
+  Example: >
+
+    let g:vimtex_syntax_minted = {
+          \ 'cpp' : {
           \   'environments' : ['cppcode', 'cppcode_test'],
+          \   'commands' : ['cppcode'],
           \ },
-          \]
+          \ 'python' : {
+          \   'commands' : ['pymint'],
+          \ },
+          \}
 <
-  Default value: []
+  Default value: {}
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
@@ -3351,8 +3340,7 @@ highlighting.  However, |vimtex| does add some minor improvements:
 - Support for `cleveref` package
 - Improved highlighting of `listings` package
 - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
-  `asymptote`, `pythontex`, `listings` (see |g:vimtex_syntax_listings|),
-  and `minted` (see |g:vimtex_syntax_minted|)
+  `asymptote`, `pythontex`, `listings`, and `minted` (see |g:vimtex_syntax_minted|)
 
 Before enabling additional syntax highlighting, |vimtex| also checks the
 |g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
@@ -3376,8 +3364,7 @@ Note: For people that are interested in improved conceal support, please check
 
 Associated settings:
   |g:vimtex_syntax_enabled|
-  |g:vimtex_syntax_nested_ignored|
-  |g:vimtex_syntax_listings|
+  |g:vimtex_syntax_nested|
   |g:vimtex_syntax_minted|
 
 ==============================================================================

@@ -32,7 +32,8 @@ let s:included = {}
 " }}}1
 
 function! s:include(cluster, name) abort " {{{1
-  let l:path = 'syntax/' . a:name . '.vim'
+  let l:name = get(g:vimtex_syntax_nested.aliases, a:name, a:name)
+  let l:path = 'syntax/' . l:name . '.vim'
 
   if empty(globpath(&runtimepath, l:path)) | return 0 | endif
 
@@ -40,7 +41,7 @@ function! s:include(cluster, name) abort " {{{1
   execute 'syntax include @' . a:cluster l:path
   let b:current_syntax = 'tex'
 
-  for l:ignored_group in get(g:vimtex_syntax_nested_ignored, a:name, [])
+  for l:ignored_group in get(g:vimtex_syntax_nested.ignored, l:name, [])
     execute 'syntax cluster' a:cluster 'remove=' . l:ignored_group
   endfor
 

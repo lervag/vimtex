@@ -14,41 +14,16 @@ let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 1
 let g:vimtex_echo_ignore_wait = 1
 let g:vimtex_view_automatic = 0
-let g:vimtex_syntax_minted = [
-      \ {
-      \   'lang' : 'c',
-      \ },
-      \ {
-      \   'lang' : 'cpp',
+let g:vimtex_syntax_minted = {
+      \ 'c' : {},
+      \ 'csharp' : {},
+      \ 'cpp' : {
       \   'environments' : ['cppcode', 'cppcode_test'],
       \ },
-      \ {
-      \   'lang' : 'csharp',
-      \   'syntax' : 'cs'
+      \ 'python' : {
+      \   'commands' : ['pymint']
       \ },
-      \ {
-      \   'lang' : 'python',
-      \   'ignore' : [
-      \     'pythonEscape',
-      \     'pythonBEscape',
-      \   ],
-      \ }
-      \]
-let g:vimtex_syntax_listings = [
-      \ {
-      \   'lang' : 'c',
-      \ },
-      \ {
-      \   'lang' : 'rust',
-      \ },
-      \ {
-      \   'lang' : 'python',
-      \   'ignore' : [
-      \     'pythonEscape',
-      \     'pythonBEscape',
-      \   ],
-      \ }
-      \]
+      \}
 
 function! SynNames()
   return join(map(synstack(line('.'), col('.')),

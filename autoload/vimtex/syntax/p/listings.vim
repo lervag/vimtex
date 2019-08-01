@@ -6,7 +6,9 @@
 
 function! vimtex#syntax#p#listings#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'listings') | return | endif
-  let b:vimtex_syntax.listings = 1
+  let b:vimtex_syntax.listings = {}
+
+  call s:get_nested_languages()
 
   " First some general support
   syntax match texInputFile
@@ -23,14 +25,11 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
         \ contains=texBeginEnd
 
   " Next add nested syntax support for desired languages
-  for l:entry in get(g:, 'vimtex_syntax_listings', [])
-    let l:lang = l:entry.lang
-    let l:syntax = get(l:entry, 'syntax', l:lang)
-
-    let l:cluster = vimtex#syntax#misc#include(l:syntax)
+  for l:nested in b:vimtex_syntax.listings.nested
+    let l:cluster = vimtex#syntax#misc#include(l:nested)
     if empty(l:cluster) | continue | endif
 
-    let l:group_main = 'texZoneListings' . toupper(l:lang[0]) . l:lang[1:]
+    let l:group_main = 'texZoneListings' . toupper(l:nested[0]) . l:nested[1:]
     let l:group_lstset = l:group_main . 'Lstset'
     let l:group_contained = l:group_main . 'Contained'
     execute 'syntax cluster texFoldGroup add=' . l:group_main
@@ -38,14 +37,14 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
 
     execute 'syntax region' l:group_main
           \ 'start="\c\\begin{lstlisting}\s*'
-          \ . '\[\_[^\]]\{-}language=' . l:lang . '\%(\s*,\_[^\]]\{-}\)\?\]"rs=s'
+          \ . '\[\_[^\]]\{-}language=' . l:nested . '\%(\s*,\_[^\]]\{-}\)\?\]"rs=s'
           \ 'end="\\end{lstlisting}"re=e'
           \ 'keepend'
           \ 'transparent'
           \ 'contains=texBeginEnd,@' . l:cluster
 
     execute 'syntax match' l:group_lstset
-          \ '"\c\\lstset{.*language=' . l:lang . '\%(\s*,\|}\)"'
+          \ '"\c\\lstset{.*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'transparent'
           \ 'contains=texStatement,texMatcher'
           \ 'skipwhite skipempty'
@@ -61,6 +60,14 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
   endfor
 
   highlight link texZoneListings texZone
+endfunction
+
+" }}}1
+
+function! s:get_nested_languages() abort " {{{1
+  let b:vimtex_syntax.listings.nested = map(
+        \ filter(getline(1, '$'), "v:val =~# 'language='"),
+        \ 'matchstr(v:val, ''language=\zs\w\+'')')
 endfunction
 
 " }}}1

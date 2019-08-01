@@ -32,14 +32,11 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contained
 
   " Next add nested syntax support for desired languages
-  for l:entry in get(g:, 'vimtex_syntax_minted', [])
-    let l:lang = l:entry.lang
-    let l:syntax = get(l:entry, 'syntax', l:lang)
-
-    let l:cluster = vimtex#syntax#misc#include(l:syntax)
+  for [l:nested, l:config] in items(g:vimtex_syntax_minted)
+    let l:cluster = vimtex#syntax#misc#include(l:nested)
     if empty(l:cluster) | continue | endif
 
-    let l:name = 'Minted' . toupper(l:lang[0]) . l:lang[1:]
+    let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
     let l:group_main = 'texZone' . l:name
     let l:group_arg = 'texArg' . l:name
     let l:group_arg_zone = 'texArgZone' . l:name
@@ -50,7 +47,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     " - \mint[]{lang}{...}
     " - \mintinline[]{lang}|...|
     " - \mintinline[]{lang}{...}
-    execute 'syntax match' l:group_arg '''{' . l:lang . '}'''
+    execute 'syntax match' l:group_arg '''{' . l:nested . '}'''
           \ 'contained'
           \ 'nextgroup=' . l:group_arg_zone
     execute 'syntax region' l:group_arg_zone
@@ -68,14 +65,14 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
     " Add main minted environment
     execute 'syntax region' l:group_main
-          \ 'start="\\begin{minted}\_[^}]\{-}{' . l:lang . '}"rs=s'
+          \ 'start="\\begin{minted}\_[^}]\{-}{' . l:nested . '}"rs=s'
           \ 'end="\\end{minted}"re=e'
           \ 'keepend'
           \ 'transparent'
           \ 'contains=texMinted,@' . l:cluster
 
     " Support for custom environment names
-    for l:env in get(l:entry, 'environments', [])
+    for l:env in get(l:config, 'environments', [])
       execute 'syntax region' l:group_main
             \ 'start="\\begin{' . l:env . '}"rs=s'
             \ 'end="\\end{' . l:env . '}"re=e'
@@ -96,7 +93,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     endfor
 
     " Support for custom commands
-    for l:cmd in sort(get(l:entry, 'commands', []))
+    for l:cmd in sort(get(l:config, 'commands', []))
       execute 'syntax match texStatement'
             \ '''\\' . l:cmd . ''''
             \ 'nextgroup=' . l:group_arg_zone
