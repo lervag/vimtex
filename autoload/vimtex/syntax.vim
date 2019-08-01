@@ -42,7 +42,7 @@ function! vimtex#syntax#load() abort " {{{1
   "
   try
     call vimtex#syntax#p#{b:vimtex.documentclass}#load()
-  catch /E117: Unknown function/
+  catch /E117:/
   endtry
 
   "
@@ -51,7 +51,7 @@ function! vimtex#syntax#load() abort " {{{1
   for l:package in keys(b:vimtex.packages)
     try
       call vimtex#syntax#p#{l:package}#load()
-    catch /E117: Unknown function/
+    catch /E117:/
     endtry
   endfor
 endfunction
