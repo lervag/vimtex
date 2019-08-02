@@ -215,6 +215,9 @@ function! vimtex#init_options() abort " {{{1
         \   'csharp' : 'cs',
         \ },
         \ 'ignored' : {
+        \   'cs' : [
+        \     'csBraces',
+        \   ],
         \   'python' : [
         \     'pythonEscape',
         \     'pythonBEscape',
