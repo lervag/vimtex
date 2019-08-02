@@ -1904,28 +1904,6 @@ OPTIONS                                                        *vimtex-options*
         \ }
         \})
 
-*g:vimtex_syntax_minted*
-  A dictionary for configuring nested syntaxes for the minted package. Each
-  key represent a language that should be supported, and the values are
-  dictionaries that may hold some additional configuration for that language:
-
-    `environments`: Specify additional nested syntax environments.
-    `commands`: Specify commands that define nested syntax region.
-
-  Example: >
-
-    let g:vimtex_syntax_minted = {
-          \ 'cpp' : {
-          \   'environments' : ['cppcode', 'cppcode_test'],
-          \   'commands' : ['cppcode'],
-          \ },
-          \ 'python' : {
-          \   'commands' : ['pymint'],
-          \ },
-          \}
-<
-  Default value: {}
-
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
   |VimtexCountWords| and |VimtexCountLetters|.
@@ -3340,7 +3318,7 @@ highlighting.  However, |vimtex| does add some minor improvements:
 - Support for `cleveref` package
 - Improved highlighting of `listings` package
 - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
-  `asymptote`, `pythontex`, `listings`, and `minted` (see |g:vimtex_syntax_minted|)
+  `asymptote`, `pythontex`, `listings`, and `minted`
 
 Before enabling additional syntax highlighting, |vimtex| also checks the
 |g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
@@ -3365,7 +3343,6 @@ Note: For people that are interested in improved conceal support, please check
 Associated settings:
   |g:vimtex_syntax_enabled|
   |g:vimtex_syntax_nested|
-  |g:vimtex_syntax_minted|
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*

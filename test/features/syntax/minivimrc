@@ -7,6 +7,9 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
+" Use a more colorful colorscheme
+colorscheme morning
+
 let s:file = expand('<sfile>')
 execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
 
@@ -14,16 +17,6 @@ let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 1
 let g:vimtex_echo_ignore_wait = 1
 let g:vimtex_view_automatic = 0
-let g:vimtex_syntax_minted = {
-      \ 'c' : {},
-      \ 'csharp' : {},
-      \ 'cpp' : {
-      \   'environments' : ['cppcode', 'cppcode_test'],
-      \ },
-      \ 'python' : {
-      \   'commands' : ['pymint']
-      \ },
-      \}
 
 function! SynNames()
   return join(map(synstack(line('.'), col('.')),

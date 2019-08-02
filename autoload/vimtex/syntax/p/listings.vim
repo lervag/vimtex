@@ -6,9 +6,7 @@
 
 function! vimtex#syntax#p#listings#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'listings') | return | endif
-  let b:vimtex_syntax.listings = {}
-
-  call s:get_nested_languages()
+  let b:vimtex_syntax.listings = s:get_nested_languages()
 
   " First some general support
   syntax match texInputFile
@@ -25,7 +23,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
         \ contains=texBeginEnd
 
   " Next add nested syntax support for desired languages
-  for l:nested in b:vimtex_syntax.listings.nested
+  for l:nested in b:vimtex_syntax.listings
     let l:cluster = vimtex#syntax#misc#include(l:nested)
     if empty(l:cluster) | continue | endif
 
@@ -65,7 +63,7 @@ endfunction
 " }}}1
 
 function! s:get_nested_languages() abort " {{{1
-  let b:vimtex_syntax.listings.nested = map(
+  return map(
         \ filter(getline(1, '$'), "v:val =~# 'language='"),
         \ 'matchstr(v:val, ''language=\zs\w\+'')')
 endfunction

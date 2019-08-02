@@ -27,6 +27,11 @@ function! vimtex#syntax#load() abort " {{{1
     return
   endif
 
+  " Initialize project cache (used e.g. for the minted package)
+  if !has_key(b:vimtex, 'syntax')
+    let b:vimtex.syntax = {}
+  endif
+
   " Set some better defaults
   syntax spell toplevel
   syntax sync maxlines=500
