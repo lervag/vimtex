@@ -95,6 +95,7 @@ function! vimtex#init_options() abort " {{{1
         \     'hypersetup',
         \     'tikzset',
         \     'pgfplotstableread',
+        \     'lstset',
         \   ],
         \ },
         \ 'cmd_single_opt' : {
