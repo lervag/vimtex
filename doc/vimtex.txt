@@ -1515,6 +1515,7 @@ OPTIONS                                                        *vimtex-options*
           \     'hypersetup',
           \     'tikzset',
           \     'pgfplotstableread',
+          \     'lstset',
           \   ],
           \ },
           \ 'cmd_single_opt' : {
