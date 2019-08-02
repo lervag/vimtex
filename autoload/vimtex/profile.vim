@@ -45,8 +45,8 @@ endfunction
 
 function! vimtex#profile#filter(sections) abort " {{{1
   let l:lines = readfile('prof.log')
-  call filter(l:lines, 'v:val !~# ''FTtex''')
-  call filter(l:lines, 'v:val !~# ''LoadFTPlugin''')
+  " call filter(l:lines, 'v:val !~# ''FTtex''')
+  " call filter(l:lines, 'v:val !~# ''LoadFTPlugin''')
 
   let l:new = []
   for l:sec in a:sections
@@ -88,12 +88,12 @@ function! s:get_section(name, lines) abort " {{{1
   let l:section = []
   for l:line in a:lines
     if l:active
-      if l:line =~# '^FUNCTION'
-        call add(l:section, '')
-        break
+      if l:line =~# '^FUNCTION' && l:line !~# a:name
+        let l:active = 0
       else
         call add(l:section, l:line)
       endif
+      continue
     endif
 
     if l:line =~# a:name
