@@ -15,6 +15,30 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax region texMintedName matchgroup=Delimiter start="{" end="}" contained
   syntax region texMintedNameOpt matchgroup=Delimiter start="\[" end="\]" contained
 
+  " Match boundaries of minted environments
+  syntax match texMintedBounds '\\end{minted}'
+        \ contained
+        \ contains=texBeginEnd
+  syntax match texMintedBounds '\\begin{minted}'
+        \ contained
+        \ contains=texBeginEnd
+        \ nextgroup=texMintedBoundsOpts,texMintedName
+  syntax region texMintedBoundsOpts matchgroup=Delimiter
+        \ start="\[" end="\]"
+        \ contained
+        \ nextgroup=texMintedName
+
+  " Match starred custom minted environments with options
+  syntax match texMintedStarred "\\begin{\w\+\*}"
+        \ contained
+        \ contains=texBeginEnd
+        \ nextgroup=texMintedStarredOpts
+  syntax region texMintedStarredOpts matchgroup=Delimiter
+        \ start='{'
+        \ end='}'
+        \ contained
+        \ containedin=texMintedStarred
+
   " Match \newminted type macros
   syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
 
@@ -24,7 +48,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
         \ end="\\end{minted}"re=e
         \ keepend
-        \ contains=texMintedBounds
+        \ contains=texMintedBounds.*
   syntax region texArgMinted matchgroup=Delimiter
         \ start='{'
         \ end='}'
@@ -58,27 +82,16 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
           \ 'end="\\end{minted}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texMintedBounds,@' . l:cluster
+          \ 'contains=texMintedBounds.*,@' . l:cluster
 
     " Match custom environment names
     for l:env in get(l:config, 'environments', [])
       execute 'syntax region' l:group_main
-            \ 'start="\\begin{\z(' . l:env . '\)}"rs=s'
+            \ 'start="\\begin{\z(' . l:env . '\*\?\)}"rs=s'
             \ 'end="\\end{\z1}"re=e'
             \ 'keepend'
             \ 'transparent'
-            \ 'contains=texBeginEnd,@' . l:cluster
-
-      " Match starred environments with options
-      execute 'syntax region' l:group_main
-            \ 'start="\\begin{' . l:env . '\*}\s*{\_.\{-}}"rs=s'
-            \ 'end="\\end{' . l:env . '\*}"re=e'
-            \ 'keepend'
-            \ 'transparent'
             \ 'contains=texMintedStarred,texBeginEnd,@' . l:cluster
-      execute 'syntax match texMintedStarred'
-            \ '"\\begin{' . l:env . '\*}\s*{\_.\{-}}"'
-            \ 'contains=texBeginEnd,texDelimiter'
     endfor
 
     " Match minted macros
@@ -118,13 +131,6 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ end='\]'
         \ contained
         \ nextgroup=texArgMinted.*
-
-  " Apply proper highlighting of environment boundaries
-  syntax match texMintedBounds '\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\s*{\w\+}'
-        \ extend
-        \ contains=texMintedName,texBeginEnd
-  syntax match texMintedBounds '\\end{minted}'
-        \ contains=texBeginEnd
 
   highlight link texZoneMinted texZone
   highlight link texMintedName texInputFileOpt
