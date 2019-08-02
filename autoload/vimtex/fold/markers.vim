@@ -16,8 +16,11 @@ let s:folder = {
       \ 're' : {
       \   'start' : '\v\%.*\{\{\{',
       \   'end' : '\v\%\s*\}\}\}',
-      \   'parser1' : '\v\%\s*\{\{\{',
-      \   'parser2' : '\v\%\s*\zs.*\ze\{\{\{',
+      \   'text' : [
+      \     ['\v\%\s*\{\{\{\s*\zs.*', '% {{{ '],
+      \     ['\v\%\s*\zs.*\ze\{\{\{', '% {{{ '],
+      \     ['\v^.*\ze\s*\%', ''],
+      \   ]
       \ },
       \ 'opened' : 0,
       \}
@@ -33,9 +36,12 @@ endfunction
 
 " }}}1
 function! s:folder.text(line, level) abort dict " {{{1
-  return a:line =~# self.re.parser1
-        \ ? ' ' . matchstr(a:line, self.re.parser1 . '\s*\zs.*')
-        \ : ' ' . matchstr(a:line, self.re.parser2)
+  for [l:re, l:pre] in self.re.text
+    let l:text = matchstr(a:line, l:re)
+    if !empty(l:text) | return l:pre . l:text | endif
+  endfor
+
+  return '% {{{ ' . getline(v:foldstart + 1)
 endfunction
 
 " }}}1
