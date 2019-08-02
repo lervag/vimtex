@@ -42,27 +42,26 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Match \newminted type macros
   syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
 
-  " Match "unknown" environments and commands
+  " Match "unknown" environments
   call vimtex#syntax#misc#add_to_section_clusters('texZoneMinted')
   syntax region texZoneMinted
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
         \ end="\\end{minted}"re=e
         \ keepend
         \ contains=texMintedBounds.*
-  syntax region texArgMinted matchgroup=Delimiter
-        \ start='{'
-        \ end='}'
+
+  " Match "unknown" commands
+  syntax match texArgMinted "{\w\+}"
         \ contained
-        \ nextgroup=texArgZoneMinted
-  syntax region texZoneMinted matchgroup=Delimiter
+        \ contains=texMintedName
+        \ nextgroup=texZoneMintedCmd
+  syntax region texZoneMintedCmd matchgroup=Delimiter
         \ start='\z([|+/]\)'
         \ end='\z1'
-        \ containedin=texArgMinted
         \ contained
-  syntax region texZoneMinted matchgroup=Delimiter
+  syntax region texZoneMintedCmd matchgroup=Delimiter
         \ start='{'
         \ end='}'
-        \ containedin=texArgMinted
         \ contained
 
   " Next add nested syntax support for desired languages
@@ -133,6 +132,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ nextgroup=texArgMinted.*
 
   highlight link texZoneMinted texZone
+  highlight link texZoneMintedCmd texZone
   highlight link texMintedName texInputFileOpt
   highlight link texMintedNameOpt texMintedName
 endfunction
