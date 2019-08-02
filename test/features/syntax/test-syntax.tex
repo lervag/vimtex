@@ -263,39 +263,21 @@ fn main() {
 \end{lstlisting}
 
 \section{Package: minted}
-\begin{minted}{python}
-def function(arg):
-    pass
-\end{minted}
+\newminted{cpp}{gobble=2}                % -> cppcode
+\newminted[cppcode_test]{cpp}{gobble=2}  % -> cppcode_test
+\newmint[pymint]{python}{linenos}        % -> \pymint
+\newmintinline{vim}{linenos}             % -> \viminline
 
-Inline custom command: \pymint{print(1 + int(r'1'))} Cool!
+Macros:
+- \mint[lineos]{perl}|$x =~ /foo/|
+- \pymint{print(1 + int(r'1'))} Cool!
+- \viminline|let a=1|
 
-\begin{cppcode}
-int main() {
-  printf("hello, world");
-  return 0;
-}
-\end{cppcode}
-
-\begin{cppcode_test}
-int main() {
-  printf("hello, world");
-  return 0;
-}
-\end{cppcode_test}
-
-\begin{cppcode*}{a=0,
-                 b=1}
-int main() {
-  printf("hello, world");
-  return 0;
-}
-\end{cppcode*}
-
+% This is not valid and should not be highlighted in any special way!
 \begin{minted}
-  L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
-  L1044 +++$+++ u0 +++$+++ m0 +++$+++ CAMERON +++$+++ They do to!
-  L985 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ I hope so.!
+L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
+L1044 +++$+++ u0 +++$+++ m0 +++$+++ CAMERON +++$+++ They do to!
+L985 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ I hope so.!
 \end{minted}
 
 \begin{minted}{c}
@@ -305,12 +287,27 @@ int main() {
 }
 \end{minted}
 
+\begin{minted}[linenos]{python}
+def function(arg):
+    pass
+\end{minted}
+
 \begin{minted}[mathescape,
-               linenos,
-               numbersep=5pt,
-               gobble=2,
-               frame=lines,
-               framesep=2mm]{csharp}
+       linenos,
+       numbersep=5pt,
+       gobble=2,
+       frame=lines,
+       framesep=2mm]{python}
+def function(arg):
+    pass
+\end{minted}
+
+\begin{minted}[mathescape,
+       linenos,
+       numbersep=5pt,
+       gobble=2,
+       frame=lines,
+       framesep=2mm]{csharp}
 string title = "This is a Unicode π in the sky"
 /*
 Defined as $\pi=\lim_{n\to\infty}\frac{P_n}{d}$ where $P$ is the perimeter
@@ -319,5 +316,27 @@ circle of diameter $d$.
 */
 const double pi = 3.1415926535
 \end{minted}
+
+\begin{cppcode}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode}
+
+\begin{cppcode*}{a=0,
+	 b=1}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode*}
+
+\begin{cppcode_test}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode_test}
 
 \end{document}
