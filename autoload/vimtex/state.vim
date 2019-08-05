@@ -15,7 +15,7 @@ endfunction
 " }}}1
 function! vimtex#state#init() abort " {{{1
   let l:main = s:get_main()
-  let l:id   = s:get_main_id(l:main)
+  let l:id = s:get_main_id(l:main)
 
   if l:id >= 0
     let b:vimtex_id = l:id
@@ -230,7 +230,7 @@ function! s:get_main() abort " {{{1
   " Search for main file recursively through include specifiers
   "
   if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
-    let l:candidate = s:get_main_recurse()
+    let l:candidate = s:get_main_choose(s:get_main_recurse())
     if l:candidate !=# ''
       return l:candidate
     endif
@@ -328,9 +328,9 @@ function! s:get_main_recurse(...) abort " {{{1
     let l:tried = a:2
 
     if s:file_is_main(l:file)
-      return l:file
+      return [l:file]
     elseif !filereadable(l:file)
-      return ''
+      return []
     endif
   endif
 
@@ -343,17 +343,47 @@ function! s:get_main_recurse(...) abort " {{{1
         \ . '\s*\f*' . fnamemodify(l:file, ':t:r')
 
   " Search through candidates found recursively upwards in the directory tree
+  let l:results = []
   for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
 
     if len(filter(readfile(l:cand), 'v:val =~# l:re_filter')) > 0
-      let l:res = s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
-      if !empty(l:res) | return l:res | endif
+      let l:results += s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
     endif
   endfor
 
-  return ''
+  return l:results
+endfunction
+
+" }}}1
+function! s:get_main_choose(list) abort " {{{1
+  if empty(a:list) | return '' | endif
+  if len(a:list) == 1 | return a:list[0] | endif
+
+  let l:all = map(copy(a:list), '[s:get_main_id(v:val), v:val]')
+  let l:new = map(filter(copy(l:all), 'v:val[0] < 0'), 'v:val[1]')
+  let l:existing = {}
+  for [l:key, l:val] in filter(copy(l:all), 'v:val[0] >= 0')
+    let l:existing[l:key] = l:val
+  endfor
+  let l:alternate_id = getbufvar('#', 'vimtex_id', -1)
+
+  if len(l:existing) == 1
+    return values(l:existing)[0]
+  elseif len(l:existing) > 1 && has_key(l:existing, l:alternate_id)
+    return l:existing[l:alternate_id]
+  elseif len(l:existing) < 1 && len(l:new) == 1
+    return l:new[0]
+  else
+    let l:choices = {}
+    for l:tex in a:list
+      let l:choices[l:tex] = vimtex#paths#relative(l:tex, getcwd())
+    endfor
+
+    return vimtex#echo#choose(l:choices,
+          \ 'Please select an appropriate main file:')
+  endif
 endfunction
 
 " }}}1
