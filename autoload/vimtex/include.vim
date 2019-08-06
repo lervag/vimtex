@@ -110,7 +110,7 @@ let s:visited = {
       \ 'list' : [],
       \}
 function! s:visited.timeout() abort dict " {{{1
-  if localtime() - self.time > 1.0
+  if localtime() - self.time > 1
     let self.time = localtime()
     let self.list = [expand('%:p')]
   endif
