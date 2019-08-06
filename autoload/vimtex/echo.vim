@@ -79,7 +79,7 @@ function! s:choose_dict(dict, prompt) abort " {{{1
     endfor
 
     try
-      let l:choice = str2nr(input({'prompt': '> '})) - 1
+      let l:choice = str2nr(input('> ')) - 1
       if l:choice >= 0 && l:choice < len(a:dict)
         return keys(a:dict)[l:choice]
       endif
@@ -106,7 +106,7 @@ function! s:choose_list(list, prompt) abort " {{{1
     endfor
 
     try
-      let l:choice = str2nr(input({'prompt': '> '})) - 1
+      let l:choice = str2nr(input('> ')) - 1
       if l:choice >= 0 && l:choice < len(a:list)
         return a:list[l:choice]
       endif
