@@ -3,8 +3,8 @@ if $OLD
   let &rtp = 'vimtex-old,' . &rtp
   let &rtp .= ',vimtex-old/after'
 else
-  let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-  let &rtp .= ',~/.vim/bundle/vimtex/after'
+  let &rtp = '../../..,' . &rtp
+  let &rtp .= ',../../../after'
 endif
 filetype plugin indent on
 syntax enable

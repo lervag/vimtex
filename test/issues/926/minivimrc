@@ -4,9 +4,9 @@ if !isdirectory('vim-airline')
   call system('git clone https://github.com/vim-airline/vim-airline')
 endif
 
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '../../..,' . &rtp
 let &rtp = 'vim-airline,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
+let &rtp .= ',../../../after'
 filetype plugin indent on
 syntax enable
 

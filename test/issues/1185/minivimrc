@@ -1,5 +1,5 @@
 set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '../../..,' . &rtp
 filetype plugin indent on
 syntax enable
 

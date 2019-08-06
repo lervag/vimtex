@@ -4,8 +4,8 @@ syntax enable
 set iskeyword+=:
 set hidden
 
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp = '~/.vim/bundle/vimtex/after,' . &rtp
+let &rtp = '../../..,' . &rtp
+let &rtp = '../../../after,' . &rtp
 
 set lines=50
 

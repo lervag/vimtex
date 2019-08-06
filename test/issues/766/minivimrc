@@ -3,8 +3,8 @@ if has('win32')
   let &rtp = '~/vimfiles/bundle/vimtex,' . &rtp
   let &rtp .= ',~/vimfiles/bundle/vimtex/after'
 else
-  let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-  let &rtp .= ',~/.vim/bundle/vimtex/after'
+  let &rtp = '../../..,' . &rtp
+  let &rtp .= ',../../../after'
 endif
 filetype plugin indent on
 syntax enable

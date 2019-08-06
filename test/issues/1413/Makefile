@@ -3,4 +3,4 @@ test: | pack/github/start/vimtex
 
 pack/github/start/vimtex:
 	mkdir -p pack/github/start
-	ln -s ~/.vim/bundle/vimtex pack/github/start/vimtex
+	ln -s ../../.. pack/github/start/vimtex

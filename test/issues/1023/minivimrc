@@ -2,8 +2,8 @@ if !isdirectory('vim-stay')
   call system('git clone https://github.com/kopischke/vim-stay')
 endif
 
-let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
+let &rtp  = '../../..,' . &rtp
+let &rtp .= ',../../../after'
 let &rtp  = 'vim-stay,' . &rtp
 
 filetype plugin indent on

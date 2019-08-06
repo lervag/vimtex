@@ -12,7 +12,7 @@ endif
 let &rtp = s:dein . ',' . &rtp
 if dein#load_state(s:plugins)
   call dein#begin(s:plugins)
-  call dein#local('~/.vim/bundle/vimtex')
+  call dein#local('../../..')
   call dein#add('mhartington/oceanic-next')
   call dein#add('vim-airline/vim-airline-themes')
   call dein#end()
