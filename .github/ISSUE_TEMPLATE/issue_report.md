@@ -8,6 +8,7 @@ labels: bug
 - Make sure to search for a solution in old issues before posting a new one
 - Run `:chechhealth` (if available, e.g. on neovim)
 - Inspect output of `:VimtexCompileOutput`
+- When submitting errors, use `export LANGUAGE=en` to generate the english version
 - Formatting guide: https://guides.github.com/features/mastering-markdown/
 -->
 
