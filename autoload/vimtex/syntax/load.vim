@@ -14,6 +14,11 @@ function! vimtex#syntax#load#general() abort " {{{1
   syntax match texStatement '\\todo\w*' contains=texTodo
   syntax match texTodo '\\todo\w*'
 
+  " Fix strange mistake in main syntax file where \usepackage is added to the
+  " texInputFile group
+  syntax match texDocType /\\usepackage\>/
+        \ nextgroup=texBeginEndName,texDocTypeArgs
+
   " Improve support for italic font, bold font and some conceals
   if get(g:, 'tex_fast', 'b') =~# 'b'
     let s:conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
