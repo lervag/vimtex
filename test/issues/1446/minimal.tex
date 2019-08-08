@@ -1,0 +1,25 @@
+\documentclass[
+    a4paper,
+    fontsize=11pt,
+]{scrartcl}
+
+\usepackage[ asdasd asdasd ]{pdfpages}
+
+\begin{document}
+
+\include{$HOME/Text_A}
+Text Text Text Text
+
+\includepdf{$HOME/test/folder/Attachment_B}
+Text Text Text Text
+
+\includepdf[asd]{$HOME/test/folder/Attachment_B}
+Text Text Text Text
+
+\includepdf[%
+    pages=-,
+    nup=2x2
+]{$HOME/test/folder/Attachment_B}
+Text Text Text Text
+
+\end{document}
