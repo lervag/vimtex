@@ -10,9 +10,6 @@ nnoremap q :qall!<cr>
 " Use a more colorful colorscheme
 colorscheme morning
 
-let s:file = expand('<sfile>')
-execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
-
 let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 1
 let g:vimtex_echo_ignore_wait = 1
@@ -28,9 +25,4 @@ augroup Testing
   autocmd CursorMoved * echo SynNames()
 augroup END
 
-if has('vim_starting')
-  silent edit test-syntax.tex
-else
-  silent VimtexReload
-  redraw!
-endif
+silent edit test-syntax.tex
