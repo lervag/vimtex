@@ -465,7 +465,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map('x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
-  if get(g:, 'vimtex_compiler_enabled', 0)
+  if g:vimtex_compiler_enabled
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
     call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
@@ -479,7 +479,7 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('n', '<localleader>lG', '<plug>(vimtex-status-all)')
   endif
 
-  if get(g:, 'vimtex_motion_enabled', 0)
+  if g:vimtex_motion_enabled
     " These are forced in order to overwrite matchit mappings
     call s:map('n', '%', '<plug>(vimtex-%)', 1)
     call s:map('x', '%', '<plug>(vimtex-%)', 1)
@@ -525,7 +525,7 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('o', '[*', '<plug>(vimtex-[*)')
   endif
 
-  if get(g:, 'vimtex_text_obj_enabled', 0)
+  if g:vimtex_text_obj_enabled
     call s:map('x', 'id', '<plug>(vimtex-id)')
     call s:map('x', 'ad', '<plug>(vimtex-ad)')
     call s:map('o', 'id', '<plug>(vimtex-id)')
@@ -575,7 +575,7 @@ function! s:init_default_mappings() abort " {{{1
     endif
   endif
 
-  if get(g:, 'vimtex_toc_enabled', 0)
+  if g:vimtex_toc_enabled
     call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
     call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
   endif
@@ -587,11 +587,11 @@ function! s:init_default_mappings() abort " {{{1
     endif
   endif
 
-  if get(g:, 'vimtex_imaps_enabled', 0)
+  if g:vimtex_imaps_enabled
     call s:map('n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
   endif
 
-  if get(g:, 'vimtex_doc_enabled', 0)
+  if g:vimtex_doc_enabled
     call s:map('n', 'K', '<plug>(vimtex-doc-package)')
   endif
 endfunction
