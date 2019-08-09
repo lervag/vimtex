@@ -209,22 +209,22 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
-  if s:re_opt.reduce_on_closing
+  if s:re_opt.close_indented
+    return s:sw*(s:count(a:prev_line, s:re_open)
+          \ - s:count(a:prev_line, s:re_close))
+  else
     return s:sw*(  max([  s:count(a:prev_line, s:re_open)
           \             - s:count(a:prev_line, s:re_close), 0])
           \      - max([  s:count(a:line, s:re_close)
           \             - s:count(a:line, s:re_open), 0]))
-  else
-    return s:sw*(s:count(a:prev_line, s:re_open)
-          \ - s:count(a:prev_line, s:re_close))
   endif
 endfunction
 
 let s:re_opt = extend({
       \ 'open' : ['{', '\\\@<!\\\['],
       \ 'close' : ['}', '\\\]'],
+      \ 'close_indented' : 0,
       \ 'include_modified_math' : 1,
-      \ 'reduce_on_closing' : 1,
       \}, get(g:, 'vimtex_indent_delims', {}))
 let s:re_open = join(s:re_opt.open, '\|')
 let s:re_close = join(s:re_opt.close, '\|')

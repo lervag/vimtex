@@ -1628,14 +1628,13 @@ OPTIONS                                                        *vimtex-options*
     close~
       List of regexes for closing delimiters that should reduce indents.
 
+    close_indented~
+      Set this to 1 if you want the line with the closing delimiter to stay
+      indented.
+
     include_modified_math~
       Set this to 0 if you do not want modified math delimiters such as
       `\left(` and `\right)` to add/reduce indents.
-
-    reduce_on_closing~
-      Set this to 0 if you do not want to reduce indent on the line that
-      contains the closing delimiter (default), but instead want to reduce the
-      indent on the following line.
 
   Note: Vimtex does not allow indents for parantheses only in math mode or any
         similar kind of context aware delimiter indents.
@@ -1645,10 +1644,10 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: >
     let g:vimtex_indent_delims = {
-          \ 'open' : ['{', '\\\@<!\\\['],
-          \ 'close' : ['}', '\\\]'],
+          \ 'open' : ['{'],
+          \ 'close' : ['}'],
+          \ 'close_indented' : 0,
           \ 'include_modified_math' : 1,
-          \ 'reduce_on_closing' : 1,
           \}
 
 *g:vimtex_indent_ignored_envs*
