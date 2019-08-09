@@ -177,12 +177,12 @@ function! s:indent_envs(cur, prev) abort " {{{1
 
   " First for general environments
   let l:ind += s:sw*(
-        \    a:prev =~# '\\begin{.*}'
-        \ && a:prev !~# '\\end{.*}'
+        \    a:prev =~# s:envs_begin
+        \ && a:prev !~# s:envs_end
         \ && a:prev !~# s:envs_ignored)
   let l:ind -= s:sw*(
-        \    a:cur !~# '\\begin{.*}'
-        \ && a:cur =~# '\\end{.*}'
+        \    a:cur !~# s:envs_begin
+        \ && a:cur =~# s:envs_end
         \ && a:cur !~# s:envs_ignored)
 
   " Indentation for prolonged items in lists
@@ -193,8 +193,11 @@ function! s:indent_envs(cur, prev) abort " {{{1
   return l:ind
 endfunction
 
+let s:envs_begin = '\\begin{.*}\|\\\@<!\\\['
+let s:envs_end = '\\end{.*}\|\\\]'
 let s:envs_ignored = '\v'
       \ . join(get(g:, 'vimtex_indent_ignored_envs', ['document']), '|')
+
 let s:envs_lists = join(get(g:, 'vimtex_indent_lists', [
       \ 'itemize',
       \ 'description',
@@ -209,15 +212,21 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
-  return s:sw*(  max([  s:count(a:prev_line, s:re_open)
-        \             - s:count(a:prev_line, s:re_close), 0])
-        \      - max([  s:count(a:line, s:re_close)
-        \             - s:count(a:line, s:re_open), 0]))
+  if s:re_opt.close_indented
+    return s:sw*(s:count(a:prev_line, s:re_open)
+          \ - s:count(a:prev_line, s:re_close))
+  else
+    return s:sw*(  max([  s:count(a:prev_line, s:re_open)
+          \             - s:count(a:prev_line, s:re_close), 0])
+          \      - max([  s:count(a:line, s:re_close)
+          \             - s:count(a:line, s:re_open), 0]))
+  endif
 endfunction
 
 let s:re_opt = extend({
-      \ 'open' : ['{', '\\\@<!\\\['],
-      \ 'close' : ['}', '\\\]'],
+      \ 'open' : ['{'],
+      \ 'close' : ['}'],
+      \ 'close_indented' : 0,
       \ 'include_modified_math' : 1,
       \}, get(g:, 'vimtex_indent_delims', {}))
 let s:re_open = join(s:re_opt.open, '\|')
