@@ -543,8 +543,8 @@ function! s:init_default_mappings() abort " {{{1
           \    (type(g:loaded_targets) == type(0)  && g:loaded_targets)
           \ || (type(g:loaded_targets) == type('') && !empty(g:loaded_targets))
           \ ) && (
-          \    g:vimtex_text_obj_variant == 'auto'
-          \ || g:vimtex_text_obj_variant == 'targets'
+          \    g:vimtex_text_obj_variant ==# 'auto'
+          \ || g:vimtex_text_obj_variant ==# 'targets'
           \ )
       let g:vimtex_text_obj_variant = 'targets'
       augroup targets_tex
@@ -558,7 +558,7 @@ function! s:init_default_mappings() abort " {{{1
               \ {'c': {'tex_cmd': [{}]}})
       augroup END
     else
-      if g:vimtex_text_obj_variant == 'targets'
+      if g:vimtex_text_obj_variant ==# 'targets'
         call vimtex#log#warning(
               \ "Ignoring g:vimtex_text_obj_variant = 'targets'"
               \ . " because 'g:loaded_targets' does not exist or is 0.")
