@@ -229,6 +229,7 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_texcount_custom_arg', '')
 
   call s:init_option('vimtex_text_obj_enabled', 1)
+  call s:init_option('vimtex_text_obj_variant', 'auto')
   call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])
 
   call s:init_option('vimtex_toc_enabled', 1)
@@ -539,11 +540,11 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('o', 'aP', '<plug>(vimtex-aP)')
 
     if exists('g:loaded_targets') && (
-          \ (type(g:loaded_targets) == 0 && g:loaded_targets != 0)  ||
-          \ (type(g:loaded_targets) == 1 && !empty(g:loaded_targets))
+          \    (type(g:loaded_targets) == type(0)  && g:loaded_targets)
+          \ || (type(g:loaded_targets) == type('') && !empty(g:loaded_targets))
           \ ) && (
-          \ get(g:, 'vimtex_text_obj_variant', 'auto') == 'auto' ||
-          \ get(g:, 'vimtex_text_obj_variant', 'auto') == 'targets'
+          \    g:vimtex_text_obj_variant == 'auto'
+          \ || g:vimtex_text_obj_variant == 'targets'
           \ )
       let g:vimtex_text_obj_variant = 'targets'
       augroup targets_tex
@@ -557,9 +558,10 @@ function! s:init_default_mappings() abort " {{{1
               \ {'c': {'tex_cmd': [{}]}})
       augroup END
     else
-      if get(g:, 'vimtex_text_obj_variant', 'auto') == 'targets'
-        echom "Ignoring g:vimtex_text_obj_variant = 'targets'".
-              \ " because 'g:loaded_targets' does not exist or is 0."
+      if g:vimtex_text_obj_variant == 'targets'
+        call vimtex#log#warning(
+              \ "Ignoring g:vimtex_text_obj_variant = 'targets'"
+              \ . " because 'g:loaded_targets' does not exist or is 0.")
       endif
       let g:vimtex_text_obj_variant = 'vimtex'
       call s:map('x', 'ie', '<plug>(vimtex-ie)')
