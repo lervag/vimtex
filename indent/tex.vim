@@ -177,12 +177,12 @@ function! s:indent_envs(cur, prev) abort " {{{1
 
   " First for general environments
   let l:ind += s:sw*(
-        \    a:prev =~# '\\begin{.*}'
-        \ && a:prev !~# '\\end{.*}'
+        \    a:prev =~# s:envs_begin
+        \ && a:prev !~# s:envs_end
         \ && a:prev !~# s:envs_ignored)
   let l:ind -= s:sw*(
-        \    a:cur !~# '\\begin{.*}'
-        \ && a:cur =~# '\\end{.*}'
+        \    a:cur !~# s:envs_begin
+        \ && a:cur =~# s:envs_end
         \ && a:cur !~# s:envs_ignored)
 
   " Indentation for prolonged items in lists
@@ -193,8 +193,11 @@ function! s:indent_envs(cur, prev) abort " {{{1
   return l:ind
 endfunction
 
+let s:envs_begin = '\\begin{.*}\|\\\@<!\\\['
+let s:envs_end = '\\end{.*}\|\\\]'
 let s:envs_ignored = '\v'
       \ . join(get(g:, 'vimtex_indent_ignored_envs', ['document']), '|')
+
 let s:envs_lists = join(get(g:, 'vimtex_indent_lists', [
       \ 'itemize',
       \ 'description',
@@ -221,8 +224,8 @@ function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
 endfunction
 
 let s:re_opt = extend({
-      \ 'open' : ['{', '\\\@<!\\\['],
-      \ 'close' : ['}', '\\\]'],
+      \ 'open' : ['{'],
+      \ 'close' : ['}'],
       \ 'close_indented' : 0,
       \ 'include_modified_math' : 1,
       \}, get(g:, 'vimtex_indent_delims', {}))
