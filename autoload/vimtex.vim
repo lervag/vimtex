@@ -547,7 +547,8 @@ function! s:init_default_mappings() abort " {{{1
           \ || g:vimtex_text_obj_variant ==# 'targets'
           \ )
       let g:vimtex_text_obj_variant = 'targets'
-      augroup targets_tex
+      augroup vimtex_targets
+        autocmd!
         autocmd User targets#sources call targets#sources#register(
               \ 'tex_env', function('vimtex#text_obj#envtargets#new'))
         autocmd User targets#sources call targets#sources#register(
