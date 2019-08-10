@@ -1,0 +1,13 @@
+set nocompatible
+let &rtp = 'targets.vim,' . &rtp
+let &rtp = '../../..,' . &rtp
+let &rtp .= ',../../../after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+augroup vimrc
+  autocmd!
+  autocmd VimEnter * ++nested silent edit minimal.tex
+augroup END
