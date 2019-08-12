@@ -7,7 +7,15 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
+" let g:vimtex_text_obj_variant = 'vimtex'
+
 augroup vimrc
   autocmd!
-  autocmd VimEnter * ++nested silent edit minimal.tex
+  autocmd VimEnter * ++nested call Startup()
 augroup END
+
+function! Startup() abort
+  silent edit minimal.tex
+  normal! 16ggf}h
+  normal vac
+endfunction
