@@ -2441,8 +2441,10 @@ COMMANDS                                                      *vimtex-commands*
 
                                              *VimtexLog*
                                              *<plug>(vimtex-log)*
-:VimtexLog                Show message log with timestamps and traces from
-                          where the messages were raised.
+:VimtexLog                Open a scratch buffer to show message log with
+                          timestamps and traces from where the messages were
+                          raised. To close the log buffer, one may press `q`
+                          or `<esc>`.
 
                                              *VimtexCompile*
                                              *<plug>(vimtex-compile)*
