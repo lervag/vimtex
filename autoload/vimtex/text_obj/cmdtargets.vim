@@ -22,6 +22,7 @@ endfunction
 " }}}1
 
 function! vimtex#text_obj#cmdtargets#current(args, opts, state) " {{{1
+  let s:current = 1
   let target = s:select(a:opts.first ? 1 : 2)
   call target.cursorE() " keep going from right end
   return target
@@ -30,9 +31,10 @@ endfunction
 " }}}1
 
 function! vimtex#text_obj#cmdtargets#next(args, opts, state) " {{{1
-  if targets#util#search('\\\S*{', 'W') > 0
+  if !exists('s:current') && targets#util#search('\\\S*{', 'W') > 0
     return targets#target#withError('no target')
   endif
+  unlet! s:current
 
   let oldpos = getpos('.')
   let target = s:select(1)
@@ -43,7 +45,13 @@ endfunction
 " }}}1
 
 function! vimtex#text_obj#cmdtargets#last(args, opts, state) " {{{1
-  if targets#util#search('\\\S*{', 'bW') > 0
+  " Normalize cursor position of current cmd: place on leading '\'
+  if targets#util#search('\\\S\+{', 'bWc') > 0
+    return targets#target#withError('no target')
+  endif
+
+  " Move to the last non-surrounding cmd
+  if targets#util#search('\\\S\+{\_.\{-}}', 'bW') > 0
     return targets#target#withError('no target')
   endif
 
@@ -75,12 +83,10 @@ function! vimtex#text_obj#cmdtargets#inner(target, args) " {{{1
   endif
 
   let [sLinewise, eLinewise] = [0, 0]
+
   call a:target.cursorS()
-  if searchpos('\S', 'nW', line('.'))[0] == 0
-    " if only whitespace after cursor
-    let sLinewise = 1
-  endif
-  silent! execute 'normal! f '
+  let sLinewise = searchpos('\S', 'nW', line('.'))[0] == 0
+  silent! execute "normal! f{\<space>"
   call a:target.setS()
 
   call a:target.cursorE()
