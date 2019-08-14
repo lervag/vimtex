@@ -231,7 +231,7 @@ function! s:get_main() abort " {{{1
   "
   if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
     let l:candidate = s:get_main_choose(s:get_main_recurse())
-    if l:candidate !=# ''
+    if !empty(l:candidate)
       return l:candidate
     endif
   endif
@@ -358,10 +358,12 @@ endfunction
 
 " }}}1
 function! s:get_main_choose(list) abort " {{{1
-  if empty(a:list) | return '' | endif
-  if len(a:list) == 1 | return a:list[0] | endif
+  let l:list = vimtex#util#uniq_unsorted(a:list)
 
-  let l:all = map(copy(a:list), '[s:get_main_id(v:val), v:val]')
+  if empty(l:list) | return '' | endif
+  if len(l:list) == 1 | return l:list[0] | endif
+
+  let l:all = map(copy(l:list), '[s:get_main_id(v:val), v:val]')
   let l:new = map(filter(copy(l:all), 'v:val[0] < 0'), 'v:val[1]')
   let l:existing = {}
   for [l:key, l:val] in filter(copy(l:all), 'v:val[0] >= 0')
@@ -377,7 +379,7 @@ function! s:get_main_choose(list) abort " {{{1
     return l:new[0]
   else
     let l:choices = {}
-    for l:tex in a:list
+    for l:tex in l:list
       let l:choices[l:tex] = vimtex#paths#relative(l:tex, getcwd())
     endfor
 
