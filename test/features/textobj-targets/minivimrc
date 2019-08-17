@@ -1,5 +1,6 @@
 set nocompatible
 let &rtp = 'targets.vim,' . &rtp
+let &rtp = 'vim-gitgutter,' . &rtp
 let &rtp = '../../..,' . &rtp
 let &rtp .= ',../../../after'
 filetype plugin indent on
