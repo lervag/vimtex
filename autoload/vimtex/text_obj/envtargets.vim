@@ -20,7 +20,6 @@ function! vimtex#text_obj#envtargets#new(args) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#envtargets#current(args, opts, state) " {{{1
   let target = s:select(a:opts.first ? 1 : 2)
   call target.cursorE() " keep going from right end
@@ -28,7 +27,6 @@ function! vimtex#text_obj#envtargets#current(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#envtargets#next(args, opts, state) " {{{1
   if targets#util#search('\\begin{.*}', 'W') > 0
     return targets#target#withError('no target')
@@ -41,7 +39,6 @@ function! vimtex#text_obj#envtargets#next(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#envtargets#last(args, opts, state) " {{{1
   if targets#util#search('\\end{.*}', 'bW') > 0
     return targets#target#withError('no target')
@@ -54,21 +51,6 @@ function! vimtex#text_obj#envtargets#last(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
-function! s:select(count) " {{{1
-  " Try to select environment
-  silent! execute 'keepjumps normal v'.a:count."\<Plug>(vimtex-ae)v"
-  let target = targets#target#fromVisualSelection()
-
-  if target.sc == target.ec && target.sl == target.el
-    return targets#target#withError('tex_env select')
-  endif
-
-  return target
-endfunction
-
-" }}}1
-
 function! vimtex#text_obj#envtargets#inner(target, args) " {{{1
   call a:target.cursorS()
   call a:target.searchposS('\\begin{.*}', 'Wce')
@@ -77,7 +59,6 @@ function! vimtex#text_obj#envtargets#inner(target, args) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#envtargets#expand(target, args) " {{{1
   " Based on targets#modify#expand() from
   "   $VIMMRUNTIME/autoload/targets/modify.vim
@@ -106,6 +87,20 @@ function! vimtex#text_obj#envtargets#expand(target, args) " {{{1
     " include all leading whitespace from beginning of line
     let a:target.sc = 1
   endif
+endfunction
+
+" }}}1
+
+function! s:select(count) " {{{1
+  " Try to select environment
+  silent! execute 'keepjumps normal v'.a:count."\<Plug>(vimtex-ae)v"
+  let target = targets#target#fromVisualSelection()
+
+  if target.sc == target.ec && target.sl == target.el
+    return targets#target#withError('tex_env select')
+  endif
+
+  return target
 endfunction
 
 " }}}1

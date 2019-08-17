@@ -539,25 +539,8 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('o', 'iP', '<plug>(vimtex-iP)')
     call s:map('o', 'aP', '<plug>(vimtex-aP)')
 
-    if exists('g:loaded_targets') && (
-          \    (type(g:loaded_targets) == type(0)  && g:loaded_targets)
-          \ || (type(g:loaded_targets) == type('') && !empty(g:loaded_targets))
-          \ ) && (
-          \    g:vimtex_text_obj_variant ==# 'auto'
-          \ || g:vimtex_text_obj_variant ==# 'targets'
-          \ )
-      let g:vimtex_text_obj_variant = 'targets'
-      augroup vimtex_targets
-        autocmd!
-        autocmd User targets#sources call targets#sources#register(
-              \ 'tex_env', function('vimtex#text_obj#envtargets#new'))
-        autocmd User targets#sources call targets#sources#register(
-              \ 'tex_cmd', function('vimtex#text_obj#cmdtargets#new'))
-        autocmd User targets#mappings#plugin call targets#mappings#extend(
-              \ {'e': {'tex_env': [{}]}})
-        autocmd User targets#mappings#plugin call targets#mappings#extend(
-              \ {'c': {'tex_cmd': [{}]}})
-      augroup END
+    if vimtex#text_obj#targets#enabled()
+      call vimtex#text_obj#targets#init()
     else
       if g:vimtex_text_obj_variant ==# 'targets'
         call vimtex#log#warning(

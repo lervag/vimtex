@@ -20,7 +20,6 @@ function! vimtex#text_obj#cmdtargets#new(args) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#cmdtargets#current(args, opts, state) " {{{1
   let s:current = 1
   let target = s:select(a:opts.first ? 1 : 2)
@@ -29,7 +28,6 @@ function! vimtex#text_obj#cmdtargets#current(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#cmdtargets#next(args, opts, state) " {{{1
   if !exists('s:current') && targets#util#search('\\\S*{', 'W') > 0
     return targets#target#withError('no target')
@@ -43,7 +41,6 @@ function! vimtex#text_obj#cmdtargets#next(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#text_obj#cmdtargets#last(args, opts, state) " {{{1
   " Normalize cursor position of current cmd: place on leading '\'
   if targets#util#search('\\\S\+{', 'bWc') > 0
@@ -62,21 +59,6 @@ function! vimtex#text_obj#cmdtargets#last(args, opts, state) " {{{1
 endfunction
 
 " }}}1
-
-function! s:select(count) " {{{1
-  " Try to select command
-  silent! execute 'keepjumps normal v'.a:count."\<Plug>(vimtex-ac)v"
-  let target = targets#target#fromVisualSelection()
-
-  if target.sc == target.ec && target.sl == target.el
-    return targets#target#withError('tex_cmd select')
-  endif
-
-  return target
-endfunction
-
-" }}}1
-
 function! vimtex#text_obj#cmdtargets#inner(target, args) " {{{1
   if a:target.state().isInvalid()
     return
@@ -101,6 +83,20 @@ function! vimtex#text_obj#cmdtargets#inner(target, args) " {{{1
   endif
   call a:target.setE()
   let a:target.linewise = sLinewise && eLinewise
+endfunction
+
+" }}}1
+
+function! s:select(count) " {{{1
+  " Try to select command
+  silent! execute 'keepjumps normal v'.a:count."\<Plug>(vimtex-ac)v"
+  let target = targets#target#fromVisualSelection()
+
+  if target.sc == target.ec && target.sl == target.el
+    return targets#target#withError('tex_cmd select')
+  endif
+
+  return target
 endfunction
 
 " }}}1
