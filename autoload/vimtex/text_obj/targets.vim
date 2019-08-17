@@ -20,6 +20,7 @@ function! vimtex#text_obj#targets#init() abort " {{{1
     autocmd!
     autocmd User targets#sources         call s:init_sources()
     autocmd User targets#mappings#plugin call s:init_mappings()
+    autocmd BufWinEnter <buffer> ++once  call s:clean_gitgutter_maps()
   augroup END
 endfunction
 
@@ -34,6 +35,14 @@ endfunction
 function! s:init_sources() abort " {{{1
   call targets#sources#register('tex_env', function('vimtex#text_obj#envtargets#new'))
   call targets#sources#register('tex_cmd', function('vimtex#text_obj#cmdtargets#new'))
+endfunction
+
+" }}}1
+function! s:clean_gitgutter_maps() abort " {{{1
+  xunmap <buffer> ic
+  ounmap <buffer> ic
+  xunmap <buffer> ac
+  ounmap <buffer> ac
 endfunction
 
 " }}}1
