@@ -12,16 +12,17 @@ function! vimtex#text_obj#cmdtargets#new(args) " {{{1
         \   'l': function('vimtex#text_obj#cmdtargets#last'),
         \ },
         \ 'modFuncs': {
-        \   'i': [function('vimtex#text_obj#cmdtargets#inner')],
+        \   'i': [function('vimtex#text_obj#cmdtargets#inner'),
+        \         function('targets#modify#drop')],
         \   'a': [function('targets#modify#keep')],
-        \   'I': [function('vimtex#text_obj#cmdtargets#inner'), function('targets#modify#shrink')],
+        \   'I': [function('vimtex#text_obj#cmdtargets#inner'),
+        \         function('targets#modify#shrink')],
         \   'A': [function('targets#modify#expand')],
         \ }}
 endfunction
 
 " }}}1
 function! vimtex#text_obj#cmdtargets#current(args, opts, state) " {{{1
-  let s:current = 1
   let target = s:select(a:opts.first ? 1 : 2)
   call target.cursorE() " keep going from right end
   return target
@@ -29,10 +30,9 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#cmdtargets#next(args, opts, state) " {{{1
-  if !exists('s:current') && targets#util#search('\\\S*{', 'W') > 0
+  if targets#util#search('\\\S*{', 'W') > 0
     return targets#target#withError('no target')
   endif
-  unlet! s:current
 
   let oldpos = getpos('.')
   let target = s:select(1)
@@ -64,25 +64,9 @@ function! vimtex#text_obj#cmdtargets#inner(target, args) " {{{1
     return
   endif
 
-  let [sLinewise, eLinewise] = [0, 0]
-
   call a:target.cursorS()
-  let sLinewise = searchpos('\S', 'nW', line('.'))[0] == 0
-  silent! execute "normal! f{\<space>"
+  silent! normal! f{
   call a:target.setS()
-
-  call a:target.cursorE()
-  if a:target.sl < a:target.el && searchpos('\S', 'bnW', line('.'))[0] == 0
-    " if only whitespace in front of cursor
-    let eLinewise = 1
-    " move to end of line above
-    normal! -$
-  else
-    " one character back
-    silent! execute "normal! \<BS>"
-  endif
-  call a:target.setE()
-  let a:target.linewise = sLinewise && eLinewise
 endfunction
 
 " }}}1
