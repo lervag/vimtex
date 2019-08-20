@@ -1,4 +1,4 @@
-language: vim
+language: generic
 dist: trusty
 before_script:
   git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
