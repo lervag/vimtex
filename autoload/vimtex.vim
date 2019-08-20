@@ -541,6 +541,12 @@ function! s:init_default_mappings() abort " {{{1
 
     if vimtex#text_obj#targets#enabled()
       call vimtex#text_obj#targets#init()
+
+      " These are handled explicitly to avoid conflict with gitgutter
+      call s:map('x', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map('x', 'ac', '<plug>(vimtex-targets-a)c')
+      call s:map('o', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map('o', 'ac', '<plug>(vimtex-targets-a)c')
     else
       if g:vimtex_text_obj_variant ==# 'targets'
         call vimtex#log#warning(
@@ -548,6 +554,7 @@ function! s:init_default_mappings() abort " {{{1
               \ . " because 'g:loaded_targets' does not exist or is 0.")
       endif
       let g:vimtex_text_obj_variant = 'vimtex'
+
       call s:map('x', 'ie', '<plug>(vimtex-ie)')
       call s:map('x', 'ae', '<plug>(vimtex-ae)')
       call s:map('o', 'ie', '<plug>(vimtex-ie)')
