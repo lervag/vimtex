@@ -18,5 +18,4 @@ augroup END
 function! Startup() abort
   silent edit minimal.tex
   normal! 16ggf}h
-  normal vac
 endfunction
