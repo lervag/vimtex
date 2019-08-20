@@ -16,11 +16,16 @@ endfunction
 function! vimtex#text_obj#targets#init() abort " {{{1
   let g:vimtex_text_obj_variant = 'targets'
 
+  " Create intermediate mappings
+  omap <expr> <plug>(vimtex-targets-i) targets#e('o', 'i', 'i')
+  xmap <expr> <plug>(vimtex-targets-i) targets#e('x', 'i', 'i')
+  omap <expr> <plug>(vimtex-targets-a) targets#e('o', 'a', 'a')
+  xmap <expr> <plug>(vimtex-targets-a) targets#e('x', 'a', 'a')
+
   augroup vimtex_targets
     autocmd!
     autocmd User targets#sources         call s:init_sources()
     autocmd User targets#mappings#plugin call s:init_mappings()
-    autocmd BufWinEnter <buffer> ++once  call s:clean_gitgutter_maps()
   augroup END
 endfunction
 
@@ -35,14 +40,6 @@ endfunction
 function! s:init_sources() abort " {{{1
   call targets#sources#register('tex_env', function('vimtex#text_obj#envtargets#new'))
   call targets#sources#register('tex_cmd', function('vimtex#text_obj#cmdtargets#new'))
-endfunction
-
-" }}}1
-function! s:clean_gitgutter_maps() abort " {{{1
-  xunmap <buffer> ic
-  ounmap <buffer> ic
-  xunmap <buffer> ac
-  ounmap <buffer> ac
 endfunction
 
 " }}}1
