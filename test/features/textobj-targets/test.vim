@@ -33,6 +33,9 @@ function! s:testVimtexCmdtargets()
     endfor
   endfor
 
+  normal! "lp2f}l
+  call s:execute('v', 'ilc')
+
   write! test1.out
 endfunction
 
