@@ -1,65 +1,54 @@
 set nocompatible
-
 let &rtp = 'targets.vim,' . &rtp
 let &rtp = '../../..,' . &rtp
 let &rtp .= ',../../../after'
-
 filetype plugin indent on
 
-source targets.vim/plugin/targets.vim
-source ../../../ftplugin/tex.vim
+runtime plugin/targets.vim
 
-set softtabstop=16 expandtab
+let g:tex_flavor = 'latex'
+
+set softtabstop=16
+set expandtab
 
 " tests should pass with this setting too
 " set selection=exclusive
 
-function! s:execute(operation, motions)
-    if a:operation == 'c'
-        execute "normal" a:operation . a:motions . "_"
-    elseif a:operation == 'v'
-        execute "normal" a:operation . a:motions
-        normal r_
-    else
-        execute "normal" a:operation . a:motions
-    endif
-    if a:operation == 'y'
-        execute "normal A\<Tab>'\<C-R>\"'"
-    endif
-    execute "normal I" . a:operation . a:motions . "\<Tab>\<Esc>"
+function! s:testVimtexCmdtargets()
+  silent edit test1.tex
+
+  call search('xxxxxx')
+  normal! "lyy
+
+  for operator in ['c', 'd', 'y', 'v']
+    for cnt in ['', '1', '2']
+      for lastnext in ['l', '', 'n']
+        for iaIA in ['I', 'i', 'a', 'A']
+          for target in ['c']
+            normal! "lpfx
+            call s:execute(operator, cnt . iaIA . lastnext . target)
+          endfor
+        endfor
+      endfor
+    endfor
+  endfor
+
+  write! test1.out
 endfunction
 
-function! s:testVimtexCmdtargets()
-    " based on testBasics() from 'targets.vim/test/test.vim'
-    edit test1.in
-    setf tex
-    normal gg0
+function! s:execute(operation, motions)
+  execute 'normal' a:operation . a:motions
+        \ . (a:operation ==# 'c' ? '_' : '')
 
-    execute "normal /xxxxxx\<CR>"
-    for delset in [
-                \ [ 'c' ]
-                \ ]
-        normal "lyy
+  if a:operation ==# 'v'
+    normal! r_
+  endif
 
-        for op in [ 'c', 'd', 'y', 'v' ]
-            for cnt in [ '', '1', '2' ]
-                for ln in [ 'l', '', 'n' ]
-                    for iaIA in [ 'I', 'i', 'a', 'A' ]
-                        for del in delset
-                            execute "normal \"lpfx"
-                            call s:execute(op, cnt . iaIA . ln . del)
-                        endfor
-                    endfor
-                endfor
-            endfor
-        endfor
+  if a:operation ==# 'y'
+    execute "normal! A\<tab>'\<c-r>\"'"
+  endif
 
-        normal +
-    endfor
-
-    normal +
-
-    write! test1.out
+  execute 'normal! I' . a:operation . a:motions . "\<tab>"
 endfunction
 
 call s:testVimtexCmdtargets()
