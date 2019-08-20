@@ -42,13 +42,8 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#cmdtargets#last(args, opts, state) " {{{1
-  " Normalize cursor position of current cmd: place on leading '\'
-  if targets#util#search('\\\S\+{', 'bWc') > 0
-    return targets#target#withError('no target')
-  endif
-
   " Move to the last non-surrounding cmd
-  if targets#util#search('\\\S\+{\_.\{-}}', 'bW') > 0
+  if targets#util#search('\\\S\+{\_.\{-}}', 'bWe') > 0
     return targets#target#withError('no target')
   endif
 
