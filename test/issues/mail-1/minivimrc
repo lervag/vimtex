@@ -4,8 +4,14 @@ let &runtimepath .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
+let g:vimtex_view_method = 'zathura'
+
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
 nnoremap q :qall!<cr>
 nnoremap e :echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<cr>
 
-silent edit hw9.tex
+silent edit minimal.tex
 normal! G
