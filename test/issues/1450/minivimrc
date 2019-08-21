@@ -1,0 +1,17 @@
+set nocompatible
+let &rtp = '../../../,' . &rtp
+let &rtp .= ',../../../after'
+filetype plugin indent on
+syntax enable
+
+set expandtab
+set shiftwidth=2
+
+nnoremap q :qall!<cr>
+
+silent edit main.tex
+
+execute "normal 8GA\<cr>]]\<cr>]]"
+
+write! tested.tex
+quit!
