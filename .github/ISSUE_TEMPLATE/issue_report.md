@@ -39,7 +39,7 @@ A clear and concise description of the issue.
 
 - Start neovim with `nvim -u minivimrc minimal.tex`
 
-- Provide set og keys or command to reproduce the issue
+- Provide set of keys or command to reproduce the issue
 
 - Describe both the expected and the observed behaviour
 
