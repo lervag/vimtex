@@ -9,6 +9,7 @@ labels: bug
 - Run `:chechhealth` (if available, e.g. on neovim)
 - Inspect output of `:VimtexCompileOutput`
 - Formatting guide: https://guides.github.com/features/mastering-markdown/
+- Include files inline (don't attach them as links)
 -->
 
 **Describe the issue**
@@ -16,7 +17,8 @@ A clear and concise description of the issue.
 
 **Steps to reproduce**
 
-- Create a minimal vimrc file, e.g.:
+*minimalvimrc*
+<!-- Create a minimal vimrc file, e.g.:
 
   ```vim
   set nocompatible
@@ -25,8 +27,10 @@ A clear and concise description of the issue.
   filetype plugin indent on
   syntax enable
   ```
+-->
 
-- Create a minimal LaTeX file, e.g.:
+*minimal.tex*
+<!-- Create a minimal LaTeX file, e.g.:
 
   ```tex
   \documentclass{minimal}
@@ -34,16 +38,24 @@ A clear and concise description of the issue.
   Hello world!
   \end{document}
   ```
+-->
 
-- Start vim with `vim --servername VIM -u minivimrc minimal.tex`
+<!--
+- If you are a vim user, start vim with `vim --servername VIM -u minivimrc minimal.tex`
 
-- Start neovim with `nvim -u minivimrc minimal.tex`
+- If you are a neovim user, start neovim with `nvim -u minivimrc minimal.tex`
+-->
 
-- Provide set of keys or command to reproduce the issue
+*Commands/Inputs*
+<!-- Provide set of keys or command to reproduce the issue-->
 
-- Describe both the expected and the observed behaviour
+*Observed Behaviour*
+<!-- Describe the observed behaviour-->
 
-- *Note*: if relevant, include the content of your `.latexmkrc` file
+*Expected Behaviour*
+<!-- Describe both the expected and the observed behaviour-->
+
+<!-- *Note*: if relevant, include the content of your `.latexmkrc` file -->
 
 **Output from VimtexInfo**
 <!-- Run `:VimtexInfo` and paste the content here -->
