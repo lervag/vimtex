@@ -17,7 +17,7 @@ labels: bug
 
 <!-- Provide the following files and commands in detail, so everybody can reproduce the issue-->
 
-**minimalvimrc**
+**minimal.vim**
 <!-- Create a minimal vimrc file, e.g.:
 
   ```vim
@@ -41,9 +41,9 @@ labels: bug
 -->
 
 <!--
-- If you are a vim user, start vim with `vim --servername VIM -u minivimrc minimal.tex`
+- If you are a vim user, start vim with `vim --servername VIM -u minimal.vim minimal.tex`
 
-- If you are a neovim user, start neovim with `nvim -u minivimrc minimal.tex`
+- If you are a neovim user, start neovim with `nvim -u minimal.vim minimal.tex`
 -->
 
 **Commands/Inputs**
