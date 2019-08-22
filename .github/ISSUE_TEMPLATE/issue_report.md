@@ -12,8 +12,8 @@ labels: bug
 - Include files inline (don't attach them as links)
 -->
 
-**Describe the issue**
-A clear and concise description of the issue.
+**Issue**
+<!--A clear and concise description of the issue in a few sentences. -->
 
 <!-- Provide the following files and commands, so everybody can reproduce the issue-->
 
