@@ -46,7 +46,7 @@ labels: bug
 - If you are a neovim user, start neovim with `nvim -u minimal.vim minimal.tex`
 -->
 
-**Commands/Inputs**
+**Commands/Input**
 <!-- Provide set of keys or command to reproduce the issue-->
 
 **Observed Behaviour**
