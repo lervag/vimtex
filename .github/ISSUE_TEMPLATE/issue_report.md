@@ -13,7 +13,7 @@ labels: bug
 -->
 
 **Issue**
-<!--A clear and concise description of the issue in a few sentences. -->
+<!--A clear and concise description of the issue in a few sentences. Try to stick to simple english, to make easier for others to understand.-->
 
 <!-- Provide the following files and commands in detail, so everybody can reproduce the issue-->
 
