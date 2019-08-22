@@ -17,7 +17,7 @@ A clear and concise description of the issue.
 
 **Steps to reproduce**
 
-*minimalvimrc*
+**minimalvimrc**
 <!-- Create a minimal vimrc file, e.g.:
 
   ```vim
@@ -29,7 +29,7 @@ A clear and concise description of the issue.
   ```
 -->
 
-*minimal.tex*
+**minimal.tex**
 <!-- Create a minimal LaTeX file, e.g.:
 
   ```tex
@@ -46,13 +46,13 @@ A clear and concise description of the issue.
 - If you are a neovim user, start neovim with `nvim -u minivimrc minimal.tex`
 -->
 
-*Commands/Inputs*
+**Commands/Inputs**
 <!-- Provide set of keys or command to reproduce the issue-->
 
-*Observed Behaviour*
+**Observed Behaviour**
 <!-- Describe the observed behaviour-->
 
-*Expected Behaviour*
+**Expected Behaviour**
 <!-- Describe both the expected and the observed behaviour-->
 
 <!-- *Note*: if relevant, include the content of your `.latexmkrc` file -->
