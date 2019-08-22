@@ -15,7 +15,7 @@ labels: bug
 **Describe the issue**
 A clear and concise description of the issue.
 
-**Steps to reproduce**
+<!-- Provide the following files and commands, so everybody can reproduce the issue-->
 
 **minimalvimrc**
 <!-- Create a minimal vimrc file, e.g.:
