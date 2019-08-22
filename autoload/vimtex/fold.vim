@@ -62,7 +62,7 @@ function! vimtex#fold#init_state(state) abort " {{{1
   let a:state.fold_re = '\v'
         \ .  '\\%(begin|end)>'
         \ . '|^\s*\%'
-        \ . '|\%%(.*\{\{\{|\s*\}\}\})'
+        \ . '|\%.*%(\{\{\{|\}\}\})'
         \ . '|^\s*\]\s*%(\{|$)'
         \ . '|^\s*}'
   for l:name in [
