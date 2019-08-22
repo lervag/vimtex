@@ -12,12 +12,12 @@ labels: bug
 - Include files inline (don't attach them as links)
 -->
 
-**Describe the issue**
-A clear and concise description of the issue.
+**Issue**
+<!--A clear and concise description of the issue in a few sentences. Try to stick to simple english, to make easier for others to understand.-->
 
-**Steps to reproduce**
+<!-- Provide the following files and commands in detail, so everybody can reproduce the issue-->
 
-*minimalvimrc*
+**minimal.vim**
 <!-- Create a minimal vimrc file, e.g.:
 
   ```vim
@@ -29,7 +29,7 @@ A clear and concise description of the issue.
   ```
 -->
 
-*minimal.tex*
+**minimal.tex**
 <!-- Create a minimal LaTeX file, e.g.:
 
   ```tex
@@ -41,18 +41,18 @@ A clear and concise description of the issue.
 -->
 
 <!--
-- If you are a vim user, start vim with `vim --servername VIM -u minivimrc minimal.tex`
+- If you are a vim user, start vim with `vim --servername VIM -u minimal.vim minimal.tex`
 
-- If you are a neovim user, start neovim with `nvim -u minivimrc minimal.tex`
+- If you are a neovim user, start neovim with `nvim -u minimal.vim minimal.tex`
 -->
 
-*Commands/Inputs*
+**Commands/Input**
 <!-- Provide set of keys or command to reproduce the issue-->
 
-*Observed Behaviour*
+**Observed Behaviour**
 <!-- Describe the observed behaviour-->
 
-*Expected Behaviour*
+**Expected Behaviour**
 <!-- Describe both the expected and the observed behaviour-->
 
 <!-- *Note*: if relevant, include the content of your `.latexmkrc` file -->
