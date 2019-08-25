@@ -21,11 +21,8 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#load() abort " {{{1
-  if !exists('b:current_syntax')
-    let b:current_syntax = 'tex'
-  elseif b:current_syntax !=# 'tex'
-    return
-  endif
+  if exists('b:current_syntax') | return | endif
+  if b:current_syntax !=# 'tex' | return | endif
 
   " Initialize project cache (used e.g. for the minted package)
   if !has_key(b:vimtex, 'syntax')
