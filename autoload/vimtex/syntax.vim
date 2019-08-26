@@ -21,20 +21,19 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#load() abort " {{{1
-  if exists('b:vimtex_syntax') | return | endif
-  if b:current_syntax !=# 'tex' | return | endif
+  if s:is_loaded() | return | endif
 
   " Initialize project cache (used e.g. for the minted package)
   if !has_key(b:vimtex, 'syntax')
     let b:vimtex.syntax = {}
   endif
 
+  " Initialize b:vimtex_syntax
+  let b:vimtex_syntax = {}
+
   " Set some better defaults
   syntax spell toplevel
   syntax sync maxlines=500
-
-  " Initialize b:vimtex_syntax if necessary
-  let b:vimtex_syntax = get(b:, 'vimtex_syntax', {})
 
   " Load some general syntax improvements
   call vimtex#syntax#load#general()
@@ -56,6 +55,16 @@ function! vimtex#syntax#load() abort " {{{1
     catch /E117:/
     endtry
   endfor
+
+  " Hack to make it possible to determine if vimtex syntax was loaded
+  syntax match texVimtexLoaded 'dummyVimtexLoadedText' contained
+endfunction
+
+" }}}1
+
+function! s:is_loaded() abort " {{{1
+  return !empty(filter(split(execute('syntax'), "\n"),
+        \ 'v:val =~# "texVimtexLoaded"'))
 endfunction
 
 " }}}1
