@@ -63,8 +63,15 @@ endfunction
 " }}}1
 
 function! s:is_loaded() abort " {{{1
-  return !empty(filter(split(execute('syntax'), "\n"),
-        \ 'v:val =~# "texVimtexLoaded"'))
+  if exists('*execute')
+    let l:result = split(execute('syntax'), "\n")
+  else
+    redir => l:result
+    syntax
+    redir END
+  endif
+
+  return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
 endfunction
 
 " }}}1

@@ -7,7 +7,7 @@ test: clean before.out after.out
 	@$(MAKE) clean
 
 %.out:
-	@MAKE=1 $(vim) -u minivimrc --headless 2>/dev/null
+	@MAKE=1 $(vim) -u minivimrc 2>/dev/null
 
 clean:
 	@rm -f *.out
