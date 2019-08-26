@@ -3,4 +3,4 @@
 vim ?= nvim --headless
 
 test:
-	@$(vim) -u minivimrc
+	@MAKE=1 $(vim) -u minivimrc
