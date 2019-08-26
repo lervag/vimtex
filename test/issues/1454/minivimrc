@@ -1,0 +1,18 @@
+set nocompatible
+let &rtp = '../../..,' . &rtp
+let &rtp .= ',../../../after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+silent edit minimal.tex
+
+let s:time1 = str2float(system('date +"%s.%N"'))
+normal! 7G
+execute "normal A\<c-x>\<c-o>"
+silent! normal! u
+execute "normal A\<c-x>\<c-o>"
+let s:time2 = str2float(system('date +"%s.%N"'))
+echo 'Time elapsed:' s:time2 - s:time1 "\n"
+quit!
