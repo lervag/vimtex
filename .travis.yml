@@ -1,5 +1,5 @@
 language: generic
-dist: trusty
+dist: xenial
 before_script:
   git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
 script: test/vader/run
