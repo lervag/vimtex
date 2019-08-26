@@ -4,6 +4,11 @@ let &runtimepath .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
+let g:vimtex_view_method = 'zathura'
+if has('nvim')
+  let g:vimtex_compiler_progname = 'nvr'
+endif
+
 nnoremap q :qall!<cr>
 nnoremap e :echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<cr>
 
@@ -15,9 +20,14 @@ augroup start
 augroup END
 
 function! Test()
-  call writefile(split(execute('syntax'), "\n"), 'before.out')
+  if exists('$MAKE')
+    call writefile(split(execute('syntax'), "\n"), 'before.out')
+  endif
+
   call system((has('nvim') ? 'nvr' : 'vim')
         \ . ' --servername ' . v:servername . ' --remote +7 minimal.tex &')
+
+  if !exists('$MAKE') | return | endif
   sleep 250m
   call writefile(split(execute('syntax'), "\n"), 'after.out')
   silent quit!
