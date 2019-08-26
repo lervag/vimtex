@@ -194,26 +194,26 @@ function! s:completer_bib.search(regex) dict abort " {{{2
           \})
 
     " Parse temporary bbl file
-    let lines = map(readfile(tmp.bbl), 's:tex2unicode(v:val)')
-    let lines = split(substitute(join(lines, "\n"),
-          \ '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g'), "\n")
+    let lines = join(readfile(tmp.bbl), "\n")
+    let lines = substitute(lines, '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g')
+    let lines = s:tex2unicode(lines)
+    let lines = split(lines, "\n")
 
     if !g:vimtex_complete_bib.simple
       call s:filter_with_options(lines, a:regex, {'anchor': 0})
     endif
 
     for line in lines
-      let matches = matchlist(line,
-            \ '^\(.*\)||\(.*\)||\(.*\)||\(.*\)||\(.*\)')
-      if !empty(matches) && !empty(matches[1])
-        let self.type_length = max([self.type_length, len(matches[2])])
+      let matches = split(line, '||')
+      if !empty(matches) && !empty(matches[0])
+        let self.type_length = max([self.type_length, len(matches[1])])
         call add(res, {
-              \ 'key':    matches[1],
-              \ 'type':   matches[2],
-              \ 'author': matches[3],
-              \ 'year':   matches[4],
-              \ 'title':  matches[5],
-              \ })
+              \ 'key':    matches[0],
+              \ 'type':   matches[1],
+              \ 'author': matches[2],
+              \ 'year':   matches[3],
+              \ 'title':  matches[4],
+              \})
       endif
     endfor
 
