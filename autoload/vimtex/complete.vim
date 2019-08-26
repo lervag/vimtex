@@ -165,91 +165,20 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 endfunction
 
 function! s:completer_bib.search(regex) dict abort " {{{2
-  let res = []
-
-  " The bibtex completion seems to require that we are in the project root
-  call vimtex#paths#pushd(b:vimtex.root)
+  let l:results = []
 
   " Find data from external bib files
-  let bibfiles = join(self.find_bibs(), ',')
-  if bibfiles !=# ''
-    " Define temporary files
-    let tmp = {
-          \ 'aux' : 'tmpfile.aux',
-          \ 'bbl' : 'tmpfile.bbl',
-          \ 'blg' : 'tmpfile.blg',
-          \ }
-
-    " Write temporary aux file
-    call writefile([
-          \ '\citation{*}',
-          \ '\bibstyle{' . self.bstfile . '}',
-          \ '\bibdata{' . bibfiles . '}',
-          \ ], tmp.aux)
-
-    " Create the temporary bbl file
-    call vimtex#process#run('bibtex -terse ' . fnameescape(tmp.aux), {
-          \ 'background' : 0,
-          \ 'silent' : 1,
-          \})
-
-    " Parse temporary bbl file
-    let lines = join(readfile(tmp.bbl), "\n")
-    let lines = substitute(lines, '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g')
-    let lines = s:tex2unicode(lines)
-    let lines = split(lines, "\n")
-
-    if !g:vimtex_complete_bib.simple
-      call s:filter_with_options(lines, a:regex, {'anchor': 0})
-    endif
-
-    for line in lines
-      let matches = split(line, '||')
-      if !empty(matches) && !empty(matches[0])
-        let self.type_length = max([self.type_length, len(matches[1])])
-        call add(res, {
-              \ 'key':    matches[0],
-              \ 'type':   matches[1],
-              \ 'author': matches[2],
-              \ 'year':   matches[3],
-              \ 'title':  matches[4],
-              \})
-      endif
-    endfor
-
-    " Clean up
-    call delete(tmp.aux)
-    call delete(tmp.bbl)
-    call delete(tmp.blg)
-  endif
-
-  " Return to previous working directory
+  " Note: bibtex completion seems to require that we are in the project root
+  call vimtex#paths#pushd(b:vimtex.root)
+  for l:file in self.find_bibs()
+    let l:results += self.parse_bib(l:file, a:regex)
+  endfor
   call vimtex#paths#popd()
 
   " Find data from 'thebibliography' environments
-  let lines = readfile(b:vimtex.tex)
-  if match(lines, '\C\\begin{thebibliography}') >= 0
-    call filter(lines, 'v:val =~# ''\C\\bibitem''')
+  let l:results += self.parse_thebibliography(a:regex)
 
-    if !g:vimtex_complete_bib.simple
-      call s:filter_with_options(lines, a:regex)
-    endif
-
-    for line in lines
-      let matches = matchlist(line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
-      if len(matches) > 1
-        call add(res, {
-              \ 'key': matches[2],
-              \ 'type': 'thebibliography',
-              \ 'author': '',
-              \ 'year': '',
-              \ 'title': matches[2],
-              \ })
-      endif
-    endfor
-  endif
-
-  return res
+  return l:results
 endfunction
 
 function! s:completer_bib.find_bibs() dict abort " {{{2
@@ -276,6 +205,113 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   endfor
 
   return vimtex#util#uniq(l:bibfiles)
+endfunction
+
+function! s:completer_bib.parse_bib(file, regex) dict abort " {{{2
+  if empty(a:file) | return [] | endif
+
+  " Get ftime for the input file
+  let l:ftime = getftime(substitute(a:file, '\%(\.bib\)\?$', '.bib', ''))
+
+  " Caching
+  if !has_key(b:vimtex, 'complete')
+    let b:vimtex.complete = {}
+  endif
+  if !has_key(b:vimtex.complete, 'bibtex')
+    let b:vimtex.complete.bibtex = {}
+  endif
+  if !has_key(b:vimtex.complete.bibtex, a:file)
+    let b:vimtex.complete.bibtex[a:file] = {'res': [], 'time': -1}
+  endif
+  if b:vimtex.complete.bibtex[a:file].time > 0
+        \ && getftime(a:file) <= b:vimtex.complete.bibtex[a:file].time
+    return b:vimtex.complete.bibtex[a:file].res
+  endif
+
+  " Define temporary files
+  let tmp = {
+        \ 'aux' : 'tmpfile.aux',
+        \ 'bbl' : 'tmpfile.bbl',
+        \ 'blg' : 'tmpfile.blg',
+        \ }
+
+  " Write temporary aux file
+  call writefile([
+        \ '\citation{*}',
+        \ '\bibstyle{' . self.bstfile . '}',
+        \ '\bibdata{' . a:file . '}',
+        \ ], tmp.aux)
+
+  " Create the temporary bbl file
+  call vimtex#process#run('bibtex -terse ' . fnameescape(tmp.aux), {
+        \ 'background' : 0,
+        \ 'silent' : 1,
+        \})
+
+  " Parse temporary bbl file
+  let lines = join(readfile(tmp.bbl), "\n")
+  let lines = substitute(lines, '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g')
+  let lines = s:tex2unicode(lines)
+  let lines = split(lines, "\n")
+
+  if !g:vimtex_complete_bib.simple
+    call s:filter_with_options(lines, a:regex, {'anchor': 0})
+  endif
+
+  let l:res = []
+  for line in lines
+    let matches = split(line, '||')
+    if !empty(matches) && !empty(matches[0])
+      let self.type_length = max([self.type_length, len(matches[1])])
+      call add(l:res, {
+            \ 'key':    matches[0],
+            \ 'type':   matches[1],
+            \ 'author': matches[2],
+            \ 'year':   matches[3],
+            \ 'title':  matches[4],
+            \})
+    endif
+  endfor
+
+  " Clean up
+  call delete(tmp.aux)
+  call delete(tmp.bbl)
+  call delete(tmp.blg)
+
+  " Cache results
+  let b:vimtex.complete.bibtex[a:file].time = l:ftime
+  let b:vimtex.complete.bibtex[a:file].res = res
+
+  return l:res
+endfunction
+
+function! s:completer_bib.parse_thebibliography(regex) dict abort " {{{2
+  let l:res = []
+
+  " Find data from 'thebibliography' environments
+  let l:lines = readfile(b:vimtex.tex)
+  if match(l:lines, '\C\\begin{thebibliography}') >= 0
+    call filter(l:lines, 'v:val =~# ''\C\\bibitem''')
+
+    if !g:vimtex_complete_bib.simple
+      call s:filter_with_options(l:lines, a:regex)
+    endif
+
+    for l:line in l:lines
+      let l:matches = matchlist(l:line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
+      if len(l:matches) > 1
+        call add(l:res, {
+              \ 'key': l:matches[2],
+              \ 'type': 'thebibliography',
+              \ 'author': '',
+              \ 'year': '',
+              \ 'title': l:matches[2],
+              \ })
+      endif
+    endfor
+  endif
+
+  return l:res
 endfunction
 
 " }}}1
