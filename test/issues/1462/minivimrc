@@ -25,4 +25,4 @@ if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
-silent edit minimal.tex
+edit minimal.tex
