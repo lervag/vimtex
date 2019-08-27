@@ -65,14 +65,10 @@ endfunction
 function! s:is_loaded() abort " {{{1
   if exists('*execute')
     let l:result = split(execute('syntax'), "\n")
+    return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
   else
-    redir => l:redir
-    syntax
-    redir END
-    let l:result = split(l:redir, "\n")
+    return 0
   endif
-
-  return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
 endfunction
 
 " }}}1
