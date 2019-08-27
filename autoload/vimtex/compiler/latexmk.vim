@@ -73,7 +73,7 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
   let l:out_dir = s:parse_latexmkrc_option(self.root, 'out_dir', 0, '')[0]
 
   if !empty(l:out_dir)
-    if !empty(self.build_dir)
+    if !empty(self.build_dir) && (self.build_dir !=# l:out_dir)
       call vimtex#log#warning(
             \ 'Setting out_dir from latexmkrc overrides build_dir!',
             \ 'Changed build_dir from: ' . self.build_dir,
