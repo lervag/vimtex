@@ -492,9 +492,9 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
 
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
-  call filter(l:candidates, 'v:val =~# ''\v\\(re)?newcommand''')
+  call filter(l:candidates, 'v:val =~# ''\v\\((re)?newcommand|DeclareDocumentCommand)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\(re)?newcommand\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((re)?newcommand|DeclareDocumentCommand)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[cmd: newcommand]'',
         \ }')
