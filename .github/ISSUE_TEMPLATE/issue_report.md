@@ -56,6 +56,8 @@ labels: bug
 <!-- Describe both the expected and the observed behaviour-->
 
 <!-- *Note*: if relevant, include the content of your `.latexmkrc` file -->
+<!-- If you opened this from vimtex, you can just type `<ESC>:read ~\.latexmkrc`
+     or `<ESC>:read .latexmkrc` for a local `.latexmkrc` -->
 
 **Output from VimtexInfo**
 <!-- Run `:VimtexInfo` and paste the content here -->
