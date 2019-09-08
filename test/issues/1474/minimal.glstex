@@ -1,0 +1,167 @@
+\glsnoexpandfields
+\providecommand{\bibglshashchar}{\expandafter\@gobble\string\#}
+\providecommand{\bibglscircumchar}{\expandafter\@gobble\string\^}
+\providecommand{\bibglsdollarchar}{\expandafter\@gobble\string\$}
+\providecommand{\bibglsampersandchar}{\expandafter\@gobble\string\&}
+\providecommand{\bibglsunderscorechar}{\expandafter\@gobble\string\_}
+\providecommand{\bibglshrefchar}[2]{\glspercentchar #1}
+\providecommand{\bibglsusesee}[1]{\glsxtrusesee{#1}}
+\providecommand{\bibglsusealias}[1]{%
+ \glsxtrifhasfield{alias}{#1}%
+ {\expandafter\glsseeformat\expandafter{\glscurrentfieldvalue}{}}%
+ {}%
+}
+\providecommand{\bibglsuseseealso}[1]{\glsxtruseseealso{#1}}
+\providecommand{\bibglsdelimN}{\delimN}
+\providecommand{\bibglslastDelimN}{,~}
+\providecommand{\bibglsrange}[1]{#1}
+\providecommand{\bibglsinterloper}[1]{#1\bibglsdelimN }
+\providecommand{\bibglspassimname}{passim}
+\providecommand{\bibglspassim}{ \bibglspassimname}
+\providecommand*{\bibglshyperlink}[2]{\glshyperlink[#1]{#2}}
+
+\providecommand{\bibglsuppercase}{\MakeTextUppercase}
+\providecommand{\bibglslowercase}{\MakeTextLowercase}
+\providecommand{\bibglsfirstuc}{\makefirstuc}
+\providecommand{\bibglstitlecase}{\capitalisewords}
+
+\providecommand{\bibglsprimaryprefixlabel}[1]{}
+\providecommand{\bibglsdualprefixlabel}[1]{}
+\providecommand{\bibglstertiaryprefixlabel}[1]{}
+\providecommand{\bibglsexternalprefixlabel}[2]{}
+
+\bibglstertiaryprefixlabel{tertiary.}
+\bibglsdualprefixlabel{dual.}
+\bibglsprimaryprefixlabel{}
+\providecommand{\bibglsseesep}{, }
+
+\providecommand{\bibglsseealsosep}{, }
+
+\providecommand{\bibglsaliassep}{, }
+
+\ifdef\glsxtrsetgrouptitle
+{
+  \providecommand{\bibglslettergroup}[4]{#4#3}
+  \providecommand{\bibglslettergrouptitle}[4]{\unexpanded{#1}}
+  \providecommand{\bibglssetlettergrouptitle}[1]{%
+    \glsxtrsetgrouptitle{\bibglslettergroup#1}{\bibglslettergrouptitle#1}}
+  \providecommand{\bibglsunicodegroup}[4]{#4#3}
+  \providecommand{\bibglsunicodegrouptitle}[4]{\unexpanded{#1}}
+  \providecommand{\bibglssetunicodegrouptitle}[1]{%
+    \glsxtrsetgrouptitle{\bibglsunicodegroup#1}{\bibglsunicodegrouptitle#1}}
+  \providecommand{\bibglsothergroup}[3]{glssymbols}
+  \providecommand{\bibglsothergrouptitle}[3]{\protect\glssymbolsgroupname}
+  \providecommand{\bibglssetothergrouptitle}[1]{%
+    \glsxtrsetgrouptitle{\bibglsothergroup#1}{\bibglsothergrouptitle#1}}
+  \providecommand{\bibglsemptygroup}[1]{glssymbols}
+  \providecommand{\bibglsemptygrouptitle}[1]{\protect\glssymbolsgroupname}
+  \providecommand{\bibglssetemptygrouptitle}[1]{%
+    \glsxtrsetgrouptitle{\bibglsemptygroup#1}{\bibglsemptygrouptitle#1}}
+  \providecommand{\bibglsnumbergroup}[3]{glsnumbers}
+  \providecommand{\bibglsnumbergrouptitle}[3]{\protect\glsnumbersgroupname}
+  \providecommand{\bibglssetnumbergrouptitle}[1]{%
+    \glsxtrsetgrouptitle{\bibglsnumbergroup#1}{\bibglsnumbergrouptitle#1}}
+}
+{
+  \providecommand{\bibglslettergroup}[4]{#1}
+  \providecommand{\bibglsothergroup}[3]{glssymbols}
+  \providecommand{\bibglsnumbergroup}[3]{glsnumbers}
+  \providecommand{\bibglssetlettergrouptitle}[1]{}
+  \providecommand{\bibglssetothergrouptitle}[1]{}
+  \providecommand{\bibglssetnumbergrouptitle}[1]{}
+  \providecommand{\bibglssetdatetimegrouptitle}[1]{}
+  \providecommand{\bibglssetdategrouptitle}[1]{}
+  \providecommand{\bibglssettimegrouptitle}[1]{}
+}
+
+\providecommand{\bibglssetlastgrouptitle}[2]{}
+
+\bibglssetlettergrouptitle{{C}{C}{5505024}{}}
+\bibglssetlettergrouptitle{{P}{P}{6422528}{}}
+\bibglssetlettergrouptitle{{I}{I}{5963776}{}}
+\bibglssetlettergrouptitle{{Q}{Q}{6488064}{}}
+\bibglssetlettergrouptitle{{N}{N}{6291456}{}}
+\bibglssetlettergrouptitle{{A}{A}{5373952}{}}
+\bibglssetlettergrouptitle{{D}{d}{5570560}{}}
+
+\bibglssetlastgrouptitle{\bibglslettergroup}{{Q}{Q}{6488064}{}}
+\providecommand*{\bibglsflattenedhomograph}[2]{#1}
+\providecommand{\bibglsnewentry}[4]{%
+ \longnewglossaryentry*{#1}{name={#3},#2}{#4}%
+}
+
+\bibglsnewentry{abelian}%
+{sort={Abelsch|},
+group={\bibglslettergroup{A}{A}{5373952}{}}}%
+{Abelsch}%
+{Som}
+
+
+\bibglsnewentry{codeword}%
+{plural={Codew\"orter},
+sort={Codewort|},
+group={\bibglslettergroup{C}{C}{5505024}{}}}%
+{Codewort}%
+{Element eines Codes}
+
+
+\bibglsnewentry{codingtheory}%
+{sort={Codierungstheorie|},
+group={\bibglslettergroup{C}{C}{5505024}{}}}%
+{Codierungstheorie}%
+{Theorie der Codes}
+
+
+\bibglsnewentry{dual-code}%
+{sort={dualer|Code|},
+group={\bibglslettergroup{D}{d}{5570560}{}}}%
+{dualer Code}%
+{Code, der von der Paritycheckmatrix eines anderen Codes aufgespannt wird}
+
+
+\providecommand{\bibglsnewacronym}[4]{%
+  \newacronym[#2]{#1}{#3}{#4}%
+}
+
+\bibglsnewacronym{isbn}%
+{location={\glsnoidxdisplayloc{}{page}{glsnumberformat}{1}},
+sort={ISBN|},
+group={\bibglslettergroup{I}{I}{5963776}{}}}%
+{ISBN}%
+{international standard book number}
+\glsxtrfieldlistadd{isbn}{loclist}{\glsnoidxdisplayloc{}{page}{glsnumberformat}{1}}
+
+
+\bibglsnewacronym{isbn13}%
+{location={\glsnoidxdisplayloc{}{page}{glsnumberformat}{1}},
+sort={isbn|13|},
+group={\bibglslettergroup{I}{i}{5963776}{}}}%
+{isbn-13}%
+{international standard book number}
+\glsxtrfieldlistadd{isbn13}{loclist}{\glsnoidxdisplayloc{}{page}{glsnumberformat}{1}}
+
+
+\bibglsnewacronym{nasa}%
+{sort={NASA|},
+group={\bibglslettergroup{N}{N}{6291456}{}}}%
+{NASA}%
+{National Aeronautics and Space Administration}
+
+
+\bibglsnewentry{plausibility-check}%
+{sort={Plausibilitäts-Check|},
+group={\bibglslettergroup{P}{P}{6422528}{}}}%
+{Plausibilit\"ats-Check}%
+{\"Uberpr\"ufung,
+	ob ein Objekt \enquote{plausibel}
+	ist; dies kann bedeuten zupr\"ufen,
+	ob es in dem erwarteten Raum ist}
+
+
+\bibglsnewentry{qr-code}%
+{sort={QR-Code|},
+group={\bibglslettergroup{Q}{Q}{6488064}{}}}%
+{QR-Code}%
+{\enquote{Quick Response}-Code}
+
+
