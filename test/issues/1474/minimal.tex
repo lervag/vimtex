@@ -1,16 +1,12 @@
 \documentclass{minimal}
-
-\usepackage[german]{babel}% to support the \"
+\usepackage[german]{babel}
 \usepackage{csquotes}
-\usepackage[
-	record,% needed for bib2gls
-	style=long,
-	]{glossaries-extra}
+\usepackage[record,style=long]{glossaries-extra}
 
-\GlsXtrLoadResources[% general glossary
-	src={glossary.gls.bib},
-	selection={all},
-	]
+\GlsXtrLoadResources[
+  src={glossary.gls.bib},
+  selection={all},
+]
 
 \begin{document}
 
@@ -18,7 +14,7 @@ Hello World!
 
 \gls{isbn}
 
-\gls{isbn13}
+
 
 \printunsrtglossaries
 
