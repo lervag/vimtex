@@ -109,41 +109,6 @@ function! vimtex#motion#find_matching_pair(...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#motion#paragraph(backwards, visual) abort " {{{1
-  if a:visual
-    normal! gv
-  endif
-
-  if a:backwards
-    let l:flags = 'Wb'
-    normal! k
-  else
-    let l:flags = 'W'
-    call search('\S', l:flags)
-  endif
-
-  if vimtex#util#in_comment()
-    let l:search = '^\s*\($\|\(%\)\@!\S\)'
-  else
-    let l:search = '\v^\s*($|' . join(s:paragraph_boundaries, '|') . ')'
-  endif
-
-  let n = 1
-  while n <= max([v:count, 1])
-    call search(l:search, l:flags)
-    let n += 1
-  endwhile
-
-  if a:visual
-    if a:backwards
-      normal! j0
-    else
-      normal! k$
-    endif
-  endif
-endfunction
-
-" }}}1
 function! vimtex#motion#section(type, backwards, visual) abort " {{{1
   let l:count = v:count1
   if a:visual
@@ -232,24 +197,8 @@ endfunction
 " }}}1
 
 
-" {{{1 Initialize module
-
-" Pattern to match section/chapter/...
+" Patterns to match section/chapter/...
 let s:re_sec = '\v^\s*\\%(%(sub)?paragraph|%(sub)*section|chapter|part|'
       \ .        'appendi%(x|ces)|%(front|back|main)matter)>'
 let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
 let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
-
-" List of paragraph boundaries
-let s:paragraph_boundaries = [
-      \ '\%',
-      \ '\\part',
-      \ '\\chapter',
-      \ '\\(sub)*section',
-      \ '\\paragraph',
-      \ '\\label',
-      \ '\\begin',
-      \ '\\end',
-      \ ]
-
-" }}}1
