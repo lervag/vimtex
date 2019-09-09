@@ -146,6 +146,7 @@ let s:re_prefilter = '\v%(\\' . join([
       \ 'part',
       \ 'printbib',
       \ 'printindex',
+      \ 'paragraph',
       \ 'section',
       \ 'subfile',
       \ 'tableofcontents',
@@ -348,9 +349,9 @@ endfunction
 " }}}1
 
 let s:matcher_sections = {
-      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section)\*?\s*(\[|\{)',
+      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section|%(sub)?paragraph)\*?\s*(\[|\{)',
       \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
-      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section)',
+      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section|%(sub)?paragraph)',
       \ 'in_preamble' : 0,
       \ 'in_content' : 1,
       \ 'priority' : 1,
@@ -360,6 +361,7 @@ function! s:matcher_sections.get_entry(context) abort dict " {{{1
   let level = matchstr(a:context.line, self.re_level)
   let type = matchlist(a:context.line, self.re)[1]
   let title = matchstr(a:context.line, self.re_title)
+  let number = ''
 
   let [l:end, l:count] = s:find_closing(0, title, 1, type)
   if l:count == 0
@@ -372,11 +374,14 @@ function! s:matcher_sections.get_entry(context) abort dict " {{{1
 
   if a:context.line !~# self.re_starred
     call a:context.level.increment(level)
+    if a:context.line !~# '\v^\s*\\%(sub)?paragraph'
+      let number = deepcopy(a:context.level)
+    endif
   endif
 
   return {
         \ 'title'  : title,
-        \ 'number' : a:context.line =~# self.re_starred ? '' : deepcopy(a:context.level),
+        \ 'number' : number,
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
         \ 'level'  : a:context.max_level - a:context.level.current,
@@ -692,6 +697,8 @@ function! s:level.reset(part, level) abort dict " {{{1
   let self.subsection = 0
   let self.subsubsection = 0
   let self.subsubsubsection = 0
+  let self.paragraph = 0
+  let self.subparagraph = 0
   let self.current = a:level
   let self[a:part] = 1
 endfunction
@@ -711,20 +718,35 @@ function! s:level.increment(level) abort dict " {{{1
     let self.subsection = 0
     let self.subsubsection = 0
     let self.subsubsubsection = 0
+    let self.paragraph = 0
+    let self.subparagraph = 0
   elseif a:level ==# 'section'
     let self.section += 1
     let self.subsection = 0
     let self.subsubsection = 0
     let self.subsubsubsection = 0
+    let self.paragraph = 0
+    let self.subparagraph = 0
   elseif a:level ==# 'subsection'
     let self.subsection += 1
     let self.subsubsection = 0
     let self.subsubsubsection = 0
+    let self.paragraph = 0
+    let self.subparagraph = 0
   elseif a:level ==# 'subsubsection'
     let self.subsubsection += 1
     let self.subsubsubsection = 0
+    let self.paragraph = 0
+    let self.subparagraph = 0
   elseif a:level ==# 'subsubsubsection'
     let self.subsubsubsection += 1
+    let self.paragraph = 0
+    let self.subparagraph = 0
+  elseif a:level ==# 'paragraph'
+    let self.paragraph += 1
+    let self.subparagraph = 0
+  elseif a:level ==# 'subparagraph'
+    let self.subparagraph += 1
   endif
 endfunction
 
@@ -732,10 +754,12 @@ endfunction
 
 let s:sec_to_value = {
       \ '_' : 0,
-      \ 'subsubsubsection' : 1,
-      \ 'subsubsection' : 2,
-      \ 'subsection' : 3,
-      \ 'section' : 4,
-      \ 'chapter' : 5,
-      \ 'part' : 6,
+      \ 'subparagraph' : 1,
+      \ 'paragraph' : 2,
+      \ 'subsubsubsection' : 3,
+      \ 'subsubsection' : 4,
+      \ 'subsection' : 5,
+      \ 'section' : 6,
+      \ 'chapter' : 7,
+      \ 'part' : 8,
       \ }

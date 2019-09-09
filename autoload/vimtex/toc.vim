@@ -354,7 +354,7 @@ function! s:toc.set_syntax() abort dict "{{{1
   syntax match VimtexTocSec1 /^L1.*/ contains=@VimtexTocStuff
   syntax match VimtexTocSec2 /^L2.*/ contains=@VimtexTocStuff
   syntax match VimtexTocSec3 /^L3.*/ contains=@VimtexTocStuff
-  syntax match VimtexTocSec4 /^L4.*/ contains=@VimtexTocStuff
+  syntax match VimtexTocSec4 /^L[4-9].*/ contains=@VimtexTocStuff
   syntax match VimtexTocSecLabel /^L\d / contained conceal
         \ nextgroup=VimtexTocNum
   syntax cluster VimtexTocStuff
@@ -419,10 +419,7 @@ endfunction
 
 " }}}1
 function! s:toc.print_entries() abort dict " {{{1
-  let self.number_width = self.layer_status.content
-        \ ? max([0, 2*(self.tocdepth + 2)])
-        \ : 0
-  let self.number_format = '%-' . self.number_width . 's'
+  call self.set_number_format()
 
   for entry in self.get_visible_entries()
     call self.print_entry(entry)
@@ -482,6 +479,19 @@ function! s:toc.print_number(number) abort dict " {{{1
   endif
 
   return join(number, '.')
+endfunction
+
+" }}}1
+function! s:toc.set_number_format() abort dict " {{{1
+  let number_width = 0
+  for entry in self.get_visible_entries()
+    let number_width = max([number_width, strlen(self.print_number(entry.number)) + 1])
+  endfor
+
+  let self.number_width = self.layer_status.content
+        \ ? max([0, min([2*(self.tocdepth + 2), number_width])])
+        \ : 0
+  let self.number_format = '%-' . self.number_width . 's'
 endfunction
 
 " }}}1
