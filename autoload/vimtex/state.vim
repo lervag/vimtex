@@ -570,7 +570,7 @@ function! s:vimtex.parse_packages() abort dict " {{{1
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
 
-  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''usepackage''')
+  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''\v%(usep|RequireP)ackage''')
   call map(l:usepackages, 'matchstr(v:val, l:pat)')
   call map(l:usepackages, 'split(v:val, ''\s*,\s*'')')
 
