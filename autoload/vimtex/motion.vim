@@ -235,7 +235,7 @@ endfunction
 " {{{1 Initialize module
 
 " Pattern to match section/chapter/...
-let s:re_sec = '\v^\s*\\%(%(sub)*section|chapter|part|'
+let s:re_sec = '\v^\s*\\%(%(sub)?paragraph|%(sub)*section|chapter|part|'
       \ .        'appendi%(x|ces)|%(front|back|main)matter)>'
 let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
 let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
