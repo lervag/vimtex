@@ -568,7 +568,7 @@ function! s:vimtex.parse_packages() abort dict " {{{1
   if !empty(self.packages) | return | endif
 
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\v\\usepackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
+      \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
 
   let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''usepackage''')
   call map(l:usepackages, 'matchstr(v:val, l:pat)')
