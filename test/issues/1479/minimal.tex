@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\begin{document}
+
+Hello World!
+
+To test label completion you need to compile the document first!
+
+\begin{equation}
+  f(x) = 42
+  \label{eq:main-is-working}
+\end{equation}
+
+\begin{theorem}
+  \label{th:first}
+  test
+\end{theorem}
+
+\begin{theorem}
+  \label{th:second}
+  test
+\end{theorem}
+
+\begin{proposition}
+  \label{prop:first}
+  test
+\end{proposition}
+
+\begin{proposition}
+  \label{prop:second}
+  test
+\end{proposition}
+
+\begin{figure}
+  \centering
+  \rule{1cm}{1cm}
+  \caption{Test 1}
+  \label{fig:test1}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \rule{1cm}{1cm}
+  \caption{Test 2}
+  \label{fig:test2}
+\end{figure}
+
+\end{document}
