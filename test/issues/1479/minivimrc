@@ -12,6 +12,6 @@ silent execute "normal GO\\cref{\<c-x>\<c-o>"
 silent normal! u
 
 for s:cand in vimtex#complete#omnifunc(0, '')
-  echo s:cand
+  echo s:cand.menu
 endfor
 quitall!
