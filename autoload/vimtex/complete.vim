@@ -338,23 +338,11 @@ function! s:completer_ref.init() dict abort " {{{2
 endfunction
 
 function! s:completer_ref.complete(regex) dict abort " {{{2
-  let self.candidates = []
+  let self.candidates = self.get_matches(a:regex)
 
-  for m in self.get_matches(a:regex)
-    call add(self.candidates, {
-          \ 'word' : m[0],
-          \ 'menu' : !empty(m[2])
-          \   ? printf('%7s [p. %s]', '('.m[1].')', m[2])
-          \   : printf('%7s',         '('.m[1].')')
-          \ })
-  endfor
-
-  "
-  " If context is 'eqref', then only show eq: labels
-  "
   if self.context =~# '\\eqref'
-        \ && !empty(filter(copy(self.matches), 'v:val[0] =~# ''eq:'''))
-    call filter(self.candidates, 'v:val.word =~# ''eq:''')
+        \ && !empty(filter(copy(self.matches), 'v:val.word =~# ''^eq:'''))
+    call filter(self.candidates, 'v:val.word =~# ''^eq:''')
   endif
 
   return self.candidates
@@ -364,11 +352,11 @@ function! s:completer_ref.get_matches(regex) dict abort " {{{2
   call self.parse_aux_files()
 
   " Match number
-  let self.matches = filter(copy(self.labels), 'v:val[1] =~# ''^' . a:regex . '''')
+  let self.matches = filter(copy(self.labels), 'v:val.menu =~# ''^' . a:regex . '''')
   if !empty(self.matches) | return self.matches | endif
 
   " Match label
-  let self.matches = filter(copy(self.labels), 'v:val[0] =~# ''' . a:regex . '''')
+  let self.matches = filter(copy(self.labels), 'v:val.word =~# ''' . a:regex . '''')
 
   " Match label and number
   if empty(self.matches)
@@ -377,8 +365,8 @@ function! s:completer_ref.get_matches(regex) dict abort " {{{2
       let l:base = l:regex_split[0]
       let l:number = escape(join(l:regex_split[1:], ' '), '.')
       let self.matches = filter(copy(self.labels),
-            \ 'v:val[0] =~# ''' . l:base   . ''' &&' .
-            \ 'v:val[1] =~# ''' . l:number . '''')
+            \ 'v:val.word =~# ''' . l:base   . ''' &&' .
+            \ 'v:val.menu =~# ''' . l:number . '''')
     endif
   endif
 
@@ -419,8 +407,9 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
   "
   "   \newlabel{name}{{number}{page}.*}.*
   "   \newlabel{name}{{text {number}}{page}.*}.*
+  "   \newlabel{name}{{number}{page}{...}{type}.*}.*
   "
-  " Returns a list of [name, number, page] tuples.
+  " Returns a list of candidates like {'word': name, 'menu': type number page}.
   "
 
   let l:labels = []
@@ -440,13 +429,18 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
     endif
     let l:context = remove(l:tree, 0)
     if type(l:context) == type([]) && len(l:context) > 1
-      let l:number = self.parse_number(l:context[0])
+      let l:menu = ''
       try
-        let l:page = l:context[1][0]
+        let l:type = substitute(l:context[3][0], '\..*$', ' ', '')
+        let l:menu .= toupper(l:type[0]) . l:type[1:]
       catch
-        let l:page = ''
       endtry
-      call add(l:labels, [l:name, l:number, l:page])
+      let l:menu .= self.parse_number(l:context[0])
+      try
+        let l:menu .= ' (p. ' . l:context[1][0] . ')'
+      catch
+      endtry
+      call add(l:labels, {'word': l:name, 'menu': l:menu})
     endif
   endfor
 
@@ -462,7 +456,7 @@ function! s:completer_ref.parse_number(num_tree) dict abort " {{{2
       return self.parse_number(a:num_tree[l:index])
     endif
   else
-    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*)($|\s.*)')
+    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*\l?)($|\s.*)')
     return len(l:matches) > 3 ? l:matches[2] : '-'
   endif
 endfunction
