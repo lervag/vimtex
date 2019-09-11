@@ -564,8 +564,8 @@ endfunction
 function! s:vimtex.parse_packages() abort dict " {{{1
   let self.packages = {}
 
-  call self.parse_packages_from_fls()
-  if !empty(self.packages) | return | endif
+  " Only parse the preamble if fls file is not enough
+  if self.parse_packages_from_fls() | return | endif
 
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
@@ -591,6 +591,7 @@ function! s:vimtex.parse_packages_from_fls() abort dict " {{{1
   let l:fls = self.fls()
   if empty(l:fls) | return | endif
 
+  let l:fmt_included = 0
   let l:fls_packages = {}
 
   for l:line in vimtex#parser#fls(l:fls)
@@ -598,12 +599,20 @@ function! s:vimtex.parse_packages_from_fls() abort dict " {{{1
     let l:package = fnamemodify(l:package, ':t')
     if !empty(l:package)
       let l:fls_packages[l:package] = {}
+    elseif l:line =~# '\vINPUT (\f+)\.fmt'
+      let l:fmt_included = 1
     endif
   endfor
 
   if !empty(l:fls_packages)
     let self.packages = l:fls_packages
+
+    " If fmt file is also included, then we should proceed to parse the
+    " preamble as well
+    if !l:fmt_included | return 1 | endif
   endif
+
+  return 0
 endfunction
 
 " }}}1
