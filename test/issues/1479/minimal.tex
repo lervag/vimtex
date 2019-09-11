@@ -1,7 +1,8 @@
 \documentclass{article}
-\usepackage{hyperref}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{cleveref}
 
 \numberwithin{equation}{section}
 
@@ -22,6 +23,7 @@ To test label completion you need to compile the document first!
 \end{theorem}
 
 \begin{equation}
+  \tag{1.0}
   f(x) = 42
   \label{eq:main-is-working}
 \end{equation}
