@@ -564,13 +564,20 @@ endfunction
 function! s:vimtex.parse_packages() abort dict " {{{1
   let self.packages = {}
 
-  " Only parse the preamble if fls file is not enough
-  if self.parse_packages_from_fls() | return | endif
+  " Try to parse .fls file if present, as it is usually more complete. That is,
+  " it contains a generated list of all the packages that are used.
+  for l:line in vimtex#parser#fls(self.fls())
+    let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
+    let l:package = fnamemodify(l:package, ':t')
+    if !empty(l:package)
+      let self.packages[l:package] = {}
+    endif
+  endfor
 
+  " Now parse preamble as well for usepackage and RequirePackage
+  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''\v%(usep|RequireP)ackage''')
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
-
-  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''\v%(usep|RequireP)ackage''')
   call map(l:usepackages, 'matchstr(v:val, l:pat)')
   call map(l:usepackages, 'split(v:val, ''\s*,\s*'')')
 
@@ -579,40 +586,6 @@ function! s:vimtex.parse_packages() abort dict " {{{1
       let self.packages[l:package] = {}
     endfor
   endfor
-endfunction
-
-" }}}1
-function! s:vimtex.parse_packages_from_fls() abort dict " {{{1
-  "
-  " The .fls file contains a generated list of all the packages that are used,
-  " and as such it is a better way of parsing for packages then reading the
-  " preamble.
-  "
-  let l:fls = self.fls()
-  if empty(l:fls) | return | endif
-
-  let l:fmt_included = 0
-  let l:fls_packages = {}
-
-  for l:line in vimtex#parser#fls(l:fls)
-    let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
-    let l:package = fnamemodify(l:package, ':t')
-    if !empty(l:package)
-      let l:fls_packages[l:package] = {}
-    elseif l:line =~# '\vINPUT (\f+)\.fmt'
-      let l:fmt_included = 1
-    endif
-  endfor
-
-  if !empty(l:fls_packages)
-    let self.packages = l:fls_packages
-
-    " If fmt file is also included, then we should proceed to parse the
-    " preamble as well
-    if !l:fmt_included | return 1 | endif
-  endif
-
-  return 0
 endfunction
 
 " }}}1
