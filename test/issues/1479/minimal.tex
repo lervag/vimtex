@@ -1,6 +1,9 @@
 \documentclass{article}
 \usepackage{hyperref}
 \usepackage{amsthm}
+\usepackage{amsmath}
+
+\numberwithin{equation}{section}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -11,15 +14,37 @@ Hello World!
 
 To test label completion you need to compile the document first!
 
-\begin{equation}
-  f(x) = 42
-  \label{eq:main-is-working}
-\end{equation}
+\section{Section 1}
 
 \begin{theorem}
   \label{th:first}
   test
 \end{theorem}
+
+\begin{equation}
+  f(x) = 42
+  \label{eq:main-is-working}
+\end{equation}
+
+\begin{align}
+  \label{eq:test1}
+  a &= 1 + x \\
+  \label{eq:aligned}
+  b &= x^2
+\end{align}
+
+\section{Section 2}
+
+\begin{subequations}
+  \begin{align}
+    \label{eq:sub1}
+    a &= 1 + x \\
+    \label{eq:sub2}
+    b &= x^2
+  \end{align}
+\end{subequations}
+
+\section{Section 2}
 
 \begin{theorem}
   \label{th:second}
