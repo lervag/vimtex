@@ -1,9 +1,20 @@
+%&preamble
 \documentclass{minimal}
-\usepackage{cleveref}
+\input{preamble.tex}
+\csname endofdump \endcsname
+
+\usepackage{xspace}
+
 \begin{document}
 
 Hello World!
-\cref{speling}
+\begin{equation}
+  f(x) = 1
+  \label{speling}
+\end{equation}
+
+Testing \cref{speling}.
+
 \include{intro.tex}
 
 \end{document}
