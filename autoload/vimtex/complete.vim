@@ -352,7 +352,7 @@ function! s:completer_ref.get_matches(regex) dict abort " {{{2
   call self.parse_aux_files()
 
   " Match number
-  let self.matches = filter(copy(self.labels), 'v:val.menu =~# ''^' . a:regex . '''')
+  let self.matches = filter(copy(self.labels), 'v:val.menu =~# ''' . a:regex . '''')
   if !empty(self.matches) | return self.matches | endif
 
   " Match label
