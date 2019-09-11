@@ -432,6 +432,7 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
       let l:menu = ''
       try
         let l:type = substitute(l:context[3][0], '\..*$', ' ', '')
+        let l:type = substitute(l:type, 'AMS', 'Equation', '')
         let l:menu .= toupper(l:type[0]) . l:type[1:]
       catch
       endtry
