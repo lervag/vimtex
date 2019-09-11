@@ -2949,7 +2949,7 @@ better with autocomplete plugins.
 ------------------------------------------------------------------------------
 COMPLETE LABELS                                        *vimtex-complete-labels*
 
-Label completion is triggered by '\ref{' commands.  The completion parses every
+Label completion is triggered by `\ref{` commands.  The completion parses every
 relevant aux file to gather the completion candidates.  This is important,
 because it means that the completion only works when the LaTeX document has
 been compiled.
@@ -2958,15 +2958,23 @@ As an example: >
 
         \ref{sec:<CTRL-X><CTRL-O>
 
-offers a list of all matching labels, with their associated value and page
-number.  The label completion matches:
+offers a list of all matching labels with a menu that contains the associated
+value and page number.
 
-    1. labels: >
-        \ref{sec:<CTRL-X><CTRL-O>
-<    2. numbers: >
-        \eqref{2<CTRL-X><CTRL-O>
-<    3. labels and numbers together (separated by whitespace): >
-        \eqref{eq 2<CTRL-X><CTRL-O>
+The completion base is matched as a regex in the following order: >
+
+        \ref{<base><CTRL-X><CTRL-O>
+<
+    1. The menu, which contains the reference value and page number.
+    2. The actual labels.
+    3. The menu and label, separated by whitespace. An example: >
+
+        \ref{eq 2<CTRL-X><CTRL-O>
+<
+       This matches "eq" in the label and "2" in the menu.
+
+Finally, it should also be mentioned that for `\eqref`, the candidates will
+automatically be filtered to only show equation references.
 
 ------------------------------------------------------------------------------
 COMPLETE COMMANDS AND ENVIRONMENTS                   *vimtex-complete-commands*
