@@ -435,9 +435,15 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
         let l:menu .= toupper(l:type[0]) . l:type[1:]
       catch
       endtry
-      let l:menu .= self.parse_number(l:context[0])
+
+      let l:number = self.parse_number(l:context[0])
+      if l:menu =~# 'Equation'
+        let l:number = '(' . l:number . ')'
+      endif
+      let l:menu .= l:number
+
       try
-        let l:menu .= ' (p. ' . l:context[1][0] . ')'
+        let l:menu .= ' [p. ' . l:context[1][0] . ']'
       catch
       endtry
       call add(l:labels, {'word': l:name, 'menu': l:menu})
