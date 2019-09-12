@@ -562,7 +562,7 @@ endfunction
 
 " }}}1
 function! s:vimtex.parse_packages() abort dict " {{{1
-  let self.packages = {}
+  let self.packages = get(self, 'packages', {})
 
   " Try to parse .fls file if present, as it is usually more complete. That is,
   " it contains a generated list of all the packages that are used.
@@ -575,6 +575,7 @@ function! s:vimtex.parse_packages() abort dict " {{{1
   endfor
 
   " Now parse preamble as well for usepackage and RequirePackage
+  if !has_key(self, 'preamble') | return | endif
   let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''\v%(usep|RequireP)ackage''')
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
