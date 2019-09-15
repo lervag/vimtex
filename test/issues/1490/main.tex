@@ -1,0 +1,45 @@
+\documentclass[draft,debug]{article}
+
+\usepackage{xparse}
+
+% standard commands
+\providecommand{\VimtexStandardProvide}{}
+\newcommand{\VimtexStandardNew}{}
+\renewcommand{\VimtexStandardRenew}{}% this will not compile
+
+\newenvironment{VimtexEnvStandardNew}[]{}{}
+\renewenvironment{VimtexEnvStandardRenew}[]{}{}
+
+% xparse commands
+\NewDocumentCommand{\VimtexXparseNewDocumentCommand}{}{}
+\RenewDocumentCommand{\VimtexXparseProvideDocumentCommand}{}{}
+\ProvideDocumentCommand{\VimtexXparseProvideDocumentCommand}{}{}
+\DeclareDocumentCommand{\VimtexXparseNewDocumentCommand}{}{}
+
+\NewExpandableDocumentCommand{\VimtexXparseNewExpandableDocumentCommand}{}{}
+\RenewExpandableDocumentCommand{\VimtexXparseProvideExpandableDocumentCommand}{}{}
+\ProvideExpandableDocumentCommand{\VimtexXparseProvideExpandableDocumentCommand}{}{}
+\DeclareExpandableDocumentCommand{\VimtexXparseNewExpandableDocumentCommand}{}{}
+
+\NewDocumentEnvironment{VimtexEnvXparseNew}{}{}{}
+\RenewDocumentEnvironment{VimtexEnvXparseRenew}{}{}{}
+\ProvideDocumentEnvironment{VimtexEnvXparseProvide}{}{}{}
+\DeclareDocumentEnvironment{VimtexEnvXparseDeclare}{}{}{}
+
+
+
+\begin{document}
+% the commands from standard should be completed here
+\VimtexStandard
+
+% the commands from standard should be completed here
+\VimtexXparse
+
+% the environments should be supplied here
+\begin{Vimtex
+
+
+
+
+
+\end{document}
