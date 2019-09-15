@@ -5,10 +5,21 @@ filetype plugin indent on
 syntax enable
 
 nnoremap q :qall!<cr>
-let g:tex_flavor = 'latex'
 
-let g:vimtex_view_automatic = 0
+silent edit main.tex
 
-if has('nvim')
-  let g:vimtex_compiler_progname = 'nvr'
-endif
+silent execute "normal GO\\Vim\<c-x>\<c-o>"
+silent normal! u
+let s:cands = filter(
+      \ map(vimtex#complete#omnifunc(0, ''), 'v:val.word'),
+      \ 'v:val =~# ''Vimtex''')
+call writefile(s:cands, 'cmds.out')
+
+silent execute "normal GO\\begin{Vim\<c-x>\<c-o>"
+silent normal! u
+let s:cands = filter(
+      \ map(vimtex#complete#omnifunc(0, ''), 'v:val.word'),
+      \ 'v:val =~# ''Vimtex''')
+call writefile(s:cands, 'envs.out')
+
+quitall!
