@@ -854,9 +854,9 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
 
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
-  call filter(l:candidates, 'v:val =~# ''\v\\(re)?newenvironment''')
+  call filter(l:candidates, 'v:val =~# ''\v\\((re)?newenvironment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\(re)?newenvironment\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((re)?newenvironment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[env: newenvironment]'',
         \ }')
