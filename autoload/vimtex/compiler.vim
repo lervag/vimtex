@@ -95,8 +95,7 @@ function! vimtex#compiler#compile() abort " {{{1
       call vimtex#compiler#stop()
     else
       call b:vimtex.compiler.start()
-      silent! let b:vimtex.compiler.check_timer =
-              \ timer_start(50, function('s:check_if_running'), {'repeat': 20})
+      let b:vimtex.compiler.check_timer = s:check_if_running_start()
     endif
   else
     call b:vimtex.compiler.start_single()
@@ -286,15 +285,33 @@ endfunction
 " }}}1
 
 
-function! s:check_if_running(...) abort " {{{1
-  if !exists('b:vimtex') | return | endif
+let s:check_timers = {}
+function! s:check_if_running_start() abort " {{{1
+  if !exists('*timer_start') | return -1 | endif
 
-  if !b:vimtex.compiler.is_running()
-    call timer_stop(b:vimtex.compiler.check_timer)
-    unlet b:vimtex.compiler.check_timer
+  let l:timer = timer_start(50, function('s:check_if_running'), {'repeat': 20})
+
+  let s:check_timers[l:timer] = {
+        \ 'compiler' : b:vimtex.compiler,
+        \ 'vimtex_id' : b:vimtex_id,
+        \}
+
+  return l:timer
+endfunction
+
+" }}}1
+function! s:check_if_running(timer) abort " {{{1
+  if s:check_timers[a:timer].compiler.is_running() | return | endif
+
+  call timer_stop(a:timer)
+
+  if get(b:, 'vimtex_id', -1) == s:check_timers[a:timer].vimtex_id
     call vimtex#compiler#output()
-    call vimtex#log#error('Compiler did not start successfully!')
   endif
+  call vimtex#log#error('Compiler did not start successfully!')
+
+  unlet s:check_timers[a:timer].compiler.check_timer
+  unlet s:check_timers[a:timer]
 endfunction
 
 " }}}1
