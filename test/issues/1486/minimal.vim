@@ -12,3 +12,7 @@ let g:vimtex_view_automatic = 0
 if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
 endif
+
+silent edit main.tex
+silent split one/two/include_NONE.tex
+silent vsplit main.tex
