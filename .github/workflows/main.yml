@@ -1,0 +1,12 @@
+name: CI tests
+
+on: push
+
+jobs:
+  tests:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: Clone vader.vim
+      run: git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
+    - name: Run Vader tests
+      run: test/vader/run
