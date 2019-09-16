@@ -9,4 +9,6 @@ jobs:
     - name: Clone vader.vim
       run: git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
     - name: Run Vader tests
-      run: test/vader/run
+      run: |
+        echo $PWD
+        ls
