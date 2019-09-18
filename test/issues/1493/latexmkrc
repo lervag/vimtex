@@ -1,0 +1,3 @@
+ensure_path('TEXINPUTS', './input-one//', './input-two//');
+
+# vim: ft=perl
