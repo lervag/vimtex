@@ -12,10 +12,10 @@ silent edit main.tex
 
 call search('input-b')
 execute 'normal gf'
-if expand('%') ==# 'input-b.tex'
+if expand('%:t') ==# 'input-b.tex'
   echo 'Success'
   quitall!
 else
-  echo 'Failed -' expand('%')
+  echo 'Failed:' expand('%')
   cquit!
 endif
