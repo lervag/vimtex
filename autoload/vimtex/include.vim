@@ -37,12 +37,10 @@ function! vimtex#include#expr() abort " {{{1
   " Search for file with kpsewhich
   "
   if g:vimtex_include_search_enabled
-    for l:file in s:gather_candidates(l:fname)
-      let l:candidate = s:kpsewhich_find(l:file)
-      if !empty(l:candidate)
-        return s:visited.check(l:candidate)
-      endif
-    endfor
+    let l:candidate = s:search_candidates_kpsewhich(l:fname)
+    if !empty(l:candidate)
+      return s:visited.check(l:candidate)
+    endif
   endif
 
   return s:visited.check(l:fname)
@@ -66,7 +64,7 @@ function! s:input(fname, type) abort " {{{1
 endfunction
 
 " }}}1
-function! s:gather_candidates(fname) abort " {{{1
+function! s:search_candidates_kpsewhich(fname) abort " {{{1
   " Split input list on commas, and if applicable, ensure that the entry that
   " the cursor is on is placed first in the queue
   let l:files = split(a:fname, '\s*,\s*')
@@ -87,20 +85,16 @@ function! s:gather_candidates(fname) abort " {{{1
     endif
   endfor
 
-  return l:candidates
-endfunction
-
-" }}}1
-function! s:kpsewhich_find(fname) abort " {{{1
-  if !has_key(s:kpsewhich_cache, a:fname)
-    let l:file = vimtex#kpsewhich#find(a:fname)
-    if filereadable(l:file)
-      let s:kpsewhich_cache[a:fname] = l:file
-    else
-      let s:kpsewhich_cache[a:fname] = ''
+  for l:file in l:candidates
+    if !has_key(s:kpsewhich_cache, l:file)
+      let l:candidate = vimtex#kpsewhich#find(l:file)
+      let s:kpsewhich_cache[l:file] = filereadable(l:candidate) ? l:candidate : ''
     endif
-  endif
-  return s:kpsewhich_cache[a:fname]
+
+    if !empty(s:kpsewhich_cache[l:file]) | return s:kpsewhich_cache[l:file] | endif
+  endfor
+
+  return ''
 endfunction
 
 " }}}1
