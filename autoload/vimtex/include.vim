@@ -34,6 +34,14 @@ function! vimtex#include#expr() abort " {{{1
   endif
 
   "
+  " Check if v:fname matches in $TEXINPUTS
+  "
+  let l:candidate = s:search_candidates_texinputs(l:fname)
+  if !empty(l:candidate)
+    return s:visited.check(l:candidate)
+  endif
+
+  "
   " Search for file with kpsewhich
   "
   if g:vimtex_include_search_enabled
@@ -61,6 +69,16 @@ function! s:input(fname, type) abort " {{{1
   let l:file = substitute(l:file, '\\space', '', 'g')
 
   return l:file
+endfunction
+
+" }}}1
+function! s:search_candidates_texinputs(fname) abort " {{{1
+  let l:candidates = glob(b:vimtex.root . '/**/' . a:fname, 0, 1)
+  if !empty(l:candidates)
+    return l:candidates[0]
+  endif
+
+  return ''
 endfunction
 
 " }}}1
