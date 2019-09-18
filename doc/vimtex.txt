@@ -506,14 +506,13 @@ TeX root directive~
   the first five lines of the current file similar to this: >
 
     %! TEX root = /path/to/my-main.tex
-<
-                                                              *vimtex-tex-root-none*
-  To declare a file only used with as a subfile there exists a special `NONE` 
-  directive, which prevents |vimtex| from recognizing it as it's own file, 
-  see [0] : >
-
     %! TEX root = NONE
-<  
+<
+  The special value `NONE` may be used to make |vimtex| inherit the main TeX file.
+  That is, if you first open some `main.tex` file, then a file with the `NONE`
+  value, then that file will use the first `main.tex` file as its main file
+  regardless of whether it is included or not. For more info, see [0].
+
   [0]: https://github.com/lervag/vimtex/issues/1440
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
@@ -3004,8 +3003,7 @@ COMPLETE FILE NAMES FOR FIGURES                        *vimtex-complete-images*
 
 File name completion for figures is triggered by '\includegraphics{' commands.
 
-By default, the paths are completed relative to the 
-path of the main
+By default, the paths are completed relative to the root path of the main
 file. One can use the option |g:vimtex_complete_img_use_tail| to instead
 complete only the tail part of file names. This is useful if one uses the
 `graphicx` package and the `\graphicspath` command.
