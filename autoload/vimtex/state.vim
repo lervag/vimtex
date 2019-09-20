@@ -249,14 +249,18 @@ endfunction
 " }}}1
 function! s:get_main_from_texroot() abort " {{{1
   for l:line in getline(1, 5)
-    let l:filename = matchstr(l:line, g:vimtex#re#tex_input_root)
-    if len(l:filename) > 0
-      if vimtex#paths#is_abs(l:filename)
-        if filereadable(l:filename) | return l:filename | endif
-      else
-        let l:candidate = simplify(expand('%:p:h') . '/' . l:filename)
-        if filereadable(l:candidate) | return l:candidate | endif
-      endif
+    let l:file_pattern = matchstr(l:line, g:vimtex#re#tex_input_root)
+    if empty(l:file_pattern) | continue | endif
+
+    if !vimtex#paths#is_abs(l:file_pattern)
+      let l:file_pattern = simplify(expand('%:p:h') . '/' . l:file_pattern)
+    endif
+
+    let l:candidates = glob(l:file_pattern, 0, 1)
+    if len(l:candidates) > 1
+      return s:get_main_choose(l:candidates)
+    elseif len(l:candidates) == 1
+      return l:candidates[0]
     endif
   endfor
 
