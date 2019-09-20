@@ -5,10 +5,12 @@ filetype plugin indent on
 syntax enable
 
 nnoremap q :qall!<cr>
+
 let g:tex_flavor = 'latex'
 
-let g:vimtex_view_automatic = 0
+silent edit one/two/include_star.tex
+" silent edit one/two/include_file.tex
 
-if has('nvim')
-  let g:vimtex_compiler_progname = 'nvr'
-endif
+echo fnamemodify(b:vimtex.tex, ':.') . "\n"
+
+quitall
