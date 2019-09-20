@@ -503,17 +503,16 @@ Buffer variable~
                                                               *vimtex-tex-root*
 TeX root directive~
   It is also possible to specify the main TeX file with a comment in one of
-  the first five lines of the current file similar to this: >
+  the first five lines of the current file. Some examples: >
 
     %! TEX root = /path/to/my-main.tex
-    %! TEX root = NONE
+    %! TEX root = ../*.tex
+    %! TEX root = **/main.tex
 <
-  The special value `NONE` may be used to make |vimtex| inherit the main TeX file.
-  That is, if you first open some `main.tex` file, then a file with the `NONE`
-  value, then that file will use the first `main.tex` file as its main file
-  regardless of whether it is included or not. For more info, see [0].
+  Note: It is allowed to use a globbing pattern (see |wildcards|). If there
+  are multiple matches, then vimtex will ask for input when the buffer is
+  opened.
 
-  [0]: https://github.com/lervag/vimtex/issues/1440
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
 Subfiles package~
