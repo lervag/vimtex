@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#complete#init_buffer() abort " {{{1
+function! vimtex#complete#init_buffer() abort " {{{2
   if !g:vimtex_complete_enabled | return | endif
 
   for l:completer in s:completers
@@ -530,9 +530,9 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
   " catch commands defined by xparse and standard declaration
-  call filter(l:candidates, 'v:val =~# ''\v\\((provide|re)?newcommand|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
+  call filter(l:candidates, 'v:val =~# ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((provide|re)?newcommand|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[cmd: newcommand]'',
         \ }')
@@ -854,9 +854,9 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
 
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
-  call filter(l:candidates, 'v:val =~# ''\v\\((re)?newenvironment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
+  call filter(l:candidates, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((re)?newenvironment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[env: newenvironment]'',
         \ }')
