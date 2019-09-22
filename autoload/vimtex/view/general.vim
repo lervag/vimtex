@@ -6,10 +6,13 @@
 
 function! vimtex#view#general#new() abort " {{{1
   " Check if the viewer is executable
-  if !executable(g:vimtex_view_general_viewer)
+  " * split to ensure that we handle stuff like "gio open"
+  let l:exe = split(g:vimtex_view_general_viewer)[0]
+  if !executable(l:exe)
     call vimtex#log#warning(
           \ 'Selected viewer is not executable!',
-          \ '- Selection: ' . g:vimtex_view_general_viewer,
+          \ '- Selection: ' . g:vimtex_view_general_viewer .
+          \ '- Executable: ' . l:exe .
           \ '- Please see :h g:vimtex_view_general_viewer')
     return {}
   endif
