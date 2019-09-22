@@ -529,9 +529,10 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
 
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
-  call filter(l:candidates, 'v:val =~# ''\v\\((re)?newcommand|DeclareDocumentCommand)''')
+  " catch commands defined by xparse and standard declaration
+  call filter(l:candidates, 'v:val =~# ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((re)?newcommand|DeclareDocumentCommand)\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[cmd: newcommand]'',
         \ }')
@@ -853,9 +854,9 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
 
   let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
 
-  call filter(l:candidates, 'v:val =~# ''\v\\(re)?newenvironment''')
+  call filter(l:candidates, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
   call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\(re)?newenvironment\*?\{\\?\zs[^}]*''),
+        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[env: newenvironment]'',
         \ }')

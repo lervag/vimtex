@@ -1,0 +1,36 @@
+\documentclass[draft,debug]{article}
+
+\usepackage{xparse}
+
+% standard commands
+\providecommand{\VimtexStandardProvide}{}
+\newcommand{\VimtexStandardNew}{}
+\renewcommand{\VimtexStandardRenew}{}% this will not compile
+
+\newenvironment{VimtexEnvStandardNew}[]{}{}
+\renewenvironment{VimtexEnvStandardRenew}[]{}{}
+
+% xparse commands
+\NewDocumentCommand{\VimtexXparseNewDocumentCommand}{}{}
+\RenewDocumentCommand{\VimtexXparseRenewDocumentCommand}{}{}
+\ProvideDocumentCommand{\VimtexXparseProvideDocumentCommand}{}{}
+\DeclareDocumentCommand{\VimtexXparseDeclareDocumentCommand}{}{}
+
+\NewExpandableDocumentCommand{\VimtexXparseNewExpandableDocumentCommand}{}{}
+\RenewExpandableDocumentCommand{\VimtexXparseRenewExpandableDocumentCommand}{}{}
+\ProvideExpandableDocumentCommand{\VimtexXparseProvideExpandableDocumentCommand}{}{}
+\DeclareExpandableDocumentCommand{\VimtexXparseDeclareExpandableDocumentCommand}{}{}
+
+\NewDocumentEnvironment{VimtexEnvXparseNew}{}{}{}
+\RenewDocumentEnvironment{VimtexEnvXparseRenew}{}{}{}
+\ProvideDocumentEnvironment{VimtexEnvXparseProvide}{}{}{}
+\DeclareDocumentEnvironment{VimtexEnvXparseDeclare}{}{}{}
+
+
+
+\begin{document}
+
+% Complete commands ala \VimtexStandard
+% Complete environments like \begin{VimtexEnvXparseNew}
+
+\end{document}
