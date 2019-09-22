@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#complete#init_buffer() abort " {{{2
+function! vimtex#complete#init_buffer() abort " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
   for l:completer in s:completers
