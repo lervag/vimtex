@@ -1,13 +1,12 @@
 Execute (Setup):
-  setfiletype tex
-  cfile ../examples/quickfix/main.log
   let counter = 0
+  edit ../examples/quickfix/main.tex
+  call vimtex#qf#setqflist()
 
 # NOTE: Update the total number when additional messages are added
 #       to '../examples/quickfix/main.log'
 
 Execute (Verify captured LaTeX logfile warnings: total number):
-  Log len(getqflist())
   AssertEqual 12, len(getqflist())
 
 After:
