@@ -26,8 +26,6 @@ function! s:qf.init(state) abort dict "{{{1
   let self.types = map(
         \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
         \ 'v:val[1]')
-
-  call self.set_errorformat()
 endfunction
 
 " }}}1
@@ -160,7 +158,10 @@ function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
     throw 'Vimtex: No log file found'
   endif
 
+  let self.errorformat_saved = &l:errorformat
+  call self.set_errorformat()
   execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(a:log)
+  let &l:errorformat = self.errorformat_saved
 
   " Apply some post processing of the quickfix list (if configured)
   let self.main = a:tex
