@@ -894,18 +894,18 @@ endfunction
 function! s:get_texmf_candidates(filetype) abort " {{{1
   let l:candidates = []
 
-  " First add the locally installed candidates
-  if !empty(l:texmfhome)
-    let l:texmfhome = $TEXMFHOME
-    if empty(l:texmfhome)
-      let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, '')
-    endif
+  let l:texmfhome = $TEXMFHOME
+  if empty(l:texmfhome)
+    let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, '')
+  endif
 
+  " Add locally installed candidates first
+  if !empty(l:texmfhome)
     let l:candidates += glob(l:texmfhome . '/**/*.' . a:filetype, 0, 1)
     call map(l:candidates, 'fnamemodify(v:val, '':t:r'')')
   endif
 
-  " Then add the globally available candidates (based on ls-R files)
+  " Then add globally available candidates (based on ls-R files)
   for l:file in vimtex#kpsewhich#run('--all ls-R')
     let l:candidates += map(filter(readfile(l:file),
           \   'v:val =~# ''\.' . a:filetype . ''''),
