@@ -892,8 +892,13 @@ endfunction
 
 " }}}1
 function! s:get_texmf_candidates(filetype) abort " {{{1
+  let l:texmfhome = $TEXMFHOME
+  if empty(l:texmfhome)
+    let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, '')
+  endif
+  if empty(l:texmfhome) | return [] | endif
+
   " First add the locally installed candidates
-  let l:texmfhome = get(vimtex#kpsewhich#run('--var-value TEXMFHOME'), 0, 'XX')
   let l:candidates = glob(l:texmfhome . '/**/*.' . a:filetype, 0, 1)
   call map(l:candidates, 'fnamemodify(v:val, '':t:r'')')
 
