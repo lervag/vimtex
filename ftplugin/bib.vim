@@ -18,7 +18,7 @@ setlocal commentstring=\%\ %s
 
 " Initialize local LaTeX state if applicable
 let b:vimtex = getbufvar('#', 'vimtex', {})
-if empty(b:vimtex) | finish | endif
+if empty(b:vimtex) | unlet b:vimtex | finish | endif
 
 " Apply errorformat for properly handling quickfix entries
 silent! call b:vimtex.qf.set_errorformat()
