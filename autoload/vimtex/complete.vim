@@ -124,7 +124,7 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
   let self.candidates = []
 
   let self.type_length = 1
-  for m in self.search(a:regex)
+  for m in self.gather_bib_entries()
     let cand = {'word': m['key']}
 
     let auth = empty(m['author']) ? 'Unknown' : m['author'][:20]
@@ -159,26 +159,31 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
 
   if g:vimtex_complete_bib.simple
     call s:filter_with_options(self.candidates, a:regex)
+  else
+    call s:filter_with_options(self.candidates, a:regex, {
+          \ 'anchor': 0,
+          \ 'filter_by_menu': 1,
+          \})
   endif
 
   return self.candidates
 endfunction
 
-function! s:completer_bib.search(regex) dict abort " {{{2
-  let l:results = []
+function! s:completer_bib.gather_bib_entries() dict abort " {{{2
+  let l:entries = []
 
   " Find data from external bib files
   " Note: bibtex completion seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
   for l:file in self.find_bibs()
-    let l:results += self.parse_bib(l:file, a:regex)
+    let l:entries += self.parse_bib(l:file)
   endfor
   call vimtex#paths#popd()
 
   " Find data from 'thebibliography' environments
-  let l:results += self.parse_thebibliography(a:regex)
+  let l:entries += self.parse_thebibliography()
 
-  return l:results
+  return l:entries
 endfunction
 
 function! s:completer_bib.find_bibs() dict abort " {{{2
@@ -207,7 +212,7 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   return vimtex#util#uniq(l:bibfiles)
 endfunction
 
-function! s:completer_bib.parse_bib(file, regex) dict abort " {{{2
+function! s:completer_bib.parse_bib(file) dict abort " {{{2
   if empty(a:file) | return [] | endif
 
   " Get ftime for the input file
@@ -254,10 +259,6 @@ function! s:completer_bib.parse_bib(file, regex) dict abort " {{{2
   let lines = s:tex2unicode(lines)
   let lines = split(lines, "\n")
 
-  if !g:vimtex_complete_bib.simple
-    call s:filter_with_options(lines, a:regex, {'anchor': 0})
-  endif
-
   let l:res = []
   for line in lines
     let matches = split(line, '||')
@@ -285,17 +286,13 @@ function! s:completer_bib.parse_bib(file, regex) dict abort " {{{2
   return l:res
 endfunction
 
-function! s:completer_bib.parse_thebibliography(regex) dict abort " {{{2
+function! s:completer_bib.parse_thebibliography() dict abort " {{{2
   let l:res = []
 
   " Find data from 'thebibliography' environments
   let l:lines = readfile(b:vimtex.tex)
   if match(l:lines, '\C\\begin{thebibliography}') >= 0
     call filter(l:lines, 'v:val =~# ''\C\\bibitem''')
-
-    if !g:vimtex_complete_bib.simple
-      call s:filter_with_options(l:lines, a:regex)
-    endif
 
     for l:line in l:lines
       let l:matches = matchlist(l:line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
@@ -872,8 +869,10 @@ endfunction
 function! s:filter_with_options(input, regex, ...) abort " {{{1
   if empty(a:input) | return a:input | endif
 
-  let l:expression = type(a:input[0]) == type({}) ? 'v:val.word' : 'v:val'
   let l:opts = a:0 > 0 ? a:1 : {}
+  let l:expression = type(a:input[0]) == type({})
+        \ ? get(l:opts, 'filter_by_menu') ? 'v:val.menu' : 'v:val.word'
+        \ : 'v:val'
 
   if g:vimtex_complete_ignore_case && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
     let l:expression .= ' =~? '

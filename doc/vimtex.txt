@@ -1088,6 +1088,7 @@ OPTIONS                                                        *vimtex-options*
     If nonzero, then cite completion only searches on the bib keys. This may
     work better e.g. if one uses an autocomplete plugin.
 
+                                               *g:vimtex_complete_bib.menu_fmt*
   menu_fmt~
     Default value: `'[@type] @author_short (@year), "@title"'`
     The format used for the `menu` entry for bib completion candidates (see
@@ -2946,7 +2947,8 @@ Then the bibliography key `knuth1981` will be completed with e.g.: >
         \cite{Don.*Knuth<CTRL-X><CTRL-O>
 
 In particular, note that regular expressions (or vim patterns) can be used
-after '\cite{' to search for candidates.
+after '\cite{' to search for candidates. By default, the regex is applied to
+the completion menu, which is defined by |g:vimtex_complete_bib.menu_fmt|.
 
 However, if one prefers, one may set the `simple` key of |g:vimtex_complete_bib|
 to only allow completion on the bibkeys directly. This should typically work
