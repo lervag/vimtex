@@ -194,6 +194,10 @@ else
       let l:cmd .= ' &'
     endif
 
+    if ! self.silent
+      let l:cmd = escape(l:cmd, '%#')
+    endif
+
     let self.prepared_cmd = l:cmd
   endfunction
 
