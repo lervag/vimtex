@@ -1,0 +1,40 @@
+@string{ test= "something" }
+@string{ name1 = "Mr. Foo" }
+
+@comment{
+  blahrg
+}
+
+@preamble{silly things
+}
+
+@SomeType{key,
+  title  = "Some title, with a comma in it",
+  year   = {2017},
+  author = "Author1 and Author2",
+  other  = {Something else}
+}
+
+@article{knuth,
+  title  = "Other title",
+  year   = {1938},
+  author = "Donald Knuth",
+}
+
+@misc{key2,
+  title = {A new title},
+  author = name1 # " and Mr. Bar",
+  year = "1960",
+}
+
+@misc{key3,
+  tag1 = {{Bib}\TeX},
+  tag2 = "{Bib}\TeX",
+  tag3 = "{Bib}" # "\TeX",
+  publisher = "nob" # "ody",
+  year = 2005,
+}
+
+@misc{key4,
+  
+}
