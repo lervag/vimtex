@@ -1,4 +1,4 @@
 .PHONY: test
 
 test:
-	nvim --headless -u minimal.vim
+	vim -u minimal.vim
