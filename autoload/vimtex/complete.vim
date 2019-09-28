@@ -127,15 +127,15 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
   for m in self.gather_bib_entries()
     let cand = {'word': m['key']}
 
-    let auth = empty(m['author']) ? 'Unknown' : m['author'][:20]
+    let auth = get(m, 'author', 'Unknown')[:20]
     let auth = substitute(auth, '\~', ' ', 'g')
     let substitutes = {
           \ '@key' : m['key'],
-          \ '@title' : empty(m['title']) ? 'No title' : m['title'],
-          \ '@year' : empty(m['year']) ? '?' : m['year'],
+          \ '@type' : empty(m['type']) ? '-' : m['type'],
           \ '@author_all' : auth,
           \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
-          \ '@type' : empty(m['type']) ? '-' : m['type'],
+          \ '@year' : get(m, 'year', '?'),
+          \ '@title' : get(m, 'title', 'No title'),
           \}
 
     " Create menu string
@@ -264,13 +264,23 @@ function! s:completer_bib.parse_bib(file) dict abort " {{{2
     let matches = split(line, '||')
     if !empty(matches) && !empty(matches[0])
       let self.type_length = max([self.type_length, len(matches[1])])
-      call add(l:res, {
+
+      let l:entry = {
             \ 'key':    matches[0],
             \ 'type':   matches[1],
-            \ 'author': matches[2],
-            \ 'year':   matches[3],
-            \ 'title':  matches[4],
-            \})
+            \}
+
+      if !empty(matches[2])
+        let l:entry.author = matches[2]
+      endif
+      if !empty(matches[3])
+        let l:entry.year = matches[3]
+      endif
+      if !empty(matches[4])
+        let l:entry.title = matches[4]
+      endif
+
+      call add(l:res, l:entry)
     endif
   endfor
 
