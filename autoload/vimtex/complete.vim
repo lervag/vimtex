@@ -286,6 +286,48 @@ function! s:completer_bib.parse_bib(file) dict abort " {{{2
   return l:res
 endfunction
 
+function! s:completer_bib.parse_bib_new(file) dict abort " {{{2
+  if empty(a:file) | return [] | endif
+
+  let l:filename = substitute(a:file, '\%(\.bib\)\?$', '.bib', '')
+  if !filereadable(l:filename)
+    let l:filename = vimtex#kpsewhich#find(l:filename)
+  endif
+  if !filereadable(l:filename)
+    return []
+  endif
+
+  " Get ftime for the input file
+  let l:ftime = getftime(l:filename)
+
+  " Caching
+  if !has_key(b:vimtex, 'complete')
+    let b:vimtex.complete = {}
+  endif
+  if !has_key(b:vimtex.complete, 'bibtex')
+    let b:vimtex.complete.bibtex = {}
+  endif
+  if !has_key(b:vimtex.complete.bibtex, a:file)
+    let b:vimtex.complete.bibtex[a:file] = {'res': [], 'time': -1}
+  endif
+  if b:vimtex.complete.bibtex[a:file].time > 0
+        \ && getftime(a:file) <= b:vimtex.complete.bibtex[a:file].time
+    return b:vimtex.complete.bibtex[a:file].res
+  endif
+
+  let l:entries = vimtex#parser#bib(l:filename)
+  let self.type_length = max(map(copy(l:entries), 'len(v:val.type)'))
+  if self.type_length < 1
+    let self.type_length = 1
+  endif
+
+  " Cache results
+  let b:vimtex.complete.bibtex[a:file].time = l:ftime
+  let b:vimtex.complete.bibtex[a:file].res = l:entries
+
+  return l:entries
+endfunction
+
 function! s:completer_bib.parse_thebibliography() dict abort " {{{2
   let l:res = []
 
