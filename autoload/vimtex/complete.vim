@@ -13,6 +13,14 @@ function! vimtex#complete#init_buffer() abort " {{{1
     endif
   endfor
 
+  " Prepare caches
+  if !has_key(b:vimtex, 'complete')
+    let b:vimtex.complete = {}
+  endif
+  if !has_key(b:vimtex.complete, 'bib')
+    let b:vimtex.complete.bib = {}
+  endif
+
   setlocal omnifunc=vimtex#complete#omnifunc
 endfunction
 
@@ -82,8 +90,6 @@ let s:completer_bib = {
       \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
       \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
       \          . '\m\s*{\zs[^}]\+\ze}''',
-      \ 'type_length' : 0,
-      \ 'bstfile' : expand('<sfile>:p:h') . '/vimcomplete',
       \ 'initialized' : 0,
       \}
 
@@ -91,51 +97,24 @@ function! s:completer_bib.init() dict abort " {{{2
   if self.initialized | return | endif
   let self.initialized = 1
 
-  " Check if bibtex is executable
-  if !executable('bibtex')
-    let self.enabled = 0
-    call vimtex#log#warning(
-          \ 'bibtex is not executable!',
-          \ 'bibtex completion is not available!')
-    return
-  endif
-
-  " Check if kpsewhich is required and available
-  if g:vimtex_complete_bib.recursive && !executable('kpsewhich')
-    let self.enabled = 0
-    call vimtex#log#warning(
-          \ 'kpsewhich is not executable!',
-          \ '- recursive bib search requires kpsewhich!',
-          \ '- bibtex completion is not available!')
-  endif
-
-  " Check if bstfile contains whitespace (not handled by vimtex)
-  if stridx(self.bstfile, ' ') >= 0
-    let l:oldbst = self.bstfile . '.bst'
-    let self.bstfile = tempname()
-    call writefile(readfile(l:oldbst), self.bstfile . '.bst')
-  endif
-
-  " Add custom patterns
   let self.patterns += g:vimtex_complete_bib.custom_patterns
 endfunction
 
 function! s:completer_bib.complete(regex) dict abort " {{{2
   let self.candidates = []
 
-  let self.type_length = 1
-  for m in self.gather_bib_entries()
-    let cand = {'word': m['key']}
+  for l:entry in self.gather_bib_entries()
+    let cand = {'word': l:entry['key']}
 
-    let auth = get(m, 'author', 'Unknown')[:20]
+    let auth = get(l:entry, 'author', 'Unknown')[:20]
     let auth = substitute(auth, '\~', ' ', 'g')
     let substitutes = {
-          \ '@key' : m['key'],
-          \ '@type' : empty(m['type']) ? '-' : m['type'],
+          \ '@key' : l:entry['key'],
+          \ '@type' : empty(l:entry['type']) ? '-' : l:entry['type'],
           \ '@author_all' : auth,
           \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
-          \ '@year' : get(m, 'year', '?'),
-          \ '@title' : get(m, 'title', 'No title'),
+          \ '@year' : get(l:entry, 'year', '?'),
+          \ '@title' : get(l:entry, 'title', 'No title'),
           \}
 
     " Create menu string
@@ -172,12 +151,34 @@ endfunction
 function! s:completer_bib.gather_bib_entries() dict abort " {{{2
   let l:entries = []
 
-  " Find data from external bib files
-  " Note: bibtex completion seems to require that we are in the project root
+  " Note: bibtex seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
+
+  " Find data from external bib files
   for l:file in self.find_bibs()
-    let l:entries += self.parse_bib(l:file)
+    if empty(l:file) | continue | endif
+
+    let l:filename = substitute(l:file, '\%(\.bib\)\?$', '.bib', '')
+    if !filereadable(l:filename)
+      let l:filename = vimtex#kpsewhich#find(l:filename)
+    endif
+    if !filereadable(l:filename) | continue | endif
+
+    if !has_key(b:vimtex.complete.bib, l:file)
+      let b:vimtex.complete.bib[l:file] = {'res': [], 'time': -1}
+    endif
+
+    let l:ftime = getftime(l:filename)
+    if b:vimtex.complete.bib[l:file].time <= 0
+          \ || l:ftime > b:vimtex.complete.bib[l:file].time
+      let b:vimtex.complete.bib[l:file].time = l:ftime
+      let b:vimtex.complete.bib[l:file].res = vimtex#parser#bib(l:filename)
+    endif
+
+    let l:entries += b:vimtex.complete.bib[l:file].res
   endfor
+
+  " Revert earlier pushd
   call vimtex#paths#popd()
 
   " Find data from 'thebibliography' environments
@@ -197,12 +198,8 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
   let l:file = vimtex#state#get(l:id).tex
 
-  let l:lines = vimtex#parser#tex(l:file, {
-        \ 'detailed' : 0,
-        \ 'recursive' : g:vimtex_complete_bib.recursive,
-        \ })
-
   let l:bibfiles = []
+  let l:lines = vimtex#parser#tex(l:file, {'detailed' : 0})
   for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
         \ 'matchstr(v:val, ' . self.bibs . ')')
     let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
@@ -210,131 +207,6 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   endfor
 
   return vimtex#util#uniq(l:bibfiles)
-endfunction
-
-function! s:completer_bib.parse_bib(file) dict abort " {{{2
-  if empty(a:file) | return [] | endif
-
-  " Get ftime for the input file
-  let l:ftime = getftime(substitute(a:file, '\%(\.bib\)\?$', '.bib', ''))
-
-  " Caching
-  if !has_key(b:vimtex, 'complete')
-    let b:vimtex.complete = {}
-  endif
-  if !has_key(b:vimtex.complete, 'bibtex')
-    let b:vimtex.complete.bibtex = {}
-  endif
-  if !has_key(b:vimtex.complete.bibtex, a:file)
-    let b:vimtex.complete.bibtex[a:file] = {'res': [], 'time': -1}
-  endif
-  if b:vimtex.complete.bibtex[a:file].time > 0
-        \ && getftime(a:file) <= b:vimtex.complete.bibtex[a:file].time
-    return b:vimtex.complete.bibtex[a:file].res
-  endif
-
-  " Define temporary files
-  let tmp = {
-        \ 'aux' : 'tmpfile.aux',
-        \ 'bbl' : 'tmpfile.bbl',
-        \ 'blg' : 'tmpfile.blg',
-        \ }
-
-  " Write temporary aux file
-  call writefile([
-        \ '\citation{*}',
-        \ '\bibstyle{' . self.bstfile . '}',
-        \ '\bibdata{' . a:file . '}',
-        \ ], tmp.aux)
-
-  " Create the temporary bbl file
-  call vimtex#process#run('bibtex -terse ' . fnameescape(tmp.aux), {
-        \ 'background' : 0,
-        \ 'silent' : 1,
-        \})
-
-  " Parse temporary bbl file
-  let lines = join(readfile(tmp.bbl), "\n")
-  let lines = substitute(lines, '\n\n\@!\(\s\=\)\s*\|{\|}', '\1', 'g')
-  let lines = s:tex2unicode(lines)
-  let lines = split(lines, "\n")
-
-  let l:res = []
-  for line in lines
-    let matches = split(line, '||')
-    if empty(matches) || empty(matches[0]) | continue | endif
-
-    let l:entry = {
-          \ 'key':    matches[0],
-          \ 'type':   matches[1],
-          \}
-
-    if !empty(matches[2])
-      let l:entry.author = matches[2]
-    endif
-    if !empty(matches[3])
-      let l:entry.year = matches[3]
-    endif
-    if !empty(get(matches, 4, ''))
-      let l:entry.title = get(matches, 4, '')
-    endif
-
-    let self.type_length = max([self.type_length, len(matches[1])])
-    call add(l:res, l:entry)
-  endfor
-
-  " Clean up
-  call delete(tmp.aux)
-  call delete(tmp.bbl)
-  call delete(tmp.blg)
-
-  " Cache results
-  let b:vimtex.complete.bibtex[a:file].time = l:ftime
-  let b:vimtex.complete.bibtex[a:file].res = res
-
-  return l:res
-endfunction
-
-function! s:completer_bib.parse_bib_new(file) dict abort " {{{2
-  if empty(a:file) | return [] | endif
-
-  let l:filename = substitute(a:file, '\%(\.bib\)\?$', '.bib', '')
-  if !filereadable(l:filename)
-    let l:filename = vimtex#kpsewhich#find(l:filename)
-  endif
-  if !filereadable(l:filename)
-    return []
-  endif
-
-  " Get ftime for the input file
-  let l:ftime = getftime(l:filename)
-
-  " Caching
-  if !has_key(b:vimtex, 'complete')
-    let b:vimtex.complete = {}
-  endif
-  if !has_key(b:vimtex.complete, 'bibtex')
-    let b:vimtex.complete.bibtex = {}
-  endif
-  if !has_key(b:vimtex.complete.bibtex, a:file)
-    let b:vimtex.complete.bibtex[a:file] = {'res': [], 'time': -1}
-  endif
-  if b:vimtex.complete.bibtex[a:file].time > 0
-        \ && getftime(a:file) <= b:vimtex.complete.bibtex[a:file].time
-    return b:vimtex.complete.bibtex[a:file].res
-  endif
-
-  let l:entries = vimtex#parser#bib(l:filename)
-  let self.type_length = max(map(copy(l:entries), 'len(v:val.type)'))
-  if self.type_length < 1
-    let self.type_length = 1
-  endif
-
-  " Cache results
-  let b:vimtex.complete.bibtex[a:file].time = l:ftime
-  let b:vimtex.complete.bibtex[a:file].res = l:entries
-
-  return l:entries
 endfunction
 
 function! s:completer_bib.parse_thebibliography() dict abort " {{{2
@@ -467,7 +339,7 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
   let l:lines = filter(l:lines, 'v:val !~# ''sub@''')
   let l:lines = filter(l:lines, 'v:val !~# ''tocindent-\?[0-9]''')
   for l:line in l:lines
-    let l:line = s:tex2unicode(l:line)
+    let l:line = vimtex#util#tex2unicode(l:line)
     let l:tree = s:tex2tree(l:line)[1:]
     let l:name = get(remove(l:tree, 0), 0, '')
     if empty(l:name)
@@ -1069,83 +941,6 @@ function! s:tex2tree(str) abort " {{{1
   endwhile
   return tree
 endfunction
-
-" }}}1
-function! s:tex2unicode(line) abort " {{{1
-  "
-  " Substitute stuff like '\IeC{\"u}' to corresponding unicode symbols
-  "
-  let l:line = a:line
-  for [l:pat, l:symbol] in s:tex2unicode_list
-    let l:line = substitute(l:line, l:pat, l:symbol, 'g')
-  endfor
-
-  return l:line
-endfunction
-
-"
-" Define list for converting '\IeC{\"u}' to corresponding unicode symbols
-"
-let s:tex2unicode_list = map([
-      \ ['\\''A}'        , 'Á'],
-      \ ['\\`A}'         , 'À'],
-      \ ['\\^A}'         , 'À'],
-      \ ['\\¨A}'         , 'Ä'],
-      \ ['\\"A}'         , 'Ä'],
-      \ ['\\''a}'        , 'á'],
-      \ ['\\`a}'         , 'à'],
-      \ ['\\^a}'         , 'à'],
-      \ ['\\¨a}'         , 'ä'],
-      \ ['\\"a}'         , 'ä'],
-      \ ['\\\~a}'        , 'ã'],
-      \ ['\\''E}'        , 'É'],
-      \ ['\\`E}'         , 'È'],
-      \ ['\\^E}'         , 'Ê'],
-      \ ['\\¨E}'         , 'Ë'],
-      \ ['\\"E}'         , 'Ë'],
-      \ ['\\''e}'        , 'é'],
-      \ ['\\`e}'         , 'è'],
-      \ ['\\^e}'         , 'ê'],
-      \ ['\\¨e}'         , 'ë'],
-      \ ['\\"e}'         , 'ë'],
-      \ ['\\''I}'        , 'Í'],
-      \ ['\\`I}'         , 'Î'],
-      \ ['\\^I}'         , 'Ì'],
-      \ ['\\¨I}'         , 'Ï'],
-      \ ['\\"I}'         , 'Ï'],
-      \ ['\\''i}'        , 'í'],
-      \ ['\\`i}'         , 'î'],
-      \ ['\\^i}'         , 'ì'],
-      \ ['\\¨i}'         , 'ï'],
-      \ ['\\"i}'         , 'ï'],
-      \ ['\\''{\?\\i }'  , 'í'],
-      \ ['\\''O}'        , 'Ó'],
-      \ ['\\`O}'         , 'Ò'],
-      \ ['\\^O}'         , 'Ô'],
-      \ ['\\¨O}'         , 'Ö'],
-      \ ['\\"O}'         , 'Ö'],
-      \ ['\\''o}'        , 'ó'],
-      \ ['\\`o}'         , 'ò'],
-      \ ['\\^o}'         , 'ô'],
-      \ ['\\¨o}'         , 'ö'],
-      \ ['\\"o}'         , 'ö'],
-      \ ['\\o }'         , 'ø'],
-      \ ['\\''U}'        , 'Ú'],
-      \ ['\\`U}'         , 'Ù'],
-      \ ['\\^U}'         , 'Û'],
-      \ ['\\¨U}'         , 'Ü'],
-      \ ['\\"U}'         , 'Ü'],
-      \ ['\\''u}'        , 'ú'],
-      \ ['\\`u}'         , 'ù'],
-      \ ['\\^u}'         , 'û'],
-      \ ['\\¨u}'         , 'ü'],
-      \ ['\\"u}'         , 'ü'],
-      \ ['\\`N}'         , 'Ǹ'],
-      \ ['\\\~N}'        , 'Ñ'],
-      \ ['\\''n}'        , 'ń'],
-      \ ['\\`n}'         , 'ǹ'],
-      \ ['\\\~n}'        , 'ñ'],
-      \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
 " }}}1
 

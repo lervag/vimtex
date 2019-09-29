@@ -38,7 +38,6 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_complete_smart_case', &smartcase)
   call s:init_option('vimtex_complete_bib', {
         \ 'simple': 0,
-        \ 'recursive': 0,
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
         \ 'abbr_fmt': '',
         \ 'custom_patterns': [],
@@ -199,6 +198,8 @@ function! vimtex#init_options() abort " {{{1
 
   call s:init_option('vimtex_labels_enabled', 1)
   call s:init_option('vimtex_labels_refresh_always', 1)
+
+  call s:init_option('vimtex_parser_bib_backend', 'bibtex')
 
   call s:init_option('vimtex_quickfix_enabled', 1)
   call s:init_option('vimtex_quickfix_method', 'latexlog')

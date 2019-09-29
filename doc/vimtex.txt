@@ -1074,14 +1074,23 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_parser_bib_backend*
+  This option sets the desired default backend for parsing bibliographies.
+  This is used e.g. for gathering completion candidates. Possible values:
+
+    `bibtex`:   The fastest, but most hacky solution. Should work well in most
+              cases.
+
+    `bibparse`: Also fast, but might be more robust.
+
+    `vim`:      The slowest but perhaps most robust solution, as it does not
+              require any external utilities.
+
+  Default value: `bibtex`
+
 *g:vimtex_complete_bib*
   This option is a dictionary for controlling the citation completion. The
   keys each control a different thing:
-
-  recursive~
-    Default value: 0
-    This option toggles recursive searching for bibliography files. Note that
-    this may lead to a significant lag for large projects.
 
   simple~
     Default value: 0
