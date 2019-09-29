@@ -262,26 +262,25 @@ function! s:completer_bib.parse_bib(file) dict abort " {{{2
   let l:res = []
   for line in lines
     let matches = split(line, '||')
-    if !empty(matches) && !empty(matches[0])
-      let self.type_length = max([self.type_length, len(matches[1])])
+    if empty(matches) || empty(matches[0]) | continue | endif
 
-      let l:entry = {
-            \ 'key':    matches[0],
-            \ 'type':   matches[1],
-            \}
+    let l:entry = {
+          \ 'key':    matches[0],
+          \ 'type':   matches[1],
+          \}
 
-      if !empty(matches[2])
-        let l:entry.author = matches[2]
-      endif
-      if !empty(matches[3])
-        let l:entry.year = matches[3]
-      endif
-      if !empty(matches[4])
-        let l:entry.title = matches[4]
-      endif
-
-      call add(l:res, l:entry)
+    if !empty(matches[2])
+      let l:entry.author = matches[2]
     endif
+    if !empty(matches[3])
+      let l:entry.year = matches[3]
+    endif
+    if !empty(get(matches, 4, ''))
+      let l:entry.title = get(matches, 4, '')
+    endif
+
+    let self.type_length = max([self.type_length, len(matches[1])])
+    call add(l:res, l:entry)
   endfor
 
   " Clean up
