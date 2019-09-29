@@ -37,9 +37,7 @@ function! vimtex#parser#bib#parse(file) abort " {{{1
   let l:current = {}
   let l:strings = {}
   let l:entries = []
-  for l:line in readfile(a:file)
-    if l:line =~# '^\s*%' | continue | endif
-
+  for l:line in filter(readfile(a:file), 'v:val !~# ''^\s*\%(%\|$\)''')
     if empty(l:current)
       if s:parse_type(l:line, l:current, l:strings)
         let l:current = {}
@@ -84,7 +82,7 @@ endfunction
 
 " }}}1
 function! s:parse_string(line, string, strings) abort " {{{1
-  let a:string.level += s:count_braces(a:line)
+  let a:string.level += count(a:line, '{') - count(a:line, '}')
   if a:string.level > 0
     let a:string.body .= a:line
     return 0
@@ -102,7 +100,7 @@ endfunction
 
 " }}}1
 function! s:parse_entry(line, entry, entries) abort " {{{1
-  let a:entry.level += s:count_braces(a:line)
+  let a:entry.level += count(a:line, '{') - count(a:line, '}')
   if a:entry.level > 0
     let a:entry.body .= a:line
     return 0
@@ -117,39 +115,38 @@ endfunction
 " }}}1
 
 function! s:parse_entry_body(entry, strings) abort " {{{1
-  let l:result = {}
-  let l:result.type = a:entry.type
-  let l:result.key = a:entry.key
+  unlet a:entry.level
 
   let l:key = ''
-  let l:body = trim(a:entry.body)
-  while !empty(l:body)
+  let l:pos = matchend(a:entry.body, '^\s*')
+  while l:pos >= 0
     if empty(l:key)
-      let [l:key, l:body] = s:get_key(l:body)
+      let [l:key, l:pos] = s:get_key(a:entry.body, l:pos)
     else
-      let [l:value, l:body] = s:get_value(l:body, a:strings)
-      let l:result[l:key] = l:value
+      let [l:value, l:pos] = s:get_value(a:entry.body, l:pos, a:strings)
+      let a:entry[l:key] = l:value
       let l:key = ''
     endif
   endwhile
 
-  return l:result
+  unlet a:entry.body
+  return a:entry
 endfunction
 
 " }}}1
-function! s:get_key(body) abort " {{{1
+function! s:get_key(body, head) abort " {{{1
   " Parse the key part of a bib entry tag.
   " Assumption: a:body is left trimmed and either empty or starts with a key.
   " Returns: The key and the remaining part of the entry body.
 
-  let l:matches = matchlist(a:body, '^\v(\w+)\s*\=\s*')
+  let l:matches = matchlist(a:body, '^\v(\w+)\s*\=\s*', a:head)
   return empty(l:matches)
-        \ ? ['', '']
-        \ : [tolower(l:matches[1]), a:body[strlen(l:matches[0]):]]
+        \ ? ['', -1]
+        \ : [tolower(l:matches[1]), a:head + strlen(l:matches[0])]
 endfunction
 
 " }}}1
-function! s:get_value(body, strings) abort " {{{1
+function! s:get_value(body, head, strings) abort " {{{1
   " Parse the value part of a bib entry tag, until separating comma or end.
   " Assumption: a:body is left trimmed and either empty or starts with a value.
   " Returns: The value and the remaining part of the entry body.
@@ -159,30 +156,29 @@ function! s:get_value(body, strings) abort " {{{1
   " 2. A concatenation (with #s) of double quoted strings, curlied strings,
   "    and/or bibvariables,
   "
-  if a:body =~# '^\d\+'
-    return s:get_value_number(a:body)
-  elseif a:body =~# '^\%({\|"\|\w\)'
-    return s:get_value_string(a:body, a:strings)
+  if a:body[a:head] =~# '\d'
+    let l:value = matchstr(a:body, '^\d\+', a:head)
+    let l:head = matchend(a:body, '^\s*,\s*', a:head + len(l:value))
+    return [l:value, l:head]
+  elseif a:body[a:head] =~# '{\|"\|\w'
+    return s:get_value_string(a:body, a:head, a:strings)
   endif
 
-  return ['s:get_value failed', '']
+  return ['s:get_value failed', -1]
 endfunction
 
 " }}}1
-function! s:get_value_number(body) abort " {{{1
-  let l:value = matchstr(a:body, '^\d\+')
-  let l:body = substitute(strpart(a:body, len(l:value)), '^\s*,\s*', '', '')
-  return [l:value, l:body]
-endfunction
+function! s:get_value_string(body, head, strings) abort " {{{1
+  let l:head = a:head
 
-" }}}1
-function! s:get_value_string(body, strings) abort " {{{1
-  if a:body[0] ==# '{'
+  if a:body[l:head] ==# '{'
     let l:sum = 1
-    let l:i1 = 1
-    let l:i0 = 1
+    let l:i1 = l:head + 1
+    let l:i0 = l:i1
 
     while v:true
+      let l:iopen = stridx(a:body, '{', l:i1)
+      let l:iclose = stridx(a:body, '}', l:i1)
       let [l:match, l:_, l:i1] = matchstrpos(a:body, '[{}]', l:i1)
       if empty(l:match) | break | endif
 
@@ -191,52 +187,29 @@ function! s:get_value_string(body, strings) abort " {{{1
       if l:sum == 0 | break | endif
     endwhile
 
-    let l:value = strpart(a:body, 1, l:i0-2)
-    let l:body = trim(strpart(a:body, l:i0))
-  elseif a:body[0] ==# '"'
-    let l:index = match(a:body, '\\\@<!"', 1)
+    let l:value = a:body[l:head+1:l:i0-2]
+    let l:head = matchend(a:body, '^\s*', l:i0)
+  elseif a:body[l:head] ==# '"'
+    let l:index = match(a:body, '\\\@<!"', l:head+1)
     if l:index < 0
       return ['s:get_value_string failed', '']
     endif
 
-    let l:value = strpart(a:body, 1, l:index-1)
-    let l:body = trim(strpart(a:body, l:index+1))
-  elseif a:body =~# '^\w\+'
-    let l:value = matchstr(a:body, '^\w\+')
-    let l:body = trim(strcharpart(a:body, strchars(l:value)))
+    let l:value = a:body[l:head+1:l:index-1]
+    let l:head = matchend(a:body, '^\s*', l:index+1)
+  elseif a:body[l:head:] =~# '^\w\+'
+    let l:value = matchstr(a:body, '^\w\+', l:head)
+    let l:head = matchend(a:body, '^\s*', l:head + strlen(l:value))
     let l:value = get(a:strings, l:value, '@(' . l:value . ')')
   endif
 
-  if l:body[0] ==# '#'
-    let [l:vadd, l:body] = s:get_value_string(trim(l:body[1:]), a:strings)
+  if a:body[l:head] ==# '#'
+    let l:head = matchend(a:body, '^\s*', l:head + 1)
+    let [l:vadd, l:head] = s:get_value_string(a:body, l:head, a:strings)
     let l:value .= l:vadd
   endif
 
-  let l:body = substitute(l:body, '^,\s*', '', '')
-
-  return [l:value, l:body]
-endfunction
-
-" }}}1
-
-function! s:count_braces(line) abort " {{{1
-  let l:sum = 0
-
-  let l:indx = match(a:line, '{')
-  while l:indx >= 0
-    let l:sum += 1
-    let l:indx += 1
-    let l:indx = match(a:line, '{', l:indx)
-  endwhile
-
-  let l:indx = match(a:line, '}')
-  while l:indx >= 0
-    let l:sum -= 1
-    let l:indx += 1
-    let l:indx = match(a:line, '}', l:indx)
-  endwhile
-
-  return l:sum
+  return [l:value, matchend(a:body, '^,\s*', l:head)]
 endfunction
 
 " }}}1
