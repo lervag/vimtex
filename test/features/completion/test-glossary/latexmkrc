@@ -1,3 +1,12 @@
+push @generated_exts, "glo";
+push @generated_exts, "ist";
+push @generated_exts, "gloss-glo";
+push @generated_exts, "gloss-gls";
+push @generated_exts, "gloss-glg";
+push @generated_exts, "symbols-glo";
+push @generated_exts, "symbols-gls";
+push @generated_exts, "symbols-glg";
+
 add_cus_dep( 'gloss-glo', 'gloss-gls', 0, 'makegloss' );
 add_cus_dep( 'symbols-glo', 'symbols-gls', 0, 'makesymbols' );
 
