@@ -19,11 +19,6 @@ function! s:check_general() abort " {{{1
   if !executable('bibtex')
     call health#report_warn('bibtex is not executable, so bibtex completions are disabled.')
   endif
-
-  if g:vimtex_complete_bib.recursive && !executable('kpsewhich')
-    call health#report_warn(
-          \ 'kpsewhich is not executable, and is required for recursive bib search')
-  endif
 endfunction
 
 " }}}1
