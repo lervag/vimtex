@@ -1,5 +1,7 @@
 .PHONY: glossaries glossaries-extra
 
+default:
+
 glossaries: glossaries.aux
 	@nvim --headless -u glossaries.vim
 	@#latexmk -C
