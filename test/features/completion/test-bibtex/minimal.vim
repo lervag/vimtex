@@ -9,33 +9,23 @@ if !empty($BACKEND)
   let g:vimtex_parser_bib_backend = $BACKEND
 endif
 
-if empty($MAKE) | finish | endif
-
 silent edit main.tex
 
-" let g:vimtex_complete_bib_simple = 1
+if empty($MAKE) | finish | endif
 
-" normal! 10G
+let s:candidates = vimtex#test#completion('\cite{', '')
+call vimtex#test#assert(len(s:candidates), 94)
 
-" " execute 'profile start' 'bibspeed-' . g:vimtex_parser_bib_backend . '.log'
-" " profile func *
+let s:candidates = vimtex#test#completion('\citet{', '.*ocal')
+call vimtex#test#assert(len(s:candidates), 2)
 
-" echo 'Backend:' toupper(g:vimtex_parser_bib_backend)
-" let s:time = str2float(system('date +"%s.%N"'))
-" execute "normal A\<c-x>\<c-o>"
-" echo 'Time elapsed (1st run):' str2float(system('date +"%s.%N"')) - s:time "\n"
-" silent! normal! u
+let s:candidates = vimtex#test#completion('\parencite[see][5--10]{', 'Arist.*1929')
+call vimtex#test#assert(len(s:candidates), 1)
+call vimtex#test#assert(s:candidates[0].word, 'aristotle:physics')
 
-" " profile pause
+let g:vimtex_complete_bib.simple = 1
+let s:candidates = vimtex#test#completion('\textcite[5--10]{', 'aristotle:p')
+call vimtex#test#assert(len(s:candidates), 2)
+call vimtex#test#assert(s:candidates[0].word, 'aristotle:physics')
 
-" let s:time = str2float(system('date +"%s.%N"'))
-" execute "normal A\<c-x>\<c-o>"
-" echo 'Time elapsed (2nd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
-
-" let s:time = str2float(system('date +"%s.%N"'))
-" let s:candidates = vimtex#complete#omnifunc(0, '')
-" echo 'Time elapsed (3rd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
-" echo 'Number of candidates:' len(s:candidates)
-" echo "\n"
-
-" quit!
+quit!
