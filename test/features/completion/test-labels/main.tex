@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{cleveref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\includeonly{sub1,sub2 with spaces}
+
+\begin{document}
+
+\begin{equation}
+  f(x) = 42
+  \label{eq:main-is-working}
+\end{equation}
+
+\begin{subequations}
+  \begin{align}
+    \label{eq:test11a}
+    f(x) &= 11a \\
+    \label{eq:test11b}
+    f(x) &= 11b
+  \end{align}
+\end{subequations}
+
+% To test label completion you need to compile the document first!
+
+% Examples that should all work:
+equation (\ref{eq:main-is-working}) \\
+equation \eqref{eq:sub1-is-working} \\
+\cref{eq:test1,eq:test2} \\
+\crefrange{eq:test1}{eq:test10} \\
+\cref{eq:sub3 with spaces} on \cpageref{sec:sub3 with spaces} \\
+\cref{sec:sub1,sec:sub3 with spaces} \\
+\crefrange{sec:sub1}{sec:sub3 with spaces} \\
+
+\include{sub1}
+
+\include{"sub2\space with\space spaces"}
+
+\include{sub4}
+
+\input{"sub3\space with\space spaces"}
+
+\end{document}

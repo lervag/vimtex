@@ -1,0 +1,22 @@
+\documentclass{article}
+
+\usepackage[nonumberlist,acronymlists={gloss,symbolslist}]{glossaries}
+\loadglsentries{glossary}
+
+\begin{document}
+
+\glsaddall
+\printglossary[
+  type=gloss,
+  style=long,
+  title={Glossary},
+  toctitle={Glossary}
+]
+\printglossary[
+  type=symbols,
+  style=long,
+  title={List of Symbols},
+  toctitle={List of Symbols}
+]
+
+\end{document}

@@ -1,0 +1,2 @@
+test:
+	exit 1

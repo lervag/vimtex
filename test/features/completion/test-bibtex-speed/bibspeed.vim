@@ -1,6 +1,6 @@
 set nocompatible
-let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
+let &rtp = '../../../..,' . &rtp
+let &rtp .= ',../../../../after'
 filetype plugin indent on
 syntax enable
 
@@ -16,8 +16,8 @@ if empty($MAKE) | finish | endif
 
 normal! 10G
 
-execute 'profile start' 'bibspeed-' . g:vimtex_parser_bib_backend . '.log'
-profile func *
+" execute 'profile start' 'bibspeed-' . g:vimtex_parser_bib_backend . '.log'
+" profile func *
 
 echo 'Backend:' toupper(g:vimtex_parser_bib_backend)
 let s:time = str2float(system('date +"%s.%N"'))
@@ -25,7 +25,7 @@ execute "normal A\<c-x>\<c-o>"
 echo 'Time elapsed (1st run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 silent! normal! u
 
-profile pause
+" profile pause
 
 let s:time = str2float(system('date +"%s.%N"'))
 execute "normal A\<c-x>\<c-o>"
