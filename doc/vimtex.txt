@@ -1435,7 +1435,13 @@ OPTIONS                                                        *vimtex-options*
     <comments>          Fold multiline comments. This is disabled by default.
 
     <markers>           Fold on vim-style markers inside comments, that is,
-                        pairs of `{{{` and `}}}`.
+                        pairs of e.g. `{{{` and `}}}`. The patterns for the
+                        opening and closing markers may be customized with the
+                        keys:
+                        - `open`:  Default is `{{{`
+                        - `close`: Default is `{{{`
+
+                        Note: Patterns are only searched inside comments!
 
     <envs>              Fold environments.
                         Can be further configured with a blacklist and

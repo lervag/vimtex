@@ -5,7 +5,7 @@
 "
 
 function! vimtex#fold#markers#new(config) abort " {{{1
-  return extend(deepcopy(s:folder), a:config)
+  return extend(deepcopy(s:folder), a:config).init()
 endfunction
 
 " }}}1
@@ -13,17 +13,24 @@ endfunction
 
 let s:folder = {
       \ 'name' : 'markers',
-      \ 're' : {
-      \   'start' : '\v\%.*\{\{\{',
-      \   'end' : '\v\%.*\}\}\}',
-      \   'text' : [
-      \     ['\v\%\s*\{\{\{\d?\s*\zs.*', '% {{{ '],
-      \     ['\v\%\s*\zs.*\ze\{\{\{', '% {{{ '],
-      \     ['\v^.*\ze\s*\%', ''],
-      \   ]
-      \ },
+      \ 'open' : '{{{',
+      \ 'close' : '}}}',
+      \ 're' : {},
       \ 'opened' : 0,
       \}
+function! s:folder.init() abort dict " {{{1
+  let self.re.start = '%.*' . self.open
+  let self.re.end = '%.*' . self.close
+  let self.re.text = [
+        \ [self.re.start . '\d\?\s*\zs.*', '% ' . self.open . ' '],
+        \ ['%\s*\zs.*\ze' . self.open, '% ' . self.open . ' '],
+        \ ['^.*\ze\s*%', ''],
+        \]
+
+  return self
+endfunction
+
+" }}}1
 function! s:folder.level(line, lnum) abort dict " {{{1
   if a:line =~# self.re.start
     let s:self.opened = 1
