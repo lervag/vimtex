@@ -113,7 +113,7 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
           \ '@type' : empty(l:entry['type']) ? '-' : l:entry['type'],
           \ '@author_all' : auth,
           \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
-          \ '@year' : get(l:entry, 'year', '?'),
+          \ '@year' : get(l:entry, 'year', get(l:entry, 'date', '?')),
           \ '@title' : get(l:entry, 'title', 'No title'),
           \}
 
