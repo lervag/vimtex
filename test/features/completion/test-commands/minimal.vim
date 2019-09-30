@@ -1,24 +1,22 @@
 set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp = '../../../../,' . &rtp
 filetype plugin indent on
 syntax enable
 
 nnoremap q :qall!<cr>
-inoremap jk <esc>
 
-set completeopt=longest,menu,preview
+silent edit main.tex
 
-let s:file = expand('<sfile>')
-execute 'nnoremap <silent> <space>r :source' s:file "\<cr>"
+if empty($MAKE) | finish | endif
 
-let g:tex_flavor = 'latex'
-let g:vimtex_echo_ignore_wait = 1
-let g:vimtex_view_automatic = 0
-" let g:vimtex_complete_bib_simple = 1
+" Test custom commands
+let s:candidates = vimtex#test#completion('\', 'test')
+call vimtex#test#assert(s:candidates[0].word, 'testddc')
+call vimtex#test#assert(s:candidates[1].word, 'testnewcommand')
+call vimtex#test#assert(s:candidates[2].word, 'testlet')
 
-if has('vim_starting')
-  silent edit main.tex
-else
-  silent VimtexReload
-  redraw!
-endif
+" Test commands from packages (xparse in this case)
+let s:candidates = vimtex#test#completion('\', 'DeclareD')
+call vimtex#test#assert(s:candidates[0].word, 'DeclareDocumentCommand')
+
+quit!
