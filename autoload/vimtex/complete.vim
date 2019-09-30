@@ -7,12 +7,6 @@
 function! vimtex#complete#init_buffer() abort " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  for l:completer in s:completers
-    if has_key(l:completer, 'init')
-      call l:completer.init()
-    endif
-  endfor
-
   " Prepare caches
   if !has_key(b:vimtex, 'complete')
     let b:vimtex.complete = {}
@@ -20,6 +14,12 @@ function! vimtex#complete#init_buffer() abort " {{{1
   if !has_key(b:vimtex.complete, 'bib')
     let b:vimtex.complete.bib = {}
   endif
+
+  for l:completer in s:completers
+    if has_key(l:completer, 'init')
+      call l:completer.init()
+    endif
+  endfor
 
   setlocal omnifunc=vimtex#complete#omnifunc
 endfunction
@@ -595,7 +595,6 @@ endfunction
 
 let s:completer_gls = {
       \ 'patterns' : ['\v\\(gls|Gls|GLS)(pl)?\s*\{[^}]*$'],
-      \ 'candidates' : [],
       \ 'key' : {
       \   'newglossaryentry' : ' [gls]',
       \   'longnewglossaryentry' : ' [gls]',
@@ -606,13 +605,11 @@ let s:completer_gls = {
       \}
 
 function! s:completer_gls.complete(regex) dict abort " {{{2
-  let l:candidates = self.parse_glossaries()
-
-  return s:filter_with_options(l:candidates, a:regex)
+  return s:filter_with_options(self.parse_glsentries(), a:regex)
 endfunction
 
-function! s:completer_gls.parse_glossaries() dict abort " {{{2
-  let self.candidates = []
+function! s:completer_gls.parse_glsentries() dict abort " {{{2
+  let l:candidates = []
 
   let l:re_input = g:vimtex#re#tex_input . '|^\s*\\loadglsentries'
   let l:re_commands = '\v\\(' . join(keys(self.key), '|') . ')'
@@ -623,13 +620,13 @@ function! s:completer_gls.parse_glossaries() dict abort " {{{2
         \   'input_re' : l:re_input,
         \ }), 'v:val =~# l:re_commands')
     let l:matches = matchlist(l:line, l:re_matcher)
-    call add(self.candidates, {
+    call add(l:candidates, {
           \ 'word' : l:matches[2],
           \ 'menu' : self.key[l:matches[1]],
           \})
   endfor
 
-  return self.candidates
+  return l:candidates
 endfunction
 
 
