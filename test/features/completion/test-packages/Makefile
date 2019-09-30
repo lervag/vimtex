@@ -1,2 +1,9 @@
+VIM ?= nvim --headless
+
+MAKE := 1
+export MAKE
+
 test:
-	exit 1
+	$(VIM) -u minimal.vim
+
+.PHONY: test
