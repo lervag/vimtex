@@ -4,12 +4,14 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#parser#bib#parse(file) abort " {{{1
+function! vimtex#parser#bib#parse(file, opts) abort " {{{1
   if !filereadable(a:file) | return [] | endif
 
-  if g:vimtex_parser_bib_backend ==# 'bibtex'
+  let l:backend = get(a:opts, 'backend', g:vimtex_parser_bib_backend)
+
+  if l:backend ==# 'bibtex'
     return s:parse_with_bibtex(a:file)
-  elseif g:vimtex_parser_bib_backend ==# 'bibparse'
+  elseif l:backend ==# 'bibparse'
     return s:parse_with_bibparse(a:file)
   else
     return s:parse_with_vim(a:file)

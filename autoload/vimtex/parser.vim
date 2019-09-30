@@ -35,8 +35,8 @@ endfunction
 
 " }}}1
 
-function! vimtex#parser#bib(file) abort " {{{1
-  return vimtex#parser#bib#parse(a:file)
+function! vimtex#parser#bib(file, ...) abort " {{{1
+  return vimtex#parser#bib#parse(a:file, a:0 > 0 ? a:1 : {})
 endfunction
 
 " }}}1
