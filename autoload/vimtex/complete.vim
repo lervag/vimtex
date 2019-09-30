@@ -604,8 +604,45 @@ let s:completer_gls = {
       \ },
       \}
 
+function! s:completer_gls.init() dict abort " {{{2
+  " Detect stuff like this:
+  "  \GlsXtrLoadResources[
+  "    src={glossary.bib},
+  "    selection={all},
+  "  ]
+
+  " Possibly a better approach:
+  " let l:preamble = join(vimtex#parser#tex(b:vimtex.tex, {
+  "       \ 're_stop': '\\begin{document}',
+  "       \ 'detailed': 0,
+  "       \}), '')
+  " call stridx(l:preamble, ...
+
+  let l:active = 0
+  for l:line in vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop': '\\begin{document}',
+        \ 'detailed': 0,
+        \})
+    if line =~# '^\s*\\GlsXtrLoadResources'
+      let l:active = 1
+    endif
+    if !l:active | continue | endif
+
+    let l:matches = split(l:line, '=')
+    let l:key = trim(l:matches[0])
+    if l:key ==# 'src'
+      let l:value = trim(get(l:matches, 1))
+      let l:value = substitute(l:value, '^{', '', '')
+      let l:value = substitute(l:value, '}\?\s*,.*', '', '')
+      let b:vimtex.complete.glsbib = l:value
+      break
+    endif
+  endfor
+endfunction
+
 function! s:completer_gls.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.parse_glsentries(), a:regex)
+  return s:filter_with_options(
+        \ self.parse_glsentries() + self.parse_glsbib(), a:regex)
 endfunction
 
 function! s:completer_gls.parse_glsentries() dict abort " {{{2
@@ -629,6 +666,20 @@ function! s:completer_gls.parse_glsentries() dict abort " {{{2
   return l:candidates
 endfunction
 
+function! s:completer_gls.parse_glsbib() dict abort " {{{2
+  let l:filename = get(b:vimtex.complete, 'glsbib', '')
+  if empty(l:filename) | return [] | endif
+
+  let l:candidates = []
+  for l:entry in vimtex#parser#bib(l:filename, {'backend': 'bibparse'})
+    call add(l:candidates, {
+          \ 'word': l:entry.key,
+          \ 'menu': get(l:entry, 'name', '--'),
+          \})
+  endfor
+
+  return l:candidates
+endfunction
 
 " }}}1
 " {{{1 Packages (\usepackage)
