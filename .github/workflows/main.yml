@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install neovim
-      run: apt install neovim
+      run: sudo apt install neovim
     - name: Run tests with neovim
       run: make -C test/features/completion
 
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Run tests with Vim
-      run: make MYVIM="vim -T dumb --noplugin -n" -C test/features/completion
+      run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
 
   vader-tests:
     name: Vader tests on ${{ matrix.os }}
