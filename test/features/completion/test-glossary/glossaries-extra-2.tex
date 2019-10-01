@@ -1,0 +1,16 @@
+\documentclass{minimal}
+\usepackage[german]{babel}
+\usepackage{csquotes}
+\usepackage[record,style=long]{glossaries-extra}
+
+\GlsXtrLoadResources[selection={all}, src={glossaries-extra.bib}]
+
+\begin{document}
+
+Hello World!
+
+\gls{isbn}
+
+\printunsrtglossaries
+
+\end{document}
