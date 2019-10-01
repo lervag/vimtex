@@ -3,8 +3,23 @@ name: CI tests
 on: push
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
+  make-tests:
+    name: Makefile tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-16.04]
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Run Makefile tests with neovim
+      run: make -C test/feature/completion
+    - name: Run Makefile tests with Vim
+      run: make MYVIM="vim -T dumb --noplugin -n" -C test/feature/completion
+
+  vader-tests:
+    name: Vader tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
