@@ -11,7 +11,7 @@ function! vimtex#test#assert(x, y) abort " {{{1
   echo 'x =' a:x
   echo 'y =' a:y
   echo "---\n"
-  cquit!
+  cquit
 endfunction
 
 " }}}1
@@ -19,10 +19,14 @@ endfunction
 function! vimtex#test#completion(context, ...) abort " {{{1
   let l:base = a:0 > 0 ? a:1 : ''
 
-  silent execute 'normal GO' . a:context . "\<c-x>\<c-o>"
-  silent normal! u
-
-  return vimtex#complete#omnifunc(0, l:base)
+  try
+    silent execute 'normal GO' . a:context . "\<c-x>\<c-o>"
+    silent normal! u
+    return vimtex#complete#omnifunc(0, l:base)
+  catch /.*/
+    echo v:exception "\n"
+    cquit
+  endtry
 endfunction
 
 " }}}1
