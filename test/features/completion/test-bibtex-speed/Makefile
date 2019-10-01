@@ -1,8 +1,8 @@
 .PHONY: test
 
-VIM ?= nvim --headless
+MYVIM ?= nvim --headless
 
 test:
-	@MAKE=1                  $(VIM) -u bibspeed.vim
-	@MAKE=2 BACKEND=bibparse $(VIM) -u bibspeed.vim
-	@MAKE=3 BACKEND=vim      $(VIM) -u bibspeed.vim
+	@MAKE=1                  $(MYVIM) -u bibspeed.vim
+	@MAKE=1 BACKEND=bibparse $(MYVIM) -u bibspeed.vim
+	@MAKE=1 BACKEND=vim      $(MYVIM) -u bibspeed.vim

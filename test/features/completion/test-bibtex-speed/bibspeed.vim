@@ -19,20 +19,19 @@ normal! 10G
 " execute 'profile start' 'bibspeed-' . g:vimtex_parser_bib_backend . '.log'
 " profile func *
 
+silent let s:time = str2float(system('date +"%s.%N"'))
+silent call vimtex#test#completion('\cite{', '')
 echo 'Backend:' toupper(g:vimtex_parser_bib_backend)
-let s:time = str2float(system('date +"%s.%N"'))
-execute "normal A\<c-x>\<c-o>"
 echo 'Time elapsed (1st run):' str2float(system('date +"%s.%N"')) - s:time "\n"
-silent! normal! u
 
 " profile pause
 
 let s:time = str2float(system('date +"%s.%N"'))
-execute "normal A\<c-x>\<c-o>"
+call vimtex#test#completion('\cite{', '')
 echo 'Time elapsed (2nd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 
 let s:time = str2float(system('date +"%s.%N"'))
-let s:candidates = vimtex#complete#omnifunc(0, '')
+let s:candidates = vimtex#test#completion('\cite{', '')
 echo 'Time elapsed (3rd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 echo 'Number of candidates:' len(s:candidates)
 echo "\n"

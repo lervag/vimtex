@@ -1,4 +1,4 @@
-VIM ?= nvim --headless
+MYVIM ?= nvim --headless
 
 MAKE := 1
 export MAKE

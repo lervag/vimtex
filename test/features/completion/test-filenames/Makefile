@@ -1,9 +1,9 @@
-VIM ?= nvim --headless
+MYVIM ?= nvim --headless
 
 MAKE := 1
 export MAKE
 
 test:
-	$(VIM) -u minimal.vim
+	@$(MYVIM) -u minimal.vim
 
 .PHONY: test

@@ -1,10 +1,10 @@
-VIM ?= nvim --headless
+MYVIM ?= nvim --headless
 
 MAKE := 1
 export MAKE
 
 test: main.aux
-	$(VIM) -u minimal.vim
+	@$(MYVIM) -u minimal.vim
 	@latexmk -C &>/dev/null
 
 main.aux:
