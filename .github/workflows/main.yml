@@ -3,19 +3,22 @@ name: CI tests
 on: push
 
 jobs:
-  make-tests:
-    name: Makefile tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-16.04]
-
+  make-tests-neovim:
+    name: Makefile tests on latest Ubuntu with neovim
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Run Makefile tests with neovim
+    - name: Install neovim
+      run: apt install neovim
+    - name: Run tests with neovim
       run: make -C test/features/completion
-    - name: Run Makefile tests with Vim
+
+  make-tests-vim:
+    name: Makefile tests on Ubuntu 16.04 with Vim
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@master
+    - name: Run tests with Vim
       run: make MYVIM="vim -T dumb --noplugin -n" -C test/features/completion
 
   vader-tests:
