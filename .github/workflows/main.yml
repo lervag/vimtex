@@ -11,7 +11,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt install neovim
-        sudo apt install texlive
+        sudo apt install texlive libtext-bibtex-perl
     - name: Run tests with neovim
       run: make -C test/features/completion
 
@@ -21,18 +21,17 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install dependencies
-      run: sudo apt install texlive
+      run: sudo apt install texlive libtext-bibtex-perl
     - name: Run tests with Vim
       run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
 
   vader-tests:
-    name: Vader tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-16.04]
 
+    name: Vader tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@master
     - name: Clone vader.vim
