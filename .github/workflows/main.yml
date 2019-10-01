@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Install neovim
-      run: sudo apt install neovim
+    - name: Install dependencies
+      run: |
+        sudo apt install neovim
+        sudo apt install texlive
     - name: Run tests with neovim
       run: make -C test/features/completion
 
@@ -18,6 +20,8 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@master
+    - name: Install dependencies
+      run: sudo apt install texlive
     - name: Run tests with Vim
       run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
 
