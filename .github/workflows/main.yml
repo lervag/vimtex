@@ -3,27 +3,27 @@ name: CI tests
 on: push
 
 jobs:
-  make-tests-neovim:
-    name: Makefile tests on latest Ubuntu with neovim
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: Install dependencies
-      run: |
-        sudo apt install neovim
-        sudo apt install texlive libtext-bibtex-perl
-    - name: Run tests with neovim
-      run: make -C test/features/completion
+  # make-tests-neovim:
+  #   name: Makefile tests on latest Ubuntu with neovim
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install dependencies
+  #     run: |
+  #       sudo apt install neovim
+  #       sudo apt install texlive libtext-bibtex-perl
+  #   - name: Run tests with neovim
+  #     run: make -C test/features/completion
 
-  make-tests-vim:
-    name: Makefile tests on Ubuntu 16.04 with Vim
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: actions/checkout@master
-    - name: Install dependencies
-      run: sudo apt install texlive libtext-bibtex-perl
-    - name: Run tests with Vim
-      run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
+  # make-tests-vim:
+  #   name: Makefile tests on Ubuntu 16.04 with Vim
+  #   runs-on: ubuntu-16.04
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Install dependencies
+  #     run: sudo apt install texlive libtext-bibtex-perl
+  #   - name: Run tests with Vim
+  #     run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
 
   vader-tests:
     strategy:
