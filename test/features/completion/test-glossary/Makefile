@@ -1,14 +1,17 @@
-.PHONY: glossaries glossaries-extra
+VIM ?= nvim --headless
 
-default:
+MAKE := 1
+export MAKE
 
-glossaries: glossaries.aux
-	@nvim --headless -u glossaries.vim
-	@#latexmk -C
+TARGETS := glossaries glossaries-extra
 
-glossaries-extra: glossaries-extra.aux
-	@nvim --headless -u glossaries.vim
-	@#latexmk -C
+test: $(TARGETS)
+
+$(TARGETS): %: %.aux
+	@nvim --headless -u $@.vim
+	@latexmk -C $@.tex &>/dev/null
 
 %.aux: %.tex
-	@latexmk $<
+	@latexmk $< &>/dev/null
+
+.PHONY: test $(TARGETS)

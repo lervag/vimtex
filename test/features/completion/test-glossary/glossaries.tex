@@ -1,14 +1,12 @@
 \documentclass{minimal}
 \usepackage[nonumberlist,acronymlists={gloss,symbolslist}]{glossaries}
-\loadglsentries{glossary}
 
+\loadglsentries{glsentries}
 \longnewglossaryentry{baz}{name={test}}
 
 \begin{document}
 
 Hello World!
-
-\gls{baz}
 
 \glsaddall
 
