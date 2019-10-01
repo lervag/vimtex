@@ -689,15 +689,14 @@ endfunction
 
 let s:completer_pck = {
       \ 'patterns' : [
-      \   '\v\\%(usepackage|RequirePackage|PassOptionsToPackage)'
-      \   . '%(\s*\[[^]]*\])?\s*\{[^}]*$'
+      \   '\v\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{[^}]*$',
+      \   '\v\\PassOptionsToPackage\s*\{[^}]*\}\s*\{[^}]*$',
       \ ],
       \ 'candidates' : [],
       \}
 
 function! s:completer_pck.complete(regex) dict abort " {{{2
-  call self.gather_candidates()
-  return s:filter_with_options(copy(self.candidates), a:regex)
+  return s:filter_with_options(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_pck.gather_candidates() dict abort " {{{2
@@ -707,6 +706,8 @@ function! s:completer_pck.gather_candidates() dict abort " {{{2
           \ ''kind'' : '' [package]'',
           \}')
   endif
+
+  return copy(self.candidates)
 endfunction
 
 " }}}1
