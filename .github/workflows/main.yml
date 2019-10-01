@@ -14,9 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Run Makefile tests with neovim
-      run: make -C test/feature/completion
+      run: make -C test/features/completion
     - name: Run Makefile tests with Vim
-      run: make MYVIM="vim -T dumb --noplugin -n" -C test/feature/completion
+      run: make MYVIM="vim -T dumb --noplugin -n" -C test/features/completion
 
   vader-tests:
     name: Vader tests on ${{ matrix.os }}
