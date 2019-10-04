@@ -657,7 +657,7 @@ function! s:find_closing(start, string, count, type) abort " {{{1
     let l:re = '\[\|\]'
     let l:open = '['
   endif
-  let l:i2 = a:start - 1
+  let l:i2 = a:start
   let l:count = a:count
   while l:count > 0
     let l:i2 = match(a:string, l:re, l:i2+1)
