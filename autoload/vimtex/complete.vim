@@ -493,16 +493,14 @@ let s:completer_img = {
       \}
 
 function! s:completer_img.complete(regex) dict abort " {{{2
-  call self.gather_candidates()
-
-  return s:filter_with_options(self.candidates, a:regex)
+  return s:filter_with_options(self.gather_candidates())
 endfunction
 
 function! s:completer_img.gather_candidates() dict abort " {{{2
   let l:added_files = []
   let l:generated_pdf = b:vimtex.out()
 
-  let self.candidates = []
+  let l:candidates = []
   for l:path in b:vimtex.graphicspath + [b:vimtex.root]
     for l:file in split(globpath(l:path, '**/*.*'), '\n')
       if l:file !~? self.ext_re
@@ -511,13 +509,15 @@ function! s:completer_img.gather_candidates() dict abort " {{{2
 
       call add(l:added_files, l:file)
 
-      call add(self.candidates, {
+      call add(l:candidates, {
             \ 'abbr': vimtex#paths#shorten_relative(l:file),
             \ 'word': vimtex#paths#relative(l:file, l:path),
             \ 'kind': '[graphics]',
             \})
     endfor
   endfor
+
+  return l:candidates
 endfunction
 
 " }}}1
