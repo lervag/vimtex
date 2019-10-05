@@ -53,6 +53,7 @@ CONTENTS                                                      *vimtex-contents*
     Complete glossary entries                   |vimtex-complete-glossary|
     Complete packages                           |vimtex-complete-packages|
     Complete documentclasses                    |vimtex-complete-classes|
+    Complete bibliographystyles                 |vimtex-complete-bibstyle|
     Autocomplete                                |vimtex-complete-auto|
       coc.nvim                                  |vimtex-complete-coc.nvim|
       deoplete                                  |vimtex-complete-deoplete|
@@ -3037,11 +3038,13 @@ Glossary entry completion from the `glossaries` package are triggered by the
 commands '\gls{', '\glspl{' and their variations.
 
 ------------------------------------------------------------------------------
-COMPLETE PACKAGES AND DOCUMENTCLASSES                *vimtex-complete-packages*
+COMPLETE PACKAGE FILES                               *vimtex-complete-packages*
                                                       *vimtex-complete-classes*
+                                                     *vimtex-complete-bibstyle*
 
-Package and documentclass completion are available for the `\usepackage{` and
-`\documentclass{` commands, respectively.
+Package, documentclass, and bibliography style completion are available for
+the `\usepackage{`, `\documentclass{`, and `\bibliographystyle` commands,
+respectively.
 
 The completion relies on the contents of `ls-R` files that are found with: >
 

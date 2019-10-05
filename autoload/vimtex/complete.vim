@@ -719,8 +719,7 @@ let s:completer_doc = {
       \}
 
 function! s:completer_doc.complete(regex) dict abort " {{{2
-  return filter(copy(self.gather_candidates()),
-        \ 'v:val.word =~# a:regex')
+  return s:filter_with_options(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_doc.gather_candidates() dict abort " {{{2
@@ -731,7 +730,7 @@ function! s:completer_doc.gather_candidates() dict abort " {{{2
           \}')
   endif
 
-  return self.candidates
+  return copy(self.candidates)
 endfunction
 
 " }}}1
@@ -834,6 +833,29 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
         \ }')
 
   let self.candidates_from_newenvironments = l:candidates
+endfunction
+
+" }}}1
+" {{{1 Bibliographystyles (\bibliographystyle)
+
+let s:completer_bst = {
+      \ 'patterns' : ['\v\\bibliographystyle\s*\{[^}]*$'],
+      \ 'candidates' : [],
+      \}
+
+function! s:completer_bst.complete(regex) dict abort " {{{2
+  return s:filter_with_options(self.gather_candidates(), a:regex)
+endfunction
+
+function! s:completer_bst.gather_candidates() dict abort " {{{2
+  if empty(self.candidates)
+    let self.candidates = map(s:get_texmf_candidates('bst'), '{
+          \ ''word'' : v:val,
+          \ ''kind'' : '' [bst files]'',
+          \}')
+  endif
+
+  return copy(self.candidates)
 endfunction
 
 " }}}1
