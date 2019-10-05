@@ -47,15 +47,12 @@ CONTENTS                                                      *vimtex-contents*
   Completion                                    |vimtex-completion|
     Complete citations                          |vimtex-complete-cites|
     Complete labels                             |vimtex-complete-labels|
-    Complete commands and environments          |vimtex-complete-commands|
-                                                |vimtex-complete-environments|
-    Complete image file names                   |vimtex-complete-images|
-    Complete input file names                   |vimtex-complete-input|
-    Complete PDF file names                     |vimtex-complete-pdf|
-    Complete standalone file names              |vimtex-complete-standalone|
+    Complete commands                           |vimtex-complete-commands|
+    Complete environments                       |vimtex-complete-environments|
+    Complete file names                         |vimtex-complete-filenames|
     Complete glossary entries                   |vimtex-complete-glossary|
-    Complete packages and documentclasses       |vimtex-complete-packages|
-                                                |vimtex-complete-classes|
+    Complete packages                           |vimtex-complete-packages|
+    Complete documentclasses                    |vimtex-complete-classes|
     Autocomplete                                |vimtex-complete-auto|
       coc.nvim                                  |vimtex-complete-coc.nvim|
       deoplete                                  |vimtex-complete-deoplete|
@@ -3015,32 +3012,23 @@ A lot of packages are supported, see the path `VIMTEX/autoload/vimtex/complete`
 for a relevant file listing.
 
 ------------------------------------------------------------------------------
-COMPLETE FILE NAMES FOR FIGURES                        *vimtex-complete-images*
+COMPLETE FILE NAMES                                 *vimtex-complete-filenames*
 
-File name completion for figures is triggered by '\includegraphics{' commands.
+File name completion is available for the following macros:
 
-By default, the paths are completed relative to the root path of the main
-file. One can use the option |g:vimtex_complete_img_use_tail| to instead
-complete only the tail part of file names. This is useful if one uses the
-`graphicx` package and the `\graphicspath` command.
+  `\includegraphics{`
+    Completes image file names.
 
-------------------------------------------------------------------------------
-COMPLETE INPUT OR INCLUDE TEX FILES                     *vimtex-complete-input*
+  `\input{`
+  `\include{`
+  `\includeonly{`
+    Complete `.tex` files.
 
-File name completion for input/include files is triggered by '\input{',
-'\include{', or '\includeonly{' commands.
+  `\includepdf{`
+    Complete `.pdf` files. This macro is provided by the `pdfpages` package.
 
-------------------------------------------------------------------------------
-COMPLETE INCLUDE PDF FILES                                *vimtex-complete-pdf*
-
-File name completion for PDF files offered by the `pdfpages` package is
-triggered by '\includepdf{' commands.
-
-------------------------------------------------------------------------------
-COMPLETE INCLUDE STANDALONE FILES                  *vimtex-complete-standalone*
-
-File name completion for standalone files offered by the package `standalone`
-is triggered by '\includestandalone{' commands.
+  `\includestandalone{`
+    Complete `.tex` files. This macro is provided by the `standalone` package.
 
 ------------------------------------------------------------------------------
 COMPLETE INCLUDE GLOSSARY ENTRIES                    *vimtex-complete-glossary*
