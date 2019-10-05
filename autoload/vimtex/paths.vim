@@ -46,11 +46,15 @@ function! vimtex#paths#relative(path, current) abort " {{{1
   let l:target = substitute(a:path, '\\', '/', 'g')
   let l:common = substitute(a:current, '\\', '/', 'g')
 
+  let l:tries = 50
   let l:result = ''
-  while stridx(l:target, l:common) != 0
+  while stridx(l:target, l:common) != 0 && l:tries > 0
     let l:common = fnamemodify(l:common, ':h')
     let l:result = empty(l:result) ? '..' : '../' . l:result
+    let l:tries -= 1
   endwhile
+
+  if l:tries == 0 | return a:path | endif
 
   if l:common ==# '/'
     let l:result .= '/'
