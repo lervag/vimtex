@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#test#assert(x, y) abort " {{{1
+function! vimtex#test#assert_equal(x, y) abort " {{{1
   if a:x == a:y | return 1 | endif
 
   echo 'Assertion failed!'

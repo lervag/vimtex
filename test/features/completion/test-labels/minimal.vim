@@ -10,9 +10,9 @@ silent edit main.tex
 if empty($MAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\ref{', '')
-call vimtex#test#assert(len(s:candidates), 21)
+call vimtex#test#assert_equal(len(s:candidates), 21)
 
 let s:candidates = vimtex#test#completion('\eqref{', '')
-call vimtex#test#assert(len(s:candidates), 15)
+call vimtex#test#assert_equal(len(s:candidates), 15)
 
 quit!
