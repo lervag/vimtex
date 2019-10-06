@@ -1,7 +1,6 @@
 set nocompatible
-let &rtp = '../../../../,' . &rtp
-filetype plugin indent on
-syntax enable
+let &rtp = '../../..,' . &rtp
+filetype plugin on
 
 nnoremap q :qall!<cr>
 
