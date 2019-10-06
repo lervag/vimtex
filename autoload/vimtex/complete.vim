@@ -493,7 +493,7 @@ let s:completer_img = {
       \}
 
 function! s:completer_img.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.gather_candidates())
+  return s:filter_with_options(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_img.gather_candidates() dict abort " {{{2
