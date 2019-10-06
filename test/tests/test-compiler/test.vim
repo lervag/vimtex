@@ -27,6 +27,16 @@ function! RunTests(comp, list_opts)
       echo '* ' . l:key . ' =' l:val
     endfor
 
+    for l:file in glob('minimal.*', 1, 1)
+      call delete(l:file)
+    endfor
+    call writefile([
+          \ '\documentclass{minimal}',
+          \ '\begin{document}',
+          \ 'Hello World!',
+          \ '\end{document}',
+          \], 'minimal.tex')
+
     silent edit minimal.tex
 
     " Check if the compiler was loaded
@@ -44,9 +54,8 @@ function! RunTests(comp, list_opts)
         cquit
       endif
 
-      sleep 900m
-      silent call vimtex#compiler#stop()
       sleep 200m
+      silent call vimtex#compiler#stop()
     endif
 
     " Check that the PDF has been built
@@ -56,7 +65,7 @@ function! RunTests(comp, list_opts)
     endif
 
     silent call vimtex#compiler#clean(1)
-    sleep 700m
+    sleep 100m
 
     if !empty(b:vimtex.out()) || !empty(b:vimtex.aux())
       echo "VimtexClean failed!\n"
