@@ -33,7 +33,12 @@ Or use some other plugin manager:
 - [neobundle](https://github.com/Shougo/neobundle.vim)
 - [pathogen](https://github.com/tpope/vim-pathogen)
 
-If you use the new package feature in Vim, please note that it does not always put the runtimepaths in the right order. This may lead to an issue where vimtex does not seem to load. See [this comment in #1413](https://github.com/lervag/vimtex/issues/1413#issuecomment-513253660) for a suggested solution.
+If you use the new package feature in Vim, please note the following:
+- Make sure to read and understand the package feature: `:help package`!
+- Use the `/pack/foo/start` subdirectory to make sure the ifletype plugin is automatically loaded for the `tex` filetypes.
+- Helptags are not generated automatically. Run `:helptags` to generate them.
+- Please note that by default Vim puts custom `/start/` plugin directories at the end of the `&runtimepath`. This means the built in filetype plugin is loaded, which prevents Vimtex from loading. See #1413 for two suggested solutions to this. To see which scripts are loaded and in which order, use `:scriptnames`.
+- For more information on how to use the Vim native package solution, see [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it) and [here](https://shapeshed.com/vim-packages/).
 
 ## Quick Start
 
