@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+
+\[
+  1+1
+\]
+
+\begin{align}
+  2+2 = 4\\[1ex]
+  3+3 = 6
+\end{align}
+
+\begin{equation}
+  \left(
+    f(x) = 3
+  \right)
+  \left.
+    f(x) = 3
+  \right.
+\end{equation}
+
+Test $[ ... )$ of unmatched brackets in
+inline math text.
+
+In R, there is the operator \verb|[<-|...
+that ...
+
+\begin{equation*} 
+  \left \{ 
+    \begin{aligned}
+      -\Delta \theta &= u \quad \text{in } \Omega, \\
+      \theta &=0 \quad \text{on } \Gamma.
+    \end{aligned}
+  \right.
+\end{equation*}
+
+\begin{equation} \label{eq:state2}
+  \left\{
+    \begin{aligned}
+      -\div [a_M(z)\nabla y + b(\nabla y)]  &= u \quad \text{in } \Omega, \\
+      y &=0 \quad \text{on } \Gamma.
+    \end{aligned}
+  \right.
+\end{equation}
+
+\begin{equation}
+  \left\{
+    \begin{aligned}
+      \min_{u,y} &J(u,y) \\
+      \text{s.t.} \quad
+                 &
+                 -\Delta y = u \text{in } \Omega\\
+                 y = 0 \text{on } \partial\Omega.
+                 \\
+                 &\begin{aligned}[t]
+                   -\Delta y &= u && \text{in } \Omega\\
+                   y &= 0 && \text{on } \partial\Omega.
+                 \end{aligned}
+    \end{aligned}
+  \right.
+\end{equation}
+
+\end{document}

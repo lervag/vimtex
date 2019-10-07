@@ -1,0 +1,49 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\begin{document}
+\tikz \fill[green] rectangle (0.5,0.5); Something
+about something.
+
+\begin{tikzpicture}
+  \draw [solid] let \p{I} = (0,0) in (1,1) -|
+    (\x{I}-1cm,-1cm) node [yshift=-.25cm] {(i)};
+  % Just some comment
+\end{tikzpicture}
+
+\begin{tikzpicture}
+  % (i) center contact head
+  \draw [solid] let \p{I} = (centerContactHead) in (centerContactHead) -|
+    (\x{I}-.75cm,-2.5)
+    node [yshift=-.25cm] {(i)};
+
+  % (ii) outer conductor of the contact head
+  \coordinate (outerContactHead) at (.8,-1.7);
+  \draw [solid] let \p{O} = (outerContactHead)
+    in (outerContactHead) -- (\x{O},-2.5)
+    node [yshift=-.25cm] {(ii)};
+
+  \begin{axis}
+    \addplot
+      table[row sep=crcr]{%
+        0       0\\
+        1       1\\
+        2       2\\
+      };
+  \end{axis}
+\end{tikzpicture}
+
+\begin{center}
+  \begin{circuitikz}[american]
+    \draw (0,0) node[npn]{};
+  \end{circuitikz}
+\end{center}
+\begin{center}
+  \begin{circuitikz}[american, baseline=(VCC)]
+    \draw (0,0) node[npn]{};
+  \end{circuitikz}
+\end{center}
+
+\end{document}
