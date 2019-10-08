@@ -502,19 +502,18 @@ function! s:completer_img.gather_candidates() dict abort " {{{2
 
   let l:candidates = []
   for l:path in b:vimtex.graphicspath + [b:vimtex.root]
-    for l:file in split(globpath(l:path, '**/*.*'), '\n')
-      if l:file !~? self.ext_re
-            \ || l:file ==# l:generated_pdf
-            \ || index(l:added_files, l:file) >= 0 | continue | endif
+    let l:files = globpath(l:path, '**/*.*', 1, 1)
 
-      call add(l:added_files, l:file)
+    call filter(l:files, 'v:val =~? self.ext_re')
+    call filter(l:files, 'v:val !=# l:generated_pdf')
+    call filter(l:files, 'index(l:added_files, v:val) < 0')
 
-      call add(l:candidates, {
-            \ 'abbr': vimtex#paths#shorten_relative(l:file),
-            \ 'word': vimtex#paths#relative(l:file, l:path),
+    let l:added_files += l:files
+    let l:candidates += map(l:files, "{
+            \ 'abbr': vimtex#paths#shorten_relative(v:val),
+            \ 'word': vimtex#paths#relative(v:val, l:path),
             \ 'kind': '[graphics]',
-            \})
-    endfor
+            \}")
   endfor
 
   return l:candidates
