@@ -1,8 +1,8 @@
 set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp = '~/.vim/bundle/vimtex/test/features/syntax,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
-filetype plugin indent on
+let &rtp = '.,' . &rtp
+let &rtp = '../../..,' . &rtp
+let &rtp .= ',../../../after'
+filetype plugin on
 syntax enable
 
 nnoremap q :qall!<cr>
@@ -13,7 +13,6 @@ colorscheme morning
 let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 1
 let g:vimtex_echo_ignore_wait = 1
-let g:vimtex_view_automatic = 0
 
 function! SynNames()
   return join(map(synstack(line('.'), col('.')),
