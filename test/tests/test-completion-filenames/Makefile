@@ -4,6 +4,6 @@ MAKE := 1
 export MAKE
 
 test:
-	@$(MYVIM) -u minimal.vim
+	@$(MYVIM) -u test.vim
 
 .PHONY: test
