@@ -35,9 +35,9 @@ Or use some other plugin manager:
 
 If you use the new package feature in Vim, please note the following:
 - Make sure to read and understand the package feature: `:help package`!
-- Use the `/pack/foo/start` subdirectory to make sure the ifletype plugin is automatically loaded for the `tex` filetypes.
+- Use the `/pack/foo/start` subdirectory to make sure the filetype plugin is automatically loaded for the `tex` filetypes.
 - Helptags are not generated automatically. Run `:helptags` to generate them.
-- Please note that by default Vim puts custom `/start/` plugin directories at the end of the `&runtimepath`. This means the built in filetype plugin is loaded, which prevents Vimtex from loading. See #1413 for two suggested solutions to this. To see which scripts are loaded and in which order, use `:scriptnames`.
+- Please note that by default Vim puts custom `/start/` plugin directories at the end of the `&runtimepath`. This means the built in filetype plugin is loaded, which prevents Vimtex from loading. See [#1413](https://github.com/lervag/vimtex/issues/1413) for two suggested solutions to this. To see which scripts are loaded and in which order, use `:scriptnames`.
 - For more information on how to use the Vim native package solution, see [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it) and [here](https://shapeshed.com/vim-packages/).
 
 ## Quick Start
