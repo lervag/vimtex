@@ -15,6 +15,17 @@ function! vimtex#test#assert_equal(x, y) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#test#assert_match(x, regex) abort " {{{1
+  if a:x =~# a:regex | return 1 | endif
+
+  echo 'Assertion failed!'
+  echo 'x =' a:x
+  echo 'regex =' a:regex
+  echo "---\n"
+  cquit
+endfunction
+
+" }}}1
 
 function! vimtex#test#completion(context, ...) abort " {{{1
   let l:base = a:0 > 0 ? a:1 : ''

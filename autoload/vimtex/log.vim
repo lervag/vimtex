@@ -28,6 +28,12 @@ endfunction
 
 " }}}1
 
+function! vimtex#log#get() abort " {{{1
+  return s:logger.entries
+endfunction
+
+" }}}1
+
 function! vimtex#log#open() abort " {{{1
   call vimtex#scratch#new(s:logger)
 endfunction
