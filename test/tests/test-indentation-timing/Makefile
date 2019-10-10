@@ -1,3 +1,5 @@
+.PHONY: hyperfine time
+
 MYVIM ?= nvim --headless
 
 MAKE := 1
@@ -12,5 +14,3 @@ hyperfine:
 
 time:
 	@bash -c 'time $(MYVIM) -u test.vim'
-
-.PHONY: hyperfine time

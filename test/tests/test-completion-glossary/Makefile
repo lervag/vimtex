@@ -1,3 +1,5 @@
+.PHONY: test $(TARGETS)
+
 MYVIM ?= nvim --headless
 
 MAKE := 1
@@ -17,5 +19,3 @@ glossaries-extra:
 
 %.aux: %.tex
 	@latexmk $< &>/dev/null
-
-.PHONY: test $(TARGETS)
