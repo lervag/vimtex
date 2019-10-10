@@ -14,7 +14,6 @@ colorscheme morning
 
 let g:tex_flavor = 'latex'
 let g:vimtex_fold_enabled = 1
-let g:vimtex_echo_ignore_wait = 1
 
 function! SynNames()
   return join(map(synstack(line('.'), col('.')),

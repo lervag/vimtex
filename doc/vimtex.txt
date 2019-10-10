@@ -1321,13 +1321,6 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: []
 
-*g:vimtex_echo_ignore_wait*
-  If enabled, then |vimtex| will remove warning messages faster. This is not
-  recommended, since the messages are intended to help fix problems one may
-  have with vimtex configuration.
-
-  Default value: 0
-
 *g:vimtex_echo_verbose_input*
   For the set of operator mappings that change a surrounding type [0],
   |vimtex| by default prints some information about what you are doing while
