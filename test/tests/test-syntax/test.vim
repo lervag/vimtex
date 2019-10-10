@@ -5,6 +5,8 @@ let &rtp .= ',../../../after'
 filetype plugin on
 syntax enable
 
+set nomore
+
 nnoremap q :qall!<cr>
 
 " Use a more colorful colorscheme
@@ -19,9 +21,17 @@ function! SynNames()
         \ 'synIDattr(v:val, ''name'')'), ' -> ')
 endfunction
 
-augroup Testing
-  autocmd!
-  autocmd CursorMoved * echo SynNames()
-augroup END
+silent edit minimal.tex
 
-silent edit test-syntax.tex
+if empty($MAKE)
+  augroup Testing
+    autocmd!
+    autocmd CursorMoved * echo SynNames()
+  augroup END
+
+  finish
+endif
+
+call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 18)
+
+quit!
