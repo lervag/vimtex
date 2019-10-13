@@ -4,8 +4,4 @@ let &rtp .= isdirectory('vader.vim') ? ',vader.vim' : ',../../../vader.vim'
 filetype plugin indent on
 syntax enable
 
-" Personal settings to get consistent results
-set wildmode=longest:full,full
-set wildcharm=<c-z>
-
 let g:tex_flavor = 'latex'
