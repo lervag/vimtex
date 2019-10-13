@@ -5,32 +5,19 @@ syntax on
 
 setfiletype tex
 
-function! TestKeys(keys, context, expected) abort " {{{1
-  normal! gg0dG
-  call append(1, a:context)
-  normal! ggdd
-
-  silent execute 'normal' a:keys
-
-  let l:observed = getline(1, line('$'))
-  call vimtex#test#assert_equal(l:observed, a:expected)
-endfunction
-
-" }}}1
-
 " csc  /  Change surrounding command
-call TestKeys("csctest\<cr>", ['\cmd{foo}'], ['\test{foo}'])
+call vimtex#test#keys("csctest\<cr>", ['\cmd{foo}'], ['\test{foo}'])
 
 " dsc  /  Delete surrounding command
-call TestKeys('dsc', ['\cmd{foo}'], ['foo'])
+call vimtex#test#keys('dsc', ['\cmd{foo}'], ['foo'])
 
 " F7   /  Insert command (insert mode, normal mode and visual mode)
-call TestKeys("lla\<f7>}", ['foobar'], ['\foo{bar}'])
-call TestKeys("fbve\<f7>emph\<cr>", ['foobar'], ['foo\emph{bar}'])
-call TestKeys("\<f7>emph\<cr>", ['foo'], ['\emph{foo}'])
+call vimtex#test#keys("lla\<f7>}", ['foobar'], ['\foo{bar}'])
+call vimtex#test#keys("fbve\<f7>emph\<cr>", ['foobar'], ['foo\emph{bar}'])
+call vimtex#test#keys("\<f7>emph\<cr>", ['foo'], ['\emph{foo}'])
 
 " tsd  /  Toggle surrounding delimiter
-call TestKeys('3jtsd', [
+call vimtex#test#keys('3jtsd', [
       \ '$\bigl(\begin{smallmatrix}',
       \ '  \Q^* &   \\',
       \ '       & 1 \\',
@@ -44,7 +31,7 @@ call TestKeys('3jtsd', [
 
 " cse  /  Change surrounding environment
 " .    /  Dot repeat
-call TestKeys("csebaz\<cr>}j.",
+call vimtex#test#keys("csebaz\<cr>}j.",
       \[
       \ '\begin{foo}',
       \ '  Foo',
@@ -70,7 +57,7 @@ set wildcharm=<c-z>
 
 " cse  /  Change surrounding environment
 " .    /  Dot repeat
-call TestKeys("cse\<c-z>\<c-z>\<c-z>\<cr>",
+call vimtex#test#keys("cse\<c-z>\<c-z>\<c-z>\<cr>",
       \[
       \ '\begin{foo}',
       \ '  Foo',
@@ -87,7 +74,7 @@ set wildmode&
 set wildcharm&
 
 " dse  /  Delete surrounding environment
-call TestKeys('dsedse',
+call vimtex#test#keys('dsedse',
       \[
       \ '\begin{test}',
       \ '  \begin{center} a \end{center}',
@@ -96,10 +83,10 @@ call TestKeys('dsedse',
       \['   a '])
 
 " ds$  /  Delete surrounding math ($...$ and \[...\])
-call TestKeys('f$ds$',
+call vimtex#test#keys('f$ds$',
       \['for $ 2+2 = 4 = 3 $ etter'],
       \['for 2+2 = 4 = 3 etter'])
-call TestKeys('jds$',
+call vimtex#test#keys('jds$',
       \[
       \ 'asd $',
       \ '2+2 = 4',
@@ -110,7 +97,7 @@ call TestKeys('jds$',
       \ '2+2 = 4',
       \ 'asd',
       \])
-call TestKeys('ds$',
+call vimtex#test#keys('ds$',
       \[
       \ '\[',
       \ '2+2 = 4',

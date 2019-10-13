@@ -41,3 +41,14 @@ function! vimtex#test#completion(context, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#test#keys(keys, context, expected) abort " {{{1
+  normal! gg0dG
+  call append(1, a:context)
+  normal! ggdd
+
+  silent execute 'normal' a:keys
+
+  call vimtex#test#assert_equal(getline(1, line('$')), a:expected)
+endfunction
+
+" }}}1
