@@ -1,0 +1,28 @@
+\documentclass[]{article}
+
+\begin{document}                                % [m[m[m[m or 4[m
+
+\begin{figure}                                  % [m[m[m or 3[m
+  \centering
+  \includegraphics[width=\linewidth]{file}
+  \caption{figure}
+  \label{fig:illustration}
+\end{figure}                                    % [M
+
+\begin{table}                                   % [m[m or 2[m
+  \centering
+  \begin{tabular}{c}                            % [m
+                                                % CURSOR
+  \end{tabular}                                 % ]M
+  \caption{table}
+  \label{tab:listing}
+\end{table}                                     % ]M]M or 2]M
+
+\begin{figure}                                  % ]m
+  \centering
+  \includegraphics[width=\linewidth]{file}
+  \caption{figure}
+  \label{fig:illustration}
+\end{figure}                                    % ]M]M]M or 3]M
+
+\end{document}                                  % ]M]M]M]M or 4]M
