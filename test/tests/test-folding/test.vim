@@ -33,4 +33,11 @@ call vimtex#test#assert_equal(matchstr(foldtextresult(146), '(.*)$'),
       \ '(sec:test1-longer label)')
 call vimtex#test#assert_equal(foldtextresult(153), '% {{{ Testing markers')
 
+" Test with different markers
+let g:vimtex_fold_types = {'markers': {'open': '<<:', 'close': ':>>'}}
+silent VimtexReload
+
+call vimtex#test#assert_equal(foldtextresult(158), 'Testing markers ')
+call vimtex#test#assert_equal(foldtextresult(163), '% <<: this fold worked before issue #1515')
+
 quit!
