@@ -6,4 +6,4 @@ MAKE := 1
 export MAKE
 
 test:
-	@$(MYVIM) -u test.vim
+	@chronic $(MYVIM) -u test.vim
