@@ -187,7 +187,6 @@ function! vimtex#motion#comment(begin, backwards, visual) abort " {{{1
         \ ? '\v%(^\s*\%.*\n)@<!\s*\%'
         \ : '\v^\s*\%.*\n%(^\s*\%)@!'
   let l:flags = 'W' . (a:backwards ? 'b' : '')
-  echo l:re l:flags
 
   for l:_ in range(l:count)
     call search(l:re, l:flags)
