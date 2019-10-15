@@ -27,6 +27,8 @@ function! s:folder.init() abort dict " {{{1
         \ ['^.*\ze\s*%', ''],
         \]
 
+  let self.re.fold_re = escape(self.open . '|' . self.close, '{}%+*.')
+
   return self
 endfunction
 
@@ -48,7 +50,7 @@ function! s:folder.text(line, level) abort dict " {{{1
     if !empty(l:text) | return l:pre . l:text | endif
   endfor
 
-  return '% {{{ ' . getline(v:foldstart + 1)
+  return '% ' . self.open . ' ' . getline(v:foldstart + 1)
 endfunction
 
 " }}}1
