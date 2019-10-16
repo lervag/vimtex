@@ -547,6 +547,12 @@ File .latexmain specifier~
 <
   Here `path/file.tex.latexmain` indicates for `file1.tex` and `file2.tex`
   that `path/file.tex` is the main LaTeX file.
+  
+  Note that your root file name must be unique. You cannot have a 
+  `path/main.tex.latexmain` for a `path/main.tex` root file, while also 
+  having additional `main.tex` files in other paths, such as 
+  `path/section1/main.tex` and `path/section2/main.tex`.
+
 
 Recursive search~
   If no other method provides an appropriate candidate, then the recursive
