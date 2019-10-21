@@ -7,3 +7,4 @@ export INMAKE
 
 test:
 	@$(MYVIM) -u test.vim
+	@$(MYVIM) -u test-logparsers.vim
