@@ -1,7 +1,7 @@
 MYVIM ?= nvim --headless
 
-MAKE := 1
-export MAKE
+INMAKE := 1
+export INMAKE
 
 .PHONY: test
 

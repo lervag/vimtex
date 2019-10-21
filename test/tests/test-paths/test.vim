@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 silent edit main.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 call vimtex#test#assert_equal(vimtex#paths#is_abs('/some/path'), v:true)
 call vimtex#test#assert_equal(vimtex#paths#is_abs('other/path'), v:false)

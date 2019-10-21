@@ -13,7 +13,7 @@ let g:vimtex_fold_types = {'comments' : {'enabled': 1}}
 
 silent edit main.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 
 call vimtex#test#assert_equal(foldlevel(1), 1)

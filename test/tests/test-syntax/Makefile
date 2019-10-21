@@ -2,8 +2,8 @@
 
 MYVIM ?= nvim --headless
 
-MAKE := 1
-export MAKE
+INMAKE := 1
+export INMAKE
 
 test: | syntax/asy.vim
 	@$(MYVIM) -u test.vim

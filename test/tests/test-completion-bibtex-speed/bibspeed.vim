@@ -10,7 +10,7 @@ endif
 
 silent edit bibspeed.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 normal! 10G
 

@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 set nomore
 
-if empty($MAKE)
+if empty($INMAKE)
   edit main.tex
   finish
 else

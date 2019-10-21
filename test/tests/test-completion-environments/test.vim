@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 silent edit main.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 " Candidates from \newenvironment
 let s:candidates = vimtex#test#completion('\begin{', 'test')

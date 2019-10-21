@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 silent edit test-method-motions.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 " vint: -ProhibitCommandRelyOnUser
 

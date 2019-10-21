@@ -21,7 +21,7 @@ endif
 
 execute 'silent edit' $FILEIN
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 silent normal! gg=G
 execute 'silent write!' $FILEOUT

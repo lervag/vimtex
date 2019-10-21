@@ -15,7 +15,7 @@ endif
 
 silent edit file\ with\ errors.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 call vimtex#qf#setqflist()
 let s:qf = getqflist()

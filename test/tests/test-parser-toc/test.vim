@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 silent edit main.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 let s:parsed = vimtex#parser#toc('main.tex')
 call vimtex#test#assert_equal(len(s:parsed), 8)

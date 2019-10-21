@@ -22,7 +22,7 @@ endfunction
 
 silent edit minimal.tex
 
-if empty($MAKE)
+if empty($INMAKE)
   augroup Testing
     autocmd!
     autocmd CursorMoved * echo SynNames()

@@ -1,9 +1,9 @@
-.PHONY: test
-
 MYVIM ?= nvim --headless
 
-MAKE := 1
-export MAKE
+INMAKE := 1
+export INMAKE
+
+.PHONY: test
 
 test:
 	@chronic $(MYVIM) -u test.vim

@@ -18,7 +18,7 @@ let s:file = empty($FILE) ? 'test-01' : $FILE
 
 execute 'silent edit' s:file . '.tex'
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 silent normal! gggqG
 

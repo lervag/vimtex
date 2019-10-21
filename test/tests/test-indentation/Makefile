@@ -1,13 +1,13 @@
-.PHONY: test $(TESTS)
-.PRECIOUS: test_%_output.tex
-
 MYVIM ?= nvim --headless
 
-MAKE := 1
-export MAKE
+INMAKE := 1
+export INMAKE
 
 TESTS := $(wildcard test_*_reference.tex)
 TESTS := $(TESTS:.tex=)
+
+.PHONY: test
+.PRECIOUS: test_%_output.tex
 
 test: $(TESTS)
 

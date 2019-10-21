@@ -1,13 +1,13 @@
-.PHONY: hyperfine time
-
 MYVIM ?= nvim --headless
 
-MAKE := 1
-export MAKE
+INMAKE := 1
+export INMAKE
 
 ifeq (, $(shell which hyperfine))
   .DEFAULT_GOAL := time
 endif
+
+.PHONY: hyperfine time
 
 hyperfine:
 	@hyperfine --min-runs 3 '$(MYVIM) -u test.vim'

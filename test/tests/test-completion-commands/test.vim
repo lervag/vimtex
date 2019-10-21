@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 silent edit main.tex
 
-if empty($MAKE) | finish | endif
+if empty($INMAKE) | finish | endif
 
 " Test custom commands
 let s:candidates = vimtex#test#completion('\', 'test')
