@@ -3997,12 +3997,17 @@ A: Yes and no.  I personally don't use Windows, and as such, it is difficult
      |g:vimtex_compiler_progname| to |v:progname|. See [3] for a convenient
      tool to adapt %PATH%.
 
+   * Vimtex does not work well with the 'shell' setting set to Windows
+     PowerShell. It is therefore recommended to use the default 'shell'
+     settings. See [4] for more information.
+
    Also, see [1-2] for some relevant issues that might be of interest.
 
    [0]: https://github.com/lervag/vimtex/issues/966
    [1]: https://github.com/lervag/vimtex/issues/736
    [2]: https://github.com/lervag/vimtex/issues/882
    [3]: https://www.rapidee.com/en/path-variable
+   [4]: https://github.com/lervag/vimtex/issues/1507
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
