@@ -1,20 +1,30 @@
 name: CI tests
 
-on: push
+on:
+  push:
+    paths-ignore:
+      - 'doc/*'
+      - 'media/*'
+      - '*.md'
 
 jobs:
   make-tests-neovim:
     name: Makefile tests on latest Ubuntu with neovim
     runs-on: ubuntu-latest
+    #ubuntu-18.04
+    #ubuntu-16.04
     steps:
     - uses: actions/checkout@master
+      with:
+        fetch-depth: 1
     - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install neovim
-        sudo apt install texlive libtext-bibtex-perl
+        sudo apt install texlive latexmk libtext-bibtex-perl
+        sudo apt install moreutils
     - name: Run tests with neovim
-      run: cd test/tests && make -j
+      run: cd test/tests && make
 
   # make-tests-vim:
   #   name: Makefile tests on Ubuntu 16.04 with Vim
