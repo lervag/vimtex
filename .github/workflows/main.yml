@@ -21,7 +21,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install neovim
-        sudo apt install texlive latexmk libtext-bibtex-perl
+        sudo apt install texlive{,-latex-extra}
+        sudo apt install latexmk libtext-bibtex-perl
         sudo apt install moreutils
     - name: Run tests with neovim
       run: cd test/tests && make
