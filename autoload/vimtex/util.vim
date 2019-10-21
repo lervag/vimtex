@@ -178,6 +178,13 @@ let s:tex2unicode_list = map([
       \], '[''\C\(\\IeC\s*{\)\?'' . v:val[0], v:val[1]]')
 
 " }}}1
+function! vimtex#util#trim(str) abort " {{{1
+  if exists('*trim') | return trim(a:str) | endif
+
+  return matchstr(a:str, '^\s*\(.\{-}\)\s*$')
+endfunction
+
+" }}}1
 function! vimtex#util#uniq(list) abort " {{{1
   if exists('*uniq') | return uniq(a:list) | endif
   if len(a:list) <= 1 | return a:list | endif

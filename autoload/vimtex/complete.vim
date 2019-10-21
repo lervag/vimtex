@@ -630,9 +630,9 @@ function! s:completer_gls.init() dict abort " {{{2
     if empty(l:matches) | continue | endif
 
     while !empty(l:matches)
-      let l:key = trim(remove(l:matches, 0))
+      let l:key = vimtex#util#trim(remove(l:matches, 0))
       if l:key ==# 'src'
-        let l:value = trim(remove(l:matches, 0))
+        let l:value = vimtex#util#trim(remove(l:matches, 0))
         let l:value = substitute(l:value, '^{', '', '')
         let l:value = substitute(l:value, '[]}]\s*', '', 'g')
         let b:vimtex.complete.glsbib = l:value
