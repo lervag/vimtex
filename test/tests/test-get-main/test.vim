@@ -39,4 +39,16 @@ call vimtex#test#assert_equal(
       \ 'test-latexmain/main.tex')
 bwipeout!
 
+" Test recursive searching and included files with subfiles
+for s:filename in [
+    \ 'test-includes/test/sub/include2.tex',
+    \ 'test-includes/include3.tex',
+    \ 'test-includes/subfile.tex']
+  execute 'silent edit' s:filename
+  call vimtex#test#assert_equal(
+        \ fnamemodify(b:vimtex.tex, ':.'),
+        \ 'test-includes/main.tex')
+  bwipeout!
+endfor
+
 quit!
