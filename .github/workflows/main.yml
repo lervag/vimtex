@@ -3,17 +3,18 @@ name: CI tests
 on: push
 
 jobs:
-  # make-tests-neovim:
-  #   name: Makefile tests on latest Ubuntu with neovim
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: Install dependencies
-  #     run: |
-  #       sudo apt install neovim
-  #       sudo apt install texlive libtext-bibtex-perl
-  #   - name: Run tests with neovim
-  #     run: make -C test/features/completion
+  make-tests-neovim:
+    name: Makefile tests on latest Ubuntu with neovim
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install neovim
+        sudo apt install texlive libtext-bibtex-perl
+    - name: Run tests with neovim
+      run: cd test/tests && make -j
 
   # make-tests-vim:
   #   name: Makefile tests on Ubuntu 16.04 with Vim
@@ -25,16 +26,16 @@ jobs:
   #   - name: Run tests with Vim
   #     run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
 
-  vader-tests:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-16.04]
+  # vader-tests:
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, ubuntu-16.04]
 
-    name: Vader tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@master
-    - name: Clone vader.vim
-      run: git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
-    - name: Run Vader tests
-      run: test/vader/run
+  #   name: Vader tests on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Clone vader.vim
+  #     run: git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
+  #   - name: Run Vader tests
+  #     run: test/vader/run
