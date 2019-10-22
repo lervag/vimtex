@@ -11,10 +11,10 @@ if empty($INMAKE) | finish | endif
 let s:candidates = vimtex#test#completion('\usepackage{', 'cleve')
 call vimtex#test#assert_equal(s:candidates[0].word, 'cleveref')
 
-let s:candidates = vimtex#test#completion('\RequirePackage{', 'ams')
-call vimtex#test#assert_equal(len(s:candidates), 18)
+let s:candidates = vimtex#test#completion('\RequirePackage{', 'am')
+call vimtex#test#assert_equal(len(s:candidates) >= 1, v:true)
 
-let s:candidates = vimtex#test#completion('\PassOptionsToPackage{option}{', 'bb')
-call vimtex#test#assert_equal(len(s:candidates), 4)
+let s:candidates = vimtex#test#completion('\PassOptionsToPackage{option}{', 'am')
+call vimtex#test#assert_equal(len(s:candidates) >= 1, v:true)
 
 quit!
