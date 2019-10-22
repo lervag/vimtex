@@ -7,7 +7,7 @@ export INMAKE
 
 test: main.aux
 	@$(MYVIM) -u test.vim
-	@latexmk -C &>/dev/null
+	@latexmk -C >/dev/null 2>&1
 
 main.aux:
-	@latexmk main.tex &>/dev/null
+	@latexmk main.tex >/dev/null 2>&1
