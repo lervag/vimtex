@@ -19,9 +19,13 @@ endfunction
 " }}}1
 function! vimtex#kpsewhich#run(args) abort " {{{1
   " kpsewhich should be run at the project root directory
-  call vimtex#paths#pushd(b:vimtex.root)
+  if exists('b:vimtex.root')
+    call vimtex#paths#pushd(b:vimtex.root)
+  endif
   let l:output = split(system('kpsewhich ' . a:args), '\n')
-  call vimtex#paths#popd()
+  if exists('b:vimtex.root')
+    call vimtex#paths#popd()
+  endif
 
   " Remove warning lines from output
   call filter(l:output, 'stridx(v:val, "kpsewhich: warning: ") == -1')
