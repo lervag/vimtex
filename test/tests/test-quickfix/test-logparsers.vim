@@ -3,7 +3,10 @@ let &rtp = '../../..,' . &rtp
 filetype plugin on
 
 silent edit ../../examples/quickfix/main.tex
+
+echo 'Test: before'
 call vimtex#qf#setqflist()
+echo 'Test: after'
 let s:qf = getqflist()
 
 " NOTE: Update the total number when additional messages are added
