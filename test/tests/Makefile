@@ -2,7 +2,8 @@ MYVIM ?= nvim --headless
 #MAKEFLAGS+=--no-print-directory
 
 TESTS := $(wildcard test-*)
-TESTS := $(filter-out test-completion-bibtex, $(TESTS))
+#TESTS := $(filter-out test-completion-bibtex, $(TESTS))
+TESTS := test-completion-bibtex
 
 .PHONY: test $(TESTS)
 
