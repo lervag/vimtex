@@ -7,5 +7,4 @@ export INMAKE
 
 test:
 	@chronic $(MYVIM) -u test.vim
-	@-pkill -f latexmk
 	@rm -f minimal.*
