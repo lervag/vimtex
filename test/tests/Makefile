@@ -1,4 +1,5 @@
 MYVIM ?= nvim --headless
+MAKEFLAGS+=--no-print-directory
 
 TESTS := $(wildcard test-*)
 
