@@ -7,6 +7,13 @@ TESTS := $(wildcard test-*)
 
 test: $(TESTS)
 
+sysinfo:
+	@echo "**** SYSTEM INFORMATION ****"
+	@-git log -1
+	@-latexmk --version
+	@-$(MYVIM) --version
+	@echo "**** SYSTEM INFORMATION ****"
+
 $(TESTS):
 	$(MAKE) -C $@
 
@@ -15,7 +22,11 @@ test-indentation: MAKEFLAGS := $(MAKEFLAGS) -j1
 test-completion-bibtex: MAKEFLAGS := $(MAKEFLAGS) -j1
 test-completion-bibtex-speed: MAKEFLAGS := $(MAKEFLAGS) -j1
 
-# Ensure that some tests are run last
+# Ensure that some goals are run first/last (if all goals are made)
+ifndef MAKECMDGOALS
+test: sysinfo
+$(TESTS): sysinfo
+
 FILTERED := test-indentation-timing
 test-indentation-timing: | $(filter-out $(FILTERED), $(TESTS))
 
@@ -24,3 +35,4 @@ test-completion-bibtex-speed: | $(filter-out $(FILTERED), $(TESTS))
 
 FILTERED += test-completion-bibtex
 test-completion-bibtex: | $(filter-out $(FILTERED), $(TESTS))
+endif
