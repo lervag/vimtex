@@ -4,7 +4,9 @@ on:
   push:
     paths-ignore:
       - 'doc/*'
+      - 'docker/*'
       - 'media/*'
+      - '.github/**'
       - '*.md'
 
 jobs:
