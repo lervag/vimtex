@@ -181,7 +181,10 @@ let s:tex2unicode_list = map([
 function! vimtex#util#trim(str) abort " {{{1
   if exists('*trim') | return trim(a:str) | endif
 
-  return matchstr(a:str, '^\s*\(.\{-}\)\s*$')
+  let l:str = substitute(a:str, '^\s*', '', '')
+  let l:str = substitute(l:str, '\s*$', '', '')
+
+  return l:str
 endfunction
 
 " }}}1
