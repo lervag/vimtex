@@ -15,19 +15,16 @@ call vimtex#test#assert_equal(len(s:parsed), 6)
 let s:parsed = TestBackend('test.bib', 'vim')
 call vimtex#test#assert_equal(len(s:parsed), 6)
 
-let s:parsed = TestBackend(
-      \ '/usr/share/texmf-dist/bibtex/bib/biblatex/biblatex/biblatex-examples.bib',
-      \ 'bibtex')
-call vimtex#test#assert_equal(len(s:parsed), 92)
+let s:bib = vimtex#kpsewhich#find('biblatex-examples.bib')
+if !empty(s:bib) && filereadable(s:bib)
+  let s:parsed = TestBackend(s:bib, 'bibtex')
+  call vimtex#test#assert_equal(len(s:parsed), 92)
 
-let s:parsed = TestBackend(
-      \ '/usr/share/texmf-dist/bibtex/bib/biblatex/biblatex/biblatex-examples.bib',
-      \ 'bibparse')
-call vimtex#test#assert_equal(len(s:parsed), 92)
+  let s:parsed = TestBackend(s:bib, 'bibparse')
+  call vimtex#test#assert_equal(len(s:parsed), 92)
 
-let s:parsed = TestBackend(
-      \ '/usr/share/texmf-dist/bibtex/bib/biblatex/biblatex/biblatex-examples.bib',
-      \ 'vim')
-call vimtex#test#assert_equal(len(s:parsed), 92)
+  let s:parsed = TestBackend(s:bib, 'vim')
+  call vimtex#test#assert_equal(len(s:parsed), 92)
+endif
 
 quit!
