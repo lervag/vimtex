@@ -17,6 +17,7 @@ sysinfo:
 	@echo "**** SYSTEM INFORMATION ****"
 
 $(TESTS):
+	ls -la $@
 	$(MAKE) -C $@
 
 
