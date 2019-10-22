@@ -12,6 +12,14 @@ silent edit main.tex
 
 if empty($INMAKE) | finish | endif
 
+" Simplify test on basic systems
+if empty(vimtex#kpsewhich#find('biblatex-example.bib'))
+  let s:candidates = vimtex#test#completion('\cite{', '')
+  call vimtex#test#assert_equal(len(s:candidates) >= 1, v:true)
+
+  quit!
+endif
+
 let s:candidates = vimtex#test#completion('\cite{', '')
 call vimtex#test#assert_equal(len(s:candidates), 94)
 
