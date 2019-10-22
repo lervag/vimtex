@@ -14,7 +14,7 @@ function! RunTests(comp, list_opts)
   if !executable(a:comp)
     echo 'Warning! "' . a:comp . '" was not executable!'
     echo "Compiler tests could not run!\n\n"
-    return
+    cquit
   endif
 
   let g:vimtex_compiler_method = a:comp
