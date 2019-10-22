@@ -1,7 +1,8 @@
 MYVIM ?= nvim --headless
-MAKEFLAGS+=--no-print-directory
+#MAKEFLAGS+=--no-print-directory
 
 TESTS := $(wildcard test-*)
+TESTS := $(filter-out test-completion-bibtex, $(TESTS))
 
 .PHONY: test $(TESTS)
 
@@ -17,12 +18,18 @@ sysinfo:
 $(TESTS):
 	$(MAKE) -C $@
 
+
+#
 # Force serial processing
+#
 test-indentation: MAKEFLAGS := $(MAKEFLAGS) -j1
 test-completion-bibtex: MAKEFLAGS := $(MAKEFLAGS) -j1
 test-completion-bibtex-speed: MAKEFLAGS := $(MAKEFLAGS) -j1
 
-# Ensure that some goals are run first/last (if all goals are made)
+
+#
+# Ensure that some goals are run first/last
+#
 ifndef MAKECMDGOALS
 test: sysinfo
 $(TESTS): sysinfo
