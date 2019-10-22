@@ -10,12 +10,14 @@ function! vimtex#parser#bib#parse(file, opts) abort " {{{1
   let l:backend = get(a:opts, 'backend', g:vimtex_parser_bib_backend)
 
   if l:backend ==# 'bibtex'
-    return s:parse_with_bibtex(a:file)
+    if !executable('bibtex') | let l:backend = 'vim' | endif
   elseif l:backend ==# 'bibparse'
-    return s:parse_with_bibparse(a:file)
+    if !executable('bibparse') | let l:backend = 'vim' | endif
   else
-    return s:parse_with_vim(a:file)
+    let l:backend = 'vim'
   endif
+
+  return s:parse_with_{l:backend}(a:file)
 endfunction
 
 " }}}1
@@ -220,7 +222,7 @@ endfunction
 
 " }}}1
 function! s:parse_string(line, string, strings) abort " {{{1
-  let a:string.level += count(a:line, '{') - count(a:line, '}')
+  let a:string.level += s:count(a:line, '{') - s:count(a:line, '}')
   if a:string.level > 0
     let a:string.body .= a:line
     return 0
@@ -238,7 +240,7 @@ endfunction
 
 " }}}1
 function! s:parse_entry(line, entry, entries) abort " {{{1
-  let a:entry.level += count(a:line, '{') - count(a:line, '}')
+  let a:entry.level += s:count(a:line, '{') - s:count(a:line, '}')
   if a:entry.level > 0
     let a:entry.body .= a:line
     return 0
@@ -346,6 +348,19 @@ function! s:get_value_string(body, head, strings) abort " {{{1
   endif
 
   return [l:value, matchend(a:body, '^,\s*', l:head)]
+endfunction
+
+" }}}1
+
+function! s:count(container, item) abort " {{{1
+  " Necessary because in old Vim versions, count() does not work for strings
+  try
+    let l:count = count(a:container, a:item)
+  catch /E712/
+    let l:count = count(split(a:container, '\zs'), a:item)
+  endtry
+
+  return l:count
 endfunction
 
 " }}}1
