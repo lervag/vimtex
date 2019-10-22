@@ -4,9 +4,13 @@ filetype plugin on
 
 silent edit ../../examples/quickfix/main.tex
 
-echo 'Test: before'
-call vimtex#qf#setqflist()
-echo 'Test: after'
+try
+  call vimtex#qf#setqflist()
+catch /Vimtex: No log file found/
+  echo 'Vimtex: No log file found'
+  cquit
+endtry
+
 let s:qf = getqflist()
 
 " NOTE: Update the total number when additional messages are added

@@ -17,9 +17,13 @@ silent edit file\ with\ errors.tex
 
 if empty($INMAKE) | finish | endif
 
-echo 'Test: before'
-call vimtex#qf#setqflist()
-echo 'Test: after'
+try
+  call vimtex#qf#setqflist()
+catch /Vimtex: No log file found/
+  echo 'Vimtex: No log file found'
+  cquit
+endtry
+
 let s:qf = getqflist()
 call vimtex#test#assert_equal(len(s:qf), 17)
 
