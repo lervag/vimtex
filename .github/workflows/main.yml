@@ -13,10 +13,7 @@ jobs:
     name: Test on ubuntu-latest
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: 1
-    - name: Install general dependencies
+    - name: Install packages
       run: |
         sudo apt update
         sudo apt install neovim
@@ -34,13 +31,12 @@ jobs:
         perl Build.PL
         ./Build
         sudo ./Build install
+    - uses: actions/checkout@master
+      with:
+        fetch-depth: 1
     - name: Test with neovim
-      run:
-        cd test/tests
-        make -j1
-#   - name: Test with vim
-#     env:
-#       MYVIM="vim -T dumb --not-a-term --noplugin -n"
-#     run:
-#       cd test/tests
-#       make -j1
+      run: cd test/tests && make -j1
+    - name: Test with vim
+      env:
+        MYVIM="vim -T dumb --not-a-term --noplugin -n"
+      run: cd test/tests && make -j1
