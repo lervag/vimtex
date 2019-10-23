@@ -28,7 +28,7 @@ jobs:
         sudo apt install gcc moreutils
         sudo apt install lib{module-build,config-autoconf,extutils-libbuilder}-perl
     - name: Install bibparse
-    - run: |
+      run: |
         wget https://search.cpan.org/CPAN/authors/id/A/AM/AMBS/Text-BibTeX-0.85.tar.gz
         tar zxf Text-BibTeX-0.85.tar.gz
         cd Text-BibTeX-0.85
@@ -47,17 +47,3 @@ jobs:
   #     run: sudo apt install texlive libtext-bibtex-perl
   #   - name: Run tests with Vim
   #     run: make MYVIM="vim -T dumb --not-a-term --noplugin -n" -C test/features/completion
-
-  # vader-tests:
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest, ubuntu-16.04]
-
-  #   name: Vader tests on ${{ matrix.os }}
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: Clone vader.vim
-  #     run: git clone https://github.com/junegunn/vader.vim.git test/vader/vader.vim
-  #   - name: Run Vader tests
-  #     run: test/vader/run
