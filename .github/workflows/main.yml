@@ -27,14 +27,14 @@ jobs:
         sudo apt install libmodule-build-perl
         sudo apt install libconfig-autoconf-perl
         sudo apt install libextutils-libbuilder-perl
-#   - name: Install bibparse
-#     run: |
-#       wget https://search.cpan.org/CPAN/authors/id/A/AM/AMBS/Text-BibTeX-0.85.tar.gz
-#       tar zxf Text-BibTeX-0.85.tar.gz
-#       cd Text-BibTeX-0.85
-#       perl Build.PL
-#       ./Build
-#       sudo ./Build install
+    - name: Install bibparse
+      run: |
+        wget https://search.cpan.org/CPAN/authors/id/A/AM/AMBS/Text-BibTeX-0.85.tar.gz
+        tar zxf Text-BibTeX-0.85.tar.gz
+        cd Text-BibTeX-0.85
+        perl Build.PL
+        ./Build
+        sudo ./Build install
     - name: Test with neovim
       run:
         cd test/tests
