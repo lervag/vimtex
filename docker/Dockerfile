@@ -17,10 +17,19 @@ FROM ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt -qq update
-RUN apt -qq -y install vim neovim moreutils
-RUN apt -qq -y install texlive texlive-latex-extra
-RUN apt -qq -y install latexmk libtext-bibtex-perl
-RUN apt -qq -y install git make wget
+RUN apt -qq -y install \
+  vim neovim moreutils \
+  gcc git make wget tree \
+  texlive texlive-latex-extra latexmk \
+  libmodule-build-perl \
+  libconfig-autoconf-perl \
+  libextutils-libbuilder-perl
+RUN wget https://search.cpan.org/CPAN/authors/id/A/AM/AMBS/Text-BibTeX-0.85.tar.gz; \
+  tar zxf Text-BibTeX-0.85.tar.gz; \
+  cd Text-BibTeX-0.85; \
+  perl Build.PL; \
+  ./Build; \
+  ./Build install
 
 WORKDIR /vimtex
 
