@@ -6,7 +6,6 @@ on:
       - 'doc/*'
       - 'docker/*'
       - 'media/*'
-      - '.github/**'
       - '*.md'
 
 jobs:
