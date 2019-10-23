@@ -10,12 +10,13 @@ on:
       - '*.md'
 
 jobs:
-  test:
+  run-tests:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-16.04]
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+
     steps:
     - uses: actions/checkout@master
       with:
@@ -38,11 +39,13 @@ jobs:
         perl Build.PL
         ./Build
         sudo ./Build install
-    - name: Run tests with neovim
+    - name: Test with neovim
       run:
         cd test/tests
         make -j1
-    # - name: Run tests with vim
-    #   run:
-    #     cd test/tests
-    #     make -j1 MYVIM="vim -T dumb --not-a-term --noplugin -n"
+#   - name: Test with vim
+#     env:
+#       MYVIM="vim -T dumb --not-a-term --noplugin -n"
+#     run:
+#       cd test/tests
+#       make -j1
