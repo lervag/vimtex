@@ -10,11 +10,8 @@ on:
 
 jobs:
   run-tests:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-16.04]
+    name: Test on ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Install packages
       run: |
