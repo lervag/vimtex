@@ -55,7 +55,7 @@ function! vimtex#misc#wordcount(...) abort " {{{1
   let cmd .= get(l:opts, 'detailed') ? '-inc ' : '-q -1 -merge '
   let cmd .= g:vimtex_texcount_custom_arg . ' '
   let cmd .= vimtex#util#shellescape(l:file.base)
-  let lines = split(system(cmd), '\n')
+  let lines = vimtex#process#capture(cmd)
 
   if l:file.base !=# b:vimtex.base
     call delete(l:file.tex)

@@ -406,7 +406,7 @@ function! s:compiler_process.exec() abort dict " {{{1
   function! l:process.set_pid() abort dict " {{{2
     if (has('win32') || has('win32unix'))
       let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
-      let pidinfo = split(system(pidcmd), '\n')[-1]
+      let pidinfo = vimtex#process#capture(pidcmd)[-1]
       let self.pid = str2nr(split(pidinfo,'\s\+')[1])
     else
       let self.pid = str2nr(system('pgrep -nf "^[^ ]*perl.*latexmk"')[:-2])

@@ -15,8 +15,12 @@ function! vimtex#process#run(cmd, ...) abort " {{{1
   let l:opts.cmd = a:cmd
   let l:process = vimtex#process#new(l:opts)
 
-  call l:process.run()
-  return l:process
+  return l:process.run()
+endfunction
+
+" }}}1
+function! vimtex#process#capture(cmd) abort " {{{1
+  return vimtex#process#run(a:cmd, {'capture': 1})
 endfunction
 
 " }}}1
@@ -36,6 +40,8 @@ let s:process = {
       \ 'output' : '',
       \ 'workdir' : '',
       \ 'silent' : 1,
+      \ 'capture' : 0,
+      \ 'result' : '',
       \}
 
 function! s:process.run() abort dict " {{{1
@@ -46,6 +52,8 @@ function! s:process.run() abort dict " {{{1
   call self._execute()
   call self._restore()
   call self._post_run()
+
+  return self.capture ? self.result : self
 endfunction
 
 " }}}1
@@ -55,7 +63,7 @@ function! s:process.stop() abort dict " {{{1
   let l:cmd = has('win32')
         \ ? 'taskkill /PID ' . self.pid . ' /T /F'
         \ : 'kill ' . self.pid
-  silent call system(l:cmd)
+  call vimtex#process#run(l:cmd, {'background': 0})
 
   let self.pid = 0
 endfunction
@@ -87,7 +95,10 @@ endfunction
 
 " }}}1
 function! s:process._pre_run() abort dict " {{{1
-  if empty(self.output) && self.background
+  if self.capture
+    let self.silent = 0
+    let self.background = 0
+  elseif empty(self.output) && self.background
     let self.output = 'null'
   endif
 
@@ -96,7 +107,9 @@ endfunction
 
 " }}}1
 function! s:process._execute() abort dict " {{{1
-  if self.silent
+  if self.capture
+    let self.result = split(system(self.prepared_cmd), '\n')
+  elseif self.silent
     silent call system(self.prepared_cmd)
   elseif self.background
     silent execute '!' . self.prepared_cmd
@@ -188,13 +201,15 @@ else
     if self.background
       if !empty(self.output)
         let l:cmd .= ' >'
-              \ . (self.output ==# 'null' ? '/dev/null' : shellescape(self.output))
+              \ . (self.output ==# 'null'
+              \    ? '/dev/null'
+              \    : shellescape(self.output))
               \ . ' 2>&1'
       endif
       let l:cmd .= ' &'
     endif
 
-    if ! self.silent
+    if !self.silent
       let l:cmd = escape(l:cmd, '%#')
     endif
 

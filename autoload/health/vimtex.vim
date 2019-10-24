@@ -149,7 +149,7 @@ function! s:check_view_skim() abort " {{{1
         \ '''tell application "Finder" to POSIX path of ',
         \ '(get application file id (id of application "Skim") as alias)''',
         \])
-  
+
   if system(l:cmd)
     call health#report_error('Skim is not installed!')
   else
