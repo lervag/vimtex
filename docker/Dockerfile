@@ -20,7 +20,7 @@ RUN apt -qq update
 RUN apt -qq -y install \
   vim neovim moreutils \
   gcc git make wget tree \
-  texlive texlive-latex-extra latexmk \
+  texlive texlive-latex-extra texlive-extra-utils latexmk \
   libmodule-build-perl \
   libconfig-autoconf-perl \
   libextutils-libbuilder-perl
