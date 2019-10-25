@@ -2241,9 +2241,14 @@ OPTIONS                                                        *vimtex-options*
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Note: It is possible to set up inverse search for SumatraPDF through
-                the command line.  This can be utilized to set the correct
-                |servername| for inverse search: >
+          Note: It is also possible to set up Backward search for SumatraPDF
+                through the command line.  This can be utilized to set the
+                correct |servername| for inverse search. For this to work with
+                Vim on the command line as well (which by default does not
+                start with a server name in contrast to Gvim),
+
+                - pass a server name, say VIM, to Vim by vim --servername VIM
+                - replace gvim --servername below by vim --servername >
 
             let g:vimtex_view_general_viewer = 'SumatraPDF'
             let g:vimtex_view_general_options
