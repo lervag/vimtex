@@ -2233,7 +2233,7 @@ OPTIONS                                                        *vimtex-options*
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
-          portable and starts up very fast.  It supports forward search.
+          portable and starts up very fast.  It supports forward search. >
 
             let g:vimtex_view_general_viewer = 'SumatraPDF'
             let g:vimtex_view_general_options
@@ -2246,15 +2246,15 @@ OPTIONS                                                        *vimtex-options*
           Note: If `Vim` is used on the command line, then the servername is not
           set automatically and `vim --servername VIM` must be run to set it. >
 
-                let g:vimtex_view_general_options
-                    \ = '-reuse-instance -forward-search @tex @line @pdf'
-                    \ . ' -inverse-search ' . (has('gui_running') ? "g" : "")
-                    \ . "vim --servername ' . v:servername
-                    \ . ' --remote-send \"^<C-\^>^<C-n^>'
-                    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-                    \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-                    \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                    \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+          let g:vimtex_view_general_options
+              \ = '-reuse-instance -forward-search @tex @line @pdf'
+              \ . ' -inverse-search "' . exepath(v:progpath)
+              \ . ' --servername ' . v:servername . ' +%l "%f"'
+              \ . ' --remote-send \"^<C-\^>^<C-n^>'
+              \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+              \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+              \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+              \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
           Note: There is a known issue with vimtex + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
