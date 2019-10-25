@@ -2234,33 +2234,22 @@ OPTIONS                                                        *vimtex-options*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
           portable and starts up very fast.  It supports forward search.
-          Backward search must be set up from the viewer. >
 
             let g:vimtex_view_general_viewer = 'SumatraPDF'
             let g:vimtex_view_general_options
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Note: To set up Backward search for SumatraPDF with `gvim`, one can
-                use the following settings: >
+          Backward search can be set up from the viewer or in (g)Vim by the
+          settings below.
+
+          Note: If `Vim` is used on the command line, then the servername is not
+          set automatically and `vim --servername VIM` must be run to set it. >
 
                 let g:vimtex_view_general_options
                     \ = '-reuse-instance -forward-search @tex @line @pdf'
-                    \ . ' -inverse-search "gvim --servername ' . v:servername
-                    \ . ' --remote-send \"^<C-\^>^<C-n^>'
-                    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-                    \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-                    \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                    \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
-<
-                If one instead use `vim` on the command line, then one should
-                first notice that the servername is not set automatically.
-                Thus one should run `vim --servername VIM` to set it. The
-                corresonping setting is now: >
-
-                let g:vimtex_view_general_options
-                    \ = '-reuse-instance -forward-search @tex @line @pdf'
-                    \ . ' -inverse-search "vim --servername ' . v:servername
+                    \ . ' -inverse-search ' . (has('gui_running') ? "g" : "")
+                    \ . "vim --servername ' . v:servername
                     \ . ' --remote-send \"^<C-\^>^<C-n^>'
                     \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
                     \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
