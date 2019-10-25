@@ -2241,24 +2241,31 @@ OPTIONS                                                        *vimtex-options*
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Note: It is also possible to set up Backward search for SumatraPDF
-                through the command line.  This can be utilized to set the
-                correct |servername| for inverse search. For this to work with
-                Vim on the command line as well (which by default does not
-                start with a server name in contrast to Gvim),
+          Note: To set up Backward search for SumatraPDF with `gvim`, one can
+                use the following settings: >
 
-                - pass a server name, say VIM, to Vim by vim --servername VIM
-                - replace gvim --servername below by vim --servername >
+                let g:vimtex_view_general_options
+                    \ = '-reuse-instance -forward-search @tex @line @pdf'
+                    \ . ' -inverse-search "gvim --servername ' . v:servername
+                    \ . ' --remote-send \"^<C-\^>^<C-n^>'
+                    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+                    \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+                    \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+                    \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+<
+                If one instead use `vim` on the command line, then one should
+                first notice that the servername is not set automatically.
+                Thus one should run `vim --servername VIM` to set it. The
+                corresonping setting is now: >
 
-            let g:vimtex_view_general_viewer = 'SumatraPDF'
-            let g:vimtex_view_general_options
-                \ = '-reuse-instance -forward-search @tex @line @pdf'
-                \ . ' -inverse-search "gvim --servername ' . v:servername
-                \ . ' --remote-send \"^<C-\^>^<C-n^>'
-                \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
-                \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-                \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+                let g:vimtex_view_general_options
+                    \ = '-reuse-instance -forward-search @tex @line @pdf'
+                    \ . ' -inverse-search "vim --servername ' . v:servername
+                    \ . ' --remote-send \"^<C-\^>^<C-n^>'
+                    \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
+                    \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+                    \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+                    \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
           Note: There is a known issue with vimtex + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
