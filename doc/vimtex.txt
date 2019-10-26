@@ -2251,7 +2251,6 @@ OPTIONS                                                        *vimtex-options*
               \ . ' -inverse-search "' . exepath(v:progpath)
               \ . ' --servername ' . v:servername
               \ . ' --remote-send \"^<C-\^>^<C-n^>'
-              \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
               \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
               \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
               \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
