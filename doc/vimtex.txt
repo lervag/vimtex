@@ -2249,7 +2249,7 @@ OPTIONS                                                        *vimtex-options*
           let g:vimtex_view_general_options
               \ = '-reuse-instance -forward-search @tex @line @pdf'
               \ . ' -inverse-search "' . exepath(v:progpath)
-              \ . ' --servername ' . v:servername . ' +%l "%f"'
+              \ . ' --servername ' . v:servername
               \ . ' --remote-send \"^<C-\^>^<C-n^>'
               \ . ':drop \%f^<CR^>:\%l^<CR^>:normal\! zzzv^<CR^>'
               \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
