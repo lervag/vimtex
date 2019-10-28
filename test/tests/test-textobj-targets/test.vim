@@ -1,8 +1,7 @@
 set nocompatible
 let &rtp = 'targets.vim,' . &rtp
 let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
-filetype plugin indent on
+filetype plugin on
 
 runtime plugin/targets.vim
 
@@ -11,12 +10,12 @@ let g:tex_flavor = 'latex'
 set softtabstop=16
 set expandtab
 
-" tests should pass with this setting too
-" set selection=exclusive
+silent edit test1.tex
+
+if empty($INMAKE) | finish | endif
 
 function! s:testVimtexCmdtargets()
-  silent edit test1.tex
-
+  silent! edit!
   call search('xxxxxx')
   normal! "lyy
 
@@ -54,6 +53,10 @@ function! s:execute(operation, motions)
   execute 'normal! I' . a:operation . a:motions . "\<tab>"
 endfunction
 
+call s:testVimtexCmdtargets()
+
+" Tests should pass with this setting too
+set selection=exclusive
 call s:testVimtexCmdtargets()
 
 quit!
