@@ -2240,11 +2240,8 @@ OPTIONS                                                        *vimtex-options*
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Backward search can be set up from the viewer or in (g)Vim by the
-          settings below.
-
-          Note: If `Vim` is used on the command line, then the servername is not
-          set automatically and `vim --servername VIM` must be run to set it. >
+          Backward search can be set up either in the viewer or in (g)Vim by
+          the adding the following lines to your vimrc:
 
           let g:vimtex_view_general_options
               \ = '-reuse-instance -forward-search @tex @line @pdf'
