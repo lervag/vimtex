@@ -21,7 +21,7 @@ function! s:folder.init() abort dict " {{{1
   let l:re = '\v^\s*\\%(' . join(self.cmds, '|') . ')\*?'
 
   let self.re.start = l:re . '.*(\{|\[)\s*(\%.*)?$'
-  let self.re.end = '^\s*}\s*\%(%\|$\)'
+  let self.re.end = '\v^\s*%(\}\s*\{)*\}\s*%(\%|$)'
   let self.re.text = l:re . '\{[^}]*\}'
   let self.re.fold_re = '\\%(' . join(self.cmds, '|') . ')'
 
