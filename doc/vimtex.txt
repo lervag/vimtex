@@ -2241,16 +2241,16 @@ OPTIONS                                                        *vimtex-options*
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
           Backward search can be set up either in the viewer or in (g)Vim by
-          the adding the following lines to your vimrc:
+          the adding the following lines to your vimrc: >
 
-          let g:vimtex_view_general_options
-              \ = '-reuse-instance -forward-search @tex @line @pdf'
-              \ . ' -inverse-search "' . exepath(v:progpath)
-              \ . ' --servername ' . v:servername
-              \ . ' --remote-send \"^<C-\^>^<C-n^>'
-              \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-              \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-              \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+            let g:vimtex_view_general_options
+                \ = '-reuse-instance -forward-search @tex @line @pdf'
+                \ . ' -inverse-search "' . exepath(v:progpath)
+                \ . ' --servername ' . v:servername
+                \ . ' --remote-send \"^<C-\^>^<C-n^>'
+                \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+                \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+                \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
           Note: There is a known issue with vimtex + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
