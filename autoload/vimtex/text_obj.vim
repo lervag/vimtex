@@ -82,7 +82,7 @@ function! vimtex#text_obj#commands(is_inner, mode) abort " {{{1
   endfor
 
   if empty(l:obj)
-    if empty(l:obj_prev)
+    if empty(l:obj_prev) || g:vimtex_text_obj_variant == 'targets'
       if a:mode
         normal! gv
       else
@@ -127,7 +127,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
     endif
 
     if empty(l:object)
-      if !empty(l:prev_object)
+      if !empty(l:prev_object) && g:vimtex_text_obj_variant != 'targets'
         let l:object = l:prev_object
         break
       endif

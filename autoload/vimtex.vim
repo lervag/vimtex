@@ -229,6 +229,7 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_texcount_custom_arg', '')
 
   call s:init_option('vimtex_text_obj_enabled', 1)
+  call s:init_option('vimtex_text_obj_variant', 'auto')
   call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])
 
   call s:init_option('vimtex_toc_enabled', 1)
@@ -464,7 +465,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map('x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
   call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
 
-  if get(g:, 'vimtex_compiler_enabled', 0)
+  if g:vimtex_compiler_enabled
     call s:map('n', '<localleader>ll', '<plug>(vimtex-compile)')
     call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
     call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
@@ -478,7 +479,7 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('n', '<localleader>lG', '<plug>(vimtex-status-all)')
   endif
 
-  if get(g:, 'vimtex_motion_enabled', 0)
+  if g:vimtex_motion_enabled
     " These are forced in order to overwrite matchit mappings
     call s:map('n', '%', '<plug>(vimtex-%)', 1)
     call s:map('x', '%', '<plug>(vimtex-%)', 1)
@@ -524,19 +525,11 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('o', '[*', '<plug>(vimtex-[*)')
   endif
 
-  if get(g:, 'vimtex_text_obj_enabled', 0)
-    call s:map('x', 'ic', '<plug>(vimtex-ic)')
-    call s:map('x', 'ac', '<plug>(vimtex-ac)')
-    call s:map('o', 'ic', '<plug>(vimtex-ic)')
-    call s:map('o', 'ac', '<plug>(vimtex-ac)')
+  if g:vimtex_text_obj_enabled
     call s:map('x', 'id', '<plug>(vimtex-id)')
     call s:map('x', 'ad', '<plug>(vimtex-ad)')
     call s:map('o', 'id', '<plug>(vimtex-id)')
     call s:map('o', 'ad', '<plug>(vimtex-ad)')
-    call s:map('x', 'ie', '<plug>(vimtex-ie)')
-    call s:map('x', 'ae', '<plug>(vimtex-ae)')
-    call s:map('o', 'ie', '<plug>(vimtex-ie)')
-    call s:map('o', 'ae', '<plug>(vimtex-ae)')
     call s:map('x', 'i$', '<plug>(vimtex-i$)')
     call s:map('x', 'a$', '<plug>(vimtex-a$)')
     call s:map('o', 'i$', '<plug>(vimtex-i$)')
@@ -545,9 +538,35 @@ function! s:init_default_mappings() abort " {{{1
     call s:map('x', 'aP', '<plug>(vimtex-aP)')
     call s:map('o', 'iP', '<plug>(vimtex-iP)')
     call s:map('o', 'aP', '<plug>(vimtex-aP)')
+
+    if vimtex#text_obj#targets#enabled()
+      call vimtex#text_obj#targets#init()
+
+      " These are handled explicitly to avoid conflict with gitgutter
+      call s:map('x', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map('x', 'ac', '<plug>(vimtex-targets-a)c')
+      call s:map('o', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map('o', 'ac', '<plug>(vimtex-targets-a)c')
+    else
+      if g:vimtex_text_obj_variant ==# 'targets'
+        call vimtex#log#warning(
+              \ "Ignoring g:vimtex_text_obj_variant = 'targets'"
+              \ . " because 'g:loaded_targets' does not exist or is 0.")
+      endif
+      let g:vimtex_text_obj_variant = 'vimtex'
+
+      call s:map('x', 'ie', '<plug>(vimtex-ie)')
+      call s:map('x', 'ae', '<plug>(vimtex-ae)')
+      call s:map('o', 'ie', '<plug>(vimtex-ie)')
+      call s:map('o', 'ae', '<plug>(vimtex-ae)')
+      call s:map('x', 'ic', '<plug>(vimtex-ic)')
+      call s:map('x', 'ac', '<plug>(vimtex-ac)')
+      call s:map('o', 'ic', '<plug>(vimtex-ic)')
+      call s:map('o', 'ac', '<plug>(vimtex-ac)')
+    endif
   endif
 
-  if get(g:, 'vimtex_toc_enabled', 0)
+  if g:vimtex_toc_enabled
     call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
     call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
   endif
@@ -559,11 +578,11 @@ function! s:init_default_mappings() abort " {{{1
     endif
   endif
 
-  if get(g:, 'vimtex_imaps_enabled', 0)
+  if g:vimtex_imaps_enabled
     call s:map('n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
   endif
 
-  if get(g:, 'vimtex_doc_enabled', 0)
+  if g:vimtex_doc_enabled
     call s:map('n', 'K', '<plug>(vimtex-doc-package)')
   endif
 endfunction
