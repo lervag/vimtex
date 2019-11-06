@@ -31,6 +31,6 @@ if empty($INMAKE)
   finish
 endif
 
-call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 18)
+call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 20)
 
 quit!

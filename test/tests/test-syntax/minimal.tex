@@ -18,6 +18,8 @@
 \usepackage{pythontex}
 \usepackage{listings}
 \usepackage{minted}
+\usepackage{tikz}
+\usepackage{pgfplots}
 
 \begin{document}
 
@@ -345,5 +347,31 @@ int main() {
   return 0;
 }
 \end{cppcode_test}
+
+\section{Package: Tikz/pgfplots}
+
+\tikzset{
+  a = b,
+}
+
+\pgfplotsset{
+  a = b,
+}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+      font = \small,
+      % A comment here
+      xlabel = $f(x)$,
+      very thick,
+    ]
+
+    % A simple line
+    \draw (0,0) -- (1,0);
+  \end{tikzpicture}
+  \caption{A simple tikz example.}
+  \label{fig:tikz-example}
+\end{figure}
 
 \end{document}
