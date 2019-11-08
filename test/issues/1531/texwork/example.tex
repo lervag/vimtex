@@ -1,0 +1,21 @@
+\documentclass{article}
+\usepackage{glossaries}
+
+\makeglossary
+\begin{document}
+
+% gf on 'inp.tex' works fine
+\input{inp.tex}
+% \input{../texinclude/inp.tex}
+
+% completion after type '\ref{' works if aux-file exists
+\ref{sec:bar}
+
+% completion after type \gls{' didn't work
+\gls{g:foo}
+
+% but completion works if used '\input{../texinclude/inp.tex}
+
+\printglossaries
+
+\end{document}
