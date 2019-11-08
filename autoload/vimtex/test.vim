@@ -4,25 +4,30 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#test#assert_equal(x, y) abort " {{{1
-  if a:x == a:y | return 1 | endif
+function! vimtex#test#assert(condition) abort " {{{1
+  if a:condition | return 1 | endif
 
-  echo 'Assertion failed!'
-  echo 'x =' a:x
-  echo 'y =' a:y
-  echo "---\n"
-  cquit
+  call s:fail()
+endfunction
+
+" }}}1
+function! vimtex#test#assert_equal(x, y) abort " {{{1
+  if a:x ==# a:y | return 1 | endif
+
+  call s:fail([
+        \ 'x = ' . a:x,
+        \ 'y = ' . a:y,
+        \])
 endfunction
 
 " }}}1
 function! vimtex#test#assert_match(x, regex) abort " {{{1
   if a:x =~# a:regex | return 1 | endif
 
-  echo 'Assertion failed!'
-  echo 'x =' a:x
-  echo 'regex =' a:regex
-  echo "---\n"
-  cquit
+  call s:fail([
+        \ 'x = ' . a:x,
+        \ 'regex = ' . a:regex,
+        \])
 endfunction
 
 " }}}1
@@ -35,8 +40,7 @@ function! vimtex#test#completion(context, ...) abort " {{{1
     silent normal! u
     return vimtex#complete#omnifunc(0, l:base)
   catch /.*/
-    echo v:exception "\n"
-    cquit
+    call s:fail(v:exception)
   endtry
 endfunction
 
@@ -49,6 +53,25 @@ function! vimtex#test#keys(keys, context, expected) abort " {{{1
   silent execute 'normal' a:keys
 
   call vimtex#test#assert_equal(getline(1, line('$')), a:expected)
+endfunction
+
+" }}}1
+
+function! s:fail(...) abort " {{{1
+  echo 'Assertion failed!'
+
+  if a:0 > 0 && !empty(a:1)
+    if type(a:1) == type('')
+      echo a:1
+    else
+      for line in a:1
+        echo line
+      endfor
+    endif
+  endif
+  echon "\n"
+
+  cquit
 endfunction
 
 " }}}1
