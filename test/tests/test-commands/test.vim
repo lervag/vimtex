@@ -5,6 +5,13 @@ syntax on
 
 setfiletype tex
 
+" ]]   /  Close current delimiter or environment
+call vimtex#test#keys("A]]", [
+      \ '$\bigl( \left. a \right) '
+      \], [
+      \ '$\bigl( \left. a \right) \bigr)',
+      \])
+
 " csc  /  Change surrounding command
 call vimtex#test#keys("csctest\<cr>", ['\cmd{foo}'], ['\test{foo}'])
 
