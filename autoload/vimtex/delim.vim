@@ -33,10 +33,11 @@ endfunction
 
 function! vimtex#delim#close() abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
-  let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
+  let l:posval_cursor = vimtex#pos#val(l:save_pos)
+  let l:posval_current = l:posval_cursor
+  let l:posval_last = l:posval_cursor + 1
 
-  let l:lnum = l:save_pos[1] + 1
-  while l:lnum > 1
+  while l:posval_current < l:posval_last
     let l:open  = vimtex#delim#get_prev('all', 'open',
           \ { 'syn_exclude' : 'texComment' })
     if empty(l:open) || get(l:open, 'name', '') ==# 'document'
@@ -49,19 +50,16 @@ function! vimtex#delim#close() abort " {{{1
       return l:open.corr
     endif
 
-    if vimtex#pos#val(l:open) == l:pos_val_cursor
-      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
-      continue
-    endif
-
-    let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
-    if l:pos_val_try > l:pos_val_cursor
+    let l:posval_last = l:posval_current
+    let l:posval_current = vimtex#pos#val(l:open)
+    let l:posval_try = vimtex#pos#val(l:close) + strlen(l:close.match)
+    if l:posval_current != l:posval_cursor
+          \ && l:posval_try > l:posval_cursor
       call vimtex#pos#set_cursor(l:save_pos)
       return l:open.corr
-    else
-      let l:lnum = l:open.lnum
-      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
     endif
+
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
   endwhile
 
   call vimtex#pos#set_cursor(l:save_pos)
@@ -716,7 +714,7 @@ function! s:parser_delim_unmatched(match, lnum, cnum, ...) abort " {{{1
     let result.corr = '\right.'
     let re1 = '\\left\s*\.'
     let re2 = s:parser_delim_get_regexp('\right', 1, 'mods')
-          \  . '\s*' . s:parser_delim_get_regexp('.', 1)
+          \  . '\s*' . s:parser_delim_get_regexp('.', 0)
   else
     let result.mod = '\right'
     let result.corr_mod = '\left'
