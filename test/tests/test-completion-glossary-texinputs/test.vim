@@ -12,9 +12,12 @@ if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
 endif
 
-let $TEXINPUTS = getcwd() . '/texinclude:'
 silent edit texwork/example.tex
 
+let s:candidates = vimtex#test#completion('\gls{', '')
+call vimtex#test#assert(len(s:candidates) == 0)
+
+let $TEXINPUTS = getcwd() . '/texinclude:'
 let s:candidates = vimtex#test#completion('\gls{', '')
 call vimtex#test#assert(len(s:candidates) > 0)
 
