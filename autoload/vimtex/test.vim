@@ -15,8 +15,8 @@ function! vimtex#test#assert_equal(x, y) abort " {{{1
   if a:x ==# a:y | return 1 | endif
 
   call s:fail([
-        \ 'x = ' . a:x,
-        \ 'y = ' . a:y,
+        \ 'x = ' . string(a:x),
+        \ 'y = ' . string(a:y),
         \])
 endfunction
 
@@ -25,7 +25,7 @@ function! vimtex#test#assert_match(x, regex) abort " {{{1
   if a:x =~# a:regex | return 1 | endif
 
   call s:fail([
-        \ 'x = ' . a:x,
+        \ 'x = ' . string(a:x),
         \ 'regex = ' . a:regex,
         \])
 endfunction
