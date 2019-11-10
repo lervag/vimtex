@@ -25,6 +25,6 @@ catch /Vimtex: No log file found/
 endtry
 
 let s:qf = getqflist()
-call vimtex#test#assert_equal(len(s:qf), 15)
+call vimtex#test#assert(len(s:qf) >= 15)
 
 quit!
