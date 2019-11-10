@@ -10,7 +10,6 @@ call vimtex#test#assert_equal([
   \ 'main.tex',
   \ 'test/include1.tex',
   \ 'test/sub/include2.tex',
-  \ 'include3.tex',
   \], b:vimtex.sources)
 
 quit!

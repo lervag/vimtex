@@ -140,14 +140,17 @@ function! s:input_to_filename(input, root) abort " {{{1
     let l:file .= '.tex'
   endif
 
-  " Use absolute paths
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = a:root . '/' . l:file
+  if vimtex#paths#is_abs(l:file)
+    return l:file
   endif
 
-  " Only return filename if it is readable
-  return filereadable(l:file) ? l:file : ''
+  let l:candidate = a:root . '/' . l:file
+  if filereadable(l:candidate)
+    return l:candidate
+  endif
+
+  let l:candidate = vimtex#kpsewhich#find(l:file)
+  return filereadable(l:candidate) ? l:candidate : l:file
 endfunction
 
 " }}}1
-
