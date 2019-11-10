@@ -82,7 +82,7 @@ function! vimtex#text_obj#commands(is_inner, mode) abort " {{{1
   endfor
 
   if empty(l:obj)
-    if empty(l:obj_prev) || g:vimtex_text_obj_variant == 'targets'
+    if empty(l:obj_prev) || g:vimtex_text_obj_variant ==# 'targets'
       if a:mode
         normal! gv
       else

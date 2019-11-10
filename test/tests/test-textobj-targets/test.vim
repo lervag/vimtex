@@ -7,6 +7,7 @@ runtime plugin/targets.vim
 
 let g:tex_flavor = 'latex'
 
+set noswapfile
 set softtabstop=16
 set expandtab
 
