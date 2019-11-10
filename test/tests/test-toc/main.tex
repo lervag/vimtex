@@ -1,0 +1,16 @@
+\documentclass{book}
+\usepackage{subfiles}
+
+\input{./chapters/preamble}
+
+\title{Test file.}
+\author{Tester Testington}
+
+\begin{document}
+\maketitle
+
+\chapter{Chapter in main}
+\subfile{chapters/subfile.tex}
+
+\input{./chapters/chapter}
+\end{document}
