@@ -11,7 +11,7 @@ function! vimtex#kpsewhich#find(file) abort " {{{1
   let l:filename = l:output[0]
 
   " If path is already absolute, return it
-  return vimtex#paths#is_abs(l:filename)
+  return !exists('b:vimtex.root') || vimtex#paths#is_abs(l:filename)
         \ ? l:filename
         \ : simplify(b:vimtex.root . '/' . l:filename)
 endfunction
