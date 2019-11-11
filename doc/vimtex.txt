@@ -363,18 +363,20 @@ Enhanced matching and higlighting of delimiters~
 
   |vimtex| highlights and allows navigation between matching pairs of
   delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
-  the `\begin` and `\end` tags of environments.  However, it does not allow
-  matching of middle delimiters or `\item`s.
+  the `\begin` and `\end` tags of environments. However, the implementation
+  may be slow (see also |vimtex-faq-slow-matchparen|, and so one may use
+  |g:vimtex_matchparen_enabled| to disable the highlighting).
 
   Alternatively, one may use the plugin |match-up| [0], which offers enhanced
   |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
   for a variety of file types.  For LaTeX douments, it:
     - Extends highlighting and the `%` motion to a number of middle
-      delimiters including,
+      delimiters including
         - `\bigm` and `\middle` marked delimiters
         - `\item`s in `itemize` and `enumerate` environments
         - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
         - `\if`, `\else` and `\endif`
+      Note: |vimtex| does not support highlighting the middle delimiters.
     - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
       between matching delimiters and operate on delimited text.
 
@@ -1722,6 +1724,8 @@ OPTIONS                                                        *vimtex-options*
         keep |matchparen| activated, which matches delimiters listed in
         'matchpairs'. The |vimtex| specific version will also match LaTeX
         specific delimiters, which is not possible with |matchparen|.
+
+  Note: If you think this feature is slow, see |vimtex-faq-slow-matchparen|.
 
   Default value: 1
 
@@ -3875,6 +3879,17 @@ that may be useful for debugging purposes.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
+
+                                                   *vimtex-faq-slow-matchparen*
+Q: Why is matching parens so slow?
+A: Because it is complicated and requires some expensive searches for matching
+   parantheses. It uses the syntax information to skip commented delimiters,
+   which is expensive. You can tune the timeout and stopline parameters for
+   the searches with |g:vimtex_delim_timeout| and |g:vimtex_delim_stopline|,
+   which may help. If it is still too slow, you can also try to use
+   vim-matchup [0].
+
+   [0]: https://github.com/andymass/vim-matchup
 
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up vimtex with Skim?
