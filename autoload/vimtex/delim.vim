@@ -791,7 +791,7 @@ endfunction
 function! s:get_matching_env() dict abort " {{{1
   try
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
-          \ self.gms_flags, '', 0, g:vimtex_delim_timeout)
+          \ self.gms_flags, '', 0, s:get_timeout())
   catch /E118/
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
           \ self.gms_flags, '', self.gms_stopline)
@@ -823,7 +823,7 @@ function! s:get_matching_delim() dict abort " {{{1
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
           \ self.gms_flags,
           \ 'synIDattr(synID(line("."), col("."), 0), "name") =~? "comment"',
-          \ 0, g:vimtex_delim_timeout)
+          \ 0, s:get_timeout())
   catch /E118/
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
           \ self.gms_flags,
@@ -844,7 +844,7 @@ function! s:get_matching_delim_unmatched() dict abort " {{{1
       let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
             \ self.gms_flags,
             \ 'index(misses, [line("."), col(".")]) >= 0',
-            \ 0, g:vimtex_delim_timeout)
+            \ 0, s:get_timeout())
     catch /E118/
       let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
             \ self.gms_flags,
@@ -871,6 +871,14 @@ function! s:get_matching_delim_unmatched() dict abort " {{{1
   endwhile
 
   return ['', 0, 0]
+endfunction
+
+" }}}1
+
+function! s:get_timeout() abort " {{{1
+  return (empty(v:insertmode) ? mode() : v:insertmode) ==# 'i'
+        \ ? g:vimtex_delim_insert_timeout
+        \ : g:vimtex_delim_timeout
 endfunction
 
 " }}}1

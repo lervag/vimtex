@@ -47,6 +47,7 @@ function! vimtex#init_options() abort " {{{1
         \})
 
   call s:init_option('vimtex_delim_timeout', 300)
+  call s:init_option('vimtex_delim_insert_timeout', 60)
   call s:init_option('vimtex_delim_stopline', 500)
 
   call s:init_option('vimtex_include_search_enabled', 1)
