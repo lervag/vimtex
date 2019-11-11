@@ -27,15 +27,17 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   call VimtexNewMathZone('M', 'mathpar', 1)
 
   " Amsmath [lr][vV]ert  (Holger Mitschke)
-  for l:texmath in [
-        \ ['\\lvert', '|'] ,
-        \ ['\\rvert', '|'] ,
-        \ ['\\lVert', '‖'] ,
-        \ ['\\rVert', '‖'] ,
-        \ ]
-    execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
-          \ . l:texmath[0] . "' contained conceal cchar=" . l:texmath[1]
-  endfor
+  if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
+    for l:texmath in [
+          \ ['\\lvert', '|'] ,
+          \ ['\\rvert', '|'] ,
+          \ ['\\lVert', '‖'] ,
+          \ ['\\rVert', '‖'] ,
+          \ ]
+        execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
+              \ . l:texmath[0] . "' contained conceal cchar=" . l:texmath[1]
+    endfor
+  endif
 endfunction
 
 " }}}1
