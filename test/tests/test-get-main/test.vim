@@ -35,4 +35,10 @@ for s:filename in [
   call TestMain(s:filename, 'test-includes/main.tex')
 endfor
 
+" Test subfiles 1: Recursive search
+call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')"}}}
+
+" Test subfiles 2: Recursive search, but the match does not include sub2
+call TestMain('test-subfiles/sub/sub2.tex', 'test-subfiles/sub/sub2.tex')
+
 quit!

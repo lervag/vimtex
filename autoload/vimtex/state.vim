@@ -287,6 +287,7 @@ function! s:get_main_from_subfile() abort " {{{1
         " directory tree.
         let l:candidate = findfile(l:filename, '.;')
         if filereadable(l:candidate)
+              \ && s:file_reaches_current(l:candidate)
           let s:subfile_preserve_root = 1
           return fnamemodify(candidate, ':p')
         endif
