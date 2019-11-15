@@ -41,7 +41,7 @@ endfor
 
 " Test subfiles 1: Recursive search
 silent edit test-subfiles/sub/sub1.tex
-echo &cpoptions stridx(&cpoptions, 'd')
+echo findfile('main.tex', expand('%:p:h') . ';') "\n"
 echo findfile('main.tex', './;') "\n"
 
 bwipeout!
