@@ -40,7 +40,15 @@ for s:filename in [
 endfor
 
 " Test subfiles 1: Recursive search
-call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')"}}}
+unsilent echo getcwd() "\n"
+silent edit test-subfiles/sub/sub1.tex
+unsilent echo b:vimtex.root "\n"
+unsilent echo b:vimtex.tex "\n"
+unsilent echo findfile('main.tex', '.;') "\n"
+unsilent echo getcwd() "\n"
+
+bwipeout!
+call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')
 
 " Test subfiles 2: Recursive search, but the match does not include sub2
 call TestMain('test-subfiles/sub/sub2.tex', 'test-subfiles/sub/sub2.tex')
