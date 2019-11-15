@@ -40,11 +40,6 @@ for s:filename in [
 endfor
 
 " Test subfiles 1: Recursive search
-silent edit test-subfiles/sub/sub1.tex
-echo findfile('main.tex', expand('%:p:h') . ';') "\n"
-echo findfile('main.tex', './;') "\n"
-
-bwipeout!
 call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')
 
 " Test subfiles 2: Recursive search, but the match does not include sub2
