@@ -3,7 +3,7 @@ let &rtp = '../../..,' . &rtp
 filetype plugin on
 
 function! TestMain(file, expected) abort " {{{1
-  execute 'silent edit' a:file
+  execute 'silent edit' fnameescape(a:file)
   call vimtex#test#assert_equal(b:vimtex.tex, fnamemodify(a:expected, ':p'))
   bwipeout!
 endfunction
@@ -11,6 +11,10 @@ endfunction
 " }}}1
 
 let g:tex_flavor = 'latex'
+
+" Ugly paths
+call TestMain('test-ugly-paths/[code college-1] title/test.tex',
+      \ 'test-ugly-paths/[code college-1] title/test.tex')
 
 " Simple recursion
 call TestMain('simple.tex', 'simple.tex')
