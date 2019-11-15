@@ -40,12 +40,9 @@ for s:filename in [
 endfor
 
 " Test subfiles 1: Recursive search
-unsilent echo getcwd() "\n"
 silent edit test-subfiles/sub/sub1.tex
-unsilent echo b:vimtex.root "\n"
-unsilent echo b:vimtex.tex "\n"
-unsilent echo findfile('main.tex', '.;') "\n"
-unsilent echo getcwd() "\n"
+echo &cpoptions stridx(&cpoptions, 'd')
+echo findfile('main.tex', './;') "\n"
 
 bwipeout!
 call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')
