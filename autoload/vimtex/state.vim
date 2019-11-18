@@ -419,15 +419,21 @@ function! s:file_reaches_current(file) abort " {{{1
     let l:file = matchstr(l:line, g:vimtex#re#tex_input . '\zs\f+')
     if empty(l:file) | continue | endif
 
-    if !vimtex#paths#is_abs(l:file)
-      let l:file = fnamemodify(a:file, ':h') . '/' . l:file
-    endif
-
     if l:file !~# '\.tex$'
       let l:file .= '.tex'
     endif
 
-    if expand('%:p') ==# l:file
+    " l:current_file is the current file's absolute path by default
+    let l:current_file = expand('%:p')
+
+    " adjust it to relative path if needed
+    if !vimtex#paths#is_abs(l:file)
+    	let l:current_file = expand('%')
+    endif
+
+    " now its guaranteed we're comparing absolute path
+    " with absolute, or relative with relative
+    if l:current_file ==# l:file
           \ || s:file_reaches_current(l:file)
       return 1
     endif
