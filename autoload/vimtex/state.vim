@@ -285,7 +285,7 @@ function! s:get_main_from_subfile() abort " {{{1
         " difficult, since the main file is the one we are looking for. We
         " therefore assume that the main file lives somewhere upwards in the
         " directory tree.
-        let l:candidate = findfile(l:filename, '.;')
+        let l:candidate = fnamemodify(findfile(l:filename, '.;'), ':p')
         if filereadable(l:candidate)
               \ && s:file_reaches_current(l:candidate)
           let s:subfile_preserve_root = 1
@@ -413,6 +413,7 @@ endfunction
 
 " }}}1
 function! s:file_reaches_current(file) abort " {{{1
+  " Note: This function assumes that the input a:file is an absolute path
   if !filereadable(a:file) | return 0 | endif
 
   for l:line in filter(readfile(a:file), 'v:val =~# g:vimtex#re#tex_input')
