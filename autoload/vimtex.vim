@@ -226,7 +226,10 @@ function! vimtex#init_options() abort " {{{1
         \     'pythonEscape',
         \     'pythonBEscape',
         \     'pythonBytesEscape',
-        \   ]
+        \   ],
+        \   'java' : [
+        \     'javaError',
+        \   ],
         \ }
         \})
 
