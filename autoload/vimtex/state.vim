@@ -273,6 +273,10 @@ function! s:get_main_from_subfile() abort " {{{1
     let l:filename = matchstr(l:line,
           \ '^\C\s*\\documentclass\[\zs.*\ze\]{subfiles}')
     if len(l:filename) > 0
+      if l:filename !~# '\.tex$'
+        let l:filename .= '.tex'
+      endif
+
       if vimtex#paths#is_abs(l:filename)
         " Specified path is absolute
         if filereadable(l:filename) | return l:filename | endif
