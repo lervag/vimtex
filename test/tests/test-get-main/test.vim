@@ -45,4 +45,7 @@ call TestMain('test-subfiles/sub/sub1.tex', 'test-subfiles/main.tex')
 " Test subfiles 2: Recursive search, but the match does not include sub2
 call TestMain('test-subfiles/sub/sub2.tex', 'test-subfiles/sub/sub2.tex')
 
+" Test subfiles 3: Recursive search, not .tex extension
+call TestMain('test-subfiles/sub/sub3.tex', 'test-subfiles/main.tex')
+
 quit!
