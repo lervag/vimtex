@@ -31,6 +31,9 @@ function! vimtex#syntax#load() abort " {{{1
   " Initialize b:vimtex_syntax
   let b:vimtex_syntax = {}
 
+  " Reset included syntaxes (necessary e.g. when doing :e)
+  call vimtex#syntax#misc#include_reset()
+
   " Set some better defaults
   syntax spell toplevel
   syntax sync maxlines=500

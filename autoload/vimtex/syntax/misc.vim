@@ -30,6 +30,13 @@ endfunction
 let s:included = {}
 
 " }}}1
+function! vimtex#syntax#misc#include_reset() abort " {{{1
+  let s:included = {}
+endfunction
+
+let s:included = {}
+
+" }}}1
 
 function! s:include(cluster, name) abort " {{{1
   let l:name = get(g:vimtex_syntax_nested.aliases, a:name, a:name)
