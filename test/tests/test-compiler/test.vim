@@ -59,7 +59,7 @@ function! RunTests(comp, list_opts)
         cquit
       endif
 
-      sleep 200m
+      sleep 300m
       silent call vimtex#compiler#stop()
     endif
 
@@ -70,7 +70,7 @@ function! RunTests(comp, list_opts)
     endif
 
     silent call vimtex#compiler#clean(1)
-    sleep 100m
+    sleep 200m
 
     if !empty(b:vimtex.out()) || !empty(b:vimtex.aux())
       echo "VimtexClean failed!\n"
