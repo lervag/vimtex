@@ -9,6 +9,6 @@ silent edit test.tex
 if empty($INMAKE) | finish | endif
 
 normal! Gkk
-normal! gf
+silent normal! gf
 call vimtex#test#assert_equal(expand('%'), 'references.bib')
 quit!
