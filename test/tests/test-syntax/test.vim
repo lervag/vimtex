@@ -33,4 +33,9 @@ endif
 
 call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 21)
 
+" Doing :e should not destroy nested syntax and similar
+call vimtex#test#assert(vimtex#util#in_syntax('pythonFunction', 311, 5))
+edit
+call vimtex#test#assert(vimtex#util#in_syntax('pythonFunction', 311, 5))
+
 quit!
