@@ -19,9 +19,13 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
         \ contains=texStatement skipwhite nextgroup=texTikzOptsCurly
   syntax match texTikzEnv /\v\\begin\{%(log)*axis}/
         \ contains=texBeginEnd nextgroup=texTikzOpts skipwhite
+  syntax match texTikzEnv /\v\\begin\{groupplot}/
+        \ contains=texBeginEnd nextgroup=texTikzOpts skipwhite
 
   " Match some custom pgfplots macros
   syntax match texAxisStatement /\\addplot3\>/
+        \ contained skipwhite nextgroup=texTikzOpts
+  syntax match texAxisStatement /\\nextgroupplot\>/
         \ contained skipwhite nextgroup=texTikzOpts
 
   highlight def link texAxisStatement texStatement
