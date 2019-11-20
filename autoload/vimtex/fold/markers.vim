@@ -20,7 +20,7 @@ let s:folder = {
       \}
 function! s:folder.init() abort dict " {{{1
   let self.re.start = '%.*' . self.open
-  let self.re.end = '%.*' . self.close
+  let self.re.end = '%[^\\\%]*' . self.close
   let self.re.text = [
         \ [self.re.start . '\d\?\s*\zs.*', '% ' . self.open . ' '],
         \ ['%\s*\zs.*\ze' . self.open, '% ' . self.open . ' '],
