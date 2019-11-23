@@ -1,8 +1,0 @@
-set nocompatible
-filetype plugin indent on
-syntax enable
-
-set completeopt=menu,preview
-
-let &rtp = '../../..,' . &rtp
-let &rtp = '../../../after,' . &rtp
