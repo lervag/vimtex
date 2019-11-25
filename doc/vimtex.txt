@@ -1596,6 +1596,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: See `autoload/vimtex.vim` (it's a long list)
 
+*g:vimtex_imaps_space*
+  Use this option to disable/enable the insertion of a space to the end of
+  each mapping.
+
+  Default value: 0
+
 *g:vimtex_include_indicators*
   Vimtex will recognize included files for a lot of different purposes. Most
   of these come from e.g. `\input{file}` or `\include{file}`. This option

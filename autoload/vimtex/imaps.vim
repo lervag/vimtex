@@ -100,6 +100,10 @@ function! s:create_map(map) abort " {{{1
     let b:vimtex_context[l:key] = a:map.context
   endif
 
+  if g:vimtex_imaps_space
+    let a:map.rhs .= ' '
+  endif
+
   silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
         \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
 

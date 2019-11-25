@@ -126,6 +126,7 @@ function! vimtex#init_options() abort " {{{1
 
   call s:init_option('vimtex_imaps_enabled', 1)
   call s:init_option('vimtex_imaps_disabled', [])
+  call s:init_option('vimtex_imaps_space', 0)
   call s:init_option('vimtex_imaps_list', [
         \ { 'lhs' : '0',  'rhs' : '\emptyset' },
         \ { 'lhs' : '6',  'rhs' : '\partial' },
