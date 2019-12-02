@@ -164,7 +164,7 @@ endfor
 
 " Adds entries for included files
 let s:matcher_include = {
-      \ 're' : vimtex#re#tex_input . '\zs\f+',
+      \ 're' : vimtex#re#tex_input . '\zs\f{-}\s*\ze\}',
       \ 'in_preamble' : 1,
       \ 'in_content' : 1,
       \ 'priority' : 1,
