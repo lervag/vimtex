@@ -6,10 +6,30 @@ syntax on
 setfiletype tex
 
 " ]]   /  Close current delimiter or environment
-call vimtex#test#keys("A]]", [
+call vimtex#test#keys('A]]', [
       \ '$\bigl( \left. a \right) '
       \], [
       \ '$\bigl( \left. a \right) \bigr)',
+      \])
+call vimtex#test#keys('Go]]', [
+      \ '\documentclass{article}',
+      \ '\usepackage{stackengine}',
+      \ '\begin{document}',
+      \ '\begin{equation}',
+      \ '  \begin{array}{c}',
+      \ '    a = \stackunder{p6mm}{',
+      \ '      \left\{ b \right.',
+      \ '    }',
+      \], [
+      \ '\documentclass{article}',
+      \ '\usepackage{stackengine}',
+      \ '\begin{document}',
+      \ '\begin{equation}',
+      \ '  \begin{array}{c}',
+      \ '    a = \stackunder{p6mm}{',
+      \ '      \left\{ b \right.',
+      \ '    }',
+      \ '  \end{array}',
       \])
 
 " csc  /  Change surrounding command
