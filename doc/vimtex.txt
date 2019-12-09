@@ -1978,8 +1978,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_toc_custom_matchers*
   This option is a list of custom ToC matchers. A matcher is used to define
   the entries that are included in the ToC window. It is implemented as
-  a |Dictionary| with a specified set of keys, see below for the
-  specification.
+  a |Dictionary| with a specified set of keys, see |toc_matcher_specification|.
 
   As an example, one can use this option to add ToC entries for a custom
   environment. Say you have defined an environment `mycustomenv`, then
@@ -2017,14 +2016,21 @@ OPTIONS                                                        *vimtex-options*
       regular expression. This key should represent a simple and fast regular
       expression that may match more then the desired entry.
 
+    priority~
+      Type: |expr-number| (default: 0)
+      Required: `no`
+      Priority is used for sorting the ToC matchers. High priority matchers
+      will be tried first, and only one matcher will match a given line. Note
+      that the built-in matchers have priority values between 0 and 2.
+
     in_preamble~
-      Type: 0 or 1
-      Required: `yes`
+      Type: 0 or 1 (default: 0)
+      Required: `no`
       If the entry may appear in the preamble.
 
     in_content~
-      Type: 0 or 1
-      Required: `yes`
+      Type: 0 or 1 (default: 1)
+      Required: `no`
       If the entry may appear in the main content.
 
     title~
