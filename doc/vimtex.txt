@@ -4161,6 +4161,18 @@ repository: https://github.com/lervag/vimtex.
 LaTeX-Box: https://github.com/LaTeX-Box-Team/LaTeX-Box.  LaTeX-suite was also
 an inspiration: http://vim-latex.sourceforge.net/.
 
+I do accept donations through PayPal (see link below [0]). As there are no
+expenses related to vimtex (except time), any money I receive would be spent
+on coffee, beer or chocolate. These things make me happy. However, I will also
+be happy if one should choose to donate to a charity instead, as there are
+a lot of people in more need of money than me! Examples of charities may be
+|ICCF| (the organisation that Vim specifically supports) or Medicins sans
+Frontieres [1]. Feel free to let me know if you should donate to a charity due
+to vimtex, as I would be happy to hear of it.
+
+[0]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5N4MFVXN7U8NW
+[1]: https://www.msf.org/
+
 ==============================================================================
 CHANGELOG                                                    *vimtex-changelog*
 
