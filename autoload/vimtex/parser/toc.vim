@@ -587,6 +587,25 @@ function! s:matcher_labels.get_entry(context) abort dict " {{{1
 endfunction
 " }}}1
 
+let s:matcher_beamer_frame = {
+      \ 're' : '^\s*\\begin{frame}',
+      \ 'priority' : 0,
+      \}
+function! s:matcher_beamer_frame.get_entry(context) abort dict " {{{1
+  let l:title = trim(matchstr(a:context.line, self.re . '\s*{\zs.*\ze}\s*$'))
+
+  return {
+        \ 'title'  : 'Frame' . (empty(l:title) ? '' : ': ' . l:title),
+        \ 'number' : '',
+        \ 'file'   : a:context.file,
+        \ 'line'   : a:context.lnum,
+        \ 'level'  : a:context.max_level - a:context.level.current,
+        \ 'rank'   : a:context.lnum_total,
+        \ 'type'   : 'content',
+        \ }
+endfunction
+" }}}1
+
 "
 " Utility functions
 "
