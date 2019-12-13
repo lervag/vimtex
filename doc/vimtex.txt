@@ -606,10 +606,10 @@ list can be viewed with |:VimtexInfo|.
 The package list is determined in two ways: >
 
 1. If a `.fls` file exists having the name of the main file, it is scanned.
-   This file is created by the tex program (e.g., pdflatex) during compilation
-   and might not be supported by all tex programs. Parsing the `.fls` file is
-   done both at vimtex initialization and after each successful compilation,
-   if possible.
+   This file is created by `latex` (or `pdflatex`, `xelatex`, ...) if it is
+   run with the `-recorder` option. This is enabled by default with `latexmk`.
+   Parsing the `.fls` file is done both at vimtex initialization and after
+   each successful compilation, if possible.
 
    Note: Parsing after successful compilations requires that one uses
          a) continuous compilation with callbacks (see the `callback` option
