@@ -4,6 +4,7 @@ filetype plugin on
 syntax on
 
 set nomore
+set autoindent
 
 setfiletype tex
 
