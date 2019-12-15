@@ -396,6 +396,7 @@ let s:completer_cmd = {
       \ 'candidates_from_packages' : [],
       \ 'candidates_from_newcommands' : [],
       \ 'candidates_from_lets' : [],
+      \ 'candidates_from_glossary_keys' : [],
       \ 'inside_braces' : 0,
       \}
 
@@ -413,11 +414,13 @@ function! s:completer_cmd.gather_candidates() dict abort " {{{2
   call self.gather_candidates_from_packages()
   call self.gather_candidates_from_newcommands()
   call self.gather_candidates_from_lets()
+  call self.gather_candidates_from_glossary_keys()
 
   return vimtex#util#uniq_unsorted(
         \   copy(self.candidates_from_newcommands)
         \ + copy(self.candidates_from_lets)
-        \ + copy(self.candidates_from_packages))
+        \ + copy(self.candidates_from_packages)
+        \ + copy(self.candidates_from_glossary_keys))
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_packages() dict abort " {{{2
@@ -458,6 +461,27 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
         \ }')
 
   let self.candidates_from_newcommands = l:candidates
+endfunction
+
+function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{{2
+  if !has_key(b:vimtex.packages, 'glossaries') | return | endif
+
+  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
+        \ 're_stop': '\\begin{document}',
+        \ 'detailed': 0,
+        \})
+  call map(l:preamble, "substitute(v:val, '\\s*%.*', '', 'g')")
+  let l:glskeys = split(join(l:preamble, "\n"), '\n\s*\\glsaddkey\*\?')[1:]
+  call map(l:glskeys, "substitute(v:val, '\n\\s*', '', 'g')")
+  call map(l:glskeys, 's:tex2tree(v:val)[2:6]')
+
+  let l:candidates = map(vimtex#util#flatten(l:glskeys), '{
+        \ ''word'' : v:val[1:],
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''[cmd: glossaries]'',
+        \ }')
+
+  let self.candidates_from_glossary_keys = l:candidates
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_lets() dict abort " {{{2

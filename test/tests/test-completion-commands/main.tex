@@ -1,9 +1,28 @@
 \documentclass{article}
+\usepackage{glossaries}
 \usepackage{xparse}
+
+% Custom glossary commands 1
+\glsaddkey
+  {maccusative}          % key
+  {}                     % default value
+  {\glsentrymaccusative} % no link cs
+  {\Glsentrymaccusative} % no link ucfirst cs
+  {\glsmacc}             % link cs
+  {\Glsmacc}             % link ucfirst cs
+  {\GLSmacc}             % link all caps cs
 
 \DeclareDocumentCommand{\testddc}{ o m }{%
 first #1 second #2
 }
+
+% Custom glossary commands 2
+\glsaddkey{plural}{}
+  {\glsentryplural}
+  {\Glsentryplural}
+  {\glspl}
+  {\Glspl}
+  {\GLSpl}
 
 \let\testlet=\leftrightarrow
 

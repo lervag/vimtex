@@ -18,6 +18,22 @@ function! vimtex#util#command(cmd) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#flatten(list) abort " {{{1
+  let l:result = []
+
+  for l:element in a:list
+    if type(l:element) == type([])
+      call extend(l:result, vimtex#util#flatten(l:element))
+    else
+      call add(l:result, l:element)
+    endif
+    unlet l:element
+  endfor
+
+  return l:result
+endfunction
+
+" }}}1
 function! vimtex#util#get_os() abort " {{{1
   if has('win32') || has('win32unix')
     return 'win'
