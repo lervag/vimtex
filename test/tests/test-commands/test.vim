@@ -3,6 +3,8 @@ let &rtp = '../../..,' . &rtp
 filetype plugin on
 syntax on
 
+set nomore
+
 setfiletype tex
 
 " ]]   /  Close current delimiter or environment
@@ -29,7 +31,7 @@ call vimtex#test#keys('Go]]', [
       \ '    a = \stackunder{p6mm}{',
       \ '      \left\{ b \right.',
       \ '    }',
-      \ '  \end{array}',
+      \ '    \end{array}',
       \])
 
 " csc  /  Change surrounding command

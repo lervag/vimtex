@@ -3,6 +3,8 @@ let &rtp = '../../..,' . &rtp
 filetype plugin on
 syntax on
 
+set nomore
+
 setfiletype tex
 
 call vimtex#test#keys('02f+d2ac',
