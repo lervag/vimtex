@@ -1,13 +1,17 @@
 \documentclass{book}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{todonotes}
 
 \input{preamble}
-\addbibresource{book.bib}
-\addglobalbib{book.bib}
+% \addbibresource{book.bib}
+% \addglobalbib{book.bib}
 
 \begin{document}
 
 \frontmatter
-\input{ frontmatter }
+\input{ frontmatter}
 
 \mainmatter
 % Todo This should NOT match
@@ -25,6 +29,10 @@
 \backmatter
 % FIXME Be smarter
 \input{backmatter}
+\begin{equation}
+  \label{eq:finito}
+  f=2
+\end{equation}
 
 \bibliography{book.bib,test}
 \end{document}
