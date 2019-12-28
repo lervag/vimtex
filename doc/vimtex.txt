@@ -4056,6 +4056,50 @@ A: Yes and no.  I personally don't use Windows, and as such, it is difficult
    [3]: https://www.rapidee.com/en/path-variable
    [4]: https://github.com/lervag/vimtex/issues/1507
 
+                                                          *vimtex-faq-wsl*
+Q: Does vimtex support WSL (Windows Subsystem for Linux)?
+
+A: For the moment, rudimentarily, as follows: To set up the viewer, install
+  mupdf [0] or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
+  [2]. In your vimrc, the lines
+>
+  if has('win32') || (has('unix') && exists('$WSLENV'))
+    if executable('mupdf.exe')
+      let g:vimtex_view_general_viewer = 'mupdf.exe'
+    elseif executable('SumatraPDF.exe')
+      let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
+    endif
+  endif
+<
+  make :VimtexView work under Windows, and also under WSL, provided that
+  at least Windows 10 version 1903 [3] of WSL is installed, the current work
+  dir and the compiled file is contained in the Linux home directory $HOME (as
+  opposed to %USERPROFILE% in Windows).
+
+  However, client-server capabilities seem to be disabled (perhaps because WSL
+  does not have built-in support for X11) and therefore backward search
+  does not work. Neither does forward search work: While SumatraPDF opens fine
+  the PDF file in \\wsl$\<DistroName>\..., the forward search in SumatraPDF
+  itself does not find the corresponding source file in \\wsl$\<DistroName>\....
+
+  To set up a LaTeX distribution, while reusing that of Windows as proposed at
+  [4] seems efficient, in practice accessing files on mounted NTFS drives
+  from WSL is slow, even more so under WSL2 [5]. Therefore a minimal TeXLive
+  installation, such as TinyTeX [6] or a minimal set of packages to compile
+  LaTeX as provided by your distribution, is a better option, as discussed at
+  [7]. For example, under openSUSE, it suffices to install the packages
+
+    texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended
+
+   [0]: https://chocolatey.org/packages/mupdf
+   [1]: https://chocolatey.org/packages/sumatrapdf
+   [2]: https://www.rapidee.com
+   [3]: https://devblogs.microsoft.com/commandline/whats-new-for-wsl-in-windows-10-version-1903/
+   [4]: https://github.com/lervag/vimtex/issues/1380
+   [5]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
+   [6]: https://yihui.org/tinytex/
+   [7]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
+
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
 
