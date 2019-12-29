@@ -4084,12 +4084,14 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
 
   To set up a LaTeX distribution, while reusing that of Windows as proposed at
   [4] seems efficient, in practice accessing files on mounted NTFS drives
-  from WSL is slow, even more so under WSL2 [5]. Therefore a minimal TeXLive
-  installation, such as TinyTeX [6] or a minimal set of packages to compile
-  LaTeX as provided by your distribution, is a better option, as discussed at
-  [7]. For example, under openSUSE, it suffices to install the packages
+  from WSL is slow, even more so under WSL2 [5]. Therefore a full TeXLive
+  installation is recommended.
 
-    texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended
+  If only basic functionality is required, then a minimal TeXLive
+  installation, such as TinyTeX [6] or a minimal set of packages to compile
+  LaTeX as provided by your distribution, is an option, as discussed at [7].
+  For example, under openSUSE, it suffices to install the packages
+  texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended.
 
    [0]: https://chocolatey.org/packages/mupdf
    [1]: https://chocolatey.org/packages/sumatrapdf
