@@ -2218,7 +2218,7 @@ OPTIONS                                                        *vimtex-options*
 <
           Backward search must be set up from the viewer through
           "Settings > Editor > Custom Text Editor". The following settings
-          should work for Vim and neovim (Note: see |vimtex_faq_neovim|),
+          should work for Vim and neovim (Note: see |vimtex-faq-neovim|),
           respectively: >
 
             vim --remote-silent +%l "%f"
