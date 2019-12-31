@@ -3970,6 +3970,23 @@ A: Yes. Since 2018-11-18 [0], most features work out of the box. However, for
    `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
    should work.
 
+   `nvr` relies on neovim's RPC API which is an analogue of vim's clientserver
+   functionality. neovim creates a uniquely named RPC socket at startup
+   unless otherwise specified unlike vim which does not start clientserver
+   functionality by default. In either case (vim or nvr+neovim), vimtex is
+   able to provide the servername (in |v:servername|) for remote callbacks. As
+   such, neovim users may not need to specify a socket name (such as for
+   reverse search with zathura). However, users can start neovim with a
+   specific socket name using:
+
+     `nvim --listen /tmp/mynvimserver`
+
+   This is primarily necessary for using reverse search with pdf viewers (such
+   as okular) that rely on user configuration of the commands used to interact
+   with the text editor so that vimtex is not able to provide the servername
+   to the viewer. In these cases, it may be useful to know that `nvr` uses the
+   server name /tmp/nvimsocket by default.
+
    [0]: https://github.com/lervag/vimtex/issues/1258
    [1]: https://github.com/neovim/neovim/issues/1750
    [2]: https://github.com/lervag/vimtex/issues/262
