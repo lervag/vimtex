@@ -2189,11 +2189,10 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_view_method*
   Set the viewer method.
 
-  Note that the general viewer |vimtex_viewer_general| defines a generic
-  interface that allows sufficient customization for most viewer applications.
+  Note: The general viewer |vimtex_viewer_general| is a generic interface
+        that allows sufficient customization for most viewer applications.
 
-  Note: For using reverse search with neovim, please refer to
-        |vimtex-faq-neovim|.
+  Note: For reverse search with neovim, please see |vimtex-faq-neovim|.
 
   Possible values:
     'general' (default)
@@ -2230,9 +2229,8 @@ OPTIONS                                                        *vimtex-options*
             " Or with arguably more convenient reverse goto function:
             vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
 
-            " For neovim nvr uses the server name /tmp/nvimsocket by default.
-            " If you use a different server name it will be necessary to
-            " name directly
+            " nvr uses the server name /tmp/nvimsocket by default. If you
+            " use a different server name, remember to specify it:
             nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
@@ -2339,9 +2337,9 @@ OPTIONS                                                        *vimtex-options*
       Note: Forward search requires `xdotool` to work properly, in order to
             not open a new Zathura instance for invocation of |VimtexView|.
 
-      Note: vimtex provides zathura with the vim/neovim servername for use in
-            reverse search. For neovim users, refer to |vimtex-faq-neovim| for
-            more detail on configuration of neovim's client server
+      Note: vimtex attempts to pass the server name to zathura for use in
+            reverse searches. neovim users should read |vimtex-faq-neovim|
+            for more detail on configuration of neovim's client server
             functionality.
 
       Note: Recent versions of Zathura no longer ensures synctex support. This
@@ -3970,9 +3968,9 @@ A: Yes. Since 2018-11-18 [0], most features work out of the box. However, for
    `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
    should work.
 
-   `nvr` relies on neovim's RPC API which is an analogue of vim's clientserver
+   `nvr` relies on neovim's RPC API, which is an analogue of vim's clientserver
    functionality. neovim creates a uniquely named RPC socket at startup
-   unless otherwise specified unlike vim which does not start clientserver
+   unless otherwise specified, unlike vim, which does not start clientserver
    functionality by default. In either case (vim or nvr+neovim), vimtex is
    able to provide the servername (in |v:servername|) for remote callbacks. As
    such, neovim users may not need to specify a socket name (such as for
