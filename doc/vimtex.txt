@@ -2192,6 +2192,9 @@ OPTIONS                                                        *vimtex-options*
   Note that the general viewer |vimtex_viewer_general| defines a generic
   interface that allows sufficient customization for most viewer applications.
 
+  Note: For using reverse search with neovim, please refer to
+        |vimtex-faq-neovim|.
+
   Possible values:
     'general' (default)
     'mupdf'
@@ -2227,17 +2230,16 @@ OPTIONS                                                        *vimtex-options*
             " Or with arguably more convenient reverse goto function:
             vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
 
-            " For neovim it may be convenient to specify servername
-            nvr --servername /tmp/nvimserver --remote-silent +%l "%f"
+            " For neovim nvr uses the server name /tmp/nvimsocket by default.
+            " If you use a different server name it will be necessary to
+            " name directly
+            nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
                 "shift + click", not "ctrl + click" as in most other viewers.
 
-            " or, for neovim, if the servername is specified
-            nvr --servername /tmp/nvimserver --remote-silent +%l "%f"
-
           Note: With |neovim|, it is useful to start the LaTeX editing session
-                with `nvim --listen /tmp/nvimserver` (e.g. by using an alias)
+                with `nvim --listen /tmp/mynvimserver` (e.g. by using an alias)
                 so as to use a predictable servername. Then one may specify
                 the servername in the "Custom Text Editor" as indicated above.
 
@@ -2336,6 +2338,11 @@ OPTIONS                                                        *vimtex-options*
 
       Note: Forward search requires `xdotool` to work properly, in order to
             not open a new Zathura instance for invocation of |VimtexView|.
+
+      Note: vimtex provides zathura with the vim/neovim servername for use in
+            reverse search. For neovim users, refer to |vimtex-faq-neovim| for
+            more detail on configuration of neovim's client server
+            functionality.
 
       Note: Recent versions of Zathura no longer ensures synctex support. This
             has resulted in synctex support being dropped on some platforms,
