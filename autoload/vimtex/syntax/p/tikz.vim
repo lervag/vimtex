@@ -12,7 +12,7 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   call vimtex#syntax#misc#add_to_section_clusters('texTikzpicture')
 
   " Define clusters
-  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texStatement,texTikzSemicolon,texComment
+  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texStatement,texTikzSemicolon,texComment,texZonePythontex
   syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texStatement,texLength,texComment
 
   " Define tikz option groups
