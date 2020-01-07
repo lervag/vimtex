@@ -66,7 +66,7 @@ CONTENTS                                                      *vimtex-contents*
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
   Navigation                                    |vimtex-navigation|
-    Include expression (|gf| command)             |vimtex-includeexpr|
+    Include expression (|gf| command)           |vimtex-includeexpr|
     Table of contents                           |vimtex-toc|
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
@@ -76,6 +76,7 @@ CONTENTS                                                      *vimtex-contents*
     Latexrun                                    |vimtex-latexrun|
     Tectonic                                    |vimtex-tectonic|
     Arara                                       |vimtex-arara|
+  Syntax Checking (Linting)                     |vimtex-lint|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
     Forward search                              |vimtex-synctex-forward-search|
@@ -3737,6 +3738,30 @@ and |vimtex-tectonic|, the viewer can be started automatically with
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_arara| option.
+
+==============================================================================
+LINT                                                              *vimtex-lint*
+
+|vimtex| provides syntax checking (linting) for TeX and BibTeX files by
+the `:compiler` command. To lint the open TeX file by lacheck [1] or chktex
+[2], call ':comp lacheck|lmake' respectively ':comp chktex|lmake'
+on the Vim command-line. To lint the currently open BibTeX file by biber [3],
+call ':comp bibertool|lmake' on the Vim command-line. See `:compiler`.
+
+Hint: Often a syntax error in a BibTeX file is due to a missing comma after an
+entry. This command that you may define in after/ftplugin/bib.vim
+
+command! -buffer -range=% -bar AddMissingCommas keeppatterns
+       \ <line1>,<line2>substitute:\v([}"])(\s*\n)+(\s*\a+\s*\=):\1,\2\3:giep
+
+adds them. To call it automatically after saving a BibTeX file, add moreover
+
+autocmd BufWrite <buffer> exe
+      \ 'normal! m`' | silent AddMissingCommas | silent! exe 'normal! g``'
+
+[1] https://ctan.org/pkg/lacheck
+[2] https://www.nongnu.org/chktex
+[3] https://github.com/plk/biber
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
