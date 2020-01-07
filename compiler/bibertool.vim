@@ -12,6 +12,7 @@ CompilerSet makeprg=biber\ --tool\ --validate-datamodel\ %:S
 
 let &l:errorformat ="%-PINFO - Globbing data source '%f',"
 let &l:errorformat.="%EERROR - %*[^\\,]\\, line %l\\, %m,"
+let &l:errorformat.="%WWARN - Datamodel: Entry '%s' (%f): %m,"
 setlocal errorformat+=%WWARN\ -\ Datamodel:\ %m
 setlocal errorformat+=%-G%.%#
 silent CompilerSet errorformat
