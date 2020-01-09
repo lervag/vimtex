@@ -221,15 +221,17 @@ endfunction
 function! vimtex#util#uniq_unsorted(list) abort " {{{1
   if len(a:list) <= 1 | return a:list | endif
 
-  let l:visited = [a:list[0]]
-  for l:index in reverse(range(1, len(a:list)-1))
-    if index(l:visited, a:list[l:index]) >= 0
-      call remove(a:list, l:index)
-    else
-      call add(l:visited, a:list[l:index])
+  let l:visited = {}
+  let l:result = []
+  for l:x in a:list
+    let l:key = string(l:x)
+    if !has_key(l:visited, l:key)
+      let l:visited[l:key] = 1
+      call add(l:result, l:x)
     endif
   endfor
-  return a:list
+
+  return l:result
 endfunction
 
 " }}}1
