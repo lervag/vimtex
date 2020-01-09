@@ -603,10 +603,12 @@ endfunction
 function! s:vimtex.gather_sources() abort dict " {{{1
   let self.sources = []
 
-  let self.sources = map(vimtex#parser#tex(self.tex, { 'root' : self.root }),
+  let self.sources = map(
+        \ vimtex#parser#tex(self.tex, { 'root' : self.root }),
         \ 'v:val[0]')
-  call map(vimtex#util#uniq_unsorted(self.sources),
-        \ 'vimtex#paths#relative(v:val, self.root)')
+  let self.sources = vimtex#util#uniq_unsorted(self.sources)
+
+  call map(self.sources, 'vimtex#paths#relative(v:val, self.root)')
 endfunction
 
 " }}}1
