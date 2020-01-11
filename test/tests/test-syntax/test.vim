@@ -39,6 +39,9 @@ call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 21)
 call vimtex#test#assert(vimtex#util#in_syntax('pythonRawString', 251, 11))
 call vimtex#test#assert(vimtex#util#in_syntax('pythonRawString', 256, 11))
 
+" Minted inside \paragraphs (#1537)
+call vimtex#test#assert(vimtex#util#in_syntax('javaScopeDecl', 355, 3))
+
 " Doing :e should not destroy nested syntax and similar
 call vimtex#test#assert(vimtex#util#in_syntax('pythonFunction', 321, 5))
 edit
