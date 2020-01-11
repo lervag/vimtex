@@ -343,7 +343,7 @@ Manipulate surrounding commands/delimiters/environments~
   `vim-repeat` [2] in addition to `visualrepeat.vim` [3].
 
   Note: The default mappings of `vim-sandwich` differ from those of
-    `surround.vim`, in that the use `s` as the prefix.  E.g., to add
+    `surround.vim`, in that they use `s` as the prefix.  E.g., to add
     surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
     instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
     the map variants from `surround.vim`, these are also available as an
