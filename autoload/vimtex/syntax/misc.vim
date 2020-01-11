@@ -11,6 +11,7 @@ function! vimtex#syntax#misc#add_to_section_clusters(group) abort " {{{1
         \ 'texSectionGroup',
         \ 'texSubSectionGroup',
         \ 'texSubSubSectionGroup',
+        \ 'texParaGroup',
         \]
     execute printf('syntax cluster %s add=%s', l:cluster, a:group)
   endfor
