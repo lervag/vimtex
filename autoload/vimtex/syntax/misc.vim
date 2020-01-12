@@ -15,6 +15,8 @@ function! vimtex#syntax#misc#add_to_section_clusters(group) abort " {{{1
         \]
     execute printf('syntax cluster %s add=%s', l:cluster, a:group)
   endfor
+
+  execute printf('syntax cluster texVimtexGlobal add=%s', a:group)
 endfunction
 
 " }}}1
