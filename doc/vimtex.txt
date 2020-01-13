@@ -3765,6 +3765,18 @@ To automatically lint a (BibTeX) file after saving, add to
 
   autocmd BufWrite <buffer=abuf> compiler bibertool | lmake!
 
+If you mind that Vim is unresponsive while linting, run it as a background job
+by replacing the command :lmake by a command :Make such as
+
+- that of vim-dispatch [4], or
+- with AsyncRun.vim [5] installed, such as >
+
+  command! -bang -nargs=* -complete=file Make
+          \ AsyncRun<bang> -auto=make -program=make
+
+The quickfix window that lists the grammar mistakes can then be opened by
+`:cwindow` and they can be jumped to by `:cN` respectively `:cp`.
+
 Hint: Often a syntax error in a BibTeX file is due to a missing comma after an
 entry. This command that you may define in after/ftplugin/bib.vim : >
 
@@ -3781,6 +3793,8 @@ For more full-fledged linting in Vim, see the plug-ins in |vimtex-non-features|.
 [1] https://ctan.org/pkg/lacheck
 [2] https://www.nongnu.org/chktex
 [3] https://github.com/plk/biber
+[4] https://github.com/tpope/vim-dispatch
+[5] https://github.com/skywind3000/asyncrun.vim
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
