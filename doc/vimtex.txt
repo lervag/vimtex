@@ -3748,11 +3748,14 @@ the `:compiler` command. To lint the open TeX file by lacheck [1] or chktex
 on the Vim command-line. To lint the currently open BibTeX file by biber [3],
 call ':comp bibertool|lmake' on the Vim command-line. See |compiler-select|.
 
-The location-list window that lists the compiler messages can then be opened by
-|:lwindow| and they can be jumped to by |:lN| respectively |:lp|. See
-|location-list|.
+The location-list window that lists the compiler messages can then be opened
+by |:lwindow| and they can be jumped to by |:lN| respectively |:lp|. See
+|location-list|. To automatically open the location-list window after linting
+finished, add to your |vimrc| >
 
-For convenience, define a command for linting for each file type. For example,
+  autocmd QuickFixCmdPost lmake lwindow
+
+For convenience, define a command for linting for each file type: For example,
 for BibTeX by adding to ~/.vim/after/ftplugin/bib.vim  >
 
   command! -buffer -bang Lint compiler bibertool | lmake<bang>
@@ -3761,10 +3764,6 @@ To automatically lint a (BibTeX) file after saving, add to
 ~/.vim/after/ftplugin/bib.vim : >
 
   autocmd BufWrite <buffer=abuf> compiler bibertool | lmake!
-
-To automatically open the location-list window after linting finished, add >
-
-  autocmd QuickFixCmdPost lmake lwindow`
 
 Hint: Often a syntax error in a BibTeX file is due to a missing comma after an
 entry. This command that you may define in after/ftplugin/bib.vim : >
