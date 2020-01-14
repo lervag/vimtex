@@ -3742,53 +3742,75 @@ The compiler may be configured through the |g:vimtex_compiler_arara| option.
 ==============================================================================
 SYNTAX CHECKING (LINTING)                                       *vimtex-lint*
 
-|vimtex| provides syntax checking (linting) for TeX and BibTeX files by
-the `:compiler` command. To lint the open TeX file by lacheck [1] or chktex
-[2], call ':comp lacheck|lmake' respectively ':comp chktex|lmake'
-on the Vim command-line. To lint the currently open BibTeX file by biber [3],
-call ':comp bibertool|lmake' on the Vim command-line. See |compiler-select|.
+|vimtex| provides syntax checking (linting) for TeX and BibTeX files through
+three compilers: `lacheck` [1], `chktex` [2], and `biber` [3]. These may be
+activated with the |:compiler| command, see |compiler-select|. A selected
+compiler may then be used e.g. with |:make| or |:lmake|. See the following
+text for some tips on how one may use this feature.
 
-The location-list window that lists the compiler messages can then be opened
-by |:lwindow| and they can be jumped to by |:lN| respectively |:lp|. See
-|location-list|. To automatically open the location-list window after linting
-finished, add to your |vimrc| >
+------------------------------------------------------------------------------
 
-  autocmd QuickFixCmdPost lmake lwindow
+A common workflow is to utilize the |location-list| with |:lmake|:
 
-For convenience, define a command for linting for each file type: For example,
-for BibTeX by adding to ~/.vim/after/ftplugin/bib.vim  >
+  - To lint the currently open TeX file with `lacheck`, run
+    `:compiler lacheck|lmake`
+  - To lint the currently open TeX file with `chktex`, run
+    `:compiler chktex|lmake`
+  - To lint the currently open BibTeX file with `biber`, run
+    `:compiler bibertool|lmake`
+
+After linting, the compiler or linter messages are added to the location list.
+This list may be displayed in the location-list window with |:lwindow|, and
+one may jump between the entries with |:lN| and |:lp|. To automatically open
+the location-list window after linting is finished, one may add the following to ones |vimrc|: >
+
+  augroup Vimtex
+    autocmd!
+    autocmd QuickFixCmdPost lmake lwindow
+  augroup END
+
+For convenience, one may also define a command for linting for each file type
+and add an autocmd to automatically lint on save. The following gives an
+example for `bibertool` and BibTeX, but one may of course do the same with
+`lacheck` and/or `chktex` for TeX files as well. First, add the following to
+`~/.vim/after/ftplugin/bib.vim`: >
 
   command! -buffer -bang Lint compiler bibertool | lmake<bang>
 
-To automatically lint a (BibTeX) file after saving, add to
-~/.vim/after/ftplugin/bib.vim : >
+Then, add to `~/.vim/after/ftplugin/bib.vim`: >
 
-  autocmd BufWrite <buffer=abuf> compiler bibertool | lmake!
+  augroup Vimtex
+    autocmd!
+    autocmd BufWrite <buffer=abuf> compiler bibertool | lmake!
+  augroup END
 
-If you mind that Vim is unresponsive while linting, run it as a background job
-by replacing the command :lmake by a command :Make such as
-
-- that of vim-dispatch [4], or
-- with AsyncRun.vim [5] installed, such as >
+If one minds that Vim becomes unresponsive while linting, then one may utilize
+plugins like |vim-dispatch| [4] or |AsyncRun| [5]. With `vim-dispatch`, one
+may simple replace `:lmake` call with `:Make`. For `AsyncRun`, one may define
+a `:Make` command such as: >
 
   command! -bang -nargs=* -complete=file Make
           \ AsyncRun<bang> -auto=make -program=make
 
-The quickfix window that lists the grammar mistakes can then be opened by
-`:cwindow` and they can be jumped to by `:cN` respectively `:cp`.
+The quickfix window that lists the linter errors and warnings can then be
+opened by |:cwindow| and they can be jumped to by |:cN| respectively |:cp|.
 
-Hint: Often a syntax error in a BibTeX file is due to a missing comma after an
-entry. This command that you may define in after/ftplugin/bib.vim : >
+Often, a syntax error in a BibTeX file is due to a missing comma after an
+entry. One may define a command to automatically add such missing commas, e.g.
+by adding the following lines in `~/.vim/after/ftplugin/bib.vim`: >
 
   command! -buffer -range=% -bar AddMissingCommas keeppatterns
         \ <line1>,<line2>substitute:\v([}"])(\s*\n)+(\s*\a+\s*\=):\1,\2\3:giep
 
-adds them. To call it automatically after saving a BibTeX file, add moreover >
+To call this automatically after saving a BibTeX file, add the following
+autocommand inside a proper autocommand group (e.g. `augroup Vimtex` as
+suggested above) in `~/.vim/after/ftplugin/bib.vim`: >
 
   autocmd BufWrite <buffer> exe
         \ 'normal! m`' | silent AddMissingCommas | silent! exe 'normal! g``'
 
-For more full-fledged linting in Vim, see the plug-ins in |vimtex-non-features|.
+Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
+|vimtex-non-features|.
 
 [1] https://ctan.org/pkg/lacheck
 [2] https://www.nongnu.org/chktex

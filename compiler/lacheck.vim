@@ -1,7 +1,8 @@
-if exists("current_compiler") | finish | endif
-let current_compiler = "lacheck"
+if exists('current_compiler') | finish | endif
+let current_compiler = 'lacheck'
 
-if exists(":CompilerSet") != 2		" older Vim always used :setlocal
+" Older Vim always used :setlocal
+if exists(':CompilerSet') != 2
   command -nargs=* CompilerSet setlocal <args>
 endif
 
