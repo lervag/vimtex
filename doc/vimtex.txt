@@ -3762,7 +3762,8 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 After linting, the compiler or linter messages are added to the location list.
 This list may be displayed in the location-list window with |:lwindow|, and
 one may jump between the entries with |:lN| and |:lp|. To automatically open
-the location-list window after linting is finished, one may add the following to ones |vimrc|: >
+the location-list window after linting is finished, one may add the following
+to one's |vimrc|: >
 
   augroup Vimtex
     autocmd!
@@ -3786,8 +3787,8 @@ Then, add to `~/.vim/after/ftplugin/bib.vim`: >
 
 If one minds that Vim becomes unresponsive while linting, then one may utilize
 plugins like |vim-dispatch| [4] or |AsyncRun| [5]. With `vim-dispatch`, one
-may simple replace `:lmake` call with `:Make`. For `AsyncRun`, one may define
-a `:Make` command such as: >
+may simply replace the `:lmake` call with `:Make`. For `AsyncRun`, one may
+define a `:Make` command such as: >
 
   command! -bang -nargs=* -complete=file Make
           \ AsyncRun<bang> -auto=make -program=make
