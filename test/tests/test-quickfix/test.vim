@@ -25,15 +25,20 @@ catch /Vimtex: No log file found/
 endtry
 
 let s:qf = getqflist()
-call vimtex#test#assert(len(s:qf) == 15)
+let s:qf_len = len(s:qf)
+call vimtex#test#assert(s:qf_len >= 15)
 
 " Apply ignore filters
 let g:vimtex_quickfix_ignore_filters = ['\\test']
 call vimtex#qf#setqflist()
 let s:qf = getqflist()
-call vimtex#test#assert(len(s:qf) == 14)
+call vimtex#test#assert(len(s:qf) == s:qf_len - 1)
 
 " Repeated invocations should not create extra quickfix lists
-call vimtex#test#assert(getqflist({'nr':'$'}).nr == 1)
+try
+  let s:qf_nr = getqflist({'nr':'$'}).nr
+  call vimtex#test#assert(s:qf_nr == 1)
+catch
+endtry
 
 quitall!
