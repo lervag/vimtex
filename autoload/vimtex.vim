@@ -208,6 +208,7 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_quickfix_enabled', 1)
   call s:init_option('vimtex_quickfix_method', 'latexlog')
   call s:init_option('vimtex_quickfix_autojump', '0')
+  call s:init_option('vimtex_quickfix_ignore_filters', [])
   call s:init_option('vimtex_quickfix_mode', '2')
   call s:init_option('vimtex_quickfix_open_on_warning', '1')
   call s:init_option('vimtex_quickfix_blgparser', {})

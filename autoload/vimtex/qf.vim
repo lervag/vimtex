@@ -128,6 +128,16 @@ function! vimtex#qf#setqflist(...) abort " {{{1
       call vimtex#qf#biblatex#addqflist(l:blg)
     else
       call vimtex#qf#bibtex#addqflist(l:blg)
+    endif
+
+    " Ignore entries if desired
+    if !empty(g:vimtex_quickfix_ignore_filters)
+      let l:qflist = getqflist()
+      for l:re in g:vimtex_quickfix_ignore_filters
+        call filter(l:qflist, 'v:val.text !~# l:re')
+      endfor
+      call setqflist(l:qflist, 'r')
+    endif
 
     " Set title if supported
     try
