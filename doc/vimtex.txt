@@ -1925,13 +1925,22 @@ OPTIONS                                                        *vimtex-options*
         \   'csharp' : 'cs',
         \ },
         \ 'ignored' : {
+        \   'cs' : [
+        \     'csBraces',
+        \   ],
         \   'python' : [
         \     'pythonEscape',
         \     'pythonBEscape',
         \     'pythonBytesEscape',
-        \   ]
+        \   ],
+        \   'java' : [
+        \     'javaError',
+        \   ],
+        \   'haskell' : [
+        \     'hsVarSym',
+        \   ],
         \ }
-        \})
+        \}
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for

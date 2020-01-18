@@ -231,6 +231,9 @@ function! vimtex#init_options() abort " {{{1
         \   'java' : [
         \     'javaError',
         \   ],
+        \   'haskell' : [
+        \     'hsVarSym',
+        \   ],
         \ }
         \})
 
