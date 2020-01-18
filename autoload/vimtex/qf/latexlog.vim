@@ -152,18 +152,17 @@ function! s:qf.set_errorformat() abort dict "{{{1
 endfunction
 
 " }}}1
-function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
+function! s:qf.addqflist(tex, log) abort dict "{{{1
   if empty(a:log) || !filereadable(a:log)
-    call setqflist([])
     throw 'Vimtex: No log file found'
   endif
 
   let self.errorformat_saved = &l:errorformat
   call self.set_errorformat()
-  execute (a:jump ? 'cfile' : 'cgetfile') fnameescape(a:log)
+  execute 'caddfile' fnameescape(a:log)
   let &l:errorformat = self.errorformat_saved
 
-  " Apply some post processing of the quickfix list (if configured)
+  " Apply some post processing of the quickfix list
   let self.main = a:tex
   let self.root = b:vimtex.root
   call self.fix_paths()
@@ -174,12 +173,6 @@ function! s:qf.setqflist(tex, log, jump) abort dict "{{{1
     endfor
     call setqflist(l:qflist, 'r')
   endif
-
-  " Set title if supported
-  try
-    call setqflist([], 'r', {'title': 'Vimtex errors (' . self.name . ')'})
-  catch
-  endtry
 endfunction
 
 " }}}1
@@ -215,17 +208,6 @@ function! s:qf.fix_paths() abort dict " {{{1
   endfor
 
   call setqflist(l:qflist, 'r')
-endfunction
-
-" }}}1
-
-function! s:log_contains_error(logfile) abort " {{{1
-  let lines = readfile(a:logfile)
-  let lines = filter(lines, 'v:val =~# ''^.*:\d\+: ''')
-  let lines = vimtex#util#uniq(map(lines, 'matchstr(v:val, ''^.*\ze:\d\+:'')'))
-  let lines = map(lines, 'fnamemodify(v:val, '':p'')')
-  let lines = filter(lines, 'filereadable(v:val)')
-  return len(lines) > 0
 endfunction
 
 " }}}1

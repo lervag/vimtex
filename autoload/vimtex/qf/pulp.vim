@@ -43,7 +43,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
 endfunction
 
 " }}}1
-function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
+function! s:qf.addqflist(tex, log) abort dict " {{{1
   if empty(a:log) || !filereadable(a:log)
     call setqflist([])
     throw 'Vimtex: No log file found'
@@ -55,14 +55,9 @@ function! s:qf.setqflist(tex, log, jump) abort dict " {{{1
   silent call system(printf('pulp %s >%s', l:log, l:tmp))
   let self.errorformat_saved = &l:errorformat
   call self.set_errorformat()
-  execute (a:jump ? 'cfile' : 'cgetfile') l:tmp
+  execute 'caddfile' l:tmp
   let &l:errorformat = self.errorformat_saved
   silent call system('rm ' . l:tmp)
-
-  try
-    call setqflist([], 'r', {'title': 'Vimtex errors (' . self.name . ')'})
-  catch
-  endtry
 endfunction
 
 " }}}1

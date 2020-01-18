@@ -40,7 +40,7 @@ endfunction
 
 " }}}1
 function! vimtex#qf#open(force) abort " {{{1
-  if !exists('b:vimtex.qf.setqflist') | return | endif
+  if !exists('b:vimtex.qf.addqflist') | return | endif
 
   try
     call vimtex#qf#setqflist()
@@ -97,7 +97,7 @@ endfunction
 
 " }}}1
 function! vimtex#qf#setqflist(...) abort " {{{1
-  if !exists('b:vimtex.qf.setqflist') | return | endif
+  if !exists('b:vimtex.qf.addqflist') | return | endif
 
   if a:0 > 0
     let l:tex = a:1
@@ -112,12 +112,32 @@ function! vimtex#qf#setqflist(...) abort " {{{1
   endif
 
   try
-    call b:vimtex.qf.setqflist(l:tex, l:log, l:jump)
+    " Initialize the quickfix list
+    " Note: Only create new list if the current list is not a vimtex qf list
+    if get(getqflist({'title': 1}), 'title') =~# 'Vimtex'
+      call setqflist([], 'r')
+    else
+      call setqflist([])
+    endif
 
+    " Parse LaTeX errors
+    call b:vimtex.qf.addqflist(l:tex, l:log)
+
+    " Parse bibliography errors
     if has_key(b:vimtex.packages, 'biblatex')
       call vimtex#qf#biblatex#addqflist(l:blg)
     else
       call vimtex#qf#bibtex#addqflist(l:blg)
+
+    " Set title if supported
+    try
+      call setqflist([], 'r', {'title': 'Vimtex errors (' . b:vimtex.qf.name . ')'})
+    catch
+    endtry
+
+    " Jump to first error if wanted
+    if l:jump
+      cfirst
     endif
   catch /Vimtex: No log file found/
     throw 'Vimtex: No log file found'

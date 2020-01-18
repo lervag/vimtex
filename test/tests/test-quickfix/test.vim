@@ -27,4 +27,8 @@ endtry
 let s:qf = getqflist()
 call vimtex#test#assert(len(s:qf) >= 15)
 
-quit!
+" Repeated uses should not create extra quickfix lists
+call vimtex#qf#setqflist()
+call vimtex#test#assert(getqflist({'nr':'$'}).nr == 1)
+
+quitall!
