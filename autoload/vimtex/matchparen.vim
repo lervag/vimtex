@@ -71,6 +71,15 @@ function! s:matchparen.highlight() abort dict " {{{1
 
   if vimtex#util#in_comment() | return | endif
 
+  " This is a hack to ensure that $ in visual block mode adhers to the rule
+  " specified in :help v_$
+  if mode() ==# "\<c-v>"
+    let l:pos = vimtex#pos#get_cursor()
+    if len(l:pos) == 5 && l:pos[-1] == 2147483647
+      call feedkeys('$', 'in')
+    endif
+  endif
+
   let l:current = vimtex#delim#get_current('all', 'both')
   if empty(l:current) | return | endif
 
