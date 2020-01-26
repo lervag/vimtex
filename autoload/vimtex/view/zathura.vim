@@ -59,6 +59,25 @@ function! s:zathura.start(outfile) dict abort " {{{1
 
   call self.xwin_get_id()
   let self.outfile = a:outfile
+  call self.move()
+  call self.size()
+endfunction
+
+"set zathura viewer position to the desired coordinate
+function! s:zathura.move() dict abort " {{{1
+  let l:cmd  = 'xdotool'
+  let l:cmd .= ' windowmove ' . self.xwin_get_id() 
+  let l:cmd .= ' ' . g:vimtex_view_zathura_move
+  echo l:cmd
+  let self.process = vimtex#process#start(l:cmd)
+endfunction
+
+"set zathura viewer size to the desired dimension
+function! s:zathura.size() dict abort " {{{1
+  let l:cmd  = 'xdotool'
+  let l:cmd .= ' windowsize ' . self.xwin_get_id() 
+  let l:cmd .= ' ' . g:vimtex_view_zathura_size
+  let self.process = vimtex#process#start(l:cmd)
 endfunction
 
 " }}}1
