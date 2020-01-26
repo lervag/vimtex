@@ -2,6 +2,7 @@
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
+"
 
 function! vimtex#init() abort " {{{1
   call vimtex#init_options()
