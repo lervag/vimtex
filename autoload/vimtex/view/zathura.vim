@@ -68,7 +68,6 @@ function! s:zathura.move() dict abort " {{{1
   let l:cmd  = 'xdotool'
   let l:cmd .= ' windowmove ' . self.xwin_get_id() 
   let l:cmd .= ' ' . g:vimtex_view_zathura_move
-  echo l:cmd
   let self.process = vimtex#process#start(l:cmd)
 endfunction
 
