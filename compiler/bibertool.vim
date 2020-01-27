@@ -9,7 +9,7 @@ endif
 let s:cpo_save = &cpo
 set cpo&vim
 
-CompilerSet makeprg=biber\ --tool\ --validate-datamodel\ %:S
+CompilerSet makeprg=biber\ --nodieonerror\ --noconf\ --nolog\ --output-file=-\ --validate-datamodel\ --tool\ %:S
 
 let &l:errorformat = "%-PINFO - Globbing data source '%f',"
 let &l:errorformat .= '%EERROR - %*[^\,]\, line %l\, %m,'
