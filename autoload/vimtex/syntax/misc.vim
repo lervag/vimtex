@@ -30,14 +30,12 @@ function! vimtex#syntax#misc#include(name) abort " {{{1
   return s:included[l:inc_name] ? l:inc_name : ''
 endfunction
 
-let s:included = {}
-
 " }}}1
 function! vimtex#syntax#misc#include_reset() abort " {{{1
-  let s:included = {}
+  let s:included = {'vimtex_nested_tex': 0}
 endfunction
 
-let s:included = {}
+let s:included = {'vimtex_nested_tex': 0}
 
 " }}}1
 
