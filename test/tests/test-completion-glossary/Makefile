@@ -10,12 +10,12 @@ TARGETS := glossaries glossaries-extra
 test: $(TARGETS)
 
 glossaries: glossaries.aux
-	@nvim --headless -u $@.vim
+	@$(MYVIM) -u $@.vim
 	@latexmk -C $@.tex >/dev/null 2>&1
 
 glossaries-extra:
-	@TEXFILE=$@-1.tex nvim --headless -u $@.vim
-	@TEXFILE=$@-2.tex nvim --headless -u $@.vim
+	@TEXFILE=$@-1.tex $(MYVIM) -u $@.vim
+	@TEXFILE=$@-2.tex $(MYVIM) -u $@.vim
 
 %.aux: %.tex
 	@latexmk $< >/dev/null 2>&1
