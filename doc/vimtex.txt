@@ -2202,6 +2202,46 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_use_temp_files*
+  If nonzero, this will copy output files to a corresponding set of files
+  with `_vimtex` prepended to the name. If one combines this with the callback
+  feature, this may provide a very convenient way to avoid that the pdf
+  becomes unavailable during compilation, as it will only update the viewer
+  outut file after a successful compilation.
+
+  The behaviour depends on the value:
+
+    1: Copy output files after successful compilations and then update.
+    2: Copy output files after all compilations and then update.
+
+  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
+        already ensures that the output file is updated only after the
+        compilation is completed.
+
+  Note: This will disable the viewer from the `latexmk` end. That is, if this
+        option is enabled, opening and updating the pdf viewer will have to be
+        done by the user or by vimtex, even if `latexmk` is chosen as the
+        compiler.
+
+  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
+        these viewers should update automatically after the pdf is updated.
+        For general viewers, one has to create a callback function and connect
+        it through |g:vimtex_view_general_callback|, and then use this
+        callback to update the viewer.
+
+  Default value: 0
+
+*g:vimtex_view_forward_search_on_start*
+  If disabled, the first invocation of the viewer will not perform a forward
+  search to the current cursor position.
+
+  Note: This option is only relevant for the following view methods (see
+        |g:vimtex_view_method|):
+        * |vimtex_viewer_mupdf|
+        * |vimtex_viewer_zathura|
+
+  Default value: 1
+
 *g:vimtex_view_method*
   Set the viewer method.
 
@@ -2368,52 +2408,37 @@ OPTIONS                                                        *vimtex-options*
             file, then there might be conflicts. In particular, this might
             affect forward/backward searching for Zathura.
 
-*g:vimtex_view_use_temp_files*
-  If nonzero, this will copy output files to a corresponding set of files
-  with `_vimtex` prepended to the name. If one combines this with the callback
-  feature, this may provide a very convenient way to avoid that the pdf
-  becomes unavailable during compilation, as it will only update the viewer
-  outut file after a successful compilation.
+*g:vimtex_view_general_hook_view*
+*g:vimtex_view_mupdf_hook_view*
+*g:vimtex_view_skim_hook_view*
+*g:vimtex_view_zathura_hook_view*
+  Set viewer hook to call after issuing |:VimtexView|.
 
-  The behaviour depends on the value:
+  Example: >
 
-    1: Copy output files after successful compilations and then update.
-    2: Copy output files after all compilations and then update.
+    let g:vimtex_view_zathura_hook_view = 'MyViewHook'
 
-  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
-        already ensures that the output file is updated only after the
-        compilation is completed.
+    function! MyViewHook() abort dict
+      echom 'See what I am:' string(self)
+    endfunction
 
-  Note: This will disable the viewer from the `latexmk` end. That is, if this
-        option is enabled, opening and updating the pdf viewer will have to be
-        done by the user or by vimtex, even if `latexmk` is chosen as the
-        compiler.
+<  Default value: ''
 
-  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
-        these viewers should update automatically after the pdf is updated.
-        For general viewers, one has to create a callback function and connect
-        it through |g:vimtex_view_general_callback|, and then use this
-        callback to update the viewer.
+*g:vimtex_view_general_hook_callback*
+*g:vimtex_view_mupdf_hook_callback*
+*g:vimtex_view_skim_hook_callback*
+*g:vimtex_view_zathura_hook_callback*
+  Set viewer hook to call after compiler callback.
 
-  Default value: 0
+  Example: >
 
-*g:vimtex_view_forward_search_on_start*
-  If disabled, the first invocation of the viewer will not perform a forward
-  search to the current cursor position.
+    let g:vimtex_view_zathura_hook_callback = 'MyViewCallbackHook'
 
-  Note: This option is only relevant for the following view methods (see
-  |g:vimtex_view_method|):
-    'mupdf'
-    'zathura'
+    function! MyViewCallbackHook() abort dict
+      echom 'See what I am:' string(self)
+    endfunction
 
-  Default value: 1
-
-*g:vimtex_view_general_viewer*
-  Use generic viewer application, see |vimtex_viewer_general|.
-
-  Default value:
-    Linux: `xdg-open`
-    Mac:   `open`
+<  Default value: ''
 
 *g:vimtex_view_general_options*
   Set options for the specified general viewer, see |vimtex_viewer_general|.
@@ -2425,6 +2450,19 @@ OPTIONS                                                        *vimtex-options*
     `@col`    Current column number
 
   Default value: '@pdf'
+
+*g:vimtex_view_mupdf_options*
+*g:vimtex_view_zathura_options*
+  Set options for mupdf/zathura (|vimtex_viewer_mupdf|, |vimtex_viewer_zathura|).
+
+  Default value: ''
+
+*g:vimtex_view_general_viewer*
+  Use generic viewer application, see |vimtex_viewer_general|.
+
+  Default value:
+    Linux: `xdg-open`
+    Mac:   `open`
 
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
@@ -2447,11 +2485,6 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ''
 
-*g:vimtex_view_mupdf_options*
-  Set options for mupdf (|vimtex_viewer_mupdf|).
-
-  Default value: ''
-
 *g:vimtex_view_mupdf_send_keys*
   A string of keys that will be sent to MuPDF just after the PDF file has been
   opened.
@@ -2469,11 +2502,6 @@ OPTIONS                                                        *vimtex-options*
   |:VimtexView|.
 
   Default value: 1
-
-*g:vimtex_view_zathura_options*
-  Set options for zathura (|vimtex_viewer_zathura|).
-
-  Default value: ''
 
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
@@ -3849,8 +3877,21 @@ Associated settings:
   |g:vimtex_view_automatic|
   |g:vimtex_view_method|
   |g:vimtex_view_use_temp_files|
+  |g:vimtex_view_general_hook_callback|
+  |g:vimtex_view_general_hook_view|
+  |g:vimtex_view_general_options|
   |g:vimtex_view_general_viewer|
-  |g:vimtex_view_<viewer>_options|
+  |g:vimtex_view_mupdf_hook_callback|
+  |g:vimtex_view_mupdf_hook_view|
+  |g:vimtex_view_mupdf_options|
+  |g:vimtex_view_mupdf_send_keys|
+  |g:vimtex_view_skim_activate|
+  |g:vimtex_view_skim_hook_callback|
+  |g:vimtex_view_skim_hook_view|
+  |g:vimtex_view_skim_reading_bar|
+  |g:vimtex_view_zathura_hook_callback|
+  |g:vimtex_view_zathura_hook_view|
+  |g:vimtex_view_zathura_options|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
