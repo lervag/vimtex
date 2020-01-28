@@ -57,3 +57,16 @@ When submitting code for vimtex, please adhere to the following standards:
     that when folded, I get a nice structural overview of a file
   - See some of the files for examples of how I do this
 
+## Running tests
+
+New functionality should be accompanied by tests.
+Tests can be run from the test/tests folder by executing `make`.
+Running tests requires the following, which may not come with all Linux distributions and may need to be installed with your favorite package manager (e.g. yum, apt-get, or brew on Mac).
+
+- wget
+- chronic (from [moreutils](https://joeyh.name/code/moreutils/))
+
+Other tips
+
+By default, tests execute with the Neovim executable `nvim`. You can change the executable by setting the environment variable `MYVIM` before running.
+To run with vanilla vim, use `MYVIM="vim -T dumb --not-a-term --noplugin -n" make`.
