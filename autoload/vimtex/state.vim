@@ -523,7 +523,7 @@ function! s:vimtex.cleanup() abort dict " {{{1
   endif
 
   " Close quickfix window
-  cclose
+  silent! cclose
 endfunction
 
 " }}}1
