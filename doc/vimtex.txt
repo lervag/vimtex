@@ -4042,18 +4042,22 @@ A: Because it is complicated and requires some expensive searches for matching
 
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up vimtex with Skim?
-A: First, set |g:vimtex_view_method| to `skim` (see also some relevant info at
-   |vimtex_viewer_skim|). This should already enable forward search. To get
-   backward search, open the settings panel in Skim, then go to the Sync tab
-   and create a custom preset for `PDF-TeX Sync support`. Use the following
-   settings: >
+A: First, set |g:vimtex_view_method| to `skim` and read |vimtex_viewer_skim|.
+   From scratch, forward search should work as expected. Backward search
+   requires some manual configuration in Skim and depends on which version of
+   Vim you are using. If you use neovim, please first read |vimtex-faq-neovim|
+   and ensure that you have `nvr` available. To configure, open the settings
+   panel in Skim, go to the Sync tab, and create a custom preset for PDF-TeX
+   Sync support. The following settings should work: >
 
+     # With MacVim (path should be same as that reported by `which mvim`)
      Command: /Applications/MacVim.app/Contents/bin/mvim
      Args:    --remote-silent +"%line" "%file"
-<
-   Note: This assumes that you are using MacVim. Ensure that the `Command` path
-         is correct, e.g. by checking with `which mvim` in your shell.
 
+     # With neovim
+     Command: nvr
+     Args:    --remote +"%line" "%file"
+<
    Note: If you have multiple versions of Vim installed (e.g. default Vim, and
          one or more versions of MacVim), then make sure that you are
          consistent in which version of Vim you are running!
