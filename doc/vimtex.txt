@@ -4042,29 +4042,21 @@ A: Because it is complicated and requires some expensive searches for matching
 
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up vimtex with Skim?
-A: First, set |g:vimtex_view_method| to `skim` and read |vimtex_viewer_skim|.
-   From scratch, forward search should work as expected. Backward search
-   requires some manual configuration in Skim and depends on which version of
-   Vim you are using. If you use neovim, please first read |vimtex-faq-neovim|
-   and ensure that you have `nvr` available. To configure, open the settings
-   panel in Skim, go to the Sync tab, and create a custom preset for PDF-TeX
-   Sync support. The following settings should work: >
+A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
+   did not already do so). Forward search should just work. Backward search
+   requires configuration in Skim that depends on which version of Vim you are
+   using. Open the settings panel in Skim, go to the `Sync` tab and set the
+   options according to your desired version of Vim:
 
-     # With MacVim (path should be same as that reported by `which mvim`)
-     Command: /Applications/MacVim.app/Contents/bin/mvim
-     Args:    --remote-silent +"%line" "%file"
+     * For `MacVim`, select the `MacVim` preset.
+     * For `neovim`, select the `Custom` preset from the drop-down list and set:
+         Command: nvr~
+         Args: --remote +"%line" "%file"~
+       Please ensure that you have the `nvr` (neovim-remote) utility and the
+       `pynvim` Python module available, see |vimtex-faq-neovim|.
 
-     # With neovim
-     Command: nvr
-     Args:    --remote +"%line" "%file"
-<
-   Note: If you have multiple versions of Vim installed (e.g. default Vim, and
-         one or more versions of MacVim), then make sure that you are
-         consistent in which version of Vim you are running!
-
-   Note: Relevant references:
-         - https://github.com/lervag/vimtex/issues/1140
-         - https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+   Some related information may be found here:
+   https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
                                                           *vimtex-faq-surround*
 Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
@@ -4093,42 +4085,20 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 <
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
-A: Yes. Since 2018-11-18 [0], most features work out of the box. However, for
-   backward search from PDF viewer to neovim, one needs the `neovim-remote`
-   tool as described below.
+A: Yes, but backward sync requires the `neovim-remote` utility. It may be
+   installed and used by vimtex as follows:
 
-   `Deprecated`: The compiler coupling and some of the viewer functionality
-   require the |--remote| options from the |clientserver|. For some reason,
-   these options have been removed from neovim, see #1750 [1]. There does
-   remain some hope that the options will be reimplemented sometime in the
-   future.
+     1. Install the `pynvim` and `neovim-remote` modules for python3 (e.g.,
+        using `pip3 install --user pynvim neovim-remote`; if `python3 -c
+        "import pynvim"` returns without error and `nvr` starts neovim from
+        the command line, everything should be good to go).
 
-   In the meantime, there exists a workaround: `neovim-remote` [2] is a simple
-   tool that implements the |--remote| options through a python script. If one
-   downloads this tool and sets the option |g:vimtex_compiler_progname| to
-   `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
-   should work.
+     2. Add `let g:vimtex_compiler_progname = 'nvr'` to your `init.vim`.
 
-   `nvr` relies on neovim's RPC API, which is an analogue of vim's clientserver
-   functionality. neovim creates a uniquely named RPC socket at startup
-   unless otherwise specified, unlike vim, which does not start clientserver
-   functionality by default. In either case (vim or nvr+neovim), vimtex is
-   able to provide the servername (in |v:servername|) for remote callbacks. As
-   such, neovim users may not need to specify a socket name (such as for
-   reverse search with zathura). However, users can start neovim with a
-   specific socket name using:
+     3. Configure your viewer to use `nvr --remote +"%line" "%file"` for
+        backward sync.
 
-     `nvim --listen /tmp/mynvimserver`
-
-   This is primarily necessary for using reverse search with pdf viewers (such
-   as okular) that rely on user configuration of the commands used to interact
-   with the text editor so that vimtex is not able to provide the servername
-   to the viewer. In these cases, it may be useful to know that `nvr` uses the
-   server name /tmp/nvimsocket by default.
-
-   [0]: https://github.com/lervag/vimtex/issues/1258
-   [1]: https://github.com/neovim/neovim/issues/1750
-   [2]: https://github.com/lervag/vimtex/issues/262
+   See https://github.com/mhinz/neovim-remote for more information on `nvr`.
 
                                                               *vimtex-faq-tags*
 Q: How can I jump from a `\ref{label}` to the corresponding label?
