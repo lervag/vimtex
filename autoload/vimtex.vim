@@ -419,6 +419,7 @@ function! s:init_buffer() abort " {{{1
 
   " Define autocommands
   augroup vimtex_buffers
+    autocmd! * <buffer>
     autocmd BufFilePre  <buffer> call s:filename_changed_pre()
     autocmd BufFilePost <buffer> call s:filename_changed_post()
     autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
@@ -643,8 +644,9 @@ function! s:buffer_deleted(reason) abort " {{{1
     let s:buffer_cache[l:file] = getbufvar(l:file, 'vimtex_id', -1)
   endif
 
-  if a:reason ==# 'wipe' || &hidden
+  if a:reason ==# 'wipe'
     call vimtex#state#cleanup(s:buffer_cache[l:file])
+    call remove(s:buffer_cache, l:file)
   endif
 endfunction
 
