@@ -107,6 +107,11 @@ function! vimtex#state#get(id) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#state#get_all() abort " {{{1
+  return s:vimtex_states
+endfunction
+
+" }}}1
 function! vimtex#state#cleanup(id) abort " {{{1
   if !vimtex#state#exists(a:id) | return | endif
 
