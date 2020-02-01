@@ -496,6 +496,9 @@ The methods are tried in the following order:
                                                                  *b:vimtex_main*
 Buffer variable~
   The main file may be specified through the buffer variable `b:vimtex_main`.
+  To take effect, it has to be set prior to loading the buffer. If set after
+  the buffer is already loaded, |:VimtexReloadState| (by default bound to
+  |<localleader>lX|) can be used to make vimtex aware of its new value.
   If one uses project specific |vimrc| files, one may then use an |autocmd| to
   specify the main file through this buffer variable with >
 
