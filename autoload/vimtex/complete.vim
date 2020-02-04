@@ -883,10 +883,8 @@ function! s:load_candidates_from_packages() abort " {{{1
 
   call vimtex#paths#pushd(s:complete_dir)
 
-  for l:unreadable in filter(copy(l:packages), '!filereadable(v:val)')
-    let s:candidates_from_packages[l:unreadable] = {}
-    call remove(l:packages, index(l:packages, l:unreadable))
-  endfor
+  let l:missing = filter(copy(l:packages), '!filereadable(v:val)')
+  call filter(l:packages, 'filereadable(v:val)')
 
   " Parse include statements in complete files
   let l:queue = copy(l:packages)
@@ -896,6 +894,9 @@ function! s:load_candidates_from_packages() abort " {{{1
     if empty(l:includes) | continue | endif
 
     call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
+    let l:missing += filter(filter(copy(l:includes),
+          \ '!filereadable(v:val)'),
+          \ 'index(l:missing, v:val) < 0')
     call filter(l:includes, 'filereadable(v:val)')
     call filter(l:includes, 'index(l:packages, v:val) < 0')
 
@@ -909,6 +910,11 @@ function! s:load_candidates_from_packages() abort " {{{1
   endfor
 
   call vimtex#paths#popd()
+
+  " Fetch candidates by parsing cls/sty file
+  for l:package in l:missing
+    call s:_load_candidates_from_source(l:package)
+  endfor
 
   return l:package_list
 endfunction
@@ -941,6 +947,27 @@ function! s:_load_candidates_from_complete_file(pkg) abort " {{{1
         \ ''kind'' : ''[env: '' . a:pkg . ''] '',
         \}')
   let s:candidates_from_packages[a:pkg].environments += l:candidates
+endfunction
+
+" }}}1
+function! s:_load_candidates_from_source(pkg) abort " {{{1
+  let l:filename = a:pkg =~# '^class-'
+        \ ? vimtex#kpsewhich#find(a:pkg[6:] . '.cls')
+        \ : vimtex#kpsewhich#find(a:pkg . '.sty')
+
+  if empty(l:filename)
+    let s:candidates_from_packages[a:pkg] = {}
+    return
+  endif
+
+  let s:candidates_from_packages[a:pkg] = {
+        \ 'commands':     [],
+        \ 'environments': [],
+        \}
+
+  let s:candidates_from_packages[a:pkg].commands
+        \ = s:gather_candidates_from_newcommands(
+        \     readfile(l:filename), 'cmd: ' . a:pkg)
 endfunction
 
 " }}}1
