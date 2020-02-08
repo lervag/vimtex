@@ -317,6 +317,7 @@ function! s:get_cmd(direction) abort " {{{1
 
   let res = {
         \ 'name' : match,
+        \ 'text' : '',
         \ 'pos_start' : { 'lnum' : lnum, 'cnum' : cnum },
         \ 'pos_end' : { 'lnum' : lnum, 'cnum' : cnum + strlen(match) - 1 },
         \ 'args' : [],
@@ -326,6 +327,8 @@ function! s:get_cmd(direction) abort " {{{1
   " afterwords
   if res.name ==# '\begin'
     let arg = s:get_cmd_part('{', res.pos_end)
+    if empty(arg) | return res | endif
+
     call add(res.args, arg)
     let res.pos_end.lnum = arg.close.lnum
     let res.pos_end.cnum = arg.close.cnum

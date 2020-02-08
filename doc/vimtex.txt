@@ -496,6 +496,9 @@ The methods are tried in the following order:
                                                                  *b:vimtex_main*
 Buffer variable~
   The main file may be specified through the buffer variable `b:vimtex_main`.
+  To take effect, it has to be set prior to loading the buffer. If set after
+  the buffer is already loaded, |:VimtexReloadState| (by default bound to
+  |<localleader>lX|) can be used to make vimtex aware of its new value.
   If one uses project specific |vimrc| files, one may then use an |autocmd| to
   specify the main file through this buffer variable with >
 
@@ -2202,6 +2205,46 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_use_temp_files*
+  If nonzero, this will copy output files to a corresponding set of files
+  with `_vimtex` prepended to the name. If one combines this with the callback
+  feature, this may provide a very convenient way to avoid that the pdf
+  becomes unavailable during compilation, as it will only update the viewer
+  outut file after a successful compilation.
+
+  The behaviour depends on the value:
+
+    1: Copy output files after successful compilations and then update.
+    2: Copy output files after all compilations and then update.
+
+  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
+        already ensures that the output file is updated only after the
+        compilation is completed.
+
+  Note: This will disable the viewer from the `latexmk` end. That is, if this
+        option is enabled, opening and updating the pdf viewer will have to be
+        done by the user or by vimtex, even if `latexmk` is chosen as the
+        compiler.
+
+  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
+        these viewers should update automatically after the pdf is updated.
+        For general viewers, one has to create a callback function and connect
+        it through |g:vimtex_view_general_callback|, and then use this
+        callback to update the viewer.
+
+  Default value: 0
+
+*g:vimtex_view_forward_search_on_start*
+  If disabled, the first invocation of the viewer will not perform a forward
+  search to the current cursor position.
+
+  Note: This option is only relevant for the following view methods (see
+        |g:vimtex_view_method|):
+        * |vimtex_viewer_mupdf|
+        * |vimtex_viewer_zathura|
+
+  Default value: 1
+
 *g:vimtex_view_method*
   Set the viewer method.
 
@@ -2368,52 +2411,37 @@ OPTIONS                                                        *vimtex-options*
             file, then there might be conflicts. In particular, this might
             affect forward/backward searching for Zathura.
 
-*g:vimtex_view_use_temp_files*
-  If nonzero, this will copy output files to a corresponding set of files
-  with `_vimtex` prepended to the name. If one combines this with the callback
-  feature, this may provide a very convenient way to avoid that the pdf
-  becomes unavailable during compilation, as it will only update the viewer
-  outut file after a successful compilation.
+*g:vimtex_view_general_hook_view*
+*g:vimtex_view_mupdf_hook_view*
+*g:vimtex_view_skim_hook_view*
+*g:vimtex_view_zathura_hook_view*
+  Set viewer hook to call after issuing |:VimtexView|.
 
-  The behaviour depends on the value:
+  Example: >
 
-    1: Copy output files after successful compilations and then update.
-    2: Copy output files after all compilations and then update.
+    let g:vimtex_view_zathura_hook_view = 'MyViewHook'
 
-  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
-        already ensures that the output file is updated only after the
-        compilation is completed.
+    function! MyViewHook() abort dict
+      echom 'See what I am:' string(self)
+    endfunction
 
-  Note: This will disable the viewer from the `latexmk` end. That is, if this
-        option is enabled, opening and updating the pdf viewer will have to be
-        done by the user or by vimtex, even if `latexmk` is chosen as the
-        compiler.
+<  Default value: ''
 
-  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
-        these viewers should update automatically after the pdf is updated.
-        For general viewers, one has to create a callback function and connect
-        it through |g:vimtex_view_general_callback|, and then use this
-        callback to update the viewer.
+*g:vimtex_view_general_hook_callback*
+*g:vimtex_view_mupdf_hook_callback*
+*g:vimtex_view_skim_hook_callback*
+*g:vimtex_view_zathura_hook_callback*
+  Set viewer hook to call after compiler callback.
 
-  Default value: 0
+  Example: >
 
-*g:vimtex_view_forward_search_on_start*
-  If disabled, the first invocation of the viewer will not perform a forward
-  search to the current cursor position.
+    let g:vimtex_view_zathura_hook_callback = 'MyViewCallbackHook'
 
-  Note: This option is only relevant for the following view methods (see
-  |g:vimtex_view_method|):
-    'mupdf'
-    'zathura'
+    function! MyViewCallbackHook() abort dict
+      echom 'See what I am:' string(self)
+    endfunction
 
-  Default value: 1
-
-*g:vimtex_view_general_viewer*
-  Use generic viewer application, see |vimtex_viewer_general|.
-
-  Default value:
-    Linux: `xdg-open`
-    Mac:   `open`
+<  Default value: ''
 
 *g:vimtex_view_general_options*
   Set options for the specified general viewer, see |vimtex_viewer_general|.
@@ -2425,6 +2453,19 @@ OPTIONS                                                        *vimtex-options*
     `@col`    Current column number
 
   Default value: '@pdf'
+
+*g:vimtex_view_mupdf_options*
+*g:vimtex_view_zathura_options*
+  Set options for mupdf/zathura (|vimtex_viewer_mupdf|, |vimtex_viewer_zathura|).
+
+  Default value: ''
+
+*g:vimtex_view_general_viewer*
+  Use generic viewer application, see |vimtex_viewer_general|.
+
+  Default value:
+    Linux: `xdg-open`
+    Mac:   `open`
 
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
@@ -2447,11 +2488,6 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ''
 
-*g:vimtex_view_mupdf_options*
-  Set options for mupdf (|vimtex_viewer_mupdf|).
-
-  Default value: ''
-
 *g:vimtex_view_mupdf_send_keys*
   A string of keys that will be sent to MuPDF just after the PDF file has been
   opened.
@@ -2469,11 +2505,6 @@ OPTIONS                                                        *vimtex-options*
   |:VimtexView|.
 
   Default value: 1
-
-*g:vimtex_view_zathura_options*
-  Set options for zathura (|vimtex_viewer_zathura|).
-
-  Default value: ''
 
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
@@ -3849,8 +3880,21 @@ Associated settings:
   |g:vimtex_view_automatic|
   |g:vimtex_view_method|
   |g:vimtex_view_use_temp_files|
+  |g:vimtex_view_general_hook_callback|
+  |g:vimtex_view_general_hook_view|
+  |g:vimtex_view_general_options|
   |g:vimtex_view_general_viewer|
-  |g:vimtex_view_<viewer>_options|
+  |g:vimtex_view_mupdf_hook_callback|
+  |g:vimtex_view_mupdf_hook_view|
+  |g:vimtex_view_mupdf_options|
+  |g:vimtex_view_mupdf_send_keys|
+  |g:vimtex_view_skim_activate|
+  |g:vimtex_view_skim_hook_callback|
+  |g:vimtex_view_skim_hook_view|
+  |g:vimtex_view_skim_reading_bar|
+  |g:vimtex_view_zathura_hook_callback|
+  |g:vimtex_view_zathura_hook_view|
+  |g:vimtex_view_zathura_options|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
@@ -4001,25 +4045,21 @@ A: Because it is complicated and requires some expensive searches for matching
 
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up vimtex with Skim?
-A: First, set |g:vimtex_view_method| to `skim` (see also some relevant info at
-   |vimtex_viewer_skim|). This should already enable forward search. To get
-   backward search, open the settings panel in Skim, then go to the Sync tab
-   and create a custom preset for `PDF-TeX Sync support`. Use the following
-   settings: >
+A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
+   did not already do so). Forward search should just work. Backward search
+   requires configuration in Skim that depends on which version of Vim you are
+   using. Open the settings panel in Skim, go to the `Sync` tab and set the
+   options according to your desired version of Vim:
 
-     Command: /Applications/MacVim.app/Contents/bin/mvim
-     Args:    --remote-silent +"%line" "%file"
-<
-   Note: This assumes that you are using MacVim. Ensure that the `Command` path
-         is correct, e.g. by checking with `which mvim` in your shell.
+     * For `MacVim`, select the `MacVim` preset.
+     * For `neovim`, select the `Custom` preset from the drop-down list and set:
+         Command: nvr~
+         Args: --remote +"%line" "%file"~
+       Please ensure that you have the `nvr` (neovim-remote) utility and the
+       `pynvim` Python module available, see |vimtex-faq-neovim|.
 
-   Note: If you have multiple versions of Vim installed (e.g. default Vim, and
-         one or more versions of MacVim), then make sure that you are
-         consistent in which version of Vim you are running!
-
-   Note: Relevant references:
-         - https://github.com/lervag/vimtex/issues/1140
-         - https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+   Some related information may be found here:
+   https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
                                                           *vimtex-faq-surround*
 Q: |vimtex| provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
@@ -4048,42 +4088,20 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 <
                                                             *vimtex-faq-neovim*
 Q: Does |vimtex| work with neovim?
-A: Yes. Since 2018-11-18 [0], most features work out of the box. However, for
-   backward search from PDF viewer to neovim, one needs the `neovim-remote`
-   tool as described below.
+A: Yes, but backward sync requires the `neovim-remote` utility. It may be
+   installed and used by vimtex as follows:
 
-   `Deprecated`: The compiler coupling and some of the viewer functionality
-   require the |--remote| options from the |clientserver|. For some reason,
-   these options have been removed from neovim, see #1750 [1]. There does
-   remain some hope that the options will be reimplemented sometime in the
-   future.
+     1. Install the `pynvim` and `neovim-remote` modules for python3 (e.g.,
+        using `pip3 install --user pynvim neovim-remote`; if `python3 -c
+        "import pynvim"` returns without error and `nvr` starts neovim from
+        the command line, everything should be good to go).
 
-   In the meantime, there exists a workaround: `neovim-remote` [2] is a simple
-   tool that implements the |--remote| options through a python script. If one
-   downloads this tool and sets the option |g:vimtex_compiler_progname| to
-   `nvr` (or the full path, if `nvr` is not in `$PATH`), then everything
-   should work.
+     2. Add `let g:vimtex_compiler_progname = 'nvr'` to your `init.vim`.
 
-   `nvr` relies on neovim's RPC API, which is an analogue of vim's clientserver
-   functionality. neovim creates a uniquely named RPC socket at startup
-   unless otherwise specified, unlike vim, which does not start clientserver
-   functionality by default. In either case (vim or nvr+neovim), vimtex is
-   able to provide the servername (in |v:servername|) for remote callbacks. As
-   such, neovim users may not need to specify a socket name (such as for
-   reverse search with zathura). However, users can start neovim with a
-   specific socket name using:
+     3. Configure your viewer to use `nvr --remote +"%line" "%file"` for
+        backward sync.
 
-     `nvim --listen /tmp/mynvimserver`
-
-   This is primarily necessary for using reverse search with pdf viewers (such
-   as okular) that rely on user configuration of the commands used to interact
-   with the text editor so that vimtex is not able to provide the servername
-   to the viewer. In these cases, it may be useful to know that `nvr` uses the
-   server name /tmp/nvimsocket by default.
-
-   [0]: https://github.com/lervag/vimtex/issues/1258
-   [1]: https://github.com/neovim/neovim/issues/1750
-   [2]: https://github.com/lervag/vimtex/issues/262
+   See https://github.com/mhinz/neovim-remote for more information on `nvr`.
 
                                                               *vimtex-faq-tags*
 Q: How can I jump from a `\ref{label}` to the corresponding label?

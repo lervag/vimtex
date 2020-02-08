@@ -107,6 +107,11 @@ function! vimtex#state#get(id) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#state#get_all() abort " {{{1
+  return s:vimtex_states
+endfunction
+
+" }}}1
 function! vimtex#state#cleanup(id) abort " {{{1
   if !vimtex#state#exists(a:id) | return | endif
 
@@ -523,7 +528,7 @@ function! s:vimtex.cleanup() abort dict " {{{1
   endif
 
   " Close quickfix window
-  cclose
+  silent! cclose
 endfunction
 
 " }}}1

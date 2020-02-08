@@ -105,9 +105,14 @@ endfunction
 " }}}1
 
 function! vimtex#env#is_inside(env) abort " {{{1
-  let l:stopline = max([line('.') - 50, 1])
-  return searchpairpos('\\begin\s*{' . a:env . '\*\?}', '',
-        \ '\\end\s*{' . a:env . '\*\?}', 'bnW', '', l:stopline)
+  let l:re_start = '\\begin\s*{' . a:env . '\*\?}'
+  let l:re_end = '\\end\s*{' . a:env . '\*\?}'
+  try
+    return searchpairpos(l:re_start, '', l:re_end, 'bnW', '', 0, 100)
+  catch /E118/
+    let l:stopline = max([line('.') - 500, 1])
+    return searchpairpos(l:re_start, '', l:re_end, 'bnW', '', l:stopline)
+  endtry
 endfunction
 
 " }}}1
