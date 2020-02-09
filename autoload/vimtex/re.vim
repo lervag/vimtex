@@ -39,7 +39,8 @@ let g:vimtex#re#neocomplete =
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|%(include%(only)?|input|subfile)\s*\{[^}]*'
-      \ . '|[a-zA-z]*([cpdr]?(gls|Gls|GLS)|ac|Ac|AC)[a-zA-z]*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)[a-zA-z]*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|(ac|Ac|AC)%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|%(usepackage|RequirePackage|PassOptionsToPackage)%(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -57,7 +58,8 @@ let g:vimtex#re#deoplete = '\\(?:'
       \ . '|hyperref\s*\[[^]]*'
       \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|(?:include(?:only)?|input|subfile)\s*\{[^}]*'
-      \ . '|[a-zA-z]*([cpdr]?(gls|Gls|GLS)|ac|Ac|AC)[a-zA-z]*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)[a-zA-z]*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|(ac|Ac|AC)(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
       \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
       \ . '|(usepackage|RequirePackage|PassOptionsToPackage)(\s*\[[^]]*\])?\s*\{[^}]*'
@@ -82,7 +84,8 @@ let g:vimtex#re#ncm2#bibtex = [
 let g:vimtex#re#ncm2#labels = [
       \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
       \ '\\hyperref\[[^]]*',
-      \ '\\[a-zA-z]*([cpdr]?(gls|Gls|GLS)|ac|Ac|AC)[a-zA-z]*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+      \ '\\([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)[a-zA-z]*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+      \ '\\(ac|Ac|AC)(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
       \]
 let g:vimtex#re#ncm2#files = [
       \ '\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
