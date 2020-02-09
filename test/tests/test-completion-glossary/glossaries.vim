@@ -37,4 +37,7 @@ call vimtex#test#assert_equal(len(s:candidates), 7)
 let s:candidates = vimtex#test#completion('\rgls{', '')
 call vimtex#test#assert_equal(len(s:candidates), 7)
 
+let s:candidates = vimtex#test#completion('\glsname{', '')
+call vimtex#test#assert_equal(len(s:candidates), 7)
+
 quit!
