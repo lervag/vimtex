@@ -617,7 +617,10 @@ endfunction
 " {{{1 Glossary
 
 let s:completer_gls = {
-      \ 'patterns' : ['\v\\(gls|Gls|GLS)\w*\s*\{[^}]*$'],
+      \ 'patterns' : [
+      \   '\v\\([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)\a*\s*\{[^}]*$',
+      \   '\v\\(ac|Ac|AC)\s*\{[^}]*$',
+      \ ],
       \ 'key' : {
       \   'newglossaryentry' : ' [gls]',
       \   'longnewglossaryentry' : ' [gls]',
