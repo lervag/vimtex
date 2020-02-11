@@ -646,8 +646,10 @@ function! s:parser_latex(match, lnum, cnum, ...) abort " {{{1
         \ : substitute(substitute(a:match, '\]', '[', ''), ')', '(', '')
 
   let result.re = {
-        \ 'open'  : a:match =~# '\\(\|\\)' ? '\m\\(' : '\m\\\[',
-        \ 'close' : a:match =~# '\\(\|\\)' ? '\m\\)' : '\m\\\]',
+        \ 'open'  : g:vimtex#re#not_bslash
+        \   . (a:match =~# '\\(\|\\)' ? '\m\\(' : '\m\\\['),
+        \ 'close' : g:vimtex#re#not_bslash
+        \   . (a:match =~# '\\(\|\\)' ? '\m\\)' : '\m\\\]'),
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
