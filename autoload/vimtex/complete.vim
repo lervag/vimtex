@@ -340,7 +340,7 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
   let l:lines = filter(l:lines, 'v:val !~# ''tocindent-\?[0-9]''')
   for l:line in l:lines
     let l:line = vimtex#util#tex2unicode(l:line)
-    let l:tree = s:tex2tree(l:line)[1:]
+    let l:tree = vimtex#util#tex2tree(l:line)[1:]
     let l:name = get(remove(l:tree, 0), 0, '')
     if empty(l:name)
       continue
@@ -473,7 +473,7 @@ function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{
   call map(l:preamble, "substitute(v:val, '\\s*%.*', '', 'g')")
   let l:glskeys = split(join(l:preamble, "\n"), '\n\s*\\glsaddkey\*\?')[1:]
   call map(l:glskeys, "substitute(v:val, '\n\\s*', '', 'g')")
-  call map(l:glskeys, 's:tex2tree(v:val)[2:6]')
+  call map(l:glskeys, 'vimtex#util#tex2tree(v:val)[2:6]')
 
   let l:candidates = map(vimtex#util#flatten(l:glskeys), '{
         \ ''word'' : v:val[1:],
@@ -1008,38 +1008,6 @@ function! s:close_braces(candidates) abort " {{{1
   endif
 
   return a:candidates
-endfunction
-
-" }}}1
-function! s:tex2tree(str) abort " {{{1
-  let tree = []
-  let i1 = 0
-  let i2 = -1
-  let depth = 0
-  while i2 < len(a:str)
-    let i2 = match(a:str, '[{}]', i2 + 1)
-    if i2 < 0
-      let i2 = len(a:str)
-    endif
-    if i2 >= len(a:str) || a:str[i2] ==# '{'
-      if depth == 0
-        let item = substitute(strpart(a:str, i1, i2 - i1),
-              \ '^\s*\|\s*$', '', 'g')
-        if !empty(item)
-          call add(tree, item)
-        endif
-        let i1 = i2 + 1
-      endif
-      let depth += 1
-    else
-      let depth -= 1
-      if depth == 0
-        call add(tree, s:tex2tree(strpart(a:str, i1, i2 - i1)))
-        let i1 = i2 + 1
-      endif
-    endif
-  endwhile
-  return tree
 endfunction
 
 " }}}1
