@@ -748,13 +748,15 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_compiler_progname*
-  Path to vim executable.  This is used for the callback functionality, and it
-  must be set correctly in order for the callback function to work.  The
-  default value should work correctly in most cases, but in some cases, e.g.
-  for MacVim, one might need to set it manually to get the callbacks to work
-  as expected.
+  Path to vim executable used for the callback functionality. It must be set
+  correctly in order for the callback function to work.  The default value
+  should work correctly in most cases, but in some cases, e.g. for MacVim, one
+  might need to set it manually to get the callbacks to work as expected.
 
-  Default value: |v:progpath| if it exists, else |v:progname|.
+  Default value on Vim:    |v:progpath| or |v:progname|
+  Default value on neovim: `nvr` if available, else same as Vim
+
+  See also: |vimtex-faq-neovim|
 
 *g:vimtex_compiler_callback_hooks*
   A list of functions that will be called from the vimtex compiler callback.
@@ -3914,10 +3916,8 @@ Alternatively, for |vimtex-latexmk|, one can put this in ones `~/.latexmkrc` fil
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
-Note: For |neovim| users, one must use `neovim-remote` (see link below) for
-      backward search. This is done by installing `neovim-remote` and setting
-      |g:vimtex_compiler_progname| to `'nvr'`
-      https://github.com/mhinz/neovim-remote
+Note: For |neovim| users, one must use `neovim-remote` for backward search. See
+      |vimtex-faq-neovim| for more info.
 
 ------------------------------------------------------------------------------
 FORWARD SEARCH                                  *vimtex-synctex-forward-search*
@@ -4096,9 +4096,7 @@ A: Yes, but backward sync requires the `neovim-remote` utility. It may be
         "import pynvim"` returns without error and `nvr` starts neovim from
         the command line, everything should be good to go).
 
-     2. Add `let g:vimtex_compiler_progname = 'nvr'` to your `init.vim`.
-
-     3. Configure your viewer to use `nvr --remote +"%line" "%file"` for
+     2. Configure your viewer to use `nvr --remote +"%line" "%file"` for
         backward sync.
 
    See https://github.com/mhinz/neovim-remote for more information on `nvr`.
