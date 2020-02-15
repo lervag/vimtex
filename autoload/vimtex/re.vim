@@ -84,7 +84,7 @@ let g:vimtex#re#ncm2#bibtex = [
 let g:vimtex#re#ncm2#labels = [
       \ '\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
       \ '\\hyperref\[[^]]*',
-      \ '\\([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)\a*\s*\{[^}]*',
+      \ '\\([cpdr]?(gls|Gls|GLS)|acr|Acr|ACR)[a-zA-Z]*\s*\{[^}]*',
       \ '\\(ac|Ac|AC)\s*\{[^}]*',
       \]
 let g:vimtex#re#ncm2#files = [
