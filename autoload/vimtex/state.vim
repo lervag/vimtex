@@ -699,5 +699,5 @@ endfunction
 
 
 " Initialize module
-let s:vimtex_states = {}
-let s:vimtex_next_id = 0
+let s:vimtex_states = get(s:, 'vimtex_states', {})
+let s:vimtex_next_id = get(s:, 'vimtex_next_id', 0)
