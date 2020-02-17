@@ -1,2 +1,6 @@
 doc/tags
-test/*
+
+test/issues/*
+test/tests/test-compiler/latexrun
+test/tests/test-syntax/syntax/
+test/tests/test-textobj-targets/targets.vim/
