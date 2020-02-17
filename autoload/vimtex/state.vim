@@ -223,7 +223,7 @@ function! s:get_main() abort " {{{1
   "
   if index(['cls', 'sty'], expand('%:e')) >= 0
     let l:id = getbufvar('#', 'vimtex_id', -1)
-    if l:id >= 0
+    if l:id >= 0 && has_key(s:vimtex_states, l:id)
       return s:vimtex_states[l:id].tex
     else
       let s:disabled_modules = ['latexmk', 'view', 'toc']
@@ -699,5 +699,5 @@ endfunction
 
 
 " Initialize module
-let s:vimtex_states = get(s:, 'vimtex_states', {})
-let s:vimtex_next_id = get(s:, 'vimtex_next_id', 0)
+let s:vimtex_states = {}
+let s:vimtex_next_id = 0
