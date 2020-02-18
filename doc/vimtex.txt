@@ -751,6 +751,11 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: Undefined.
 
+*g:vimtex_cache_root*
+  Specify the cache directory for |vimtex|.
+
+  Default value: '~/.cache/vimtex/'
+
 *g:vimtex_compiler_enabled*
   Use this option to disable/enable the `compiler` interface, see |vimtex-compiler|.
 

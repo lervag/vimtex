@@ -657,6 +657,8 @@ function! s:quit() abort " {{{1
   for l:state in vimtex#state#list_all()
     call l:state.cleanup()
   endfor
+
+  call vimtex#cache#write_all()
 endfunction
 
 " }}}1
