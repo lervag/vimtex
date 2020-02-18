@@ -6,6 +6,8 @@ set nomore
 
 nnoremap q :qall!<cr>
 
+let g:vimtex_cache_root = '.'
+
 silent edit test3.tex
 
 if empty($INMAKE) | finish | endif
