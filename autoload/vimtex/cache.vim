@@ -42,6 +42,15 @@ function! vimtex#cache#wrap(Func, name) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#cache#clear(name) abort " {{{1
+  let l:cache = vimtex#cache#open(a:name)
+
+  call l:cache.read()
+  let l:cache.data = {}
+  call l:cache.write()
+endfunction
+
+" }}}1
 function! vimtex#cache#write_all() abort " {{{1
   for l:cache in values(get(s:, 'caches', {}))
     call l:cache.write()
