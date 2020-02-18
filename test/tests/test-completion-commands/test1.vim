@@ -6,7 +6,7 @@ set nomore
 
 nnoremap q :qall!<cr>
 
-silent edit main.tex
+silent edit test1.tex
 
 if empty($INMAKE) | finish | endif
 
@@ -26,10 +26,5 @@ call vimtex#test#assert_equal(s:candidates[0].word, 'DeclareDocumentCommand')
 let s:candidates = vimtex#test#completion('\', 'glsentry.*acc')
 call vimtex#test#assert(len(s:candidates) > 0)
 call vimtex#test#assert_equal(s:candidates[0].word, 'glsentrymaccusative')
-
-" Test commands from custom classes
-let s:candidates = vimtex#test#completion('\', 'custom')
-call vimtex#test#assert(len(s:candidates) > 0)
-call vimtex#test#assert_equal(s:candidates[0].word, 'customtest')
 
 quit!
