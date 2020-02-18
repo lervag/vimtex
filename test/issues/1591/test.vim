@@ -1,7 +1,0 @@
-set nocompatible
-let &rtp = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
-filetype plugin indent on
-syntax enable
-
-nnoremap q :qall!<cr>
