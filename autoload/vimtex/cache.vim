@@ -134,7 +134,8 @@ function! s:cache.read() abort " {{{1
 
   if getftime(self.path) > self.ftime
     let self.ftime = getftime(self.path)
-    call extend(self.data, json_decode(readfile(self.path)), 'keep')
+    call extend(self.data,
+          \ json_decode(join(readfile(self.path))), 'keep')
   else
     let self.ftime = localtime()
   endif
