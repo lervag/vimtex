@@ -110,12 +110,8 @@ function! s:search_candidates_kpsewhich(fname) abort " {{{1
   endfor
 
   for l:file in l:candidates
-    if !has_key(s:kpsewhich_cache, l:file)
-      let l:candidate = vimtex#kpsewhich#find(l:file)
-      let s:kpsewhich_cache[l:file] = filereadable(l:candidate) ? l:candidate : ''
-    endif
-
-    if !empty(s:kpsewhich_cache[l:file]) | return s:kpsewhich_cache[l:file] | endif
+    let l:candidate = vimtex#kpsewhich#find(l:file)
+    if !empty(l:candidate) && filereadable(l:candidate) | return l:candidate | endif
   endfor
 
   return ''
@@ -145,5 +141,3 @@ function! s:visited.check(fname) abort dict " {{{1
 endfunction
 
 " }}}1
-
-let s:kpsewhich_cache = {}
