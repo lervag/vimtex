@@ -7,6 +7,7 @@ set nomore
 nnoremap q :qall!<cr>
 
 let g:vimtex_cache_root = '.'
+let g:vimtex_cache_persistant = 0
 
 silent edit test3.tex
 
