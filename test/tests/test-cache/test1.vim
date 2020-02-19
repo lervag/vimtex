@@ -13,16 +13,4 @@ call vimtex#test#assert_equal(s:cache.get('d'), 4)
 call vimtex#test#assert_equal(s:cache.get('missing'), 0)
 call vimtex#test#assert(s:cache.has('c'))
 
-try
-  call s:cache.insert('a', 2)
-  call vimtex#test#assert(v:false)
-catch /vimtex#cache: Key already exists:/
-endtry
-
-try
-  call s:cache.update('e', 1)
-  call vimtex#test#assert(v:false)
-catch /vimtex#cache: Key does not exists:/
-endtry
-
 quit!

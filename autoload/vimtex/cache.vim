@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#cache#open(name) abort " {{{1
+function! vimtex#cache#open(name, ...) abort " {{{1
   let s:caches = get(s:, 'caches', {})
   if has_key(s:caches, a:name)
     return s:caches[a:name]
@@ -15,26 +15,35 @@ function! vimtex#cache#open(name) abort " {{{1
     call mkdir(l:cache_root, 'p')
   endif
 
-  let l:path = l:cache_root . '/' . a:name . '.json'
+  let l:opts = {
+        \ 'path': l:cache_root . '/' . a:name . '.json',
+        \ 'persistent': get(g:, 'vimtex_cache_persistant', 1),
+        \}
+  if a:0 > 0 | call extend(l:opts, a:1) | endif
 
-  let l:cache = deepcopy(s:cache)
-  call l:cache.init(l:path)
-  unlet l:cache.init
-
-  let s:caches[a:name] = l:cache
-
-  return l:cache
+  let s:caches[a:name] = s:cache.init(l:opts)
+  return s:caches[a:name]
 endfunction
 
 " }}}1
-function! vimtex#cache#wrap(Func, name) abort " {{{1
-  let l:cache = vimtex#cache#open(a:name)
+function! vimtex#cache#close(name) abort " {{{1
+  let s:caches = get(s:, 'caches', {})
+  if !has_key(s:caches, a:name) | return | endif
+
+  let l:cache = s:caches[a:name]
+  call l:cache.write()
+  unlet s:caches[a:name]
+endfunction
+
+" }}}1
+function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
+  let l:cache = vimtex#cache#open(a:name, a:0 > 0 ? a:1 : {})
 
   function! CachedFunc(key) closure
     if l:cache.has(a:key)
       return l:cache.get(a:key)
     else
-      return l:cache.insert(a:key, a:Func(a:key))
+      return l:cache.set(a:key, a:Func(a:key))
     endif
   endfunction
 
@@ -61,65 +70,48 @@ endfunction
 
 let s:cache = {}
 
-function! s:cache.init(path) abort " {{{1
-  let self.path = a:path
-  let self.data = {}
-  let self.ftime = -1
+function! s:cache.init(opts) dict abort " {{{1
+  let new = deepcopy(self)
+  unlet new.init
+
+  let new.path = a:opts.path
+  let new.persistent = a:opts.persistent
+  let new.data = {}
+  let new.ftime = -1
+
+  return new
 endfunction
 
 " }}}1
-
-function! s:cache.get(key) abort " {{{1
+function! s:cache.get(key) dict abort " {{{1
   call self.read()
 
   return get(self.data, a:key)
 endfunction
 
 " }}}1
-function! s:cache.has(key) abort " {{{1
+function! s:cache.has(key) dict abort " {{{1
   call self.read()
 
   return has_key(self.data, a:key)
 endfunction
 
 " }}}1
-function! s:cache.insert(key, value) abort " {{{1
+function! s:cache.set(key, value) dict abort " {{{1
   call self.read()
-
-  if has_key(self.data, a:key)
-    throw 'vimtex#cache: Key already exists: ' . a:key
-  endif
 
   let self.data[a:key] = a:value
 
   if localtime() > self.ftime + 299
-    call s:cache.write()
+    call self.write()
   endif
 
   return a:value
 endfunction
 
 " }}}1
-function! s:cache.update(key, value) abort " {{{1
-  call self.read()
-
-  if !has_key(self.data, a:key)
-    throw 'vimtex#cache: Key does not exists: ' . a:key
-  endif
-
-  let self.data[a:key] = a:value
-
-  if localtime() > self.ftime + 299
-    call s:cache.write()
-  endif
-
-  return a:value
-endfunction
-
-" }}}1
-
-function! s:cache.write() abort " {{{1
-  if !get(g:, 'vimtex_cache_persistant', 1) | return | endif
+function! s:cache.write() dict abort " {{{1
+  if !self.persistent | return | endif
 
   call self.read()
 
@@ -129,8 +121,8 @@ function! s:cache.write() abort " {{{1
 endfunction
 
 " }}}1
-function! s:cache.read() abort " {{{1
-  if !get(g:, 'vimtex_cache_persistant', 1) | return | endif
+function! s:cache.read() dict abort " {{{1
+  if !self.persistent | return | endif
 
   if getftime(self.path) > self.ftime
     let self.ftime = getftime(self.path)
