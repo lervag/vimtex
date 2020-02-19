@@ -20,21 +20,21 @@ call vimtex#test#assert_equal(len(vimtex#state#list_all()), 2)
 silent edit new2.tex
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 3)
 
-bwipeout
+silent bwipeout
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 2)
 
 " Don't clean the state unless it is wiped
-bdelete
+silent bdelete
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 2)
 
-2bwipeout
+silent 2bwipeout
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 1)
 
 " Reload file with 'edit' should not clean states
-edit
+silent edit
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 1)
 
-bwipeout
+silent bwipeout
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 0)
 
 " Open included file should create two states (main and included)
@@ -50,7 +50,7 @@ augroup Testing
 augroup END
 
 " Wiping the buffer when main state is active should wipe all states
-bwipeout
+silent bwipeout
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 0)
 call vimtex#test#assert_equal(g:test, 2)
 
