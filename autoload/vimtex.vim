@@ -638,10 +638,9 @@ function! s:buffer_deleted(reason) abort " {{{1
   " buffer variables, so that a subsequent buffer wipe will not trigger a full
   " cleanup. By caching the buffer id, we should avoid this issue.
   "
+  let s:buffer_cache = get(s:, 'buffer_cache', {})
   let l:file = expand('<afile>')
-  if !exists('s:buffer_cache')
-    let s:buffer_cache = {}
-  endif
+
   if !has_key(s:buffer_cache, l:file)
     let s:buffer_cache[l:file] = getbufvar(l:file, 'vimtex_id', -1)
   endif
