@@ -756,6 +756,11 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: '~/.cache/vimtex/'
 
+*g:vimtex_cache_persistant*
+  Specify whether to use persistant caching.
+
+  Default value: 1
+
 *g:vimtex_compiler_enabled*
   Use this option to disable/enable the `compiler` interface, see |vimtex-compiler|.
 

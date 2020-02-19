@@ -119,6 +119,8 @@ endfunction
 " }}}1
 
 function! s:cache.write() abort " {{{1
+  if !get(g:, 'vimtex_cache_persistant', 1) | return | endif
+
   call self.read()
 
   call writefile([json_encode(self.data)], self.path)
@@ -128,6 +130,8 @@ endfunction
 
 " }}}1
 function! s:cache.read() abort " {{{1
+  if !get(g:, 'vimtex_cache_persistant', 1) | return | endif
+
   if getftime(self.path) > self.ftime
     let self.ftime = getftime(self.path)
     call extend(self.data, json_decode(readfile(self.path)), 'keep')
