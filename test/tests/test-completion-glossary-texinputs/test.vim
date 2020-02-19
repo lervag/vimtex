@@ -8,7 +8,7 @@ nnoremap q :qall!<cr>
 
 let g:tex_flavor = 'latex'
 
-let g:vimtex_cache_root = '.'
+let g:vimtex_cache_persistant = 0
 
 silent edit texwork/example.tex
 

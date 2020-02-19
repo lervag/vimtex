@@ -7,4 +7,3 @@ export INMAKE
 
 test:
 	@$(MYVIM) -u test.vim
-	@rm -f kpsewhich.json
