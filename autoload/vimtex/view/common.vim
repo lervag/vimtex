@@ -185,3 +185,26 @@ function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
 endfunction
 
 " }}}1
+function! s:move(x, y) dict abort " {{{1
+  if !executable('xdotool') || self.xwin_id <= 0
+    return
+  endif
+
+  let l:cmd = 'xdotool windowmove ' . self.xwin_get_id() 
+  let l:cmd .= ' ' . x,' ' y
+  let self.process = vimtex#process#start(l:cmd)
+endfunction
+
+" }}}1
+function! s:resize(width, height) dict abort " {{{1
+  if !executable('xdotool') || self.xwin_id <= 0
+    return
+  endif
+
+  let l:cmd = 'xdotool windowsize ' . self.xwin_get_id() 
+  let l:cmd .= ' ' . width, ' ', height
+  let self.process = vimtex#process#start(l:cmd)
+endfunction
+
+" }}}1
+
