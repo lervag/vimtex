@@ -190,8 +190,8 @@ function! s:move(x, y) dict abort " {{{1
     return
   endif
 
-  let l:cmd = 'xdotool windowmove ' . self.xwin_get_id() 
-  let l:cmd .= ' ' . x,' ' y
+  let l:cmd = 'xdotool windowmove ' . self.xwin_get_id()
+  let l:cmd .= ' ' x,' ' y
   let self.process = vimtex#process#start(l:cmd)
 endfunction
 
@@ -201,10 +201,9 @@ function! s:resize(width, height) dict abort " {{{1
     return
   endif
 
-  let l:cmd = 'xdotool windowsize ' . self.xwin_get_id() 
-  let l:cmd .= ' ' . width, ' ', height
+  let l:cmd = 'xdotool windowsize ' . self.xwin_get_id()
+  let l:cmd .= ' ' width, ' ', height
   let self.process = vimtex#process#start(l:cmd)
 endfunction
 
 " }}}1
-
