@@ -295,6 +295,8 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_view_skim_activate', 0)
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
+  call s:init_option('vimtex_view_zathura_move', '0 0')
+  call s:init_option('vimtex_view_zathura_size', '1366 742')
 endfunction
 
 " }}}1
