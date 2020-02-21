@@ -2429,6 +2429,22 @@ OPTIONS                                                        *vimtex-options*
 
 <  Default value: ''
 
+    Note: If the viewer shall be positioned and resized after opening
+    the move and resize functions can be used. Arguments for move are desired X and Y
+    coordinates. Arguments for for resize are desired width and breadth of the
+    window. This might also work for other PDF viewers by replacing zathura in
+    the hook variable.
+
+    Example:
+>
+        " PDF viewer positioning
+        let g:vimtex_view_zathura_hook_view = 'ViewerPosition'
+
+        function! ViewerPosition() abort dict
+            call self.move('0 0')
+            call self.resize('1600 876')
+        endfunction
+
 *g:vimtex_view_general_hook_callback*
 *g:vimtex_view_mupdf_hook_callback*
 *g:vimtex_view_skim_hook_callback*
