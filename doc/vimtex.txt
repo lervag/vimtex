@@ -2431,7 +2431,7 @@ OPTIONS                                                        *vimtex-options*
 
     Note: If the viewer shall be positioned and resized after opening
     the move and resize functions can be used. Arguments for move are desired X and Y
-    coordinates. Arguments for for resize are desired width and breadth of the
+    coordinates. Arguments for for resize are desired width and height of the
     window. This might also work for other PDF viewers by replacing zathura in
     the hook variable.
 
