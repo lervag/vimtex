@@ -55,7 +55,7 @@ function! s:parser.parse(file) abort dict " {{{1
 
     if has_key(self, 're_stop') && l:line =~# self.re_stop
       let self.finished = 1
-      break
+      if !get(self, 're_stop_inclusive', 0) | break | endif
     endif
 
     if self.detailed
