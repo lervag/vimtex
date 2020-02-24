@@ -22,14 +22,14 @@ endfunction
 
 "}}}1
 
-function! vimtex#compiler#latexmk#get_rc_opt(root, opt, is_integer, default) abort " {{{1
+function! vimtex#compiler#latexmk#get_rc_opt(root, opt, type, default) abort " {{{1
   "
   " Parse option from .latexmkrc.
   "
   " Arguments:
   "   root         Root of LaTeX project
   "   opt          Name of options
-  "   is_integer   If return type should be integer
+  "   type         0 if string, 1 if integer, 2 if list
   "   default      Value to return if option not found in latexmkrc file
   "
   " Output:
@@ -42,9 +42,15 @@ function! vimtex#compiler#latexmk#get_rc_opt(root, opt, is_integer, default) abo
   "                  1: local latexmkrc file
   "
 
-  let l:pattern = '^\s*\$' . a:opt . '\s*=\s*'
-        \ . (a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]')
-        \ . '\s*;\?\s*\(#.*\)\?$'
+  if a:type == 0
+    let l:pattern = '^\s*\$' . a:opt . '\s*=\s*[''"]\(.\+\)[''"]'
+  elseif a:type == 1
+    let l:pattern = '^\s*\$' . a:opt . '\s*=\s*\(\d\+\)'
+  elseif a:type == 2
+    let l:pattern = '^\s*@' . a:opt . '\s*=\s*(\(.*\))'
+  else
+    throw 'vimtex: argument error'
+  endif
 
   " Candidate files
   " - each element is a pair [path_to_file, is_local_rc_file].
@@ -57,19 +63,34 @@ function! vimtex#compiler#latexmk#get_rc_opt(root, opt, is_integer, default) abo
     call add(l:files, [$XDG_CONFIG_HOME . '/latexmk/latexmkrc', 0])
   endif
 
+  let l:result = [a:default, -1]
+
   for [l:file, l:is_local] in l:files
     if filereadable(l:file)
       let l:match = matchlist(readfile(l:file), l:pattern)
       if len(l:match) > 1
-        return [l:match[1], l:is_local]
+        let l:result = [l:match[1], l:is_local]
+        break
       end
     endif
   endfor
 
-  return [a:default, -1]
+  " Parse the list
+  if a:type == 2 && l:result[1] > -1
+    let l:array = split(l:result[0], ',')
+    let l:result[0] = []
+    for l:x in l:array
+      let l:x = substitute(l:x, "^'", '', '')
+      let l:x = substitute(l:x, "'$", '', '')
+      let l:result[0] += [l:x]
+    endfor
+  endif
+
+  return l:result
 endfunction
 
 " }}}1
+
 let s:compiler = {
       \ 'name' : 'latexmk',
       \ 'executable' : 'latexmk',
