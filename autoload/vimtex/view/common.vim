@@ -185,3 +185,23 @@ function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
 endfunction
 
 " }}}1
+function! s:xwin_template.move(arg) abort " {{{1
+  if !executable('xdotool') || self.xwin_id <= 0
+    return
+  endif
+
+  let l:cmd = 'xdotool windowmove ' . self.xwin_get_id() . ' ' . a:arg
+  silent call system(l:cmd)
+endfunction
+
+" }}}1
+function! s:xwin_template.resize(arg) abort " {{{1
+  if !executable('xdotool') || self.xwin_id <= 0
+    return
+  endif
+
+  let l:cmd = 'xdotool windowsize ' . self.xwin_get_id()  . ' ' . a:arg
+  silent call system(l:cmd)
+endfunction
+
+" }}}1
