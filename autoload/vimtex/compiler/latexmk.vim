@@ -22,6 +22,54 @@ endfunction
 
 "}}}1
 
+function! vimtex#compiler#latexmk#get_rc_opt(root, opt, is_integer, default) abort " {{{1
+  "
+  " Parse option from .latexmkrc.
+  "
+  " Arguments:
+  "   root         Root of LaTeX project
+  "   opt          Name of options
+  "   is_integer   If return type should be integer
+  "   default      Value to return if option not found in latexmkrc file
+  "
+  " Output:
+  "   [value, location]
+  "
+  "   value        Option value (integer or string)
+  "   location     An integer that indicates where option was found
+  "                 -1: not found (default value returned)
+  "                  0: global latexmkrc file
+  "                  1: local latexmkrc file
+  "
+
+  let l:pattern = '^\s*\$' . a:opt . '\s*=\s*'
+        \ . (a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]')
+        \ . '\s*;\?\s*\(#.*\)\?$'
+
+  " Candidate files
+  " - each element is a pair [path_to_file, is_local_rc_file].
+  let l:files = [
+        \ [a:root . '/latexmkrc', 1],
+        \ [a:root . '/.latexmkrc', 1],
+        \ [fnamemodify('~/.latexmkrc', ':p'), 0],
+        \]
+  if !empty($XDG_CONFIG_HOME)
+    call add(l:files, [$XDG_CONFIG_HOME . '/latexmk/latexmkrc', 0])
+  endif
+
+  for [l:file, l:is_local] in l:files
+    if filereadable(l:file)
+      let l:match = matchlist(readfile(l:file), l:pattern)
+      if len(l:match) > 1
+        return [l:match[1], l:is_local]
+      end
+    endif
+  endfor
+
+  return [a:default, -1]
+endfunction
+
+" }}}1
 let s:compiler = {
       \ 'name' : 'latexmk',
       \ 'executable' : 'latexmk',
@@ -70,7 +118,8 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
   "
   " Check if .latexmkrc sets the build_dir - if so this should be respected
   "
-  let l:out_dir = s:parse_latexmkrc_option(self.root, 'out_dir', 0, '')[0]
+  let l:out_dir =
+        \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'out_dir', 0, '')[0]
 
   if !empty(l:out_dir)
     if !empty(self.build_dir) && (self.build_dir !=# l:out_dir)
@@ -91,7 +140,7 @@ function! s:compiler.init_pdf_mode_option() abort dict " {{{1
 
   " Parse the pdf_mode option. If not found, it is set to -1.
   let [l:pdf_mode, l:is_local] =
-        \ s:parse_latexmkrc_option(self.root, 'pdf_mode', 1, -1)
+        \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'pdf_mode', 1, -1)
 
   " If pdf_mode has a supported value (1: pdflatex, 4: lualatex, 5: xelatex),
   " override the value of self.tex_program.
@@ -622,60 +671,6 @@ endfunction
 function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
   let l:target = self.target !=# b:vimtex.tex ? self.target : ''
   call vimtex#compiler#callback(!vimtex#qf#inquire(l:target))
-endfunction
-
-" }}}1
-
-
-"
-" Utility functions
-"
-
-function! s:parse_latexmkrc_option(root, opt, is_integer, default) abort " {{{1
-  "
-  " Parse option from .latexmkrc.
-  "
-  " Arguments:
-  "   root         Root of LaTeX project
-  "   opt          Name of options
-  "   is_integer   If return type should be integer
-  "   default      Value to return if option not found in latexmkrc file
-  "
-  " Output:
-  "   [value, location]
-  "
-  "   value        Option value (integer or string)
-  "   location     An integer that indicates where option was found
-  "                 -1: not found (default value returned)
-  "                  0: global latexmkrc file
-  "                  1: local latexmkrc file
-  "
-
-  let l:pattern = '^\s*\$' . a:opt . '\s*=\s*'
-        \ . (a:is_integer ? '\(\d\+\)' : '[''"]\(.\+\)[''"]')
-        \ . '\s*;\?\s*\(#.*\)\?$'
-
-  " Candidate files
-  " - each element is a pair [path_to_file, is_local_rc_file].
-  let l:files = [
-        \ [a:root . '/latexmkrc', 1],
-        \ [a:root . '/.latexmkrc', 1],
-        \ [fnamemodify('~/.latexmkrc', ':p'), 0],
-        \]
-  if !empty($XDG_CONFIG_HOME)
-    call add(l:files, [$XDG_CONFIG_HOME . '/latexmk/latexmkrc', 0])
-  endif
-
-  for [l:file, l:is_local] in l:files
-    if filereadable(l:file)
-      let l:match = matchlist(readfile(l:file), l:pattern)
-      if len(l:match) > 1
-        return [l:match[1], l:is_local]
-      end
-    endif
-  endfor
-
-  return [a:default, -1]
 endfunction
 
 " }}}1
