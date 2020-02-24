@@ -491,7 +491,8 @@ The methods are tried in the following order:
   2. TeX root directive
   3. Subfiles package
   4. File `.latexmain` specifier
-  5. Recursive search
+  5. Local `latexmkrc` file specifier (from `@default_files` option)
+  6. Recursive search
 
                                                                  *b:vimtex_main*
 Buffer variable~
@@ -553,6 +554,14 @@ File .latexmain specifier~
 <
   Here `path/file.tex.latexmain` indicates for `file1.tex` and `file2.tex`
   that `path/file.tex` is the main LaTeX file.
+
+Local latexmkrc file specifier~
+  It is possible to specify to latexmk which files to compile with the
+  `@default_files` option in the `latexmkrc` configuration file. Vimtex
+  supports reading this option in any LOCAL `latexmkrc` or `.latexmkrc` file.
+
+  Note: `@default_files` is a list of files, Vimtex will use the first
+        entry that is found.
 
 Recursive search~
   If no other method provides an appropriate candidate, then the recursive
