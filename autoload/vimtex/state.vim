@@ -219,6 +219,14 @@ function! s:get_main() abort " {{{1
   endif
 
   "
+  " Search for .latexmkrc @default_files specifier
+  "
+  let l:candidate = s:get_main_latexmk()
+  if !empty(l:candidate)
+    return l:candidate
+  endif
+
+  "
   " Check if we are class or style file
   "
   if index(['cls', 'sty'], expand('%:e')) >= 0
@@ -325,6 +333,22 @@ function! s:get_main_latexmain(file) abort " {{{1
       return l:cand
     else
       let s:cand_fallback = l:cand
+    endif
+  endfor
+
+  return ''
+endfunction
+
+function! s:get_main_latexmk() abort " {{{1
+  let l:root = expand('%:p:h')
+  let l:results = vimtex#compiler#latexmk#get_rc_opt(
+        \ l:root, 'default_files', 2, [])
+  if l:results[1] < 1 | return '' | endif
+
+  for l:candidate in l:results[0]
+    let l:file = l:root . '/' . l:candidate
+    if filereadable(l:file)
+      return l:file
     endif
   endfor
 
