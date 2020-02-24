@@ -14,7 +14,7 @@ endfunction
 
 " }}}1
 function! vimtex#state#init() abort " {{{1
-  let l:main = s:get_main()
+  let [l:main, l:main_type] = s:get_main()
   let l:id = s:get_main_id(l:main)
 
   if l:id >= 0
@@ -22,7 +22,7 @@ function! vimtex#state#init() abort " {{{1
     let b:vimtex = s:vimtex_states[l:id]
   else
     let b:vimtex_id = s:vimtex_next_id
-    let b:vimtex = s:vimtex.new(l:main, 0)
+    let b:vimtex = s:vimtex.new(l:main, l:main_type, 0)
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
   endif
@@ -40,7 +40,7 @@ function! vimtex#state#init_local() abort " {{{1
 
   if l:vimtex_id < 0
     let l:vimtex_id = s:vimtex_next_id
-    let l:vimtex = s:vimtex.new(l:filename, l:preserve_root)
+    let l:vimtex = s:vimtex.new(l:filename, 'local file', l:preserve_root)
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
 
@@ -183,7 +183,7 @@ function! s:get_main() abort " {{{1
   " Use buffer variable if it exists
   "
   if exists('b:vimtex_main') && filereadable(b:vimtex_main)
-    return fnamemodify(b:vimtex_main, ':p')
+    return [fnamemodify(b:vimtex_main, ':p'), 'buffer variable']
   endif
 
   "
@@ -192,14 +192,14 @@ function! s:get_main() abort " {{{1
   "
   let l:candidate = s:get_main_from_texroot()
   if !empty(l:candidate)
-    return l:candidate
+    return [l:candidate, 'texroot specifier']
   endif
 
   "
   " Check if the current file is a main file
   "
   if s:file_is_main(expand('%:p'))
-    return expand('%:p')
+    return [expand('%:p'), 'current file verified']
   endif
 
   "
@@ -207,7 +207,7 @@ function! s:get_main() abort " {{{1
   "
   let l:candidate = s:get_main_from_subfile()
   if !empty(l:candidate)
-    return l:candidate
+    return [l:candidate, 'subfiles']
   endif
 
   "
@@ -215,7 +215,7 @@ function! s:get_main() abort " {{{1
   "
   let l:candidate = s:get_main_latexmain(expand('%:p'))
   if !empty(l:candidate)
-    return l:candidate
+    return [l:candidate, 'latexmain specifier']
   endif
 
   "
@@ -223,7 +223,7 @@ function! s:get_main() abort " {{{1
   "
   let l:candidate = s:get_main_latexmk()
   if !empty(l:candidate)
-    return l:candidate
+    return [l:candidate, 'latexmkrc @default_files']
   endif
 
   "
@@ -232,10 +232,10 @@ function! s:get_main() abort " {{{1
   if index(['cls', 'sty'], expand('%:e')) >= 0
     let l:id = getbufvar('#', 'vimtex_id', -1)
     if l:id >= 0 && has_key(s:vimtex_states, l:id)
-      return s:vimtex_states[l:id].tex
+      return [s:vimtex_states[l:id].tex, 'cls/sty file (inherit from alternate)']
     else
       let s:disabled_modules = ['latexmk', 'view', 'toc']
-      return expand('%:p')
+      return [expand('%:p'), 'cls/sty file']
     endif
   endif
 
@@ -245,7 +245,7 @@ function! s:get_main() abort " {{{1
   if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
     let l:candidate = s:get_main_choose(s:get_main_recurse())
     if !empty(l:candidate)
-      return l:candidate
+      return [l:candidate, 'recursive search']
     endif
   endif
 
@@ -255,8 +255,10 @@ function! s:get_main() abort " {{{1
   let l:candidate = get(s:, 'cand_fallback', expand('%:p'))
   if exists('s:cand_fallback')
     unlet s:cand_fallback
+    return [l:candidate, 'fallback']
+  else
+    return [l:candidate, 'current file']
   endif
-  return l:candidate
 endfunction
 
 " }}}1
@@ -495,12 +497,13 @@ endfunction
 
 let s:vimtex = {}
 
-function! s:vimtex.new(main, preserve_root) abort dict " {{{1
+function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   let l:new = deepcopy(self)
   let l:new.tex  = a:main
   let l:new.root = fnamemodify(l:new.tex, ':h')
   let l:new.base = fnamemodify(l:new.tex, ':t')
   let l:new.name = fnamemodify(l:new.tex, ':t:r')
+  let l:new.main_parser = a:main_parser
 
   if a:preserve_root && exists('b:vimtex')
     let l:new.root = b:vimtex.root
@@ -661,6 +664,7 @@ function! s:vimtex.pprint_items() abort dict " {{{1
         \ ['log', self.log()],
         \ ['aux', self.aux()],
         \ ['fls', self.fls()],
+        \ ['main parser', self.main_parser],
         \]
 
   if self.tex_program !=# '_'
