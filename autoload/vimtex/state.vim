@@ -417,6 +417,16 @@ function! s:file_is_main(file) abort " {{{1
   call filter(l:lines, 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')
   call filter(l:lines, 'v:val !~# ''{subfiles}''')
   call filter(l:lines, 'v:val !~# ''{standalone}''')
+  if len(l:lines) == 0 | return 0 | endif
+
+  " A main file contains `\begin{document}`
+  let l:lines = vimtex#parser#tex(a:file, {
+        \ 'detailed' : 0,
+        \ 're_stop' : '\\begin\s*{document}',
+        \ 're_stop_inclusive' : 1,
+        \ 'root' : fnamemodify(a:file, ':p:h'),
+        \})
+  call filter(l:lines, 'v:val =~# ''\\begin\s*{document}''')
   return len(l:lines) > 0
 endfunction
 
