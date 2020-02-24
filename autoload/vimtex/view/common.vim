@@ -191,7 +191,7 @@ function! s:xwin_template.move(arg) abort " {{{1
   endif
 
   let l:cmd = 'xdotool windowmove ' . self.xwin_get_id() . ' ' . a:arg
-  let self.process = vimtex#process#start(l:cmd)
+  silent call system(l:cmd)
 endfunction
 
 " }}}1
@@ -201,7 +201,7 @@ function! s:xwin_template.resize(arg) abort " {{{1
   endif
 
   let l:cmd = 'xdotool windowsize ' . self.xwin_get_id()  . ' ' . a:arg
-  let self.process = vimtex#process#start(l:cmd)
+  silent call system(l:cmd)
 endfunction
 
 " }}}1
