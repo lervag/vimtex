@@ -76,8 +76,12 @@ function! s:cache.init(opts) dict abort " {{{1
 
   let new.path = a:opts.path
   let new.persistent = a:opts.persistent
+  if has_key(a:opts, 'default')
+    let new.default = a:opts.default
+  endif
   let new.data = {}
   let new.ftime = -1
+  let new.modified = 0
 
   return new
 endfunction
@@ -85,6 +89,10 @@ endfunction
 " }}}1
 function! s:cache.get(key) dict abort " {{{1
   call self.read()
+
+  if has_key(self, 'default') && !has_key(self.data, a:key)
+    let self.data[a:key] = deepcopy(self.default)
+  endif
 
   return get(self.data, a:key)
 endfunction
@@ -101,23 +109,30 @@ function! s:cache.set(key, value) dict abort " {{{1
   call self.read()
 
   let self.data[a:key] = a:value
-
-  if localtime() > self.ftime + 299
-    call self.write()
-  endif
+  let self.modified = 1
+  call self.write()
 
   return a:value
 endfunction
 
 " }}}1
 function! s:cache.write() dict abort " {{{1
-  if !self.persistent | return | endif
+  if !self.persistent
+    let self.modified = 0
+    return
+  endif
+
+  if !self.modified | return | endif
+
+  if localtime() <= self.ftime + 299
+    " Too short since last write
+    return
+  endif
 
   call self.read()
-
   call writefile([json_encode(self.data)], self.path)
-
   let self.ftime = getftime(self.path)
+  let self.modified = 0
 endfunction
 
 " }}}1
@@ -128,8 +143,6 @@ function! s:cache.read() dict abort " {{{1
     let self.ftime = getftime(self.path)
     call extend(self.data,
           \ json_decode(join(readfile(self.path))), 'keep')
-  else
-    let self.ftime = localtime()
   endif
 endfunction
 
