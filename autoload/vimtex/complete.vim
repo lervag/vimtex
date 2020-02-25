@@ -832,16 +832,10 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
     endif
   endif
 
-  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
-
-  call filter(l:candidates, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
-  call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[env: newenvironment]'',
-        \ }')
-
-  let self.candidates_from_newenvironments = l:candidates
+  let self.candidates_from_newenvironments
+        \ = s:gather_candidates_from_newenvironments(
+        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \     'env: newenvironment')
 endfunction
 
 " }}}1
@@ -960,17 +954,19 @@ function! s:_load_candidates_from_source(pkg) abort " {{{1
     return
   endif
 
+  let l:lines = readfile(l:filename)
   let s:candidates_from_packages[a:pkg] = {
-        \ 'commands':     [],
-        \ 'environments': [],
+        \ 'commands':
+        \   s:gather_candidates_from_newcommands(
+        \     copy(l:lines), 'cmd: ' . a:pkg),
+        \ 'environments':
+        \   s:gather_candidates_from_newenvironments(
+        \     l:lines, 'env: ' . a:pkg)
         \}
-
-  let s:candidates_from_packages[a:pkg].commands
-        \ = s:gather_candidates_from_newcommands(
-        \     readfile(l:filename), 'cmd: ' . a:pkg)
 endfunction
 
 " }}}1
+
 function! s:gather_candidates_from_newcommands(lines, label) abort " {{{1
   " Arguments:
   "   a:lines   Lines of TeX that may contain \newcommands (or some variant,
@@ -988,6 +984,24 @@ function! s:gather_candidates_from_newcommands(lines, label) abort " {{{1
 endfunction
 
 " }}}1
+function! s:gather_candidates_from_newenvironments(lines, label) abort " {{{1
+  " Arguments:
+  "   a:lines   Lines of TeX that may contain \newenvironments (or some
+  "             variant, e.g. as provided by xparse and standard declaration)
+  "   a:label   Label to use in the menu
+
+  call filter(a:lines, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
+  call map(a:lines, '{
+        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''['' . a:label . '']'',
+        \ }')
+
+  return a:lines
+endfunction
+
+" }}}1
+
 
 "
 " Utility functions
