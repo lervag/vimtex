@@ -433,7 +433,7 @@ function! s:completer_cmd.gather_candidates_from_packages() dict abort " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
-  " Simple caching
+  " Cache the candidates
   if !empty(self.candidates_from_newcommands)
     let l:modified_time = max(map(
           \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
@@ -820,7 +820,7 @@ endfunction
 
 " }}}2
 function! s:completer_env.gather_candidates_from_newenvironments() dict abort " {{{2
-  " Simple caching
+  " Cache the candidates
   if !empty(self.candidates_from_newenvironments)
     let l:modified_time = max(map(
           \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
