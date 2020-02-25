@@ -4,6 +4,9 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
+let g:vimtex_cache_root = '.'
+let g:vimtex_cache_persistent = 0
+
 silent edit test1.tex
 
 if empty($INMAKE) | finish | endif
