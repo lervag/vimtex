@@ -756,7 +756,7 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: '~/.cache/vimtex/'
 
-*g:vimtex_cache_persistant*
+*g:vimtex_cache_persistent*
   Specify whether to use persistant caching.
 
   Default value: 1

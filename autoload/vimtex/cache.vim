@@ -17,7 +17,7 @@ function! vimtex#cache#open(name, ...) abort " {{{1
 
   let l:opts = {
         \ 'path': l:cache_root . '/' . a:name . '.json',
-        \ 'persistent': get(g:, 'vimtex_cache_persistant', 1),
+        \ 'persistent': get(g:, 'vimtex_cache_persistent', 1),
         \}
   if a:0 > 0 | call extend(l:opts, a:1) | endif
 
