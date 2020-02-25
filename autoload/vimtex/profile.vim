@@ -4,6 +4,19 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#profile#start() abort " {{{1
+  profile start prof.log
+  profile func *
+endfunction
+
+" }}}1
+function! vimtex#profile#stop() abort " {{{1
+  profile stop
+  call s:fix_sids()
+endfunction
+
+" }}}1
+"
 function! vimtex#profile#open() abort " {{{1
   source ~/.vim/vimrc
   silent edit prof.log
@@ -21,24 +34,20 @@ endfunction
 " }}}1
 
 function! vimtex#profile#file(filename) abort " {{{1
-  profile start prof.log
-  profile func *
+  call vimtex#profile#start()
 
   execute 'silent edit' a:filename
 
-  profile stop
-  call s:fix_sids()
+  call vimtex#profile#stop()
 endfunction
 
 " }}}1
 function! vimtex#profile#command(cmd) abort " {{{1
-  profile start prof.log
-  profile func *
+  call vimtex#profile#start()
 
   execute a:cmd
 
-  profile stop
-  call s:fix_sids()
+  call vimtex#profile#stop()
 endfunction
 
 " }}}1
@@ -76,7 +85,7 @@ function! s:fix_sids() abort " {{{1
       endif
       call add(l:new, substitute(l:line, '\v\<SNR\>\d+_', l:filename, 'g'))
     else
-      call add(l:new, l:line)
+      call add(l:new, substitute(l:line, '\s\+$', '', ''))
     endif
   endfor
   call writefile(l:new, 'prof.log')

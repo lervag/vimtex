@@ -424,14 +424,9 @@ function! s:completer_cmd.gather_candidates() dict abort " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_packages() dict abort " {{{2
-  let l:packages = [
-        \ 'default',
-        \ 'class-' . get(b:vimtex, 'documentclass', ''),
-        \] + keys(b:vimtex.packages)
-  call s:load_candidates_from_packages(l:packages)
-
   let self.candidates_from_packages = []
-  for l:p in l:packages
+
+  for l:p in s:load_candidates_from_packages()
     let self.candidates_from_packages += get(
           \ get(s:candidates_from_packages, l:p, {}), 'commands', [])
   endfor
@@ -450,17 +445,10 @@ function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
     endif
   endif
 
-  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
-
-  " catch commands defined by xparse and standard declaration
-  call filter(l:candidates, 'v:val =~# ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
-  call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[cmd: newcommand]'',
-        \ }')
-
-  let self.candidates_from_newcommands = l:candidates
+  let self.candidates_from_newcommands
+        \ = s:gather_candidates_from_newcommands(
+        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \     'cmd: newcommand')
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{{2
@@ -822,14 +810,9 @@ endfunction
 
 " }}}2
 function! s:completer_env.gather_candidates_from_packages() dict abort " {{{2
-  let l:packages = [
-        \ 'default',
-        \ 'class-' . get(b:vimtex, 'documentclass', ''),
-        \] + keys(b:vimtex.packages)
-  call s:load_candidates_from_packages(l:packages)
-
   let self.candidates_from_packages = []
-  for l:p in l:packages
+
+  for l:p in s:load_candidates_from_packages()
     let self.candidates_from_packages += get(
           \ get(s:candidates_from_packages, l:p, {}), 'environments', [])
   endfor
@@ -849,16 +832,10 @@ function! s:completer_env.gather_candidates_from_newenvironments() dict abort " 
     endif
   endif
 
-  let l:candidates = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
-
-  call filter(l:candidates, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
-  call map(l:candidates, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[env: newenvironment]'',
-        \ }')
-
-  let self.candidates_from_newenvironments = l:candidates
+  let self.candidates_from_newenvironments
+        \ = s:gather_candidates_from_newenvironments(
+        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \     'env: newenvironment')
 endfunction
 
 " }}}1
@@ -885,6 +862,146 @@ function! s:completer_bst.gather_candidates() dict abort " {{{2
 endfunction
 
 " }}}1
+
+"
+" Common functions to parse candidates
+"
+function! s:load_candidates_from_packages() abort " {{{1
+  let l:package_list = [
+        \   'default',
+        \   'class-' . get(b:vimtex, 'documentclass', ''),
+        \  ] + keys(b:vimtex.packages)
+  let l:packages = filter(copy(l:package_list),
+        \ '!has_key(s:candidates_from_packages, v:val)')
+  if empty(l:packages) | return l:package_list | endif
+
+  call vimtex#paths#pushd(s:complete_dir)
+
+  let l:missing = filter(copy(l:packages), '!filereadable(v:val)')
+  call filter(l:packages, 'filereadable(v:val)')
+
+  " Parse include statements in complete files
+  let l:queue = copy(l:packages)
+  while !empty(l:queue)
+    let l:current = remove(l:queue, 0)
+    let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
+    if empty(l:includes) | continue | endif
+
+    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
+    let l:missing += filter(filter(copy(l:includes),
+          \ '!filereadable(v:val)'),
+          \ 'index(l:missing, v:val) < 0')
+    call filter(l:includes, 'filereadable(v:val)')
+    call filter(l:includes, 'index(l:packages, v:val) < 0')
+
+    let l:packages += l:includes
+    let l:queue += l:includes
+  endwhile
+
+  " Fetch candidates from complete files
+  for l:package in l:packages
+    call s:_load_candidates_from_complete_file(l:package)
+  endfor
+
+  call vimtex#paths#popd()
+
+  " Fetch candidates by parsing cls/sty file
+  for l:package in l:missing
+    call s:_load_candidates_from_source(l:package)
+  endfor
+
+  return l:package_list
+endfunction
+
+let s:candidates_from_packages = {}
+
+" }}}1
+function! s:_load_candidates_from_complete_file(pkg) abort " {{{1
+  let s:candidates_from_packages[a:pkg] = {
+        \ 'commands':     [],
+        \ 'environments': [],
+        \}
+
+  let l:lines = readfile(a:pkg)
+
+  let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\a''')
+  call map(l:candidates, 'split(v:val)')
+  call map(l:candidates, '{
+        \ ''word'' : v:val[0],
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''[cmd: '' . a:pkg . ''] '',
+        \ ''menu'' : (get(v:val, 1, '''')),
+        \}')
+  let s:candidates_from_packages[a:pkg].commands += l:candidates
+
+  let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\\begin{''')
+  call map(l:candidates, '{
+        \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''[env: '' . a:pkg . ''] '',
+        \}')
+  let s:candidates_from_packages[a:pkg].environments += l:candidates
+endfunction
+
+" }}}1
+function! s:_load_candidates_from_source(pkg) abort " {{{1
+  let l:filename = a:pkg =~# '^class-'
+        \ ? vimtex#kpsewhich#find(a:pkg[6:] . '.cls')
+        \ : vimtex#kpsewhich#find(a:pkg . '.sty')
+
+  if empty(l:filename)
+    let s:candidates_from_packages[a:pkg] = {}
+    return
+  endif
+
+  let l:lines = readfile(l:filename)
+  let s:candidates_from_packages[a:pkg] = {
+        \ 'commands':
+        \   s:gather_candidates_from_newcommands(
+        \     copy(l:lines), 'cmd: ' . a:pkg),
+        \ 'environments':
+        \   s:gather_candidates_from_newenvironments(
+        \     l:lines, 'env: ' . a:pkg)
+        \}
+endfunction
+
+" }}}1
+
+function! s:gather_candidates_from_newcommands(lines, label) abort " {{{1
+  " Arguments:
+  "   a:lines   Lines of TeX that may contain \newcommands (or some variant,
+  "             e.g. as provided by xparse and standard declaration)
+  "   a:label   Label to use in the menu
+
+  call filter(a:lines, 'v:val =~# ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
+  call map(a:lines, '{
+        \ ''word'' : matchstr(v:val, ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''['' . a:label . '']'',
+        \ }')
+
+  return a:lines
+endfunction
+
+" }}}1
+function! s:gather_candidates_from_newenvironments(lines, label) abort " {{{1
+  " Arguments:
+  "   a:lines   Lines of TeX that may contain \newenvironments (or some
+  "             variant, e.g. as provided by xparse and standard declaration)
+  "   a:label   Label to use in the menu
+
+  call filter(a:lines, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
+  call map(a:lines, '{
+        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
+        \ ''mode'' : ''.'',
+        \ ''kind'' : ''['' . a:label . '']'',
+        \ }')
+
+  return a:lines
+endfunction
+
+" }}}1
+
 
 "
 " Utility functions
@@ -938,65 +1055,6 @@ function! s:get_texmf_candidates(filetype) abort " {{{1
 endfunction
 
 " }}}1
-function! s:load_candidates_from_packages(packages) abort " {{{1
-  let l:packages = filter(copy(a:packages),
-        \ '!has_key(s:candidates_from_packages, v:val)')
-  if empty(l:packages) | return | endif
-
-  call vimtex#paths#pushd(s:complete_dir)
-
-  for l:unreadable in filter(copy(l:packages), '!filereadable(v:val)')
-    let s:candidates_from_packages[l:unreadable] = {}
-    call remove(l:packages, index(l:packages, l:unreadable))
-  endfor
-
-  let l:queue = copy(l:packages)
-  while !empty(l:queue)
-    let l:current = remove(l:queue, 0)
-    let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
-    if empty(l:includes) | continue | endif
-
-    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
-    call filter(l:includes, 'filereadable(v:val)')
-    call filter(l:includes, 'index(l:packages, v:val) < 0')
-
-    let l:packages += l:includes
-    let l:queue += l:includes
-  endwhile
-
-  for l:package in l:packages
-    let s:candidates_from_packages[l:package] = {
-          \ 'commands':     [],
-          \ 'environments': [],
-          \}
-
-    let l:lines = readfile(l:package)
-
-    let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\a''')
-    call map(l:candidates, 'split(v:val)')
-    call map(l:candidates, '{
-          \ ''word'' : v:val[0],
-          \ ''mode'' : ''.'',
-          \ ''kind'' : ''[cmd: '' . l:package . ''] '',
-          \ ''menu'' : (get(v:val, 1, '''')),
-          \}')
-    let s:candidates_from_packages[l:package].commands += l:candidates
-
-    let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\\begin{''')
-    call map(l:candidates, '{
-          \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
-          \ ''mode'' : ''.'',
-          \ ''kind'' : ''[env: '' . l:package . ''] '',
-          \}')
-    let s:candidates_from_packages[l:package].environments += l:candidates
-  endfor
-
-  call vimtex#paths#popd()
-endfunction
-
-let s:candidates_from_packages = {}
-
-" }}}1
 function! s:close_braces(candidates) abort " {{{1
   if strpart(getline('.'), col('.') - 1) !~# '^\s*[,}]'
     for l:cand in a:candidates
@@ -1013,12 +1071,11 @@ endfunction
 " }}}1
 
 
-" {{{1 Initialize module
-
+"
+" Initialize module
+"
 let s:completers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^completer_'''),
       \ 'v:val[1]')
 
 let s:complete_dir = fnamemodify(expand('<sfile>'), ':r') . '/'
-
-" }}}1

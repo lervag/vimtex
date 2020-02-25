@@ -14,7 +14,7 @@ if empty($INMAKE) | finish | endif
 silent edit test_reload.cls
 
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 1)
-VimtexReload
+silent VimtexReload
 call vimtex#test#assert_equal(len(vimtex#state#list_all()), 1)
 
 quitall!

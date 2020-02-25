@@ -5,15 +5,7 @@
 "
 
 function! vimtex#kpsewhich#find(file) abort " {{{1
-  let l:output = vimtex#kpsewhich#run(fnameescape(a:file))
-
-  if empty(l:output) | return '' | endif
-  let l:filename = l:output[0]
-
-  " If path is already absolute, return it
-  return !exists('b:vimtex.root') || vimtex#paths#is_abs(l:filename)
-        \ ? l:filename
-        \ : simplify(b:vimtex.root . '/' . l:filename)
+  return s:find_cached(a:file)
 endfunction
 
 " }}}1
@@ -32,5 +24,23 @@ function! vimtex#kpsewhich#run(args) abort " {{{1
 
   return l:output
 endfunction
+
+" }}}1
+
+function! s:find(file) abort " {{{1
+  let l:output = vimtex#kpsewhich#run(fnameescape(a:file))
+  if empty(l:output) | return '' | endif
+
+  let l:filename = l:output[0]
+
+  " Ensure absolute path
+  if !vimtex#paths#is_abs(l:filename) && exists('b:vimtex.root')
+    let l:filename = simplify(b:vimtex.root . '/' . l:filename)
+  endif
+
+  return l:filename
+endfunction
+
+let s:find_cached = vimtex#cache#wrap(function('s:find'), 'kpsewhich')
 
 " }}}1
