@@ -7,12 +7,8 @@
 function! vimtex#complete#init_buffer() abort " {{{1
   if !g:vimtex_complete_enabled | return | endif
 
-  " Prepare caches
   if !has_key(b:vimtex, 'complete')
     let b:vimtex.complete = {}
-  endif
-  if !has_key(b:vimtex.complete, 'bib')
-    let b:vimtex.complete.bib = {}
   endif
 
   for l:completer in s:completers
@@ -154,6 +150,9 @@ function! s:completer_bib.gather_bib_entries() dict abort " {{{2
   " Note: bibtex seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
 
+  let l:cache = vimtex#cache#open('bibcomplete',
+        \ {'default': {'result': [], 'ftime': -1}})
+
   " Find data from external bib files
   for l:file in self.find_bibs()
     if empty(l:file) | continue | endif
@@ -164,19 +163,18 @@ function! s:completer_bib.gather_bib_entries() dict abort " {{{2
     endif
     if !filereadable(l:filename) | continue | endif
 
-    if !has_key(b:vimtex.complete.bib, l:file)
-      let b:vimtex.complete.bib[l:file] = {'res': [], 'time': -1}
-    endif
-
+    let l:current = l:cache.get(l:filename)
     let l:ftime = getftime(l:filename)
-    if b:vimtex.complete.bib[l:file].time <= 0
-          \ || l:ftime > b:vimtex.complete.bib[l:file].time
-      let b:vimtex.complete.bib[l:file].time = l:ftime
-      let b:vimtex.complete.bib[l:file].res = vimtex#parser#bib(l:filename)
+    if l:ftime > l:current.ftime
+      let l:current.ftime = l:ftime
+      let l:current.result = vimtex#parser#bib(l:filename)
+      let l:cache.modified = 1
     endif
-
-    let l:entries += b:vimtex.complete.bib[l:file].res
+    let l:entries += l:current.result
   endfor
+
+  " Write cache to file
+  call l:cache.write()
 
   " Revert earlier pushd
   call vimtex#paths#popd()
@@ -306,17 +304,24 @@ function! s:completer_ref.parse_aux_files() dict abort " {{{2
         \ vimtex#parser#get_externalfiles(),
         \ '[v:val.aux, v:val.opt]')
 
+  let l:cache = vimtex#cache#open('refcomplete',
+        \ {'default': {'labels': [], 'ftime': -1}})
+
   let self.labels = []
   for [l:file, l:prefix] in filter(l:files, 'filereadable(v:val[0])')
-    let l:cached = get(self.cache, l:file, {})
-    if get(l:cached, 'ftime', 0) != getftime(l:file)
-      let l:cached.ftime = getftime(l:file)
-      let l:cached.labels = self.parse_labels(l:file, l:prefix)
-      let self.cache[l:file] = l:cached
+    let l:current = l:cache.get(l:file)
+    let l:ftime = getftime(l:file)
+    if l:ftime > l:current.ftime
+      let l:current.ftime = l:ftime
+      let l:current.labels = self.parse_labels(l:file, l:prefix)
+      let l:cache.modified = 1
     endif
 
-    let self.labels += l:cached.labels
+    let self.labels += l:current.labels
   endfor
+
+  " Write cache to file
+  call l:cache.write()
 
   return self.labels
 endfunction
