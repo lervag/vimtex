@@ -8,7 +8,7 @@ rewritten from scratch to provide a more modern and modular code base. See
 [here](#alternatives) for some more comments on the difference between vimtex
 and other LaTeX plugins for Vim.
 
-![Build Status](https://github.com/lervag/vimtex/workflows/main.yml/badge.svg)
+[![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5N4MFVXN7U8NW)
 
 ## Table of contents
