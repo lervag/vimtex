@@ -9,6 +9,7 @@ rewritten from scratch to provide a more modern and modular code base. See
 and other LaTeX plugins for Vim.
 
 [![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+![CI tests](https://github.com/lervag/vimtex/workflows/CI%20tests/badge.svg)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5N4MFVXN7U8NW)
 
 ## Table of contents
