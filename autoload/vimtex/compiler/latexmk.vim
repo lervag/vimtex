@@ -291,7 +291,6 @@ endfunction
 function! s:compiler.get_engine() abort dict " {{{1
   return get(extend(g:vimtex_compiler_latexmk_engines,
         \ {
-        \  '_'                : '-pdf',
         \  'pdfdvi'           : '-pdfdvi',
         \  'pdflatex'         : '-pdf',
         \  'luatex'           : '-lualatex',
@@ -300,7 +299,7 @@ function! s:compiler.get_engine() abort dict " {{{1
         \  'context (pdftex)' : '-pdf -pdflatex=texexec',
         \  'context (luatex)' : '-pdf -pdflatex=context',
         \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
-        \ }, 'keep'), self.tex_program, '_')
+        \ }, 'keep'), self.tex_program, '-pdf')
 endfunction
 
 " }}}1
