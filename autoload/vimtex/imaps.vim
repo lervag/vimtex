@@ -149,6 +149,11 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   return l:return
 endfunction
 
+function! vimtex#imaps#feynmanslash()
+  let l:c = getchar()
+  execute "normal a\\slashed{" . nr2char(l:c) . "}\<Esc>"
+endfunction
+
 " }}}1
 
 "
