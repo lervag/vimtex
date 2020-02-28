@@ -99,9 +99,12 @@ function! s:create_map(map) abort " {{{1
     endif
     let b:vimtex_context[l:key] = a:map.context
   endif
+  if ! get(a:map, 'expr', 0)
+    let a:map.rhs = string(a:map.rhs)
+  endif
 
   silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
-        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
+        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . a:map.rhs . ')'
 
   let s:created_maps += [a:map]
 endfunction
@@ -151,7 +154,7 @@ endfunction
 
 function! vimtex#imaps#feynmanslash()
   let l:c = getchar()
-  execute "normal a\\slashed{" . nr2char(l:c) . "}\<Esc>"
+  return '\slashed{' . nr2char(l:c) . '}'
 endfunction
 
 " }}}1
