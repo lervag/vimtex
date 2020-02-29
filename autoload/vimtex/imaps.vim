@@ -76,6 +76,8 @@ endfunction
 " The imap generator
 "
 function! s:create_map(map) abort " {{{1
+  if index(s:created_maps, a:map) >= 0 | return | endif
+
   let l:leader = get(a:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><nowait><buffer>' l:leader . l:leader l:leader
