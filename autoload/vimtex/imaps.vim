@@ -101,9 +101,12 @@ function! s:create_map(map) abort " {{{1
     endif
     let b:vimtex_context[l:key] = a:map.context
   endif
+  if !get(a:map, 'expr')
+    let a:map.rhs = string(a:map.rhs)
+  endif
 
   silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
-        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
+        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . a:map.rhs . ')'
 
   let s:created_maps += [a:map]
 endfunction
@@ -151,6 +154,10 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   return l:return
 endfunction
 
+function! vimtex#imaps#style(command)
+  let l:c = getchar()
+  return '\' . a:command . '{' . nr2char(l:c) . '}'
+endfunction
 " }}}1
 
 "
