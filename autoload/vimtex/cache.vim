@@ -54,8 +54,10 @@ function! vimtex#cache#clear(name, local) abort " {{{1
   let l:cache = vimtex#cache#open(a:name, {'local': a:local})
 
   call l:cache.read()
-  let l:cache.data = {}
-  call l:cache.write()
+  if !empty(l:cache.data)
+    let l:cache.data = {}
+    call l:cache.write()
+  endif
 endfunction
 
 " }}}1

@@ -15,7 +15,7 @@ silent edit texwork/example.tex
 let s:candidates = vimtex#test#completion('\gls{', '')
 call vimtex#test#assert(len(s:candidates) == 0)
 
-call vimtex#cache#clear('kpsewhich')
+call vimtex#cache#clear('kpsewhich', 0)
 let $TEXINPUTS = getcwd() . '/texinclude:'
 let s:candidates = vimtex#test#completion('\gls{', '')
 call vimtex#test#assert(len(s:candidates) > 0)
