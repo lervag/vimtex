@@ -5,39 +5,38 @@
 "
 
 function! vimtex#cache#open(name, ...) abort " {{{1
+  let l:opts = a:0 > 0 ? a:1 : {}
+  let l:name = get(l:opts, 'local') ? s:local_name(a:name) : a:name
+
   let s:caches = get(s:, 'caches', {})
-  if has_key(s:caches, a:name)
-    return s:caches[a:name]
+  if has_key(s:caches, l:name)
+    return s:caches[l:name]
   endif
 
-  let l:cache_root = get(g:, 'vimtex_cache_root', $HOME . '/.cache/vimtex')
-  if !isdirectory(l:cache_root)
-    call mkdir(l:cache_root, 'p')
-  endif
-
-  let l:opts = {
-        \ 'path': l:cache_root . '/' . a:name . '.json',
-        \ 'persistent': get(g:, 'vimtex_cache_persistent', 1),
-        \}
-  if a:0 > 0 | call extend(l:opts, a:1) | endif
-
-  let s:caches[a:name] = s:cache.init(l:opts)
-  return s:caches[a:name]
+  let s:caches[l:name] = s:cache.init(l:name, l:opts)
+  return s:caches[l:name]
 endfunction
 
 " }}}1
 function! vimtex#cache#close(name) abort " {{{1
   let s:caches = get(s:, 'caches', {})
-  if !has_key(s:caches, a:name) | return | endif
 
-  let l:cache = s:caches[a:name]
+  " Try global name first, then local name
+  let l:name = a:name
+  if !has_key(s:caches, l:name)
+    let l:name = s:local_name(l:name)
+  endif
+  if !has_key(s:caches, l:name) | return | endif
+
+  let l:cache = s:caches[l:name]
   call l:cache.write()
-  unlet s:caches[a:name]
+  unlet s:caches[l:name]
 endfunction
 
 " }}}1
 function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
-  let l:cache = vimtex#cache#open(a:name, a:0 > 0 ? a:1 : {})
+  let l:opts = a:0 > 0 ? a:1 : {}
+  let l:cache = vimtex#cache#open(a:name, l:opts)
 
   function! CachedFunc(key) closure
     if l:cache.has(a:key)
@@ -51,8 +50,8 @@ function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#cache#clear(name) abort " {{{1
-  let l:cache = vimtex#cache#open(a:name)
+function! vimtex#cache#clear(name, local) abort " {{{1
+  let l:cache = vimtex#cache#open(a:name, {'local': a:local})
 
   call l:cache.read()
   let l:cache.data = {}
@@ -70,15 +69,25 @@ endfunction
 
 let s:cache = {}
 
-function! s:cache.init(opts) dict abort " {{{1
+function! s:cache.init(name, opts) dict abort " {{{1
   let new = deepcopy(self)
   unlet new.init
 
-  let new.path = a:opts.path
-  let new.persistent = a:opts.persistent
+  let l:root = get(g:, 'vimtex_cache_root', $HOME . '/.cache/vimtex')
+  if !isdirectory(l:root)
+    call mkdir(l:root, 'p')
+  endif
+
+  let new.name = a:name
+  let new.path = l:root . '/' . a:name . '.json'
+  let new.local = get(a:opts, 'local')
+  let new.persistent = get(a:opts, 'persistent',
+        \ get(g:, 'vimtex_cache_persistent', 1))
+
   if has_key(a:opts, 'default')
     let new.default = a:opts.default
   endif
+
   let new.data = {}
   let new.ftime = -1
   let new.modified = 0
@@ -144,6 +153,16 @@ function! s:cache.read() dict abort " {{{1
     call extend(self.data,
           \ json_decode(join(readfile(self.path))), 'keep')
   endif
+endfunction
+
+" }}}1
+
+"
+" Utility functions
+"
+function! s:local_name(name) abort " {{{1
+  return a:name . '_'
+        \ . sha256(exists('b:vimtex.tex') ? b:vimtex.tex : expand('%:p'))
 endfunction
 
 " }}}1
