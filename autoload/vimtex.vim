@@ -198,7 +198,7 @@ function! vimtex#init_options() abort " {{{1
         \ { 'lhs' : 'b',  'rhs' : 'vimtex#imaps#style("mathbf")', 'expr' : 1, 'leader' : '#'},
         \ { 'lhs' : 'f',  'rhs' : 'vimtex#imaps#style("mathfrak")', 'expr' : 1, 'leader' : '#'},
         \ { 'lhs' : 'c',  'rhs' : 'vimtex#imaps#style("mathcal")', 'expr' : 1, 'leader' : '#'},
-        \ { 'lhs' : '-',  'rhs' : 'vimtex#imaps#format("overline")', 'expr' : 1, 'leader' : '#'},
+        \ { 'lhs' : '-',  'rhs' : 'vimtex#imaps#style("overline")', 'expr' : 1, 'leader' : '#'},
         \])
 
   call s:init_option('vimtex_mappings_enabled', 1)
