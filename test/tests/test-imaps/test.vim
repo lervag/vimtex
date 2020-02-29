@@ -30,6 +30,11 @@ call vimtex#test#keys('$i;b;;',
       \['$2+2 = $'],
       \['$2+2 = \beta;$'])
 
+" Test #bv -> \mathbf{v}
+call vimtex#test#keys('$i#bv',
+      \['$2+2 = $'],
+      \['$2+2 = \mathbf{v}$'])
+
 " Test ;; -> ; (leader escape)
 call vimtex#test#keys('$i;;',
       \['$;; = $'],
