@@ -11,7 +11,7 @@ if !empty($BACKEND)
   let g:vimtex_parser_bib_backend = $BACKEND
 endif
 
-silent edit main.tex
+silent edit test_backend.tex
 
 if empty($INMAKE) | finish | endif
 

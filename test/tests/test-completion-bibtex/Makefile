@@ -5,9 +5,12 @@ export INMAKE
 
 BACKENDS := bibtex bibparse vim
 
-.PHONY: all $(BACKENDS)
+.PHONY: all $(BACKENDS) jobname
 
-all: $(BACKENDS)
+all: $(BACKENDS) jobname
 
 $(BACKENDS):
-	@BACKEND=$@ $(MYVIM) -u test.vim
+	@BACKEND=$@ $(MYVIM) -u test_backend.vim
+
+jobname:
+	@$(MYVIM) -u test_jobname.vim
