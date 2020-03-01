@@ -402,8 +402,6 @@ endfunction
 let s:completer_cmd = {
       \ 'patterns' : [g:vimtex#re#not_bslash . '\\\a*$'],
       \ 'inside_braces' : 0,
-      \ 'candidates_from_newcommands' : [],
-      \ 'newcommands_updated' : -1,
       \}
 
 function! s:completer_cmd.complete(regex) dict abort " {{{2
@@ -417,7 +415,7 @@ function! s:completer_cmd.complete(regex) dict abort " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates() dict abort " {{{2
-  let l:candidates = self.gather_candidates_from_newcommands()
+  let l:candidates = s:load_from_document('cmd')
   let l:candidates += self.gather_candidates_from_lets()
   for l:pkg in s:get_packages()
     let l:candidates += s:load_from_package(l:pkg, 'cmd')
@@ -425,22 +423,6 @@ function! s:completer_cmd.gather_candidates() dict abort " {{{2
   let l:candidates += self.gather_candidates_from_glossary_keys()
 
   return vimtex#util#uniq_unsorted(l:candidates)
-endfunction
-
-function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
-  " Cache the candidates
-  let l:modified_time = max(map(
-        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-        \ 'getftime(v:val)'))
-  if l:modified_time > get(self, 'newcommands_updated')
-    let self.newcommands_updated = l:modified_time
-    let self.candidates_from_newcommands
-          \ = s:gather_candidates_from_newcommands(
-          \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
-          \     'env: newcommand')
-  endif
-
-  return copy(self.candidates_from_newcommands)
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{{2
@@ -491,8 +473,6 @@ endfunction
 
 let s:completer_env = {
       \ 'patterns' : ['\v\\%(begin|end)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
-      \ 'candidates_from_newenvironments' : [],
-      \ 'newenvironments_updated' : -1,
       \}
 
 function! s:completer_env.complete(regex) dict abort " {{{2
@@ -539,29 +519,12 @@ endfunction
 
 " }}}2
 function! s:completer_env.gather_candidates() dict abort " {{{2
-  let l:candidates = self.gather_candidates_from_newenvironments()
+  let l:candidates = s:load_from_document('env')
   for l:pkg in s:get_packages()
     let l:candidates += s:load_from_package(l:pkg, 'env')
   endfor
 
   return vimtex#util#uniq_unsorted(l:candidates)
-endfunction
-
-" }}}2
-function! s:completer_env.gather_candidates_from_newenvironments() dict abort " {{{2
-  " Cache the candidates
-  let l:modified_time = max(map(
-        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-        \ 'getftime(v:val)'))
-  if l:modified_time > get(self, 'newenvironments_updated')
-    let self.newenvironments_updated = l:modified_time
-    let self.candidates_from_newenvironments
-          \ = s:gather_candidates_from_newenvironments(
-          \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
-          \     'env: newenvironment')
-  endif
-
-  return copy(self.candidates_from_newenvironments)
 endfunction
 
 " }}}2
@@ -914,6 +877,31 @@ function! s:load_from_package(pkg, type) abort " {{{1
 
   " Write cache to file
   call s:pkg_cache.write()
+
+  return copy(l:current.candidates[a:type])
+endfunction
+
+" }}}1
+function! s:load_from_document(type) abort " {{{1
+  let s:pkg_cache = get(s:, 'pkg_cache',
+        \ vimtex#cache#open('pkgcomplete', {'default': {}}))
+
+  let l:ftime = max(map(
+        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+        \ 'getftime(v:val)'))
+  if l:ftime < 0 | return [] | endif
+
+  let l:current = s:pkg_cache.get(sha256(b:vimtex.tex))
+  if l:ftime > get(l:current, 'ftime', -1)
+    let l:current.ftime = l:ftime
+    let l:current.candidates = s:_load_candidates_from_source(
+        \ vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \ 'local')
+
+    " Write cache to file
+    let s:pkg_cache.modified = 1
+    call s:pkg_cache.write()
+  endif
 
   return copy(l:current.candidates[a:type])
 endfunction
