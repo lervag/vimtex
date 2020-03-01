@@ -150,8 +150,10 @@ function! s:completer_bib.gather_bib_entries() dict abort " {{{2
   " Note: bibtex seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
 
-  let l:cache = vimtex#cache#open('bibcomplete',
-        \ {'default': {'result': [], 'ftime': -1}})
+  let l:cache = vimtex#cache#open('bibcomplete', {
+        \ 'local': 1,
+        \ 'default': {'result': [], 'ftime': -1}
+        \})
 
   " Find data from external bib files
   for l:file in self.find_bibs()
@@ -304,8 +306,10 @@ function! s:completer_ref.parse_aux_files() dict abort " {{{2
         \ vimtex#parser#get_externalfiles(),
         \ '[v:val.aux, v:val.opt]')
 
-  let l:cache = vimtex#cache#open('refcomplete',
-        \ {'default': {'labels': [], 'ftime': -1}})
+  let l:cache = vimtex#cache#open('refcomplete', {
+        \ 'local': 1,
+        \ 'default': {'labels': [], 'ftime': -1}
+        \})
 
   let self.labels = []
   for [l:file, l:prefix] in filter(l:files, 'filereadable(v:val[0])')
