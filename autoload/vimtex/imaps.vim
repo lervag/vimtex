@@ -155,6 +155,9 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
 endfunction
 
 function! vimtex#imaps#style(command)
+  if !s:is_math()
+    return ''
+  endif
   let l:c = getchar()
   return '\' . a:command . '{' . nr2char(l:c) . '}'
 endfunction

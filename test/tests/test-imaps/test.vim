@@ -35,6 +35,11 @@ call vimtex#test#keys('$i#bv',
       \['$2+2 = $'],
       \['$2+2 = \mathbf{v}$'])
 
+" Should not gobble a character outside of math mode
+call vimtex#test#keys('$a#bv',
+      \['$2+2 = $'],
+      \['$2+2 = $#bv'])
+
 " Test ;; -> ; (leader escape)
 call vimtex#test#keys('$i;;',
       \['$;; = $'],
