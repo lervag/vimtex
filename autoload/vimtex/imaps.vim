@@ -102,8 +102,14 @@ function! s:create_map(map) abort " {{{1
     let b:vimtex_context[l:key] = a:map.context
   endif
 
+  " The rhs may be evaluated before being passed to wrapper, unless expr is
+  " disabled (which it is by default)
+  if !get(a:map, 'expr')
+    let a:map.rhs = string(a:map.rhs)
+  endif
+
   silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
-        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . string(a:map.rhs) . ')'
+        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . a:map.rhs . ')'
 
   let s:created_maps += [a:map]
 endfunction
@@ -149,6 +155,17 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   endfor
 
   return l:return
+endfunction
+
+" }}}1
+
+"
+" Special rhs styles
+"
+function! vimtex#imaps#style_math(command) " {{{1
+  return s:is_math()
+        \ ? '\' . a:command . '{' . nr2char(getchar()) . '}'
+        \ : ''
 endfunction
 
 " }}}1
