@@ -643,8 +643,6 @@ endfunction
 
 " }}}1
 function! s:vimtex.gather_sources() abort dict " {{{1
-  let self.sources = []
-
   let self.sources = map(
         \ vimtex#parser#tex(self.tex, { 'root' : self.root }),
         \ 'v:val[0]')
@@ -731,6 +729,11 @@ function! s:vimtex.ext(ext, ...) abort dict " {{{1
 
   " Finally return empty string if no entry is found
   return ''
+endfunction
+
+" }}}1
+function! s:vimtex.getftime() abort dict " {{{1
+  return max(map(copy(self.sources), 'getftime(self.root . ''/'' . v:val)'))
 endfunction
 
 " }}}1

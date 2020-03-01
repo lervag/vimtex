@@ -151,9 +151,7 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
   "
   " Find data from 'thebibliography' environments
   "
-  let l:ftime = max(map(
-        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-        \ 'getftime(v:val)'))
+  let l:ftime = b:vimtex.getftime()
   if l:ftime > 0
     let l:current = l:cache.get(sha256(b:vimtex.tex))
 
@@ -206,9 +204,7 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   let l:vimtex = vimtex#state#get(l:id)
 
   let l:bibfiles = []
-  for l:file in map(
-        \ get(l:vimtex, 'source_files', [l:vimtex.base]),
-        \ 'l:vimtex.root . ''/'' . v:val')
+  for l:file in map(copy(l:vimtex.sources), 'l:vimtex.root . ''/'' . v:val')
     let l:current = l:cache.get(l:file)
 
     let l:ftime = getftime(l:file)
@@ -920,9 +916,7 @@ function! s:load_from_document(type) abort " {{{1
   let s:pkg_cache = get(s:, 'pkg_cache',
         \ vimtex#cache#open('pkgcomplete', {'default': {}}))
 
-  let l:ftime = max(map(
-        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-        \ 'getftime(v:val)'))
+  let l:ftime = b:vimtex.getftime()
   if l:ftime < 0 | return [] | endif
 
   let l:current = s:pkg_cache.get(sha256(b:vimtex.tex))
