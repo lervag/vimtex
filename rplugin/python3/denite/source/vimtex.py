@@ -41,6 +41,6 @@ class Source(Base):
                 'action__line': e.get('line', 0)}
 
     def gather_candidates(self, context):
-        entries = self.vim.eval('vimtex#parser#toc(b:vimtex.tex)')
+        entries = self.vim.eval('vimtex#parser#toc()')
         depth = max([int(e['level']) for e in entries])
         return [Source.create_candidate(e, depth) for e in entries]

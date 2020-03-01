@@ -12,7 +12,7 @@ silent edit main.tex
 
 if empty($INMAKE) | finish | endif
 
-let s:parsed = vimtex#parser#toc('main.tex')
+let s:parsed = vimtex#parser#toc()
 call vimtex#test#assert_equal(len(s:parsed), 10)
 
 " Test added for #1543

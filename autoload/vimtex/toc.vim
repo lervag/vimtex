@@ -135,7 +135,7 @@ function! s:toc.get_entries(force) abort dict " {{{1
     return self.entries
   endif
 
-  let self.entries = vimtex#parser#toc(b:vimtex.tex)
+  let self.entries = vimtex#parser#toc()
   let self.topmatters = vimtex#parser#toc#get_topmatters()
 
   "

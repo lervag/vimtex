@@ -29,8 +29,24 @@ endfunction
 
 " }}}1
 
-function! vimtex#parser#toc(file) abort " {{{1
-  return vimtex#parser#toc#parse(a:file)
+function! vimtex#parser#toc(...) abort " {{{1
+  let l:vimtex = a:0 > 0 ? a:1 : b:vimtex
+
+  let l:cache = vimtex#cache#open('parsertoc', {
+        \ 'persistent': 0,
+        \ 'default': {'entries': [], 'ftime': -1},
+        \})
+  let l:current = l:cache.get(l:vimtex.tex)
+
+  " Update cache if relevant
+  let l:ftime = l:vimtex.getftime()
+  if l:ftime > l:current.ftime
+    let l:cache.modified = 1
+    let l:current.ftime = l:ftime
+    let l:current.entries = vimtex#parser#toc#parse(l:vimtex.tex)
+  endif
+
+  return deepcopy(l:current.entries)
 endfunction
 
 " }}}1

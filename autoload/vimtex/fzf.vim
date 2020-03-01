@@ -85,7 +85,7 @@ def create_candidate(e, depth):
   number = format_number(dict(e['number']))
   return f"{e.get('line', 0)} {e['file']} {colorize(e)} {number}"
 
-entries = vim.eval('vimtex#parser#toc(b:vimtex.tex)')
+entries = vim.eval('vimtex#parser#toc()')
 depth = max([int(e['level']) for e in entries])
 filter = vim.eval("a:filter")
 candidates = [create_candidate(e, depth)
