@@ -244,7 +244,6 @@ let s:completer_ref = {
       \   '\\subref\*\?{[^}]*$',
       \ ],
       \ 're_context' : '\\\w*{[^}]*$',
-      \ 'cache' : {},
       \ 'labels' : [],
       \ 'initialized' : 0,
       \}
@@ -504,6 +503,98 @@ function! s:completer_cmd.gather_candidates_from_lets() dict abort " {{{2
 endfunction
 
 " }}}1
+" {{{1 Environments
+
+let s:completer_env = {
+      \ 'patterns' : ['\v\\%(begin|end)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'candidates_from_newenvironments' : [],
+      \ 'candidates_from_packages' : [],
+      \}
+
+function! s:completer_env.complete(regex) dict abort " {{{2
+  if self.context =~# '^\\end\>'
+    " When completing \end{, search for an unmatched \begin{...}
+    let l:matching_env = ''
+    let l:save_pos = vimtex#pos#get_cursor()
+    let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
+
+    let l:lnum = l:save_pos[1] + 1
+    while l:lnum > 1
+      let l:open  = vimtex#delim#get_prev('env_tex', 'open')
+      if empty(l:open) || get(l:open, 'name', '') ==# 'document'
+        break
+      endif
+
+      let l:close = vimtex#delim#get_matching(l:open)
+      if empty(l:close.match)
+        let l:matching_env = l:close.name . (l:close.starred ? '*' : '')
+        break
+      endif
+
+      let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
+      if l:pos_val_try > l:pos_val_cursor
+        break
+      else
+        let l:lnum = l:open.lnum
+        call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+      endif
+    endwhile
+
+    call vimtex#pos#set_cursor(l:save_pos)
+
+    if !empty(l:matching_env) && l:matching_env =~# a:regex
+      return [{
+            \ 'word': l:matching_env,
+            \ 'kind': '[env: matching]',
+            \}]
+    endif
+  endif
+
+  return s:filter_with_options(copy(self.gather_candidates()), a:regex)
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates() dict abort " {{{2
+  call self.gather_candidates_from_packages()
+  call self.gather_candidates_from_newenvironments()
+
+  return vimtex#util#uniq_unsorted(
+        \   copy(self.candidates_from_newenvironments)
+        \ + copy(self.candidates_from_packages))
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates_from_packages() dict abort " {{{2
+  let self.candidates_from_packages = []
+
+  for l:p in s:load_candidates_from_packages()
+    let self.candidates_from_packages += get(
+          \ get(s:candidates_from_packages, l:p, {}), 'environments', [])
+  endfor
+endfunction
+
+" }}}2
+function! s:completer_env.gather_candidates_from_newenvironments() dict abort " {{{2
+  " Cache the candidates
+  if !empty(self.candidates_from_newenvironments)
+    let l:modified_time = max(map(
+          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+          \ 'getftime(v:val)'))
+    if l:modified_time > get(self, 'newenvironments_updated')
+      let self.newenvironments_updated = l:modified_time
+    else
+      return
+    endif
+  endif
+
+  let self.candidates_from_newenvironments
+        \ = s:gather_candidates_from_newenvironments(
+        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \     'env: newenvironment')
+endfunction
+
+" }}}2
+" }}}1
 " {{{1 Filenames (\includegraphics)
 
 let s:completer_img = {
@@ -611,7 +702,7 @@ function! s:completer_sta.complete(regex) dict abort " {{{2
 endfunction
 
 " }}}1
-" {{{1 Glossary
+" {{{1 Glossary (\gls +++)
 
 let s:completer_gls = {
       \ 'patterns' : [
@@ -757,97 +848,6 @@ function! s:completer_doc.gather_candidates() dict abort " {{{2
 endfunction
 
 " }}}1
-" {{{1 Environments (\begin/\end)
-
-let s:completer_env = {
-      \ 'patterns' : ['\v\\%(begin|end)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
-      \ 'candidates_from_newenvironments' : [],
-      \ 'candidates_from_packages' : [],
-      \}
-
-function! s:completer_env.complete(regex) dict abort " {{{2
-  if self.context =~# '^\\end\>'
-    " When completing \end{, search for an unmatched \begin{...}
-    let l:matching_env = ''
-    let l:save_pos = vimtex#pos#get_cursor()
-    let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
-
-    let l:lnum = l:save_pos[1] + 1
-    while l:lnum > 1
-      let l:open  = vimtex#delim#get_prev('env_tex', 'open')
-      if empty(l:open) || get(l:open, 'name', '') ==# 'document'
-        break
-      endif
-
-      let l:close = vimtex#delim#get_matching(l:open)
-      if empty(l:close.match)
-        let l:matching_env = l:close.name . (l:close.starred ? '*' : '')
-        break
-      endif
-
-      let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match)
-      if l:pos_val_try > l:pos_val_cursor
-        break
-      else
-        let l:lnum = l:open.lnum
-        call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
-      endif
-    endwhile
-
-    call vimtex#pos#set_cursor(l:save_pos)
-
-    if !empty(l:matching_env) && l:matching_env =~# a:regex
-      return [{
-            \ 'word': l:matching_env,
-            \ 'kind': '[env: matching]',
-            \}]
-    endif
-  endif
-
-  return s:filter_with_options(copy(self.gather_candidates()), a:regex)
-endfunction
-
-" }}}2
-function! s:completer_env.gather_candidates() dict abort " {{{2
-  call self.gather_candidates_from_packages()
-  call self.gather_candidates_from_newenvironments()
-
-  return vimtex#util#uniq_unsorted(
-        \   copy(self.candidates_from_newenvironments)
-        \ + copy(self.candidates_from_packages))
-endfunction
-
-" }}}2
-function! s:completer_env.gather_candidates_from_packages() dict abort " {{{2
-  let self.candidates_from_packages = []
-
-  for l:p in s:load_candidates_from_packages()
-    let self.candidates_from_packages += get(
-          \ get(s:candidates_from_packages, l:p, {}), 'environments', [])
-  endfor
-endfunction
-
-" }}}2
-function! s:completer_env.gather_candidates_from_newenvironments() dict abort " {{{2
-  " Cache the candidates
-  if !empty(self.candidates_from_newenvironments)
-    let l:modified_time = max(map(
-          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-          \ 'getftime(v:val)'))
-    if l:modified_time > get(self, 'newenvironments_updated')
-      let self.newenvironments_updated = l:modified_time
-    else
-      return
-    endif
-  endif
-
-  let self.candidates_from_newenvironments
-        \ = s:gather_candidates_from_newenvironments(
-        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
-        \     'env: newenvironment')
-endfunction
-
-" }}}1
 " {{{1 Bibliographystyles (\bibliographystyle)
 
 let s:completer_bst = {
@@ -873,7 +873,7 @@ endfunction
 " }}}1
 
 "
-" Common functions to parse candidates
+" Functions to parse candidates from packages
 "
 function! s:load_candidates_from_packages() abort " {{{1
   let l:package_list = [
