@@ -101,6 +101,9 @@ function! s:create_map(map) abort " {{{1
     endif
     let b:vimtex_context[l:key] = a:map.context
   endif
+
+  " The rhs may be evaluated before being passed to wrapper, unless expr is
+  " disabled (which it is by default)
   if !get(a:map, 'expr')
     let a:map.rhs = string(a:map.rhs)
   endif
@@ -154,13 +157,17 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   return l:return
 endfunction
 
-function! vimtex#imaps#style(command)
-  if !s:is_math()
-    return ''
-  endif
-  let l:c = getchar()
-  return '\' . a:command . '{' . nr2char(l:c) . '}'
+" }}}1
+
+"
+" Special rhs styles
+"
+function! vimtex#imaps#style_math(command) " {{{1
+  return s:is_math()
+        \ ? '\' . a:command . '{' . nr2char(getchar()) . '}'
+        \ : ''
 endfunction
+
 " }}}1
 
 "
