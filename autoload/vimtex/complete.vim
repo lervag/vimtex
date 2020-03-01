@@ -196,17 +196,41 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   " * This also removes the .bib extensions
   "
 
+  let l:cache = vimtex#cache#open('bibfiles', {
+        \ 'local': 1,
+        \ 'default': {'files': [], 'ftime': -1}
+        \})
+
   " Handle local file editing (e.g. subfiles package)
   let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
-  let l:file = vimtex#state#get(l:id).tex
+  let l:vimtex = vimtex#state#get(l:id)
 
   let l:bibfiles = []
-  let l:lines = vimtex#parser#tex(l:file, {'detailed' : 0})
-  for l:entry in map(filter(l:lines, 'v:val =~ ' . self.bibs),
-        \ 'matchstr(v:val, ' . self.bibs . ')')
-    let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
-    let l:bibfiles += map(split(l:entry, ','), 'fnamemodify(v:val, '':r'')')
+  for l:file in map(
+        \ get(l:vimtex, 'source_files', [l:vimtex.base]),
+        \ 'l:vimtex.root . ''/'' . v:val')
+    let l:current = l:cache.get(l:file)
+
+    let l:ftime = getftime(l:file)
+    if l:ftime > l:current.ftime
+      let l:cache.modified = 1
+      let l:current.ftime = l:ftime
+      let l:current.files = []
+      for l:entry in map(
+            \ filter(readfile(l:file), 'v:val =~ ' . self.bibs),
+            \ 'matchstr(v:val, ' . self.bibs . ')')
+        let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
+        let l:current.files += map(
+              \ split(l:entry, ','),
+              \ 'fnamemodify(v:val, '':r'')')
+      endfor
+    endif
+
+    let l:bibfiles += l:current.files
   endfor
+
+  " Write cache to file
+  call l:cache.write()
 
   return vimtex#util#uniq(l:bibfiles)
 endfunction
