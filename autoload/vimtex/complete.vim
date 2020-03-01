@@ -401,11 +401,9 @@ endfunction
 
 let s:completer_cmd = {
       \ 'patterns' : [g:vimtex#re#not_bslash . '\\\a*$'],
-      \ 'candidates_from_packages' : [],
-      \ 'candidates_from_newcommands' : [],
-      \ 'candidates_from_lets' : [],
-      \ 'candidates_from_glossary_keys' : [],
       \ 'inside_braces' : 0,
+      \ 'candidates_from_newcommands' : [],
+      \ 'newcommands_updated' : -1,
       \}
 
 function! s:completer_cmd.complete(regex) dict abort " {{{2
@@ -419,48 +417,34 @@ function! s:completer_cmd.complete(regex) dict abort " {{{2
 endfunction
 
 function! s:completer_cmd.gather_candidates() dict abort " {{{2
-  call self.gather_candidates_from_packages()
-  call self.gather_candidates_from_newcommands()
-  call self.gather_candidates_from_lets()
-  call self.gather_candidates_from_glossary_keys()
-
-  return vimtex#util#uniq_unsorted(
-        \   copy(self.candidates_from_newcommands)
-        \ + copy(self.candidates_from_lets)
-        \ + copy(self.candidates_from_packages)
-        \ + copy(self.candidates_from_glossary_keys))
-endfunction
-
-function! s:completer_cmd.gather_candidates_from_packages() dict abort " {{{2
-  let self.candidates_from_packages = []
-
-  for l:p in s:load_candidates_from_packages()
-    let self.candidates_from_packages += get(
-          \ get(s:candidates_from_packages, l:p, {}), 'commands', [])
+  let l:candidates = self.gather_candidates_from_newcommands()
+  let l:candidates += self.gather_candidates_from_lets()
+  for l:pkg in s:get_packages()
+    let l:candidates += s:load_from_package(l:pkg, 'cmd')
   endfor
+  let l:candidates += self.gather_candidates_from_glossary_keys()
+
+  return vimtex#util#uniq_unsorted(l:candidates)
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_newcommands() dict abort " {{{2
   " Cache the candidates
-  if !empty(self.candidates_from_newcommands)
-    let l:modified_time = max(map(
-          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-          \ 'getftime(v:val)'))
-    if l:modified_time > get(self, 'newcommands_updated')
-      let self.newcommands_updated = l:modified_time
-    else
-      return
-    endif
+  let l:modified_time = max(map(
+        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+        \ 'getftime(v:val)'))
+  if l:modified_time > get(self, 'newcommands_updated')
+    let self.newcommands_updated = l:modified_time
+    let self.candidates_from_newcommands
+          \ = s:gather_candidates_from_newcommands(
+          \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+          \     'env: newcommand')
   endif
 
-  let self.candidates_from_newcommands
-        \ = s:gather_candidates_from_newcommands(
-        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
-        \     'cmd: newcommand')
+  return copy(self.candidates_from_newcommands)
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{{2
-  if !has_key(b:vimtex.packages, 'glossaries') | return | endif
+  if !has_key(b:vimtex.packages, 'glossaries') | return [] | endif
 
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
         \ 're_stop': '\\begin{document}',
@@ -477,7 +461,7 @@ function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{
         \ ''kind'' : ''[cmd: glossaries]'',
         \ }')
 
-  let self.candidates_from_glossary_keys = l:candidates
+  return l:candidates
 endfunction
 
 function! s:completer_cmd.gather_candidates_from_lets() dict abort " {{{2
@@ -499,7 +483,7 @@ function! s:completer_cmd.gather_candidates_from_lets() dict abort " {{{2
         \ ''kind'' : ''[cmd: \def]'',
         \ }')
 
-  let self.candidates_from_lets = l:candidates
+  return l:candidates
 endfunction
 
 " }}}1
@@ -508,7 +492,7 @@ endfunction
 let s:completer_env = {
       \ 'patterns' : ['\v\\%(begin|end)%(\s*\[[^]]*\])?\s*\{[^}]*$'],
       \ 'candidates_from_newenvironments' : [],
-      \ 'candidates_from_packages' : [],
+      \ 'newenvironments_updated' : -1,
       \}
 
 function! s:completer_env.complete(regex) dict abort " {{{2
@@ -555,42 +539,29 @@ endfunction
 
 " }}}2
 function! s:completer_env.gather_candidates() dict abort " {{{2
-  call self.gather_candidates_from_packages()
-  call self.gather_candidates_from_newenvironments()
-
-  return vimtex#util#uniq_unsorted(
-        \   copy(self.candidates_from_newenvironments)
-        \ + copy(self.candidates_from_packages))
-endfunction
-
-" }}}2
-function! s:completer_env.gather_candidates_from_packages() dict abort " {{{2
-  let self.candidates_from_packages = []
-
-  for l:p in s:load_candidates_from_packages()
-    let self.candidates_from_packages += get(
-          \ get(s:candidates_from_packages, l:p, {}), 'environments', [])
+  let l:candidates = self.gather_candidates_from_newenvironments()
+  for l:pkg in s:get_packages()
+    let l:candidates += s:load_from_package(l:pkg, 'env')
   endfor
+
+  return vimtex#util#uniq_unsorted(l:candidates)
 endfunction
 
 " }}}2
 function! s:completer_env.gather_candidates_from_newenvironments() dict abort " {{{2
   " Cache the candidates
-  if !empty(self.candidates_from_newenvironments)
-    let l:modified_time = max(map(
-          \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
-          \ 'getftime(v:val)'))
-    if l:modified_time > get(self, 'newenvironments_updated')
-      let self.newenvironments_updated = l:modified_time
-    else
-      return
-    endif
+  let l:modified_time = max(map(
+        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+        \ 'getftime(v:val)'))
+  if l:modified_time > get(self, 'newenvironments_updated')
+    let self.newenvironments_updated = l:modified_time
+    let self.candidates_from_newenvironments
+          \ = s:gather_candidates_from_newenvironments(
+          \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+          \     'env: newenvironment')
   endif
 
-  let self.candidates_from_newenvironments
-        \ = s:gather_candidates_from_newenvironments(
-        \     vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
-        \     'env: newenvironment')
+  return copy(self.candidates_from_newenvironments)
 endfunction
 
 " }}}2
@@ -875,14 +846,11 @@ endfunction
 "
 " Functions to parse candidates from packages
 "
-function! s:load_candidates_from_packages() abort " {{{1
-  let l:package_list = [
+function! s:get_packages() abort " {{{1
+  let l:packages = [
         \   'default',
         \   'class-' . get(b:vimtex, 'documentclass', ''),
         \  ] + keys(b:vimtex.packages)
-  let l:packages = filter(copy(l:package_list),
-        \ '!has_key(s:candidates_from_packages, v:val)')
-  if empty(l:packages) | return l:package_list | endif
 
   call vimtex#paths#pushd(s:complete_dir)
 
@@ -907,31 +875,53 @@ function! s:load_candidates_from_packages() abort " {{{1
     let l:queue += l:includes
   endwhile
 
-  " Fetch candidates from complete files
-  for l:package in l:packages
-    call s:_load_candidates_from_complete_file(l:package)
-  endfor
-
   call vimtex#paths#popd()
 
-  " Fetch candidates by parsing cls/sty file
-  for l:package in l:missing
-    call s:_load_candidates_from_source(l:package)
-  endfor
-
-  return l:package_list
+  return l:packages + l:missing
 endfunction
 
-let s:candidates_from_packages = {}
+" }}}1
+function! s:load_from_package(pkg, type) abort " {{{1
+  let s:pkg_cache = get(s:, 'pkg_cache',
+        \ vimtex#cache#open('pkgcomplete', {'default': {}}))
+  let l:current = s:pkg_cache.get(a:pkg)
+
+  let l:pkg_file = s:complete_dir . '/' . a:pkg
+  if filereadable(l:pkg_file)
+    if !has_key(l:current, 'candidates')
+      let s:pkg_cache.modified = 1
+      let l:current.candidates
+            \ = s:_load_candidates_from_complete_file(a:pkg, l:pkg_file)
+    endif
+  else
+    if !has_key(l:current, 'candidates')
+      let s:pkg_cache.modified = 1
+      let l:current.candidates = {'cmd': [], 'env': []}
+    endif
+
+    let l:filename = a:pkg =~# '^class-'
+          \ ? vimtex#kpsewhich#find(a:pkg[6:] . '.cls')
+          \ : vimtex#kpsewhich#find(a:pkg . '.sty')
+
+    let l:ftime = getftime(l:filename)
+    if l:ftime > get(l:current, 'ftime', -1)
+      let s:pkg_cache.modified = 1
+      let l:current.ftime = l:ftime
+      let l:current.candidates = s:_load_candidates_from_source(
+            \ readfile(l:filename), a:pkg)
+    endif
+  endif
+
+  " Write cache to file
+  call s:pkg_cache.write()
+
+  return copy(l:current.candidates[a:type])
+endfunction
 
 " }}}1
-function! s:_load_candidates_from_complete_file(pkg) abort " {{{1
-  let s:candidates_from_packages[a:pkg] = {
-        \ 'commands':     [],
-        \ 'environments': [],
-        \}
-
-  let l:lines = readfile(a:pkg)
+function! s:_load_candidates_from_complete_file(pkg, pkgfile) abort " {{{1
+  let l:result = {'cmd': [], 'env': []}
+  let l:lines = readfile(a:pkgfile)
 
   let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\a''')
   call map(l:candidates, 'split(v:val)')
@@ -941,36 +931,28 @@ function! s:_load_candidates_from_complete_file(pkg) abort " {{{1
         \ ''kind'' : ''[cmd: '' . a:pkg . ''] '',
         \ ''menu'' : (get(v:val, 1, '''')),
         \}')
-  let s:candidates_from_packages[a:pkg].commands += l:candidates
+  let l:result.cmd += l:candidates
 
-  let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\\begin{''')
+  let l:candidates = filter(l:lines, 'v:val =~# ''^\\begin{''')
   call map(l:candidates, '{
         \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
         \ ''mode'' : ''.'',
         \ ''kind'' : ''[env: '' . a:pkg . ''] '',
         \}')
-  let s:candidates_from_packages[a:pkg].environments += l:candidates
+  let l:result.env += l:candidates
+
+  return l:result
 endfunction
 
 " }}}1
-function! s:_load_candidates_from_source(pkg) abort " {{{1
-  let l:filename = a:pkg =~# '^class-'
-        \ ? vimtex#kpsewhich#find(a:pkg[6:] . '.cls')
-        \ : vimtex#kpsewhich#find(a:pkg . '.sty')
-
-  if empty(l:filename)
-    let s:candidates_from_packages[a:pkg] = {}
-    return
-  endif
-
-  let l:lines = readfile(l:filename)
-  let s:candidates_from_packages[a:pkg] = {
-        \ 'commands':
+function! s:_load_candidates_from_source(lines, pkg) abort " {{{1
+  return {
+        \ 'cmd':
         \   s:gather_candidates_from_newcommands(
-        \     copy(l:lines), 'cmd: ' . a:pkg),
-        \ 'environments':
+        \     copy(a:lines), 'cmd: ' . a:pkg),
+        \ 'env':
         \   s:gather_candidates_from_newenvironments(
-        \     l:lines, 'env: ' . a:pkg)
+        \     a:lines, 'env: ' . a:pkg)
         \}
 endfunction
 
