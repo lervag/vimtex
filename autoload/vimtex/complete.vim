@@ -97,40 +97,7 @@ function! s:completer_bib.init() dict abort " {{{2
 endfunction
 
 function! s:completer_bib.complete(regex) dict abort " {{{2
-  let self.candidates = []
-
-  for l:entry in self.gather_bib_entries()
-    let cand = {'word': l:entry['key']}
-
-    let auth = get(l:entry, 'author', 'Unknown')[:20]
-    let auth = substitute(auth, '\~', ' ', 'g')
-    let substitutes = {
-          \ '@key' : l:entry['key'],
-          \ '@type' : empty(l:entry['type']) ? '-' : l:entry['type'],
-          \ '@author_all' : auth,
-          \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
-          \ '@year' : get(l:entry, 'year', get(l:entry, 'date', '?')),
-          \ '@title' : get(l:entry, 'title', 'No title'),
-          \}
-
-    " Create menu string
-    if !empty(g:vimtex_complete_bib.menu_fmt)
-      let cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
-      for [key, val] in items(substitutes)
-        let cand.menu = substitute(cand.menu, key, escape(val, '&'), '')
-      endfor
-    endif
-
-    " Create abbreviation string
-    if !empty(g:vimtex_complete_bib.abbr_fmt)
-      let cand.abbr = copy(g:vimtex_complete_bib.abbr_fmt)
-      for [key, val] in items(substitutes)
-        let cand.abbr = substitute(cand.abbr, key, escape(val, '&'), '')
-      endfor
-    endif
-
-    call add(self.candidates, cand)
-  endfor
+  let self.candidates = self.gather_candidates()
 
   if g:vimtex_complete_bib.simple
     call s:filter_with_options(self.candidates, a:regex)
@@ -144,18 +111,20 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
   return self.candidates
 endfunction
 
-function! s:completer_bib.gather_bib_entries() dict abort " {{{2
+function! s:completer_bib.gather_candidates() dict abort " {{{2
   let l:entries = []
-
-  " Note: bibtex seems to require that we are in the project root
-  call vimtex#paths#pushd(b:vimtex.root)
 
   let l:cache = vimtex#cache#open('bibcomplete', {
         \ 'local': 1,
         \ 'default': {'result': [], 'ftime': -1}
         \})
 
+  "
   " Find data from external bib files
+  "
+
+  " Note: bibtex seems to require that we are in the project root
+  call vimtex#paths#pushd(b:vimtex.root)
   for l:file in self.find_bibs()
     if empty(l:file) | continue | endif
 
@@ -169,20 +138,53 @@ function! s:completer_bib.gather_bib_entries() dict abort " {{{2
     let l:ftime = getftime(l:filename)
     if l:ftime > l:current.ftime
       let l:current.ftime = l:ftime
-      let l:current.result = vimtex#parser#bib(l:filename)
+      let l:current.result = map(
+            \ vimtex#parser#bib(l:filename),
+            \ 'self.convert(v:val)')
       let l:cache.modified = 1
     endif
     let l:entries += l:current.result
   endfor
 
-  " Write cache to file
-  call l:cache.write()
-
-  " Revert earlier pushd
   call vimtex#paths#popd()
 
+  "
   " Find data from 'thebibliography' environments
-  let l:entries += self.parse_thebibliography()
+  "
+  let l:ftime = max(map(
+        \ copy(get(b:vimtex, 'source_files', [b:vimtex.tex])),
+        \ 'getftime(v:val)'))
+  if l:ftime > 0
+    let l:current = l:cache.get(sha256(b:vimtex.tex))
+
+    if l:ftime > l:current.ftime
+      let l:current.ftime = l:ftime
+      let l:current.result = []
+
+      let l:lines = vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0})
+      if match(l:lines, '\C\\begin{thebibliography}') >= 0
+        call filter(l:lines, 'v:val =~# ''\C\\bibitem''')
+
+        for l:line in l:lines
+          let l:matches = matchlist(l:line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
+          if len(l:matches) > 1
+            call add(l:current.result, self.convert({
+                  \ 'key': l:matches[2],
+                  \ 'type': 'thebibliography',
+                  \ 'author': '',
+                  \ 'year': '',
+                  \ 'title': l:matches[2],
+                  \ }))
+          endif
+        endfor
+      endif
+    endif
+
+    let l:entries += l:current.result
+  endif
+
+  " Write cache to file
+  call l:cache.write()
 
   return l:entries
 endfunction
@@ -209,29 +211,37 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
   return vimtex#util#uniq(l:bibfiles)
 endfunction
 
-function! s:completer_bib.parse_thebibliography() dict abort " {{{2
-  let l:res = []
+function! s:completer_bib.convert(entry) dict abort " {{{2
+  let cand = {'word': a:entry['key']}
 
-  " Find data from 'thebibliography' environments
-  let l:lines = readfile(b:vimtex.tex)
-  if match(l:lines, '\C\\begin{thebibliography}') >= 0
-    call filter(l:lines, 'v:val =~# ''\C\\bibitem''')
+  let auth = get(a:entry, 'author', 'Unknown')[:20]
+  let auth = substitute(auth, '\~', ' ', 'g')
+  let substitutes = {
+        \ '@key' : a:entry['key'],
+        \ '@type' : empty(a:entry['type']) ? '-' : a:entry['type'],
+        \ '@author_all' : auth,
+        \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
+        \ '@year' : get(a:entry, 'year', get(a:entry, 'date', '?')),
+        \ '@title' : get(a:entry, 'title', 'No title'),
+        \}
 
-    for l:line in l:lines
-      let l:matches = matchlist(l:line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
-      if len(l:matches) > 1
-        call add(l:res, {
-              \ 'key': l:matches[2],
-              \ 'type': 'thebibliography',
-              \ 'author': '',
-              \ 'year': '',
-              \ 'title': l:matches[2],
-              \ })
-      endif
+  " Create menu string
+  if !empty(g:vimtex_complete_bib.menu_fmt)
+    let cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
+    for [key, val] in items(substitutes)
+      let cand.menu = substitute(cand.menu, key, escape(val, '&'), '')
     endfor
   endif
 
-  return l:res
+  " Create abbreviation string
+  if !empty(g:vimtex_complete_bib.abbr_fmt)
+    let cand.abbr = copy(g:vimtex_complete_bib.abbr_fmt)
+    for [key, val] in items(substitutes)
+      let cand.abbr = substitute(cand.abbr, key, escape(val, '&'), '')
+    endfor
+  endif
+
+  return cand
 endfunction
 
 " }}}1
