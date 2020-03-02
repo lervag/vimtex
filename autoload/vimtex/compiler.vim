@@ -76,6 +76,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
 
   if a:status && exists('b:vimtex')
     call b:vimtex.parse_packages()
+    call vimtex#syntax#load#packages()
   endif
 
   for l:hook in g:vimtex_compiler_callback_hooks
