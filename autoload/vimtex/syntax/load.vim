@@ -61,3 +61,18 @@ function! vimtex#syntax#load#general() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#syntax#load#packages() abort " {{{1
+  try
+    call vimtex#syntax#p#{b:vimtex.documentclass}#load()
+  catch /E117:/
+  endtry
+
+  for l:pkg in map(keys(b:vimtex.packages), "substitute(v:val, '-', '_', 'g')")
+    try
+      call vimtex#syntax#p#{l:pkg}#load()
+    catch /E117:/
+    endtry
+  endfor
+endfunction
+
+" }}}1

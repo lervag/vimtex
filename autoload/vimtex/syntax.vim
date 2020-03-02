@@ -41,23 +41,8 @@ function! vimtex#syntax#load() abort " {{{1
   " Load some general syntax improvements
   call vimtex#syntax#load#general()
 
-  "
-  " Load syntax for documentclass
-  "
-  try
-    call vimtex#syntax#p#{b:vimtex.documentclass}#load()
-  catch /E117:/
-  endtry
-
-  "
-  " Load syntax for packages
-  "
-  for l:pkg in map(keys(b:vimtex.packages), "substitute(v:val, '-', '_', 'g')")
-    try
-      call vimtex#syntax#p#{l:pkg}#load()
-    catch /E117:/
-    endtry
-  endfor
+  " Load syntax for documentclass and packages
+  call vimtex#syntax#load#packages()
 
   " Hack to make it possible to determine if vimtex syntax was loaded
   syntax match texVimtexLoaded 'dummyVimtexLoadedText' contained
