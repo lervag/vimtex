@@ -52,9 +52,9 @@ function! vimtex#syntax#load() abort " {{{1
   "
   " Load syntax for packages
   "
-  for l:package in keys(b:vimtex.packages)
+  for l:pkg in map(keys(b:vimtex.packages), "substitute(v:val, '-', '_', 'g')")
     try
-      call vimtex#syntax#p#{l:package}#load()
+      call vimtex#syntax#p#{l:pkg}#load()
     catch /E117:/
     endtry
   endfor
