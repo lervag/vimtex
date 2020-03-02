@@ -20,7 +20,7 @@ function! SynNames()
         \ 'synIDattr(v:val, ''name'')'), ' -> ')
 endfunction
 
-silent edit minimal.tex
+silent edit test-large.tex
 
 syntax sync fromstart
 
