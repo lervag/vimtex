@@ -22,7 +22,7 @@ class Source(Base):
                'section',
                'subsection',
                'subsubsection',
-               'subsubsubsection'] if n[k] is not 0]
+               'subsubsubsection'] if n[k] != 0]
 
         if n['appendix']:
             num[0] = chr(int(num[0]) + 64)
