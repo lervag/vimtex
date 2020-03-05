@@ -46,19 +46,6 @@ call vimtex#test#keys("lla\<f7>}", ['foobar'], ['\foo{bar}'])
 call vimtex#test#keys("fbve\<f7>emph\<cr>", ['foobar'], ['foo\emph{bar}'])
 call vimtex#test#keys("\<f7>emph\<cr>", ['foo'], ['\emph{foo}'])
 
-" tsd  /  Toggle surrounding delimiter
-call vimtex#test#keys('3jtsd', [
-      \ '$\bigl(\begin{smallmatrix}',
-      \ '  \Q^* &   \\',
-      \ '       & 1 \\',
-      \ '\end{smallmatrix}\bigr)$',
-      \], [
-      \ '$(\begin{smallmatrix}',
-      \ '  \Q^* &   \\',
-      \ '       & 1 \\',
-      \ '\end{smallmatrix})$',
-      \])
-
 " cse  /  Change surrounding environment
 " .    /  Dot repeat
 call vimtex#test#keys("csebaz\<cr>}j.",

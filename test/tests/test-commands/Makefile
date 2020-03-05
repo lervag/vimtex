@@ -1,9 +1,14 @@
-.PHONY: test
-
 MYVIM ?= nvim --headless
 
 INMAKE := 1
 export INMAKE
 
-test:
-	@chronic $(MYVIM) -u test.vim
+TESTS := $(wildcard test*.vim)
+TESTS := $(TESTS:.vim=)
+
+.PHONY: test $(TESTS)
+
+test: $(TESTS)
+
+$(TESTS):
+	@chronic $(MYVIM) -u $@.vim
