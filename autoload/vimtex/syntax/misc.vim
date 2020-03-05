@@ -38,6 +38,35 @@ endfunction
 let s:included = {'vimtex_nested_tex': 0}
 
 " }}}1
+function! vimtex#syntax#misc#new_math_zone(sfx, mathzone, starred) abort " {{{1
+  " This function is based on Charles E. Campbell's amsmath.vba file 2018-06-29
+
+  if get(g:, 'tex_fast', 'M') !~# 'M' | return | endif
+
+  let foldcmd = get(g:, 'tex_fold_enabled') ? ' fold' : ''
+
+  let grp = 'texMathZone' . a:sfx
+  execute 'syntax cluster texMathZones add=' . grp
+  execute 'syntax region ' . grp
+        \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\s*}'''
+        \ . ' end=''\\end\s*{\s*' . a:mathzone . '\s*}'''
+        \ . foldcmd . ' keepend contains=@texMathZoneGroup'
+  execute 'highlight def link '.grp.' texMath'
+
+  if a:starred
+    let grp .= 'S'
+    execute 'syntax cluster texMathZones add=' . grp
+    execute 'syntax region ' . grp
+          \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\*\s*}'''
+          \ . ' end=''\\end\s*{\s*' . a:mathzone . '\*\s*}'''
+          \ . foldcmd . ' keepend contains=@texMathZoneGroup'
+    execute 'highlight def link '.grp.' texMath'
+  endif
+
+  execute 'syntax match texBadMath ''\\end\s*{\s*' . a:mathzone . '\*\=\s*}'''
+endfunction
+
+" }}}1
 
 function! s:include(cluster, name) abort " {{{1
   let l:name = get(g:vimtex_syntax_nested.aliases, a:name, a:name)
