@@ -1,0 +1,19 @@
+\documentclass{minimal}
+\usepackage{physics}
+\usepackage{breqn}
+
+\begin{document}
+
+\begin{dmath}
+[a,f(a,a^\dagger)]
+= \sum_{n_1=0}^{\infty} \sum_{n_2=0}^{\infty} \frac{1}{n_1! n_2!}
+\frac{\partial^{n_1+n_2}f(0,0)}{\partial X^{n_1} \partial Y^{n_2}}
+[a,a^{n_1} {a^\dagger}^{n_2}]
+= \sum_{n_1=0}^{\infty} \sum_{n_2=0}^{\infty} \frac{1}{n_1! n_2!}
+\frac{\partial^{n_1+n_2}f(0,0)}{\partial X^{n_1} \partial Y^{n_2}} n_2 a^{n_1} {a^\dagger}^{n_2-1}
+= \sum_{n_1=0}^{\infty} \sum_{n_2=1}^{\infty} \frac{1}{n_1! (n_2-1)!}
+\frac{\partial^{n_1+n_2}f(0,0)}{\partial X^{n_1} \partial Y^{n_2}} a^{n_1} {a^\dagger}^{n_2-1}
+= \pdv{f}{a^\dagger}.
+\end{dmath}
+
+\end{document}
