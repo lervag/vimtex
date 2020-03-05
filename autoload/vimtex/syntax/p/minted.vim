@@ -67,7 +67,6 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Next add nested syntax support for desired languages
   for [l:nested, l:config] in items(b:vimtex.syntax.minted)
     let l:cluster = vimtex#syntax#misc#include(l:nested)
-    if empty(l:cluster) | continue | endif
 
     let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
     let l:group_main = 'texZone' . l:name
@@ -75,13 +74,25 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     let l:group_arg_zone = 'texArgZone' . l:name
     call vimtex#syntax#misc#add_to_section_clusters(l:group_main)
 
+    if empty(l:cluster)
+      let l:transparent = ''
+      let l:contains_env = ''
+      let l:contains_macro = ''
+      execute 'highlight link' l:group_main 'texZoneMinted'
+      execute 'highlight link' l:group_arg_zone 'texZoneMinted'
+    else
+      let l:transparent = 'transparent'
+      let l:contains_env = ',@' . l:cluster
+      let l:contains_macro = 'contains=@' . l:cluster
+    endif
+
     " Match minted environment
     execute 'syntax region' l:group_main
           \ 'start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{' . l:nested . '}"rs=s'
           \ 'end="\\end{minted}"re=e'
           \ 'keepend'
-          \ 'transparent'
-          \ 'contains=texMintedBounds.*,@' . l:cluster
+          \ l:transparent
+          \ 'contains=texMintedBounds.*' . l:contains_env
 
     " Match custom environment names
     for l:env in get(l:config, 'environments', [])
@@ -89,8 +100,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
             \ 'start="\\begin{\z(' . l:env . '\*\?\)}"rs=s'
             \ 'end="\\end{\z1}"re=e'
             \ 'keepend'
-            \ 'transparent'
-            \ 'contains=texMintedStarred,texBeginEnd,@' . l:cluster
+            \ l:transparent
+            \ 'contains=texMintedStarred,texBeginEnd' . l:contains_env
     endfor
 
     " Match minted macros
@@ -107,13 +118,13 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
           \ 'start=''\z([|+/]\)'''
           \ 'end=''\z1'''
           \ 'contained'
-          \ 'contains=@' . l:cluster
+          \ l:contains_macro
     execute 'syntax region' l:group_arg_zone
           \ 'matchgroup=Delimiter'
           \ 'start=''{'''
           \ 'end=''}'''
           \ 'contained'
-          \ 'contains=@' . l:cluster
+          \ l:contains_macro
 
     " Match minted custom macros
     for l:cmd in sort(get(l:config, 'commands', []))
@@ -178,7 +189,8 @@ function! s:parse_minted_constructs() abort " {{{1
     " Custom environments:
     " - \newminted{lang}{opts} -> langcode
     " - \newminted[envname]{lang}{opts} -> envname
-    let l:matches = matchlist(l:line, '\\newminted\%(\s*\[\([^\]]*\)\]\)\?\s*{\(\w\+\)}')
+    let l:matches = matchlist(l:line,
+          \ '\\newminted\%(\s*\[\([^\]]*\)\]\)\?\s*{\([a-zA-Z-]\+\)}')
     if !empty(l:matches)
       call l:db.register(l:matches[2])
       call l:db.add_environment(!empty(l:matches[1])
@@ -190,7 +202,8 @@ function! s:parse_minted_constructs() abort " {{{1
     " Custom macros:
     " - \newmint(inline){lang}{opts} -> \lang(inline)
     " - \newmint(inline)[macroname]{lang}{opts} -> \macroname
-    let l:matches = matchlist(l:line, '\\newmint\(inline\)\?\%(\s*\[\([^\]]*\)\]\)\?\s*{\(\w\+\)}')
+    let l:matches = matchlist(l:line,
+          \ '\\newmint\(inline\)\?\%(\s*\[\([^\]]*\)\]\)\?\s*{\([a-zA-Z-]\+\)}')
     if !empty(l:matches)
       call l:db.register(l:matches[3])
       call l:db.add_macro(!empty(l:matches[2])
@@ -209,14 +222,17 @@ let s:db = {
       \}
 
 function! s:db.register(lang) abort dict " {{{1
-  if !has_key(self.data, a:lang)
-    let self.data[a:lang] = {
+  " Avoid dashes in langnames
+  let l:lang = substitute(a:lang, '-', '', 'g')
+
+  if !has_key(self.data, l:lang)
+    let self.data[l:lang] = {
           \ 'environments' : [],
           \ 'commands' : [],
           \}
   endif
 
-  let self.cur = self.data[a:lang]
+  let self.cur = self.data[l:lang]
 endfunction
 
 " }}}1
