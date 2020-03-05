@@ -1,12 +1,4 @@
-set nocompatible
-let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
-filetype plugin on
-syntax enable
-
-set nomore
-
-nnoremap q :qall!<cr>
+source common.vim
 
 silent edit test-loading.tex
 

@@ -1,0 +1,107 @@
+\documentclass{minimal}
+\usepackage{minted}
+
+\begin{document}
+
+\newminted{cpp}{gobble=2}                % -> cppcode
+\newminted[cppcode_test]{cpp}{gobble=2}  % -> cppcode_test
+\newmint[pymint]{python}{linenos}        % -> \pymint
+\newmintinline{vim}{linenos}             % -> \viminline
+
+Macros:
+- \mint[lineos]{perl}|$x =~ /foo/|
+- \mint[lineos]{perlxxx}|$x =~ /foo/|
+- \pymint{print(1 + int(r'1'))} Cool!
+- \viminline|let a=1|
+
+\begin{minted}{perlxxx}
+L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
+L1044 +++$+++ u0 +++$+++ m0 +++$+++ CAMERON +++$+++ They do to!
+L985 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ I hope so.!
+\end{minted}
+
+% This is not valid and should not be highlighted in any special way!
+\begin{minted}
+L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
+L1044 +++$+++ u0 +++$+++ m0 +++$+++ CAMERON +++$+++ They do to!
+L985 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ I hope so.!
+\end{minted}
+
+\begin{minted}{c}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{minted}
+
+\begin{minted}[linenos]{python}
+def function(arg):
+    pass
+\end{minted}
+
+\begin{minted}[mathescape,
+       linenos,
+       numbersep=5pt,
+       gobble=2,
+       frame=lines,
+       framesep=2mm]{python}
+def function(arg):
+    pass
+\end{minted}
+
+\begin{minted}[mathescape,
+       linenos,
+       numbersep=5pt,
+       gobble=2,
+       frame=lines,
+       framesep=2mm]{csharp}
+string title = "This is a Unicode π in the sky"
+/*
+Defined as $\pi=\lim_{n\to\infty}\frac{P_n}{d}$ where $P$ is the perimeter
+of an $n$-sided regular polygon circumscribing a
+circle of diameter $d$.
+*/
+const double pi = 3.1415926535
+\end{minted}
+
+\paragraph{Some paragraph}
+
+\begin{minted}{java}
+class HelloWorld
+{
+  public static void main(String args[])
+  {
+      System.out.println("Hello world");
+  }
+}
+\end{minted}
+
+\begin{cppcode}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode}
+
+\begin{cppcode*}{a=0,
+	 b=1}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode*}
+
+\begin{cppcode_test}
+int main() {
+  printf("hello, world");
+  return 0;
+}
+\end{cppcode_test}
+
+\begin{minted}{tex}
+\begin{example}
+  Hello world
+\end{example}
+\end{minted}
+
+\end{document}
