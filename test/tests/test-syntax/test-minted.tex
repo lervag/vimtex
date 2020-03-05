@@ -104,4 +104,17 @@ int main() {
 \end{example}
 \end{minted}
 
+% Test newminted for stuff that does not exist
+\newminted[log]{log}{breaklines}
+\newminted[longss]{shell-session}{breaklines}
+
+\begin{log}
+destination d_local { file("/var/log/syslog-ng/messages_${HOST}"); };
+\end{log}
+
+\begin{longss}
+$ ls -l
+$ ls -l
+\end{longss}
+
 \end{document}
