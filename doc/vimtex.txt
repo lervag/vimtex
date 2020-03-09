@@ -3900,8 +3900,8 @@ GRAMMAR CHECKING                                               *vimtex-grammar*
 |vimtex| provides grammar checking for TeX files through two compilers:
 `style-check` [1] and `textidote` [2]. These may be activated with the
 |:compiler| command, see |compiler-select|. A selected compiler may then be
-used e.g. with |:make| or |:lmake|. See |vimtex-lint| above for some tips on to
-use this feature.
+used e.g. with |:make| or |:lmake|. See |vimtex-lint| above for some tips on
+how to use this feature.
 
 A common workflow is to utilize the |location-list| with |:lmake|:
 
