@@ -2011,6 +2011,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: `'auto'`
 
+*g:vimtex_textidote_jar*
+  Specify path to `textidote.jar` for use with the textidote grammar checker,
+  see |vimtex-grammar|.
+
+  Default value: `UNDEFINED`
+
 *g:vimtex_toc_enabled*
   Use this option to disable/enable table of contents (ToC).
 
@@ -3912,7 +3918,7 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 
 The language of the Tex file is determined by |'spelllang'|. Be aware that to
 use `textidote`, the path to its jar file `textidote.jar` must be indicated in
-the global variable `g:textidote_jar`.
+the option |g:vimtex_textidote_jar|.
 
 [1] http://www.cs.umd.edu/~nspring/software/style-check-readme.html
 [2] https://sylvainhalle.github.io/textidote/
