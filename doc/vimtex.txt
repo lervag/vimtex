@@ -3912,7 +3912,7 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 
 The language of the Tex file is determined by |'spelllang'|. Be aware that to
 use `textidote`, the path to its jar file `textidote.jar` must be indicated in
-the global variable `g:textidote_jar`.
+the global variable `g:vimtex_textidote_jar`.
 
 [1] http://www.cs.umd.edu/~nspring/software/style-check-readme.html
 [2] https://sylvainhalle.github.io/textidote/
