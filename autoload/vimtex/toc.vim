@@ -204,6 +204,7 @@ function! s:toc.create() abort dict " {{{1
   let l:bufnr = bufnr('')
   let l:winid = win_getid()
   let l:vimtex = get(b:, 'vimtex', {})
+  let l:vimtex_syntax = get(b:, 'vimtex_syntax', {})
 
   if self.split_pos ==# 'full'
     silent execute 'edit' escape(self.name, ' ')
@@ -220,6 +221,7 @@ function! s:toc.create() abort dict " {{{1
   let self.prev_winid = l:winid
   let b:toc = self
   let b:vimtex = l:vimtex
+  let b:vimtex_syntax = l:vimtex_syntax
 
   setlocal bufhidden=wipe
   setlocal buftype=nofile
