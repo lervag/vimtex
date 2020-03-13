@@ -1001,11 +1001,11 @@ function! s:init_delim_regexes() abort " {{{1
   " Matches modified math delimiters
   "
   let l:re.delim_mod_math = {
-        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\)\s*\%('
+        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\)\s*\\\@<!\%('
         \   . l:o . '\)\|\\left\s*\.',
-        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\)\s*\%('
+        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\)\s*\\\@<!\%('
         \   . l:c . '\)\|\\right\s*\.',
-        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\)\s*\%('
+        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\)\s*\\\@<!\%('
         \   . l:o . '\|' . l:c . '\)\|\\\%(left\|right\)\s*\.',
         \}
 
@@ -1013,11 +1013,11 @@ function! s:init_delim_regexes() abort " {{{1
   " Matches possibly modified math delimiters
   "
   let l:re.delim_modq_math = {
-        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\s*\)\?\%('
+        \ 'open' : '\%(\%(' . l:re.mods.open . '\)\s*\)\?\\\@<!\%('
         \   . l:o . '\)\|\\left\s*\.',
-        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\s*\)\?\%('
+        \ 'close' : '\%(\%(' . l:re.mods.close . '\)\s*\)\?\\\@<!\%('
         \   . l:c . '\)\|\\right\s*\.',
-        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\s*\)\?\%('
+        \ 'both' : '\%(\%(' . l:re.mods.both . '\)\s*\)\?\\\@<!\%('
         \   . l:o . '\|' . l:c . '\)\|\\\%(left\|right\)\s*\.',
         \}
 
@@ -1046,9 +1046,9 @@ function! s:init_delim_regexes_generator(list_name) abort " {{{1
   let l:close = join(map(copy(l:list.re), 'v:val[1]'), '\|')
 
   return {
-        \ 'open' : '\%(' . l:open . '\)',
-        \ 'close' : '\%(' . l:close . '\)',
-        \ 'both' : '\%(' . l:open . '\|' . l:close . '\)'
+        \ 'open' : '\\\@<!\%(' . l:open . '\)',
+        \ 'close' : '\\\@<!\%(' . l:close . '\)',
+        \ 'both' : '\\\@<!\%(' . l:open . '\|' . l:close . '\)'
         \}
 endfunction
 

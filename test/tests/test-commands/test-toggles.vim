@@ -21,4 +21,11 @@ call vimtex#test#keys('3jtsd', [
       \ '\end{smallmatrix})$',
       \])
 
+" tsd  /  Toggle surrounding delimiter (cf. #1620)
+call vimtex#test#keys('f+tsd', [
+      \ '\( a^2 + b^2 = c^2 \)',
+      \], [
+      \ '\( a^2 + b^2 = c^2 \)',
+      \])
+
 quit!
