@@ -485,6 +485,22 @@ Filetype plugin for bib files~
   See also https://github.com/lervag/vimtex/issues/1293 for some related
   discussions.
 
+Language server / texlab~
+                                                                *vimtex-nf-lsp*
+  In recent years, language servers (lsps) [0] has become very popular. There is
+  a language server for LaTeX and bibtex called texlab [1]. It may be
+  interesting both as an alternative to vimtex and/or in addition. One may use
+  it with e.g. |vim-lsp| [2] or |coc.nvim| [3, 4] or other lsps.
+
+  See also this vimtex issue [5] for more information.
+
+  [0]: https://langserver.org/
+  [1]: https://texlab.netlify.com/
+  [2]: https://github.com/prabirshrestha/vim-lsp
+  [3]: https://github.com/neoclide/coc.nvim
+  [4]: https://github.com/fannheyward/coc-texlab
+  [5]: https://github.com/lervag/vimtex/issues/1371
+
 ------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
 
