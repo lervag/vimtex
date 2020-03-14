@@ -281,8 +281,18 @@ FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
 The following is a list of features that one might think should be provided by
 vimtex, but that are instead better provided by other plugins.
 
-Linting and syntax checking~
+* Linting and syntax checking                      |vimtex-nf-linting|
+* Snippets/Templates                               |vimtex-nf-snippets|
+* Syntax highlighting                              |vimtex-nf-syntax|
+* Tag navigation                                   |vimtex-nf-tag-nav|
+* Manipulate surrounding cmds/delims/envs          |vimtex-nf-surround|
+* Enhanced matching and higlighting of delimiters  |vimtex-nf-enhanced-matchparen|
+* Formatting                                       |vimtex-nf-formatting|
+* Filetype plugin for bib files                    |vimtex-nf-ftplugin-bib|
+* Language server / texlab                         |vimtex-nf-lsp|
 
+Linting and syntax checking~
+                                                            *vimtex-nf-linting*
   The following is a list of good plugins that have support for (La)TeX
   syntax checking.
 
@@ -299,16 +309,16 @@ Linting and syntax checking~
   [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
 
 Snippets/Templates~
-
+                                                           *vimtex-nf-snippets*
   Snippets and/or templates are provided by for instance `neosnippet` and
   `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
 
 Syntax highlighting~
-
+                                                             *vimtex-nf-syntax*
   See |vimtex-comment-internal|.
 
 Tag navigation~
-
+                                                            *vimtex-nf-tag-nav*
   One may navigate by tags with the |CTRL-]| mapping, e.g. from
   `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
   this requires that a tag file has been generated with |ctags|. I recommend
@@ -322,7 +332,7 @@ Tag navigation~
   [1]: https://github.com/ludovicchabant/vim-gutentags
 
 Manipulate surrounding commands/delimiters/environments~
-
+                                                           *vimtex-nf-surround*
   |vimtex| provides mappings that change, delete and toggle commands,
   delimiters and environments (see the `ds`, `cs` and `ts` family of
   mappings listed under |vimtex-default-mappings|).  These mappings are
@@ -362,7 +372,7 @@ Manipulate surrounding commands/delimiters/environments~
   [3]: http://www.vim.org/scripts/script.php?script_id=3848
 
 Enhanced matching and higlighting of delimiters~
-
+                                                *vimtex-nf-enhanced-matchparen*
   |vimtex| highlights and allows navigation between matching pairs of
   delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
   the `\begin` and `\end` tags of environments. However, the implementation
@@ -408,7 +418,7 @@ Enhanced matching and higlighting of delimiters~
   [0]: https://github.com/andymass/vim-matchup
 
 Formatting~
-
+                                                         *vimtex-nf-formatting*
   vimtex has a custom |formatexpr| that may be enabled with the option
   |g:vimtex_format_enabled|. However, there are a lot of different styles for
   formatting LaTeX manuscripts. These are typically much more relevant when
@@ -454,7 +464,7 @@ Formatting~
   [9]: https://github.com/Konfekt/vim-sentence-chopper
 
 Filetype plugin for bib files~
-
+                                                       *vimtex-nf-ftplugin-bib*
   |vimtex| is not a filetype plugin for bibliography (`.bib`) files. However,
   it does include a couple of minor things, such as setting the 'comments' and
   'commentstring' options and a simple indentation expression, see
