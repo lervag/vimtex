@@ -168,6 +168,8 @@ function! s:local_name(name) abort " {{{1
         \ : expand('%:p:r')
   let l:filename = substitute(l:filename, '\s\+', '_', 'g')
   let l:filename = substitute(l:filename, '\/', '%', 'g')
+  let l:filename = substitute(l:filename, '\\', '%', 'g')
+  let l:filename = substitute(l:filename, ':', '%', 'g')
   return a:name . l:filename
 endfunction
 
