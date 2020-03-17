@@ -1656,7 +1656,7 @@ OPTIONS                                                        *vimtex-options*
   Note: This option is read during initialization of vimtex, and so it must be
         set early. I.e., it can not be set in `after/ftplugin/tex.vim`.
 
-  Default value: ['input', 'include', 'subfile']
+  Default value: ['input', 'include', 'subfile', 'subfileinclude']
 
 *g:vimtex_include_search_enabled*
   Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
