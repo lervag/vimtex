@@ -1314,10 +1314,10 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_delim_timeout*
 *g:vimtex_delim_insert_timeout*
-  Timeout when searching for matching delimiters. It is used for the {timeout}
-  argument of |search()|-like function calls. If the option is increased it
-  will make the matching more accurate, at the expense of potential lags. The
-  default value should work well for most people.
+  Timeout (in milliseconds) when searching for matching delimiters. It is used
+  for the {timeout} argument of |search()|-like function calls. If the option
+  is increased it will make the matching more accurate, at the expense of
+  potential lags. The default value should work well for most people.
 
   Default values: 300, 60 (respectively)
 
