@@ -490,7 +490,7 @@ Language server / texlab~
   In recent years, language servers (lsps) [0] has become very popular. There is
   a language server for LaTeX and bibtex called texlab [1]. It may be
   interesting both as an alternative to vimtex and/or in addition. One may use
-  it with e.g. |vim-lsp| [2] or |coc.nvim| [3, 4] or other lsps.
+  it with e.g. |vim-lsp| [2] or |coc-nvim| [3, 4] or other lsps.
 
   See also this vimtex issue [5] for more information.
 
@@ -3205,7 +3205,7 @@ Note: If you want to change the default value of `TEXMFHOME` in your shell
 AUTOCOMPLETE                                             *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-several good plugins that provide this: |coc.nvim|, |deoplete|, |neocomplete|, |ncm2|,
+several good plugins that provide this: |coc-nvim|, |deoplete|, |neocomplete|, |ncm2|,
 |nvim-completion-manager| and |youcompleteme|.  Moreover, there is |VimCompletesMe|
 that overrides <tab> to trigger different built-in completions, such as the
 omni-completion by vimtex, depending on the context. See below for
@@ -3213,11 +3213,11 @@ descriptions on how to setup these with |vimtex|.
 
 coc.nvim~
                                                      *vimtex-complete-coc.nvim*
-|coc.nvim| is an intellisense engine for Vim8 & Neovim. It's a completion
+|coc-nvim| is an intellisense engine for Vim8 & Neovim. It's a completion
 framework and language server client which supports extension features of
 Visual Studio Code. The project is here: https://github.com/neoclide/coc.nvim.
 
-|coc.nvim| can be installed using vim-plug: >
+|coc-nvim| can be installed using vim-plug: >
 
   Plug 'neoclide/coc.nvim'
 
@@ -3227,12 +3227,12 @@ https://github.com/neoclide/coc.nvim/wiki/Install-coc.nvim
 
 To configure for `vimtex`, one should use the extension plugin |coc-vimtex|,
 which may be found here: https://github.com/neoclide/coc-vimtex. To use it,
-first make sure you have |coc.nvim| installed, then just run: >
+first make sure you have |coc-nvim| installed, then just run: >
 
   :CocInstall coc-vimtex
 
 Additionally, you can configure code completion for TeX by setting these
-options in |coc.nvim|'s configuration file `coc-settings.json` >
+options in |coc-nvim|'s configuration file `coc-settings.json` >
 
   coc.source.vimtex.disableSyntaxes // disabled syntax names
   coc.source.vimtex.enable          // set to false to disable this source
