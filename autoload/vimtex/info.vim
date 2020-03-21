@@ -192,7 +192,7 @@ function! s:get_os_info() abort " {{{1
     return l:name . ' ' . l:version . ' (' . l:build . ')'
   else
     if !exists('s:win_info')
-      let s:win_info = vimtex#process#capture(systeminfo)
+      let s:win_info = vimtex#process#capture('systeminfo')
     endif
 
     let l:name = matchstr(s:win_info[1], ':\s*\zs.*')
