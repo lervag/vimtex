@@ -292,12 +292,25 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_view_method', 'general')
   call s:init_option('vimtex_view_use_temp_files', 0)
   call s:init_option('vimtex_view_forward_search_on_start', 1)
-  call s:init_option('vimtex_view_general_viewer', get({
-        \ 'linux' : 'xdg-open',
-        \ 'mac'   : 'open',
-        \}, vimtex#util#get_os(), ''))
-  call s:init_option('vimtex_view_general_options', '@pdf')
-  call s:init_option('vimtex_view_general_options_latexmk', '')
+
+  " OS dependent defaults
+  let l:os = vimtex#util#get_os()
+  if l:os ==# 'win' && executable('SumatraPDF')
+    call s:init_option('vimtex_view_general_viewer', 'SumatraPDF')
+    call s:init_option('vimtex_view_general_options',
+          \ '-reuse-instance -forward-search @tex @line @pdf')
+    call s:init_option('vimtex_view_general_options_latexmk',
+          \ 'reuse-instance')
+  else
+    call s:init_option('vimtex_view_general_viewer', get({
+          \ 'linux' : 'xdg-open',
+          \ 'mac'   : 'open',
+          \ 'win'   : 'explorer.exe',
+          \}, l:os, ''))
+    call s:init_option('vimtex_view_general_options', '@pdf')
+    call s:init_option('vimtex_view_general_options_latexmk', '')
+  endif
+
   call s:init_option('vimtex_view_mupdf_options', '')
   call s:init_option('vimtex_view_mupdf_send_keys', '')
   call s:init_option('vimtex_view_skim_activate', 0)

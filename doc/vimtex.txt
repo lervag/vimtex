@@ -2385,15 +2385,17 @@ OPTIONS                                                        *vimtex-options*
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
-          portable and starts up very fast.  It supports forward search. >
+          portable and starts up very fast.  It supports forward search. The
+          following settings are applied as defaults on Windows if
+          `SumatraPDF` is detected as executable: >
 
             let g:vimtex_view_general_viewer = 'SumatraPDF'
             let g:vimtex_view_general_options
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Backward search can be set up either in the viewer or in (g)Vim by
-          the adding the following lines to your vimrc: >
+          Backward search can be set up in SumatraPDF. One can also try to set
+          it from Vim by adding the following lines to ones vimrc: >
 
             let g:vimtex_view_general_options
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
@@ -2525,8 +2527,9 @@ OPTIONS                                                        *vimtex-options*
   Use generic viewer application, see |vimtex_viewer_general|.
 
   Default value:
-    Linux: `xdg-open`
-    Mac:   `open`
+    Linux:   `xdg-open`
+    Mac:     `open`
+    Windows: `SumatraPDF` if available, else `explorer.exe`
 
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
