@@ -295,12 +295,16 @@ function! vimtex#init_options() abort " {{{1
 
   " OS dependent defaults
   let l:os = vimtex#util#get_os()
-  if l:os ==# 'win' && executable('SumatraPDF')
-    call s:init_option('vimtex_view_general_viewer', 'SumatraPDF')
-    call s:init_option('vimtex_view_general_options',
-          \ '-reuse-instance -forward-search @tex @line @pdf')
-    call s:init_option('vimtex_view_general_options_latexmk',
-          \ 'reuse-instance')
+  if l:os ==# 'win
+    if executable('SumatraPDF')
+      call s:init_option('vimtex_view_general_viewer', 'SumatraPDF')
+      call s:init_option('vimtex_view_general_options',
+            \ '-reuse-instance -forward-search @tex @line @pdf')
+      call s:init_option('vimtex_view_general_options_latexmk',
+            \ 'reuse-instance')
+    elseif executable('mupdf')
+      call s:init_option('vimtex_view_general_viewer', 'mupdf')
+    endif
   else
     call s:init_option('vimtex_view_general_viewer', get({
           \ 'linux' : 'xdg-open',
