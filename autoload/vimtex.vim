@@ -305,7 +305,7 @@ function! vimtex#init_options() abort " {{{1
     call s:init_option('vimtex_view_general_viewer', get({
           \ 'linux' : 'xdg-open',
           \ 'mac'   : 'open',
-          \ 'win'   : 'explorer.exe',
+          \ 'win'   : 'start',
           \}, l:os, ''))
     call s:init_option('vimtex_view_general_options', '@pdf')
     call s:init_option('vimtex_view_general_options_latexmk', '')
