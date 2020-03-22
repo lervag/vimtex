@@ -2415,9 +2415,10 @@ OPTIONS                                                        *vimtex-options*
     *vimtex_viewer_mupdf*
       http://www.mupdf.com/
       A very minimalistic and quick PDF viewer.  Supports forward and backward
-      search.  Backward search is available with |VimtexRSearch|, which is
-      mapped to '<localleader>lr'.  One may also define a set of keys that is
-      sent to MuPDF on startup with |g:vimtex_view_mupdf_send_keys|.
+      search.  Backward search is available via xdotool (under Unix) with
+      |VimtexRSearch|, which is mapped to '<localleader>lr'.  One may also
+      define a set of keys that is sent to MuPDF on startup with
+      |g:vimtex_view_mupdf_send_keys|.
 
       Note: Both forward and backward search requires `xdotool` to work.
             Forward search will only take you to the correct page.  Backward
@@ -2529,7 +2530,7 @@ OPTIONS                                                        *vimtex-options*
   Default value:
     Linux:   `xdg-open`
     Mac:     `open`
-    Windows: `SumatraPDF` if available, else `explorer.exe`
+    Windows: `SumatraPDF` or `mupdf` if available, else `start`
 
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
