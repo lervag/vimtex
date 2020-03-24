@@ -2,6 +2,8 @@ set nocompatible
 let &rtp = '../../..,' . &rtp
 filetype plugin on
 
+set nomore
+
 nnoremap q :qall!<cr>
 
 silent edit $TEXFILE

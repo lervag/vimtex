@@ -6,13 +6,14 @@
 
 function! vimtex#parser#tex#parse(file, opts) abort " {{{1
   let l:opts = extend({
-          \ 're_input' : g:vimtex#re#tex_input,
-          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
-          \}, a:opts)
+        \ 'detailed': 1,
+        \ 're_input' : g:vimtex#re#tex_input,
+        \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
+        \}, a:opts)
 
   let l:parsed = s:parse(a:file, l:opts, [])
 
-  if !get(a:opts, 'detailed', 1)
+  if !l:opts.detailed
     call map(l:parsed, 'v:val[2]')
   endif
 
@@ -84,7 +85,6 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
 endfunction
 
 " }}}1
-
 
 function! s:input_parser(line, current_file, root) abort " {{{1
   " Handle \space commands
