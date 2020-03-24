@@ -6,7 +6,13 @@
 
 function! vimtex#parser#general#parse(file, opts) abort " {{{1
   let l:parser = s:parser.new(a:opts)
-  return l:parser.parse(a:file)
+  let l:parsed = l:parser.parse(a:file)
+
+  if !l:parser.detailed
+    call map(l:parsed, 'v:val[2]')
+  endif
+
+  return l:parsed
 endfunction
 
 " }}}1
@@ -44,30 +50,26 @@ function! s:parser.parse(file) abort dict " {{{1
   endif
   call add(self.prev_parsed, a:file)
 
-  let l:parsed = []
   let l:lnum = 0
+  let l:parsed = []
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if self.finished
+    if has_key(self, 're_stop') && l:line =~# self.re_stop
+      if get(self, 're_stop_inclusive')
+        call add(l:parsed, [a:file, l:lnum, l:line])
+      endif
       break
     endif
 
-    if has_key(self, 're_stop') && l:line =~# self.re_stop
-      let self.finished = 1
-      if !get(self, 're_stop_inclusive', 0) | break | endif
-    endif
+    call add(l:parsed, [a:file, l:lnum, l:line])
 
-    if self.detailed
-      call add(l:parsed, [a:file, l:lnum, l:line])
-    else
-      call add(l:parsed, l:line)
-    endif
+    " Minor optimization: Avoid complex regex on "simple" lines
+    if stridx(l:line, '\') < 0 | continue | endif
 
     if l:line =~# self.input_re
       let l:file = self.input_parser(l:line, a:file, self.input_re)
       call extend(l:parsed, self.parse(l:file))
-      continue
     endif
   endfor
 
