@@ -292,6 +292,10 @@ function! s:toc.create() abort dict " {{{1
 
   " Jump to closest index
   call vimtex#pos#set_cursor(self.get_closest_index())
+
+  if exists('#User#VimtexEventTocCreated')
+    doautocmd <nomodeline> User VimtexEventTocCreated
+  endif
 endfunction
 
 " }}}1

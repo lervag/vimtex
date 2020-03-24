@@ -3041,6 +3041,9 @@ further customization.
   *VimtexEventCompileStopped*
     This event is triggered after compilation is stopped.
 
+  *VimtexEventTocCreated*
+    This event is triggered after a ToC window is created.
+
 Examples: >
 
   " Compile on initialization, cleanup on quit
@@ -3050,8 +3053,8 @@ Examples: >
     au User VimtexEventInitPost call vimtex#compiler#compile()
   augroup END
 
-  " Close viewers on quit
   function! CloseViewers()
+    " Close viewers on quit
     if executable('xdotool') && exists('b:vimtex')
         \ && exists('b:vimtex.viewer') && b:vimtex.viewer.xwin_id > 0
       call system('xdotool windowclose '. b:vimtex.viewer.xwin_id)
@@ -3062,6 +3065,17 @@ Examples: >
     au!
     au User VimtexEventQuit call CloseViewers()
   augroup END
+
+  function! TocMappings()
+    " You probably don't want to do this, though...
+    nnoremap <silent><nowait><buffer> q :quitall!
+  endfunction
+
+  augroup vimtex_event_3
+    au!
+    au User VimtexEventTocCreated call TocMappings()
+  augroup END
+
 
 ==============================================================================
 COMPLETION                                                  *vimtex-completion*
