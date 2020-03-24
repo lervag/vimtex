@@ -379,8 +379,9 @@ function! s:get_main_recurse(...) abort " {{{1
     let l:tried[l:file] = [l:file]
   endif
 
-  let l:re_filter = g:vimtex#re#tex_input
-        \ . '\s*\f*' . fnamemodify(l:file, ':t:r')
+  " Apply filters successively (minor optimization)
+  let l:re_filter1 = fnamemodify(l:file, ':t:r')
+  let l:re_filter2 = g:vimtex#re#tex_input . '\s*\f*' . l:re_filter1
 
   " Search through candidates found recursively upwards in the directory tree
   let l:results = []
@@ -388,7 +389,9 @@ function! s:get_main_recurse(...) abort " {{{1
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
 
-    if len(filter(readfile(l:cand), 'v:val =~# l:re_filter')) > 0
+    if len(filter(filter(readfile(l:cand),
+          \ 'v:val =~# l:re_filter1'),
+          \ 'v:val =~# l:re_filter2')) > 0
       let l:results += s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
     endif
   endfor
