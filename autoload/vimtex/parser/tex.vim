@@ -7,7 +7,6 @@
 function! vimtex#parser#tex#parse(file, opts) abort " {{{1
   let l:opts = extend({
         \ 'detailed': 1,
-        \ 're_input' : g:vimtex#re#tex_input,
         \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
         \}, a:opts)
 
@@ -38,6 +37,9 @@ function! s:parse(file, opts, parsed_files) abort " {{{1
   endif
   call add(a:parsed_files, a:file)
 
+  " Also load includes from glsentries
+  let l:re_input = g:vimtex#re#tex_input . '|^\s*\\loadglsentries'
+
   let l:lnum = 0
   let l:parsed = []
   for l:line in readfile(a:file)
@@ -48,7 +50,7 @@ function! s:parse(file, opts, parsed_files) abort " {{{1
     " Minor optimization: Avoid complex regex on "simple" lines
     if stridx(l:line, '\') < 0 | continue | endif
 
-    if l:line =~# a:opts.re_input
+    if l:line =~# l:re_input
       let l:file = s:input_parser(l:line, a:file, a:opts.root)
       call extend(l:parsed, s:parse(l:file, a:opts, a:parsed_files))
     endif

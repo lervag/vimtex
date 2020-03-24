@@ -720,14 +720,12 @@ endfunction
 function! s:completer_gls.parse_glsentries() dict abort " {{{2
   let l:candidates = []
 
-  let l:re_input = g:vimtex#re#tex_input . '|^\s*\\loadglsentries'
   let l:re_commands = '\v\\(' . join(keys(self.key), '|') . ')'
   let l:re_matcher = l:re_commands . '\s*%(\[.*\])=\s*\{([^{}]*)'
 
-  for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
-        \   'detailed' : 0,
-        \   're_input' : l:re_input,
-        \ }), 'v:val =~# l:re_commands')
+  for l:line in filter(
+        \ vimtex#parser#tex(b:vimtex.tex, {'detailed' : 0}),
+        \ 'v:val =~# l:re_commands')
     let l:matches = matchlist(l:line, l:re_matcher)
     call add(l:candidates, {
           \ 'word' : l:matches[2],
