@@ -48,8 +48,8 @@ endfunction
 
 function! vimtex#parser#get_externalfiles() abort " {{{1
   let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
-        \ 're_stop' : '\\begin{document}',
         \ 'detailed' : 0,
+        \ 'preamble' : 1,
         \})
 
   let l:result = []
@@ -118,7 +118,7 @@ function! vimtex#parser#selection_to_texfile(type, ...) range abort " {{{1
   "
   let l:lines = vimtex#parser#tex(b:vimtex.tex, {
         \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
+        \ 'preamble' : 1,
         \})
         \ + ['\begin{document}']
         \ + l:lines[l:start : l:end]

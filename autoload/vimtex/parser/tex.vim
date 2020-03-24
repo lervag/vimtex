@@ -5,10 +5,16 @@
 "
 
 function! vimtex#parser#tex#parse(file, opts) abort " {{{1
-  let l:parser = s:parser.new(a:opts)
-  let l:parsed = l:parser.parse(a:file)
+  let l:opts = extend({
+          \ 'preamble' : 0,
+          \ 'preamble_inclusive' : 0,
+          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
+          \ 're_input' : g:vimtex#re#tex_input,
+          \}, a:opts)
 
-  if !l:parser.detailed
+  let l:parsed = s:parse_recurse(a:file, l:opts, [])
+
+  if !get(a:opts, 'detailed', 1)
     call map(l:parsed, 'v:val[2]')
   endif
 
@@ -17,39 +23,19 @@ endfunction
 
 " }}}1
 
-let s:parser = {
-      \ 'detailed' : 1,
-      \ 'prev_parsed' : [],
-      \ 'root' : '',
-      \ 'finished' : 0,
-      \ 're_input' : g:vimtex#re#tex_input,
-      \}
-
-function! s:parser.new(opts) abort dict " {{{1
-  let l:parser = extend(deepcopy(self), a:opts)
-
-  if empty(l:parser.root) && exists('b:vimtex.root')
-    let l:parser.root = b:vimtex.root
-  endif
-
-  unlet l:parser.new
-  return l:parser
-endfunction
-
-" }}}1
-function! s:parser.parse(file) abort dict " {{{1
-  if !filereadable(a:file) || index(self.prev_parsed, a:file) >= 0
+function! s:parse_recurse(file, opts, parsed_files) abort " {{{1
+  if !filereadable(a:file) || index(a:parsed_files, a:file) >= 0
     return []
   endif
-  call add(self.prev_parsed, a:file)
+  call add(a:parsed_files, a:file)
 
   let l:lnum = 0
   let l:parsed = []
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if has_key(self, 're_stop') && l:line =~# self.re_stop
-      if get(self, 're_stop_inclusive')
+    if a:opts.preamble && l:line =~# '\\begin\s*{document}'
+      if a:opts.preamble_inclusive
         call add(l:parsed, [a:file, l:lnum, l:line])
       endif
       break
@@ -60,9 +46,9 @@ function! s:parser.parse(file) abort dict " {{{1
     " Minor optimization: Avoid complex regex on "simple" lines
     if stridx(l:line, '\') < 0 | continue | endif
 
-    if l:line =~# self.re_input
-      let l:file = self.input_parser(l:line, a:file)
-      call extend(l:parsed, self.parse(l:file))
+    if l:line =~# a:opts.re_input
+      let l:file = s:input_parser(l:line, a:file, a:opts.root)
+      call extend(l:parsed, s:parse_recurse(l:file, a:opts, a:parsed_files))
     endif
   endfor
 
@@ -70,7 +56,9 @@ function! s:parser.parse(file) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:parser.input_parser(line, current_file) abort dict " {{{1
+
+
+function! s:input_parser(line, current_file, root) abort " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
@@ -78,7 +66,7 @@ function! s:parser.input_parser(line, current_file) abort dict " {{{1
   if l:file =~# g:vimtex#re#tex_input_import
     let l:root = l:file =~# '\\sub'
           \ ? fnamemodify(a:current_file, ':p:h')
-          \ : self.root
+          \ : a:root
 
     let l:candidate = s:input_to_filename(
           \ substitute(copy(l:file), '}\s*{', '', 'g'), l:root)
@@ -89,12 +77,11 @@ function! s:parser.input_parser(line, current_file) abort dict " {{{1
           \ substitute(copy(l:file), '{.{-}}', '', ''), l:root)
     endif
   else
-    return s:input_to_filename(l:file, self.root)
+    return s:input_to_filename(l:file, a:root)
   endif
 endfunction
 
 " }}}1
-
 function! s:input_to_filename(input, root) abort " {{{1
   let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
 

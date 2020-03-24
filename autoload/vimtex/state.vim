@@ -451,8 +451,8 @@ function! s:file_is_main(file) abort " {{{1
   " A main file contains `\begin{document}`
   let l:lines = vimtex#parser#tex(a:file, {
         \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
-        \ 're_stop_inclusive' : 1,
+        \ 'preamble' : 1,
+        \ 'preamble_inclusive' : 1,
         \ 'root' : fnamemodify(a:file, ':p:h'),
         \})
   call filter(l:lines, 'v:val =~# ''\\begin\s*{document}''')
@@ -524,7 +524,7 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   "
   let l:new.preamble = vimtex#parser#tex(l:new.tex, {
         \ 'detailed' : 0,
-        \ 're_stop' : '\\begin\s*{document}',
+        \ 'preamble' : 1,
         \ 'root' : l:new.root,
         \})
 

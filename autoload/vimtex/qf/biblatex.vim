@@ -70,7 +70,7 @@ function! s:biblatex.get_db_files() abort " {{{1
   if empty(self.db_files)
     let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
           \ 'detailed' : 0,
-          \ 're_stop' : '\\begin\s*{document}',
+          \ 'preamble' : 1,
           \ 'root' : b:vimtex.root,
           \})
     let l:files = map(
