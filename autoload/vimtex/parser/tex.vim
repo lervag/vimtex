@@ -6,13 +6,11 @@
 
 function! vimtex#parser#tex#parse(file, opts) abort " {{{1
   let l:opts = extend({
-          \ 'preamble' : 0,
-          \ 'preamble_inclusive' : 0,
-          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
           \ 're_input' : g:vimtex#re#tex_input,
+          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
           \}, a:opts)
 
-  let l:parsed = s:parse_recurse(a:file, l:opts, [])
+  let l:parsed = s:parse(a:file, l:opts, [])
 
   if !get(a:opts, 'detailed', 1)
     call map(l:parsed, 'v:val[2]')
@@ -22,8 +20,18 @@ function! vimtex#parser#tex#parse(file, opts) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
+  let l:opts = extend({
+          \ 'inclusive' : 0,
+          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
+          \}, a:opts)
 
-function! s:parse_recurse(file, opts, parsed_files) abort " {{{1
+  return s:parse_preamble(a:file, l:opts, [])
+endfunction
+
+" }}}1
+
+function! s:parse(file, opts, parsed_files) abort " {{{1
   if !filereadable(a:file) || index(a:parsed_files, a:file) >= 0
     return []
   endif
@@ -34,13 +42,6 @@ function! s:parse_recurse(file, opts, parsed_files) abort " {{{1
   for l:line in readfile(a:file)
     let l:lnum += 1
 
-    if a:opts.preamble && l:line =~# '\\begin\s*{document}'
-      if a:opts.preamble_inclusive
-        call add(l:parsed, [a:file, l:lnum, l:line])
-      endif
-      break
-    endif
-
     call add(l:parsed, [a:file, l:lnum, l:line])
 
     " Minor optimization: Avoid complex regex on "simple" lines
@@ -48,11 +49,38 @@ function! s:parse_recurse(file, opts, parsed_files) abort " {{{1
 
     if l:line =~# a:opts.re_input
       let l:file = s:input_parser(l:line, a:file, a:opts.root)
-      call extend(l:parsed, s:parse_recurse(l:file, a:opts, a:parsed_files))
+      call extend(l:parsed, s:parse(l:file, a:opts, a:parsed_files))
     endif
   endfor
 
   return l:parsed
+endfunction
+
+" }}}1
+function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
+  if !filereadable(a:file) || index(a:parsed_files, a:file) >= 0
+    return []
+  endif
+  call add(a:parsed_files, a:file)
+
+  let l:lines = []
+  for l:line in readfile(a:file)
+    if l:line =~# '\\begin\s*{document}'
+      if a:opts.inclusive
+        call add(l:lines, l:line)
+      endif
+      break
+    endif
+
+    call add(l:lines, l:line)
+
+    if l:line =~# g:vimtex#re#tex_input
+      let l:file = s:input_parser(l:line, a:file, a:opts.root)
+      call extend(l:lines, s:parse_preamble(l:file, a:opts, a:parsed_files))
+    endif
+  endfor
+
+  return l:lines
 endfunction
 
 " }}}1

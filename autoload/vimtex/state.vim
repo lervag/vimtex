@@ -449,10 +449,8 @@ function! s:file_is_main(file) abort " {{{1
   if len(l:lines) == 0 | return 0 | endif
 
   " A main file contains `\begin{document}`
-  let l:lines = vimtex#parser#tex(a:file, {
-        \ 'detailed' : 0,
-        \ 'preamble' : 1,
-        \ 'preamble_inclusive' : 1,
+  let l:lines = vimtex#parser#preamble(a:file, {
+        \ 'inclusive' : 1,
         \ 'root' : fnamemodify(a:file, ':p:h'),
         \})
   call filter(l:lines, 'v:val =~# ''\\begin\s*{document}''')
@@ -522,9 +520,7 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   " documentclass and the package list; we store it as a temporary shared
   " object variable
   "
-  let l:new.preamble = vimtex#parser#tex(l:new.tex, {
-        \ 'detailed' : 0,
-        \ 'preamble' : 1,
+  let l:new.preamble = vimtex#parser#preamble(l:new.tex, {
         \ 'root' : l:new.root,
         \})
 
@@ -647,7 +643,7 @@ endfunction
 " }}}1
 function! s:vimtex.gather_sources() abort dict " {{{1
   let self.sources = map(
-        \ vimtex#parser#tex(self.tex, { 'root' : self.root }),
+        \ vimtex#parser#tex(self.tex, {'root' : self.root}),
         \ 'v:val[0]')
   let self.sources = vimtex#util#uniq_unsorted(self.sources)
 

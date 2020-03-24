@@ -9,6 +9,11 @@ function! vimtex#parser#tex(file, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#parser#preamble(file, ...) abort " {{{1
+  return vimtex#parser#tex#parse_preamble(a:file, a:0 > 0 ? a:1 : {})
+endfunction
+
+" }}}1
 function! vimtex#parser#aux(file) abort " {{{1
   return vimtex#parser#aux#parse(a:file)
 endfunction
@@ -47,10 +52,7 @@ endfunction
 " }}}1
 
 function! vimtex#parser#get_externalfiles() abort " {{{1
-  let l:preamble = vimtex#parser#tex(b:vimtex.tex, {
-        \ 'detailed' : 0,
-        \ 'preamble' : 1,
-        \})
+  let l:preamble = vimtex#parser#preamble(b:vimtex.tex)
 
   let l:result = []
   for l:line in filter(l:preamble, 'v:val =~# ''\\externaldocument''')
@@ -116,10 +118,7 @@ function! vimtex#parser#selection_to_texfile(type, ...) range abort " {{{1
   "
   " Define the set of lines to compile
   "
-  let l:lines = vimtex#parser#tex(b:vimtex.tex, {
-        \ 'detailed' : 0,
-        \ 'preamble' : 1,
-        \})
+  let l:lines = vimtex#parser#preamble(b:vimtex.tex)
         \ + ['\begin{document}']
         \ + l:lines[l:start : l:end]
         \ + ['\end{document}']
