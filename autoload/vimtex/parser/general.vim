@@ -23,8 +23,8 @@ let s:parser = {
       \ 'root' : '',
       \ 'finished' : 0,
       \ 'type' : 'tex',
-      \ 'input_re_tex' : g:vimtex#re#tex_input,
-      \ 'input_re_aux' : '\\@input{',
+      \ 're_input_tex' : g:vimtex#re#tex_input,
+      \ 're_input_aux' : '\\@input{',
       \}
 
 function! s:parser.new(opts) abort dict " {{{1
@@ -34,8 +34,8 @@ function! s:parser.new(opts) abort dict " {{{1
     let l:parser.root = b:vimtex.root
   endif
 
-  let l:parser.input_re = get(l:parser, 'input_re',
-        \ get(l:parser, 'input_re_' . l:parser.type))
+  let l:parser.re_input = get(l:parser, 're_input',
+        \ get(l:parser, 're_input_' . l:parser.type))
   let l:parser.input_parser = get(l:parser, 'input_parser',
         \ get(l:parser, 'input_line_parser_' . l:parser.type))
 
@@ -67,8 +67,8 @@ function! s:parser.parse(file) abort dict " {{{1
     " Minor optimization: Avoid complex regex on "simple" lines
     if stridx(l:line, '\') < 0 | continue | endif
 
-    if l:line =~# self.input_re
-      let l:file = self.input_parser(l:line, a:file, self.input_re)
+    if l:line =~# self.re_input
+      let l:file = self.input_parser(l:line, a:file, self.re_input)
       call extend(l:parsed, self.parse(l:file))
     endif
   endfor

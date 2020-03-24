@@ -735,7 +735,7 @@ function! s:completer_gls.parse_glsentries() dict abort " {{{2
 
   for l:line in filter(vimtex#parser#tex(b:vimtex.tex, {
         \   'detailed' : 0,
-        \   'input_re' : l:re_input,
+        \   're_input' : l:re_input,
         \ }), 'v:val =~# l:re_commands')
     let l:matches = matchlist(l:line, l:re_matcher)
     call add(l:candidates, {

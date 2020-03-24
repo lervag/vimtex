@@ -22,13 +22,12 @@ function! vimtex#parser#fls(file, ...) abort " {{{1
   let l:options = extend(a:0 > 0 ? a:1 : {}, {
         \ 'detailed' : 0,
         \ 'type' : 'fls',
-        \ 'input_re_fls' : 'nomatch^',
+        \ 're_input_fls' : 'nomatch^',
         \}, 'keep')
   return vimtex#parser#general#parse(a:file, l:options)
 endfunction
 
 " }}}1
-
 function! vimtex#parser#toc(...) abort " {{{1
   let l:vimtex = a:0 > 0 ? a:1 : b:vimtex
 
@@ -50,7 +49,6 @@ function! vimtex#parser#toc(...) abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#parser#bib(file, ...) abort " {{{1
   return vimtex#parser#bib#parse(a:file, a:0 > 0 ? a:1 : {})
 endfunction
