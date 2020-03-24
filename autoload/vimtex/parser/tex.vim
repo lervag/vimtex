@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#parser#general#parse(file, opts) abort " {{{1
+function! vimtex#parser#tex#parse(file, opts) abort " {{{1
   let l:parser = s:parser.new(a:opts)
   let l:parsed = l:parser.parse(a:file)
 
@@ -22,9 +22,7 @@ let s:parser = {
       \ 'prev_parsed' : [],
       \ 'root' : '',
       \ 'finished' : 0,
-      \ 'type' : 'tex',
-      \ 're_input_tex' : g:vimtex#re#tex_input,
-      \ 're_input_aux' : '\\@input{',
+      \ 're_input' : g:vimtex#re#tex_input,
       \}
 
 function! s:parser.new(opts) abort dict " {{{1
@@ -33,11 +31,6 @@ function! s:parser.new(opts) abort dict " {{{1
   if empty(l:parser.root) && exists('b:vimtex.root')
     let l:parser.root = b:vimtex.root
   endif
-
-  let l:parser.re_input = get(l:parser, 're_input',
-        \ get(l:parser, 're_input_' . l:parser.type))
-  let l:parser.input_parser = get(l:parser, 'input_parser',
-        \ get(l:parser, 'input_line_parser_' . l:parser.type))
 
   unlet l:parser.new
   return l:parser
@@ -68,7 +61,7 @@ function! s:parser.parse(file) abort dict " {{{1
     if stridx(l:line, '\') < 0 | continue | endif
 
     if l:line =~# self.re_input
-      let l:file = self.input_parser(l:line, a:file, self.re_input)
+      let l:file = self.input_parser(l:line, a:file)
       call extend(l:parsed, self.parse(l:file))
     endif
   endfor
@@ -77,11 +70,7 @@ function! s:parser.parse(file) abort dict " {{{1
 endfunction
 
 " }}}1
-
-"
-" Input line parsers
-"
-function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{{1
+function! s:parser.input_parser(line, current_file) abort dict " {{{1
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
@@ -105,31 +94,7 @@ function! s:parser.input_line_parser_tex(line, current_file, re) abort dict " {{
 endfunction
 
 " }}}1
-function! s:parser.input_line_parser_aux(line, file, re) abort dict " {{{1
-  let l:file = matchstr(a:line, a:re . '\zs[^}]\+\ze}')
 
-  " Remove extension to simplify the parsing (e.g. for "my file name".aux)
-  let l:file = substitute(l:file, '\.aux', '', '')
-
-  " Trim whitespaces and quotes from beginning/end of string, append extension
-  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
-  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
-  let l:file .= '.aux'
-
-  " Use absolute paths
-  if l:file !~# '\v^(\/|[A-Z]:)'
-    let l:file = fnamemodify(a:file, ':p:h') . '/' . l:file
-  endif
-
-  " Only return filename if it is readable
-  return filereadable(l:file) ? l:file : ''
-endfunction
-
-" }}}1
-
-"
-" Utility functions
-"
 function! s:input_to_filename(input, root) abort " {{{1
   let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
 

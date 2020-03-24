@@ -5,26 +5,17 @@
 "
 
 function! vimtex#parser#tex(file, ...) abort " {{{1
-  return vimtex#parser#general#parse(a:file, a:0 > 0 ? a:1 : {})
+  return vimtex#parser#tex#parse(a:file, a:0 > 0 ? a:1 : {})
 endfunction
 
 " }}}1
-function! vimtex#parser#aux(file, ...) abort " {{{1
-  let l:options = extend(a:0 > 0 ? a:1 : {}, {
-        \ 'detailed' : 0,
-        \ 'type' : 'aux',
-        \}, 'keep')
-  return vimtex#parser#general#parse(a:file, l:options)
+function! vimtex#parser#aux(file) abort " {{{1
+  return vimtex#parser#aux#parse(a:file)
 endfunction
 
 " }}}1
-function! vimtex#parser#fls(file, ...) abort " {{{1
-  let l:options = extend(a:0 > 0 ? a:1 : {}, {
-        \ 'detailed' : 0,
-        \ 'type' : 'fls',
-        \ 're_input_fls' : 'nomatch^',
-        \}, 'keep')
-  return vimtex#parser#general#parse(a:file, l:options)
+function! vimtex#parser#fls(file) abort " {{{1
+  return vimtex#parser#fls#parse(a:file)
 endfunction
 
 " }}}1
