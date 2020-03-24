@@ -9,6 +9,7 @@ test: latexrun
 	@PATH=$$PATH:. chronic $(MYVIM) -u test.vim
 	@rm -f minimal.*
 	@rm -f .latexrun.db.lock
+	@rm -r out
 
 latexrun:
 	@wget \
