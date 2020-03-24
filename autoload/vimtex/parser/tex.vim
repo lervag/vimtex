@@ -26,6 +26,22 @@ function! vimtex#parser#tex#parse(file, opts) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#parser#tex#parse_files(file, opts) abort " {{{1
+  let l:opts = extend({
+        \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
+        \}, a:opts)
+
+  let l:cache = vimtex#cache#open('texparser', {
+        \ 'local': 1,
+        \ 'persistent': 0,
+        \ 'default': {'ftime': -2},
+        \})
+
+  return vimtex#util#uniq_unsorted(
+        \ s:parse_files(a:file, l:opts, l:cache))
+endfunction
+
+" }}}1
 function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
   let l:opts = extend({
           \ 'inclusive' : 0,
@@ -42,7 +58,7 @@ function! s:parse(file, opts, cache) abort " {{{1
   let l:ftime = getftime(a:file)
   if l:ftime > l:current.ftime
     let l:current.ftime = l:ftime
-    let l:current.lines = s:parse_current(a:file, a:opts)
+    call s:parse_current(a:file, a:opts, l:current)
   endif
 
   let l:parsed = []
@@ -59,8 +75,29 @@ function! s:parse(file, opts, cache) abort " {{{1
 endfunction
 
 " }}}1
-function! s:parse_current(file, opts) abort " {{{1
-  let l:lines = []
+function! s:parse_files(file, opts, cache) abort " {{{1
+  let l:current = a:cache.get(a:file)
+  let l:ftime = getftime(a:file)
+  if l:ftime > l:current.ftime
+    let l:current.ftime = l:ftime
+    call s:parse_current(a:file, a:opts, l:current)
+  endif
+
+  " Only include existing files
+  if !filereadable(a:file) | return [] | endif
+
+  let l:files = [a:file]
+  for l:file in l:current.includes
+    let l:files += s:parse_files(l:file, a:opts, a:cache)
+  endfor
+
+  return l:files
+endfunction
+
+" }}}1
+function! s:parse_current(file, opts, current) abort " {{{1
+  let a:current.lines = []
+  let a:current.includes = []
 
   " Also load includes from glsentries
   let l:re_input = g:vimtex#re#tex_input . '|^\s*\\loadglsentries'
@@ -69,19 +106,18 @@ function! s:parse_current(file, opts) abort " {{{1
     let l:lnum = 0
     for l:line in readfile(a:file)
       let l:lnum += 1
-      call add(l:lines, [a:file, l:lnum, l:line])
+      call add(a:current.lines, [a:file, l:lnum, l:line])
 
       " Minor optimization: Avoid complex regex on "simple" lines
       if stridx(l:line, '\') < 0 | continue | endif
 
       if l:line =~# l:re_input
         let l:file = s:input_parser(l:line, a:file, a:opts.root)
-        call add(l:lines, l:file)
+        call add(a:current.lines, l:file)
+        call add(a:current.includes, l:file)
       endif
     endfor
   endif
-
-  return l:lines
 endfunction
 
 " }}}1
