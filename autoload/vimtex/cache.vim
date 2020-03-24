@@ -135,11 +135,6 @@ function! s:cache.write() dict abort " {{{1
 
   if !self.modified | return | endif
 
-  if localtime() <= self.ftime + 299
-    " Too short since last write
-    return
-  endif
-
   call self.read()
   call writefile([json_encode(self.data)], self.path)
   let self.ftime = getftime(self.path)
