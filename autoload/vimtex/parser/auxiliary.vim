@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#parser#aux#parse(file) abort " {{{1
+function! vimtex#parser#auxiliary#parse(file) abort " {{{1
   return s:parse_recurse(a:file, [])
 endfunction
 

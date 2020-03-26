@@ -14,8 +14,8 @@ function! vimtex#parser#preamble(file, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#parser#aux(file) abort " {{{1
-  return vimtex#parser#aux#parse(a:file)
+function! vimtex#parser#auxiliary(file) abort " {{{1
+  return vimtex#parser#auxiliary#parse(a:file)
 endfunction
 
 " }}}1

@@ -371,7 +371,7 @@ function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
   "
 
   let l:labels = []
-  let l:lines = vimtex#parser#aux(a:file)
+  let l:lines = vimtex#parser#auxiliary(a:file)
   let l:lines = filter(l:lines, 'v:val =~# ''\\newlabel{''')
   let l:lines = filter(l:lines, 'v:val !~# ''@cref''')
   let l:lines = filter(l:lines, 'v:val !~# ''sub@''')
