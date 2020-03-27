@@ -293,20 +293,23 @@ vimtex, but that are instead better provided by other plugins.
 
 Linting and syntax checking~
                                                             *vimtex-nf-linting*
-  The following is a list of good plugins that have support for (La)TeX
-  syntax checking.
+  vimtex has some support for linting through the |:compiler| command, see
+  |vimtex-lint|. There exists several more dedicated, automatic linting
+  plugins. The following plugins have support for (La)TeX syntax checking
+  through `lacheck` [0], `chktex` [1], and `proselint` [2].
 
     `ale`         https://github.com/w0rp/ale
     `neomake`     https://github.com/neomake/neomake
     `syntastic`   https://github.com/vim-syntastic/syntastic
 
-  All of the above plugins support `lacheck` [0], `chktex` [1], `proselint` [2].
-  `neomake` also supports `rubberinfo` [3].
+  `neomake` also supports `rubberinfo` [3]. One may also be interested in
+  `blacktex` [4], which may be used to clean up/fix LaTeX code.
 
   [0]: https://www.ctan.org/pkg/lacheck
   [1]: http://www.nongnu.org/chktex/
   [2]: http://proselint.com/
   [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
+  [4]: https://github.com/nschloe/blacktex
 
 Snippets/Templates~
                                                            *vimtex-nf-snippets*
@@ -3872,6 +3875,9 @@ three compilers: `lacheck` [1], `chktex` [2], and `biber` [3]. These may be
 activated with the |:compiler| command, see |compiler-select|. A selected
 compiler may then be used e.g. with |:make| or |:lmake|. See the following
 text for some tips on how one may use this feature.
+
+It is possible to use more automatic linting through dedicated plugins. For
+more information, see |vimtex-nf-linting|.
 
 ------------------------------------------------------------------------------
 
