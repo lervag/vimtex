@@ -50,9 +50,26 @@ function! vimtex#test#keys(keys, context, expected) abort " {{{1
   call append(1, a:context)
   normal! ggdd
 
-  silent execute 'normal' a:keys
+  let l:fail_msg = ['keys: ' . a:keys]
+  let l:fail_msg += ['context:']
+  let l:fail_msg += map(copy(a:context), '"  " . v:val')
+  let l:fail_msg += ['expected:']
+  let l:fail_msg += map(copy(a:expected), '"  " . v:val')
 
-  call vimtex#test#assert_equal(getline(1, line('$')), a:expected)
+  try
+    silent execute 'normal' a:keys
+  catch
+    let l:fail_msg += ['error:']
+    let l:fail_msg += ['  ' . v:exception]
+    call s:fail(l:fail_msg)
+  endtry
+
+  let l:result = getline(1, line('$'))
+  if l:result ==# a:expected | return 1 | endif
+
+  let l:fail_msg += ['result:']
+  let l:fail_msg += map(l:result, '"  " . v:val')
+  call s:fail(l:fail_msg)
 endfunction
 
 " }}}1

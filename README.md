@@ -113,6 +113,7 @@ disabled if desired.
     `csc`/`cse`/`cs$`/`csd`
   - Toggle starred command or environment with `tsc`/`tse`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
+  - Toggle (inline) fractions with `tsf`
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
