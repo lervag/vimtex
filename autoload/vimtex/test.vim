@@ -11,12 +11,12 @@ function! vimtex#test#assert(condition) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#test#assert_equal(x, y) abort " {{{1
-  if a:x ==# a:y | return 1 | endif
+function! vimtex#test#assert_equal(expect, observe) abort " {{{1
+  if a:expect ==# a:observe | return 1 | endif
 
   call s:fail([
-        \ 'x = ' . string(a:x),
-        \ 'y = ' . string(a:y),
+        \ 'expect:  ' . string(a:expect),
+        \ 'observe: ' . string(a:observe),
         \])
 endfunction
 
