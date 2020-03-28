@@ -4,12 +4,14 @@ filetype plugin on
 
 let g:tex_flavor = 'latex'
 
-silent edit main.tex
+silent edit test-sources/main.tex
 
 call vimtex#test#assert_equal([
   \ 'main.tex',
-  \ 'test/include1.tex',
-  \ 'test/sub/include2.tex',
+  \ './include1.tex',
+  \ 'sub1/include2.tex',
+  \ 'sub2/include3.tex',
+  \ 'subfile.tex',
   \], b:vimtex.sources)
 
 quit!
