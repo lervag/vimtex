@@ -642,8 +642,12 @@ endfunction
 
 " }}}1
 function! s:vimtex.gather_sources() abort dict " {{{1
-  let self.sources = vimtex#parser#tex#parse_files(
-        \ self.tex, {'root' : self.root})
+  let self.sources = vimtex#parser#fls#parse_files(self)
+
+  if empty(self.sources)
+    let self.sources = vimtex#parser#tex#parse_files(
+          \ self.tex, {'root' : self.root})
+  endif
 
   call map(self.sources, 'vimtex#paths#relative(v:val, self.root)')
 endfunction
