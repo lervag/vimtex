@@ -1,8 +1,10 @@
 set nocompatible
 let &rtp = '../../..,' . &rtp
+let &rtp .= ',../../../after'
 filetype plugin indent on
-syntax on
+syntax enable
 
+set nomore
 set expandtab
 set shiftwidth=2
 
@@ -74,5 +76,11 @@ call vimtex#test#keys('ocool',
 call vimtex#test#keys('ocool',
       \['\begin{enumerate}', '\end{enumerate}'],
       \['\begin{enumerate}', '  \item', '\end{enumerate}'])
+
+" Test inside align environment: ;b -> \beta (#1648)
+call vimtex#syntax#p#amsmath#load()
+call vimtex#test#keys('o;b',
+      \ ['\begin{align}', '\end{align}'],
+      \ ['\begin{align}', '  \beta', '\end{align}'])
 
 quit!
