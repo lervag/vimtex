@@ -22,6 +22,8 @@ function! vimtex#syntax#p#pdfpages#load() abort " {{{1
         \ start="{" end="}"
         \ contained
         \ contains=texComment
+
+  highlight default link texInputFileArg texInputFile
 endfunction
 
 " }}}1
