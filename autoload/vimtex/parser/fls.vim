@@ -23,19 +23,19 @@ function! vimtex#parser#fls#parse_files(vimtex) abort " {{{1
   " This seems like a correct heuristic to limit the scope for parsing the
   " included main source files
   let l:files = readfile(a:vimtex.fls())
-  let l:aux = fnamemodify(a:vimtex.base, ':r') . '.aux'
-  let l:pdf = fnamemodify(a:vimtex.base, ':r') . '.pdf'
-  let l:i1 = index(l:files, 'OUTPUT ' . l:aux)
-  let l:i2 = index(l:files, 'OUTPUT ' . l:pdf)
-  let l:files = vimtex#util#uniq_unsorted(l:files[l:i1+1 : l:i2-1])
 
   " Only include the INPUT lines with .tex extension
   call filter(l:files, 'stridx(v:val, ''INPUT'') == 0')
   call filter(l:files, 'v:val =~# ''\.tex$''')
+
+  " Ignore package files under texmf trees
+  call filter(l:files, 'v:val !~# ''\/texmf[^\/]*\/''')
+
+  " Remove INPUT prefix
   call map(l:files, 'strpart(v:val, 6)')
 
   " Add the main file to the list before returning
-  return [a:vimtex.base] + l:files
+  return vimtex#util#uniq_unsorted(l:files)
 endfunction
 
 " }}}1
