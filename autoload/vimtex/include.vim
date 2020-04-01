@@ -68,7 +68,7 @@ function! s:input(fname, type) abort " {{{1
   let l:file = substitute(l:file, '^\s*"\|"\s*$', '', 'g')
   let l:file = substitute(l:file, '\\space', '', 'g')
 
-  if strpart(l:file, -3) !=# a:type
+  if l:file[-3:] !=# a:type
     let l:file .= '.' . a:type
   endif
 
