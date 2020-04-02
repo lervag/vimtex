@@ -58,4 +58,21 @@ for [s:in, s:out] in [
   endif
 endfor
 
+" tsf  /  Toggle surrounding fraction (visual mode)
+call vimtex#test#keys('f$lvf$htsf',
+      \ ['testing $inline frac / something$ more text'],
+      \ ['testing $\frac{inline frac}{something}$ more text'])
+call vimtex#test#keys('f/bvf$htsf',
+      \ ['testing $inline frac / something$ more text'],
+      \ ['testing $inline \frac{frac}{something}$ more text'])
+call vimtex#test#keys('f/bvtttsf',
+      \ ['testing $inline frac / something$ more text'],
+      \ ['testing $inline \frac{frac}{some}thing$ more text'])
+call vimtex#test#keys('f(v$hhtsf',
+      \ ['$(\delta_{02})/(\delta_{02} + \delta_{01})$'],
+      \ ['$\frac{\delta_{02}}{\delta_{02} + \delta_{01}}$'])
+call vimtex#test#keys('f\v$hhtsf',
+      \ ['$\frac{\delta_{02}}{\delta_{02} + \delta_{01}}$'],
+      \ ['$(\delta_{02})/(\delta_{02} + \delta_{01})$'])
+
 quit!
