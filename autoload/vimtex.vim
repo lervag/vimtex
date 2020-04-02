@@ -492,6 +492,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map('n', 'csc',  '<plug>(vimtex-cmd-change)')
   call s:map('n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
   call s:map('n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map('x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
   call s:map('i', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map('n', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map('x', '<F7>', '<plug>(vimtex-cmd-create)')

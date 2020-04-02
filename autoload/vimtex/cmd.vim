@@ -25,6 +25,9 @@ function! vimtex#cmd#init_buffer() abort " {{{1
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-frac)
         \ :<c-u>call <sid>operator_setup('toggle_frac')<bar>normal! g@l<cr>
+
+  xnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-frac)
+        \ :<c-u>call vimtex#cmd#toggle_frac_visual()<cr>
 endfunction
 
 " }}}1
@@ -240,8 +243,28 @@ function! vimtex#cmd#toggle_frac() abort " {{{1
   let l:line = getline(l:lnum)
   call setline(l:lnum,
         \ strpart(l:line, 0, l:frac.col_start)
-        \ . (l:frac.type ==# 'cmd' ? l:frac.text_inline : l:frac.text_cmd)
+        \ . l:frac.text_toggled
         \ . strpart(l:line, l:frac.col_end+1))
+endfunction
+
+" }}}1
+function! vimtex#cmd#toggle_frac_visual() abort " {{{1
+  let l:save_reg = getreg('a')
+  normal! gv"ay
+  let l:selected = substitute(getreg('a'), '\n\s*', ' ', '')
+  call setreg('a', l:save_reg)
+
+  let l:frac = s:get_frac_inline_visual(l:selected)
+  if empty(l:frac)
+    let l:frac = s:get_frac_cmd_visual(l:selected)
+  endif
+
+  if empty(l:frac) | return | endif
+
+  let l:save_reg = getreg('a')
+  call setreg('a', l:frac.text_toggled)
+  normal! gv"ap
+  call setreg('a', l:save_reg)
 endfunction
 
 " }}}1
@@ -306,20 +329,40 @@ function! s:get_frac_cmd() abort " {{{1
   " Abort if \frac region does not cover cursor
   if l:frac.col_end < col('.') | return {} | endif
 
-  let l:frac.text_cmd = strpart(getline('.'),
+  let l:frac.text = strpart(getline('.'),
         \ l:frac.col_start, l:frac.col_end - l:frac.col_start + 1)
 
-  let l:denominator = (l:frac.denominator =~# '^\\\?\w*$')
-        \ ? l:frac.denominator
-        \ : '(' . l:frac.denominator . ')'
+  return s:get_frac_cmd_aux(l:frac)
+endfunction
 
-  let l:numerator = (l:frac.numerator =~# '^\\\?\w*$')
-        \ ? l:frac.numerator
-        \ : '(' . l:frac.numerator . ')'
+" }}}1
+function! s:get_frac_cmd_visual(selected) abort " {{{1
+  let l:matches = matchlist(a:selected, '^\s*\\frac\s*{\(.*\)}\s*{\(.*\)}\s*$')
+  if empty(l:matches) | return {} | endif
 
-  let l:frac.text_inline = l:denominator . '/' . l:numerator
+  let l:frac = {
+        \ 'type': 'cmd',
+        \ 'text': a:selected,
+        \ 'denominator': l:matches[1],
+        \ 'numerator': l:matches[2],
+        \}
 
-  return l:frac
+  return s:get_frac_cmd_aux(l:frac)
+endfunction
+
+" }}}1
+function! s:get_frac_cmd_aux(frac) abort " {{{1
+  let l:denominator = (a:frac.denominator =~# '^\\\?\w*$')
+        \ ? a:frac.denominator
+        \ : '(' . a:frac.denominator . ')'
+
+  let l:numerator = (a:frac.numerator =~# '^\\\?\w*$')
+        \ ? a:frac.numerator
+        \ : '(' . a:frac.numerator . ')'
+
+  let a:frac.text_toggled = l:denominator . '/' . l:numerator
+
+  return a:frac
 endfunction
 
 " }}}1
@@ -390,10 +433,10 @@ function! s:get_frac_inline() abort " {{{1
     "
     " Combine/Parse inline and frac expressions
     "
-    let l:frac.text_inline = strpart(l:line,
+    let l:frac.text = strpart(l:line,
           \ l:frac.col_start,
           \ l:frac.col_end - l:frac.col_start + 1)
-    let l:frac.text_cmd  = printf('\frac{%s}{%s}',
+    let l:frac.text_toggled  = printf('\frac{%s}{%s}',
           \ l:frac.numerator, l:frac.denominator)
 
     "
@@ -405,6 +448,24 @@ function! s:get_frac_inline() abort " {{{1
   endfor
 
   return {}
+endfunction
+
+" }}}1
+function! s:get_frac_inline_visual(selected) abort " {{{1
+  let l:parts = split(a:selected, '/')
+  if len(l:parts) != 2 | return {} | endif
+
+  let l:frac = {
+        \ 'type': 'inline',
+        \ 'text': a:selected,
+        \ 'numerator': s:get_inline_trim(l:parts[0]),
+        \ 'denominator': s:get_inline_trim(l:parts[1]),
+        \}
+
+  let l:frac.text_toggled  = printf('\frac{%s}{%s}',
+        \ l:frac.numerator, l:frac.denominator)
+
+  return l:frac
 endfunction
 
 " }}}1
