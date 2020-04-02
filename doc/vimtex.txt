@@ -744,7 +744,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    csc              |<plug>(vimtex-cmd-change)|                     `n`
    cs$              |<plug>(vimtex-env-change-math)|                `n`
    csd              |<plug>(vimtex-delim-change-math)|              `n`
-   tsf              |<plug>(vimtex-cmd-toggle-frac)|                `n`
+   tsf              |<plug>(vimtex-cmd-toggle-frac)|                `nx`
    tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
    tse              |<plug>(vimtex-env-toggle-star)|                `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|          `nx`
@@ -2790,6 +2790,15 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-delim-change-math)*
   Delete/Change surrounding (math) delimiter. See also
   |g:vimtex_echo_verbose_input|.
+
+*<plug>(vimtex-cmd-toggle-frac)*
+  Toggle fractions between inline mode (`num/den`) and command mode
+  (`\frac{num}{den}`).
+
+  In visual mode, the selected text is toggled if it matches either
+  a `\frac{}{}` command or a `numerator / denominator` string. In normal mode,
+  we try to detect the surrounding fraction command or inline fraction
+  expression. If successful, the detected fraction is toggled.
 
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
