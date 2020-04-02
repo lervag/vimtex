@@ -704,7 +704,9 @@ commands.
 
 In the below list of mappings, LHS is the default mapping, RHS is the
 corresponding <plug>-maps, and MODE indicates in which vim mode the mappings
-are valid.
+are valid. See |map-modes| for an explanation of the various modes. indicator
+refers to the prefix of the corresponding map command, e.g. `n` refers to an
+|nmap|, and so on.
 
 In addition to the mappings listed below, |vimtex| provides convenient insert
 mode mappings to make it easier and faster to type mathematical equations.
