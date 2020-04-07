@@ -215,10 +215,18 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
       for l:entry in map(
             \ filter(readfile(l:file), 'v:val =~ ' . self.bibs),
             \ 'matchstr(v:val, ' . self.bibs . ')')
+        let l:files = []
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
-        let l:current.files += map(
-              \ split(l:entry, ','),
-              \ 'fnamemodify(v:val, '':r'')')
+
+        for l:f in split(l:entry, ',')
+          if stridx(l:f, '*') >= 0
+            let l:files += glob(l:f, 0, 1)
+          else
+            let l:files += [fnamemodify(l:f, ':r')]
+          endif
+        endfor
+
+        let l:current.files += l:files
       endfor
     endif
 
