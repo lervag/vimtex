@@ -398,7 +398,7 @@ function! s:get_frac_inline() abort " {{{1
     "
     let l:before = strpart(l:line, 0, l:pos)
     if l:before =~# ')\s*$'
-      let l:pos_before = s:get_inline_limit(l:before, -1)
+      let l:pos_before = s:get_inline_limit(l:before, -1) - 1
       let l:parens = strpart(l:before, l:pos_before)
     else
       let l:pos_before = match(l:before, '\s*$')
@@ -406,7 +406,7 @@ function! s:get_frac_inline() abort " {{{1
     endif
 
     let l:before = strpart(l:line, 0, l:pos_before)
-    let l:atoms = matchstr(l:before, '\(\\(\)\?\zs[^$ ]*$')
+    let l:atoms = matchstr(l:before, '\(\\(\)\?\zs[^$() ]*$')
     let l:pos_before = l:pos_before - strlen(l:atoms)
     let l:frac.numerator = s:get_inline_trim(l:atoms . l:parens)
     let l:frac.col_start = l:pos_before
@@ -415,9 +415,9 @@ function! s:get_frac_inline() abort " {{{1
     " Parse denominator
     "
     let l:after = strpart(l:line, l:pos+1)
-    let l:atoms = l:after =~# '^\s*[^($ ]*\\)'
-          \ ? matchstr(l:after, '^\s*[^($ ]*\ze\\)')
-          \ : matchstr(l:after, '^\s*[^($ ]*')
+    let l:atoms = l:after =~# '^\s*[^$() ]*\\)'
+          \ ? matchstr(l:after, '^\s*[^$() ]*\ze\\)')
+          \ : matchstr(l:after, '^\s*[^$() ]*')
     let l:pos_after = l:pos + strlen(l:atoms)
     let l:after = strpart(l:line, l:pos_after+1)
     if l:after =~# '^('
