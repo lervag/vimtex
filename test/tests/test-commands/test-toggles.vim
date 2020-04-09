@@ -30,6 +30,7 @@ call vimtex#test#keys('f+tsd', [
 
 " tsf  /  Toggle surrounding fraction
 for [s:in, s:out] in [
+      \ ['$(0/q)$', '$(\frac{0}{q})$'],
       \ ['$\frac{x+1}{x-1}$', '$(x+1)/(x-1)$'],
       \ ['$\frac {x+1}  {x-1}$', '$(x+1)/(x-1)$'],
       \ ['$\frac {x-1} x$', '$(x-1)/x$'],
@@ -48,7 +49,7 @@ for [s:in, s:out] in [
       \  '$\frac{\delta_{02}}{\delta_{02} + \delta_{01}}$'],
       \ ['\(a/p_\text{b}\)', '\(\frac{a}{p_\text{b}}\)'],
       \ ['$f(x+y)/g(z)$', '$\frac{f(x+y)}{g(z)}$'],
-      \ ['$f(x)g(y)/h(z)$', '$\frac{f(x)g(y)}{h(z)}$'],
+      \ ['$f(x)g(y)/h(z)$', '$f(x)\frac{g(y)}{h(z)}$'],
       \]
   if s:in =~# '\/'
     call vimtex#test#keys('f/ltsf', [s:in], [s:out])
