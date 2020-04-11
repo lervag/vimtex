@@ -304,6 +304,8 @@ function! vimtex#init_options() abort " {{{1
             \ 'reuse-instance')
     elseif executable('mupdf')
       call s:init_option('vimtex_view_general_viewer', 'mupdf')
+    else
+      call s:init_option('vimtex_view_general_viewer', '')
     endif
   else
     call s:init_option('vimtex_view_general_viewer', get({
