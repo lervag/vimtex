@@ -35,6 +35,10 @@ endfunction
 
 " }}}1
 function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
+  if !has('lambda')
+    throw 'error: vimtex#cache#wrap requires +lambda'
+  endif
+
   let l:opts = a:0 > 0 ? a:1 : {}
   let l:cache = vimtex#cache#open(a:name, l:opts)
 

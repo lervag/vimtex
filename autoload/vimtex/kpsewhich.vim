@@ -41,6 +41,9 @@ function! s:find(file) abort " {{{1
   return l:filename
 endfunction
 
-let s:find_cached = vimtex#cache#wrap(function('s:find'), 'kpsewhich')
+" Use caching if possible (requires 'lambda' feature)
+let s:find_cached = has('lambda')
+      \ ? vimtex#cache#wrap(function('s:find'), 'kpsewhich')
+      \ : function('s:find')
 
 " }}}1
