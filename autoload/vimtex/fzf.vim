@@ -13,13 +13,23 @@ function! vimtex#fzf#run(...) abort " {{{1
   "     i:  include: This shows included files
   " The default behavior is to show all entries, e.g. 'ctli'
 
+  " A second argument can be passed to this function to customize the FZF
+  " options. It should be an object containing the parameters passed to
+  " fzf#run().
+
   " The --with-nth 3.. option hides the first two words from the fzf window
   " which we used to pass on the file name and line number
-  call fzf#run({
+  let default_parameters = {
       \ 'source': <sid>parse_toc(a:0 == 0 ? 'ctli' : a:1),
       \ 'sink': function('vimtex#fzf#open_selection'),
       \ 'options': '--ansi --with-nth 3..',
-      \})
+      \}
+
+  if a:0 > 1
+    call extend(default_parameters, a:2)
+  endif
+
+  call fzf#run(default_parameters)
 endfunction
 
 " }}}1

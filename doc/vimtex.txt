@@ -3702,6 +3702,14 @@ The default behavior is to show all layers, i.e. 'ctli'. To only show
 On Windows the python package Colorama is required for colored output.
 For Linux and MacOS colors should work out-of-the-box, even without Colorama.
 
+A second argument can be passed to this function to customize the FZF options. 
+It should be an object containing the parameters passed to `fzf#run()`. For 
+example, if you've defined `g:fzf_layout`, then those options can be passed to 
+`vimtex#fzf#run`: >
+
+    :call vimtex#fzf#run('ctli', g:fzf_layout)
+
+
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
 
