@@ -20,8 +20,7 @@ function! vimtex#view#zathura#new() abort " {{{1
     endif
   endif
 
-  " Use the xwin template
-  return vimtex#view#_template_xwin#apply(deepcopy(s:zathura))
+  return vimtex#view#_template#apply(deepcopy(s:zathura))
 endfunction
 
 " }}}1
@@ -33,6 +32,7 @@ let s:zathura = {
       \}
 
 function! s:zathura.start(outfile) dict abort " {{{1
+  let l:outfile = fnamemodify(a:outfile, ':.')
   let l:cmd  = 'zathura'
   if self.has_synctex
     let l:cmd .= ' -x "' . s:inverse_search_cmd
@@ -45,15 +45,42 @@ function! s:zathura.start(outfile) dict abort " {{{1
     endif
   endif
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
-  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  let l:cmd .= ' ' . vimtex#util#shellescape(l:outfile)
   let l:cmd .= '&'
   let self.cmd_start = l:cmd
 
   call vimtex#jobs#run(self.cmd_start)
 
-  call self.xwin_get_id()
-  let self.outfile = a:outfile
+  let self.outfile = l:outfile
 endfunction
+
+function! s:zathura.exists() dict abort " {{{1
+  let pid = self.get_pid()
+  return !empty(pid)
+endfunction
+
+function! s:zathura.view(file) dict abort " {{{1
+  if empty(a:file)
+    let outfile = self.out()
+  else
+    let outfile = a:file
+  endif
+  if vimtex#view#not_readable(outfile) | return | endif
+
+  if self.exists()
+    call self.forward_search(outfile)
+  else
+    if g:vimtex_view_use_temp_files
+      call self.copy_files()
+    endif
+    call self.start(outfile)
+  endif
+
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
+  endif
+endfunction
+
 
 " }}}1
 function! s:zathura.forward_search(outfile) dict abort " {{{1
@@ -61,7 +88,7 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
   if !filereadable(self.synctex()) | return | endif
 
   let self.texfile = vimtex#paths#relative(expand('%:p'), b:vimtex.root)
-  let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
+  let self.outfile = fnamemodify(a:outfile, ':.')
 
   let self.cmd_forward_search = printf(
         \ 'zathura --synctex-forward %d:%d:%s %s &',
@@ -96,7 +123,8 @@ endfunction
 " }}}1
 function! s:zathura.get_pid() dict abort " {{{1
   " First try to match full output file name
-  let l:outfile = fnamemodify(get(self, 'outfile', self.out()), ':t')
+  let l:outfile = get(self, 'outfile', self.out())
+  let l:outfile = fnamemodify(l:outfile, ':.')
   let l:output = vimtex#jobs#capture(
         \ 'pgrep -nf "^zathura.*' . escape(l:outfile, '~\%.') . '"')
   let l:pid = str2nr(join(l:output, ''))
