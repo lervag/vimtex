@@ -43,6 +43,8 @@ function! vimtex#view#init_state(state) abort " {{{1
   " Add compiler callback to callback hooks (if it exists)
   "
   if exists('*l:v.compiler_callback')
+        \ && index(g:vimtex_compiler_callback_hooks,
+        \          'b:vimtex.viewer.compiler_callback') == -1
     call add(g:vimtex_compiler_callback_hooks,
           \ 'b:vimtex.viewer.compiler_callback')
   endif
