@@ -4200,6 +4200,8 @@ A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
       \ = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
   let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
 <
+   Note: Please also read the section |vimtex-nf-surround|!
+
    Note: An alternative is to use `vim-sandwich` (see |sandwich.txt| or
          https://github.com/machakann/vim-sandwich), which has built-in
          support for LaTeX-specific surroundings.
