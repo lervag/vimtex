@@ -30,6 +30,9 @@ call vimtex#test#keys('f+tsd', [
 
 " tsf  /  Toggle surrounding fraction
 for [s:in, s:out] in [
+      \ ['$e^{a/b}$', '$e^{\frac{a}{b}}$'],
+      \ ['$n^{1/2}$', '$n^{\frac{1}{2}}$'],
+      \ ['$n^{-1/2}$', '$n^{-\frac{1}{2}}$'],
       \ ['$(0/q)$', '$(\frac{0}{q})$'],
       \ ['$\frac{x+1}{x-1}$', '$(x+1)/(x-1)$'],
       \ ['$\frac {x+1}  {x-1}$', '$(x+1)/(x-1)$'],
