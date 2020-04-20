@@ -21,24 +21,13 @@ function! vimtex#fold#init_buffer() abort " {{{1
     " Define commands
     command! -buffer VimtexRefreshFolds call vimtex#fold#refresh('zx')
 
-    " Set options for automatic/manual folding mode
-    let s:fold_manual_id = get(s:, 'fold_manual_id', 0) + 1
-    let b:fold_manual_augroup = 'vimtex_fold_' . s:fold_manual_id
-    execute 'augroup' b:fold_manual_augroup
-      autocmd!
-      " vint: -ProhibitAutocmdWithNoGroup
-      autocmd CursorMoved <buffer> call s:fold_manual_refresh()
-      " vint: +ProhibitAutocmdWithNoGroup
+    " Ensure that folds are refreshed on startup
+    augroup vimtex_temporary
+      autocmd! * <buffer>
+      autocmd CursorMoved <buffer>
+            \   call vimtex#fold#refresh('zx')
+            \ | autocmd! vimtex_temporary CursorMoved <buffer>
     augroup END
-
-    function! s:fold_manual_refresh() abort
-      call vimtex#fold#refresh('zx')
-      if exists('b:fold_manual_augroup')
-        execute 'autocmd!' b:fold_manual_augroup
-        execute 'augroup!' b:fold_manual_augroup
-        unlet b:fold_manual_augroup
-      endif
-    endfunction
   endif
 endfunction
 
@@ -90,7 +79,7 @@ endfunction
 
 function! vimtex#fold#refresh(map) abort " {{{1
   setlocal foldmethod=expr
-  execute 'normal! ' . a:map
+  execute 'normal!' a:map
   setlocal foldmethod=manual
 endfunction
 
