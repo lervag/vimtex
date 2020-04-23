@@ -590,6 +590,11 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
     " Return to toc window
     execute toc_winnr . 'wincmd w'
   endif
+
+  " Allow user entry points through autocmd events
+  if exists('#User#VimtexEventTocActivated')
+    doautocmd <nomodeline> User VimtexEventTocActivated
+  endif
 endfunction
 
 " }}}1

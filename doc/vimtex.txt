@@ -3060,6 +3060,11 @@ further customization.
   *VimtexEventTocCreated*
     This event is triggered after a ToC window is created.
 
+  *VimtexEventTocActivated*
+    This event is triggered when a ToC entry has been activated. This allows
+    to add custom behaviour after opening an entry, e.g. positioning the
+    buffer window with the |zt| or |zz| mappings.
+
 Examples: >
 
   " Compile on initialization, cleanup on quit
@@ -3069,6 +3074,7 @@ Examples: >
     au User VimtexEventInitPost call vimtex#compiler#compile()
   augroup END
 
+  " Close viewers when vimtex buffers are closed
   function! CloseViewers()
     " Close viewers on quit
     if executable('xdotool') && exists('b:vimtex')
@@ -3082,6 +3088,7 @@ Examples: >
     au User VimtexEventQuit call CloseViewers()
   augroup END
 
+  " Add custom mappings in ToC buffer
   function! TocMappings()
     " You probably don't want to do this, though...
     nnoremap <silent><nowait><buffer> q :quitall!
@@ -3090,6 +3097,12 @@ Examples: >
   augroup vimtex_event_3
     au!
     au User VimtexEventTocCreated call TocMappings()
+  augroup END
+
+  " Specify window position when opening ToC entries
+  augroup vimtex_event_4
+    au!
+    au User VimtexEventTocActivated normal! zt
   augroup END
 
 
