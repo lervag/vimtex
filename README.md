@@ -106,6 +106,7 @@ disabled if desired.
   - `ie ae` LaTeX environments
   - `i$ a$` Inline math structures
   - `iP aP` Sections
+  - `im am` Items
 - Other mappings
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`

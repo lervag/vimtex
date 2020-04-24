@@ -164,6 +164,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `ie` `ae` LaTeX environments
   - `i$` `a$` Inline math structures
   - `iP` `aP` Sections
+  - `im` `am` Items
 - Other mappings
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
@@ -761,6 +762,8 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    i$               |<plug>(vimtex-i$)|                             `xo`
    aP               |<plug>(vimtex-aP)|                             `xo`
    iP               |<plug>(vimtex-iP)|                             `xo`
+   am               |<plug>(vimtex-am)|                             `xo`
+   im               |<plug>(vimtex-im)|                             `xo`
    %                |<plug>(vimtex-%)|                              `nxo`
    ]]               |<plug>(vimtex-]])|                             `nxo`
    ][               |<plug>(vimtex-][)|                             `nxo`
@@ -2862,6 +2865,10 @@ object, see |text-objects|.
 *<plug>(vimtex-aP)*
 *<plug>(vimtex-iP)*
   Text object for sections.
+
+*<plug>(vimtex-am)*
+*<plug>(vimtex-im)*
+  Text object for items.
 
 *<plug>(vimtex-%)*
   Find matching pair.
