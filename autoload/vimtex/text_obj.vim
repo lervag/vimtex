@@ -14,6 +14,7 @@ function! vimtex#text_obj#init_buffer() abort " {{{1
         \ ['e', 'delimited', 'env_tex'],
         \ ['$', 'delimited', 'env_math'],
         \ ['P', 'sections', ''],
+        \ ['m', 'items', ''],
         \]
     let l:optional = empty(l:opt) ? '' : ',''' . l:opt . ''''
     execute printf('xnoremap <silent><buffer> <plug>(vimtex-i%s) :<c-u>call vimtex#text_obj#%s(1, 1%s)<cr>', l:map, l:name, l:optional)
@@ -127,7 +128,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
     endif
 
     if empty(l:object)
-      if !empty(l:prev_object) && g:vimtex_text_obj_variant != 'targets'
+      if !empty(l:prev_object) && g:vimtex_text_obj_variant !=# 'targets'
         let l:object = l:prev_object
         break
       endif
@@ -203,6 +204,24 @@ function! vimtex#text_obj#sections(is_inner, mode) abort " {{{1
   " Apply selection
   call vimtex#pos#set_cursor(l:pos_start)
   normal! V
+  call vimtex#pos#set_cursor(l:pos_end)
+endfunction
+
+" }}}1
+function! vimtex#text_obj#items(is_inner, mode) abort " {{{1
+  let l:pos_save = vimtex#pos#get_cursor()
+
+  " Get section border positions
+  let [l:pos_start, l:pos_end] = s:get_sel_items(a:is_inner)
+  if empty(l:pos_start)
+    call vimtex#pos#set_cursor(l:pos_save)
+    return
+  endif
+
+  " Apply selection
+  execute 'normal!' (v:operator ==# ':') ? visualmode() : 'v'
+  call vimtex#pos#set_cursor(l:pos_start)
+  normal! o
   call vimtex#pos#set_cursor(l:pos_end)
 endfunction
 
@@ -359,6 +378,32 @@ function! s:get_sel_sections(is_inner, type) abort " {{{1
   endif
 
   return [l:pos_start, l:pos_end, l:sec_type]
+endfunction
+
+" }}}1
+function! s:get_sel_items(is_inner) abort " {{{1
+  let l:pos_cursor = vimtex#pos#get_cursor()
+
+  " Find previous \item
+  call vimtex#pos#set_cursor(l:pos_cursor[0], 1)
+  let l:pos_start = searchpos('^\s*\\item\S*', 'bcnWz')
+  if l:pos_start == [0, 0] | return [[], []] | endif
+
+  " Find end of current \item
+  call vimtex#pos#set_cursor(l:pos_start)
+  let l:pos_end = searchpos('\ze\n\s*\%(\\item\|\\end{itemize}\)', 'nW')
+  if l:pos_end == [0, 0]
+        \ || vimtex#pos#val(l:pos_cursor) > vimtex#pos#val(l:pos_end)
+    return [[], []]
+  endif
+
+  " Adjust for outer text object
+  if a:is_inner
+    let l:pos_start[1] = searchpos('^\s*\\item\S*\s\?', 'cne')[1] + 1
+    let l:pos_end[1] = col([l:pos_end[0], '$']) - 1
+  endif
+
+  return [l:pos_start, l:pos_end]
 endfunction
 
 " }}}1
