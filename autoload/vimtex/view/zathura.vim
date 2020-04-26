@@ -88,21 +88,20 @@ function! s:zathura.compiler_callback(status) dict abort " {{{1
 
   if !filereadable(self.out()) | return | endif
 
-  if g:vimtex_view_automatic
+  if g:vimtex_view_automatic && !has_key(self, 'started_through_callback')
     "
     " Search for existing window created by latexmk
-    "   It may be necessary to wait some time before it is opened and
-    "   recognized. Sometimes it is very quick, other times it may take
-    "   a second. This way, we don't block longer than necessary.
+    " Note: It may be necessary to wait some time before it is opened and
+    "       recognized. Sometimes it is very quick, other times it may take
+    "       a second. This way, we don't block longer than necessary.
     "
-    if !has_key(self, 'started_through_callback')
-      for l:dummy in range(30)
-        sleep 50m
-        if self.xwin_exists() | break | endif
-      endfor
-    endif
+    for l:dummy in range(30)
+      let l:xwin_exists = self.xwin_exists()
+      if l:xwin_exists | break | endif
+      sleep 50m
+    endfor
 
-    if !self.xwin_exists() && !has_key(self, 'started_through_callback')
+    if ! l:xwin_exists
       call self.start(self.out())
       let self.started_through_callback = 1
     endif
