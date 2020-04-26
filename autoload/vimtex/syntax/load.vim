@@ -5,6 +5,8 @@
 "
 
 function! vimtex#syntax#load#general() abort " {{{1
+  if !exists('b:vimtex_syntax') | return | endif
+
   " I don't see why we can't match Math zones in the MatchNMGroup
   if !exists('g:tex_no_math')
     syntax cluster texMatchNMGroup add=@texMathZones
@@ -62,6 +64,8 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#load#packages() abort " {{{1
+  if !exists('b:vimtex_syntax') | return | endif
+
   try
     call vimtex#syntax#p#{b:vimtex.documentclass}#load()
   catch /E117:/
