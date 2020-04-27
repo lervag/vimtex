@@ -61,6 +61,8 @@ function! s:input(fname, type) abort " {{{1
   if l:lnum == 0 | return a:fname | endif
 
   let l:cmd = vimtex#cmd#get_at(l:lnum, l:cnum)
+  if empty(l:cmd) | return a:fname | endif
+
   let l:file = join(map(
         \   get(l:cmd, 'args', [{}]),
         \   "get(v:val, 'text', '')"),
