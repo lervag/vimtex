@@ -18,7 +18,7 @@ let g:vimtex#re#tex_input_import =
 let g:vimtex#re#tex_input_package =
       \ '\v\\%(usepackage|RequirePackage)%(\s*\[[^]]*\])?\s*\{\zs[^}]*\ze\}'
 
-let g:vimtex#re#tex_input = '\v^\s*%(' . join([
+let g:vimtex#re#tex_input = '\v^\s*\zs%(' . join([
       \   g:vimtex#re#tex_input_latex,
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
