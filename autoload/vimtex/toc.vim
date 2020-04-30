@@ -352,7 +352,8 @@ function! s:toc.set_syntax() abort dict "{{{1
 
   syntax match VimtexTocNum /\v(([A-Z]+>|\d+)(\.\d+)*)?\s*/ contained
   execute 'syntax match VimtexTocTodo'
-        \ '/\v\s\zs%(' . toupper(join(g:vimtex_toc_todo_keywords, '|')) . '): /'
+        \ '/\v\s\zs%('
+        \   . toupper(join(keys(g:vimtex_toc_todo_labels), '|')) . '): /'
         \ 'contained'
   syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
 
@@ -749,7 +750,7 @@ endfunction
 function! s:foldtext() abort " {{{1
   let l:line = getline(v:foldstart)[3:]
   if b:toc.todo_sorted
-        \ && l:line =~# '\v%(' . join(g:vimtex_toc_todo_keywords, '|') . ')'
+        \ && l:line =~# '\v%(' . join(keys(g:vimtex_toc_todo_labels), '|') . ')'
     return substitute(l:line, '\w+\zs:.*', 's', '')
   else
     return l:line

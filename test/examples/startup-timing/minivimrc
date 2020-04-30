@@ -6,7 +6,12 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let g:vimtex_toc_todo_keywords = ['TODO', 'FIXME', 'IMPORTANT', 'IMPORTANTE']
+let g:vimtex_toc_todo_labels = {
+      \ 'TODO': 'TODO: ',
+      \ 'FIXME': 'FIXME: ',
+      \ 'IMPORTANT': 'IMPORTANT: ',
+      \ 'IMPORTANTE': 'IMPORTANT: ',
+      \}
 
 silent edit thesis.tex
 

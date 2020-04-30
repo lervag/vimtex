@@ -152,7 +152,7 @@ let s:re_prefilter = '\v%(\\' . join([
       \ 'tableofcontents',
       \ 'todo',
       \], '|') . ')'
-      \ . '|\%\s*%(' . join(g:vimtex_toc_todo_keywords, '|') . ')'
+      \ . '|\%\s*%(' . join(keys(g:vimtex_toc_todo_labels), '|') . ')'
       \ . '|\%\s*vimtex-include'
 for s:m in g:vimtex_toc_custom_matchers
   if has_key(s:m, 'prefilter')
@@ -511,14 +511,16 @@ endfunction
 
 let s:matcher_todos = {
       \ 're' : g:vimtex#re#not_bslash . '\%\s+('
-      \   . join(g:vimtex_toc_todo_keywords, '|') . ')[ :]+\s*(.*)',
+      \   . join(keys(g:vimtex_toc_todo_labels), '|') . ')[ :]+\s*(.*)',
       \ 'in_preamble' : 1,
       \ 'priority' : 2,
       \}
 function! s:matcher_todos.get_entry(context) abort dict " {{{1
   let [l:type, l:text] = matchlist(a:context.line, self.re)[1:2]
+  let l:label = g:vimtex_toc_todo_labels[toupper(l:type)]
+
   return {
-        \ 'title'  : toupper(l:type) . ': ' . l:text,
+        \ 'title'  : l:label . l:text,
         \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
@@ -545,8 +547,10 @@ function! s:matcher_todonotes.get_entry(context) abort dict " {{{1
     let s:matcher_continue = deepcopy(self)
   endif
 
+  let l:label = get(g:vimtex_toc_todo_labels, 'TODO', 'TODO: ')
+
   return {
-        \ 'title'  : 'TODO: ' . title,
+        \ 'title'  : l:label . title,
         \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,

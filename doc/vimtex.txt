@@ -2141,11 +2141,11 @@ OPTIONS                                                        *vimtex-options*
       becomes necessary in combination with the `get_entry` key. See the built
       in `s:matcher_section` matcher for an example on how to use this.
 
-*g:vimtex_toc_todo_keywords*
-  Set list of keywords that should be recognized in comments for the todo
-  layer.
+*g:vimtex_toc_todo_labels*
+  Dictionary of keywords that should be recognized in comments for the todo
+  layer. The values represent the labels used in the ToC.
 
-  Default value: `['TODO', 'FIXME']`
+  Default value: `{'TODO': 'TODO: ', 'FIXME': 'FIXME: '}`
 
 *g:vimtex_toc_show_preamble*
   Whether to include the preamble in the ToC.
@@ -3670,7 +3670,7 @@ values and |g:vimtex_toc_config|).
 Associated settings:
   |g:vimtex_toc_enabled|
   |g:vimtex_toc_custom_matchers|
-  |g:vimtex_toc_todo_keywords|
+  |g:vimtex_toc_todo_labels|
   |g:vimtex_toc_show_preamble|
   |g:vimtex_toc_config|
 
