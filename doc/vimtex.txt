@@ -2346,8 +2346,8 @@ OPTIONS                                                        *vimtex-options*
           should work for Vim and neovim (Note: see |vimtex-faq-neovim|),
           respectively: >
 
-            vim --remote-silent +%l "%f"
-            nvr --remote-silent +%l "%f"
+            vim --remote-silent +%l %f
+            nvr --remote-silent +%l %f
 
             " Or with arguably more convenient reverse goto function:
             vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
