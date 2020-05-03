@@ -11,7 +11,7 @@ function! vimtex#view#zathura#new() abort " {{{1
     return {}
   endif
 
-  if executable('ldd')
+  if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
     let l:shared = split(system("sh -c 'ldd $(which zathura)'"))
     if v:shell_error == 0
           \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))

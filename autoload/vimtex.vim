@@ -325,6 +325,7 @@ function! vimtex#init_options() abort " {{{1
   call s:init_option('vimtex_view_skim_activate', 0)
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
+  call s:init_option('vimtex_view_zathura_check_libsynctex', v:true)
 endfunction
 
 " }}}1

@@ -2581,6 +2581,16 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_zathura_check_libsynctex*
+  Check on startup if Zathura is compiled with libsynctex. This is done by
+  default because Zathura on some systems is compiled without libsynctex
+  support, in which case forward and backward search will not work. When this
+  is the case, the startup check will provide a notification to the user.
+
+  If this option is set to 0 or |v:false|, then the check is skipped.
+
+  Default value: v:true
+
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
 
