@@ -2416,6 +2416,10 @@ OPTIONS                                                        *vimtex-options*
                 \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
                 \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
+          Note: The expected behavior for the multi-line setting above is to refresh 
+                the `InverseSearchCmdLine` setting in Sumatra. It may fail if the 
+                vim/gvim process is not running as Admin on a Windows 10 machine.
+                A workaround is to launch vim/gvim as Admin when editing tex files.
           Note: There is a known issue with vimtex + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
                 after compilation. A workaround was found and posted by
