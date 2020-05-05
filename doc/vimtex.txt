@@ -2384,7 +2384,7 @@ OPTIONS                                                        *vimtex-options*
 
         *vimtex_viewer_qpdfview*
           https://launchpad.net/qpdfview
-          qpdfview is a tabbed document viewer.  It supports forward search.
+          qpdfview is a tabbed document viewer. It supports forward search.
           Backward search must be set up from the viewer. >
 
             let g:vimtex_view_general_viewer = 'qpdfview'
@@ -2395,7 +2395,7 @@ OPTIONS                                                        *vimtex-options*
         *vimtex_viewer_sumatrapdf*
           http://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
-          portable and starts up very fast.  It supports forward search. The
+          portable and starts up very fast. It supports forward search. The
           following settings are applied as defaults on Windows if
           `SumatraPDF` is detected as executable: >
 
@@ -2416,10 +2416,12 @@ OPTIONS                                                        *vimtex-options*
                 \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
                 \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
 <
-          Note: The expected behavior for the multi-line setting above is to refresh 
-                the `InverseSearchCmdLine` setting in Sumatra. It may fail if the 
-                vim/gvim process is not running as Admin on a Windows 10 machine.
-                A workaround is to launch vim/gvim as Admin when editing tex files.
+          Note: The expected behavior for the multi-line setting above is to
+                refresh the `InverseSearchCmdLine` setting in SumatraPDF. It
+                may fail if the Vim/gVim process is not running as
+                Administrator on Windows 10. A workaround is to ensure to
+                launch Vim as Administrator when editing tex files.
+
           Note: There is a known issue with vimtex + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
                 after compilation. A workaround was found and posted by
