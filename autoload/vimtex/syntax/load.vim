@@ -77,6 +77,15 @@ function! vimtex#syntax#load#packages() abort " {{{1
     catch /E117:/
     endtry
   endfor
+
+  for l:pkg in g:vimtex_syntax_autoload_packages
+    try
+      call vimtex#syntax#p#{l:pkg}#load()
+    catch /E117:/
+      call vimtex#log#warning('Syntax package does not exist: ' . l:pkg,
+            \ 'Please see :help g:vimtex_syntax_autoload_packages')
+    endtry
+  endfor
 endfunction
 
 " }}}1

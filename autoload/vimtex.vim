@@ -245,6 +245,7 @@ function! vimtex#init_options() abort " {{{1
         \   ],
         \ }
         \})
+  call s:init_option('vimtex_syntax_autoload_packages', ['amsmath'])
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 

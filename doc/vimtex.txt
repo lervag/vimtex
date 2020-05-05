@@ -2009,6 +2009,12 @@ OPTIONS                                                        *vimtex-options*
         \ }
         \}
 
+*g:vimtex_syntax_autoload_packages*
+  Specify list of syntax packages to load on start. See |vimtex-syntax-packages|
+  for more info.
+
+  Default value: ['amsmath']
+
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
   |VimtexCountWords| and |VimtexCountLetters|.
@@ -3558,6 +3564,14 @@ highlighting.  However, |vimtex| does add some minor improvements:
 - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
   `asymptote`, `pythontex`, `listings`, and `minted`
 
+                                                       *vimtex-syntax-packages*
+The syntax improvements for a specific package is loaded if that package is
+detected in the current document, see |vimtex-package-detection|. This
+generally works well when a document is compiled, but may fail to detect
+packages for new documents or documents that are not compiled. One may
+therefore specify a list of packages to autoload regardless of the package
+detection, see |g:vimtex_syntax_autoload_packages|.
+
 Before enabling additional syntax highlighting, |vimtex| also checks the
 |g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
 selectively enable or disable highlighting for specific groups.  If
@@ -3566,12 +3580,7 @@ reference groups are enabled only if they are explicitly allowed.
 
 Note: The default syntax highlighting of vim maintained by Charles Campbell
       does not support any package (:h tex-package). However, C. Campbell
-      provides syntax highlighting files on his website for
-      - `amsmath`
-      - `array`
-      - `lstlisting`
-      - `moreverb`
-      - `slide`
+      provides syntax highlighting files on his website for some packages, see
       http://www.drchip.org/astronaut/vim/index.html#LATEXPKGS
 
 Note: For people that are interested in improved conceal support, please check
@@ -3581,6 +3590,7 @@ Note: For people that are interested in improved conceal support, please check
 Associated settings:
   |g:vimtex_syntax_enabled|
   |g:vimtex_syntax_nested|
+  |g:vimtex_syntax_autoload_packages|
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
