@@ -7,6 +7,11 @@
 function! vimtex#imaps#init_buffer() abort " {{{1
   if !g:vimtex_imaps_enabled | return | endif
 
+  " Store mappings in buffer
+  if !exists('b:vimtex_imaps')
+    let b:vimtex_imaps = []
+  endif
+
   "
   " Create imaps
   "
@@ -30,16 +35,18 @@ endfunction
 function! vimtex#imaps#add_map(map) abort " {{{1
   let s:custom_maps = get(s:, 'custom_maps', []) + [a:map]
 
-  if exists('s:created_maps')
+  if exists('b:vimtex_imaps')
     call s:create_map(a:map)
   endif
 endfunction
 
 " }}}1
 function! vimtex#imaps#list() abort " {{{1
+  let l:maps = b:vimtex_imaps
+
   silent new vimtex\ imaps
 
-  for l:map in s:created_maps
+  for l:map in l:maps
     call append('$', printf('%5S  ->  %-30S %S',
           \ get(l:map, 'leader', get(g:, 'vimtex_imaps_leader', '`')) . l:map.lhs,
           \ l:map.rhs,
@@ -76,15 +83,16 @@ endfunction
 " The imap generator
 "
 function! s:create_map(map) abort " {{{1
-  if index(s:created_maps, a:map) >= 0 | return | endif
+  if index(b:vimtex_imaps, a:map) >= 0 | return | endif
+  let l:map = deepcopy(a:map)
 
-  let l:leader = get(a:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
+  let l:leader = get(l:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><nowait><buffer>' l:leader . l:leader l:leader
   endif
-  let l:lhs = l:leader . a:map.lhs
+  let l:lhs = l:leader . l:map.lhs
 
-  let l:wrapper = get(a:map, 'wrapper', 'vimtex#imaps#wrap_math')
+  let l:wrapper = get(l:map, 'wrapper', 'vimtex#imaps#wrap_math')
   if ! exists('*' . l:wrapper)
     echoerr 'vimtex error: imaps wrapper does not exist!'
     echoerr '              ' . l:wrapper
@@ -93,25 +101,25 @@ function! s:create_map(map) abort " {{{1
 
   " Some wrappers use a context which must be made available to the wrapper
   " function at run time.
-  if has_key(a:map, 'context')
+  if has_key(l:map, 'context')
     execute 'let l:key = "' . escape(l:lhs, '<') . '"'
-    let l:key .= a:map.rhs
+    let l:key .= l:map.rhs
     if !exists('b:vimtex_context')
       let b:vimtex_context = {}
     endif
-    let b:vimtex_context[l:key] = a:map.context
+    let b:vimtex_context[l:key] = l:map.context
   endif
 
   " The rhs may be evaluated before being passed to wrapper, unless expr is
   " disabled (which it is by default)
-  if !get(a:map, 'expr')
-    let a:map.rhs = string(a:map.rhs)
+  if !get(l:map, 'expr')
+    let l:map.rhs = string(l:map.rhs)
   endif
 
   silent execute 'inoremap <expr><silent><nowait><buffer>' l:lhs
-        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . a:map.rhs . ')'
+        \ l:wrapper . '("' . escape(l:lhs, '\') . '", ' . l:map.rhs . ')'
 
-  let s:created_maps += [a:map]
+  let b:vimtex_imaps += [l:map]
 endfunction
 
 " }}}1
@@ -177,12 +185,5 @@ function! s:is_math() abort " {{{1
   return match(map(synstack(line('.'), max([col('.') - 1, 1])),
         \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
 endfunction
-
-" }}}1
-
-
-" {{{1 Initialize module
-
-let s:created_maps = []
 
 " }}}1
