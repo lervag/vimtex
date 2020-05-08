@@ -80,7 +80,8 @@ endfunction
 " }}}1
 function! s:search_candidates_texinputs(fname) abort " {{{1
   for l:suffix in [''] + split(&l:suffixesadd, ',')
-    let l:candidates = glob(b:vimtex.root . '/**/' . a:fname . l:suffix, 0, 1)
+    let l:candidates = glob(b:vimtex.root . '/**/'
+          \ . fnameescape(a:fname) . l:suffix, 0, 1)
     if !empty(l:candidates)
       return l:candidates[0]
     endif
