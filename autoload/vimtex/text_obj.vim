@@ -383,17 +383,65 @@ endfunction
 " }}}1
 function! s:get_sel_items(is_inner) abort " {{{1
   let l:pos_cursor = vimtex#pos#get_cursor()
+  let l:val_cursor = vimtex#pos#val(l:pos_cursor)
 
   " Find previous \item
-  call vimtex#pos#set_cursor(l:pos_cursor[0], 1)
-  let l:pos_start = searchpos('^\s*\\item\S*', 'bcnWz')
-  if l:pos_start == [0, 0] | return [[], []] | endif
+  let l:depth = 0
+  let l:pos_cur = [l:pos_cursor[0], 2]
+  while 1
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:pos_cur))
+    if l:depth > 5 | return [[], []] | endif
+
+    let l:pos_start = searchpos(
+          \ l:depth > 0 ? '\\begin{\w\+}' : '^\s*\\item\S*',
+          \ 'bcnWz')
+    let l:val_start = vimtex#pos#val(l:pos_start)
+    if l:val_start == 0 | return [[], []] | endif
+
+    let l:pos_endenv = searchpos('\\end{\w\+}', 'bcnWz')
+    let l:val_endenv = vimtex#pos#val(l:pos_endenv)
+
+    if l:val_endenv == 0 || l:val_start > l:val_endenv
+      if l:depth == 0 | break | endif
+      let l:pos_cur = l:pos_start
+      let l:depth -= 1
+    else
+      let l:pos_cur = l:pos_endenv
+      let l:depth += 1
+    endif
+  endwhile
 
   " Find end of current \item
-  call vimtex#pos#set_cursor(l:pos_start)
-  let l:pos_end = searchpos('\ze\n\s*\%(\\item\|\\end{itemize}\)', 'nW')
-  if l:pos_end == [0, 0]
-        \ || vimtex#pos#val(l:pos_cursor) > vimtex#pos#val(l:pos_end)
+  let l:depth = 0
+  let l:pos_cur = l:pos_start
+  while 1
+    call vimtex#pos#set_cursor(vimtex#pos#next(l:pos_cur))
+
+    let l:pos_end = searchpos(
+          \ l:depth > 0
+          \   ? '\\end{\w\+}'
+          \   : '\ze\n\s*\%(\\item\|\\end{\(itemize\|enumerate\)}\)',
+          \ 'nW')
+    let l:val_end = vimtex#pos#val(l:pos_end)
+    if l:depth == 0 && l:val_end == 0
+      return [[], []]
+    endif
+
+    let l:pos_beginenv = searchpos('\\begin{\w\+}', 'cnW')
+    let l:val_beginenv = vimtex#pos#val(l:pos_beginenv)
+
+    if l:val_beginenv == 0 || l:val_end < l:val_beginenv
+      if l:depth == 0 | break | endif
+      let l:pos_cur = l:pos_end
+      let l:depth -= 1
+    else
+      let l:pos_cur = l:pos_beginenv
+      let l:depth += 1
+    endif
+  endwhile
+
+  " The region must include the cursor
+  if l:val_cursor > l:val_end
     return [[], []]
   endif
 
