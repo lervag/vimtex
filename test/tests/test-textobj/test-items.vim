@@ -47,4 +47,67 @@ call vimtex#test#keys('jj$cimtest', s:example1,
       \ '\end{itemize}',
       \])
 
+
+let s:example2 = [
+      \ '\begin{enumerate}',
+      \ '  \item text here',
+      \ '    \begin{enumerate}',
+      \ '      \item',
+      \ '      \item',
+      \ '    \end{enumerate}',
+      \ '    and here.',
+      \ '  \item and more text here',
+      \ '\end{enumerate}',
+      \]
+
+call vimtex#test#keys('jjdim', s:example2,
+      \[
+      \ '\begin{enumerate}',
+      \ '  \item ',
+      \ '  \item and more text here',
+      \ '\end{enumerate}',
+      \])
+
+call vimtex#test#keys('jjdam', s:example2,
+      \[
+      \ '\begin{enumerate}',
+      \ '  \item and more text here',
+      \ '\end{enumerate}',
+      \])
+
+call vimtex#test#keys('6jdim', s:example2,
+      \[
+      \ '\begin{enumerate}',
+      \ '  \item ',
+      \ '  \item and more text here',
+      \ '\end{enumerate}',
+      \])
+
+call vimtex#test#keys('6jdam', s:example2,
+      \[
+      \ '\begin{enumerate}',
+      \ '  \item and more text here',
+      \ '\end{enumerate}',
+      \])
+
+
+let s:example3 = [
+      \ '\begin{enumerate}',
+      \ '  \item hello world',
+      \ '  \item hello',
+      \ '    \begin{itemize}',
+      \ '      \item moon',
+      \ '      \item and sun',
+      \ '    \end{itemize}',
+      \ '    and galaxy.',
+      \ '\end{enumerate}',
+      \]
+
+call vimtex#test#keys('3jdam', s:example3,
+      \[
+      \ '\begin{enumerate}',
+      \ '  \item hello world',
+      \ '\end{enumerate}',
+      \])
+
 quit!
