@@ -2601,7 +2601,7 @@ OPTIONS                                                        *vimtex-options*
 
   If this option is set to 0 or |v:false|, then the check is skipped.
 
-  Default value: v:true
+  Default value: 1
 
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*

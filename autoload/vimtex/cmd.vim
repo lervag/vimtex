@@ -272,7 +272,7 @@ endfunction
 
 function! s:get_frac_cmd() abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
-  while v:true
+  while 1
     let l:cmd = s:get_cmd('prev')
     if empty(l:cmd) || l:cmd.pos_start.lnum < line('.')
       call vimtex#pos#set_cursor(l:save_pos)
@@ -373,7 +373,7 @@ function! s:get_frac_inline() abort " {{{1
 
   let l:pos_after = -1
   let l:pos_before = -1
-  while v:true
+  while 1
     let l:pos_before = l:pos_after
     let l:pos_after = match(l:line, '\/', l:pos_after+1)
     if l:pos_after < 0 || l:pos_after >= l:col | break | endif
