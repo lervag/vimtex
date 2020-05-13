@@ -166,7 +166,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `iP` `aP` Sections
   - `im` `am` Items
 - Other mappings
-  - Delete the surrounding command, environment or delimiter with
+  - Delete the surrounding command,/ environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
   - Change the surrounding command, environment or delimiter with
     `csc`/`cse`/`cs$`/`csd`
@@ -2363,7 +2363,8 @@ OPTIONS                                                        *vimtex-options*
             nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
-                "shift + click", not "ctrl + click" as in most other viewers.
+                "shift + click" while browse mode is enabled, not "ctrl + click" 
+                as in most other viewers.
 
           Note: With |neovim|, it is useful to start the LaTeX editing session
                 with `nvim --listen /tmp/mynvimserver` (e.g. by using an alias)
