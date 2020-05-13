@@ -166,7 +166,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `iP` `aP` Sections
   - `im` `am` Items
 - Other mappings
-  - Delete the surrounding command,/ environment or delimiter with
+  - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
   - Change the surrounding command, environment or delimiter with
     `csc`/`cse`/`cs$`/`csd`
