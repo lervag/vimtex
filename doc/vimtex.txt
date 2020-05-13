@@ -2363,7 +2363,7 @@ OPTIONS                                                        *vimtex-options*
             nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
 <
           Note: To perform a backward (or inverse) search in Okular, you do
-                "shift + click" while browse mode is enabled, not "ctrl + click" 
+                `shift + click` while browse mode is enabled, not `ctrl + click`
                 as in most other viewers.
 
           Note: With |neovim|, it is useful to start the LaTeX editing session
