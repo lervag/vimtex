@@ -387,18 +387,18 @@ function! s:get_sel_items(is_inner) abort " {{{1
 
   " Find previous \item
   let l:depth = 0
-  let l:pos_cur = [l:pos_cursor[0], 2]
+  let l:pos_cur = vimtex#pos#next(l:pos_cursor)
   while 1
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:pos_cur))
     if l:depth > 5 | return [[], []] | endif
 
     let l:pos_start = searchpos(
           \ l:depth > 0 ? '\\begin{\w\+}' : '^\s*\\item\S*',
-          \ 'bcnWz')
+          \ 'bcnW')
     let l:val_start = vimtex#pos#val(l:pos_start)
     if l:val_start == 0 | return [[], []] | endif
 
-    let l:pos_endenv = searchpos('\\end{\w\+}', 'bcnWz')
+    let l:pos_endenv = searchpos('\%(^\s*\)\?\\end{\w\+}', 'bcnW')
     let l:val_endenv = vimtex#pos#val(l:pos_endenv)
 
     if l:val_endenv == 0 || l:val_start > l:val_endenv
@@ -417,11 +417,10 @@ function! s:get_sel_items(is_inner) abort " {{{1
   while 1
     call vimtex#pos#set_cursor(vimtex#pos#next(l:pos_cur))
 
-    let l:pos_end = searchpos(
-          \ l:depth > 0
-          \   ? '\\end{\w\+}'
-          \   : '\ze\n\s*\%(\\item\|\\end{\(itemize\|enumerate\)}\)',
-          \ 'nW')
+    let l:re = l:depth > 0
+          \ ? '\\end{\w\+}'
+          \ : '\n\s*\%(\\item\|\\end{\(itemize\|enumerate\)}\)'
+    let l:pos_end = searchpos(l:re, 'nW')
     let l:val_end = vimtex#pos#val(l:pos_end)
     if l:depth == 0 && l:val_end == 0
       return [[], []]
@@ -447,7 +446,7 @@ function! s:get_sel_items(is_inner) abort " {{{1
 
   " Adjust for outer text object
   if a:is_inner
-    let l:pos_start[1] = searchpos('^\s*\\item\S*\s\?', 'cne')[1] + 1
+    let l:pos_start[1] = searchpos('^\s*\\item\S*\s', 'cne')[1] + 1
     let l:pos_end[1] = col([l:pos_end[0], '$']) - 1
   endif
 
