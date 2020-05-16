@@ -67,12 +67,6 @@ function! s:check_plugin_clash() abort " {{{1
     call health#report_warn('Conflicting plugin detected: LaTeX-Box')
     call health#report_info('vimtex does not work as expected when LaTeX-Box is installed!')
     call health#report_info('Please disable or remove it to use vimtex!')
-
-    let l:polyglot = !empty(filter(copy(l:scriptnames), "v:val =~# 'polyglot'"))
-    if l:polyglot
-      call health#report_info('LaTeX-Box is included with vim-polyglot and may be disabled with:')
-      call health#report_info('let g:polyglot_disabled = [''latex'']')
-    endif
   endif
 endfunction
 

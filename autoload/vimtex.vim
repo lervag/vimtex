@@ -335,18 +335,11 @@ function! vimtex#check_plugin_clash() abort " {{{1
 
   let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
   if l:latexbox
-    let l:polyglot = !empty(filter(copy(l:scriptnames), "v:val =~# 'polyglot'"))
     call vimtex#log#warning([
           \ 'Conflicting plugin detected: LaTeX-Box',
           \ 'vimtex does not work as expected when LaTeX-Box is installed!',
           \ 'Please disable or remove it to use vimtex!',
           \])
-    if l:polyglot
-      call vimtex#log#warning([
-            \ 'LaTeX-Box is included with vim-polyglot and may be disabled with:',
-            \ 'let g:polyglot_disabled = [''latex'']',
-            \])
-    endif
   endif
 endfunction
 
