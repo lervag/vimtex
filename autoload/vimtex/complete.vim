@@ -1049,7 +1049,8 @@ function! s:get_texmf_candidates(filetype) abort " {{{1
   endif
 
   " Then add globally available candidates (based on ls-R files)
-  for l:file in vimtex#kpsewhich#run('--all ls-R')
+  for l:file in
+        \ filter(vimtex#kpsewhich#run('--all ls-R'), 'filereadable(v:val)')
     let l:candidates += map(filter(readfile(l:file),
           \   'v:val =~# ''\.' . a:filetype . ''''),
           \ 'fnamemodify(v:val, '':r'')')
