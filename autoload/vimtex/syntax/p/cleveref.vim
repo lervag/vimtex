@@ -9,7 +9,7 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
   let b:vimtex_syntax.cleveref = 1
   if get(g:, 'tex_fast', 'r') !~# 'r' | return | endif
 
-  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\|auto\)ref\>'
+  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\)ref\>'
         \ nextgroup=texCRefZone
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
