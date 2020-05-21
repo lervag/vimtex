@@ -602,7 +602,7 @@ endfunction
 function! s:toc.toggle_help() abort dict "{{{1
   let l:pos = vimtex#pos#get_cursor()
   if self.show_help
-    let l:pos[1] -= self.help_nlines
+    let l:pos[1] = max([l:pos[1] - self.help_nlines, 1])
     call vimtex#pos#set_cursor(l:pos)
   endif
 
