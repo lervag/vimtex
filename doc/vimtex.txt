@@ -791,7 +791,9 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_cache_root*
   Specify the cache directory for |vimtex|.
 
-  Default value: '~/.cache/vimtex/'
+  Default value:
+    `'$XDG_CACHE_HOME/vimtex'`   if `$XDG_CACHE_HOME` is defined
+    `'~/.cache/vimtex'`          otherwise
 
 *g:vimtex_cache_persistent*
   Specify whether to use persistant caching.

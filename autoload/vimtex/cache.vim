@@ -79,7 +79,9 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new = deepcopy(self)
   unlet new.init
 
-  let l:root = get(g:, 'vimtex_cache_root', $HOME . '/.cache/vimtex')
+  let l:root = get(g:, 'vimtex_cache_root',
+        \ (empty($XDG_CACHE_HOME) ? $HOME . '/.cache' : $XDG_CACHE_HOME)
+        \ . '/vimtex')
   if !isdirectory(l:root)
     call mkdir(l:root, 'p')
   endif
