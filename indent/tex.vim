@@ -88,8 +88,8 @@ endfunction
 
 " }}}1
 function! s:is_verbatim(line, lnum) abort " {{{1
-  return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
-        \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')[0]
+  return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted|markdown)'
+        \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\|markdown\)')[0]
 endfunction
 
 " }}}1
