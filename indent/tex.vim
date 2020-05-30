@@ -88,9 +88,14 @@ endfunction
 
 " }}}1
 function! s:is_verbatim(line, lnum) abort " {{{1
-  return a:line !~# '\v\\%(begin|end)\{%(verbatim|lstlisting|minted)'
-        \ && vimtex#env#is_inside('\%(lstlisting\|verbatim\|minted\)')[0]
+  return a:line !~# s:verbatim_re_envdelim
+        \ && vimtex#env#is_inside(s:verbatim_re_list)[0]
 endfunction
+
+let s:verbatim_envs = ['lstlisting', 'verbatim', 'minted', 'markdown']
+let s:verbatim_re_list = '\%(' . join(s:verbatim_envs, '\|') . '\)'
+let s:verbatim_re_envdelim = '\v\\%(begin|end)\{%('
+      \ . join(s:verbatim_envs, '|') . ')'
 
 " }}}1
 
