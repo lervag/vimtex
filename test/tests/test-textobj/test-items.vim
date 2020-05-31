@@ -135,4 +135,18 @@ call vimtex#test#keys('4jwdim', s:example5,
       \ '\end{itemize}',
       \])
 
+
+call vimtex#test#keys('j$damp', [
+      \ '\begin{enumerate}',
+      \ '  \item First one.',
+      \ '  \item Second one.',
+      \ '\end{enumerate}',
+      \], [
+      \ '\begin{enumerate}',
+      \ '  \item Second one.',
+      \ '  \item First one.',
+      \ '\end{enumerate}',
+      \])
+
+
 quit!

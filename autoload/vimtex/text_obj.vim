@@ -219,7 +219,11 @@ function! vimtex#text_obj#items(is_inner, mode) abort " {{{1
   endif
 
   " Apply selection
-  execute 'normal!' (v:operator ==# ':') ? visualmode() : 'v'
+  if a:is_inner
+    execute 'normal!' (v:operator ==# ':') ? visualmode() : 'v'
+  else
+    normal! V
+  endif
   call vimtex#pos#set_cursor(l:pos_start)
   normal! o
   call vimtex#pos#set_cursor(l:pos_end)
