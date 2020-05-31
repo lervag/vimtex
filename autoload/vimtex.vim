@@ -586,11 +586,18 @@ function! s:init_default_mappings() abort " {{{1
     if vimtex#text_obj#targets#enabled()
       call vimtex#text_obj#targets#init()
 
-      " These are handled explicitly to avoid conflict with gitgutter
+      " These are handled explicitly to overwrite plugins
+      " which define these text objects gloablly
+      " e.g. gitgutter (ic, ac) and vim-textobj-entire (ie, ae)
       call s:map('x', 'ic', '<plug>(vimtex-targets-i)c')
       call s:map('x', 'ac', '<plug>(vimtex-targets-a)c')
       call s:map('o', 'ic', '<plug>(vimtex-targets-i)c')
       call s:map('o', 'ac', '<plug>(vimtex-targets-a)c')
+      call s:map('x', 'ie', '<plug>(vimtex-targets-i)e')
+      call s:map('x', 'ae', '<plug>(vimtex-targets-a)e')
+      call s:map('o', 'ie', '<plug>(vimtex-targets-i)e')
+      call s:map('o', 'ae', '<plug>(vimtex-targets-a)e')
+      
     else
       if g:vimtex_text_obj_variant ==# 'targets'
         call vimtex#log#warning(
