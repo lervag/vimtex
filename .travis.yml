@@ -1,0 +1,18 @@
+os: linux
+dist: bionic
+language: minimal
+
+addons:
+  apt:
+    packages:
+      - neovim
+      - latexmk
+      - texlive
+      - texlive-latex-extra
+      - texlive-extra-utils
+      - texlive-bibtex-extra
+      - libtext-bibtex-perl
+      - moreutils
+
+script:
+  - make -C test/tests
