@@ -134,6 +134,7 @@ if get(s:, 'reload_guard', 1)
 
     " Reload syntax
     if l:reload_syntax
+      syntax clear
       runtime! syntax/tex.vim
     endif
 
