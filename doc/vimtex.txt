@@ -1782,6 +1782,14 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: {}
 
+*g:vimtex_mappings_override_existing*
+  Control behaviour on mapping conflicts, in particular whether or not to
+  override pre-existing mappings. By default, vimtex does not override existing
+  mappings. If this option is enabled, then vimtex will override existing
+  mappings on conflict.
+
+  Default value: 0
+
 *g:vimtex_matchparen_enabled*
   Enable highlighting of matching delimiters.
 

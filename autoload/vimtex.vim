@@ -204,6 +204,7 @@ function! vimtex#init_options() abort " {{{1
 
   call s:init_option('vimtex_mappings_enabled', 1)
   call s:init_option('vimtex_mappings_disable', {})
+  call s:init_option('vimtex_mappings_override_existing', 0)
 
   call s:init_option('vimtex_matchparen_enabled', 1)
   call s:init_option('vimtex_motion_enabled', 1)
@@ -470,7 +471,8 @@ function! s:init_default_mappings() abort " {{{1
   function! s:map(mode, lhs, rhs, ...) abort
     if !hasmapto(a:rhs, a:mode)
           \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
-          \ && (empty(maparg(a:lhs, a:mode)) || a:0 > 0)
+          \ && (a:0 > 0 || get(g:, 'vimtex_mappings_override_existing', 0) > 0
+                \ || empty(maparg(a:lhs, a:mode)))
       silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
     endif
   endfunction
