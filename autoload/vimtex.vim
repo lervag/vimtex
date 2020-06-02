@@ -471,8 +471,9 @@ function! s:init_default_mappings() abort " {{{1
   function! s:map(mode, lhs, rhs, ...) abort
     if !hasmapto(a:rhs, a:mode)
           \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
-          \ && (a:0 > 0 || get(g:, 'vimtex_mappings_override_existing', 0) > 0
-                \ || empty(maparg(a:lhs, a:mode)))
+          \ && (a:0 > 0
+          \     || g:vimtex_mappings_override_existing
+          \     || empty(maparg(a:lhs, a:mode)))
       silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
     endif
   endfunction
