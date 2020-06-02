@@ -22,14 +22,14 @@ jobs:
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install neovim
-        sudo apt install texlive texlive-latex-extra texlive-extra-utils
-        sudo apt install texlive-bibtex-extra libtext-bibtex-perl
-        sudo apt install latexmk
-        sudo apt install gcc moreutils
-        sudo apt install libmodule-build-perl
-        sudo apt install libconfig-autoconf-perl
-        sudo apt install libextutils-libbuilder-perl
+        sudo apt install neovim \
+          texlive texlive-latex-extra texlive-extra-utils \
+          texlive-bibtex-extra libtext-bibtex-perl \
+          latexmk \
+          gcc moreutils \
+          libmodule-build-perl \
+          libconfig-autoconf-perl \
+          libextutils-libbuilder-perl
     - uses: actions/checkout@master
       with:
         fetch-depth: 1
