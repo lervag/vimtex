@@ -1,6 +1,12 @@
 name: CI tests
 
 on:
+  pull_request:
+    paths-ignore:
+      - 'doc/*'
+      - 'docker/*'
+      - 'media/*'
+      - '*.md'
   push:
     paths-ignore:
       - 'doc/*'
