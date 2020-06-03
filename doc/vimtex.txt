@@ -2620,6 +2620,9 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_vlty*
+  This option configures the |vimtex| compiler `vlty`, see |compiler-vlty|.
+
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
 
@@ -4048,11 +4051,11 @@ Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
 ==============================================================================
 GRAMMAR CHECKING                                               *vimtex-grammar*
 
-|vimtex| provides grammar checking for TeX files through two compilers:
-`style-check` [1] and `textidote` [2]. These may be activated with the
-|:compiler| command, see |compiler-select|. A selected compiler may then be
-used e.g. with |:make| or |:lmake|. See |vimtex-lint| above for some tips on
-how to use this feature.
+|vimtex| provides grammar checking for TeX files through the compilers
+`style-check` [1], `textidote` [2] and `vlty` (see |compiler-vlty|).
+These may be activated with the |:compiler| command, see |compiler-select|.
+A selected compiler may then be used e.g. with |:make| or |:lmake|.
+See |vimtex-lint| above for some tips on how to use this feature.
 
 A common workflow is to utilize the |location-list| with |:lmake|:
 
@@ -4060,6 +4063,8 @@ A common workflow is to utilize the |location-list| with |:lmake|:
     `:compiler style|lmake`
   - To check the currently open TeX file with `textidote`, run
     `:compiler textidote|lmake`
+  - To check the currently open TeX file with `vlty`, run
+    `:compiler vlty|lmake`
 
 The language of the Tex file is determined by |'spelllang'|. Be aware that to
 use `textidote`, the path to its jar file `textidote.jar` must be indicated in
@@ -4067,6 +4072,78 @@ the option |g:vimtex_textidote_jar|.
 
 [1] http://www.cs.umd.edu/~nspring/software/style-check-readme.html
 [2] https://sylvainhalle.github.io/textidote/
+
+------------------------------------------------------------------------------
+COMPILER VLTY                                                   *compiler-vlty*
+
+The compiler `vlty` invokes the proofreading software `LanguageTool` [1],
+applying Python package `YaLafi` [5] for the extraction of plain text.
+
+In order to use this compiler, you need local installations of both components.
+An archive of `LanguageTool` can be downloaded from [2]. After uncompressing
+at a suitable place, the path to it is specified as shown below. `YaLafi` can
+be installed with `pip install --user yalafi`.
+
+Configuration is controlled by the Vim dictionary `g:vimtex_vlty` and
+|'spelllang'|. As a minimal example, one could write in |vimrc|: >
+
+  let g:vimtex_vlty = {'ltdirectory': 'path/to/LanguageTool'}
+  set spellang=en_gb
+
+The given directory has to contain the `LanguageTool` software, including for
+instance the file `languagetool-server.jar`. Note that spell checking by
+`LanguageTool` is only enabled, if a country code is specified in
+|'spelllang'|.
+
+Default value for `g:vimtex_vlty`: >
+
+  let g:vimtex_vlty = {
+      \ 'ltdirectory': '~/lib/LanguageTool',
+      \ 'server': '',
+      \ 'disable': 'WHITESPACE_RULE',
+      \ 'enable': '',
+      \ 'disablecategories': '',
+      \ 'enablecategories': '',
+      \ 'shell_options': '',
+      \ 'show_suggestions': 0,
+  \}
+
+The default value shows which entries may be changed. Here the different
+keys are explained in more detail:
+
+  ltdirectory~
+    Sets the path to the `LanguageTool` software.
+
+  server~
+    Specifies, whether an HTTP server should be used. This may be faster
+    for short texts. Possible values are:
+
+    `<empty>` Do not use a server.
+    `my`  Use a local `LanguageTool` server. If not yet running, it is started.
+    `lt`  Contact the Web server provided by `LanguageTool`. In this case,
+          no local installation is necessary. Please note [3] for conditions
+          and restrictions.
+
+  disable~
+  enable~
+  disablecategories~
+  enablecategories~
+    Options for `LanguageTool` that control application of rules and rule
+    categories; see [4].
+
+  shell_options~
+    Pass additional options to `YaLafi`, e.g., `--equation-punctuation displ`;
+    compare [5].
+
+  show_suggestions~
+    If set to 1, then `LanguageTool's` replacement suggestions are included
+    into the |quickfix| messages.
+
+[1] https://www.languagetool.org
+[2] https://www.languagetool.org/download
+[3] http://wiki.languagetool.org/public-http-api
+[4] http://wiki.languagetool.org/command-line-options
+[5] https://github.com/matze-dd/YaLafi
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
