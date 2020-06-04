@@ -21,7 +21,7 @@ set cpo&vim
 "
 let s:pref = 'In order to use the vlty compiler, please '
 if !exists('g:vimtex_vlty')
-    let g:vimtex_lty = {}
+    let g:vimtex_vlty = {}
 elseif type(g:vimtex_vlty) != type({})
     echoerr s:pref . 'initialise g:vimtex_vlty with a dictionary.'
     finish
@@ -32,7 +32,7 @@ if !has_key(s:vlty, 'ltdirectory')
     let s:vlty['ltdirectory'] = '~/lib/LanguageTool'
 endif
 if !has_key(s:vlty, 'server')
-    let s:vlty['server'] = ''
+    let s:vlty['server'] = 'no'
 endif
 if !has_key(s:vlty, 'disable')
     let s:vlty['disable'] = 'WHITESPACE_RULE'
@@ -89,7 +89,7 @@ let s:language = substitute(s:language, '_', '-', '')
 let &l:makeprg =
     \ 'python -m yalafi.shell'
     \ . ' --lt-directory ' . s:vlty['ltdirectory']
-    \ . (s:vlty['server'] == '' ?  '' : ' --server ' . s:vlty['server'])
+    \ . (s:vlty['server'] == 'no' ?  '' : ' --server ' . s:vlty['server'])
     \ . ' --language ' . s:language
     \ . ' --disable "' . s:vlty['disable'] . '"'
     \ . ' --enable "' . s:vlty['enable'] . '"'
