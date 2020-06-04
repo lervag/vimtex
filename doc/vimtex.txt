@@ -2621,7 +2621,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_vlty*
-  This option configures the |vimtex| compiler `vlty`, see |compiler-vlty|.
+  This option configures the |vimtex| compiler `vlty`, see |vimtex-vlty|.
 
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
@@ -4042,7 +4042,7 @@ Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
 GRAMMAR CHECKING                                               *vimtex-grammar*
 
 |vimtex| provides grammar checking for TeX files through the compilers
-`style-check` [1], `textidote` [2] and `vlty` (see |compiler-vlty|).
+`style-check` [1], `textidote` [2] and `vlty` (see |vimtex-vlty|).
 These may be activated with the |:compiler| command, see |compiler-select|.
 A selected compiler may then be used e.g. with |:make| or |:lmake|.
 See |vimtex-lint| above for some tips on how to use this feature.
@@ -4064,7 +4064,7 @@ the option |g:vimtex_textidote_jar|.
 [2] https://sylvainhalle.github.io/textidote/
 
 ------------------------------------------------------------------------------
-COMPILER VLTY                                                   *compiler-vlty*
+COMPILER VLTY                                                     *vimtex-vlty*
 
 The compiler `vlty` invokes the proofreading software `LanguageTool` [1],
 applying Python package `YaLafi` [5] for the extraction of plain text.
@@ -4089,7 +4089,7 @@ Default value for `g:vimtex_vlty`: >
 
   let g:vimtex_vlty = {
       \ 'ltdirectory': '~/lib/LanguageTool',
-      \ 'server': '',
+      \ 'server': 'no',
       \ 'disable': 'WHITESPACE_RULE',
       \ 'enable': '',
       \ 'disablecategories': '',
@@ -4108,7 +4108,7 @@ keys are explained in more detail:
     Specifies, whether an HTTP server should be used. This may be faster
     for short texts. Possible values are:
 
-    `<empty>` Do not use a server.
+    `no`  Do not use a server.
     `my`  Use a local `LanguageTool` server. If not yet running, it is started.
     `lt`  Contact the Web server provided by `LanguageTool`. In this case,
           no local installation is necessary. Please note [3] for conditions
