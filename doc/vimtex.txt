@@ -3318,8 +3318,10 @@ first make sure you have |coc-nvim| installed, then just run: >
 
   :CocInstall coc-vimtex
 
-Additionally, you can configure code completion for TeX by setting these
-options in |coc-nvim|'s configuration file `coc-settings.json` >
+The `coc-vimtex` extension has a few options that can be configured in the
+`coc-settings.json` file. See the documentation for |coc-nvim| to learn how to
+apply the configurations. The following is a list of the options with a short
+description as it is specified on the project web page: >
 
   coc.source.vimtex.disableSyntaxes // disabled syntax names
   coc.source.vimtex.enable          // set to false to disable this source
