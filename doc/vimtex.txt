@@ -3323,10 +3323,10 @@ The `coc-vimtex` extension has a few options that can be configured in the
 apply the configurations. The following is a list of the options with a short
 description as it is specified on the project web page: >
 
-  coc.source.vimtex.disableSyntaxes // disabled syntax names
-  coc.source.vimtex.enable          // set to false to disable this source
-  coc.source.vimtex.priority        // priority of source, default 99
-  coc.source.vimtex.shortcut        // shortcut used in menu of completion item
+  coc.source.vimtex.disableSyntaxes    disabled syntax names
+  coc.source.vimtex.enable             set to false to disable this source
+  coc.source.vimtex.priority           priority of source, default 99
+  coc.source.vimtex.shortcut           shortcut used in menu of completion item
 
 deoplete~
                                                      *vimtex-complete-deoplete*
