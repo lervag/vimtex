@@ -58,8 +58,9 @@ function! vimtex#compiler#latexmk#get_rc_opt(root, opt, type, default) abort " {
         \ [a:root . '/latexmkrc', 1],
         \ [a:root . '/.latexmkrc', 1],
         \ [fnamemodify('~/.latexmkrc', ':p'), 0],
-        \ [(!empty($XDG_CONFIG_HOME) ? $XDG_CONFIG_HOME : '~/.config')
-        \  . '/latexmk/latexmkrc', 0]
+        \ [fnamemodify(
+        \    !empty($XDG_CONFIG_HOME) ? $XDG_CONFIG_HOME : '~/.config', ':p')
+        \    . '/latexmk/latexmkrc', 0]
         \]
 
   let l:result = [a:default, -1]
