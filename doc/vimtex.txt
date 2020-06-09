@@ -558,17 +558,22 @@ Subfiles package~
   the `subfiles` package, the |VimtexToggleMain| command is particularly
   useful.
 
-  With `subfiles`, included files will look like this: >
+  With `subfiles`, included files will typically look like this: >
 
-    \documentclass[main.tex]{subfiles}
+    \documentclass[<main-path>]{subfiles}
     \begin{document}
     ...
     \end{document}
 <
-  Absolute paths for to the main file (e.g. `main.tex`) will work as expected,
-  but when using a relative path, one should note that vimtex assumes we start
-  compilation from the directory of the main file. Thus one should not write
-  e.g. `../main.tex`.
+  Here `<main-path>` is the path to the main file. It must be specified as
+  relative to the particular subfile. So, given the structure: >
+
+    main.tex
+    sub/sub.tex
+<
+  The header in `sub.tex` should be `\documentclass[../main.tex]{subfiles}`.
+  Absolute paths like `/home/user/main.tex` are also allowed and should work
+  as expected.
 
   [0]: https://www.ctan.org/pkg/import
   [1]: https://www.ctan.org/pkg/subfiles
@@ -1663,12 +1668,13 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_include_indicators*
   Vimtex will recognize included files for a lot of different purposes. Most
   of these come from e.g. `\input{file}` or `\include{file}`. This option
-  allows to add more commands that are used to include files.
+  allows to add more commands that are used to include files, e.g. custom
+  macros.
 
   Note: This option is read during initialization of vimtex, and so it must be
         set early. I.e., it can not be set in `after/ftplugin/tex.vim`.
 
-  Default value: ['input', 'include', 'subfile', 'subfileinclude']
+  Default value: ['input', 'include']
 
 *g:vimtex_include_search_enabled*
   Vimtex sets 'includeexpr' to recognize included files. If a file isn't found
