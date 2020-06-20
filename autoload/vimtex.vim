@@ -126,6 +126,17 @@ function! vimtex#init_options() abort " {{{1
 
   call s:init_option('vimtex_format_enabled', 0)
 
+  call s:init_option('vimtex_grammar_vlty', {
+        \ 'lt_directory': '~/lib/LanguageTool',
+        \ 'lt_disable': 'WHITESPACE_RULE',
+        \ 'lt_enable': '',
+        \ 'lt_disablecategories': '',
+        \ 'lt_enablecategories': '',
+        \ 'server': 'no',
+        \ 'shell_options': '',
+        \ 'show_suggestions': 0,
+        \})
+
   call s:init_option('vimtex_imaps_enabled', 1)
   call s:init_option('vimtex_imaps_disabled', [])
   call s:init_option('vimtex_imaps_list', [
