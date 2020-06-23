@@ -1651,8 +1651,8 @@ OPTIONS                                                        *vimtex-options*
 
     lt_disable~
     lt_enable~
-    disablecategories~
-    enablecategories~
+    lt_disablecategories~
+    lt_enablecategories~
       Options for `LanguageTool` that control application of rules and rule
       categories. For more info, see:
       http://wiki.languagetool.org/command-line-options
@@ -4127,7 +4127,7 @@ Configuration is controlled by the Vim dictionary |g:vimtex_grammar_vlty|.
 As a minimal example, one could write in |vimrc|: >
 
   let g:vimtex_grammar_vlty = {'lt_directory': 'path/to/LanguageTool'}
-  set spellang=en_gb
+  set spelllang=en_gb
 
 The given directory has to contain the `LanguageTool` software, including for
 instance the file `languagetool-server.jar`.
