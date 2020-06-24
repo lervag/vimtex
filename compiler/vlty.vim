@@ -11,30 +11,31 @@ set cpo&vim
 
 let s:vlty = g:vimtex_grammar_vlty
 
+function! s:installation_error(msg)
+  call vimtex#log#error(
+        \ [a:msg, 'Please see ":help vimtex-grammar-vlty" for more details.'])
+endfunction
+
 if !executable('python')
-  call vimtex#log#error('vlty compiler requires Python')
-  echoerr 'vlty compiler requires Python'
+  call s:installation_error('vlty compiler requires Python')
   finish
 endif
 
 call system('python -c "import yalafi"')
 if v:shell_error != 0
-  call vimtex#log#error('vlty compiler requires the Python module YaLafi')
-  echoerr 'vlty compiler requires the Python module YaLafi'
+  call s:installation_error('vlty compiler requires the Python module YaLafi')
   finish
 endif
 
 if s:vlty.server !=# 'lt'
   if !executable('java')
-    call vimtex#log#error('vlty compiler requires java')
-    echoerr 'vlty compiler requires java'
+    call s:installation_error('vlty compiler requires java')
     finish
   endif
 
   if !filereadable(fnamemodify(s:vlty.lt_directory
         \ . '/languagetool-commandline.jar', ':p'))
-    call vimtex#log#error('vlty compiler - lt_directory path not valid')
-    echoerr 'vlty compiler - lt_directory path not valid'
+    call s:installation_error('vlty compiler - lt_directory path not valid')
     finish
   endif
 endif
