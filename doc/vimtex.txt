@@ -4140,7 +4140,8 @@ As a minimal example, one could write in |vimrc|: >
   set spelllang=en_gb
 
 The given directory has to contain the `LanguageTool` software, including for
-instance the file `languagetool-server.jar`.
+instance the file `languagetool-server.jar`. A separated `:compiler vlty` will
+raise an error message, if some component cannot be found.
 
 Note: Spell checking with `LanguageTool` is only enabled if a country code is
       specified in |'spelllang'|.
