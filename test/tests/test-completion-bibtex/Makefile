@@ -5,9 +5,9 @@ export INMAKE
 
 BACKENDS := bibtex bibparse vim
 
-.PHONY: all $(BACKENDS) jobname globbed
+.PHONY: all $(BACKENDS) jobname globbed starred
 
-all: $(BACKENDS) jobname globbed
+all: $(BACKENDS) jobname globbed starred
 
 $(BACKENDS):
 	@BACKEND=$@ $(MYVIM) -u test_backend.vim
@@ -17,3 +17,6 @@ jobname:
 
 globbed:
 	@$(MYVIM) -u test_globbed.vim
+
+starred:
+	@$(MYVIM) -u test_starred.vim
