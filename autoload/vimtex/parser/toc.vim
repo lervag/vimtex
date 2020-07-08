@@ -23,6 +23,14 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
   let l:entries = []
   let l:content = vimtex#parser#tex(a:file)
 
+  " Initialize matchers (if applicable)
+  for l:matcher in s:matchers
+    try
+      call l:matcher.init()
+    catch /E716/
+    endtry
+  endfor
+
   let l:max_level = 0
   for [l:file, l:lnum, l:line] in l:content
     if l:line =~# s:matcher_sections.re
@@ -581,10 +589,33 @@ endfunction
 let s:matcher_labels = {
       \ 're' : g:vimtex#re#not_comment . '\\label\{\zs.{-}\ze\}',
       \ 'priority' : 1,
+      \ 'label_dict' : {},
       \}
+function! s:matcher_labels.init() abort dict " {{{1
+  let l:labels = vimtex#parser#auxiliary#labels()
+
+  let self.label_dict = {}
+  for l:x in l:labels
+    let self.label_dict[l:x.word] = ' (' . l:x.menu . ')'
+  endfor
+
+  let l:width = winwidth(0) - 2
+  if stridx(g:vimtex_toc_config.split_pos, 'vert') >= 0
+    let l:width = g:vimtex_toc_config.split_width
+  endif
+  let l:width -= 10
+  let l:w1 = l:width/2
+  let l:w2 = l:width - l:w1
+  let self.format = '%-' . l:w1 . 's%' . l:w2 . 's'
+endfunction
+
+" }}}1
 function! s:matcher_labels.get_entry(context) abort dict " {{{1
+  let l:key = matchstr(a:context.line, self.re)
+  let l:label = get(self.label_dict, l:key, '')
+
   return {
-        \ 'title'  : matchstr(a:context.line, self.re),
+        \ 'title'  : printf(self.format, l:key, l:label),
         \ 'number' : '',
         \ 'file'   : a:context.file,
         \ 'line'   : a:context.lnum,
@@ -777,6 +808,6 @@ endfor
 unlet! s:m
 
 let s:matchers_preamble = filter(
-      \ deepcopy(s:matchers), "get(v:val, 'in_preamble')")
+      \ copy(s:matchers), "get(v:val, 'in_preamble')")
 let s:matchers_content = filter(
-      \ deepcopy(s:matchers), "get(v:val, 'in_content', 1)")
+      \ copy(s:matchers), "get(v:val, 'in_content', 1)")

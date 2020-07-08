@@ -287,7 +287,7 @@ function! vimtex#init_options() abort " {{{1
         \ 'show_help' : 1,
         \ 'show_numbers' : 1,
         \ 'split_pos' : 'vert leftabove',
-        \ 'split_width' : 30,
+        \ 'split_width' : 50,
         \ 'tocdepth' : 3,
         \ 'todo_sorted' : 1,
         \})
@@ -366,7 +366,7 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexInfoTitle', 'PreProc'],
         \ ['VimtexInfoKey', 'PreProc'],
         \ ['VimtexInfoValue', 'Statement'],
-        \ ['VimtexInfoOther', 'Normal'],
+        \ ['VimtexInfoOther', ''],
         \ ['VimtexMsg', 'ModeMsg'],
         \ ['VimtexSuccess', 'Statement'],
         \ ['VimtexTocHelp', 'helpVim'],
@@ -376,7 +376,7 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexTocTodo', 'Todo'],
         \ ['VimtexTocNum', 'Number'],
         \ ['VimtexTocSec0', 'Title'],
-        \ ['VimtexTocSec1', 'Normal'],
+        \ ['VimtexTocSec1', ''],
         \ ['VimtexTocSec2', 'helpVim'],
         \ ['VimtexTocSec3', 'NonText'],
         \ ['VimtexTocSec4', 'Comment'],
@@ -386,11 +386,11 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexTocLabelsFig', 'Identifier'],
         \ ['VimtexTocLabelsTab', 'String'],
         \ ['VimtexTocIncl', 'Number'],
-        \ ['VimtexTocInclPath', 'Normal'],
+        \ ['VimtexTocInclPath', ''],
         \ ['VimtexWarning', 'WarningMsg'],
         \ ['VimtexError', 'ErrorMsg'],
         \]
-    if !hlexists(l:name)
+    if !hlexists(l:name) && !empty(l:target)
       silent execute 'highlight default link' l:name l:target
     endif
   endfor

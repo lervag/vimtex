@@ -16,7 +16,7 @@ silent edit main.tex
 if empty($INMAKE) | finish | endif
 
 let s:toc = vimtex#toc#get_entries()
-call vimtex#test#assert_equal(len(s:toc), 13)
+call vimtex#test#assert_equal(len(s:toc), 18)
 
 " let s:i = 0
 " for s:x in s:toc
@@ -26,5 +26,8 @@ call vimtex#test#assert_equal(len(s:toc), 13)
 
 call vimtex#test#assert_equal('chapters/sections/first.tex', s:toc[5].file)
 call vimtex#test#assert_equal('chapters/sections/second.tex', s:toc[8].file)
+call vimtex#test#assert_equal(
+      \ 'eq:1                        (4.1 [p. 9])',
+      \ s:toc[16].title)
 
 quit!

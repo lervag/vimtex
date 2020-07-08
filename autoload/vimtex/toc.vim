@@ -355,7 +355,7 @@ function! s:toc.set_syntax() abort dict "{{{1
         \ '/\v\s\zs%('
         \   . toupper(join(keys(g:vimtex_toc_todo_labels), '|')) . '): /'
         \ 'contained'
-  syntax match VimtexTocHotkey /\[[^]]\+\]/ contained
+  syntax match VimtexTocHotkey /\[[^] ]\+\]/ contained
 
   syntax match VimtexTocSec0 /^L0.*/ contains=@VimtexTocStuff
   syntax match VimtexTocSec1 /^L1.*/ contains=@VimtexTocStuff

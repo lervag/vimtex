@@ -282,7 +282,6 @@ let s:completer_ref = {
       \   '\\subref\*\?{[^}]*$',
       \ ],
       \ 're_context' : '\\\w*{[^}]*$',
-      \ 'labels' : [],
       \ 'initialized' : 0,
       \}
 
@@ -295,143 +294,38 @@ function! s:completer_ref.init() dict abort " {{{2
 endfunction
 
 function! s:completer_ref.complete(regex) dict abort " {{{2
-  let self.candidates = self.get_matches(a:regex)
+  let l:candidates = self.get_matches(a:regex)
 
   if self.context =~# '\\eqref'
-        \ && !empty(filter(copy(self.matches), 'v:val.word =~# ''^eq:'''))
-    call filter(self.candidates, 'v:val.word =~# ''^eq:''')
+        \ && !empty(filter(copy(l:candidates), 'v:val.word =~# ''^eq:'''))
+    call filter(l:candidates, 'v:val.word =~# ''^eq:''')
   endif
 
-  return self.candidates
+  return l:candidates
 endfunction
 
 function! s:completer_ref.get_matches(regex) dict abort " {{{2
-  call self.parse_aux_files()
+  let l:labels = vimtex#parser#auxiliary#labels()
 
   " Match number
-  let self.matches = filter(copy(self.labels), 'v:val.menu =~# ''' . a:regex . '''')
-  if !empty(self.matches) | return self.matches | endif
+  let l:matches = filter(copy(l:labels), 'v:val.menu =~# ''' . a:regex . '''')
+  if !empty(l:matches) | return l:matches | endif
 
   " Match label
-  let self.matches = filter(copy(self.labels), 'v:val.word =~# ''' . a:regex . '''')
+  let l:matches = filter(copy(l:labels), 'v:val.word =~# ''' . a:regex . '''')
+  if !empty(l:matches) | return l:matches | endif
 
   " Match label and number
-  if empty(self.matches)
-    let l:regex_split = split(a:regex)
-    if len(l:regex_split) > 1
-      let l:base = l:regex_split[0]
-      let l:number = escape(join(l:regex_split[1:], ' '), '.')
-      let self.matches = filter(copy(self.labels),
-            \ 'v:val.word =~# ''' . l:base   . ''' &&' .
-            \ 'v:val.menu =~# ''' . l:number . '''')
-    endif
+  let l:regex_split = split(a:regex)
+  if len(l:regex_split) > 1
+    let l:base = l:regex_split[0]
+    let l:number = escape(join(l:regex_split[1:], ' '), '.')
+    let l:matches = filter(copy(l:labels),
+          \ 'v:val.word =~# ''' . l:base   . ''' &&' .
+          \ 'v:val.menu =~# ''' . l:number . '''')
   endif
 
-  return self.matches
-endfunction
-
-function! s:completer_ref.parse_aux_files() dict abort " {{{2
-  let l:files = [[b:vimtex.aux(), '']]
-
-  " Handle local file editing (e.g. subfiles package)
-  if exists('b:vimtex_local') && b:vimtex_local.active
-    let l:files += [[vimtex#state#get(b:vimtex_local.main_id).aux(), '']]
-  endif
-
-  " Add externaldocuments (from \externaldocument in preamble)
-  let l:files += map(
-        \ vimtex#parser#get_externalfiles(),
-        \ '[v:val.aux, v:val.opt]')
-
-  let l:cache = vimtex#cache#open('refcomplete', {
-        \ 'local': 1,
-        \ 'default': {'labels': [], 'ftime': -1}
-        \})
-
-  let self.labels = []
-  for [l:file, l:prefix] in filter(l:files, 'filereadable(v:val[0])')
-    let l:current = l:cache.get(l:file)
-    let l:ftime = getftime(l:file)
-    if l:ftime > l:current.ftime
-      let l:current.ftime = l:ftime
-      let l:current.labels = self.parse_labels(l:file, l:prefix)
-      let l:cache.modified = 1
-    endif
-
-    let self.labels += l:current.labels
-  endfor
-
-  " Write cache to file
-  call l:cache.write()
-
-  return self.labels
-endfunction
-
-function! s:completer_ref.parse_labels(file, prefix) dict abort " {{{2
-  "
-  " Searches aux files recursively for commands of the form
-  "
-  "   \newlabel{name}{{number}{page}.*}.*
-  "   \newlabel{name}{{text {number}}{page}.*}.*
-  "   \newlabel{name}{{number}{page}{...}{type}.*}.*
-  "
-  " Returns a list of candidates like {'word': name, 'menu': type number page}.
-  "
-
-  let l:labels = []
-  let l:lines = vimtex#parser#auxiliary(a:file)
-  let l:lines = filter(l:lines, 'v:val =~# ''\\newlabel{''')
-  let l:lines = filter(l:lines, 'v:val !~# ''@cref''')
-  let l:lines = filter(l:lines, 'v:val !~# ''sub@''')
-  let l:lines = filter(l:lines, 'v:val !~# ''tocindent-\?[0-9]''')
-  for l:line in l:lines
-    let l:line = vimtex#util#tex2unicode(l:line)
-    let l:tree = vimtex#util#tex2tree(l:line)[1:]
-    let l:name = get(remove(l:tree, 0), 0, '')
-    if empty(l:name)
-      continue
-    else
-      let l:name = a:prefix . l:name
-    endif
-    let l:context = remove(l:tree, 0)
-    if type(l:context) == type([]) && len(l:context) > 1
-      let l:menu = ''
-      try
-        let l:type = substitute(l:context[3][0], '\..*$', ' ', '')
-        let l:type = substitute(l:type, 'AMS', 'Equation', '')
-        let l:menu .= toupper(l:type[0]) . l:type[1:]
-      catch
-      endtry
-
-      let l:number = self.parse_number(l:context[0])
-      if l:menu =~# 'Equation'
-        let l:number = '(' . l:number . ')'
-      endif
-      let l:menu .= l:number
-
-      try
-        let l:menu .= ' [p. ' . l:context[1][0] . ']'
-      catch
-      endtry
-      call add(l:labels, {'word': l:name, 'menu': l:menu})
-    endif
-  endfor
-
-  return l:labels
-endfunction
-
-function! s:completer_ref.parse_number(num_tree) dict abort " {{{2
-  if type(a:num_tree) == type([])
-    if len(a:num_tree) == 0
-      return '-'
-    else
-      let l:index = len(a:num_tree) == 1 ? 0 : 1
-      return self.parse_number(a:num_tree[l:index])
-    endif
-  else
-    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*\l?)($|\s.*)')
-    return len(l:matches) > 3 ? l:matches[2] : '-'
-  endif
+  return l:matches
 endfunction
 
 " }}}1
