@@ -287,7 +287,7 @@ function! vimtex#init_options() abort " {{{1
         \ 'show_help' : 1,
         \ 'show_numbers' : 1,
         \ 'split_pos' : 'vert leftabove',
-        \ 'split_width' : 30,
+        \ 'split_width' : 50,
         \ 'tocdepth' : 3,
         \ 'todo_sorted' : 1,
         \})
