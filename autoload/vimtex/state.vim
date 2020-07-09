@@ -30,10 +30,12 @@ endfunction
 
 " }}}1
 function! vimtex#state#init_local() abort " {{{1
-  let l:filename = expand('%:p')
   let l:preserve_root = get(s:, 'subfile_preserve_root')
   unlet! s:subfile_preserve_root
 
+  if &filetype !=# 'tex' || empty(b:vimtex.tex) | return | endif
+
+  let l:filename = expand('%:p')
   if b:vimtex.tex ==# l:filename | return | endif
 
   let l:vimtex_id = s:get_main_id(l:filename)
@@ -234,7 +236,7 @@ function! s:get_main() abort " {{{1
     if l:id >= 0 && has_key(s:vimtex_states, l:id)
       return [s:vimtex_states[l:id].tex, 'cls/sty file (inherit from alternate)']
     else
-      let s:disabled_modules = ['latexmk', 'view', 'toc']
+      let s:disabled_modules = ['compiler', 'view', 'toc', 'qf']
       return [expand('%:p'), 'cls/sty file']
     endif
   endif
@@ -250,14 +252,16 @@ function! s:get_main() abort " {{{1
   endif
 
   "
-  " Use fallback candidate or the current file
+  " Fallbacks:
+  " 1.  fallback candidate from get_main_latexmain
+  " 2.  current file
   "
-  let l:candidate = get(s:, 'cand_fallback', expand('%:p'))
   if exists('s:cand_fallback')
+    let l:candidate = s:cand_fallback
     unlet s:cand_fallback
     return [l:candidate, 'fallback']
   else
-    return [l:candidate, 'current file']
+    return [expand('%:p'), 'current file']
   endif
 endfunction
 
@@ -500,10 +504,9 @@ let s:vimtex = {}
 
 function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   let l:new = deepcopy(self)
-  let l:new.tex  = a:main
-  let l:new.root = fnamemodify(l:new.tex, ':h')
-  let l:new.base = fnamemodify(l:new.tex, ':t')
-  let l:new.name = fnamemodify(l:new.tex, ':t:r')
+  let l:new.root = fnamemodify(a:main, ':h')
+  let l:new.base = fnamemodify(a:main, ':t')
+  let l:new.name = fnamemodify(a:main, ':t:r')
   let l:new.main_parser = a:main_parser
 
   if a:preserve_root && exists('b:vimtex')
@@ -511,14 +514,21 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
     let l:new.base = vimtex#paths#relative(a:main, l:new.root)
   endif
 
+  let l:ext = fnamemodify(a:main, ':e')
+  let l:new.tex = l:ext ==# 'tex' ? a:main : ''
+
   "
   " The preamble content is used to parse for the engine directive, the
   " documentclass and the package list; we store it as a temporary shared
   " object variable
   "
-  let l:new.preamble = vimtex#parser#preamble(l:new.tex, {
-        \ 'root' : l:new.root,
-        \})
+  if !empty(l:new.tex)
+    let l:new.preamble = vimtex#parser#preamble(l:new.tex, {
+          \ 'root' : l:new.root,
+          \})
+  else
+    let l:new.preamble = []
+  endif
 
   call l:new.parse_tex_program()
   call l:new.parse_documentclass()
