@@ -511,10 +511,6 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
     let l:new.base = vimtex#paths#relative(a:main, l:new.root)
   endif
 
-  if exists('s:disabled_modules')
-    let l:new.disabled_modules = s:disabled_modules
-  endif
-
   "
   " The preamble content is used to parse for the engine directive, the
   " documentclass and the package list; we store it as a temporary shared
@@ -529,11 +525,13 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   call l:new.parse_graphicspath()
   call l:new.gather_sources()
 
-  call vimtex#view#init_state(l:new)
-  call vimtex#compiler#init_state(l:new)
-  call vimtex#qf#init_state(l:new)
-  call vimtex#toc#init_state(l:new)
-  call vimtex#fold#init_state(l:new)
+  " Initialize state in submodules
+  let l:new.disabled_modules = get(s:, 'disabled_modules', [])
+  for l:mod in filter(
+        \ ['view', 'compiler', 'qf', 'toc', 'fold'],
+        \ 'index(l:new.disabled_modules, v:val) < 0')
+    call vimtex#{l:mod}#init_state(l:new)
+  endfor
 
   " Parsing packages might depend on the compiler setting for build_dir
   call l:new.parse_packages()

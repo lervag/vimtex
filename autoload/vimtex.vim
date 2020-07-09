@@ -404,7 +404,6 @@ endfunction
 
 " }}}1
 function! s:init_buffer() abort " {{{1
-  " Set Vim options
   for l:suf in [
         \ '.sty',
         \ '.cls',
@@ -453,9 +452,9 @@ function! s:init_buffer() abort " {{{1
   augroup END
 
   " Initialize buffer settings for sub modules
-  for l:mod in s:modules
-    if index(get(b:vimtex, 'disabled_modules', []), l:mod) >= 0 | continue | endif
-
+  let l:disabled_modules = get(b:vimtex, 'disabled_modules', [])
+  for l:mod in filter(copy(s:modules),
+        \ 'index(l:disabled_modules, v:val) < 0')
     try
       call vimtex#{l:mod}#init_buffer()
     catch /E117.*#init_/
@@ -467,16 +466,6 @@ endfunction
 " }}}1
 function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
-
-  function! s:map(mode, lhs, rhs, ...) abort
-    if !hasmapto(a:rhs, a:mode)
-          \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
-          \ && (a:0 > 0
-          \     || g:vimtex_mappings_override_existing
-          \     || empty(maparg(a:lhs, a:mode)))
-      silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
-    endif
-  endfunction
 
   call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
   call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
@@ -694,6 +683,17 @@ endfunction
 
 " }}}1
 
+function! s:map(mode, lhs, rhs, ...) abort " {{{1
+  if !hasmapto(a:rhs, a:mode)
+        \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
+        \ && (a:0 > 0
+        \     || g:vimtex_mappings_override_existing
+        \     || empty(maparg(a:lhs, a:mode)))
+    silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
+  endif
+endfunction
+
+" }}}1
 
 " {{{1 Initialize module
 
