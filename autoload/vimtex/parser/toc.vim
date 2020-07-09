@@ -278,10 +278,14 @@ function! s:matcher_include_bibtex.get_entry(context) abort dict " {{{1
       let l:file .= '.bib'
     endif
 
+    if !filereadable(l:file)
+      let l:file = vimtex#kpsewhich#find(l:file)
+    endif
+
     call add(l:entries, {
           \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
           \ 'number' : '',
-          \ 'file'   : vimtex#kpsewhich#find(l:file),
+          \ 'file'   : l:file,
           \ 'line'   : 1,
           \ 'level'  : 0,
           \ 'rank'   : a:context.lnum_total,
@@ -304,10 +308,14 @@ let s:matcher_include_biblatex = {
 function! s:matcher_include_biblatex.get_entry(context) abort dict " {{{1
   let l:file = matchstr(a:context.line, self.re)
 
+  if !filereadable(l:file)
+    let l:file = vimtex#kpsewhich#find(l:file)
+  endif
+
   return {
         \ 'title'  : printf('bib incl: %-.67s', fnamemodify(l:file, ':t')),
         \ 'number' : '',
-        \ 'file'   : vimtex#kpsewhich#find(l:file),
+        \ 'file'   : l:file,
         \ 'line'   : 1,
         \ 'level'  : 0,
         \ 'rank'   : a:context.lnum_total,
