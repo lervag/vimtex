@@ -45,4 +45,12 @@ call vimtex#test#main('test-subfiles/sub/sub3.tex', 'test-subfiles/main.tex')
 " Test mainfile specified in .latexmrc
 call vimtex#test#main('test-latexmk/preamble.tex', 'test-latexmk/main.tex')
 
+" Test mainfile from bibfiles
+call vimtex#test#main('test-bib-simple/references.bib', 'test-bib-simple/main.tex')
+call vimtex#test#main('test-bib-notfound/references.bib', '')
+call vimtex#test#main('test-bib-alternate/references.bib', '')
+
+execute 'silent edit' fnameescape('test-bib-alternate/main.tex')
+call vimtex#test#main('test-bib-alternate/references.bib', 'test-bib-alternate/main.tex')
+
 quit!
