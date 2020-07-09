@@ -73,6 +73,17 @@ function! vimtex#test#keys(keys, context, expected) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#test#main(file, expected) abort " {{{1
+  execute 'silent edit' fnameescape(a:file)
+
+  let l:expected = empty(a:expected) ? '' : fnamemodify(a:expected, ':p')
+  call vimtex#test#assert(exists('b:vimtex'))
+  call vimtex#test#assert_equal(l:expected, b:vimtex.tex)
+
+  bwipeout!
+endfunction
+
+" }}}1
 
 function! s:fail(...) abort " {{{1
   echo 'Assertion failed!'

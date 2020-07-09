@@ -700,5 +700,6 @@ endfunction
 let s:modules = map(
       \ glob(fnamemodify(expand('<sfile>'), ':r') . '/*.vim', 0, 1),
       \ 'fnamemodify(v:val, '':t:r'')')
+call remove(s:modules, index(s:modules, 'test'))
 
 " }}}1
