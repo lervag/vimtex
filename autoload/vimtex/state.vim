@@ -197,19 +197,21 @@ function! s:get_main() abort " {{{1
     return [l:candidate, 'texroot specifier']
   endif
 
-  "
-  " Check if the current file is a main file
-  "
-  if s:file_is_main(expand('%:p'))
-    return [expand('%:p'), 'current file verified']
-  endif
+  if &filetype ==# 'tex'
+    "
+    " Check if the current file is a main file
+    "
+    if s:file_is_main(expand('%:p'))
+      return [expand('%:p'), 'current file verified']
+    endif
 
-  "
-  " Support for subfiles package
-  "
-  let l:candidate = s:get_main_from_subfile()
-  if !empty(l:candidate)
-    return [l:candidate, 'subfiles']
+    "
+    " Support for subfiles package
+    "
+    let l:candidate = s:get_main_from_subfile()
+    if !empty(l:candidate)
+      return [l:candidate, 'subfiles']
+    endif
   endif
 
   "
@@ -245,21 +247,37 @@ function! s:get_main() abort " {{{1
   " Search for main file recursively through include specifiers
   "
   if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
-    let l:candidate = s:get_main_choose(s:get_main_recurse())
-    if !empty(l:candidate)
-      return [l:candidate, 'recursive search']
+    if &filetype ==# 'tex'
+      let l:candidate = s:get_main_choose(s:get_main_recurse())
+      if !empty(l:candidate)
+        return [l:candidate, 'recursive search']
+      endif
+    else
+      let l:candidate = s:get_main_choose(s:get_main_recurse_from_bib())
+      if !empty(l:candidate)
+        return [l:candidate, 'recursive search (bib)']
+      endif
     endif
   endif
 
   "
   " Fallbacks:
   " 1.  fallback candidate from get_main_latexmain
-  " 2.  current file
+  " 2. a. tex: current file
+  "    b. bib: check alternate file or current
   "
   if exists('s:cand_fallback')
     let l:candidate = s:cand_fallback
     unlet s:cand_fallback
     return [l:candidate, 'fallback']
+  elseif &filetype ==# 'bib'
+    let l:id = getbufvar('#', 'vimtex_id', -1)
+    if l:id >= 0 && has_key(s:vimtex_states, l:id)
+      return [s:vimtex_states[l:id].tex, 'bib file (inherit from alternate)']
+    else
+      let s:disabled_modules = ['compiler', 'view', 'toc', 'qf', 'fold']
+      return [expand('%:p'), 'bib file']
+    endif
   else
     return [expand('%:p'), 'current file']
   endif
@@ -386,6 +404,32 @@ function! s:get_main_recurse(...) abort " {{{1
   " Apply filters successively (minor optimization)
   let l:re_filter1 = fnamemodify(l:file, ':t:r')
   let l:re_filter2 = g:vimtex#re#tex_input . '\s*\f*' . l:re_filter1
+
+  " Search through candidates found recursively upwards in the directory tree
+  let l:results = []
+  for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
+    if index(l:tried[l:file], l:cand) >= 0 | continue | endif
+    call add(l:tried[l:file], l:cand)
+
+    if len(filter(filter(readfile(l:cand),
+          \ 'v:val =~# l:re_filter1'),
+          \ 'v:val =~# l:re_filter2')) > 0
+      let l:results += s:get_main_recurse(fnamemodify(l:cand, ':p'), l:tried)
+    endif
+  endfor
+
+  return l:results
+endfunction
+
+" }}}1
+function! s:get_main_recurse_from_bib() abort " {{{1
+  let l:file = expand('%:p')
+  let l:tried = {}
+  let l:tried[l:file] = [l:file]
+
+  " Apply filters successively (minor optimization)
+  let l:re_filter1 = fnamemodify(l:file, ':t:r')
+  let l:re_filter2 = g:vimtex#re#bib_input . '\s*\f*' . l:re_filter1
 
   " Search through candidates found recursively upwards in the directory tree
   let l:results = []

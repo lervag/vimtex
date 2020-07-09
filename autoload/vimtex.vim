@@ -404,6 +404,10 @@ endfunction
 
 " }}}1
 function! s:init_buffer() abort " {{{1
+  " This function configures settings for the buffer, which may be either of
+  " filetype "tex" or "bib". A lot of settings are shared, but some are
+  " different.
+
   for l:suf in [
         \ '.sty',
         \ '.cls',
@@ -427,20 +431,35 @@ function! s:init_buffer() abort " {{{1
         \ ]
     execute 'set suffixes+=' . l:suf
   endfor
-  setlocal suffixesadd=.sty,.tex,.cls
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
-  setlocal commentstring=%%s
-  setlocal iskeyword+=:
-  setlocal includeexpr=vimtex#include#expr()
-  let &l:include = g:vimtex#re#tex_include
-  let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
-  let &l:define .= '\|toks\)\=def\|\\font\|\\\(future\)\=let'
-  let &l:define .= '\|\\new\(count\|dimen\|skip'
-  let &l:define .= '\|muskip\|box\|toks\|read\|write\|fam\|insert\)'
-  let &l:define .= '\|\\\(re\)\=new\(boolean\|command\|counter\|environment'
-  let &l:define .= '\|font\|if\|length\|savebox'
-  let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
-  let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
+  setlocal commentstring=\%\ %s
+
+  " Get list of disabled modules from state object
+  let l:disabled_modules = copy(get(b:vimtex, 'disabled_modules', []))
+
+  " Apply some filetype specific settings
+  if &filetype ==# 'tex'
+    setlocal suffixesadd=.tex,.sty,.cls
+    setlocal iskeyword+=:
+    setlocal includeexpr=vimtex#include#expr()
+    let &l:include = g:vimtex#re#tex_include
+    let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
+    let &l:define .= '\|toks\)\=def\|\\font\|\\\(future\)\=let'
+    let &l:define .= '\|\\new\(count\|dimen\|skip'
+    let &l:define .= '\|muskip\|box\|toks\|read\|write\|fam\|insert\)'
+    let &l:define .= '\|\\\(re\)\=new\(boolean\|command\|counter\|environment'
+    let &l:define .= '\|font\|if\|length\|savebox'
+    let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
+    let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
+  elseif &filetype ==# 'bib'
+    setlocal suffixesadd=.tex,.bib
+
+    " Several additional modules should be disabled in bib files
+    let l:disabled_modules += [
+          \ 'fold', 'matchparen', 'format', 'doc', 'imaps', 'cmd', 'delim',
+          \ 'env', 'motion', 'complete',
+          \]
+  endif
 
   " Define autocommands
   augroup vimtex_buffers
@@ -452,7 +471,6 @@ function! s:init_buffer() abort " {{{1
   augroup END
 
   " Initialize buffer settings for sub modules
-  let l:disabled_modules = get(b:vimtex, 'disabled_modules', [])
   for l:mod in filter(copy(s:modules),
         \ 'index(l:disabled_modules, v:val) < 0')
     try
@@ -467,122 +485,122 @@ endfunction
 function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
-  call s:map('n', '<localleader>li', '<plug>(vimtex-info)')
-  call s:map('n', '<localleader>lI', '<plug>(vimtex-info-full)')
-  call s:map('n', '<localleader>lx', '<plug>(vimtex-reload)')
-  call s:map('n', '<localleader>lX', '<plug>(vimtex-reload-state)')
-  call s:map('n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
-  call s:map('n', '<localleader>lq', '<plug>(vimtex-log)')
+  call s:map(0, 'n', '<localleader>li', '<plug>(vimtex-info)')
+  call s:map(0, 'n', '<localleader>lI', '<plug>(vimtex-info-full)')
+  call s:map(0, 'n', '<localleader>lx', '<plug>(vimtex-reload)')
+  call s:map(0, 'n', '<localleader>lX', '<plug>(vimtex-reload-state)')
+  call s:map(1, 'n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
+  call s:map(0, 'n', '<localleader>lq', '<plug>(vimtex-log)')
 
-  call s:map('n', 'ds$', '<plug>(vimtex-env-delete-math)')
-  call s:map('n', 'cs$', '<plug>(vimtex-env-change-math)')
-  call s:map('n', 'dse', '<plug>(vimtex-env-delete)')
-  call s:map('n', 'cse', '<plug>(vimtex-env-change)')
-  call s:map('n', 'tse', '<plug>(vimtex-env-toggle-star)')
+  call s:map(1, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
+  call s:map(1, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
+  call s:map(1, 'n', 'dse', '<plug>(vimtex-env-delete)')
+  call s:map(1, 'n', 'cse', '<plug>(vimtex-env-change)')
+  call s:map(1, 'n', 'tse', '<plug>(vimtex-env-toggle-star)')
 
-  call s:map('n', 'dsc',  '<plug>(vimtex-cmd-delete)')
-  call s:map('n', 'csc',  '<plug>(vimtex-cmd-change)')
-  call s:map('n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
-  call s:map('n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
-  call s:map('x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
-  call s:map('i', '<F7>', '<plug>(vimtex-cmd-create)')
-  call s:map('n', '<F7>', '<plug>(vimtex-cmd-create)')
-  call s:map('x', '<F7>', '<plug>(vimtex-cmd-create)')
+  call s:map(1, 'n', 'dsc',  '<plug>(vimtex-cmd-delete)')
+  call s:map(1, 'n', 'csc',  '<plug>(vimtex-cmd-change)')
+  call s:map(1, 'n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
+  call s:map(1, 'n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map(1, 'x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map(1, 'i', '<F7>', '<plug>(vimtex-cmd-create)')
+  call s:map(1, 'n', '<F7>', '<plug>(vimtex-cmd-create)')
+  call s:map(1, 'x', '<F7>', '<plug>(vimtex-cmd-create)')
 
-  call s:map('n', 'dsd', '<plug>(vimtex-delim-delete)')
-  call s:map('n', 'csd', '<plug>(vimtex-delim-change-math)')
-  call s:map('n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
-  call s:map('x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
-  call s:map('n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
-  call s:map('x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
-  call s:map('i', ']]',  '<plug>(vimtex-delim-close)')
+  call s:map(1, 'n', 'dsd', '<plug>(vimtex-delim-delete)')
+  call s:map(1, 'n', 'csd', '<plug>(vimtex-delim-change-math)')
+  call s:map(1, 'n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map(1, 'x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map(1, 'n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+  call s:map(1, 'x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+  call s:map(1, 'i', ']]',  '<plug>(vimtex-delim-close)')
 
   if g:vimtex_compiler_enabled
-    call s:map('n', '<localleader>ll', '<plug>(vimtex-compile)')
-    call s:map('n', '<localleader>lo', '<plug>(vimtex-compile-output)')
-    call s:map('n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
-    call s:map('x', '<localleader>lL', '<plug>(vimtex-compile-selected)')
-    call s:map('n', '<localleader>lk', '<plug>(vimtex-stop)')
-    call s:map('n', '<localleader>lK', '<plug>(vimtex-stop-all)')
-    call s:map('n', '<localleader>le', '<plug>(vimtex-errors)')
-    call s:map('n', '<localleader>lc', '<plug>(vimtex-clean)')
-    call s:map('n', '<localleader>lC', '<plug>(vimtex-clean-full)')
-    call s:map('n', '<localleader>lg', '<plug>(vimtex-status)')
-    call s:map('n', '<localleader>lG', '<plug>(vimtex-status-all)')
+    call s:map(0, 'n', '<localleader>ll', '<plug>(vimtex-compile)')
+    call s:map(0, 'n', '<localleader>lo', '<plug>(vimtex-compile-output)')
+    call s:map(1, 'n', '<localleader>lL', '<plug>(vimtex-compile-selected)')
+    call s:map(1, 'x', '<localleader>lL', '<plug>(vimtex-compile-selected)')
+    call s:map(0, 'n', '<localleader>lk', '<plug>(vimtex-stop)')
+    call s:map(0, 'n', '<localleader>lK', '<plug>(vimtex-stop-all)')
+    call s:map(0, 'n', '<localleader>le', '<plug>(vimtex-errors)')
+    call s:map(0, 'n', '<localleader>lc', '<plug>(vimtex-clean)')
+    call s:map(0, 'n', '<localleader>lC', '<plug>(vimtex-clean-full)')
+    call s:map(0, 'n', '<localleader>lg', '<plug>(vimtex-status)')
+    call s:map(0, 'n', '<localleader>lG', '<plug>(vimtex-status-all)')
   endif
 
   if g:vimtex_motion_enabled
     " These are forced in order to overwrite matchit mappings
-    call s:map('n', '%', '<plug>(vimtex-%)', 1)
-    call s:map('x', '%', '<plug>(vimtex-%)', 1)
-    call s:map('o', '%', '<plug>(vimtex-%)', 1)
+    call s:map(0, 'n', '%', '<plug>(vimtex-%)', 1)
+    call s:map(0, 'x', '%', '<plug>(vimtex-%)', 1)
+    call s:map(0, 'o', '%', '<plug>(vimtex-%)', 1)
 
-    call s:map('n', ']]', '<plug>(vimtex-]])')
-    call s:map('n', '][', '<plug>(vimtex-][)')
-    call s:map('n', '[]', '<plug>(vimtex-[])')
-    call s:map('n', '[[', '<plug>(vimtex-[[)')
-    call s:map('x', ']]', '<plug>(vimtex-]])')
-    call s:map('x', '][', '<plug>(vimtex-][)')
-    call s:map('x', '[]', '<plug>(vimtex-[])')
-    call s:map('x', '[[', '<plug>(vimtex-[[)')
-    call s:map('o', ']]', '<plug>(vimtex-]])')
-    call s:map('o', '][', '<plug>(vimtex-][)')
-    call s:map('o', '[]', '<plug>(vimtex-[])')
-    call s:map('o', '[[', '<plug>(vimtex-[[)')
+    call s:map(1, 'n', ']]', '<plug>(vimtex-]])')
+    call s:map(1, 'n', '][', '<plug>(vimtex-][)')
+    call s:map(1, 'n', '[]', '<plug>(vimtex-[])')
+    call s:map(1, 'n', '[[', '<plug>(vimtex-[[)')
+    call s:map(1, 'x', ']]', '<plug>(vimtex-]])')
+    call s:map(1, 'x', '][', '<plug>(vimtex-][)')
+    call s:map(1, 'x', '[]', '<plug>(vimtex-[])')
+    call s:map(1, 'x', '[[', '<plug>(vimtex-[[)')
+    call s:map(1, 'o', ']]', '<plug>(vimtex-]])')
+    call s:map(1, 'o', '][', '<plug>(vimtex-][)')
+    call s:map(1, 'o', '[]', '<plug>(vimtex-[])')
+    call s:map(1, 'o', '[[', '<plug>(vimtex-[[)')
 
-    call s:map('n', ']M', '<plug>(vimtex-]M)')
-    call s:map('n', ']m', '<plug>(vimtex-]m)')
-    call s:map('n', '[M', '<plug>(vimtex-[M)')
-    call s:map('n', '[m', '<plug>(vimtex-[m)')
-    call s:map('x', ']M', '<plug>(vimtex-]M)')
-    call s:map('x', ']m', '<plug>(vimtex-]m)')
-    call s:map('x', '[M', '<plug>(vimtex-[M)')
-    call s:map('x', '[m', '<plug>(vimtex-[m)')
-    call s:map('o', ']M', '<plug>(vimtex-]M)')
-    call s:map('o', ']m', '<plug>(vimtex-]m)')
-    call s:map('o', '[M', '<plug>(vimtex-[M)')
-    call s:map('o', '[m', '<plug>(vimtex-[m)')
+    call s:map(1, 'n', ']M', '<plug>(vimtex-]M)')
+    call s:map(1, 'n', ']m', '<plug>(vimtex-]m)')
+    call s:map(1, 'n', '[M', '<plug>(vimtex-[M)')
+    call s:map(1, 'n', '[m', '<plug>(vimtex-[m)')
+    call s:map(1, 'x', ']M', '<plug>(vimtex-]M)')
+    call s:map(1, 'x', ']m', '<plug>(vimtex-]m)')
+    call s:map(1, 'x', '[M', '<plug>(vimtex-[M)')
+    call s:map(1, 'x', '[m', '<plug>(vimtex-[m)')
+    call s:map(1, 'o', ']M', '<plug>(vimtex-]M)')
+    call s:map(1, 'o', ']m', '<plug>(vimtex-]m)')
+    call s:map(1, 'o', '[M', '<plug>(vimtex-[M)')
+    call s:map(1, 'o', '[m', '<plug>(vimtex-[m)')
 
-    call s:map('n', ']/', '<plug>(vimtex-]/)')
-    call s:map('n', ']*', '<plug>(vimtex-]*)')
-    call s:map('n', '[/', '<plug>(vimtex-[/)')
-    call s:map('n', '[*', '<plug>(vimtex-[*)')
-    call s:map('x', ']/', '<plug>(vimtex-]/)')
-    call s:map('x', ']*', '<plug>(vimtex-]*)')
-    call s:map('x', '[/', '<plug>(vimtex-[/)')
-    call s:map('x', '[*', '<plug>(vimtex-[*)')
-    call s:map('o', ']/', '<plug>(vimtex-]/)')
-    call s:map('o', ']*', '<plug>(vimtex-]*)')
-    call s:map('o', '[/', '<plug>(vimtex-[/)')
-    call s:map('o', '[*', '<plug>(vimtex-[*)')
+    call s:map(1, 'n', ']/', '<plug>(vimtex-]/)')
+    call s:map(1, 'n', ']*', '<plug>(vimtex-]*)')
+    call s:map(1, 'n', '[/', '<plug>(vimtex-[/)')
+    call s:map(1, 'n', '[*', '<plug>(vimtex-[*)')
+    call s:map(1, 'x', ']/', '<plug>(vimtex-]/)')
+    call s:map(1, 'x', ']*', '<plug>(vimtex-]*)')
+    call s:map(1, 'x', '[/', '<plug>(vimtex-[/)')
+    call s:map(1, 'x', '[*', '<plug>(vimtex-[*)')
+    call s:map(1, 'o', ']/', '<plug>(vimtex-]/)')
+    call s:map(1, 'o', ']*', '<plug>(vimtex-]*)')
+    call s:map(1, 'o', '[/', '<plug>(vimtex-[/)')
+    call s:map(1, 'o', '[*', '<plug>(vimtex-[*)')
   endif
 
   if g:vimtex_text_obj_enabled
-    call s:map('x', 'id', '<plug>(vimtex-id)')
-    call s:map('x', 'ad', '<plug>(vimtex-ad)')
-    call s:map('o', 'id', '<plug>(vimtex-id)')
-    call s:map('o', 'ad', '<plug>(vimtex-ad)')
-    call s:map('x', 'i$', '<plug>(vimtex-i$)')
-    call s:map('x', 'a$', '<plug>(vimtex-a$)')
-    call s:map('o', 'i$', '<plug>(vimtex-i$)')
-    call s:map('o', 'a$', '<plug>(vimtex-a$)')
-    call s:map('x', 'iP', '<plug>(vimtex-iP)')
-    call s:map('x', 'aP', '<plug>(vimtex-aP)')
-    call s:map('o', 'iP', '<plug>(vimtex-iP)')
-    call s:map('o', 'aP', '<plug>(vimtex-aP)')
-    call s:map('x', 'im', '<plug>(vimtex-im)')
-    call s:map('x', 'am', '<plug>(vimtex-am)')
-    call s:map('o', 'im', '<plug>(vimtex-im)')
-    call s:map('o', 'am', '<plug>(vimtex-am)')
+    call s:map(0, 'x', 'id', '<plug>(vimtex-id)')
+    call s:map(0, 'x', 'ad', '<plug>(vimtex-ad)')
+    call s:map(0, 'o', 'id', '<plug>(vimtex-id)')
+    call s:map(0, 'o', 'ad', '<plug>(vimtex-ad)')
+    call s:map(0, 'x', 'i$', '<plug>(vimtex-i$)')
+    call s:map(0, 'x', 'a$', '<plug>(vimtex-a$)')
+    call s:map(0, 'o', 'i$', '<plug>(vimtex-i$)')
+    call s:map(0, 'o', 'a$', '<plug>(vimtex-a$)')
+    call s:map(1, 'x', 'iP', '<plug>(vimtex-iP)')
+    call s:map(1, 'x', 'aP', '<plug>(vimtex-aP)')
+    call s:map(1, 'o', 'iP', '<plug>(vimtex-iP)')
+    call s:map(1, 'o', 'aP', '<plug>(vimtex-aP)')
+    call s:map(1, 'x', 'im', '<plug>(vimtex-im)')
+    call s:map(1, 'x', 'am', '<plug>(vimtex-am)')
+    call s:map(1, 'o', 'im', '<plug>(vimtex-im)')
+    call s:map(1, 'o', 'am', '<plug>(vimtex-am)')
 
     if vimtex#text_obj#targets#enabled()
       call vimtex#text_obj#targets#init()
 
       " These are handled explicitly to avoid conflict with gitgutter
-      call s:map('x', 'ic', '<plug>(vimtex-targets-i)c')
-      call s:map('x', 'ac', '<plug>(vimtex-targets-a)c')
-      call s:map('o', 'ic', '<plug>(vimtex-targets-i)c')
-      call s:map('o', 'ac', '<plug>(vimtex-targets-a)c')
+      call s:map(0, 'x', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map(0, 'x', 'ac', '<plug>(vimtex-targets-a)c')
+      call s:map(0, 'o', 'ic', '<plug>(vimtex-targets-i)c')
+      call s:map(0, 'o', 'ac', '<plug>(vimtex-targets-a)c')
     else
       if g:vimtex_text_obj_variant ==# 'targets'
         call vimtex#log#warning(
@@ -591,35 +609,35 @@ function! s:init_default_mappings() abort " {{{1
       endif
       let g:vimtex_text_obj_variant = 'vimtex'
 
-      call s:map('x', 'ie', '<plug>(vimtex-ie)')
-      call s:map('x', 'ae', '<plug>(vimtex-ae)')
-      call s:map('o', 'ie', '<plug>(vimtex-ie)')
-      call s:map('o', 'ae', '<plug>(vimtex-ae)')
-      call s:map('x', 'ic', '<plug>(vimtex-ic)')
-      call s:map('x', 'ac', '<plug>(vimtex-ac)')
-      call s:map('o', 'ic', '<plug>(vimtex-ic)')
-      call s:map('o', 'ac', '<plug>(vimtex-ac)')
+      call s:map(1, 'x', 'ie', '<plug>(vimtex-ie)')
+      call s:map(1, 'x', 'ae', '<plug>(vimtex-ae)')
+      call s:map(1, 'o', 'ie', '<plug>(vimtex-ie)')
+      call s:map(1, 'o', 'ae', '<plug>(vimtex-ae)')
+      call s:map(0, 'x', 'ic', '<plug>(vimtex-ic)')
+      call s:map(0, 'x', 'ac', '<plug>(vimtex-ac)')
+      call s:map(0, 'o', 'ic', '<plug>(vimtex-ic)')
+      call s:map(0, 'o', 'ac', '<plug>(vimtex-ac)')
     endif
   endif
 
   if g:vimtex_toc_enabled
-    call s:map('n', '<localleader>lt', '<plug>(vimtex-toc-open)')
-    call s:map('n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
+    call s:map(0, 'n', '<localleader>lt', '<plug>(vimtex-toc-open)')
+    call s:map(0, 'n', '<localleader>lT', '<plug>(vimtex-toc-toggle)')
   endif
 
   if has_key(b:vimtex, 'viewer')
-    call s:map('n', '<localleader>lv', '<plug>(vimtex-view)')
+    call s:map(0, 'n', '<localleader>lv', '<plug>(vimtex-view)')
     if has_key(b:vimtex.viewer, 'reverse_search')
-      call s:map('n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
+      call s:map(0, 'n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
     endif
   endif
 
   if g:vimtex_imaps_enabled
-    call s:map('n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
+    call s:map(0, 'n', '<localleader>lm', '<plug>(vimtex-imaps-list)')
   endif
 
   if g:vimtex_doc_enabled
-    call s:map('n', 'K', '<plug>(vimtex-doc-package)')
+    call s:map(0,'n', 'K', '<plug>(vimtex-doc-package)')
   endif
 endfunction
 
@@ -683,8 +701,11 @@ endfunction
 
 " }}}1
 
-function! s:map(mode, lhs, rhs, ...) abort " {{{1
-  if !hasmapto(a:rhs, a:mode)
+function! s:map(ftype, mode, lhs, rhs, ...) abort " {{{1
+  if (a:ftype == 0
+        \     || a:ftype == 1 && &filetype ==# 'tex'
+        \     || a:ftype == 2 && &filetype ==# 'bib')
+        \ && !hasmapto(a:rhs, a:mode)
         \ && index(get(g:vimtex_mappings_disable, a:mode, []), a:lhs) < 0
         \ && (a:0 > 0
         \     || g:vimtex_mappings_override_existing

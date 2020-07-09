@@ -13,12 +13,13 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
-setlocal commentstring=\%\ %s
+if !(!get(g:, 'vimtex_version_check', 1)
+      \ || has('nvim-0.1.7')
+      \ || v:version >= 704)
+  echoerr 'Error: vimtex does not support your version of Vim'
+  echom 'Please update to Vim 7.4 or neovim 0.1.7 or later!'
+  echom 'For more info, please see :h vimtex_version_check'
+  finish
+endif
 
-" Initialize local LaTeX state if applicable
-let b:vimtex = getbufvar('#', 'vimtex', {})
-if empty(b:vimtex) | unlet b:vimtex | finish | endif
-
-" Apply errorformat for properly handling quickfix entries
-silent! call b:vimtex.qf.set_errorformat()
+call vimtex#init()

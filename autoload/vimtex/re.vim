@@ -25,7 +25,7 @@ let g:vimtex#re#tex_input = '\v^\s*\zs%(' . join([
       \   g:vimtex#re#tex_input_import,
       \ ], '|') . ')'
 
-let g:vimtex#re#bib_input = '\v\\%(addbibresource|bibliography)>'
+let g:vimtex#re#bib_input = '\v^\s*\zs\\%(addbibresource|bibliography)\s*\{'
 
 let g:vimtex#re#tex_include = g:vimtex#re#tex_input_root
       \ . '|' . g:vimtex#re#tex_input . '\zs[^\}]*\ze\}?'
