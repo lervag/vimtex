@@ -51,7 +51,7 @@ function! RunTests(comp, list_opts)
     endif
 
     silent call vimtex#compiler#compile()
-    sleep 400m
+    sleep 500m
 
     " Check if continuous mode is active
     if get(b:vimtex.compiler, 'continuous')
