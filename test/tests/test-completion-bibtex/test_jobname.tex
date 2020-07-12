@@ -2,9 +2,6 @@
 \usepackage{natbib}
 \usepackage{bibentry}
 
-\bibliographystyle{apalike}
-\nobibliography{\jobname}
-
 % This is the sample bib file
 \begin{filecontents}{\jobname.bib}
   @book{Saussure1995,
@@ -18,8 +15,11 @@
 
 \begin{document}
 
-This is a complete citation in the middle of the text:
+This is a complete citation in the middle of the text: \cite{Saussure1995}.
 
 % \bibentry{
+
+\bibliographystyle{apalike}
+\bibliography{\jobname}
 
 \end{document}
