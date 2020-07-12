@@ -190,19 +190,40 @@ endfunction
 function! s:completer_bib.find_bibs() dict abort " {{{2
   let l:file = b:vimtex.ext('blg')
   if filereadable(l:file)
-    let l:lines = readfile(l:file, 30)
-    if l:lines[0] =~# '^This is BibTeX'
-      return map(
-            \ filter(l:lines, 'v:val =~# ''^Database file #\d'''),
-            \ 'matchstr(v:val, ''#\d\+: \zs.*\ze\.bib$'')')
-    else
-      return map(
-            \ filter(l:lines, 'v:val =~# ''Globbed data source'''),
-            \ 'matchstr(v:val, '' to \zs.*\ze\.bib$'')')
-    endif
+    return self.find_bibs_blg(l:file)
   endif
 
   return self.find_bibs_manual()
+endfunction
+
+function! s:completer_bib.find_bibs_blg(file) dict abort " {{{2
+  let l:cache = vimtex#cache#open('bibfiles', {
+        \ 'local': 1,
+        \ 'default': {'files': [], 'ftime': -1}
+        \})
+
+  let l:ftime = getftime(a:file)
+  let l:current = l:cache.get(a:file)
+  if l:ftime > l:current.ftime
+    let l:current.ftime = l:ftime
+    let l:cache.modified = 1
+
+    let l:lines = readfile(a:file, 30)
+    if l:lines[0] =~# '^This is BibTeX'
+      let l:current.files = map(
+            \ filter(l:lines, 'v:val =~# ''^Database file #\d'''),
+            \ 'matchstr(v:val, ''#\d\+: \zs.*\ze\.bib$'')')
+    else
+      let l:current.files = map(
+            \ filter(l:lines, 'v:val =~# ''Globbed data source'''),
+            \ 'matchstr(v:val, '' to \zs.*\ze\.bib$'')')
+    endif
+
+    " Write cache to file
+    call l:cache.write()
+  endif
+
+  return l:current.files
 endfunction
 
 function! s:completer_bib.find_bibs_manual() dict abort " {{{2
