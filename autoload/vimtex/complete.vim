@@ -188,10 +188,27 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
 endfunction
 
 function! s:completer_bib.find_bibs() dict abort " {{{2
+  let l:file = b:vimtex.ext('blg')
+  if filereadable(l:file)
+    let l:lines = readfile(l:file, 30)
+    if l:lines[0] =~# '^This is BibTeX'
+      return map(
+            \ filter(l:lines, 'v:val =~# ''^Database file #\d'''),
+            \ 'matchstr(v:val, ''#\d\+: \zs.*\ze\.bib$'')')
+    else
+      return map(
+            \ filter(l:lines, 'v:val =~# ''Globbed data source'''),
+            \ 'matchstr(v:val, '' to \zs.*\ze\.bib$'')')
+    endif
+  endif
+
+  return self.find_bibs_manual()
+endfunction
+
+function! s:completer_bib.find_bibs_manual() dict abort " {{{2
   "
-  " Search for added bibliographies
+  " Search for bibliography files by parsing the source code
   " * Parse commands such as \bibliography{file1,file2.bib,...}
-  " * This also removes the .bib extensions
   "
 
   let l:cache = vimtex#cache#open('bibfiles', {
