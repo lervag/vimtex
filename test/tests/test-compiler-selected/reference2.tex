@@ -1,0 +1,13 @@
+\documentclass[12pt]{article}
+
+\newenvironment{LRmath}{
+  \def\E{}
+  \renewcommand{\E}[2][]{\ensuremath\mathrm{E}_{##1}\!\left[##2\right]}
+  \def\PP{\ensuremath\mathrm{P}}
+}{}
+
+\begin{document}
+\begin{equation}
+    \PP[x\le y] = \E[x]{\max(y-x,0)/(y-x)}
+\end{equation}
+\end{document}
