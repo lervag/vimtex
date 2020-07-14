@@ -45,7 +45,7 @@ function! vimtex#misc#wordcount(...) abort " {{{1
   if l:range == [1, line('$')]
     let l:file = b:vimtex
   else
-    let l:file = vimtex#parser#selection_to_texfile('arg', l:range)
+    let l:file = vimtex#parser#selection_to_texfile({'range': l:range})
   endif
 
   let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)

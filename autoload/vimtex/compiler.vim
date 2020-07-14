@@ -10,7 +10,7 @@ function! vimtex#compiler#init_buffer() abort " {{{1
   " Define commands
   command! -buffer        VimtexCompile                        call vimtex#compiler#compile()
   command! -buffer -bang  VimtexCompileSS                      call vimtex#compiler#compile_ss()
-  command! -buffer -range VimtexCompileSelected <line1>,<line2>call vimtex#compiler#compile_selected('cmd')
+  command! -buffer -range VimtexCompileSelected <line1>,<line2>call vimtex#compiler#compile_selected('command')
   command! -buffer        VimtexCompileOutput                  call vimtex#compiler#output()
   command! -buffer        VimtexStop                           call vimtex#compiler#stop()
   command! -buffer        VimtexStopAll                        call vimtex#compiler#stop_all()
@@ -110,7 +110,8 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#compile_selected(type) abort range " {{{1
-  let l:file = vimtex#parser#selection_to_texfile(a:type)
+  let l:file = vimtex#parser#selection_to_texfile(
+        \ {'type':  a:type =~# 'line\|char\|block' ? 'operator' : a:type})
   if empty(l:file) | return | endif
 
   " Create and initialize temporary compiler

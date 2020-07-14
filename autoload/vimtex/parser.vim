@@ -68,33 +68,25 @@ function! vimtex#parser#get_externalfiles() abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#parser#selection_to_texfile(type, ...) range abort " {{{1
-  "
-  " Get selected lines. Method depends on type of selection, which may be
-  " either of
-  "
-  " 1. range from argument
-  " 2. Command range
-  " 3. Visual mapping
-  " 4. Operator mapping
-  "
-  if a:type ==# 'arg'
-    let l:lines = getline(a:1[0], a:1[1])
-  elseif a:type ==# 'cmd'
-    let l:lines = getline(a:firstline, a:lastline)
-  elseif a:type ==# 'visual'
-    let l:lines = getline(line("'<"), line("'>"))
-  else
-    let l:lines = getline(line("'["), line("']"))
+function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
+  let l:opts = extend({
+        \ 'type': 'range',
+        \ 'range': [0, 0],
+        \}, a:opts)
+
+  " Set range from selection type
+  if l:opts.type ==# 'command'
+    let l:opts.range = [a:firstline, a:lastline]
+  elseif l:opts.type ==# 'visual'
+    let l:opts.range = [line("'<"), line("'>")]
+  elseif l:opts.type ==# 'operator'
+    let l:opts.range = [line("'["), line("']")]
   endif
 
-  "
-  " Use only the part of the selection that is within the
-  "
-  "   \begin{document} ... \end{document}
-  "
-  " environment.
-  "
+  let l:lines = getline(l:opts.range[0], l:opts.range[1])
+
+  " Restrict the selection to whatever is within the \begin{document} ...
+  " \end{document} environment
   let l:start = 0
   let l:end = len(l:lines)
   for l:n in range(len(l:lines))
@@ -106,32 +98,27 @@ function! vimtex#parser#selection_to_texfile(type, ...) range abort " {{{1
     endif
   endfor
 
-  "
   " Check if the selection has any real content
-  "
   if l:start >= len(l:lines)
         \ || l:end < 0
         \ || empty(substitute(join(l:lines[l:start : l:end], ''), '\s*', '', ''))
     return {}
   endif
+  let l:lines = l:lines[l:start : l:end]
 
-  "
   " Define the set of lines to compile
-  "
   let l:lines = vimtex#parser#preamble(b:vimtex.tex)
         \ + ['\begin{document}']
-        \ + l:lines[l:start : l:end]
+        \ + l:lines
         \ + ['\end{document}']
 
-  "
   " Write content to temporary file
-  "
   let l:file = {}
   let l:file.root = b:vimtex.root
-  let l:file.base = b:vimtex.name . '_vimtex_selected.tex'
-  let l:file.tex  = l:file.root . '/' . l:file.base
-  let l:file.pdf = fnamemodify(l:file.tex, ':r') . '.pdf'
-  let l:file.log = fnamemodify(l:file.tex, ':r') . '.log'
+  let l:file.base = b:vimtex.name . '_vimtex_selected'
+  let l:file.tex = l:file.root . '/' . l:file.base . '.tex'
+  let l:file.pdf = l:file.root . '/' . l:file.base . '.pdf'
+  let l:file.log = l:file.root . '/' . l:file.base . '.log'
   call writefile(l:lines, l:file.tex)
 
   return l:file
