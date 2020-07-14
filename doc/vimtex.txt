@@ -2686,6 +2686,19 @@ COMMANDS                                                      *vimtex-commands*
 
                           Note: This always works linewise!
 
+                          The command compiles the selected text by copying it
+                          to a temporary file with the same preamble as the
+                          current file. It will be compiled similarly to
+                          a single shot compile (see |VimtexCompileSS|. If
+                          there are errors, they will be shown in the quickfix
+                          list.
+
+                          One may specify a custom template with a file
+                          `vimtex-template.tex`, in which any (single!) line
+                          with the exact content `%%% VIMTEX PLACEHOLDER` will
+                          be interchanged with the selected lines. This allows
+                          to customize the preamble and surrounding content.
+
                                              *VimtexCompileOutput*
                                              *<plug>(vimtex-compile-output)*
 :VimtexCompileOutput      Open file where compiler output is redirected.
@@ -3796,10 +3809,7 @@ mappings for these commands are listed here: |vimtex-default-mappings|.
 
 It is also possible to compile a selection of the file. To do this, one may
 either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
-|VimtexCompileSelected|. This will compile the selected text by copying it to
-a temporary file with the same preamble as the current file. It will be
-compiled similarly to a single shot compile, and if there are errors, they
-will be shown in the quickfix list.
+|VimtexCompileSelected|.
 
 The compilers should respect the TeX program directive as described here:
 |vimtex-tex-program|, except for |vimtex-arara|, which uses its own set of
