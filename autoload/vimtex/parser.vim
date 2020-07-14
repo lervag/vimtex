@@ -72,6 +72,8 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
   let l:opts = extend({
         \ 'type': 'range',
         \ 'range': [0, 0],
+        \ 'name': b:vimtex.name . '_vimtex_selected',
+        \ 'template': 'vimtex-template.tex',
         \}, a:opts)
 
   " Set range from selection type
@@ -107,15 +109,21 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
   let l:lines = l:lines[l:start : l:end]
 
   " Define the set of lines to compile
-  let l:lines = vimtex#parser#preamble(b:vimtex.tex)
-        \ + ['\begin{document}']
-        \ + l:lines
-        \ + ['\end{document}']
+  if filereadable(l:opts.template)
+    let l:template = readfile(l:opts.template)
+    let l:i = index(l:template, '%%% VIMTEX PLACEHOLDER')
+    let l:lines = l:template[:l:i-1] + l:lines + l:template[l:i+1:]
+  else
+    let l:lines = vimtex#parser#preamble(b:vimtex.tex)
+          \ + ['\begin{document}']
+          \ + l:lines
+          \ + ['\end{document}']
+  endif
 
   " Write content to temporary file
   let l:file = {}
   let l:file.root = b:vimtex.root
-  let l:file.base = b:vimtex.name . '_vimtex_selected'
+  let l:file.base = l:opts.name
   let l:file.tex = l:file.root . '/' . l:file.base . '.tex'
   let l:file.pdf = l:file.root . '/' . l:file.base . '.pdf'
   let l:file.log = l:file.root . '/' . l:file.base . '.log'
