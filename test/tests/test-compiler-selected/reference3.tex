@@ -1,0 +1,18 @@
+\documentclass[14pt]{article}
+
+\def\E{}
+\renewcommand{\E}[2][]{\ensuremath\mathrm{E}_{##1}\!\left[##2\right]}
+\def\PP{\ensuremath\mathrm{P}}
+
+\begin{document}
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+\begin{equation}
+    \PP[x\le y] = \E[x]{\max(y-x,0)/(y-x)}
+\end{equation}
+
+\end{document}

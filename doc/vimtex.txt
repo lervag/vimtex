@@ -2742,11 +2742,18 @@ COMMANDS                                                      *vimtex-commands*
                           there are errors, they will be shown in the quickfix
                           list.
 
-                          One may specify a custom template with a file
-                          `vimtex-template.tex`, in which any (single!) line
-                          with the exact content `%%% VIMTEX PLACEHOLDER` will
-                          be interchanged with the selected lines. This allows
-                          to customize the preamble and surrounding content.
+                          One may specify a custom template with a template
+                          file in which any (single!) line with the exact
+                          content `%%% VIMTEX PLACEHOLDER` will be
+                          interchanged with the selected lines. This allows to
+                          customize the preamble and surrounding content. The
+                          template file should be named `vimtex-template.tex`
+                          or `<head>-vimtex-template.tex`, where `<head>`
+                          implies the head of the current file name with the
+                          extension removed. E.g., for a file `foo.tex`, one
+                          may specify a custom template
+                          `foo-vimtex-template.tex`. This will have a higher
+                          priority than `vimtex-template.tex`.
 
                                              *VimtexCompileOutput*
                                              *<plug>(vimtex-compile-output)*

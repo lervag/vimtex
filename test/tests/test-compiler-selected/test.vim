@@ -14,7 +14,13 @@ call vimtex#parser#selection_to_texfile({
 call vimtex#parser#selection_to_texfile({
       \ 'range': [14, 16],
       \ 'name': 'output2',
-      \ 'template': 'NONE',
+      \ 'template_name': 'NONE',
+      \})
+
+call vimtex#parser#selection_to_texfile({
+      \ 'range': [14, 16],
+      \ 'name': 'output3',
+      \ 'template_name': 'template.tex',
       \})
 
 quitall!

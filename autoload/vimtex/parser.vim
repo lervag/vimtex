@@ -73,7 +73,7 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
         \ 'type': 'range',
         \ 'range': [0, 0],
         \ 'name': b:vimtex.name . '_vimtex_selected',
-        \ 'template': 'vimtex-template.tex',
+        \ 'template_name': 'vimtex-template.tex',
         \}, a:opts)
 
   " Set range from selection type
@@ -108,9 +108,20 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
   endif
   let l:lines = l:lines[l:start : l:end]
 
+  " Load template (if available)
+  let l:template = []
+  for l:template_file in [
+        \ expand('%:r') . '-' . l:opts.template_name,
+        \ l:opts.template_name,
+        \]
+    if filereadable(l:template_file)
+      let l:template = readfile(l:template_file)
+      break
+    endif
+  endfor
+
   " Define the set of lines to compile
-  if filereadable(l:opts.template)
-    let l:template = readfile(l:opts.template)
+  if !empty(l:template)
     let l:i = index(l:template, '%%% VIMTEX PLACEHOLDER')
     let l:lines = l:template[:l:i-1] + l:lines + l:template[l:i+1:]
   else
