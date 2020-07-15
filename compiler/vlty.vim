@@ -63,7 +63,7 @@ let &l:makeprg =
       \ . ' %:S'
 silent CompilerSet makeprg
 
-let &l:errorformat = '%A%*\d.) Line %l\, column %v\, Rule ID:%.%#,'
+let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#,'
 if s:vlty.show_suggestions == 0
   let &l:errorformat .= '%ZMessage: %m,%-G%.%#'
 else
