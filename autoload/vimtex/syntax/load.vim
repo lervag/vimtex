@@ -60,6 +60,15 @@ function! vimtex#syntax#load#general() abort " {{{1
   highlight def link texDefParmNested Identifier
   syntax cluster texEnvGroup add=texDefParmNested
   syntax cluster texCmdGroup add=texDefParmNested
+
+  " Do not check URLs and acronyms in comments
+  " Source: https://github.com/lervag/vimtex/issues/562
+  syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
+        \ contains=@NoSpell containedin=texComment
+  syntax match texCommentAcronym '\v<(\u|\d){3,}s?>'
+        \ contains=@NoSpell containedin=texComment
+  highlight def link texCommentURL Comment
+  highlight def link texCommentAcronym Comment
 endfunction
 
 " }}}1
