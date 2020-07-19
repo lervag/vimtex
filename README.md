@@ -17,7 +17,7 @@ vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) f
 
 ## Requirements
 
-vimtex requires Vim version 7.4.52 or neovim version 0.1.7. Some features
+vimtex requires Vim version 8.0.1453 or neovim version 0.4.3. Some features
 require external tools. For example, the default compiler backend relies on
 [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
 
