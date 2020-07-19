@@ -4644,6 +4644,10 @@ The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
+2020-07-19: Released version 1.0~
+Version 1.0 (and earlier) works on Vim 7.4 and with neovim 0.1.7. Later
+versions require Vim 8.0 or neovim 0.4.3.
+
 2018-08-15: Refactored the ToC interface~
 I've made a large update to the code for the ToC window in order to simplify
 and unify the interface. In the new version, |g:vimtex_toc_config| replaces
