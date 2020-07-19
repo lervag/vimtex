@@ -1,4 +1,4 @@
-*vimtex.txt*    A modern vim plugin for editing LaTeX files.
+*vimtex.txt*    A modern Vim and neovim filetype plugin for LaTeX files.
 *vimtex*
 
 Author:  Karl Yngve Lervåg <karl.yngve@gmail.com>
@@ -200,7 +200,7 @@ of its key features.  There are a couple of relevant FAQs for those who use
 
 Vim version~
                                                          *vimtex_version_check*
-  |vimtex| supports Vim version 7.4.52 and neovim version 0.1.7.  It will not
+  |vimtex| requires Vim version 7.4.52 or neovim version 0.1.7.  It will not
   load for older versions, unless one adds >
 
     let g:vimtex_version_check = 0
