@@ -236,20 +236,6 @@ function! vimtex#util#trim(str) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#uniq(list) abort " {{{1
-  if exists('*uniq') | return uniq(a:list) | endif
-  if len(a:list) <= 1 | return a:list | endif
-
-  let l:uniq = [a:list[0]]
-  for l:next in a:list[1:]
-    if l:uniq[-1] != l:next
-      call add(l:uniq, l:next)
-    endif
-  endfor
-  return l:uniq
-endfunction
-
-" }}}1
 function! vimtex#util#uniq_unsorted(list) abort " {{{1
   if len(a:list) <= 1 | return a:list | endif
 

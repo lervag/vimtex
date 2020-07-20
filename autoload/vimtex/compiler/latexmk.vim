@@ -402,7 +402,7 @@ function! s:compiler.start(...) abort dict " {{{1
     let l:dirs = split(glob(self.root . '/**/*.tex'), '\n')
     call map(l:dirs, 'fnamemodify(v:val, '':h'')')
     call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
-    call vimtex#util#uniq(sort(filter(l:dirs, "v:val !=# ''")))
+    call uniq(sort(filter(l:dirs, "v:val !=# ''")))
     call map(l:dirs,
           \ (vimtex#paths#is_abs(self.build_dir) ? '' : "self.root . '/' . ")
           \ . "self.build_dir . '/' . v:val")

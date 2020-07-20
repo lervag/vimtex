@@ -277,7 +277,7 @@ function! s:completer_bib.find_bibs_manual() dict abort " {{{2
   " Write cache to file
   call l:cache.write()
 
-  return vimtex#util#uniq(l:bibfiles)
+  return uniq(l:bibfiles)
 endfunction
 
 function! s:completer_bib.convert(entry) dict abort " {{{2
