@@ -361,7 +361,7 @@ function! s:init_option(option, default) abort " {{{1
   let l:option = 'g:' . a:option
   if !exists(l:option)
     let {l:option} = a:default
-  elseif type(a:default) == type({})
+  elseif type(a:default) == v:t_dict
     call vimtex#util#extend_recursive({l:option}, a:default, 'keep')
   endif
 endfunction
@@ -731,7 +731,7 @@ endfunction
 
 let s:modules = map(
       \ glob(fnamemodify(expand('<sfile>'), ':r') . '/*.vim', 0, 1),
-      \ 'fnamemodify(v:val, '':t:r'')')
+      \ "fnamemodify(v:val, ':t:r')")
 call remove(s:modules, index(s:modules, 'test'))
 
 " }}}1

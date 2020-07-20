@@ -67,11 +67,13 @@ function! s:toc.open() abort dict " {{{1
   call self.get_entries(0)
 
   if self.mode > 1
-    call setloclist(0, map(filter(deepcopy(self.entries), 'v:val.active'), '{
-          \ ''lnum'': v:val.line,
-          \ ''filename'': v:val.file,
-          \ ''text'': v:val.title,
-          \}'))
+    call setloclist(0, map(filter(deepcopy(self.entries), 'v:val.active'),
+          \ {_, x -> {
+          \   'lnum': x.line,
+          \   'filename': x.file,
+          \   'text': x.title,
+          \ }
+          \}))
     try
       call setloclist(0, [], 'r', {'title': self.name})
     catch
@@ -186,7 +188,8 @@ endfunction
 
 " }}}1
 function! s:toc.get_visible_entries() abort dict " {{{1
-  return filter(deepcopy(get(self, 'entries', [])), 'self.entry_is_visible(v:val)')
+  return filter(deepcopy(get(self, 'entries', [])),
+        \ 'self.entry_is_visible(v:val)')
 endfunction
 
 " }}}1
@@ -455,7 +458,7 @@ endfunction
 " }}}1
 function! s:toc.print_number(number) abort dict " {{{1
   if empty(a:number) | return '' | endif
-  if type(a:number) == type('') | return a:number | endif
+  if type(a:number) == v:t_string | return a:number | endif
 
   if get(a:number, 'part_toggle')
     return s:int_to_roman(a:number.part)

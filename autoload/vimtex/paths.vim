@@ -79,7 +79,7 @@ endfunction
 " }}}1
 
 
-let s:cd = exists('*haslocaldir') && haslocaldir()
+let s:cd = haslocaldir()
       \ ? 'lcd'
       \ : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
 let s:qpath = get(s:, 'qpath', [])

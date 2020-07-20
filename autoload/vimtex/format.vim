@@ -73,8 +73,8 @@ function! s:format(top, bottom) abort " {{{1
   for l:current in range(a:bottom, a:top, -1)
     let l:line = getline(l:current)
 
-    if vimtex#util#in_mathzone(l:current, 1)
-          \ && vimtex#util#in_mathzone(l:current, col([l:current, '$']))
+    if vimtex#syntax#in_mathzone(l:current, 1)
+          \ && vimtex#syntax#in_mathzone(l:current, col([l:current, '$']))
       let l:mark = l:current - 1
       continue
     endif
@@ -128,7 +128,7 @@ function! s:format_build_lines(start, end) abort " {{{1
   " line spaces
   "
   let l:text = join(map(getline(a:start, a:end),
-        \ 'substitute(v:val, ''^\s*'', '''', '''')'), ' ')
+        \ {_, x -> substitute(x, '^\s*', '', '')}))
   let l:spaces = matchstr(l:text, '\s*$')
   let l:words = split(l:text, ' ')
   if empty(l:words) | return 0 | endif

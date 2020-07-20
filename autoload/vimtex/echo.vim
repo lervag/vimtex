@@ -33,7 +33,7 @@ endfunction
 function! vimtex#echo#choose(list_or_dict, prompt) abort " {{{1
   if empty(a:list_or_dict) | return '' | endif
 
-  return type(a:list_or_dict) == type({})
+  return type(a:list_or_dict) == v:t_dict
         \ ? s:choose_dict(a:list_or_dict, a:prompt)
         \ : s:choose_list(a:list_or_dict, a:prompt)
 endfunction
@@ -43,7 +43,7 @@ function! vimtex#echo#formatted(parts) abort " {{{1
   echo ''
   try
     for part in a:parts
-      if type(part) == type('')
+      if type(part) == v:t_string
         echohl VimtexMsg
         echon part
       else

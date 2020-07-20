@@ -14,8 +14,7 @@ nnoremap q :qall!<cr>
 colorscheme morning
 
 function! SynNames()
-  return join(map(synstack(line('.'), col('.')),
-        \ 'synIDattr(v:val, ''name'')'), ' -> ')
+  return join(vimtex#syntax#stack(), ' -> ')
 endfunction
 
 if empty($INMAKE)

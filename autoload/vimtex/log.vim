@@ -65,10 +65,10 @@ let s:logger = {
 function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:msg_list = []
   for l:msg in a:msg_arg
-    if type(l:msg) == type('')
+    if type(l:msg) == v:t_string
       call add(l:msg_list, l:msg)
-    elseif type(l:msg) == type([])
-      call extend(l:msg_list, filter(l:msg, "type(v:val) == type('')"))
+    elseif type(l:msg) == v:t_list
+      call extend(l:msg_list, filter(l:msg, 'type(v:val) == v:t_string'))
     endif
   endfor
 

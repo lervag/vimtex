@@ -89,7 +89,7 @@ function! s:fail(...) abort " {{{1
   echo 'Assertion failed!'
 
   if a:0 > 0 && !empty(a:1)
-    if type(a:1) == type('')
+    if type(a:1) == v:t_string
       echo a:1
     else
       for line in a:1

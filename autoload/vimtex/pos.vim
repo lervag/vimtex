@@ -10,7 +10,7 @@ endfunction
 
 " }}}1
 function! vimtex#pos#get_cursor() abort " {{{1
-  return exists('*getcurpos') ? getcurpos() : getpos('.')
+  return getcurpos()
 endfunction
 
 " }}}1
@@ -76,7 +76,7 @@ function! s:parse_args(args) abort " {{{1
   if len(a:args) > 1
     return s:parse_args([a:args])
   elseif len(a:args) == 1
-    if type(a:args[0]) == type({})
+    if type(a:args[0]) == v:t_dict
       return [get(a:args[0], 'lnum'), get(a:args[0], 'cnum')]
     else
       if len(a:args[0]) == 2

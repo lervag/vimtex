@@ -121,7 +121,7 @@ function! vimtex#state#cleanup(id) abort " {{{1
   " Count the number of open buffers for the given blob
   "
   let l:buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  let l:ids = map(l:buffers, 'getbufvar(v:val, ''vimtex_id'', -1)')
+  let l:ids = map(l:buffers, "getbufvar(v:val, 'vimtex_id', -1)")
   let l:count = count(l:ids, a:id)
 
   "
@@ -454,7 +454,7 @@ function! s:get_main_choose(list) abort " {{{1
   if empty(l:list) | return '' | endif
   if len(l:list) == 1 | return l:list[0] | endif
 
-  let l:all = map(copy(l:list), '[s:get_main_id(v:val), v:val]')
+  let l:all = map(copy(l:list), {_, x -> [s:get_main_id(x), x]})
   let l:new = map(filter(copy(l:all), 'v:val[0] < 0'), 'v:val[1]')
   let l:existing = {}
   for [l:key, l:val] in filter(copy(l:all), 'v:val[0] >= 0')
@@ -645,7 +645,7 @@ endfunction
 function! s:vimtex.parse_graphicspath() abort dict " {{{1
   " Combine the preamble as one long string of commands
   let l:preamble = join(map(copy(self.preamble),
-        \ 'substitute(v:val, ''\\\@<!%.*'', '''', '''')'))
+        \ {_, x -> substitute(x, '\\\@<!%.*', '', '')}))
 
   " Extract the graphicspath command from this string
   let l:graphicspath = matchstr(l:preamble,
@@ -679,11 +679,11 @@ function! s:vimtex.parse_packages() abort dict " {{{1
 
   " Now parse preamble as well for usepackage and RequirePackage
   if !has_key(self, 'preamble') | return | endif
-  let l:usepackages = filter(copy(self.preamble), 'v:val =~# ''\v%(usep|RequireP)ackage''')
+  let l:usepackages = filter(copy(self.preamble),
+        \ 'v:val =~# ''\v%(usep|RequireP)ackage''')
   let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
       \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
-  call map(l:usepackages, 'matchstr(v:val, l:pat)')
-  call map(l:usepackages, 'split(v:val, ''\s*,\s*'')')
+  call map(l:usepackages, {_, x -> split(matchstr(x, l:pat), '\s*,\s*')})
 
   for l:packages in l:usepackages
     for l:package in l:packages

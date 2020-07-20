@@ -289,8 +289,6 @@ endfunction
 
 let s:check_timers = {}
 function! s:check_if_running_start() abort " {{{1
-  if !exists('*timer_start') | return -1 | endif
-
   let l:timer = timer_start(50, function('s:check_if_running'), {'repeat': 20})
 
   let s:check_timers[l:timer] = {

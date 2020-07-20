@@ -230,8 +230,9 @@ function! vimtex#delim#change_with_args(open, close, new) abort " {{{1
     let [l:beg, l:end] = ['{', '}']
   else
     let l:side = a:new =~# g:vimtex#delim#re.delim_math.close
-    let l:index = index(map(copy(g:vimtex#delim#lists.delim_math.name),
-          \   'v:val[' . l:side . ']'),
+    let l:index = index(map(
+          \   copy(g:vimtex#delim#lists.delim_math.name),
+          \   {_, x -> x[l:side]}),
           \ a:new)
     if l:index >= 0
       let [l:beg, l:end] = g:vimtex#delim#lists.delim_math.name[l:index]
@@ -271,7 +272,7 @@ function! vimtex#delim#change_input_complete(lead, cmdline, pos) abort " {{{1
   let l:close = map(copy(l:all), 'v:val[1]')
 
   let l:lead_re = escape(a:lead, '\$[]')
-  return filter(l:open + l:close, 'v:val =~# ''^' . l:lead_re . '''')
+  return filter(l:open + l:close, {_, x -> v:val =~# '^' . l:lead_re})
 endfunction
 
 " }}}1
@@ -471,7 +472,7 @@ function! s:get_delim(opts) abort " {{{1
     if l:lnum == 0 | break | endif
 
     if has_key(a:opts, 'syn_exclude')
-          \ && vimtex#util#in_syntax(a:opts.syn_exclude, l:lnum, l:cnum)
+          \ && vimtex#syntax#in(a:opts.syn_exclude, l:lnum, l:cnum)
       call vimtex#pos#set_cursor(vimtex#pos#prev(l:lnum, l:cnum))
       continue
     endif
@@ -589,7 +590,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
         \ 'open'  : '\m' . escape(a:match, '$'),
         \ 'close' : '\m' . escape(a:match, '$'),
         \}
-  let result.side = vimtex#util#in_syntax(
+  let result.side = vimtex#syntax#in(
         \   (a:match ==# '$' ? 'texMathZoneX' : 'texMathZoneY'),
         \   a:lnum, a:cnum+1)
         \ ? 'open' : 'close'
@@ -767,8 +768,9 @@ function! s:parser_delim_get_regexp(delim, side, ...) abort " {{{1
   endif
 
   " Next check normal delimiters
-  let l:index = index(map(copy(g:vimtex#delim#lists[l:type].name),
-        \   'v:val[' . a:side . ']'),
+  let l:index = index(map(
+        \   copy(g:vimtex#delim#lists[l:type].name),
+        \   {_, x -> x[a:side]}),
         \ a:delim)
   return l:index >= 0
         \ ? g:vimtex#delim#lists[l:type].re[l:index][a:side]
@@ -964,7 +966,7 @@ function! s:init_delim_lists() abort " {{{1
   for l:type in values(l:lists)
     if !has_key(l:type, 're') && has_key(l:type, 'name')
       let l:type.re = map(deepcopy(l:type.name),
-            \ 'map(v:val, ''escape(v:val, ''''\$[]'''')'')')
+            \ {i1, x -> map(x, {i2, y -> escape(y, '\$[]')})})
     endif
   endfor
 

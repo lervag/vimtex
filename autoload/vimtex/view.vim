@@ -96,9 +96,9 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
     let l:pids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
 
     let l:xwinids = []
-    call map(copy(l:pids), 'extend(l:xwinids, reverse(split('
-          \ . "system('xdotool search --onlyvisible --pid ' . v:val)"
-          \ . ')))')
+    call map(copy(l:pids),
+          \ {_, x -> extend(l:xwinids, reverse(split(system(
+          \   'xdotool search --onlyvisible --pid ' . x))))})
     call filter(l:xwinids, '!empty(v:val)')
 
     if !empty(l:xwinids)

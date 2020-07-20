@@ -65,7 +65,7 @@ endfunction
 function! s:get_nested_languages() abort " {{{1
   return map(
         \ filter(getline(1, '$'), "v:val =~# 'language='"),
-        \ 'matchstr(v:val, ''language=\zs\w\+'')')
+        \ {_, x -> matchstr(x, 'language=\zs\w\+')})
 endfunction
 
 " }}}1

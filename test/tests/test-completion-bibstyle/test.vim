@@ -11,7 +11,7 @@ silent edit main.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\bibliographystyle{', '')
-call vimtex#test#assert_equal(
-      \ index(map(s:candidates, 'v:val.word'), 'unsrt') > 0, v:true)
+call vimtex#test#assert_equal(v:true,
+      \ index(map(s:candidates, 'v:val.word'), 'unsrt') > 0)
 
 quit!

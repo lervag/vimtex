@@ -141,10 +141,11 @@ function! s:packages_from_command(cmd) abort " {{{1
   let l:queue = copy(l:packages)
   while !empty(l:queue)
     let l:current = remove(l:queue, 0)
-    let l:includes = filter(readfile(s:complete_dir . l:current), 'v:val =~# ''^\#\s*include:''')
+    let l:includes = filter(readfile(s:complete_dir . l:current),
+          \ 'v:val =~# ''^\#\s*include:''')
     if empty(l:includes) | continue | endif
 
-    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
+    call map(l:includes, {_, x -> matchstr(x, 'include:\s*\zs.*\ze\s*$')})
     call filter(l:includes, 'filereadable(s:complete_dir . v:val)')
     call filter(l:includes, 'index(l:packages, v:val) < 0')
 
@@ -174,12 +175,11 @@ endfunction
 
 " }}}1
 function! s:packages_remove_invalid(context) abort " {{{1
-  let l:invalid_packages = filter(copy(a:context.candidates),
-        \   'empty(vimtex#kpsewhich#find(v:val . ''.sty'')) && '
-        \ . 'empty(vimtex#kpsewhich#find(v:val . ''.cls''))')
+  let l:invalid_packages = filter(copy(a:context.candidates), {_, x ->
+        \    empty(vimtex#kpsewhich#find(x . '.sty'))
+        \ && empty(vimtex#kpsewhich#find(x . '.cls'))})
 
-  call filter(l:invalid_packages,
-        \ 'index([''latex2e'', ''lshort''], v:val) < 0')
+  call filter(l:invalid_packages, "index(['latex2e', 'lshort'], v:val) < 0")
 
   " Warn about invalid candidates
   if !empty(l:invalid_packages)

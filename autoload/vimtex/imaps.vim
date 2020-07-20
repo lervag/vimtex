@@ -17,7 +17,7 @@ function! vimtex#imaps#init_buffer() abort " {{{1
   "
   let l:maps = g:vimtex_imaps_list
   for l:disable in g:vimtex_imaps_disabled
-    let l:maps = filter(l:maps, 'v:val.lhs !=# ''' . l:disable . '''')
+    let l:maps = filter(l:maps, {_, x -> x.lhs !=# l:disable})
   endfor
   for l:map in l:maps + get(s:, 'custom_maps', [])
     call s:create_map(l:map)
@@ -133,7 +133,7 @@ endfunction
 
 " }}}1
 function! vimtex#imaps#wrap_math(lhs, rhs) abort " {{{1
-  return s:is_math() ? a:rhs : a:lhs
+  return vimtex#syntax#in_mathzone() ? a:rhs : a:lhs
 endfunction
 
 " }}}1
@@ -143,10 +143,10 @@ function! vimtex#imaps#wrap_environment(lhs, rhs) abort " {{{1
   let l:value = 0
 
   for l:context in b:vimtex_context[a:lhs . a:rhs]
-    if type(l:context) == type('')
+    if type(l:context) == v:t_string
       let l:envs = [l:context]
       let l:rhs = a:rhs
-    elseif type(l:context) == type({})
+    elseif type(l:context) == v:t_dict
       let l:envs = l:context.envs
       let l:rhs = l:context.rhs
     endif
@@ -171,19 +171,9 @@ endfunction
 " Special rhs styles
 "
 function! vimtex#imaps#style_math(command) " {{{1
-  return s:is_math()
+  return vimtex#syntax#in_mathzone()
         \ ? '\' . a:command . '{' . nr2char(getchar()) . '}'
         \ : ''
-endfunction
-
-" }}}1
-
-"
-" Helpers
-"
-function! s:is_math() abort " {{{1
-  return match(map(synstack(line('.'), max([col('.') - 1, 1])),
-        \ 'synIDattr(v:val, ''name'')'), '^texMathZone') >= 0
 endfunction
 
 " }}}1

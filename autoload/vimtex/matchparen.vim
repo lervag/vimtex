@@ -69,7 +69,7 @@ endfunction
 function! s:matchparen.highlight() abort dict " {{{1
   call self.clear()
 
-  if vimtex#util#in_comment() | return | endif
+  if vimtex#syntax#in_comment() | return | endif
 
   " This is a hack to ensure that $ in visual block mode adhers to the rule
   " specified in :help v_$
@@ -91,17 +91,10 @@ function! s:matchparen.highlight() abort dict " {{{1
         \ ? [l:current, l:corresponding]
         \ : [l:corresponding, l:current]
 
-  if exists('*matchaddpos')
-    let w:vimtex_match_id1 = matchaddpos('MatchParen',
-          \ [[l:open.lnum, l:open.cnum, strlen(l:open.match)]])
-    let w:vimtex_match_id2 = matchaddpos('MatchParen',
-          \ [[l:close.lnum, l:close.cnum, strlen(l:close.match)]])
-  else
-    let w:vimtex_match_id1 = matchadd('MatchParen',
-          \ '\%' . l:open.lnum . 'l\%' . l:open.cnum . 'c' . l:open.re.this)
-    let w:vimtex_match_id2 = matchadd('MatchParen',
-          \ '\%' . l:close.lnum . 'l\%' . l:close.cnum . 'c' . l:close.re.this)
-  endif
+  let w:vimtex_match_id1 = matchaddpos('MatchParen',
+        \ [[l:open.lnum, l:open.cnum, strlen(l:open.match)]])
+  let w:vimtex_match_id2 = matchaddpos('MatchParen',
+        \ [[l:close.lnum, l:close.cnum, strlen(l:close.match)]])
 endfunction
 
 " }}}1

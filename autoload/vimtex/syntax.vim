@@ -50,13 +50,36 @@ endfunction
 
 " }}}1
 
-function! s:is_loaded() abort " {{{1
-  if exists('*execute')
-    let l:result = split(execute('syntax'), "\n")
-    return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
-  else
-    return 0
+function! vimtex#syntax#stack(...) abort " {{{1
+  let l:pos = a:0 > 0 ? [a:1, a:2] : [line('.'), col('.')]
+  if mode() ==# 'i'
+    let l:pos[1] -= 1
   endif
+  call map(l:pos, 'max([v:val, 1])')
+
+  return map(synstack(l:pos[0], l:pos[1]), "synIDattr(v:val, 'name')")
+endfunction
+
+" }}}1
+function! vimtex#syntax#in(name, ...) abort " {{{1
+  return match(call('vimtex#syntax#stack', a:000), '^' . a:name) >= 0
+endfunction
+
+" }}}1
+function! vimtex#syntax#in_comment(...) abort " {{{1
+  return call('vimtex#syntax#in', ['texComment'] + a:000)
+endfunction
+
+" }}}1
+function! vimtex#syntax#in_mathzone(...) abort " {{{1
+  return call('vimtex#syntax#in', ['texMathZone'] + a:000)
+endfunction
+
+" }}}1
+
+function! s:is_loaded() abort " {{{1
+  let l:result = vimtex#util#command('syntax')
+  return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
 endfunction
 
 " }}}1

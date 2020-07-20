@@ -64,7 +64,7 @@ function! s:parse(file, opts, cache) abort " {{{1
   let l:parsed = []
 
   for l:val in l:current.lines
-    if type(l:val) == type([])
+    if type(l:val) == v:t_list
       call add(l:parsed, l:val)
     else
       call extend(l:parsed, s:parse(l:val, a:opts, a:cache))

@@ -215,11 +215,11 @@ function! s:completer_bib.find_bibs_blg(file) dict abort " {{{2
     if l:lines[0] =~# '^This is BibTeX'
       let l:current.files = map(
             \ filter(l:lines, 'v:val =~# ''^Database file #\d'''),
-            \ 'matchstr(v:val, ''#\d\+: \zs.*\ze\.bib$'')')
+            \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
     else
       let l:current.files = map(
             \ filter(l:lines, 'v:val =~# ''Globbed data source'''),
-            \ 'matchstr(v:val, '' to \zs.*\ze\.bib$'')')
+            \ {_, x -> matchstr(x, ' to \zs.*\ze\.bib$')})
     endif
 
     " Write cache to file
@@ -349,11 +349,11 @@ function! s:completer_ref.get_matches(regex) dict abort " {{{2
   let l:labels = vimtex#parser#auxiliary#labels()
 
   " Match number
-  let l:matches = filter(copy(l:labels), 'v:val.menu =~# ''' . a:regex . '''')
+  let l:matches = filter(copy(l:labels), {_, x -> x.menu =~# a:regex})
   if !empty(l:matches) | return l:matches | endif
 
   " Match label
-  let l:matches = filter(copy(l:labels), 'v:val.word =~# ''' . a:regex . '''')
+  let l:matches = filter(copy(l:labels), {_, x -> x.word =~# a:regex})
   if !empty(l:matches) | return l:matches | endif
 
   " Match label and number
@@ -362,8 +362,7 @@ function! s:completer_ref.get_matches(regex) dict abort " {{{2
     let l:base = l:regex_split[0]
     let l:number = escape(join(l:regex_split[1:], ' '), '.')
     let l:matches = filter(copy(l:labels),
-          \ 'v:val.word =~# ''' . l:base   . ''' &&' .
-          \ 'v:val.menu =~# ''' . l:number . '''')
+          \ {_, x -> x.word =~# l:base && x.menu =~# l:number})
   endif
 
   return l:matches
@@ -379,7 +378,7 @@ let s:completer_cmd = {
 
 function! s:completer_cmd.complete(regex) dict abort " {{{2
   let l:candidates = self.gather_candidates()
-  let l:mode = vimtex#util#in_mathzone() ? 'm' : 'n'
+  let l:mode = vimtex#syntax#in_mathzone() ? 'm' : 'n'
 
   call s:filter_with_options(l:candidates, a:regex)
   call filter(l:candidates, 'l:mode =~# v:val.mode')
@@ -402,16 +401,16 @@ function! s:completer_cmd.gather_candidates_from_glossary_keys() dict abort " {{
   if !has_key(b:vimtex.packages, 'glossaries') | return [] | endif
 
   let l:preamble = vimtex#parser#preamble(b:vimtex.tex)
-  call map(l:preamble, "substitute(v:val, '\\s*%.*', '', 'g')")
+  call map(l:preamble, {_, x -> substitute(x, '\s*%.*', '', 'g')})
   let l:glskeys = split(join(l:preamble, "\n"), '\n\s*\\glsaddkey\*\?')[1:]
-  call map(l:glskeys, "substitute(v:val, '\n\\s*', '', 'g')")
+  call map(l:glskeys, {_, x -> substitute(x, '\n\s*', '', 'g')})
   call map(l:glskeys, 'vimtex#util#tex2tree(v:val)[2:6]')
 
-  let l:candidates = map(vimtex#util#flatten(l:glskeys), '{
-        \ ''word'' : v:val[1:],
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[cmd: glossaries]'',
-        \ }')
+  let l:candidates = map(vimtex#util#flatten(l:glskeys), {_, x -> {
+        \ 'word' : x[1:],
+        \ 'mode' : '.',
+        \ 'kind' : '[cmd: glossaries]',
+        \}})
 
   return l:candidates
 endfunction
@@ -421,16 +420,16 @@ function! s:completer_cmd.gather_candidates_from_lets() dict abort " {{{2
 
   let l:lets = filter(copy(l:preamble), 'v:val =~# ''\\let\>''')
   let l:defs = filter(copy(l:preamble), 'v:val =~# ''\\def\>''')
-  let l:candidates = map(l:lets, '{
-        \ ''word'' : matchstr(v:val, ''\\let[^\\]*\\\zs\w*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[cmd: \let]'',
-        \ }')
-        \ + map(l:defs, '{
-        \ ''word'' : matchstr(v:val, ''\\def[^\\]*\\\zs\w*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[cmd: \def]'',
-        \ }')
+  let l:candidates = map(l:lets, {_, x -> {
+        \ 'word': matchstr(x, '\\let[^\\]*\\\zs\w*'),
+        \ 'mode': '.',
+        \ 'kind': '[cmd: \let]',
+        \}})
+        \ + map(l:defs, {_, x -> {
+        \ 'word': matchstr(x, '\\def[^\\]*\\\zs\w*'),
+        \ 'mode': '.',
+        \ 'kind': '[cmd: \def]',
+        \}})
 
   return l:candidates
 endfunction
@@ -517,16 +516,17 @@ function! s:completer_img.gather_candidates() dict abort " {{{2
   for l:path in b:vimtex.graphicspath + [b:vimtex.root]
     let l:files = globpath(l:path, '**/*.*', 1, 1)
 
-    call filter(l:files, 'v:val =~? self.ext_re')
-    call filter(l:files, 'v:val !=# l:generated_pdf')
-    call filter(l:files, 'index(l:added_files, v:val) < 0')
+    call filter(l:files,
+          \ {_, x ->    x =~? self.ext_re
+          \          && x !=# l:generated_pdf
+          \          && index(l:added_files, x) < 0})
 
     let l:added_files += l:files
-    let l:candidates += map(l:files, "{
-            \ 'abbr': vimtex#paths#shorten_relative(v:val),
-            \ 'word': vimtex#paths#relative(v:val, l:path),
+    let l:candidates += map(l:files, {_, x -> {
+            \ 'abbr': vimtex#paths#shorten_relative(x),
+            \ 'word': vimtex#paths#relative(x, l:path),
             \ 'kind': '[graphics]',
-            \}")
+            \}})
   endfor
 
   return l:candidates
@@ -549,15 +549,15 @@ function! s:completer_inc.complete(regex) dict abort " {{{2
   call s:filter_with_options(self.candidates, a:regex)
 
   if self.context =~# '\\include'
-    let self.candidates = map(self.candidates, '{
-          \ ''word'' : fnamemodify(v:val, '':r''),
-          \ ''kind'' : '' [include]'',
-          \}')
+    let self.candidates = map(self.candidates, {_, x -> {
+          \ 'word': fnamemodify(x, ':r'),
+          \ 'kind': '[include]',
+          \}})
   else
-    let self.candidates = map(self.candidates, '{
-          \ ''word'' : v:val,
-          \ ''kind'' : '' [input]'',
-          \}')
+    let self.candidates = map(self.candidates, {_, x -> {
+          \ 'word': x,
+          \ 'kind': '[input]',
+          \}})
   endif
 
   return self.candidates
@@ -575,10 +575,10 @@ function! s:completer_pdf.complete(regex) dict abort " {{{2
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
   call s:filter_with_options(self.candidates, a:regex)
-  let self.candidates = map(self.candidates, '{
-        \ ''word'' : v:val,
-        \ ''kind'' : '' [includepdf]'',
-        \}')
+  let self.candidates = map(self.candidates, {_, x -> {
+        \ 'word': x,
+        \ 'kind': '[includepdf]',
+        \}})
   return self.candidates
 endfunction
 
@@ -595,10 +595,10 @@ function! s:completer_sta.complete(regex) dict abort " {{{2
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
   call s:filter_with_options(self.candidates, a:regex)
-  let self.candidates = map(self.candidates, '{
-        \ ''word'' : v:val,
-        \ ''kind'' : '' [includestandalone]'',
-        \}')
+  let self.candidates = map(self.candidates, {_, x -> {
+        \ 'word': x,
+        \ 'kind': '[includestandalone]',
+        \}})
   return self.candidates
 endfunction
 
@@ -711,10 +711,10 @@ endfunction
 
 function! s:completer_pck.gather_candidates() dict abort " {{{2
   if empty(self.candidates)
-    let self.candidates = map(s:get_texmf_candidates('sty'), '{
-          \ ''word'' : v:val,
-          \ ''kind'' : '' [package]'',
-          \}')
+    let self.candidates = map(s:get_texmf_candidates('sty'), {_, x -> {
+          \ 'word': x,
+          \ 'kind': '[package]',
+          \}})
   endif
 
   return copy(self.candidates)
@@ -734,10 +734,10 @@ endfunction
 
 function! s:completer_doc.gather_candidates() dict abort " {{{2
   if empty(self.candidates)
-    let self.candidates = map(s:get_texmf_candidates('cls'), '{
-          \ ''word'' : v:val,
-          \ ''kind'' : '' [documentclass]'',
-          \}')
+    let self.candidates = map(s:get_texmf_candidates('cls'), {_, x -> {
+          \ 'word' : x,
+          \ 'kind' : '[documentclass]',
+          \}})
   endif
 
   return copy(self.candidates)
@@ -757,10 +757,10 @@ endfunction
 
 function! s:completer_bst.gather_candidates() dict abort " {{{2
   if empty(self.candidates)
-    let self.candidates = map(s:get_texmf_candidates('bst'), '{
-          \ ''word'' : v:val,
-          \ ''kind'' : '' [bst files]'',
-          \}')
+    let self.candidates = map(s:get_texmf_candidates('bst'), {_, x -> {
+          \ 'word' : x,
+          \ 'kind' : '[bst files]',
+          \}})
   endif
 
   return copy(self.candidates)
@@ -789,12 +789,11 @@ function! s:get_packages() abort " {{{1
     let l:includes = filter(readfile(l:current), 'v:val =~# ''^\#\s*include:''')
     if empty(l:includes) | continue | endif
 
-    call map(l:includes, 'matchstr(v:val, ''include:\s*\zs.*\ze\s*$'')')
-    let l:missing += filter(filter(copy(l:includes),
-          \ '!filereadable(v:val)'),
-          \ 'index(l:missing, v:val) < 0')
-    call filter(l:includes, 'filereadable(v:val)')
-    call filter(l:includes, 'index(l:packages, v:val) < 0')
+    call map(l:includes, {_, x -> matchstr(x, 'include:\s*\zs.*\ze\s*$')})
+    let l:missing += filter(copy(l:includes),
+          \ {_, x -> !filereadable(x) && index(l:missing, x) < 0})
+    call filter(l:includes,
+          \ {_, x -> filereadable(x) && index(l:packages, x) < 0})
 
     let l:packages += l:includes
     let l:queue += l:includes
@@ -873,20 +872,20 @@ function! s:_load_candidates_from_complete_file(pkg, pkgfile) abort " {{{1
 
   let l:candidates = filter(copy(l:lines), 'v:val =~# ''^\a''')
   call map(l:candidates, 'split(v:val)')
-  call map(l:candidates, '{
-        \ ''word'' : v:val[0],
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[cmd: '' . a:pkg . ''] '',
-        \ ''menu'' : (get(v:val, 1, '''')),
-        \}')
+  call map(l:candidates, {_, x -> {
+        \ 'word': x[0],
+        \ 'mode': '.',
+        \ 'kind': '[cmd: ' . a:pkg . '] ',
+        \ 'menu': get(x, 1, ''),
+        \}})
   let l:result.cmd += l:candidates
 
   let l:candidates = filter(l:lines, 'v:val =~# ''^\\begin{''')
-  call map(l:candidates, '{
-        \ ''word'' : substitute(v:val, ''^\\begin{\|}$'', '''', ''g''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''[env: '' . a:pkg . ''] '',
-        \}')
+  call map(l:candidates, {_, x -> {
+        \ 'word': substitute(x, '^\\begin{\|}$', '', 'g'),
+        \ 'mode': '.',
+        \ 'kind': '[env: ' . a:pkg . '] ',
+        \}})
   let l:result.env += l:candidates
 
   return l:result
@@ -912,14 +911,15 @@ function! s:gather_candidates_from_newcommands(lines, label) abort " {{{1
   "             e.g. as provided by xparse and standard declaration)
   "   a:label   Label to use in the menu
 
-  call filter(a:lines, 'v:val =~# ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)''')
-  call map(a:lines, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((provide|renew|new)command|(New|Declare|Provide|Renew)(Expandable)?DocumentCommand)\*?\{\\?\zs[^}]*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''['' . a:label . '']'',
-        \ }')
+  let l:re = '\v\\%(%(provide|renew|new)command'
+        \ . '|%(New|Declare|Provide|Renew)%(Expandable)?DocumentCommand)'
+  let l:re_match = l:re . '\*?\{\\?\zs[^}]*'
 
-  return a:lines
+  return map(filter(a:lines, 'v:val =~# l:re'), {_, x -> {
+        \ 'word': matchstr(x, l:re_match),
+        \ 'mode': '.',
+        \ 'kind': '[' . a:label . ']',
+        \}})
 endfunction
 
 " }}}1
@@ -929,14 +929,15 @@ function! s:gather_candidates_from_newenvironments(lines, label) abort " {{{1
   "             variant, e.g. as provided by xparse and standard declaration)
   "   a:label   Label to use in the menu
 
-  call filter(a:lines, 'v:val =~# ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)''')
-  call map(a:lines, '{
-        \ ''word'' : matchstr(v:val, ''\v\\((renew|new)environment|(New|Renew|Provide|Declare)DocumentEnvironment)\*?\{\\?\zs[^}]*''),
-        \ ''mode'' : ''.'',
-        \ ''kind'' : ''['' . a:label . '']'',
-        \ }')
+  let l:re = '\v\\((renew|new)environment'
+        \ . '|(New|Renew|Provide|Declare)DocumentEnvironment)'
+  let l:re_match = l:re . '\*?\{\\?\zs[^}]*'
 
-  return a:lines
+  return map(filter(a:lines, 'v:val =~# l:re'), {_, x -> {
+        \ 'word': matchstr(x, l:re_match),
+        \ 'mode': '.',
+        \ 'kind': '[' . a:label . ']',
+        \}})
 endfunction
 
 " }}}1
@@ -949,7 +950,7 @@ function! s:filter_with_options(input, regex, ...) abort " {{{1
   if empty(a:input) | return a:input | endif
 
   let l:opts = a:0 > 0 ? a:1 : {}
-  let l:expression = type(a:input[0]) == type({})
+  let l:expression = type(a:input[0]) == v:t_dict
         \ ? get(l:opts, 'filter_by_menu') ? 'v:val.menu' : 'v:val.word'
         \ : 'v:val'
 
@@ -980,14 +981,14 @@ function! s:get_texmf_candidates(filetype) abort " {{{1
   " Add locally installed candidates first
   if !empty(l:texmfhome)
     let l:candidates += glob(l:texmfhome . '/**/*.' . a:filetype, 0, 1)
-    call map(l:candidates, 'fnamemodify(v:val, '':t:r'')')
+    call map(l:candidates, "fnamemodify(v:val, ':t:r')")
   endif
 
   " Then add globally available candidates (based on ls-R files)
   for l:file in vimtex#kpsewhich#run('--all ls-R')
     let l:candidates += map(filter(readfile(l:file),
-          \   'v:val =~# ''\.' . a:filetype . ''''),
-          \ 'fnamemodify(v:val, '':r'')')
+          \   {_, x -> x =~# '\.' . a:filetype}),
+          \ "fnamemodify(v:val, ':r')")
   endfor
 
   return l:candidates

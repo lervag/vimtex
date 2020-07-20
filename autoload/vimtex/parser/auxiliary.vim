@@ -117,7 +117,7 @@ function! s:parse_labels(file, prefix) abort " {{{1
 
     let l:name = a:prefix . l:name
     let l:context = remove(l:tree, 0)
-    if type(l:context) == type([]) && len(l:context) > 1
+    if type(l:context) == v:t_list && len(l:context) > 1
       let l:menu = ''
       try
         let l:type = substitute(l:context[3][0], '\..*$', ' ', '')
@@ -145,7 +145,7 @@ endfunction
 
 " }}}1
 function! s:parse_number(num_tree) abort " {{{1
-  if type(a:num_tree) == type([])
+  if type(a:num_tree) == v:t_list
     if len(a:num_tree) == 0
       return '-'
     else

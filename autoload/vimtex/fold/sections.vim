@@ -153,14 +153,14 @@ function! s:folder.refresh() abort dict " {{{1
 
   " Parse part commands (frontmatter, appendix, etc)
   " Note: We want a minimum of two top level parts
-  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.parts . '''')
+  let lines = filter(copy(buffer), {_, x -> x =~# self.re.parts})
   if len(lines) >= 2
     let level += 1
     call insert(self.folds, [self.re.parts, level])
   endif
 
   " Parse section commands (part, chapter, [sub...]section)
-  let lines = filter(copy(buffer), 'v:val =~ ''' . self.re.any_sections . '''')
+  let lines = filter(copy(buffer), {_, x -> x =~# self.re.any_sections})
   for part in self.sections
     let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
     for line in lines

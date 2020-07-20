@@ -160,8 +160,10 @@ function! s:xwin_template.xwin_exists() dict abort " {{{1
     else
       let cmd = 'xdotool search --name ' . fnamemodify(self.out(), ':t')
       let ids = split(system(cmd), '\n')
-      let ids_already_used = filter(map(deepcopy(vimtex#state#list_all()),
-            \ "get(get(v:val, 'viewer', {}), 'xwin_id')"), 'v:val > 0')
+      let ids_already_used = filter(map(
+            \   deepcopy(vimtex#state#list_all()),
+            \   {_, x -> get(get(x, 'viewer', {}), 'xwin_id')}),
+            \ 'v:val > 0')
       for id in ids
         if index(ids_already_used, id) < 0
           let self.xwin_id = id

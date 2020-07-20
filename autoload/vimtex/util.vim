@@ -5,16 +5,7 @@
 "
 
 function! vimtex#util#command(cmd) abort " {{{1
-  let l:a = @a
-  try
-    silent! redir @a
-    silent! execute a:cmd
-    redir END
-  finally
-    let l:res = @a
-    let @a = l:a
-    return split(l:res, "\n")
-  endtry
+  return split(execute(a:cmd, 'silent!'), "\n")
 endfunction
 
 " }}}1
@@ -22,7 +13,7 @@ function! vimtex#util#flatten(list) abort " {{{1
   let l:result = []
 
   for l:element in a:list
-    if type(l:element) == type([])
+    if type(l:element) == v:t_list
       call extend(l:result, vimtex#util#flatten(l:element))
     else
       call add(l:result, l:element)
@@ -47,34 +38,6 @@ function! vimtex#util#get_os() abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#in_comment(...) abort " {{{1
-  return call('vimtex#util#in_syntax', ['texComment'] + a:000)
-endfunction
-
-" }}}1
-function! vimtex#util#in_mathzone(...) abort " {{{1
-  return call('vimtex#util#in_syntax', ['texMathZone'] + a:000)
-endfunction
-
-" }}}1
-function! vimtex#util#in_syntax(name, ...) abort " {{{1
-
-  " Usage: vimtex#util#in_syntax(name, [line, col])
-
-  " Get position and correct it if necessary
-  let l:pos = a:0 > 0 ? [a:1, a:2] : [line('.'), col('.')]
-  if mode() ==# 'i'
-    let l:pos[1] -= 1
-  endif
-  call map(l:pos, 'max([v:val, 1])')
-
-  " Check syntax at position
-  return match(map(synstack(l:pos[0], l:pos[1]),
-        \          "synIDattr(v:val, 'name')"),
-        \      '^' . a:name) >= 0
-endfunction
-
-" }}}1
 function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
   let l:option = a:0 > 0 ? a:1 : 'force'
   if index(['force', 'keep', 'error'], l:option) < 0
@@ -84,7 +47,7 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
   for [l:key, l:value] in items(a:dict2)
     if !has_key(a:dict1, l:key)
       let a:dict1[l:key] = l:value
-    elseif type(l:value) == type({})
+    elseif type(l:value) == v:t_dict
       call vimtex#util#extend_recursive(a:dict1[l:key], l:value, l:option)
     elseif l:option ==# 'error'
       throw 'E737: Key already exists: ' . l:key

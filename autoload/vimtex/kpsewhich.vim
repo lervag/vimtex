@@ -20,7 +20,7 @@ function! vimtex#kpsewhich#run(args) abort " {{{1
   endif
 
   " Remove warning lines from output
-  call filter(l:output, 'stridx(v:val, "kpsewhich: warning: ") == -1')
+  call filter(l:output, {_, x -> stridx(x, 'kpsewhich: warning: ') == -1})
 
   return l:output
 endfunction

@@ -12,7 +12,7 @@ if empty($INMAKE) | finish | endif
 call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 20)
 
 " PythonTeX inside tikzpictures (#1563)
-call vimtex#test#assert(vimtex#util#in_syntax('pythonRawString', 243, 11))
-call vimtex#test#assert(vimtex#util#in_syntax('pythonRawString', 248, 11))
+call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 243, 11))
+call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 248, 11))
 
 quit!

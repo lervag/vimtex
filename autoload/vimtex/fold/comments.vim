@@ -35,7 +35,8 @@ endfunction
 
 " }}}1
 function! s:folder.text(line, level) abort dict " {{{1
-  let l:lines = map(getline(v:foldstart, v:foldend), 'matchstr(v:val, ''%\s*\zs.*\ze\s*'')')
+  let l:lines = map(getline(v:foldstart, v:foldend),
+        \ {_, x -> matchstr(x, '%\s*\zs.*\ze\s*')})
   return matchstr(a:line, '^.*\s*%') . join(l:lines, ' ')
 endfunction
 

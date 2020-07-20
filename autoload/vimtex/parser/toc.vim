@@ -84,7 +84,7 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     for l:matcher in l:matchers
       if l:line =~# l:matcher.re
         let l:entry = l:matcher.get_entry(l:context)
-        if type(l:entry) == type([])
+        if type(l:entry) == v:t_list
           call extend(l:entries, l:entry)
         elseif !empty(l:entry)
           call add(l:entries, l:entry)
@@ -815,7 +815,5 @@ for s:m in s:matchers
 endfor
 unlet! s:m
 
-let s:matchers_preamble = filter(
-      \ copy(s:matchers), "get(v:val, 'in_preamble')")
-let s:matchers_content = filter(
-      \ copy(s:matchers), "get(v:val, 'in_content', 1)")
+let s:matchers_preamble = filter(copy(s:matchers), "get(v:val, 'in_preamble')")
+let s:matchers_content = filter(copy(s:matchers), "get(v:val, 'in_content', 1)")

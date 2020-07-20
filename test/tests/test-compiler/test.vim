@@ -5,6 +5,7 @@ filetype plugin on
 set nomore
 
 let g:vimtex_view_automatic = 0
+let g:vimtex_log_verbose = 0
 
 if has('nvim')
   let g:vimtex_compiler_progname = 'nvr'
@@ -27,10 +28,13 @@ function! RunTests(comp, list_opts)
       call system('pkill -f latexmk')
     endif
 
-    echo 'Testing compiler "' . a:comp . '" with options:'
-    for [l:key, l:val] in items(l:opts)
-      echo '* ' . l:key . ' =' l:val
-    endfor
+    echo 'Testing compiler "' . a:comp . '"'
+    if !empty(l:opts)
+      echon ' with options:'
+      for [l:key, l:val] in items(l:opts)
+        echo '* ' . l:key . ' =' l:val . "\n"
+      endfor
+    endif
 
     for l:file in glob('minimal.*', 1, 1)
       call delete(l:file)
@@ -90,15 +94,15 @@ endfunction
 
 for [s:comp, s:opts] in items({
       \ 'latexmk' : [
-      \   {'backend' : 'process', 'build_dir' : 'out'},
+      \   {},
+      \   {'build_dir' : 'out'},
       \   {'callback' : 0},
-      \   {'callback' : 0, 'background' : 0},
       \   {'callback' : 0, 'continuous' : 0},
-      \   {'background' : 0, 'continuous' : 0},
+      \   {'continuous' : 0},
       \ ],
       \ 'latexrun' : [
-      \   {'backend' : 'process', 'build_dir' : 'out'},
-      \   {'background' : 0},
+      \   {},
+      \   {'build_dir' : 'out'},
       \ ],
       \})
   call RunTests(s:comp, s:opts)

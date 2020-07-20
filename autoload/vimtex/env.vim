@@ -120,12 +120,12 @@ function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
   let l:cands = map(vimtex#complete#complete('env', '', '\begin'), 'v:val.word')
 
   " Never include document and remove current env (place it first)
-  call filter(l:cands, 'index([''document'', s:env_name], v:val) < 0')
+  call filter(l:cands, "index(['document', s:env_name], v:val) < 0")
 
   " Always include current env and displaymath
   let l:cands = [s:env_name] + l:cands + ['\[']
 
-  return filter(l:cands, 'v:val =~# ''^' . a:lead . '''')
+  return filter(l:cands, {_, x -> x =~# '^' . a:lead})
 endfunction
 
 " }}}1

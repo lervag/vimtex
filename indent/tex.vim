@@ -33,7 +33,7 @@ endfunction
 
 "}}}
 function! VimtexIndent(lnum) abort " {{{1
-  let s:sw = exists('*shiftwidth') ? shiftwidth() : &shiftwidth
+  let s:sw = shiftwidth()
 
   let [l:prev_lnum, l:prev_line] = s:get_prev_lnum(prevnonblank(a:lnum - 1))
   if l:prev_lnum == 0 | return indent(a:lnum) | endif

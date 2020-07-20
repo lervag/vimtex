@@ -125,7 +125,8 @@ function! s:biblatex.get_key_lnum(key, filename) abort " {{{1
   let l:lines = readfile(a:filename)
   let l:lnums = range(len(l:lines))
   let l:annotated_lines = map(l:lnums, '[v:val, l:lines[v:val]]')
-  let l:matches = filter(l:annotated_lines, 'v:val[1] =~# ''^\s*@\w*{\s*\V' . a:key . '''')
+  let l:matches = filter(l:annotated_lines,
+        \ {_, x -> x[1] =~# '^\s*@\w*{\s*\V' . a:key})
 
   return len(l:matches) > 0 ? l:matches[-1][0]+1 : 0
 endfunction
