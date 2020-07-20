@@ -244,8 +244,6 @@ Compiler backend~
 Clientserver~
                                                           *vimtex-clientserver*
   |+clientserver| is necessary for backward search from PDF viewer to Vim.
-  Further, when not on |nvim| or when |+job| is not available, then |vimtex|
-  may use |+clientserver| for the callback functionality to work.
 
   A server will be started automatically if Vim is running on Windows, or if
   running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
@@ -657,11 +655,7 @@ The package list is determined in two ways: >
    Note: Parsing after successful compilations requires that one uses
          a) continuous compilation with callbacks (see the `callback` option
             for |g:vimtex_compiler_latexmk|), or
-         b) single-shot compilation with the `jobs` or `nvim` backend (see the
-            `backend` option of |g:vimtex_compiler_latexmk| and
-            |g:vimtex_compiler_latexrun|). If one uses the `process` backend
-            (e.g. on older Vim versions), one must either have the `callback`
-            option also enabled or it must run in foreground.
+         b) single-shot compilation.
 
 2. Otherwise, the preamble is parsed for `\usepackage` statements. This is
    slower and less accurate than `.fls` file parsing. Therefore, it is only
@@ -862,8 +856,6 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_compiler_latexmk = {
-        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-        \ 'background' : 1,
         \ 'build_dir' : '',
         \ 'callback' : 1,
         \ 'continuous' : 1,
@@ -880,26 +872,6 @@ OPTIONS                                                        *vimtex-options*
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
-  backend~
-    Sets the backend for running processes. Possible values are:
-
-      `process`  Traditional interface that should work (tm) on all systems.
-               It uses |!:| to control the compiler processes.
-      `jobs`     Uses |job| to control the processes. This is available on
-               modern Vim installations. Note that this will start every job
-               in the background, regardless of the value of the `background`
-               key. The output may be viewed through |VimtexCompileOutput|.
-      `nvim`     This uses the neovim |job-control| system to control the
-               compiler process. It is very similar to the `jobs` backend.
-
-    The default value is to use the `jobs` or `nvim` backend, if supported,
-    and fallback to `process` if not.
-
-  background~
-    This option sets whether single shot compilations should be run in the
-    foreground or the background. Note that it is only relevant for the
-    `process` backend.
-
   build_dir~
     This option sets the compilation build directory.  It corresponds to the
     `-output-directory` option in `latexmk`.  If the path is a relative path,
@@ -913,11 +885,8 @@ OPTIONS                                                        *vimtex-options*
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
     after compilation is finished.
 
-    Note 1: This feature requires |nvim|, Vim with |+job| or |+clientserver|.
-    Note 2: When using |clientserver|, the callback is run with the vim
-            executable defined by |g:vimtex_compiler_progname|.
-    Note 3: Callbacks are only possible when the `backend` is one of `nvim` or
-            `jobs`, or when `continuous` is also activated.
+    Note: When using |clientserver|, the callback is run with the vim
+          executable defined by |g:vimtex_compiler_progname|.
 
   continuous~
     If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
@@ -997,8 +966,6 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_compiler_latexrun = {
-        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-        \ 'background' : 1,
         \ 'build_dir' : '',
         \ 'options' : [
         \   '-verbose-cmds',
@@ -1008,12 +975,6 @@ OPTIONS                                                        *vimtex-options*
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
-
-  backend~
-    Same as |g:vimtex_compiler_latexmk| / `backend`.
-
-  background~
-    Same as |g:vimtex_compiler_latexmk| / `background`.
 
   build_dir~
     Same as |g:vimtex_compiler_latexmk| / `build_dir`.
@@ -1053,8 +1014,6 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_compiler_tectonic = {
-        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-        \ 'background' : 1,
         \ 'build_dir' : '',
         \ 'options' : [
         \   '--keep-logs',
@@ -1064,12 +1023,6 @@ OPTIONS                                                        *vimtex-options*
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
-
-  backend~
-    Same as |g:vimtex_compiler_latexmk| / `backend`.
-
-  background~
-    Same as |g:vimtex_compiler_latexmk| / `background`.
 
   build_dir~
     Same as |g:vimtex_compiler_latexmk| / `build_dir`. This will be created if
@@ -1095,19 +1048,11 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_compiler_arara = {
-        \ 'backend' : DEPENDS ON SYSTEM (SEE BELOW),
-        \ 'background' : 1,
         \ 'options' : ['-v'],
         \}
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
-
-  backend~
-    Same as |g:vimtex_compiler_latexmk| / `backend`.
-
-  background~
-    Same as |g:vimtex_compiler_latexmk| / `background`.
 
   options~
     This is a list of options that are passed to `arara`. The default options
@@ -2004,7 +1949,7 @@ OPTIONS                                                        *vimtex-options*
 
   Note: The quickfix window will only be opened automatically if the compiler
         is set to `continuous` mode and has `callbacks` enabled, or if
-        `continuous` mode is disabled and one uses the `nvim` or `jobs` backends.
+        `continuous` mode is disabled.
 
   Default value: 2
 
@@ -2324,7 +2269,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_view_automatic*
   If enabled, the viewer will open automatically when compilation has started
   in `continuous` mode and if `callback` is enabled, or if `continuous` mode
-  is disabled and one uses either the `jobs` or the `nvim` backend.
+  is disabled.
 
   `latexmk` will typically start the viewer directly.  However, with this
   option enabled, |vimtex| will start the viewer through callbacks also for
@@ -3912,10 +3857,9 @@ when source files have been changed.  |vimtex| uses the continuous mode by
 default, but `latexmk` also allows single shot compilations.  The compiler may
 be configured through the |g:vimtex_compiler_latexmk| option.
 
-If you use |nvim| or Vim with |+job| or |+clientserver|, and if the `callback`
-key is enabled (which it is by default), then compilation errors will be
-parsed automatically.  This is done by utilizing the tricks explained below.
-Note: This only works for continuous compilation mode.
+If the `callback` key is enabled (it is by default), then compilation errors
+will be parsed automatically.  This is done by utilizing the tricks explained
+below. Note: This only works for continuous compilation mode.
 
 As stated, one may customize the `latexmk` options through
 |g:vimtex_compiler_latexmk|.  However, one may also configure `latexmk`

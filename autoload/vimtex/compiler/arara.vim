@@ -17,12 +17,9 @@ endfunction
 
 let s:compiler = {
       \ 'name' : 'arara',
-      \ 'backend' : has('nvim') ? 'nvim'
-      \                         : v:version >= 800 ? 'jobs' : 'process',
       \ 'root' : '',
       \ 'target' : '',
       \ 'target_path' : '',
-      \ 'background' : 1,
       \ 'output' : tempname(),
       \ 'options' : ['--log'],
       \}
@@ -35,12 +32,8 @@ function! s:compiler.init(options) abort dict " {{{1
     throw 'vimtex: Requirements not met'
   endif
 
-  call extend(self, deepcopy(s:compiler_{self.backend}))
-
-  " Processes run with the new jobs api will not run in the foreground
-  if self.backend !=# 'process'
-    let self.background = 1
-  endif
+  let l:backend = has('nvim') ? 'nvim' : 'jobs'
+  call extend(self, deepcopy(s:compiler_{l:backend}))
 endfunction
 
 " }}}1
@@ -64,17 +57,10 @@ endfunction
 function! s:compiler.pprint_items() abort dict " {{{1
   let l:configuration = []
 
-  if self.backend ==# 'process'
-    call add(l:configuration, ['background', self.background])
-  endif
-
   call add(l:configuration, ['arara options', self.options])
 
   let l:list = []
-  call add(l:list, ['backend', self.backend])
-  if self.background
-    call add(l:list, ['output', self.output])
-  endif
+  call add(l:list, ['output', self.output])
 
   if self.target_path !=# b:vimtex.tex
     call add(l:list, ['root', self.root])
@@ -104,11 +90,7 @@ endfunction
 function! s:compiler.start(...) abort dict " {{{1
   call self.exec()
 
-  if self.background
-    call vimtex#log#info('Compiler started in background')
-  else
-    call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
-  endif
+  call vimtex#log#info('Compiler started in background')
 endfunction
 
 " }}}1
@@ -134,19 +116,6 @@ endfunction
 " }}}1
 function! s:compiler.get_pid() abort dict " {{{1
   return 0
-endfunction
-
-" }}}1
-
-let s:compiler_process = {}
-function! s:compiler_process.exec() abort dict " {{{1
-  let self.process = vimtex#process#new()
-  let self.process.name = 'arara'
-  let self.process.background = self.background
-  let self.process.workdir = self.root
-  let self.process.output = self.output
-  let self.process.cmd = self.build_cmd()
-  call self.process.run()
 endfunction
 
 " }}}1

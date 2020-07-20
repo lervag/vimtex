@@ -94,12 +94,9 @@ endfunction
 let s:compiler = {
       \ 'name' : 'latexmk',
       \ 'executable' : 'latexmk',
-      \ 'backend' : has('nvim') ? 'nvim'
-      \                         : v:version >= 800 ? 'jobs' : 'process',
       \ 'root' : '',
       \ 'target' : '',
       \ 'target_path' : '',
-      \ 'background' : 1,
       \ 'build_dir' : '',
       \ 'callback' : 1,
       \ 'continuous' : 1,
@@ -121,17 +118,10 @@ function! s:compiler.init(options) abort dict " {{{1
   call self.init_build_dir_option()
   call self.init_pdf_mode_option()
 
-  call extend(self, deepcopy(s:compiler_{self.backend}))
+  let self.shell = 'sh'
 
-  " Continuous processes can't run in foreground, neither can processes run
-  " with the new jobs api
-  if self.continuous || self.backend !=# 'process'
-    let self.background = 1
-  endif
-
-  if self.backend !=# 'process'
-    let self.shell = 'sh'
-  endif
+  let l:backend = has('nvim') ? 'nvim' : 'jobs'
+  call extend(self, deepcopy(s:compiler_{l:backend}))
 endfunction
 
 " }}}1
@@ -316,10 +306,6 @@ function! s:compiler.pprint_items() abort dict " {{{1
         \ ['callback', self.callback],
         \]
 
-  if self.backend ==# 'process' && !self.continuous
-    call add(l:configuration, ['background', self.background])
-  endif
-
   if !empty(self.build_dir)
     call add(l:configuration, ['build_dir', self.build_dir])
   endif
@@ -327,12 +313,8 @@ function! s:compiler.pprint_items() abort dict " {{{1
   call add(l:configuration, ['latexmk engine', self.get_engine()])
 
   let l:list = []
-  call add(l:list, ['backend', self.backend])
   if self.executable !=# s:compiler.executable
     call add(l:list, ['latexmk executable', self.executable])
-  endif
-  if self.background
-    call add(l:list, ['output', self.output])
   endif
 
   if self.target_path !=# b:vimtex.tex
@@ -348,11 +330,8 @@ function! s:compiler.pprint_items() abort dict " {{{1
 
   if has_key(self, 'job')
     if self.continuous
-      if self.backend ==# 'jobs'
-        call add(l:list, ['job', self.job])
-      else
-        call add(l:list, ['pid', self.get_pid()])
-      endif
+      call add(l:list, ['job', self.job])
+      call add(l:list, ['pid', self.get_pid()])
     endif
     call add(l:list, ['cmd', self.cmd])
   endif
@@ -423,11 +402,7 @@ function! s:compiler.start(...) abort dict " {{{1
       doautocmd <nomodeline> User VimtexEventCompileStarted
     endif
   else
-    if self.background
-      call vimtex#log#info('Compiler started in background!')
-    else
-      call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
-    endif
+    call vimtex#log#info('Compiler started in background!')
   endif
 endfunction
 
@@ -443,83 +418,6 @@ function! s:compiler.stop() abort dict " {{{1
     call vimtex#log#warning(
           \ 'There is no process to stop (' . self.target . ')')
   endif
-endfunction
-
-" }}}1
-
-let s:compiler_process = {}
-function! s:compiler_process.exec() abort dict " {{{1
-  let l:process = vimtex#process#new()
-  let l:process.name = 'latexmk'
-  let l:process.continuous = self.continuous
-  let l:process.background = self.background
-  let l:process.workdir = self.root
-  let l:process.output = self.output
-  let l:process.cmd = self.build_cmd()
-
-  if l:process.continuous
-    if (has('win32') || has('win32unix'))
-      " Not implemented
-    else
-      for l:pid in split(system(
-            \ 'pgrep -f "^[^ ]*perl.*latexmk.*' . self.target . '"'), "\n")
-        let l:path = resolve('/proc/' . l:pid . '/cwd') . '/' . self.target
-        if l:path ==# self.target_path
-          let l:process.pid = str2nr(l:pid)
-          break
-        endif
-      endfor
-    endif
-  endif
-
-  function! l:process.set_pid() abort dict " {{{2
-    if (has('win32') || has('win32unix'))
-      let pidcmd = 'tasklist /fi "imagename eq latexmk.exe"'
-      let pidinfo = vimtex#process#capture(pidcmd)[-1]
-      let self.pid = str2nr(split(pidinfo,'\s\+')[1])
-    else
-      let self.pid = str2nr(system('pgrep -nf "^[^ ]*perl.*latexmk"')[:-2])
-    endif
-
-    return self.pid
-  endfunction
-
-  " }}}2
-
-  let self.process = l:process
-  call self.process.run()
-endfunction
-
-" }}}1
-function! s:compiler_process.start_single() abort dict " {{{1
-  let l:continuous = self.continuous
-  let self.continuous = self.background && self.callback && !empty(v:servername)
-
-  if self.continuous
-    let g:vimtex_compiler_callback_hooks += ['VimtexSSCallback']
-    function! VimtexSSCallback(status) abort
-      silent call vimtex#compiler#stop()
-      call remove(g:vimtex_compiler_callback_hooks, 'VimtexSSCallback')
-    endfunction
-  endif
-
-  call self.start(1)
-  let self.continuous = l:continuous
-endfunction
-
-" }}}1
-function! s:compiler_process.is_running() abort dict " {{{1
-  return exists('self.process.pid') && self.process.pid > 0
-endfunction
-
-" }}}1
-function! s:compiler_process.kill() abort dict " {{{1
-  call self.process.stop()
-endfunction
-
-" }}}1
-function! s:compiler_process.get_pid() abort dict " {{{1
-  return has_key(self, 'process') ? self.process.pid : 0
 endfunction
 
 " }}}1
