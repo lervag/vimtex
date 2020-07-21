@@ -2017,6 +2017,11 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: ['amsmath']
 
+*g:vimtex_syntax_nospell_commands*
+  A list of commands whose argument should be excluded from spell checking.
+
+  Default value: []
+
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
   |VimtexCountWords| and |VimtexCountLetters|.

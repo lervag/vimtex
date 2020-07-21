@@ -69,6 +69,15 @@ function! vimtex#syntax#load#general() abort " {{{1
         \ contains=@NoSpell containedin=texComment
   highlight def link texCommentURL Comment
   highlight def link texCommentAcronym Comment
+
+  " Add nospell for commands per configuration
+  syntax region texVimtexNoSpell matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained contains=@NoSpell
+  for l:macro in g:vimtex_syntax_nospell_commands
+    execute 'syntax match texStatement /\\' . l:macro . '/'
+          \ 'nextgroup=texVimtexNospell'
+  endfor
 endfunction
 
 " }}}1
