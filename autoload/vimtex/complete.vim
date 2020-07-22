@@ -191,64 +191,25 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
 endfunction
 
 function! s:completer_bib.find_bibs() dict abort " {{{2
-  let l:file = b:vimtex.ext('bcf')
-  if filereadable(l:file)
-    let l:bibs = self.find_bibs_bcf(l:file)
-    if !empty(l:bibs) | return l:bibs | endif
+  if has_key(b:vimtex.packages, 'biblatex')
+    let l:file = b:vimtex.ext('bcf')
+    if filereadable(l:file)
+      let l:bibs = map(
+            \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
+            \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
+      if !empty(l:bibs) | return l:bibs | endif
+    endif
   endif
 
   let l:file = b:vimtex.ext('blg')
   if filereadable(l:file)
-    let l:bibs = self.find_bibs_blg(l:file)
+    let l:bibs = map(
+          \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
+          \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
     if !empty(l:bibs) | return l:bibs | endif
   endif
 
   return self.find_bibs_manual()
-endfunction
-
-function! s:completer_bib.find_bibs_blg(file) dict abort " {{{2
-  let l:cache = vimtex#cache#open('bibfiles', {
-        \ 'local': 1,
-        \ 'default': {'files': [], 'ftime': -1}
-        \})
-
-  let l:ftime = getftime(a:file)
-  let l:current = l:cache.get(a:file)
-  if l:ftime > l:current.ftime
-    let l:current.ftime = l:ftime
-    let l:cache.modified = 1
-
-    let l:lines = readfile(a:file, 30)
-    let l:current.files = l:lines[0] =~# '^This is BibTeX'
-          \ ? map(
-          \       filter(l:lines, 'v:val =~# ''^Database file #\d'''),
-          \       {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
-          \ : []
-
-    call l:cache.write()
-  endif
-
-  return l:current.files
-endfunction
-
-function! s:completer_bib.find_bibs_bcf(file) dict abort " {{{2
-  let l:cache = vimtex#cache#open('bibfiles', {
-        \ 'local': 1,
-        \ 'default': {'files': [], 'ftime': -1}
-        \})
-
-  let l:ftime = getftime(a:file)
-  let l:current = l:cache.get(a:file)
-  if l:ftime > l:current.ftime
-    let l:current.ftime = l:ftime
-    let l:cache.modified = 1
-    let l:current.files = map(
-          \ filter(readfile(a:file), "v:val =~# 'bcf:datasource'"),
-          \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
-    call l:cache.write()
-  endif
-
-  return l:current.files
 endfunction
 
 function! s:completer_bib.find_bibs_manual() dict abort " {{{2
