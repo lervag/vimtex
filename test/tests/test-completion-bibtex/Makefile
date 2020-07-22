@@ -23,3 +23,9 @@ starred:
 
 multicite:
 	@$(MYVIM) -u test_multicite.vim
+
+parser_bcf:
+	@$(MYVIM) -u test_parser_bcf.vim
+
+parser_blg:
+	@$(MYVIM) -u test_parser_blg.vim
