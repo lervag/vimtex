@@ -263,7 +263,7 @@ Clientserver~
     alias vim='vim --servername VIM'
 <
   For other methods of ensuring that Vim is started with a servername, see:
-  http://vim.wikia.com/wiki/Enable_servername_capability_in_vim/xterm
+  https://vim.fandom.com/wiki/Enable_servername_capability_in_vim/xterm
 
   To test whether a server was successfully started, |serverlist()| can be
   used. E.g. `:echo serverlist()`
@@ -291,7 +291,7 @@ Linting and syntax checking~
   plugins. The following plugins have support for (La)TeX syntax checking
   through `lacheck` [0], `chktex` [1], and `proselint` [2].
 
-    `ale`         https://github.com/w0rp/ale
+    `ale`         https://github.com/dense-analysis/ale
     `neomake`     https://github.com/neomake/neomake
     `syntastic`   https://github.com/vim-syntastic/syntastic
 
@@ -450,13 +450,13 @@ Formatting~
 
   [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
   [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
-  [2]: http://rhodesmill.org/brandon/2012/one-sentence-per-line/
+  [2]: https://rhodesmill.org/brandon/2012/one-sentence-per-line/
   [3]: https://github.com/cmhughes/latexindent.pl
   [4]: https://github.com/dbmrq/vim-bucky
   [5]: https://github.com/sbdchd/neoformat
   [6]: https://github.com/google/vim-codefmt
   [7]: https://github.com/Chiel92/vim-autoformat
-  [8]: https://github.com/w0rp/ale
+  [8]: https://github.com/dense-analysis/ale
   [9]: https://github.com/Konfekt/vim-sentence-chopper
 
 Filetype plugin for bib files~
@@ -491,7 +491,7 @@ Language server / texlab~
   See also this vimtex issue [5] for more information.
 
   [0]: https://langserver.org/
-  [1]: https://texlab.netlify.com/
+  [1]: https://texlab.netlify.app/
   [2]: https://github.com/prabirshrestha/vim-lsp
   [3]: https://github.com/neoclide/coc.nvim
   [4]: https://github.com/fannheyward/coc-texlab
@@ -2258,7 +2258,7 @@ OPTIONS                                                        *vimtex-options*
     `tocdepth` : 3
       Define the depth of section levels to display. This attempts to mimic
       the corresponding latex variable `tocdepth`. For more info, see:
-      http://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
+      https://en.wikibooks.org/w/index.php?title=LaTeX/Document_Structure
 
       Note: This will also change the width of the number column according to
             the space needed to show the section numbers.
@@ -2407,7 +2407,7 @@ OPTIONS                                                        *vimtex-options*
             let g:vimtex_view_general_options_latexmk = '--unique'
 <
         *vimtex_viewer_sumatrapdf*
-          http://www.sumatrapdfreader.org/free-pdf-reader.html
+          https://www.sumatrapdfreader.org/free-pdf-reader.html
           SumatraPDF is a PDF viewer for windows that is powerful, small,
           portable and starts up very fast. It supports forward search. The
           following settings are applied as defaults on Windows if
@@ -2443,7 +2443,7 @@ OPTIONS                                                        *vimtex-options*
                 https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
 
     *vimtex_viewer_mupdf*
-      http://www.mupdf.com/
+      https://www.mupdf.com/
       A very minimalistic and quick PDF viewer.  Supports forward and backward
       search.  Backward search is available via xdotool (under Unix) with
       |VimtexRSearch|, which is mapped to '<localleader>lr'.  One may also
@@ -2461,7 +2461,7 @@ OPTIONS                                                        *vimtex-options*
             as expected.
 
     *vimtex_viewer_skim*
-      http://skim-app.sourceforge.net/
+      https://skim-app.sourceforge.net/
       Skim is a PDF reader and note-taker for OS X.  It is designed to help
       you read and annotate scientific papers in PDF, but is also great
       for viewing any PDF file. The vimtex implementation supports forward
@@ -3497,7 +3497,7 @@ To configure for vimtex, one can use the following code: >
 YouCompleteMe~
                                                 *vimtex-complete-youcompleteme*
 |youcompleteme| is probably the most popular code-completion engine for Vim.  The
-github repository is here: https://github.com/Valloric/YouCompleteMe.
+github repository is here: https://github.com/ycm-core/YouCompleteMe.
 It is described as:
 
 > YouCompleteMe is a fast, as-you-type, fuzzy-search code completion engine
@@ -3897,7 +3897,7 @@ Note: If you define these options similar to the above `xdotool` trick and
       a semicolon at the end of the `cmd` strings so that |vimtex| may append
       safely to the options.
 
-Note: More info on `xdotool` here: http://www.semicomplete.com/projects/xdotool.
+Note: More info on `xdotool` here: https://www.semicomplete.com/projects/xdotool.
 
 ------------------------------------------------------------------------------
 LATEXRUN                                                      *vimtex-latexrun*
@@ -3949,7 +3949,7 @@ ARARA                                                            *vimtex-arara*
 
 `arara` is a TeX automation tool that uses rules and directives that are
 defined in the preamble of a LaTeX project. The user manual can be found here:
-http://ctan.uib.no/support/arara/doc/arara-usermanual.pdf
+https://ctan.uib.no/support/arara/doc/arara-manual.pdf
 
 `arara` does not do continuous compilation, and so the only relevant commands
 are |VimtexCompile| to start (single shot) compilation, and
@@ -4037,7 +4037,7 @@ Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
 |vimtex-non-features|.
 
 [1] https://ctan.org/pkg/lacheck
-[2] https://www.nongnu.org/chktex
+[2] https://www.nongnu.org/chktex/
 [3] https://github.com/plk/biber
 [4] https://github.com/tpope/vim-dispatch
 [5] https://github.com/skywind3000/asyncrun.vim
@@ -4096,7 +4096,7 @@ Note: Spell checking with `LanguageTool` is only enabled if a country code is
 
 [1] https://github.com/matze-dd/YaLafi
 [2] https://www.languagetool.org
-[3] https://www.languagetool.org/download
+[3] https://www.languagetool.org/download/
 
 ==============================================================================
 VIEW                                                              *vimtex-view*
@@ -4235,7 +4235,7 @@ since it may be easily downloaded in various formats from [8].
 [5]: https://github.com/KabbAmine/zeavim.vim
 [6]: https://github.com/keith/investigate.vim
 [7]: https://www.tug.org/texdoc/doc/texdoc.pdf
-[8]: https://latexref.xyz/dev
+[8]: https://latexref.xyz/dev/
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
@@ -4462,7 +4462,7 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
 
    [0]: https://chocolatey.org/packages/mupdf
    [1]: https://chocolatey.org/packages/sumatrapdf
-   [2]: https://www.rapidee.com
+   [2]: https://www.rapidee.com/en/about
    [3]: https://devblogs.microsoft.com/commandline/whats-new-for-wsl-in-windows-10-version-1903/
    [4]: https://github.com/lervag/vimtex/issues/1380
    [5]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
