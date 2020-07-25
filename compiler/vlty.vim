@@ -4,6 +4,7 @@ let current_compiler = 'vlty'
 let s:cpo_save = &cpo
 set cpo&vim
 
+let s:python = executable('python3') ? 'python3' : 'python'
 let s:vlty = g:vimtex_grammar_vlty
 
 function! s:installation_error(msg)
@@ -11,12 +12,12 @@ function! s:installation_error(msg)
         \ [a:msg, 'Please see ":help vimtex-grammar-vlty" for more details.'])
 endfunction
 
-if !executable('python')
+if !executable(s:python)
   call s:installation_error('vlty compiler requires Python')
   finish
 endif
 
-call system('python -c "import yalafi"')
+call system(s:python . ' -c "import yalafi"')
 if v:shell_error != 0
   call s:installation_error('vlty compiler requires the Python module YaLafi')
   finish
@@ -42,7 +43,7 @@ let s:language = matchstr(&spelllang, '\v^\a\a([-_]\a\a)?')
 let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
-      \ 'python -m yalafi.shell'
+      \ s:python . ' -m yalafi.shell'
       \ . ' --lt-directory ' . s:vlty.lt_directory
       \ . (s:vlty.server ==# 'no'
       \    ?  ''
