@@ -314,6 +314,7 @@ let s:tikz_commands = '\v\\%(' . join([
         \ 'path',
         \ 'node',
         \ 'coordinate',
+        \ 'clip',
         \ 'add%(legendentry|plot)',
       \ ], '|') . ')'
 
