@@ -85,6 +85,12 @@ function! vimtex#compiler#callback(status) abort " {{{1
     endif
   endfor
 
+  if a:status
+    if exists('#User#VimtexEventCompileSuccess')
+        doautocmd <nomodeline> User VimtexEventCompileSuccess
+    endif
+  endif
+
   return ''
 endfunction
 
