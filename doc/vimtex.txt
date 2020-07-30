@@ -808,25 +808,6 @@ OPTIONS                                                        *vimtex-options*
 
   See also: |vimtex-faq-neovim|
 
-*g:vimtex_compiler_callback_hooks*
-  A list of functions that will be called from the vimtex compiler callback.
-  The compilation status must be taken as an argument. This allows users to
-  add custom callback functionality.
-
-  Note: The Zathura and MuPDF viewers, if used, add a hook to this list in
-        order to store the viewer X window ID in order to prevent multiple
-        viewer windows.
-
-  Example: >
-
-    let g:vimtex_compiler_callback_hooks = ['MyTestHook']
-
-    function! MyTestHook(status)
-      echom a:status
-    endfunction
-
-<  Default value: []
-
 *g:vimtex_compiler_method*
   Set the compiler method. Available choices are:
 
@@ -2306,8 +2287,7 @@ OPTIONS                                                        *vimtex-options*
   Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
         these viewers should update automatically after the pdf is updated.
         For general viewers, one has to create a callback function and connect
-        it through |g:vimtex_view_general_callback|, and then use this
-        callback to update the viewer.
+        it through the |VimtexEventCompileSuccess| event to update the viewer.
 
   Default value: 0
 
@@ -2498,45 +2478,6 @@ OPTIONS                                                        *vimtex-options*
             file, then there might be conflicts. In particular, this might
             affect forward/backward searching for Zathura.
 
-*g:vimtex_view_general_hook_view*
-*g:vimtex_view_mupdf_hook_view*
-*g:vimtex_view_skim_hook_view*
-*g:vimtex_view_zathura_hook_view*
-  Set viewer hook to call after issuing |:VimtexView|. A simple example: >
-
-    let g:vimtex_view_zathura_hook_view = 'MyViewHook'
-
-    function! MyViewHook() abort dict
-      echom 'See what I am:' string(self)
-    endfunction
-<
-  This can be used e.g. to specify a position and size for MuPDF and Zathura
-  windows after they have been opened as in the following example: >
-
-    let g:vimtex_view_zathura_hook_view = 'ViewerPosition'
-
-    function! ViewerPosition() abort dict
-      call self.move('0 0')
-      call self.resize('1600 876')
-    endfunction
-<
-  `move` and `resize` are methods available to the MuPDF and Zathura viewers.
-  The argument for `move` is a string with the desired X and Y coordinates,
-  while the argument for `resize` is a string with the desired width and
-  height of the window.
-
-   Default value: ''
-
-*g:vimtex_view_general_hook_callback*
-*g:vimtex_view_mupdf_hook_callback*
-*g:vimtex_view_skim_hook_callback*
-*g:vimtex_view_zathura_hook_callback*
-  Set viewer hook to call after compiler callback. See also
-  |g:vimtex_view_zathura_hook_view| for more information and a couple of
-  examples.
-
-   Default value: ''
-
 *g:vimtex_view_general_options*
   Set options for the specified general viewer, see |vimtex_viewer_general|.
   The options are parsed to substitute the following keywords:
@@ -2569,17 +2510,6 @@ OPTIONS                                                        *vimtex-options*
   `@line` escape is expanded.
 
   Note: This option is only relevant with |vimtex-latexmk| as the compiler.
-
-  Default value: ''
-
-*g:vimtex_view_general_callback*
-  Sets the name of a function that is called within |vimtex#compiler#callback|
-  after compilation has finished. The function takes a single argument, which
-  is the status flag (1 for success, 0 for failure). Within the function, one
-  can use the `b:vimtex` variable directly, e.g. the pdf file is available as
-  `b:vimtex.out()`. The function is part of the viewer dictionary, and as such
-  it may be defined with the |func-dict| argument. See the source for the
-  reference of the viewer dictionary.
 
   Default value: ''
 
@@ -3126,6 +3056,10 @@ further customization.
     This event is triggered when a ToC entry has been activated. This allows
     to add custom behaviour after opening an entry, e.g. positioning the
     buffer window with the |zt| or |zz| mappings.
+
+  *VimtexEventView*
+    This event is triggered after the viewer has opened/forward search has
+    been performed by the command |VimtexView| or the related mapping.
 
 Examples: >
 
@@ -3844,7 +3778,6 @@ Associated settings:
   |g:vimtex_compiler_tectonic|
   |g:vimtex_compiler_arara|
   |g:vimtex_compiler_progname|
-  |g:vimtex_compiler_callback_hooks|
 
 Associated events:
   |VimtexEventCompileStarted|
@@ -4120,21 +4053,16 @@ Associated settings:
   |g:vimtex_view_automatic|
   |g:vimtex_view_method|
   |g:vimtex_view_use_temp_files|
-  |g:vimtex_view_general_hook_callback|
-  |g:vimtex_view_general_hook_view|
   |g:vimtex_view_general_options|
   |g:vimtex_view_general_viewer|
-  |g:vimtex_view_mupdf_hook_callback|
-  |g:vimtex_view_mupdf_hook_view|
   |g:vimtex_view_mupdf_options|
   |g:vimtex_view_mupdf_send_keys|
   |g:vimtex_view_skim_activate|
-  |g:vimtex_view_skim_hook_callback|
-  |g:vimtex_view_skim_hook_view|
   |g:vimtex_view_skim_reading_bar|
-  |g:vimtex_view_zathura_hook_callback|
-  |g:vimtex_view_zathura_hook_view|
   |g:vimtex_view_zathura_options|
+
+Associated events:
+  |VimtexEventView|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
@@ -4599,6 +4527,21 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2020-07-31: Use events for callback hooks~
+The events |VimtexEventCompileSuccess|, |VimtexEventCompileFailed|, and
+|VimtexEventView| have been added to make it easier to hook personal
+customizations. This deprecates the following options:
+  *g:vimtex_compiler_callback_hooks*
+  *g:vimtex_view_general_callback*
+  *g:vimtex_view_general_hook_callback*
+  *g:vimtex_view_general_hook_view*
+  *g:vimtex_view_mupdf_hook_callback*
+  *g:vimtex_view_mupdf_hook_view*
+  *g:vimtex_view_skim_hook_callback*
+  *g:vimtex_view_skim_hook_view*
+  *g:vimtex_view_zathura_hook_callback*
+  *g:vimtex_view_zathura_hook_view*
 
 2020-07-19: Released version 1.0~
 Version 1.0 (and earlier) works on Vim 7.4 and with neovim 0.1.7. Later

@@ -105,8 +105,8 @@ function! s:xwin_template.view(file) dict abort " {{{1
     call self.start(outfile)
   endif
 
-  if has_key(self, 'hook_view')
-    call self.hook_view()
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
   endif
 endfunction
 

@@ -20,6 +20,14 @@ function! vimtex#view#init_buffer() abort " {{{1
     nnoremap <buffer> <plug>(vimtex-reverse-search)
           \ :call b:vimtex.viewer.reverse_search()<cr>
   endif
+
+  if g:vimtex_view_use_temp_files
+    augroup vimtex_view_buffer
+      autocmd! * <buffer>
+      autocmd User <buffer> VimtexEventCompileSuccess
+            \ call b:vimtex.viewer.copy_files()
+    augroup END
+  endif
 endfunction
 
 " }}}1
@@ -35,33 +43,6 @@ function! vimtex#view#init_state(state) abort " {{{1
           \ 'Please see :h g:vimtex_view_method')
     return
   endtry
-
-  " Make the following code more concise
-  let l:v = a:state.viewer
-
-  "
-  " Add compiler callback to callback hooks (if it exists)
-  "
-  if exists('*l:v.compiler_callback')
-        \ && index(g:vimtex_compiler_callback_hooks,
-        \          'b:vimtex.viewer.compiler_callback') == -1
-    call insert(g:vimtex_compiler_callback_hooks,
-          \ 'b:vimtex.viewer.compiler_callback')
-  endif
-
-  "
-  " Create view and/or callback hooks (if they exist)
-  "
-  for l:point in ['view', 'callback']
-    execute 'let l:hook = ''g:vimtex_view_'
-          \ . g:vimtex_view_method . '_hook_' . l:point . ''''
-    if exists(l:hook)
-      execute 'let hookfunc = ''*'' . ' . l:hook
-      if exists(hookfunc)
-        execute 'let l:v.hook_' . l:point . ' = function(' . l:hook . ')'
-      endif
-    endif
-  endfor
 endfunction
 
 " }}}1

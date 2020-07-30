@@ -17,7 +17,34 @@ function! vimtex#view#skim#new() abort " {{{1
     return {}
   endif
 
+  augroup vimtex_view_skim
+    autocmd!
+    autocmd User VimtexEventCompileSuccess
+            \ call vimtex#view#skim#compiler_callback()
+  augroup END
+
   return vimtex#view#common#apply_common_template(deepcopy(s:skim))
+endfunction
+
+" }}}1
+function! vimtex#view#skim#compiler_callback() abort " {{{1
+  let self = b:vimtex.viewer
+  if !filereadable(self.out()) | return | endif
+
+  let l:cmd = join([
+        \ 'osascript',
+        \ '-e ''set theFile to POSIX file "' . self.out() . '"''',
+        \ '-e ''set thePath to POSIX path of (theFile as alias)''',
+        \ '-e ''tell application "Skim"''',
+        \ '-e ''try''',
+        \ '-e ''set theDocs to get documents whose path is thePath''',
+        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
+        \ '-e ''end try''',
+        \ '-e ''open theFile''',
+        \ '-e ''end tell''',
+        \])
+
+  let b:vimtex.viewer.process = vimtex#process#start(l:cmd)
 endfunction
 
 " }}}1
@@ -61,40 +88,8 @@ function! s:skim.view(file) dict abort " {{{1
 
   let self.process = vimtex#process#start(l:cmd)
 
-  if has_key(self, 'hook_view')
-    call self.hook_view()
-  endif
-endfunction
-
-" }}}1
-function! s:skim.compiler_callback(status) dict abort " {{{1
-  if !a:status && g:vimtex_view_use_temp_files < 2
-    return
-  endif
-
-  if g:vimtex_view_use_temp_files
-    call self.copy_files()
-  endif
-
-  if !filereadable(self.out()) | return | endif
-
-  let l:cmd = join([
-        \ 'osascript',
-        \ '-e ''set theFile to POSIX file "' . self.out() . '"''',
-        \ '-e ''set thePath to POSIX path of (theFile as alias)''',
-        \ '-e ''tell application "Skim"''',
-        \ '-e ''try''',
-        \ '-e ''set theDocs to get documents whose path is thePath''',
-        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
-        \ '-e ''end try''',
-        \ '-e ''open theFile''',
-        \ '-e ''end tell''',
-        \])
-
-  let self.process = vimtex#process#start(l:cmd)
-
-  if has_key(self, 'hook_callback')
-    call self.hook_callback()
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
   endif
 endfunction
 

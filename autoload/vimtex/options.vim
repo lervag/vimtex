@@ -334,6 +334,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_change_ignored_delims_pattern',
         \ 'g:vimtex_change_set_formatexpr',
         \ 'g:vimtex_change_toggled_delims',
+        \ 'g:vimtex_compiler_callback_hooks',
         \ 'g:vimtex_env_complete_list',
         \ 'g:vimtex_fold_commands',
         \ 'g:vimtex_fold_commands_default',
@@ -379,6 +380,15 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_toc_split_pos',
         \ 'g:vimtex_toc_tocdepth',
         \ 'g:vimtex_toc_width',
+        \ 'g:vimtex_view_general_callback',
+        \ 'g:vimtex_view_general_hook_callback',
+        \ 'g:vimtex_view_general_hook_view',
+        \ 'g:vimtex_view_mupdf_hook_callback',
+        \ 'g:vimtex_view_mupdf_hook_view',
+        \ 'g:vimtex_view_skim_hook_callback',
+        \ 'g:vimtex_view_skim_hook_view',
+        \ 'g:vimtex_view_zathura_hook_callback',
+        \ 'g:vimtex_view_zathura_hook_view',
         \], 'exists(v:val)')
 
   if !empty(l:deprecated)

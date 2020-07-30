@@ -20,11 +20,6 @@ function! vimtex#view#general#new() abort " {{{1
   " Start from standard template
   let l:viewer = vimtex#view#common#apply_common_template(deepcopy(s:general))
 
-  " Add callback hook
-  if exists('g:vimtex_view_general_callback')
-    let l:viewer.compiler_callback = function(g:vimtex_view_general_callback)
-  endif
-
   return l:viewer
 endfunction
 
@@ -69,8 +64,8 @@ function! s:general.view(file) dict abort " {{{1
   " Start the view process
   let self.process = vimtex#process#start(l:cmd, {'silent': 0})
 
-  if has_key(self, 'hook_view')
-    call self.hook_view()
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
   endif
 endfunction
 
@@ -86,21 +81,6 @@ function! s:general.latexmk_append_argument() dict abort " {{{1
             \                    '@line', line('.'), 'g')
     endif
     return vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:option)
-  endif
-endfunction
-
-" }}}1
-function! s:general.compiler_callback(status) dict abort " {{{1
-  if !a:status && g:vimtex_view_use_temp_files < 2
-    return
-  endif
-
-  if g:vimtex_view_use_temp_files
-    call self.copy_files()
-  endif
-
-  if has_key(self, 'hook_callback')
-    call self.hook_callback()
   endif
 endfunction
 

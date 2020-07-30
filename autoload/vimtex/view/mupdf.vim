@@ -13,9 +13,45 @@ function! vimtex#view#mupdf#new() abort " {{{1
     return {}
   endif
 
+  augroup vimtex_view_mupdf
+    autocmd!
+    autocmd User VimtexEventCompileSuccess
+            \ call vimtex#view#mupdf#compiler_callback()
+  augroup END
+
   " Use the xwin template
   return vimtex#view#common#apply_xwin_template('MuPDF',
         \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
+endfunction
+
+" }}}1
+function! vimtex#view#mupdf#compiler_callback() abort " {{{1
+  let self = b:vimtex.viewer
+  if !filereadable(self.out()) | return | endif
+
+  if g:vimtex_view_automatic
+    "
+    " Search for existing window created by latexmk
+    "   It may be necessary to wait some time before it is opened and
+    "   recognized. Sometimes it is very quick, other times it may take
+    "   a second. This way, we don't block longer than necessary.
+    "
+    if !has_key(self, 'started_through_callback')
+      for l:dummy in range(30)
+        sleep 50m
+        if self.xwin_exists() | break | endif
+      endfor
+    endif
+
+    if !self.xwin_exists() && !has_key(self, 'started_through_callback')
+      call self.start(self.out())
+      let self.started_through_callback = 1
+    endif
+  endif
+
+  if g:vimtex_view_use_temp_files || get(b:vimtex.compiler, 'callback')
+    call self.xwin_send_keys('r')
+  endif
 endfunction
 
 " }}}1
@@ -102,47 +138,6 @@ function! s:mupdf.reverse_search() dict abort " {{{1
     " Unfold, move to top line to correspond to top pdf line, and go to end of
     " line in case the corresponding pdf line begins on previous pdf page.
     normal! zvztg_
-  endif
-endfunction
-
-" }}}1
-function! s:mupdf.compiler_callback(status) dict abort " {{{1
-  if !a:status && g:vimtex_view_use_temp_files < 2
-    return
-  endif
-
-  if g:vimtex_view_use_temp_files
-    call self.copy_files()
-  endif
-
-  if !filereadable(self.out()) | return | endif
-
-  if g:vimtex_view_automatic
-    "
-    " Search for existing window created by latexmk
-    "   It may be necessary to wait some time before it is opened and
-    "   recognized. Sometimes it is very quick, other times it may take
-    "   a second. This way, we don't block longer than necessary.
-    "
-    if !has_key(self, 'started_through_callback')
-      for l:dummy in range(30)
-        sleep 50m
-        if self.xwin_exists() | break | endif
-      endfor
-    endif
-
-    if !self.xwin_exists() && !has_key(self, 'started_through_callback')
-      call self.start(self.out())
-      let self.started_through_callback = 1
-    endif
-  endif
-
-  if g:vimtex_view_use_temp_files || get(b:vimtex.compiler, 'callback')
-    call self.xwin_send_keys('r')
-  endif
-
-  if has_key(self, 'hook_callback')
-    call self.hook_callback()
   endif
 endfunction
 
