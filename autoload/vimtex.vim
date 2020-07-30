@@ -343,20 +343,6 @@ function! vimtex#init_options() abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#check_plugin_clash() abort " {{{1
-  let l:scriptnames = vimtex#util#command('scriptnames')
-
-  let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
-  if l:latexbox
-    call vimtex#log#warning([
-          \ 'Conflicting plugin detected: LaTeX-Box',
-          \ 'vimtex does not work as expected when LaTeX-Box is installed!',
-          \ 'Please disable or remove it to use vimtex!',
-          \])
-  endif
-endfunction
-
-" }}}1
 
 function! s:init_option(option, default) abort " {{{1
   let l:option = 'g:' . a:option

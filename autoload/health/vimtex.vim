@@ -60,7 +60,8 @@ endfunction
 " }}}1
 
 function! s:check_plugin_clash() abort " {{{1
-  let l:scriptnames = split(execute('scriptnames'), "\n")
+  " Note: This duplicates the code in after/ftplugin/tex.vim
+  let l:scriptnames = vimtex#util#command('scriptnames')
 
   let l:latexbox = !empty(filter(copy(l:scriptnames), "v:val =~# 'latex-box'"))
   if l:latexbox

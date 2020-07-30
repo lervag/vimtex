@@ -13,4 +13,15 @@ if exists('b:did_ftplugin_vimtex')
 endif
 let b:did_ftplugin_vimtex = 1
 
-call vimtex#check_plugin_clash()
+" Check for plugin clashes.
+" Note: This duplicates the code in health/vimtex.vim:s:check_plugin_clash()
+let s:scriptnames = vimtex#util#command('scriptnames')
+
+let s:latexbox = !empty(filter(copy(s:scriptnames), "v:val =~# 'latex-box'"))
+if s:latexbox
+  call vimtex#log#warning([
+        \ 'Conflicting plugin detected: LaTeX-Box',
+        \ 'vimtex does not work as expected when LaTeX-Box is installed!',
+        \ 'Please disable or remove it to use vimtex!',
+        \])
+endif
