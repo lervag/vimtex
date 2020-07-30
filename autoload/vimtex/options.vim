@@ -6,6 +6,8 @@
 
 function! vimtex#options#init() abort " {{{1
   call s:init_highlights()
+  call s:check_for_deprecated_options()
+
   call s:init_option('vimtex_compiler_enabled', 1)
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
@@ -322,6 +324,70 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
+endfunction
+
+" }}}1
+
+function! s:check_for_deprecated_options() abort " {{{1
+  let l:deprecated = filter([
+        \ 'g:vimtex_change_complete_envs',
+        \ 'g:vimtex_change_ignored_delims_pattern',
+        \ 'g:vimtex_change_set_formatexpr',
+        \ 'g:vimtex_change_toggled_delims',
+        \ 'g:vimtex_env_complete_list',
+        \ 'g:vimtex_fold_commands',
+        \ 'g:vimtex_fold_commands_default',
+        \ 'g:vimtex_fold_comments',
+        \ 'g:vimtex_fold_env_blacklist',
+        \ 'g:vimtex_fold_env_whitelist',
+        \ 'g:vimtex_fold_envs',
+        \ 'g:vimtex_fold_markers',
+        \ 'g:vimtex_fold_parts',
+        \ 'g:vimtex_fold_preamble',
+        \ 'g:vimtex_fold_sections',
+        \ 'g:vimtex_index_hide_line_numbers',
+        \ 'g:vimtex_index_mode',
+        \ 'g:vimtex_index_resize',
+        \ 'g:vimtex_index_show_help',
+        \ 'g:vimtex_index_split_pos',
+        \ 'g:vimtex_index_split_width',
+        \ 'g:vimtex_latexmk_autojump',
+        \ 'g:vimtex_latexmk_background',
+        \ 'g:vimtex_latexmk_callback',
+        \ 'g:vimtex_latexmk_callback_hooks',
+        \ 'g:vimtex_latexmk_continuous',
+        \ 'g:vimtex_latexmk_enabled',
+        \ 'g:vimtex_latexmk_options',
+        \ 'g:vimtex_latexmk_progname',
+        \ 'g:vimtex_quickfix_ignore_all_warnings',
+        \ 'g:vimtex_quickfix_ignored_warnings',
+        \ 'g:vimtex_quickfix_warnings',
+        \ 'g:vimtex_toc_fold',
+        \ 'g:vimtex_toc_fold_level_start',
+        \ 'g:vimtex_toc_fold_levels',
+        \ 'g:vimtex_toc_hide_help',
+        \ 'g:vimtex_toc_hide_line_numbers',
+        \ 'g:vimtex_toc_hide_preamble',
+        \ 'g:vimtex_toc_hotkeys',
+        \ 'g:vimtex_toc_layers',
+        \ 'g:vimtex_toc_number_width',
+        \ 'g:vimtex_toc_numbers',
+        \ 'g:vimtex_toc_numbers_width',
+        \ 'g:vimtex_toc_refresh_always',
+        \ 'g:vimtex_toc_resize',
+        \ 'g:vimtex_toc_show_numbers',
+        \ 'g:vimtex_toc_split_pos',
+        \ 'g:vimtex_toc_tocdepth',
+        \ 'g:vimtex_toc_width',
+        \], 'exists(v:val)')
+
+  if !empty(l:deprecated)
+    redraw!
+    let l:message = ['Deprecated option(s) detected!']
+          \ + map(l:deprecated, { _, val -> '- ' . val})
+          \ + ['Please see `:help OPTION` for more info!']
+    call vimtex#log#warning(l:message)
+  endif
 endfunction
 
 " }}}1
