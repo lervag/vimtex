@@ -45,7 +45,7 @@ function! vimtex#view#init_state(state) abort " {{{1
   if exists('*l:v.compiler_callback')
         \ && index(g:vimtex_compiler_callback_hooks,
         \          'b:vimtex.viewer.compiler_callback') == -1
-    call add(g:vimtex_compiler_callback_hooks,
+    call insert(g:vimtex_compiler_callback_hooks,
           \ 'b:vimtex.viewer.compiler_callback')
   endif
 
