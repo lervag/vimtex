@@ -90,9 +90,9 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
         \ [self.type_to_highlight[a:type], 'vimtex:'],
         \ ' ' . l:msg_list[0]
         \])
-  for l:line in l:msg_list[1:]
-    call vimtex#echo#echo('        ' . l:line)
-  endfor
+  if len(l:msg_list) > 1
+    call vimtex#echo#echo(join(map(l:msg_list[1:], "'        ' . v:val"), "\n"))
+  endif
 endfunction
 
 " }}}1
