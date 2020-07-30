@@ -1,5 +1,5 @@
 function! health#vimtex#check() abort
-  call vimtex#init_options()
+  call vimtex#options#init()
 
   call health#report_start('vimtex')
 
