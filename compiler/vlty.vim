@@ -17,6 +17,13 @@ if !executable(s:python)
   finish
 endif
 
+call system(s:python . ' -c "import sys; assert sys.version_info.major >= 3'
+            \ . ' and sys.version_info.minor >= 6"')
+if v:shell_error != 0
+  call s:installation_error('vlty compiler requires at least Python version 3.6')
+  finish
+endif
+
 call system(s:python . ' -c "import yalafi"')
 if v:shell_error != 0
   call s:installation_error('vlty compiler requires the Python module YaLafi')
