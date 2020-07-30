@@ -3114,6 +3114,9 @@ further customization.
   *VimtexEventCompileStopped*
     This event is triggered after compilation is stopped.
 
+  *VimtexEventCompileSuccess*
+    This event is triggered after successful compilation.
+
   *VimtexEventTocCreated*
     This event is triggered after a ToC window is created.
 
