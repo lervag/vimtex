@@ -3115,7 +3115,9 @@ further customization.
     This event is triggered after compilation is stopped.
 
   *VimtexEventCompileSuccess*
-    This event is triggered after successful compilation.
+  *VimtexEventCompileFailed*
+    These events are triggered after successful/failed compilation and
+    allows users to add custom callback functionality.
 
   *VimtexEventTocCreated*
     This event is triggered after a ToC window is created.
@@ -3847,6 +3849,8 @@ Associated settings:
 Associated events:
   |VimtexEventCompileStarted|
   |VimtexEventCompileStopped|
+  |VimtexEventCompileSuccess|
+  |VimtexEventCompileFailed|
 
 ------------------------------------------------------------------------------
 LATEXMK                                                        *vimtex-latexmk*
