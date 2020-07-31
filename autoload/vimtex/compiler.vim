@@ -79,12 +79,6 @@ function! vimtex#compiler#callback(status) abort " {{{1
     call vimtex#syntax#load#packages()
   endif
 
-  for l:hook in g:vimtex_compiler_callback_hooks
-    if exists('*' . l:hook)
-      execute 'call' l:hook . '(' . a:status . ')'
-    endif
-  endfor
-
   if a:status
     if exists('#User#VimtexEventCompileSuccess')
       doautocmd <nomodeline> User VimtexEventCompileSuccess
