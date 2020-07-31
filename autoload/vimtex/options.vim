@@ -14,7 +14,6 @@ function! vimtex#options#init() abort " {{{1
         \ has('nvim') && executable('nvr')
         \   ? 'nvr'
         \   : get(v:, 'progpath', get(v:, 'progname', '')))
-  call s:init_option('vimtex_compiler_callback_hooks', [])
   call s:init_option('vimtex_compiler_latexmk_engines', {})
   call s:init_option('vimtex_compiler_latexrun_engines', {})
 
