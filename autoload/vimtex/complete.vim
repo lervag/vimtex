@@ -206,6 +206,12 @@ function! s:completer_bib.find_bibs() dict abort " {{{2
     let l:bibs = map(
           \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
           \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
+
+    " Ignore '{name}-blx.bib' file (created by biblatex)
+    if has_key(b:vimtex.packages, 'biblatex')
+      call filter(l:bibs, 'v:val !~# ''-blx$''')
+    endif
+
     if !empty(l:bibs) | return l:bibs | endif
   endif
 
