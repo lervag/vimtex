@@ -38,5 +38,5 @@ jobs:
       run: cd test/tests && make -j1
     - name: Test with vim
       env:
-        MYVIM: vim -T dumb --not-a-term --noplugin -n
+        MYVIM: vim -T dumb --not-a-term -n
       run: cd test/tests && make -j1
