@@ -117,12 +117,23 @@ define the same set of sensible settings as the internal plugin. However,
 improvements to |ft-tex-syntax|, see |vimtex-syntax|. |vimtex| also provides its
 own indentation plugin, see |vimtex-indent|.
 
-Vim will generally autodetect filetypes automatically. In most cases this
-works as expected, however, in some cases it will detect a file with the `tex`
-suffix as a |plaintex|. To prevent this, one may set the option
-|g:tex_flavor| in ones `vimrc` file, that is: >
+                                                            *vimtex-tex-flavor*
+|ft-tex-plugin| supports both plain TeX, ConTeXt, and LaTeX files. This means
+that the `.tex` extension is ambiguous. Vimtex is only activated for LaTeX
+files with 'filetype' set to `tex`. In most cases, the filetype is
+correcly specified automatically. When this is not possible, then it falls
+back to the setting of |g:tex_flavor|. The default (when |g:tex_flavor| is not
+defined) is to fallback to plain TeX, which means vimtex is not loaded! As
+this may be surprising to a lot of people, Vimtex will give a warning if it is
+installed and if the |g:tex_flavor| option is not defined. In most cases, you
+want to set: >
 
   let g:tex_flavor = 'latex'
+
+Some people may want to keep the default behaviour. If so, one may explicitly
+set the default value: >
+
+  let g:tex_flavor = 'plain'
 
 -----------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
