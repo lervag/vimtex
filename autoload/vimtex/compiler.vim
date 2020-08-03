@@ -95,15 +95,10 @@ endfunction
 " }}}1
 
 function! vimtex#compiler#compile() abort " {{{1
-  if get(b:vimtex.compiler, 'continuous')
-    if b:vimtex.compiler.is_running()
-      call vimtex#compiler#stop()
-    else
-      call b:vimtex.compiler.start()
-      let b:vimtex.compiler.check_timer = s:check_if_running_start()
-    endif
+  if b:vimtex.compiler.is_running()
+    call vimtex#compiler#stop()
   else
-    call b:vimtex.compiler.start_single()
+    call vimtex#compiler#start()
   endif
 endfunction
 
@@ -221,6 +216,19 @@ function! vimtex#compiler#output() abort " {{{1
   setlocal autoread
   setlocal nomodifiable
   setlocal bufhidden=wipe
+endfunction
+
+" }}}1
+function! vimtex#compiler#start() abort " {{{1
+  if b:vimtex.compiler.is_running() | return | endif
+
+  if !get(b:vimtex.compiler, 'continuous')
+    call b:vimtex.compiler.start_single()
+    return
+  endif
+
+  call b:vimtex.compiler.start()
+  let b:vimtex.compiler.check_timer = s:check_if_running_start()
 endfunction
 
 " }}}1
