@@ -48,10 +48,15 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
             \ '^\s*\d\+:\s*', '', '')
     else
       let l:func_name = l:name =~# '^\d\+$' ? '{' . l:name . '}' : l:name
-      let l:filename = matchstr(
-            \ vimtex#util#command('verbose function ' . l:func_name)[1],
-            \ v:lang[0:1] ==# 'en'
-            \   ? 'Last set from \zs.*\.vim' : '\f\+\.vim')
+      let l:func_lines = vimtex#util#command('verbose function ' . l:func_name)
+      if len(l:func_lines) > 1
+        let l:filename = matchstr(
+              \ l:func_lines[1],
+              \ v:lang[0:1] ==# 'en'
+              \   ? 'Last set from \zs.*\.vim' : '\f\+\.vim')
+      else
+        let l:filename = 'NOFILE'
+      endif
     endif
 
     let l:filename = fnamemodify(l:filename, ':p')
