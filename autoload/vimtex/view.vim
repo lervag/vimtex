@@ -20,20 +20,18 @@ function! vimtex#view#init_buffer() abort " {{{1
     nnoremap <buffer> <plug>(vimtex-reverse-search)
           \ :call b:vimtex.viewer.reverse_search()<cr>
   endif
-
-  if g:vimtex_view_use_temp_files
-    augroup vimtex_view_buffer
-      autocmd! * <buffer>
-      autocmd User <buffer> VimtexEventCompileSuccess
-            \ call b:vimtex.viewer.copy_files()
-    augroup END
-  endif
 endfunction
 
 " }}}1
 function! vimtex#view#init_state(state) abort " {{{1
   if !g:vimtex_view_enabled | return | endif
   if has_key(a:state, 'viewer') | return | endif
+
+  if g:vimtex_view_use_temp_files
+    augroup vimtex_view_buffer
+      autocmd User VimtexEventCompileSuccess call b:vimtex.viewer.copy_files()
+    augroup END
+  endif
 
   try
     let a:state.viewer = vimtex#view#{g:vimtex_view_method}#new()
