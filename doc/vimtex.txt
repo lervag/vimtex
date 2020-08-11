@@ -1463,6 +1463,10 @@ OPTIONS                                                        *vimtex-options*
                         Here the `axis` environment must not be otherwise
                         folded through the <envs> fold type.
 
+    <items>             `\item` blocks in itemize like environments. The
+                        recognized environments are the same as specified by
+                        |g:vimtex_indent_lists|.
+
     <cmd_single>        Fold long commands with a single argument. E.g.: >
 
                           \hypersetup{    --->    \hypersetup{...}
@@ -1510,6 +1514,7 @@ OPTIONS                                                        *vimtex-options*
     let g:vimtex_fold_types = {}
     let g:vimtex_fold_types_defaults = {
           \ 'preamble' : {},
+          \ 'items' : {},
           \ 'comments' : {'enabled' : 0},
           \ 'envs' : {
           \   'blacklist' : [],   !!! This is a list of strings
