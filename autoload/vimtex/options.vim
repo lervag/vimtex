@@ -390,6 +390,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_latexmk_progname',
         \ 'g:vimtex_quickfix_ignore_all_warnings',
         \ 'g:vimtex_quickfix_ignored_warnings',
+        \ 'g:vimtex_quickfix_latexlog',
         \ 'g:vimtex_quickfix_warnings',
         \ 'g:vimtex_toc_fold',
         \ 'g:vimtex_toc_fold_level_start',

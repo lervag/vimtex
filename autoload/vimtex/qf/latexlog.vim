@@ -16,12 +16,6 @@ let s:qf = {
       \}
 
 function! s:qf.init(state) abort dict "{{{1
-  let self.config = get(g:, 'vimtex_quickfix_latexlog', {})
-  let self.config.default = get(self.config, 'default', 1)
-  let self.config.packages = get(self.config, 'packages', {})
-  let self.config.packages.default = get(self.config.packages, 'default',
-        \ self.config.default)
-
   let self.types = map(
         \ filter(items(s:), 'v:val[0] =~# ''^type_'''),
         \ 'v:val[1]')
@@ -52,99 +46,52 @@ function! s:qf.set_errorformat() abort dict "{{{1
   "
   " Define general warnings
   "
-  let l:default = self.config.default
-  if get(self.config, 'font', l:default)
-    setlocal errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
-    setlocal errorformat+=%-CLaTeX\ Font\ Warning:\ %m
-    setlocal errorformat+=%-C(Font)%m
-  else
-    setlocal errorformat+=%-WLaTeX\ Font\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
+  setlocal errorformat+=%-CLaTeX\ Font\ Warning:\ %m
+  setlocal errorformat+=%-C(Font)%m
 
-  if !get(self.config, 'references', l:default)
-    setlocal errorformat+=%-WLaTeX\ %.%#Warning:\ %.%#eference%.%#undefined%.%#line\ %l%.%#
-    setlocal errorformat+=%-WLaTeX\ %.%#Warning:\ %.%#undefined\ references.
-  endif
+  setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
+  setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %m
 
-  if get(self.config, 'general', l:default)
-    setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-    setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %m
-  endif
+  setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+  setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ line\ %l
+  setlocal errorformat+=%+WOverfull\ %\\%\\vbox%.%#\ at\ line\ %l
 
-  if get(self.config, 'overfull', l:default)
-    setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
-    setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ line\ %l
-    setlocal errorformat+=%+WOverfull\ %\\%\\vbox%.%#\ at\ line\ %l
-  endif
-
-  if get(self.config, 'underfull', l:default)
-    setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
-    setlocal errorformat+=%+WUnderfull\ %\\%\\vbox%.%#\ at\ line\ %l
-  endif
+  setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
+  setlocal errorformat+=%+WUnderfull\ %\\%\\vbox%.%#\ at\ line\ %l
 
   "
   " Define package related warnings
   "
-  let l:default = self.config.packages.default
-  if get(self.config.packages, 'natbib', l:default)
-    setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l.
-  else
-    setlocal errorformat+=%-WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l.
-  endif
+  setlocal errorformat+=%+WPackage\ natbib\ Warning:\ %m\ on\ input\ line\ %l.
 
-  if get(self.config.packages, 'biblatex', l:default)
-    setlocal errorformat+=%+WPackage\ biblatex\ Warning:\ %m
-    setlocal errorformat+=%-C(biblatex)%.%#in\ t%.%#
-    setlocal errorformat+=%-C(biblatex)%.%#Please\ v%.%#
-    setlocal errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
-    setlocal errorformat+=%-C(biblatex)%m
-  else
-    setlocal errorformat+=%-WPackage\ biblatex\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ biblatex\ Warning:\ %m
+  setlocal errorformat+=%-C(biblatex)%.%#in\ t%.%#
+  setlocal errorformat+=%-C(biblatex)%.%#Please\ v%.%#
+  setlocal errorformat+=%-C(biblatex)%.%#LaTeX\ a%.%#
+  setlocal errorformat+=%-C(biblatex)%m
 
-  if get(self.config.packages, 'babel', l:default)
-    setlocal errorformat+=%+WPackage\ babel\ Warning:\ %m
-    setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
-    setlocal errorformat+=%-C(babel)%m
-  else
-    setlocal errorformat+=%-WPackage\ babel\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ babel\ Warning:\ %m
+  setlocal errorformat+=%-Z(babel)%.%#input\ line\ %l.
+  setlocal errorformat+=%-C(babel)%m
 
-  if get(self.config.packages, 'hyperref', l:default)
-    setlocal errorformat+=%+WPackage\ hyperref\ Warning:\ %m
-    setlocal errorformat+=%-C(hyperref)%m\ on\ input\ line\ %l.
-    setlocal errorformat+=%-C(hyperref)%m
-  else
-    setlocal errorformat+=%-WPackage\ hyperref\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ hyperref\ Warning:\ %m
+  setlocal errorformat+=%-C(hyperref)%m\ on\ input\ line\ %l.
+  setlocal errorformat+=%-C(hyperref)%m
 
-  if get(self.config.packages, 'scrreprt', l:default)
-    setlocal errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
-    setlocal errorformat+=%-C(scrreprt)%m
-  else
-    setlocal errorformat+=%-WPackage\ scrreprt\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ scrreprt\ Warning:\ %m
+  setlocal errorformat+=%-C(scrreprt)%m
 
-  if get(self.config.packages, 'fixltx2e', l:default)
-    setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
-    setlocal errorformat+=%-C(fixltx2e)%m
-  else
-    setlocal errorformat+=%-WPackage\ fixltx2e\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ fixltx2e\ Warning:\ %m
+  setlocal errorformat+=%-C(fixltx2e)%m
 
-  if get(self.config.packages, 'titlesec', l:default)
-    setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
-    setlocal errorformat+=%-C(titlesec)%m
-  else
-    setlocal errorformat+=%-WPackage\ titlesec\ Warning:\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
+  setlocal errorformat+=%-C(titlesec)%m
 
-  if get(self.config.packages, 'general', l:default)
-    setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m\ on\ input\ line\ %l.
-    setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m
-    setlocal errorformat+=%-Z(%.%#)\ %m\ on\ input\ line\ %l.
-    setlocal errorformat+=%-C(%.%#)\ %m
-  endif
+  setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m\ on\ input\ line\ %l.
+  setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m
+  setlocal errorformat+=%-Z(%.%#)\ %m\ on\ input\ line\ %l.
+  setlocal errorformat+=%-C(%.%#)\ %m
 
   " Ignore unmatched lines
   setlocal errorformat+=%-G%.%#
@@ -165,11 +112,6 @@ function! s:qf.addqflist(tex, log) abort dict "{{{1
   let self.main = a:tex
   let self.root = b:vimtex.root
   call self.fix_paths()
-endfunction
-
-" }}}1
-function! s:qf.pprint_items() abort dict " {{{1
-  return [[ 'config', self.config ]]
 endfunction
 
 " }}}1
