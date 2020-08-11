@@ -56,6 +56,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_fold_types', {})
   call s:init_option('vimtex_fold_types_defaults', {
         \ 'preamble' : {},
+        \ 'items' : {},
         \ 'comments' : { 'enabled' : 0 },
         \ 'envs' : {
         \   'blacklist' : [],

@@ -53,6 +53,7 @@ function! vimtex#fold#init_state(state) abort " {{{1
         \ . '|^\s*\%'
         \ . '|^\s*\]\s*%(\{|$)'
         \ . '|^\s*}'
+  let a:state.fold_re_next = ''
   for l:name in [
         \ 'preamble',
         \ 'cmd_single',
@@ -62,6 +63,7 @@ function! vimtex#fold#init_state(state) abort " {{{1
         \ 'sections',
         \ 'markers',
         \ 'comments',
+        \ 'items',
         \ 'envs',
         \ 'env_options',
         \]
@@ -70,6 +72,11 @@ function! vimtex#fold#init_state(state) abort " {{{1
       call add(a:state.fold_types_ordered, l:type)
       if exists('l:type.re.fold_re')
         let a:state.fold_re .= '|' . l:type.re.fold_re
+      endif
+      if exists('l:type.re.fold_re_next')
+        let a:state.fold_re_next .=
+              \ (empty(a:state.fold_re_next) ? '\v' : '|')
+              \ . l:type.re.fold_re_next
       endif
     endif
   endfor
@@ -86,6 +93,7 @@ endfunction
 " }}}1
 function! vimtex#fold#level(lnum) abort " {{{1
   let l:line = getline(a:lnum)
+  let l:next = getline(a:lnum + 1)
 
   " Never fold \begin|end{document}
   if l:line =~# '^\s*\\\%(begin\|end\){document}'
@@ -93,7 +101,7 @@ function! vimtex#fold#level(lnum) abort " {{{1
   endif
 
   " Optimize: Filter out irrelevant lines
-  if l:line !~# b:vimtex.fold_re
+  if l:line !~# b:vimtex.fold_re && l:next !~# b:vimtex.fold_re_next
     return '='
   endif
 
