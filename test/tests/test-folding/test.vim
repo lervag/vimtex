@@ -50,4 +50,10 @@ silent VimtexReload
 call vimtex#test#assert_equal('Testing markers ', foldtextresult(158))
 call vimtex#test#assert_equal('% <<: this fold worked before issue #1515', foldtextresult(163))
 
+call vimtex#test#assert_equal(3, foldlevel(176))
+call vimtex#test#assert_equal(5, foldlevel(179))
+call vimtex#test#assert_equal(4, foldlevel(184))
+call vimtex#test#assert_equal(3, foldlevel(186))
+call vimtex#test#assert_equal(1, foldlevel(190))
+
 quit!
