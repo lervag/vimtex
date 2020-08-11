@@ -8,7 +8,9 @@ if exists('b:did_indent')
   finish
 endif
 
-if !get(g:, 'vimtex_indent_enabled', 1) | finish | endif
+call vimtex#options#init()
+
+if !g:vimtex_indent_enabled | finish | endif
 
 let b:did_vimtex_indent = 1
 let b:did_indent = 1
@@ -109,7 +111,7 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   let self.prev_lnum = a:plnum
   let self.prev_line = a:pline
   let self.prev_ind = a:plnum > 0 ? indent(a:plnum) : 0
-  if !get(g:, 'vimtex_indent_on_ampersands', 1) | return self.prev_ind | endif
+  if !g:vimtex_indent_on_ampersands | return self.prev_ind | endif
 
   if a:cline =~# self.re_align
         \ || a:cline =~# self.re_amp
@@ -200,15 +202,9 @@ endfunction
 
 let s:envs_begin = '\\begin{.*}\|\\\@<!\\\['
 let s:envs_end = '\\end{.*}\|\\\]'
-let s:envs_ignored = '\v'
-      \ . join(get(g:, 'vimtex_indent_ignored_envs', ['document']), '|')
+let s:envs_ignored = '\v' . join(g:vimtex_indent_ignored_envs, '|')
 
-let s:envs_lists = join(get(g:, 'vimtex_indent_lists', [
-      \ 'itemize',
-      \ 'description',
-      \ 'enumerate',
-      \ 'thebibliography',
-      \]), '\|')
+let s:envs_lists = join(g:vimtex_indent_lists, '\|')
 let s:envs_item = '^\s*\\item'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'
 let s:envs_endlist =   '\\end{\%(' . s:envs_lists . '\)'
@@ -233,7 +229,7 @@ let s:re_opt = extend({
       \ 'close' : ['}'],
       \ 'close_indented' : 0,
       \ 'include_modified_math' : 1,
-      \}, get(g:, 'vimtex_indent_delims', {}))
+      \}, g:vimtex_indent_delims)
 let s:re_open = join(s:re_opt.open, '\|')
 let s:re_close = join(s:re_opt.close, '\|')
 if s:re_opt.include_modified_math
@@ -244,21 +240,7 @@ endif
 " }}}1
 function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
   if !exists('s:re_cond')
-    let l:cfg = {}
-
-    if exists('g:vimtex_indent_conditionals')
-      let l:cfg = g:vimtex_indent_conditionals
-      if empty(l:cfg)
-        let s:re_cond = {}
-        return 0
-      endif
-    endif
-
-    let s:re_cond = extend({
-          \ 'open': '\v(\\newif\s*)@<!\\if(f|field|name|numequal|thenelse)@!',
-          \ 'else': '\\else\>',
-          \ 'close': '\\fi\>',
-          \}, l:cfg)
+    let s:re_cond = g:vimtex_indent_conditionals
   endif
 
   if empty(s:re_cond) | return 0 | endif

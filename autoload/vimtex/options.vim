@@ -5,6 +5,8 @@
 "
 
 function! vimtex#options#init() abort " {{{1
+  if s:initialized | return | endif
+
   call s:init_highlights()
   call s:check_for_deprecated_options()
 
@@ -196,6 +198,28 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : 'B',  'rhs' : 'vimtex#imaps#style_math("mathbb")', 'expr' : 1, 'leader' : '#'},
         \])
 
+  call s:init_option('vimtex_indent_enabled', 1)
+  call s:init_option('vimtex_indent_bib_enabled', 1)
+  call s:init_option('vimtex_indent_conditionals', {
+        \ 'open': '\v%(\\newif)@<!\\if%(field|name|numequal|thenelse)@!',
+        \ 'else': '\\else\>',
+        \ 'close': '\\fi\>',
+        \})
+  call s:init_option('vimtex_indent_delims', {
+        \ 'open' : ['{'],
+        \ 'close' : ['}'],
+        \ 'close_indented' : 0,
+        \ 'include_modified_math' : 1,
+        \})
+  call s:init_option('vimtex_indent_ignored_envs', ['document'])
+  call s:init_option('vimtex_indent_lists', [
+        \ 'itemize',
+        \ 'description',
+        \ 'enumerate',
+        \ 'thebibliography',
+        \])
+  call s:init_option('vimtex_indent_on_ampersands', 1)
+
   call s:init_option('vimtex_mappings_enabled', 1)
   call s:init_option('vimtex_mappings_disable', {})
   call s:init_option('vimtex_mappings_override_existing', 0)
@@ -323,7 +347,11 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
+
+  let s:initialized = v:true
 endfunction
+
+let s:initialized = v:false
 
 " }}}1
 
