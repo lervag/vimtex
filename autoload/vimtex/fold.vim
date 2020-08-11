@@ -87,12 +87,14 @@ endfunction
 function! vimtex#fold#level(lnum) abort " {{{1
   let l:line = getline(a:lnum)
 
-  " Filter out lines that do not start any folds (optimization)
-  if l:line !~# b:vimtex.fold_re | return '=' | endif
-
   " Never fold \begin|end{document}
   if l:line =~# '^\s*\\\%(begin\|end\){document}'
     return 0
+  endif
+
+  " Optimize: Filter out irrelevant lines
+  if l:line !~# b:vimtex.fold_re
+    return '='
   endif
 
   for l:type in b:vimtex.fold_types_ordered
@@ -100,7 +102,6 @@ function! vimtex#fold#level(lnum) abort " {{{1
     if !empty(l:value) | return l:value | endif
   endfor
 
-  " Return foldlevel of previous line
   return '='
 endfunction
 
