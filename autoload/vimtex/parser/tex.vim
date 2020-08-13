@@ -114,7 +114,17 @@ function! s:parse_current(file, opts, current) abort " {{{1
       if l:line =~# l:re_input
         let l:file = s:input_parser(l:line, a:file, a:opts.root)
         call add(a:current.lines, l:file)
-        call add(a:current.includes, l:file)
+
+        if a:file ==# l:file
+          call vimtex#log#error([
+                \ 'Recursive file inclusion!',
+                \ 'File: ' . fnamemodify(a:file, ':.'),
+                \ 'Line ' . l:lnum . ':',
+                \ l:line,
+                \])
+        else
+          call add(a:current.includes, l:file)
+        endif
       endif
     endfor
   endif
