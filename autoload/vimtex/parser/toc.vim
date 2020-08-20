@@ -713,7 +713,7 @@ endfunction
 "
 " Section level counter
 "
-let s:level = {}
+let s:level = get(s:, 'level', {})
 function! s:level.reset(part, level) abort dict " {{{1
   if a:part ==# 'preamble'
     let self.old = []
