@@ -449,6 +449,11 @@ function! s:toc.print_entry(entry) abort dict " {{{1
   if self.hotkeys_enabled
     let output .= printf('[%S] ', a:entry.hotkey)
   endif
+
+  if self.indent_levels
+    let output .= repeat('  ', a:entry.level)
+  endif
+
   if self.show_numbers
     let number = a:entry.level >= self.tocdepth + 2 ? ''
           \ : strpart(self.print_number(a:entry.number),

@@ -294,6 +294,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'hotkeys_enabled' : 0,
         \ 'hotkeys' : 'abcdeilmnopuvxyz',
         \ 'hotkeys_leader' : ';',
+        \ 'indent_levels' : 0,
         \ 'layer_status' : {
         \   'content': 1,
         \   'label': 1,

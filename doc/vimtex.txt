@@ -2149,6 +2149,9 @@ OPTIONS                                                        *vimtex-options*
     `hotkeys_leader` : `;`
       The hotkey leader. Set to empty string to disable the leader.
 
+    `indent_levels` : 0
+      Set to 1 to indent the section levels in the ToC window.
+
     `layers` : Undefined
     `layer_status` : Dictionary >
         { 'content': 1,
