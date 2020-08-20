@@ -86,15 +86,16 @@ let s:completer_bib = {
       \   '\v\\%(text|block)cquote\*?%(\s*\[[^]]*\]){0,2}\{[^}]*$',
       \   '\v\\%(for|hy)\w+cquote\*?\{[^}]*\}%(\s*\[[^]]*\]){0,2}\{[^}]*$',
       \  ],
-      \ 'bibs' : '''\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!'
-      \          . '\\(%(no)?bibliography|add(bibresource|globalbib|sectionbib))'
-      \          . '\m\s*{\zs[^}]\+\ze}''',
       \ 'initialized' : 0,
       \}
 
 function! s:completer_bib.init() dict abort " {{{2
   if self.initialized | return | endif
   let self.initialized = 1
+
+  let self.bibs = g:vimtex#re#not_comment . '\\('
+        \ . join(g:vimtex_complete_bib.bibliography_commands, '|')
+        \ . ')\s*\{\zs[^}]+\ze}'
 
   let self.patterns += g:vimtex_complete_bib.custom_patterns
 endfunction
@@ -243,8 +244,8 @@ function! s:completer_bib.find_bibs_manual() dict abort " {{{2
       let l:current.ftime = l:ftime
       let l:current.files = []
       for l:entry in map(
-            \ filter(readfile(l:file), 'v:val =~ ' . self.bibs),
-            \ 'matchstr(v:val, ' . self.bibs . ')')
+            \ filter(readfile(l:file), {_, x -> x =~# self.bibs}),
+            \ {_, x -> matchstr(x, self.bibs)})
         let l:files = []
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
 

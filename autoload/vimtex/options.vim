@@ -27,6 +27,10 @@ function! vimtex#options#init() abort " {{{1
         \ 'simple': 0,
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
         \ 'abbr_fmt': '',
+        \ 'bibliography_commands': [
+        \   '%(no)?bibliography',
+        \   'add%(bibresource|globalbib|sectionbib)',
+        \ ],
         \ 'custom_patterns': [],
         \})
   call s:init_option('vimtex_complete_ref', {
