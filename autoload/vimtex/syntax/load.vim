@@ -21,22 +21,39 @@ function! vimtex#syntax#load#general() abort " {{{1
   syntax match texDocType /\\usepackage\>/
         \ nextgroup=texBeginEndName,texDocTypeArgs
 
-  " Improve support for italic font, bold font and some conceals
+  " Improve support for italic and bold fonts
+  " Note: This essentially fixes a couple of bugs in the main syntax script
   if get(g:, 'tex_fast', 'b') =~# 'b'
-    let s:conceal = (has('conceal') && get(g:, 'tex_conceal', 'b') =~# 'b')
-          \ ? 'concealends' : ''
+    let l:spell = get(g:, 'tex_nospell') ? '' : ',@Spell'
+    if empty(l:spell)
+      syntax cluster texMatchGroup add=texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle
+      syntax cluster texMatchNMGroup add=texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle
+      syntax cluster texStyleGroup add=texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle
+    endif
 
-    for [s:style, s:group, s:commands] in [
-          \ ['texItalStyle', 'texItalGroup', ['emph', 'textit']],
-          \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
-          \]
-      for s:cmd in s:commands
-        execute 'syntax region' s:style 'matchgroup=texTypeStyle'
-              \ 'start="\\' . s:cmd . '\s*{" end="}"'
-              \ 'contains=@Spell,@' . s:group
-              \ s:conceal
+    let l:conceal = get(g:, 'tex_conceal', 'b') =~# 'b' ? 'concealends' : ''
+    if empty(l:conceal)
+      let l:matrix = [
+            \ ['texBoldStyle', 'texBoldGroup', ['textbf']],
+            \ ['texBoldItalStyle', 'texItalGroup', ['textit']],
+            \ ['texItalStyle', 'texItalGroup', ['textit']],
+            \ ['texItalBoldStyle', 'texBoldGroup', ['textbf']],
+            \ ['texEmphStyle', 'texItalGroup', ['emph']],
+            \ ['texEmphStyle', 'texBoldGroup', ['texts[cfl]', 'textup', 'texttt']],
+            \]
+    else
+      let l:matrix = empty(l:spell)
+            \ ? [['texEmphStyle', 'texBoldGroup', ['texts[cfl]', 'textup', 'texttt']]]
+            \ : []
+    endif
+
+    for [l:style, l:group, l:commands] in l:matrix
+      for l:cmd in l:commands
+        execute 'syntax region' l:style 'matchgroup=texTypeStyle'
+              \ 'start="\\' . l:cmd . '\s*{" end="}"'
+              \ l:conceal
+              \ 'contains=@' . l:group . l:spell
       endfor
-      execute 'syntax cluster texMatchGroup add=' . s:style
     endfor
   endif
 
