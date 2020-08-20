@@ -38,6 +38,7 @@ endfunction
 
 " }}}1
 function! vimtex#view#zathura#compiler_callback() abort " {{{1
+  if !exists('b:vimtex.viewer') | return | endif
   let self = b:vimtex.viewer
   if !filereadable(self.out()) | return | endif
 
