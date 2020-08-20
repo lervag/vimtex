@@ -1,0 +1,11 @@
+\documentclass{amsart}
+\newcommand{mybibliography}[1]{
+  \phantomsection\addcontentsline{toc}{subsubsection}{Reference}
+  \bibliography{#1}
+}
+
+\mybibliography{test_custom_bibs}
+
+\begin{document}
+Test
+\end{document}

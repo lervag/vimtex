@@ -29,3 +29,6 @@ parser_bcf:
 
 parser_blg:
 	@$(MYVIM) -u test_parser_blg.vim
+
+custom_bibs:
+	@$(MYVIM) -u test_custom_bibs.vim
