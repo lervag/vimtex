@@ -28,6 +28,6 @@ call vimtex#test#assert_equal('chapters/sections/first.tex', s:toc[5].file)
 call vimtex#test#assert_equal('chapters/sections/second.tex', s:toc[8].file)
 call vimtex#test#assert_equal(
       \ 'eq:1                        (4.1 [p. 9])',
-      \ s:toc[16].title)
+      \ s:toc[17].title)
 
 quit!
