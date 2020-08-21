@@ -81,9 +81,9 @@ function! vimtex#syntax#load#general() abort " {{{1
   " Do not check URLs and acronyms in comments
   " Source: https://github.com/lervag/vimtex/issues/562
   syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
-        \ contains=@NoSpell containedin=texComment
+        \ contains=@NoSpell containedin=texComment contained
   syntax match texCommentAcronym '\v<(\u|\d){3,}s?>'
-        \ contains=@NoSpell containedin=texComment
+        \ contains=@NoSpell containedin=texComment contained
   highlight def link texCommentURL Comment
   highlight def link texCommentAcronym Comment
 
