@@ -658,22 +658,29 @@ endfunction
 " Utility functions
 "
 function! s:clear_texorpdfstring(title) abort " {{{1
+  " We only want the TeX string:
+  "
+  " > \texorpdfstring{TEXstring}{PDFstring}
+
   let l:i1 = match(a:title, '\\texorpdfstring')
   if l:i1 < 0 | return a:title | endif
 
   " Find start of included part
-  let [l:i2, l:dummy] = s:find_closing(
-        \ match(a:title, '{', l:i1+1), a:title, 1, '{')
-  let l:i2 = match(a:title, '{', l:i2+1)
+  let l:i2 = match(a:title, '{', l:i1+1)
   if l:i2 < 0 | return a:title | endif
 
   " Find end of included part
-  let [l:i3, l:dummy] = s:find_closing(l:i2, a:title, 1, '{')
+  let [l:i3, l:dummy] = s:find_closing(l:i2+1, a:title, 1, '{')
   if l:i3 < 0 | return a:title | endif
+
+  " Find start, then end of excluded part
+  let l:i4 = match(a:title, '{', l:i3+1)
+  if l:i4 < 0 | return a:title | endif
+  let [l:i4, l:dummy] = s:find_closing(l:i4+1, a:title, 1, '{')
 
   return strpart(a:title, 0, l:i1)
         \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
-        \ . s:clear_texorpdfstring(strpart(a:title, l:i3+1))
+        \ . s:clear_texorpdfstring(strpart(a:title, l:i4+1))
 endfunction
 
 " }}}1

@@ -16,7 +16,7 @@ silent edit main.tex
 if empty($INMAKE) | finish | endif
 
 let s:toc = vimtex#toc#get_entries()
-call vimtex#test#assert_equal(len(s:toc), 18)
+call vimtex#test#assert_equal(len(s:toc), 19)
 
 " let s:i = 0
 " for s:x in s:toc
