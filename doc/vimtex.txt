@@ -3058,7 +3058,7 @@ Examples: >
   " Add custom mappings in ToC buffer
   function! TocMappings()
     " You probably don't want to do this, though...
-    nnoremap <silent><nowait><buffer> q :quitall!
+    nnoremap <silent><buffer><nowait> q :quitall!
   endfunction
 
   augroup vimtex_event_3

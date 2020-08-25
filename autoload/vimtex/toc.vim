@@ -258,28 +258,28 @@ function! s:toc.create() abort dict " {{{1
           \ : self.tocdepth))
   endif
 
-  nnoremap <silent><nowait><buffer><expr> gg b:toc.show_help ? 'gg}}j' : 'gg'
-  nnoremap <silent><nowait><buffer> <esc>OA k
-  nnoremap <silent><nowait><buffer> <esc>OB j
-  nnoremap <silent><nowait><buffer> <esc>OC k
-  nnoremap <silent><nowait><buffer> <esc>OD j
-  nnoremap <silent><nowait><buffer> q             :call b:toc.close()<cr>
-  nnoremap <silent><nowait><buffer> <esc>         :call b:toc.close()<cr>
-  nnoremap <silent><nowait><buffer> <space>       :call b:toc.activate_current(0)<cr>
-  nnoremap <silent><nowait><buffer> <2-leftmouse> :call b:toc.activate_current(0)<cr>
-  nnoremap <silent><nowait><buffer> <cr>          :call b:toc.activate_current(1)<cr>
-  nnoremap <buffer><nowait><silent> h             :call b:toc.toggle_help()<cr>
-  nnoremap <buffer><nowait><silent> f             :call b:toc.filter()<cr>
-  nnoremap <buffer><nowait><silent> F             :call b:toc.clear_filter()<cr>
-  nnoremap <buffer><nowait><silent> s             :call b:toc.toggle_numbers()<cr>
-  nnoremap <buffer><nowait><silent> t             :call b:toc.toggle_sorted_todos()<cr>
-  nnoremap <buffer><nowait><silent> r             :call b:toc.get_entries(1)<cr>
-  nnoremap <buffer><nowait><silent> -             :call b:toc.decrease_depth()<cr>
-  nnoremap <buffer><nowait><silent> +             :call b:toc.increase_depth()<cr>
+  nnoremap <silent><buffer><nowait><expr> gg b:toc.show_help ? 'gg}}j' : 'gg'
+  nnoremap <silent><buffer><nowait> <esc>OA k
+  nnoremap <silent><buffer><nowait> <esc>OB j
+  nnoremap <silent><buffer><nowait> <esc>OC k
+  nnoremap <silent><buffer><nowait> <esc>OD j
+  nnoremap <silent><buffer><nowait> q             :call b:toc.close()<cr>
+  nnoremap <silent><buffer><nowait> <esc>         :call b:toc.close()<cr>
+  nnoremap <silent><buffer><nowait> <space>       :call b:toc.activate_current(0)<cr>
+  nnoremap <silent><buffer><nowait> <2-leftmouse> :call b:toc.activate_current(0)<cr>
+  nnoremap <silent><buffer><nowait> <cr>          :call b:toc.activate_current(1)<cr>
+  nnoremap <silent><buffer><nowait> h             :call b:toc.toggle_help()<cr>
+  nnoremap <silent><buffer><nowait> f             :call b:toc.filter()<cr>
+  nnoremap <silent><buffer><nowait> F             :call b:toc.clear_filter()<cr>
+  nnoremap <silent><buffer><nowait> s             :call b:toc.toggle_numbers()<cr>
+  nnoremap <silent><buffer><nowait> t             :call b:toc.toggle_sorted_todos()<cr>
+  nnoremap <silent><buffer><nowait> r             :call b:toc.get_entries(1)<cr>
+  nnoremap <silent><buffer><nowait> -             :call b:toc.decrease_depth()<cr>
+  nnoremap <silent><buffer><nowait> +             :call b:toc.increase_depth()<cr>
 
   for [type, key] in items(self.layer_keys)
     execute printf(
-          \ 'nnoremap <buffer><nowait><silent> %s'
+          \ 'nnoremap <silent><buffer><nowait> %s'
           \ . ' :call b:toc.toggle_type(''%s'')<cr>',
           \ key, type)
   endfor
@@ -287,7 +287,7 @@ function! s:toc.create() abort dict " {{{1
   if self.hotkeys_enabled
     for entry in self.entries
       execute printf(
-            \ 'nnoremap <buffer><nowait><silent> %s%s'
+            \ 'nnoremap <silent><buffer><nowait> %s%s'
             \ . ' :call b:toc.activate_hotkey(''%s'')<cr>',
             \ self.hotkeys_leader, entry.hotkey, entry.hotkey)
     endfor

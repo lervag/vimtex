@@ -207,9 +207,9 @@ function! vimtex#compiler#output() abort " {{{1
   augroup END
 
   " Set some mappings
-  nnoremap <silent><nowait><buffer> q :bwipeout<cr>
+  nnoremap <silent><buffer><nowait> q :bwipeout<cr>
   if has('nvim') || has('gui_running')
-    nnoremap <silent><nowait><buffer> <esc> :bwipeout<cr>
+    nnoremap <silent><buffer><nowait> <esc> :bwipeout<cr>
   endif
 
   " Set some buffer options

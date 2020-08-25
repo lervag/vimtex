@@ -336,7 +336,7 @@ function! s:map(ftype, mode, lhs, rhs, ...) abort " {{{1
         \ && (a:0 > 0
         \     || g:vimtex_mappings_override_existing
         \     || empty(maparg(a:lhs, a:mode)))
-    silent execute a:mode . 'map <silent><nowait><buffer>' a:lhs a:rhs
+    silent execute a:mode . 'map <silent><buffer><nowait>' a:lhs a:rhs
   endif
 endfunction
 

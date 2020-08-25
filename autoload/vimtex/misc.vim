@@ -93,7 +93,7 @@ function! vimtex#misc#wordcount_display(opts) abort " {{{1
   0delete _
 
   " Set mappings
-  nnoremap <buffer><nowait><silent> q :bwipeout<cr>
+  nnoremap <silent><buffer><nowait> q :bwipeout<cr>
 
   " Set buffer options
   setlocal bufhidden=wipe
