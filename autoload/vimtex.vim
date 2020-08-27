@@ -5,6 +5,10 @@
 "
 
 function! vimtex#init() abort " {{{1
+  if exists('#User#VimtexEventInitPre')
+    doautocmd <nomodeline> User VimtexEventInitPre
+  endif
+
   call vimtex#options#init()
 
   call s:init_state()

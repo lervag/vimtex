@@ -3005,9 +3005,10 @@ further customization.
     because when quitting vim the current buffer does not necessarily have
     filetype 'tex'.
 
+  *VimtexEventInitPre*
   *VimtexEventInitPost*
-    This event is triggered after |vimtex| initialization is completed.  It may
-    be used to automatically start compiling a document.
+    This event is triggered at the start/end of |vimtex| initialization.  The
+    post event may e.g. be used to automatically start compiling a document.
 
   *VimtexEventCompileStarted*
     This event is triggered after compilation is started (in continuous mode).
