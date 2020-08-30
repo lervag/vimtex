@@ -1902,6 +1902,23 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 2
 
+*g:vimtex_quickfix_resize_to_content*
+  This option controls the size of the |quickfix| window. The recognized options
+  are:
+
+  Value Effect ~
+  0     The quickfix window will always open at default size
+  1     The quickfix window will resize itself to fit content, at most
+        g:vimtex_quickfix_max_size lines tall.
+
+  Default value: 0
+
+*g:vimtex_quickfix_max_size*
+  This option controls the maximum size of the |quickfix| window when
+  g:vimtex_quickfix_resize_to_content is set to 1.
+
+  Default value: 10
+
 *g:vimtex_quickfix_autoclose_after_keystrokes*
   If set to value greater than zero, then the quickfix window will close after
   this number of motions (i.e. |CursorMoved| and |CursorMovedI| events). This

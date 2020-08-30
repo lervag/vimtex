@@ -81,7 +81,18 @@ function! vimtex#qf#open(force) abort " {{{1
 
   if a:force || (g:vimtex_quickfix_mode > 0 && l:errors_or_warnings)
     let s:previous_window = win_getid()
-    botright cwindow
+
+    if g:vimtex_quickfix_resize_to_content == 1
+      let l:content_size = len(getqflist())
+
+      if l:content_size >= g:vimtex_quickfix_max_size
+        let l:content_size = g:vimtex_quickfix_max_size
+      endif
+
+      call execute('botright copen' . l:content_size)
+    else
+      botright cwindow
+    endif
     if g:vimtex_quickfix_mode == 2
       call win_gotoid(s:previous_window)
     endif
@@ -93,6 +104,7 @@ function! vimtex#qf#open(force) abort " {{{1
     endif
     redraw
   endif
+
 endfunction
 
 " }}}1

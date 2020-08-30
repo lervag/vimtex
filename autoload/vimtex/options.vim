@@ -245,6 +245,8 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_quickfix_open_on_warning', '1')
   call s:init_option('vimtex_quickfix_blgparser', {})
   call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', '0')
+  call s:init_option('vimtex_quickfix_resize_to_content', '0')
+  call s:init_option('vimtex_quickfix_max_size', '10')
 
   call s:init_option('vimtex_syntax_enabled', 1)
   call s:init_option('vimtex_syntax_nested', {
