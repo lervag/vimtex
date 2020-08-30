@@ -30,7 +30,7 @@ call vimtex#test#assert_equal(
       \ 'Setting VIMTEX_OUTPUT_DIRECTORY overrides build_dir!',
       \ s:warning)
 
-unlet $VIMTEX_OUTPUT_DIRECTORY
+let $VIMTEX_OUTPUT_DIRECTORY = ''
 call TestBuildDir('out')
 
 quitall!
