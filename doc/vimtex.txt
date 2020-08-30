@@ -872,6 +872,8 @@ OPTIONS                                                        *vimtex-options*
     Note 1: This option only works with `latexmk` version 4.27 and later.
     Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
             will have priority.
+    Note 3: If |$VIMTEX_OUTPUT_DIRECTORY| is defined, it will have the highest
+            priority.
 
   callback~
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
@@ -2512,6 +2514,19 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*$VIMTEX_OUTPUT_DIRECTORY*
+  This environment variable allows to specify the output directory of
+  auxiliary LaTeX files. If it exists and is a valid path, this path will be
+  used as the output directory (aka build directory). That is, it overrides
+  options such as |g:vimtex_compiler_latexmk| / `build_dir`. This has two main
+  use cases:
+
+    1. It allows to use a custom build directory for different projects.
+    2. It allows to specify an output directory for projects where one uses
+       compiler backends such as |vimtex-arara|. This makes it possible to
+       make e.g. the |vimtex-view| feature to work as expected if output
+       directories are used with arara.
+
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
 
@@ -3750,6 +3765,7 @@ Associated settings:
   |g:vimtex_compiler_tectonic|
   |g:vimtex_compiler_arara|
   |g:vimtex_compiler_progname|
+  |$VIMTEX_OUTPUT_DIRECTORY|
 
 Associated events:
   |VimtexEventCompileStarted|
@@ -3870,6 +3886,12 @@ and |vimtex-tectonic|, the viewer can be started automatically with
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_arara| option.
+
+Note: It is not possible to directly specify an output directory from vimtex.
+      This is a restriction caused by the design of arara. However, since one
+      may still want to specify custom output directories, vimtex allows to
+      customize the output directory through the environment variable
+      |$VIMTEX_OUTPUT_DIRECTORY|.
 
 ==============================================================================
 SYNTAX CHECKING (LINTING)                                       *vimtex-lint*
