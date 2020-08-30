@@ -1089,6 +1089,15 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: `bibtex`
 
+*g:vimtex_bibliography_commands*
+    A list of command names for commands that include bibliography files.
+    Each list entry is interpreted as a pattern (very magic, see |/\v|) to
+    match a particular command name. This option may be useful if one defines
+    custom commands that includes bibliography files.
+
+    Default value: >
+        ['%(no)?bibliography', 'add%(bibresource|globalbib|sectionbib)']
+
 *g:vimtex_complete_bib*
   This option is a dictionary for controlling the citation completion. The
   keys each control a different thing:
@@ -1118,14 +1127,6 @@ OPTIONS                                                        *vimtex-options*
     Default value: `''`
     The format used for the `abbr` entry for bib completion candidates. See
     `menu_fmt` for further description.
-
-  bibliography_commands~
-    Default value: >
-        ['%(no)?bibliography', 'add%(bibresource|globalbib|sectionbib)']
-<    A list of command names for commands that include bibliography files.
-    Each list entry is interpreted as a pattern (very magic, see |/\v|) to
-    match a particular command name. This option may be useful if one defines
-    custom commands that includes bibliography files.
 
   custom_patterns~
     Default value: []

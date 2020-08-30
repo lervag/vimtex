@@ -93,10 +93,6 @@ function! s:completer_bib.init() dict abort " {{{2
   if self.initialized | return | endif
   let self.initialized = 1
 
-  let self.bibs = g:vimtex#re#not_comment . '\\('
-        \ . join(g:vimtex_complete_bib.bibliography_commands, '|')
-        \ . ')\s*\{\zs[^}]+\ze}'
-
   let self.patterns += g:vimtex_complete_bib.custom_patterns
 endfunction
 
@@ -129,7 +125,7 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
 
   " Note: bibtex seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
-  for l:file in self.find_bibs()
+  for l:file in vimtex#bib#files()
     if empty(l:file) | continue | endif
 
     let l:filename = substitute(l:file, '\%(\.bib\)\?$', '.bib', '')
@@ -189,85 +185,6 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
   call l:cache.write()
 
   return l:entries
-endfunction
-
-function! s:completer_bib.find_bibs() dict abort " {{{2
-  if has_key(b:vimtex.packages, 'biblatex')
-    let l:file = b:vimtex.ext('bcf')
-    if filereadable(l:file)
-      let l:bibs = map(
-            \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
-            \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
-      if !empty(l:bibs) | return l:bibs | endif
-    endif
-  endif
-
-  let l:file = b:vimtex.ext('blg')
-  if filereadable(l:file)
-    let l:bibs = map(
-          \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
-          \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
-
-    " Ignore '{name}-blx.bib' file (created by biblatex)
-    if has_key(b:vimtex.packages, 'biblatex')
-      call filter(l:bibs, 'v:val !~# ''-blx$''')
-    endif
-
-    if !empty(l:bibs) | return l:bibs | endif
-  endif
-
-  return self.find_bibs_manual()
-endfunction
-
-function! s:completer_bib.find_bibs_manual() dict abort " {{{2
-  "
-  " Search for bibliography files by parsing the source code
-  " * Parse commands such as \bibliography{file1,file2.bib,...}
-  "
-
-  let l:cache = vimtex#cache#open('bibfiles', {
-        \ 'local': 1,
-        \ 'default': {'files': [], 'ftime': -1}
-        \})
-
-  " Handle local file editing (e.g. subfiles package)
-  let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
-  let l:vimtex = vimtex#state#get(l:id)
-
-  let l:bibfiles = []
-  for l:file in map(copy(l:vimtex.sources), 'l:vimtex.root . ''/'' . v:val')
-    let l:current = l:cache.get(l:file)
-
-    let l:ftime = getftime(l:file)
-    if l:ftime > l:current.ftime
-      let l:cache.modified = 1
-      let l:current.ftime = l:ftime
-      let l:current.files = []
-      for l:entry in map(
-            \ filter(readfile(l:file), {_, x -> x =~# self.bibs}),
-            \ {_, x -> matchstr(x, self.bibs)})
-        let l:files = []
-        let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
-
-        for l:f in split(l:entry, ',')
-          if stridx(l:f, '*') >= 0
-            let l:files += glob(l:f, 0, 1)
-          else
-            let l:files += [fnamemodify(l:f, ':r')]
-          endif
-        endfor
-
-        let l:current.files += l:files
-      endfor
-    endif
-
-    let l:bibfiles += l:current.files
-  endfor
-
-  " Write cache to file
-  call l:cache.write()
-
-  return uniq(l:bibfiles)
 endfunction
 
 function! s:completer_bib.convert(entry) dict abort " {{{2

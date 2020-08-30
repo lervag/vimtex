@@ -10,6 +10,11 @@ function! vimtex#options#init() abort " {{{1
   call s:init_highlights()
   call s:check_for_deprecated_options()
 
+  call s:init_option('vimtex_bibliography_commands', [
+        \ '%(no)?bibliography',
+        \ 'add%(bibresource|globalbib|sectionbib)',
+        \])
+
   call s:init_option('vimtex_compiler_enabled', 1)
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
@@ -27,10 +32,6 @@ function! vimtex#options#init() abort " {{{1
         \ 'simple': 0,
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
         \ 'abbr_fmt': '',
-        \ 'bibliography_commands': [
-        \   '%(no)?bibliography',
-        \   'add%(bibresource|globalbib|sectionbib)',
-        \ ],
         \ 'custom_patterns': [],
         \})
   call s:init_option('vimtex_complete_ref', {
