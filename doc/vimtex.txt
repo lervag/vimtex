@@ -4390,24 +4390,6 @@ are a few things that must be considered for system interoperability. A number
 of common problems and suggested solutions are included in the following
 troubleshooting section.
 
-Problem: The user wants to use vim-polyglot~
-
-New versions of vim-polyglot [0] loads vimtex. If one insists on using
-vim-polyglot, then make sure to not separately load vimtex (e.g. with two
-`Plug` lines in your vimrc).
-
-In old versions of vim-polyglot [0], it included and enabled LaTeX-Box by
-default. LaTeX-Box will not work well with vimtex, e.g. because of conflicting
-mappings.
-
-Recommendation:
-  Avoid vim-polyglot. This is recommended, because vim-polyglot installs
-  a bunch of filetype plugins that you will not use anyway. Further, one
-  should aim to know which plugins are installed in ones system. It is not
-  a lot of extra work to install whichever extra filetype plugins one need.
-
-[0]: https://github.com/sheerun/vim-polyglot
-
 Problem: Continuous compilation seems to hang~
 
 Upon starting continuous compilation the status bar indicates "vimtex:
