@@ -126,20 +126,12 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
   " Note: bibtex seems to require that we are in the project root
   call vimtex#paths#pushd(b:vimtex.root)
   for l:file in vimtex#bib#files()
-    if empty(l:file) | continue | endif
-
-    let l:filename = substitute(l:file, '\%(\.bib\)\?$', '.bib', '')
-    if !filereadable(l:filename)
-      let l:filename = vimtex#kpsewhich#find(l:filename)
-    endif
-    if !filereadable(l:filename) | continue | endif
-
-    let l:current = l:cache.get(l:filename)
-    let l:ftime = getftime(l:filename)
+    let l:current = l:cache.get(l:file)
+    let l:ftime = getftime(l:file)
     if l:ftime > l:current.ftime
       let l:current.ftime = l:ftime
       let l:current.result = map(
-            \ vimtex#parser#bib(l:filename),
+            \ vimtex#parser#bib(l:file),
             \ 'self.convert(v:val)')
       let l:cache.modified = 1
     endif

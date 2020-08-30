@@ -177,9 +177,12 @@ function! s:parse_with_vim(file) abort " {{{1
   let l:current = {}
   let l:strings = {}
   let l:entries = []
-  for l:line in filter(readfile(a:file), 'v:val !~# ''^\s*\%(%\|$\)''')
+  let l:lnum = 0
+  for l:line in readfile(a:file)
+    let l:lnum += 1
+
     if empty(l:current)
-      if s:parse_type(l:line, l:current, l:strings)
+      if s:parse_type(a:file, l:lnum, l:line, l:current, l:strings)
         let l:current = {}
       endif
       continue
@@ -201,7 +204,7 @@ endfunction
 
 " }}}1
 
-function! s:parse_type(line, current, strings) abort " {{{1
+function! s:parse_type(file, lnum, line, current, strings) abort " {{{1
   let l:matches = matchlist(a:line, '\v^\@(\w+)\s*\{\s*(.*)')
   if empty(l:matches) | return 0 | endif
 
@@ -210,6 +213,8 @@ function! s:parse_type(line, current, strings) abort " {{{1
 
   let a:current.level = 1
   let a:current.body = ''
+  let a:current.vimtex_file = a:file
+  let a:current.vimtex_lnum = a:lnum
 
   if l:type ==# 'string'
     return s:parse_string(l:matches[2], a:current, a:strings)

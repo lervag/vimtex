@@ -11,7 +11,7 @@ function! vimtex#bib#files() abort " {{{1
       let l:bibs = map(
             \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
             \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
-      if !empty(l:bibs) | return l:bibs | endif
+      if !empty(l:bibs) | return s:validate(l:bibs) | endif
     endif
   endif
 
@@ -26,14 +26,24 @@ function! vimtex#bib#files() abort " {{{1
       call filter(l:bibs, 'v:val !~# ''-blx$''')
     endif
 
-    if !empty(l:bibs) | return l:bibs | endif
+    if !empty(l:bibs) | return s:validate(l:bibs) | endif
   endif
 
-  return s:files_manual()
+  return s:validate(s:files_manual())
 endfunction
 
 " }}}1
 
+function! s:validate(files) abort " {{{1
+  call filter(a:files, {_, x -> !empty(x)})
+  call map(a:files, {_, x -> substitute(x, '\%(\.bib\)\?$', '.bib', '')})
+  call map(a:files, {_, x -> filereadable(x) ? x : vimtex#kpsewhich#find(x)})
+  call filter(a:files, {_, x -> filereadable(x)})
+
+  return a:files
+endfunction
+
+" }}}1
 function! s:files_manual() abort " {{{1
   "
   " Search for bibliography files by parsing the source code
