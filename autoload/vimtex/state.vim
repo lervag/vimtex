@@ -587,7 +587,6 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
     call vimtex#{l:mod}#init_state(l:new)
   endfor
 
-  " Parsing packages might depend on the compiler setting for build_dir
   call l:new.parse_packages()
 
   unlet l:new.preamble
@@ -759,24 +758,29 @@ endfunction
 
 " }}}1
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
-  " First check build dir (latexmk -output_directory option)
-  if !empty(get(get(self, 'compiler', {}), 'build_dir', ''))
-    let cand = self.compiler.build_dir . '/' . self.name . '.' . a:ext
-    if !vimtex#paths#is_abs(self.compiler.build_dir)
-      let cand = self.root . '/' . cand
-    endif
-    if a:0 > 0 || filereadable(cand)
-      return fnamemodify(cand, ':p')
-    endif
-  endif
+  " Check for various output directories
+  " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
+  "   any vimtex settings like g:vimtex_compiler_latexmk.build_dir!
+  " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
+  "   available as b:vimtex.compiler.build_dir.
+  " * Fallback to the main root directory
+  for l:root in [
+        \ $VIMTEX_OUTPUT_DIRECTORY,
+        \ get(get(self, 'compiler', {}), 'build_dir', ''),
+        \ self.root
+        \]
+    if empty(l:root) | continue | endif
 
-  " Next check for file in project root folder
-  let cand = self.root . '/' . self.name . '.' . a:ext
-  if a:0 > 0 || filereadable(cand)
-    return fnamemodify(cand, ':p')
-  endif
+    let l:cand = printf('%s/%s.%s', l:root, self.name, a:ext)
+    if !vimtex#paths#is_abs(l:root)
+      let l:cand = self.root . '/' . l:cand
+    endif
 
-  " Finally return empty string if no entry is found
+    if a:0 > 0 || filereadable(l:cand)
+      return fnamemodify(l:cand, ':p')
+    endif
+  endfor
+
   return ''
 endfunction
 

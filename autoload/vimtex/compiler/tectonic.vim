@@ -36,6 +36,18 @@ function! s:compiler.init(options) abort dict " {{{1
     throw 'vimtex: Requirements not met'
   endif
 
+  " Check if environment variable exists; it has the highest priority
+  if !empty($VIMTEX_OUTPUT_DIRECTORY)
+    if !empty(self.build_dir)
+          \ && (self.build_dir !=# $VIMTEX_OUTPUT_DIRECTORY)
+      call vimtex#log#warning(
+            \ 'Setting VIMTEX_OUTPUT_DIRECTORY overrides build_dir!',
+            \ 'Changed build_dir from: ' . self.build_dir,
+            \ 'Changed build_dir to: ' . $VIMTEX_OUTPUT_DIRECTORY)
+    endif
+    let self.build_dir = $VIMTEX_OUTPUT_DIRECTORY
+  endif
+
   let l:backend = has('nvim') ? 'nvim' : 'jobs'
   call extend(self, deepcopy(s:compiler_{l:backend}))
 endfunction

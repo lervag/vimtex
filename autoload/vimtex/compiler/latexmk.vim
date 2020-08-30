@@ -126,9 +126,7 @@ endfunction
 
 " }}}1
 function! s:compiler.init_build_dir_option() abort dict " {{{1
-  "
   " Check if .latexmkrc sets the build_dir - if so this should be respected
-  "
   let l:out_dir =
         \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'out_dir', 0, '')[0]
 
@@ -140,6 +138,18 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
             \ 'Changed build_dir to: ' . l:out_dir)
     endif
     let self.build_dir = l:out_dir
+  endif
+
+  " Check if environment variable exists; it has the highest priority
+  if !empty($VIMTEX_OUTPUT_DIRECTORY)
+    if !empty(self.build_dir)
+          \ && (self.build_dir !=# $VIMTEX_OUTPUT_DIRECTORY)
+      call vimtex#log#warning(
+            \ 'Setting VIMTEX_OUTPUT_DIRECTORY overrides build_dir!',
+            \ 'Changed build_dir from: ' . self.build_dir,
+            \ 'Changed build_dir to: ' . $VIMTEX_OUTPUT_DIRECTORY)
+    endif
+    let self.build_dir = $VIMTEX_OUTPUT_DIRECTORY
   endif
 endfunction
 
