@@ -220,6 +220,8 @@ endfunction
 
 " }}}1
 function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
+  if !exists('b:vimtex.tex') | return | endif
+
   let l:target = self.target !=# b:vimtex.tex ? self.target : ''
   call vimtex#compiler#callback(!vimtex#qf#inquire(l:target))
 endfunction
