@@ -3700,7 +3700,7 @@ table (see |vimtex-toc| for detailed explanation of the "layers"):
 The default behavior is to show all layers, i.e. 'ctli'. To only show
 `content` and `label`s use: >
 
-  :call vimtex#fzf#run('ct')
+  :call vimtex#fzf#run('cl')
 
 On Windows the python package Colorama is required for colored output.
 For Linux and MacOS colors should work out-of-the-box, even without Colorama.
