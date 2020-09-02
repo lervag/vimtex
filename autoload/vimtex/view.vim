@@ -8,17 +8,15 @@ function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
   command! -buffer -nargs=? -complete=file VimtexView
-        \ call b:vimtex.viewer.view(<q-args>)
+        \ call vimtex#view#view(<q-args>)
   if has_key(b:vimtex.viewer, 'reverse_search')
-    command! -buffer -nargs=* VimtexRSearch
-          \ call b:vimtex.viewer.reverse_search()
+    command! -buffer -nargs=* VimtexViewRSearch
+         \ call vimtex#view#reverse_search()
   endif
 
-  nnoremap <buffer> <plug>(vimtex-view)
-        \ :call b:vimtex.viewer.view('')<cr>
+  nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
   if has_key(b:vimtex.viewer, 'reverse_search')
-    nnoremap <buffer> <plug>(vimtex-reverse-search)
-          \ :call b:vimtex.viewer.reverse_search()<cr>
+    nnoremap <buffer> <plug>(vimtex-reverse-search) :VimtexViewRSearch<cr>
   endif
 endfunction
 
@@ -41,6 +39,21 @@ function! vimtex#view#init_state(state) abort " {{{1
           \ 'Please see :h g:vimtex_view_method')
     return
   endtry
+endfunction
+
+" }}}1
+
+function! vimtex#view#view(...) abort " {{{1
+  if exists('*b:vimtex.viewer.view')
+    call b:vimtex.viewer.view(a:0 > 0 ? a:1 : '')
+  endif
+endfunction
+
+" }}}1
+function! vimtex#view#reverse_search() abort " {{{1
+  if exists('*b:vimtex.viewer.reverse_search')
+    call b:vimtex.viewer.reverse_search()
+  endif
 endfunction
 
 " }}}1
