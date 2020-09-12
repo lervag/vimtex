@@ -70,7 +70,9 @@ function! s:init_buffer() abort " {{{1
   " Apply some filetype specific settings
   if &filetype ==# 'tex'
     setlocal suffixesadd=.tex,.sty,.cls
-    setlocal iskeyword+=:
+    if g:vimtex_enable_mutate_iskeyword
+      setlocal iskeyword+=:
+    endif
     setlocal includeexpr=vimtex#include#expr()
     let &l:include = g:vimtex#re#tex_include
     let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
