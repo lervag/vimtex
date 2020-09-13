@@ -96,14 +96,16 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
   if !self.has_synctex | return | endif
   if !filereadable(self.synctex()) | return | endif
 
+  let self.texfile = vimtex#paths#relative(expand('%:p'), b:vimtex.root)
+  let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
+
   let l:cmd  = 'zathura --synctex-forward '
   let l:cmd .= line('.')
   let l:cmd .= ':' . col('.')
-  let l:cmd .= ':' . vimtex#util#shellescape(expand('%:p'))
-  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  let l:cmd .= ':' . vimtex#util#shellescape(self.texfile)
+  let l:cmd .= ' ' . vimtex#util#shellescape(self.outfile)
   call vimtex#process#run(l:cmd)
   let self.cmd_forward_search = l:cmd
-  let self.outfile = a:outfile
 endfunction
 
 " }}}1
