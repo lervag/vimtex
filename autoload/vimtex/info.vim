@@ -72,7 +72,7 @@ endfunction
 " }}}1
 function! s:info.syntax() abort dict " {{{1
   syntax match VimtexInfoOther /.*/
-  syntax match VimtexInfoKey /^.*:/ nextgroup=VimtexInfoValue
+  syntax match VimtexInfoKey /^.\{-}:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoValue /.*/ contained
   syntax match VimtexInfoTitle /vimtex project:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoTitle /System info/
