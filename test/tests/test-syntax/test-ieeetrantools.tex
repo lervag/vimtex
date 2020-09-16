@@ -1,0 +1,45 @@
+\documentclass{minimal}
+\usepackage{IEEEtrantools}
+\begin{document}
+
+Standard usage:
+
+\begin{IEEEeqnarray}{srCl}
+  text & 1\cdot1 &=& 1 \\
+  text & 1       &=& 1\cdot1
+\end{IEEEeqnarray}
+
+\begin{IEEEeqnarray*}{srCl}
+  text & 1\cdot1 &=& 1 \\
+  text & 1       &=& 1\cdot1
+\end{IEEEeqnarray*}
+
+IEEEeqnarraybox
+
+\begin{IEEEeqnarraybox}{sl}
+  text & math
+\end{IEEEeqnarraybox}
+\begin{equation}
+  \begin{IEEEeqnarraybox}{sl}
+    text & math
+  \end{IEEEeqnarraybox}
+\end{equation}
+
+IEEEeqnarrayboxm
+
+\begin{IEEEeqnarrayboxm}{sl}
+  text & math
+\end{IEEEeqnarrayboxm}
+
+IEEEeqnarrayboxt
+
+\begin{IEEEeqnarrayboxt}{sl}
+  text & math
+\end{IEEEeqnarrayboxt}
+\begin{equation}
+  \begin{IEEEeqnarrayboxt}{sl}
+    text & math
+  \end{IEEEeqnarrayboxt}
+\end{equation}
+
+\end{document}

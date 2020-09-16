@@ -108,7 +108,7 @@ function! vimtex#syntax#load#packages() abort " {{{1
 
   for l:pkg in map(keys(b:vimtex.packages), "substitute(v:val, '-', '_', 'g')")
     try
-      call vimtex#syntax#p#{l:pkg}#load()
+      call vimtex#syntax#p#{tolower(l:pkg)}#load()
     catch /E117:/
     endtry
   endfor
