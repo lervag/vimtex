@@ -30,12 +30,27 @@ function! vimtex#echo#input(opts) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#echo#choose(list_or_dict, prompt) abort " {{{1
-  if empty(a:list_or_dict) | return '' | endif
+function! vimtex#echo#choose(container, ...) abort " {{{1
+  if empty(a:container) | return '' | endif
 
-  return type(a:list_or_dict) == v:t_dict
-        \ ? s:choose_dict(a:list_or_dict, a:prompt)
-        \ : s:choose_list(a:list_or_dict, a:prompt)
+  if type(a:container) == v:t_dict
+    let l:choose_list = values(a:container)
+    let l:return_list = keys(a:container)
+  else
+    let l:choose_list = a:container
+    let l:return_list = a:container
+  endif
+
+  let l:options = extend(
+        \ {
+        \   'prompt': 'Please choose item:',
+        \   'abort': v:true,
+        \ },
+        \ a:0 > 0 ? a:1 : {})
+
+  let l:index = s:choose_from(l:choose_list, l:options)
+  if l:index < 0 | return '' | endif
+  return l:return_list[l:index]
 endfunction
 
 " }}}1
@@ -59,59 +74,53 @@ endfunction
 
 " }}}1
 
-function! s:choose_dict(dict, prompt) abort " {{{1
-  if len(a:dict) == 1
-    return values(a:dict)[0]
-  endif
+function! s:choose_from(list, options) abort " {{{1
+  if len(a:list) == 1 | return a:list[0] | endif
 
   while 1
     redraw!
-    if !empty(a:prompt)
-      echohl VimtexMsg
-      unsilent echo a:prompt
-      echohl None
-    endif
+    echohl VimtexMsg
+    unsilent echo a:options.prompt
+    echohl None
 
-    let l:choice = 0
-    for l:x in values(a:dict)
-      let l:choice += 1
-      unsilent call vimtex#echo#formatted([['VimtexWarning', l:choice], ': ', l:x])
+    let l:choices = 0
+    if a:options.abort
+      unsilent call vimtex#echo#formatted(
+            \ [['VimtexWarning', '0'], ': Abort'])
+    endif
+    for l:x in a:list
+      let l:choices += 1
+      unsilent call vimtex#echo#formatted(
+            \ [['VimtexWarning', l:choices], ': ', l:x])
     endfor
 
     try
-      let l:choice = str2nr(input('> ')) - 1
-      if l:choice >= 0 && l:choice < len(a:dict)
-        return keys(a:dict)[l:choice]
+      let l:choice = l:choices > 9
+              \ ? s:_get_choice_many()
+              \ : s:_get_choice_few()
+      if a:options.abort && l:choice == 0
+        echon l:choice
+        return -1
+      endif
+      let l:choice -= 1
+      if l:choice >= 0 && l:choice < len(a:list)
+        echon l:choice
+        return l:choice
       endif
     endtry
   endwhile
 endfunction
 
 " }}}1
-function! s:choose_list(list, prompt) abort " {{{1
-  if len(a:list) == 1 | return a:list[0] | endif
 
-  while 1
-    redraw!
-    if !empty(a:prompt)
-      echohl VimtexMsg
-      unsilent echo a:prompt
-      echohl None
-    endif
+function! s:_get_choice_few() abort " {{{1
+  echo '> '
+  return nr2char(getchar())
+endfunction
 
-    let l:choice = 0
-    for l:x in a:list
-      let l:choice += 1
-      unsilent call vimtex#echo#formatted([['VimtexWarning', l:choice], ': ', l:x])
-    endfor
-
-    try
-      let l:choice = str2nr(input('> ')) - 1
-      if l:choice >= 0 && l:choice < len(a:list)
-        return a:list[l:choice]
-      endif
-    endtry
-  endwhile
+" }}}1
+function! s:_get_choice_many() abort " {{{1
+  return str2nr(input('> '))
 endfunction
 
 " }}}1

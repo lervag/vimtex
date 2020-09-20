@@ -46,35 +46,11 @@ function! vimtex#doc#make_selection(context) abort " {{{1
     return
   endif
 
-  if len(a:context.candidates) == 1
-    let a:context.selected = a:context.candidates[0]
-    return
-  endif
-
-  call vimtex#echo#echo('Multiple candidates detected, please select one:')
-  let l:count = 0
-  for l:package in a:context.candidates
-    let l:count += 1
-    call vimtex#echo#formatted([
-          \ '  [' . string(l:count) . '] ',
-          \ ['VimtexSuccess', l:package]
-          \])
-  endfor
-
-  call vimtex#echo#echo('Type number (everything else cancels): ')
-  let l:choice = nr2char(getchar())
-  if l:choice !~# '\d'
-        \ || l:choice == 0
-        \ || l:choice > len(a:context.candidates)
-    echohl VimtexWarning
-    echon l:choice =~# '\d' ? l:choice : '-'
-    echohl NONE
-    let a:context.selected = ''
-  else
-    echon l:choice
-    let a:context.selected = a:context.candidates[l:choice-1]
-    let a:context.ask_before_open = 0
-  endif
+  let a:context.ask_before_open = len(a:context.candidates) == 1
+  let a:context.selected = vimtex#echo#choose(a:context.candidates, {
+        \ 'prompt': 'Multiple candidates detected, please select one:',
+        \ 'abort': v:true,
+        \})
 endfunction
 
 " }}}1
