@@ -94,7 +94,37 @@ endfunction
 
 " }}}1
 function! s:actions.show() abort dict " {{{1
-  echo self.entry
+  let l:entry = deepcopy(self.entry)
+
+  call vimtex#echo#formatted([
+        \ ['Normal', '@'],
+        \ ['VimtexMsg', l:entry.type],
+        \ ['Normal', '{'],
+        \ ['Special', l:entry.key],
+        \ ['Normal', ','],
+        \])
+
+  for l:x in ['key', 'type', 'vimtex_lnum', 'vimtex_file']
+    if has_key(l:entry, l:x)
+      call remove(l:entry, l:x)
+    endif
+  endfor
+
+  for l:x in ['title', 'author', 'year']
+    if has_key(l:entry, l:x)
+      call vimtex#echo#formatted([
+            \ ['VimtexInfoValue', '  ' . l:x . ': '],
+            \ ['Normal', remove(l:entry, l:x)]
+            \])
+    endif
+  endfor
+
+  for [l:key, l:val] in items(l:entry)
+      call vimtex#echo#formatted([
+            \ ['VimtexInfoValue', '  ' . l:key . ': '],
+            \ ['Normal', l:val]
+            \])
+  endfor
 endfunction
 
 " }}}1
