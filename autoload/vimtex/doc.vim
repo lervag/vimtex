@@ -46,11 +46,10 @@ function! vimtex#doc#make_selection(context) abort " {{{1
     return
   endif
 
-  let a:context.ask_before_open = len(a:context.candidates) == 1
-  let a:context.selected = vimtex#echo#choose(a:context.candidates, {
+  let a:context.selected = vimtex#ui#choose(a:context.candidates, {
         \ 'prompt': 'Multiple candidates detected, please select one:',
-        \ 'abort': v:true,
         \})
+  let a:context.ask_before_open = len(a:context.candidates) == 1
 endfunction
 
 " }}}1
@@ -150,6 +149,7 @@ function! s:packages_from_command(cmd) abort " {{{1
 endfunction
 
 " }}}1
+
 function! s:packages_remove_invalid(context) abort " {{{1
   let l:invalid_packages = filter(copy(a:context.candidates), {_, x ->
         \    empty(vimtex#kpsewhich#find(x . '.sty'))
