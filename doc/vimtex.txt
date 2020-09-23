@@ -84,6 +84,8 @@ CONTENTS                                                      *vimtex-contents*
     Forward search                              |vimtex-synctex-forward-search|
     Backward search                             |vimtex-synctex-backward-search|
   LaTeX Documentation                           |vimtex-latexdoc|
+  Context menu                                  |vimtex-context-menu|
+    Citation context                            |vimtex-context-citation|
   Code structure                                |vimtex-code|
   FAQ                                           |vimtex-faq|
   Troubleshooting                               |vimtex-troubleshooting|
@@ -188,6 +190,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
+  - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Folding
 - Indentation
 - Improved syntax highlighting
@@ -781,6 +784,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    [/               |<plug>(vimtex-[/|                              `nxo`
    [*               |<plug>(vimtex-[star|                           `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
+   <CR>             |<plug>(vimtex-context-menu)|                   `n`
   ---------------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
@@ -2531,6 +2535,11 @@ OPTIONS                                                        *vimtex-options*
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
 
+                                             *VimtexContextMenu*
+                                             *<plug>(vimtex-context-menu)*
+:VimtexContextMenu        Show a context menu on the item below cursor. See
+                          |vimtex-context-menu| for more information.
+
                                              *VimtexInfo*
                                              *<plug>(vimtex-info)*
 :VimtexInfo               Show information that is stored by vimtex about the
@@ -4167,6 +4176,41 @@ since it may be easily downloaded in various formats from [8].
 [6]: https://github.com/keith/investigate.vim
 [7]: https://www.tug.org/texdoc/doc/texdoc.pdf
 [8]: https://latexref.xyz/dev/
+
+==============================================================================
+CONTEXT MENU                                              *vimtex-context-menu*
+
+|vimtex| provides the command |VimtexContextMenu| to open a context menu for
+the item below the cursor. The menu allows various actions relevant to the
+current context. It is mapped by default to `<cr>`.
+
+The available contexts are listed below.
+
+------------------------------------------------------------------------------
+CITATION CONTEXT                                      *vimtex-context-citation*
+
+When the cursor is over a citations, e.g. `\textcite{myRef}`, then the context
+menu will show choices relevant to the current citation entry. This works by
+parsing the relevant `bib` file for metadata and providing menu actions
+depending on the available metadata. The actions are only displayed when they
+are relevant.
+
+Possible actions:
+
+  Edit entry~
+    Go to the entry location in the relevant bib file.
+
+  Show entry~
+    Show the registered data for the current entry.
+
+  Open PDF~
+    Open associated PDF file from the `file` key of the bib entry.
+
+  Open DOI~
+    Open associated DOI url from the `doi` key of the bib entry.
+
+  Open URL~
+    Open associated URL from the `url` key of the bib entry.
 
 ==============================================================================
 CODE STRUCTURE                                                    *vimtex-code*
