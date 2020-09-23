@@ -584,7 +584,7 @@ function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
   " Initialize state in submodules
   let l:new.disabled_modules = get(s:, 'disabled_modules', [])
   for l:mod in filter(
-        \ ['view', 'compiler', 'qf', 'toc', 'fold'],
+        \ ['view', 'compiler', 'qf', 'toc', 'fold', 'context'],
         \ 'index(l:new.disabled_modules, v:val) < 0')
     call vimtex#{l:mod}#init_state(l:new)
   endfor
