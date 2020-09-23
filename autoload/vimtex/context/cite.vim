@@ -23,7 +23,7 @@ function! s:handler.match(cmd, word) abort dict " {{{1
     return v:false
   endif
 
-  let self.cites = split(a:cmd.args[0].text, ',')
+  let self.cites = split(a:cmd.args[0].text, ',\s*')
   if index(self.cites, a:word) >= 0
     let self.selected = a:word
   else
