@@ -204,17 +204,7 @@ function! s:packages_open(context) abort " {{{1
     endif
   endif
 
-  let l:os = vimtex#util#get_os()
-  let l:url = 'http://texdoc.net/pkg/' . a:context.selected
-
-  silent execute (l:os ==# 'linux'
-        \         ? '!xdg-open'
-        \         : (l:os ==# 'mac'
-        \            ? '!open'
-        \            : '!start'))
-        \ . ' ' . l:url
-        \ . (l:os ==# 'win' ? '' : ' &')
-
+  call vimtex#util#www('http://texdoc.net/pkg/' . a:context.selected)
   redraw!
 endfunction
 

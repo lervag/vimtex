@@ -216,3 +216,16 @@ function! vimtex#util#uniq_unsorted(list) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#www(url) abort " {{{1
+  let l:os = vimtex#util#get_os()
+
+  silent execute (l:os ==# 'linux'
+        \         ? '!xdg-open'
+        \         : (l:os ==# 'mac'
+        \            ? '!open'
+        \            : '!start'))
+        \ . ' ' . a:url
+        \ . (l:os ==# 'win' ? '' : ' &')
+endfunction
+
+" }}}1
