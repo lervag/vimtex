@@ -126,6 +126,7 @@ disabled if desired.
   - Close the current environment/delimiter in insert mode with `]]`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
+  - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
 - Improved syntax highlighting
