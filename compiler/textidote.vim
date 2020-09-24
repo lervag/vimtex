@@ -15,6 +15,7 @@ else
 endif
 
 let &l:makeprg = s:textidote_cmd
+      \ . exists(g:vimtex_textidote_args) ? ' ' . g:vimtex_textidote_args : ''
       \ . ' --no-color --output singleline --check '
       \ . matchstr(&spelllang, '^\a\a') . ' %:S'
 
