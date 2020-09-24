@@ -31,6 +31,39 @@ function! vimtex#ui#choose(container, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#ui#menu(actions) abort " {{{1
+  " Argument: The 'actions' argument is a dictionary/object which contains
+  "   a list of menu items and corresponding actions (dict functions).
+  "   Something like this:
+  "
+  "   let a:actions = {
+  "         \ 'prompt': 'Prompt string for menu',
+  "         \ 'menu': [
+  "         \   {'name': 'My first action',
+  "         \    'func': 'action1'},
+  "         \   {'name': 'My second action',
+  "         \    'func': 'action2'},
+  "         \   ...
+  "         \ ],
+  "         \ 'action1': Func,
+  "         \ 'action2': Func,
+  "         \ ...
+  "         \}
+  if empty(a:actions) | return | endif
+
+  let l:choice = vimtex#ui#choose(a:actions.menu, {
+        \ 'prompt': a:actions.prompt,
+        \})
+  if empty(l:choice) | return | endif
+
+  try
+    call a:actions[l:choice.func]()
+  catch
+    " error here
+  endtry
+endfunction
+
+" }}}1
 
 function! s:choose_from(list, options) abort " {{{1
   if len(a:list) == 1 | return a:list[0] | endif
@@ -86,4 +119,3 @@ function! s:_get_choice_many() abort " {{{1
 endfunction
 
 " }}}1
-
