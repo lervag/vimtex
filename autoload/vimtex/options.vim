@@ -117,6 +117,10 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_format_enabled', 0)
 
+  call s:init_option('vimtex_grammar_textidote', {
+        \ 'jar': '',
+        \ 'args': '',
+        \})
   call s:init_option('vimtex_grammar_vlty', {
         \ 'lt_directory': '~/lib/LanguageTool',
         \ 'lt_disable': 'WHITESPACE_RULE',
@@ -398,6 +402,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_quickfix_ignored_warnings',
         \ 'g:vimtex_quickfix_latexlog',
         \ 'g:vimtex_quickfix_warnings',
+        \ 'g:vimtex_textidote_jar',
         \ 'g:vimtex_toc_fold',
         \ 'g:vimtex_toc_fold_level_start',
         \ 'g:vimtex_toc_fold_levels',

@@ -78,6 +78,7 @@ CONTENTS                                                      *vimtex-contents*
     Arara                                       |vimtex-arara|
   Syntax Checking (Linting)                     |vimtex-lint|
   Grammar Checking                              |vimtex-grammar|
+    textidote                                   |vimtex-grammar-textidote|
     vlty                                        |vimtex-grammar-vlty|
   View                                          |vimtex-view|
     Synctex                                     |vimtex-synctex|
@@ -1591,6 +1592,24 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_grammar_textidote*
+  This option is used to configure the `textidote` grammar and document checker,
+  see |vimtex-grammar-textidote|. It is a dictionary with the following keys 
+
+    jar~
+      The path to `textidote.jar`. This key must be defined if you want to use
+      the TeXtidote wrapper!
+
+    args~
+       Specify arguments to be passed to the TeXtidote grammar checker.
+
+  Default: >
+
+      let g:vimtex_grammar_textidote = {
+            \ 'jar': '',
+            \ 'args': '',
+            \}
+
 *g:vimtex_grammar_vlty*
   This option is used to configure the `vlty` grammar checker. It is a dictionary
   with the following keys (see |vimtex-grammar-vlty| for more details):
@@ -2015,12 +2034,6 @@ OPTIONS                                                        *vimtex-options*
   For more details, see `doc/targets-textobj-cheatsheet.md`.
 
   Default value: `'auto'`
-
-*g:vimtex_textidote_jar*
-  Specify path to `textidote.jar` for use with the textidote grammar checker,
-  see |vimtex-grammar|.
-
-  Default value: `UNDEFINED`
 
 *g:vimtex_toc_enabled*
   Use this option to disable/enable table of contents (ToC).
@@ -4006,13 +4019,24 @@ following is a list of the available checkers:
     http://www.cs.umd.edu/~nspring/software/style-check-readme.html
 
   textidote~
-    https://sylvainhalle.github.io/textidote/
-    To use `textidote`, the path to its jar file `textidote.jar` must be
-    indicated in the option |g:vimtex_textidote_jar|.
+    See more details here: |vimtex-grammar-textidote|
 
   vlty~
     See more details here: |vimtex-grammar-vlty|
->
+
+------------------------------------------------------------------------------
+TEXTIDOTE                                            *vimtex-grammar-textidote*
+
+The `textidote` compiler is a vimtex wrapper over TeXtidote [1]. TeXtidote is
+a correction tool for LaTeX documents to check grammar, style, and perform
+spell checking.
+
+Configuration of the wrapper is controlled by the Vim dictionary
+|g:vimtex_grammar_textidote|. In particular, it is important to specify the
+`jar` key to the path of the executable jar file `textidote.jar`.
+
+[1]: https://sylvainhalle.github.io/textidote/
+
 ------------------------------------------------------------------------------
 VLTY                                                      *vimtex-grammar-vlty*
 
@@ -4549,6 +4573,9 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2020-09-24: More consise grammar options~
+Deprecate *g:vimtex_textidote_jar* in favor of |g:vimtex_grammar_textidote|.
 
 2020-08-11: Remove g:vimtex_quickfix_latexlog~
 The option *g:vimtex_quickfix_latexlog* was deprecated in favor of the more

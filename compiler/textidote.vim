@@ -4,17 +4,18 @@ let current_compiler = 'textidote'
 let s:cpo_save = &cpo
 set cpo&vim
 
-if exists('g:vimtex_textidote_jar')
-      \ && filereadable(fnamemodify(g:vimtex_textidote_jar, ':p'))
-  let s:textidote_cmd = 'java -jar '
-        \ . shellescape(fnamemodify(g:vimtex_textidote_jar, ':p'))
-else
-  echoerr 'To use the textidote compiler, '
-        \ . 'please set g:vimtex_textidote_jar to the path of textidote.jar!'
+let s:cfg = g:vimtex_grammar_textidote
+
+if empty(s:cfg.jar) || !filereadable(fnamemodify(s:cfg.jar, ':p'))
+  call vimtex#log#error([
+        \ 'g:vimtex_grammar_textidote is not properly configured!',
+        \ 'Please see ":help vimtex-grammar-textidote" for more details.'
+        \])
   finish
 endif
 
-let &l:makeprg = s:textidote_cmd
+let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
+      \ . (exists(s:cfg.args) ? ' ' . s:cfg.args : '')
       \ . ' --no-color --output singleline --check '
       \ . matchstr(&spelllang, '^\a\a') . ' %:S'
 
