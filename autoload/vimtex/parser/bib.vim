@@ -182,7 +182,7 @@ function! s:parse_with_vim(file) abort " {{{1
     let l:lnum += 1
 
     if empty(l:current)
-      if s:parse_type(a:file, l:lnum, l:line, l:current, l:strings)
+      if s:parse_type(a:file, l:lnum, l:line, l:current, l:strings, l:entries)
         let l:current = {}
       endif
       continue
@@ -204,7 +204,7 @@ endfunction
 
 " }}}1
 
-function! s:parse_type(file, lnum, line, current, strings) abort " {{{1
+function! s:parse_type(file, lnum, line, current, strings, entries) abort " {{{1
   let l:matches = matchlist(a:line, '\v^\@(\w+)\s*\{\s*(.*)')
   if empty(l:matches) | return 0 | endif
 
@@ -219,9 +219,13 @@ function! s:parse_type(file, lnum, line, current, strings) abort " {{{1
   if l:type ==# 'string'
     return s:parse_string(l:matches[2], a:current, a:strings)
   else
+    let l:matches = matchlist(l:matches[2], '\v^([^, ]*)\s*,\s*(.*)')
     let a:current.type = l:type
-    let a:current.key = matchstr(l:matches[2], '.*\ze,\s*')
-    return 0
+    let a:current.key = l:matches[1]
+
+    return empty(l:matches[2])
+          \ ? 0
+          \ : s:parse_entry(l:matches[2], a:current, a:entries)
   endif
 endfunction
 
