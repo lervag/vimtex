@@ -15,7 +15,7 @@ if empty(s:cfg.jar) || !filereadable(fnamemodify(s:cfg.jar, ':p'))
 endif
 
 let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
-      \ . (exists(s:cfg.args) ? ' ' . s:cfg.args : '')
+      \ . (has_key(s:cfg, 'args') ? ' ' . s:cfg.args : '')
       \ . ' --no-color --output singleline --check '
       \ . matchstr(&spelllang, '^\a\a') . ' %:S'
 
