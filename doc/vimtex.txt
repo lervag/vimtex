@@ -2072,14 +2072,22 @@ OPTIONS                                                        *vimtex-options*
       This specifies a regular expression that should match the current line
       for the desired ToC entry.
 
-    prefilter~
+    prefilter_re~
       Type: |String|
-      Required: `maybe`
-      This specifies a `simplified` regular expression that should match the
-      current line for the desired ToC entry. This is used in order to make
-      things faster. The `re` key may often be a complex and therefore slow
-      regular expression. This key should represent a simple and fast regular
-      expression that may match more then the desired entry.
+      Required: `maybe` (this or `prefilter_cmds` should be specified)
+      This specifies a regular expression that must match the current line for
+      the desired ToC entry. This is used as a prefilter to make things
+      faster, and it does not need to be a perfect match. The `re` key may
+      often be a complex and therefore slow regular expression. This key
+      should represent a simple and fast regular expression that may match
+      more than the desired entry.
+
+    prefilter_cmds~
+      Type: List of |String|
+      Required: `maybe` (this or `prefilter_re` should be specified)
+      This is similar to `prefilter_re`, except it specifies a list of command
+      names (regular expressions). For instance, it should contain `todo` for
+      a ToC matcher for `\todo` commands.
 
     priority~
       Type: |expr-number| (default: 0)
@@ -2122,6 +2130,13 @@ OPTIONS                                                        *vimtex-options*
       Some entries may be specified over several lines, in which case this key
       becomes necessary in combination with the `get_entry` key. See the built
       in `s:matcher_section` matcher for an example on how to use this.
+
+    name~
+      Type: |String|
+      Required: `no`
+      Mostly for making it easier to debug a specific matcher. Without a name,
+      the matcher will be registered with a semi random numbered name like
+      `custom1`.
 
 *g:vimtex_toc_todo_labels*
   Dictionary of keywords that should be recognized in comments for the todo
