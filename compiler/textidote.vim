@@ -17,7 +17,7 @@ endif
 let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
       \ . (has_key(s:cfg, 'args') ? ' ' . s:cfg.args : '')
       \ . ' --no-color --output singleline --check '
-      \ . matchstr(&spelllang, '^\a\a') . ' %:S'
+      \ . s:get_textidote_lang(&spelllang) . ' %:S'
 
 setlocal errorformat=
 setlocal errorformat+=%f(L%lC%c-L%\\d%\\+C%\\d%\\+):\ %m
@@ -28,3 +28,18 @@ silent CompilerSet errorformat
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
+
+function! s:get_textidote_lang(lang)
+  " Match specific language(s)
+  if a:lang ==# 'en_gb'
+    return 'en_UK'
+  endif
+
+  " Convert normal lang strings to textidote format
+  let l:matched = matchlist(a:lang, '^\v(\a\a)%(_(\a\a))?')
+  let l:string = l:matched[1]
+  if !empty(l:matched[2])
+    let l:string .= toupper(l:matched[2])
+  endif
+  return l:string
+endfunction
