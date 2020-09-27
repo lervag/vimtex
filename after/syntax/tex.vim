@@ -4,4 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-call vimtex#syntax#init()
+if !g:vimtex_syntax_alpha
+  call vimtex#syntax#init()
+endif

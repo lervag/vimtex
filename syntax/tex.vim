@@ -15,11 +15,12 @@
 "      "g:tex_no_error"
 "      "g:tex_nospell"
 "      "g:tex_fast"
+"      syntax folding
 
 " TODO: Migrate options
 "   6. Please see  :help latex-syntax  for information on options.
 
-if exists('b:current_syntax') || !get(g:, 'vimtex_syntax_alpha')
+if exists('b:current_syntax') || !g:vimtex_syntax_alpha
   finish
 endif
 let s:keepcpo= &cpo
@@ -52,14 +53,6 @@ let s:tex_comment_nospell = get(g:, 'tex_comment_nospell')
 let s:tex_matchcheck = get(g:, 'tex_matchcheck', '[({[]')
 let s:tex_excludematcher = get(g:, 'tex_excludematcher')
 
-" Handle folding
-let s:tex_fold_enabled = get(g:, 'tex_fold_enabled')
-if s:tex_fold_enabled
-  command! -nargs=* TexFold <args> fold 
-else
-  command! -nargs=* TexFold <args> 
-endif
-
 " {{{1 (La)TeX keywords
 
 " Sses the characters 0-9,a-z,A-Z,192-255 only...
@@ -76,7 +69,7 @@ execute 'syntax iskeyword' . b:tex_isk
 syntax cluster texCmdGroup contains=texCmdBody,texComment,texDefParm,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texBeginEnd,texBeginEndName,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,@texMathZones,texMathError
 
 syntax cluster texEnvGroup contains=texMatcher,texMathDelim,texSpecialChar,texStatement
-syntax cluster texFoldGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMatcher,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texItalStyle,texEmphStyle,texNoSpell
+syntax cluster texZoneGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMatcher,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texItalStyle,texEmphStyle,texNoSpell
 syntax cluster texBoldGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texBoldItalStyle,texNoSpell
 syntax cluster texItalGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texItalStyle,texEmphStyle,texItalBoldStyle,texNoSpell
 if !s:tex_excludematcher
@@ -178,12 +171,6 @@ syntax region texBeginEndModifier matchgroup=Delimiter start="\[" end="]" contai
 syntax match texDocType "\\documentclass\>\|\\documentstyle\>\|\\usepackage\>" nextgroup=texBeginEndName,texDocTypeArgs
 syntax region texDocTypeArgs matchgroup=Delimiter start="\[" end="]" contained nextgroup=texBeginEndName contains=texComment,@NoSpell
 
-" {{{1 Preamble syntax-based folding support:
-
-if s:tex_fold_enabled
- syntax region texPreamble transparent fold start='\zs\\documentclass\>' end='\ze\\begin{document}' contains=texStyle,@texPreambleMatchGroup
-endif
-
 " {{{1 TeX input
 
 syntax match texInput           "\\input\s\+[a-zA-Z/.0-9_^]\+"hs=s+7                      contains=texStatement
@@ -261,16 +248,16 @@ syntax match texSpaceCodeChar "`\\\=.\(\^.\)\==\(\d\|\"\x\{1,6}\|`.\)"  containe
 
 " {{{1 Sections, subsections, etc
 
-TexFold syntax region texDocZone matchgroup=texSection start='\\begin\s*{\s*document\s*}' end='\\end\s*{\s*document\s*}' contains=@texFoldGroup,@texDocGroup,@Spell
-TexFold syntax region texPartZone matchgroup=texSection start='\\part\>' end='\ze\s*\\\%(part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texPartGroup,@Spell
-TexFold syntax region texChapterZone matchgroup=texSection start='\\chapter\>' end='\ze\s*\\\%(chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texChapterGroup,@Spell
-TexFold syntax region texSectionZone matchgroup=texSection start='\\section\>' end='\ze\s*\\\%(section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texSectionGroup,@Spell
-TexFold syntax region texSubSectionZone matchgroup=texSection start='\\subsection\>' end='\ze\s*\\\%(\%(sub\)\=section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texSubSectionGroup,@Spell
-TexFold syntax region texSubSubSectionZone matchgroup=texSection start='\\subsubsection\>' end='\ze\s*\\\%(\%(sub\)\{,2}section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texSubSubSectionGroup,@Spell
-TexFold syntax region texParaZone matchgroup=texSection start='\\paragraph\>' end='\ze\s*\\\%(paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@texParaGroup,@Spell
-TexFold syntax region texSubParaZone matchgroup=texSection start='\\subparagraph\>' end='\ze\s*\\\%(\%(sub\)\=paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texFoldGroup,@Spell
-TexFold syntax region texTitle matchgroup=texSection start='\\\%(author\|title\)\>\s*{' end='}' contains=@texFoldGroup,@Spell
-TexFold syntax region texAbstract matchgroup=texSection start='\\begin\s*{\s*abstract\s*}' end='\\end\s*{\s*abstract\s*}' contains=@texFoldGroup,@Spell
+syntax region texDocZone matchgroup=texSection start='\\begin\s*{\s*document\s*}' end='\\end\s*{\s*document\s*}' contains=@texZoneGroup,@texDocGroup,@Spell
+syntax region texPartZone matchgroup=texSection start='\\part\>' end='\ze\s*\\\%(part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texPartGroup,@Spell
+syntax region texChapterZone matchgroup=texSection start='\\chapter\>' end='\ze\s*\\\%(chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texChapterGroup,@Spell
+syntax region texSectionZone matchgroup=texSection start='\\section\>' end='\ze\s*\\\%(section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSectionGroup,@Spell
+syntax region texSubSectionZone matchgroup=texSection start='\\subsection\>' end='\ze\s*\\\%(\%(sub\)\=section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSubSectionGroup,@Spell
+syntax region texSubSubSectionZone matchgroup=texSection start='\\subsubsection\>' end='\ze\s*\\\%(\%(sub\)\{,2}section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSubSubSectionGroup,@Spell
+syntax region texParaZone matchgroup=texSection start='\\paragraph\>' end='\ze\s*\\\%(paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texParaGroup,@Spell
+syntax region texSubParaZone matchgroup=texSection start='\\subparagraph\>' end='\ze\s*\\\%(\%(sub\)\=paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@Spell
+syntax region texTitle matchgroup=texSection start='\\\%(author\|title\)\>\s*{' end='}' contains=@texZoneGroup,@Spell
+syntax region texAbstract matchgroup=texSection start='\\begin\s*{\s*abstract\s*}' end='\\end\s*{\s*abstract\s*}' contains=@texZoneGroup,@Spell
 
 " {{{1 Bold and italic
 
@@ -300,13 +287,8 @@ function! TexNewMathZone(sfx,mathzone,starform) abort " {{{2
   " sync, and highlighting.
   let grpname = 'texMathZone' . a:sfx
   let syncname = 'texSyncMathZone' . a:sfx
-  if s:tex_fold_enabled
-    let foldcmd = ' fold'
-  else
-    let foldcmd = ''
-  endif
   execute 'syntax cluster texMathZones add=' . grpname
-  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\s*}''' . ' keepend contains=@texMathZoneGroup' . foldcmd
+  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\s*}''' . ' keepend contains=@texMathZoneGroup'
   execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
   execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
   execute 'highlight def link ' . grpname . ' texMath'
@@ -316,7 +298,7 @@ function! TexNewMathZone(sfx,mathzone,starform) abort " {{{2
   let grpname  = 'texMathZone' . a:sfx . 'S'
   let syncname = 'texSyncMathZone' . a:sfx . 'S'
   execute 'syntax cluster texMathZones add=' . grpname
-  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\*\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\*\s*}''' . ' keepend contains=@texMathZoneGroup' . foldcmd
+  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\*\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\*\s*}''' . ' keepend contains=@texMathZoneGroup'
   execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
   execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
   execute 'highlight def link ' . grpname . ' texMath'
@@ -348,7 +330,7 @@ syntax match texMathOper "[_^=]" contained
 
 " {{{2 Text Inside Math Zones
 
-syntax region texMathText matchgroup=texStatement start='\\\(\(inter\)\=text\|mbox\)\s*{' end='}' contains=@texFoldGroup,@Spell
+syntax region texMathText matchgroup=texStatement start='\\\(\(inter\)\=text\|mbox\)\s*{' end='}' contains=@texZoneGroup,@Spell
 
 " {{{2 \left..something.. and \right..something.. support
 
@@ -450,20 +432,12 @@ if s:extfname ==# 'dtx'
   syntax match texComment "\^\^A.*$" contains=@texCommentGroup
   syntax match texComment "^%\+"     contains=@texCommentGroup
 else
-  if s:tex_fold_enabled
-    " Allows syntax-folding of 2 or more contiguous comment lines single-line
-    " comments are not folded
-    syntax match texComment "%.*$" contains=@texCommentGroup
-    TexFold syn region texComment start="^\zs\s*%.*\_s*%" skip="^\s*%" end='^\ze\s*[^%]' contains=@texCommentGroup
-    TexFold syn region texNoSpell contained matchgroup=texComment start="%\s*nospell\s*{" end="%\s*nospell\s*}" contains=@texFoldGroup,@NoSpell
-  else
-    syntax match texComment "%.*$" contains=@texCommentGroup
-    syntax region texNoSpell contained matchgroup=texComment start="%\s*nospell\s*{" end="%\s*nospell\s*}" contains=@texFoldGroup,@NoSpell
-  endif
+  syntax match texComment "%.*$" contains=@texCommentGroup
+  syntax region texNoSpell contained matchgroup=texComment start="%\s*nospell\s*{" end="%\s*nospell\s*}" contains=@texZoneGroup,@NoSpell
 endif
 
 " %begin-include ... %end-include acts like a texDocZone for \include'd files.  Permits spell checking, for example, in such files.
-TexFold syn region texDocZone matchgroup=texSection start='^\s*%begin-include\>' end='^\s*%end-include\>' contains=@texFoldGroup,@texDocGroup,@Spell
+syntax region texDocZone matchgroup=texSection start='^\s*%begin-include\>' end='^\s*%end-include\>' contains=@texZoneGroup,@texDocGroup,@Spell
 
 " {{{1 Verbatim
 
@@ -1159,8 +1133,9 @@ endif
 
 " {{{1 Cleanup
 
-delcommand TexFold
 unlet s:extfname
 let b:current_syntax = 'tex'
 let &cpo = s:keepcpo
 unlet s:keepcpo
+
+call vimtex#syntax#init()
