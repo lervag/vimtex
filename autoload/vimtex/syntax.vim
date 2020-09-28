@@ -2,7 +2,7 @@
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
-"
+
 
 function! vimtex#syntax#init() abort " {{{1
   if exists('b:current_syntax') || !get(g:, 'vimtex_syntax_alpha')
@@ -271,15 +271,14 @@ function! vimtex#syntax#init() abort " {{{1
   " {{{2 Bad/Mismatched math
 
   syntax match texBadMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
-  syntax match texBadMath "\\end\s*{\s*\(displaymath\|equation\|eqnarray\|math\)\*\=\s*}"
   syntax match texBadMath "\\[\])]"
 
   " {{{2 Math Zones
 
-  call TexNewMathZone('A', 'displaymath', 1)
-  call TexNewMathZone('B', 'eqnarray', 1)
-  call TexNewMathZone('C', 'equation', 1)
-  call TexNewMathZone('D', 'math', 1)
+  call vimtex#syntax#misc#new_math_zone('A', 'displaymath', 1)
+  call vimtex#syntax#misc#new_math_zone('B', 'eqnarray', 1)
+  call vimtex#syntax#misc#new_math_zone('C', 'equation', 1)
+  call vimtex#syntax#misc#new_math_zone('D', 'math', 1)
 
   " {{{2 Inline Math Zones
 
@@ -1078,32 +1077,6 @@ function! vimtex#syntax#init() abort " {{{1
 endfunction
 
   " }}}1
-
-function! TexNewMathZone(sfx, mathzone, starform) abort " {{{1
-  " Creates a mathzone with the given suffix and mathzone name. Starred forms
-  " are created if starform is true.  Starred forms have syntax group and
-  " synchronization groups with a "S" appended.  Handles: cluster, syntax,
-  " sync, and highlighting.
-  let grpname = 'texMathZone' . a:sfx
-  let syncname = 'texSyncMathZone' . a:sfx
-  execute 'syntax cluster texMathZones add=' . grpname
-  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\s*}''' . ' keepend contains=@texMathZoneGroup'
-  execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
-  execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
-  execute 'highlight def link ' . grpname . ' texMath'
-
-  if !a:starform | return | endif
-
-  let grpname  = 'texMathZone' . a:sfx . 'S'
-  let syncname = 'texSyncMathZone' . a:sfx . 'S'
-  execute 'syntax cluster texMathZones add=' . grpname
-  execute 'syntax region ' . grpname . " start='" . '\\begin\s*{\s*' . a:mathzone . '\*\s*}''' . " end='" . '\\end\s*{\s*' . a:mathzone . '\*\s*}''' . ' keepend contains=@texMathZoneGroup'
-  execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
-  execute 'syntax sync match ' . syncname . ' grouphere ' . grpname . ' "\\begin\s*{\s*' . a:mathzone . '\*\s*}"'
-  execute 'highlight def link ' . grpname . ' texMath'
-endfunction
-
-" }}}1
 
 function! s:Accents(chr, ...) " {{{1
   let i= 1
