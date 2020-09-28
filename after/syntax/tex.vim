@@ -4,6 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-if !g:vimtex_syntax_alpha
+if !get(g:, 'vimtex_syntax_alpha')
   call vimtex#syntax#init()
 endif

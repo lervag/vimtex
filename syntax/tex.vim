@@ -20,7 +20,7 @@
 " TODO: Migrate options
 "   6. Please see  :help latex-syntax  for information on options.
 
-if exists('b:current_syntax') || !g:vimtex_syntax_alpha
+if exists('b:current_syntax') || !get(g:, 'vimtex_syntax_alpha')
   finish
 endif
 let s:keepcpo= &cpo
