@@ -5,5 +5,5 @@
 "
 
 if !get(g:, 'vimtex_syntax_alpha')
-  call vimtex#syntax#init()
+  call vimtex#syntax#init_post()
 endif
