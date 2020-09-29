@@ -252,6 +252,14 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', '0')
 
   call s:init_option('vimtex_syntax_alpha', $VIMTEX_ALPHA)
+  call s:init_option('vimtex_syntax_config', {
+        \ 'conceal': get(g:, 'tex_conceal', 'abdmgsS'),
+        \ 'conceal_set_super':
+        \   get(g:, 'tex_superscripts', '[0-9a-zA-W.,:;+-<>/()=]'),
+        \ 'conceal_set_sub':
+        \   get(g:, 'tex_subscripts', '[0-9aehijklmnoprstuvx,+-/().]'),
+        \})
+
   call s:init_option('vimtex_syntax_enabled', 1)
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
