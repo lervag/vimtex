@@ -14,52 +14,51 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   call s:init_clusters()
 
-  " {{{2 Try to flag {}, [], and () mismatches
+  " {{{2 Primitives
 
-  syntax region texMatcher matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" transparent contains=@texMatchGroup,texError
-  syntax region texMatcher matchgroup=Delimiter start="\["                    end="]" transparent contains=@texMatchGroup,texError,@NoSpell
-  syntax region texParen start="(" end=")" transparent contains=@texMatchGroup,@Spell
-  syntax match texError "[}\]]"
+  " Delimiters
+  syntax region texMatcher     matchgroup=Delimiter start=/{/  skip=/\%(\\\\\)*\\}/ end=/}/ transparent contains=@texMatchGroup,texError
+  syntax region texMatcher     matchgroup=Delimiter start=/\[/                      end=/]/ transparent contains=@texMatchGroup,texError,@NoSpell
+  syntax region texMathMatcher matchgroup=Delimiter start=/{/  skip=/\%(\\\\\)*\\}/ end=/}/ end=/%stopzone\>/ contained contains=@texMathMatchGroup
+  syntax region texParen                            start=/(/                       end=/)/ transparent contains=@texMatchGroup,@Spell
 
-  syntax match texMathError "}" contained
-  syntax region texMathMatcher matchgroup=Delimiter start="{" skip="\(\\\\\)*\\}" end="}" end="%stopzone\>" contained contains=@texMathMatchGroup
+  syntax match texDelimiter /&/
 
-  " {{{2 TeX/LaTeX keywords and delimiters
+  " Flag mismatching ending delimiters } and ]
+  syntax match texError /[}\]]/
+  syntax match texErrorMath /}/ contained
 
-  if l:cfg.is_style_document
-    syntax match texStatement "\\[a-zA-Z@]\+"
-  else
-    syntax match texStatement "\\\a\+"
-    syntax match texError "\\\a*@[a-zA-Z@]*"
+  " Tex commands
+  syntax match texStatement /\\[a-zA-Z@]\+/ contains=texErrorStatement
+  if ! l:cfg.is_style_document
+    syntax match texErrorStatement /\\\a*@\a*/
   endif
 
-  syntax match texDelimiter "&"
-  syntax match texDelimiter "\\\\"
-
-  syntax match texOption "[^\\]\zs#\d\+\|^#\d\+"
-
+  " Accents and ligatures
   if l:cfg.is_style_document
-    syntax match texAccent "\\[bcdvuH][^a-zA-Z@]"me=e-1
-    syntax match texLigature "\\\([ijolL]\|ae\|oe\|ss\|AA\|AE\|OE\)[^a-zA-Z@]"me=e-1
+    syntax match texAccent /\\[bcdvuH]\ze[^a-zA-Z@]/
+    syntax match texLigature /\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]/
   else
-    syntax match texAccent "\\[bcdvuH]\A"me=e-1
-    syntax match texLigature "\\\([ijolL]\|ae\|oe\|ss\|AA\|AE\|OE\)\A"me=e-1
+    syntax match texAccent /\\[bcdvuH]\ze\A/
+    syntax match texLigature /\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze\A/
   endif
-  syntax match texAccent "\\[bcdvuH]$"
-  syntax match texAccent +\\[=^.\~"`']+
-  syntax match texAccent +\\['=t'.c^ud"vb~Hr]{\a}+
-  syntax match texLigature "\\\([ijolL]\|ae\|oe\|ss\|AA\|AE\|OE\)$"
+  syntax match texAccent /\\[bcdvuH]$/
+  syntax match texAccent /\\[=^.\~"`']/
+  syntax match texAccent /\\['=t'.c^ud"vb~Hr]{\a}/
+  syntax match texLigature /\\\([ijolL]\|ae\|oe\|ss\|AA\|AE\|OE\)$/
 
-  " {{{2 \begin{}/\end{} section markers
+  " Environments
+  syntax match  texBeginEnd /\v\\%(begin|end)>/ nextgroup=texBeginEndName
+  syntax region texBeginEndName     matchgroup=Delimiter start=/{/  end=/}/ contained contains=texComment nextgroup=texBeginEndModifier
+  syntax region texBeginEndModifier matchgroup=Delimiter start="\[" end=/]/ contained contains=texComment,@texMathZones,@NoSpell
 
-  syntax match  texBeginEnd "\\begin\>\|\\end\>" nextgroup=texBeginEndName
-  syntax region texBeginEndName     matchgroup=Delimiter start="{"  end="}" contained nextgroup=texBeginEndModifier   contains=texComment
-  syntax region texBeginEndModifier matchgroup=Delimiter start="\[" end="]" contained contains=texComment,@texMathZones,@NoSpell
+  " Some common, specific LaTeX commands
+  " TODO: This should be updated!
+  syntax match texDocType /\v\\%(documentclass|documentstyle|usepackage)>/ nextgroup=texBeginEndName,texDocTypeArgs
+  syntax region texDocTypeArgs matchgroup=Delimiter start=/\[/ end=/]/ contained nextgroup=texBeginEndName contains=texComment,@NoSpell
 
-  " {{{2 \documentclass, \documentstyle, \usepackage
-
-  syntax match texDocType "\\documentclass\>\|\\documentstyle\>\|\\usepackage\>" nextgroup=texBeginEndName,texDocTypeArgs
-  syntax region texDocTypeArgs matchgroup=Delimiter start="\[" end="]" contained nextgroup=texBeginEndName contains=texComment,@NoSpell
+  " Other
+  syntax match texOption /\v%(^|[^\\]\zs)#\d+/
 
   " {{{2 TeX input
 
@@ -714,7 +713,7 @@ endfunction
 " }}}1
 
 function! s:init_clusters() abort " {{{1
-  syntax cluster texCmdGroup contains=texCmdBody,texComment,texDefParm,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texBeginEnd,texBeginEndName,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,@texMathZones,texMathError
+  syntax cluster texCmdGroup contains=texCmdBody,texComment,texDefParm,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texBeginEnd,texBeginEndName,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,@texMathZones,texErrorMath
 
   syntax cluster texEnvGroup contains=texMatcher,texMathDelim,texSpecialChar,texStatement
   syntax cluster texZoneGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMatcher,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texItalStyle,texEmphStyle,texNoSpell
@@ -728,8 +727,8 @@ function! s:init_clusters() abort " {{{1
   syntax cluster texMathZones contains=texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ
   syntax cluster texMatchGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMatcher,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,@Spell,@texMathZones
   syntax cluster texMathDelimGroup contains=texMathDelimBad,texMathDelimKey,texMathDelimSet1,texMathDelimSet2
-  syntax cluster texMathMatchGroup contains=@texMathZones,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathMatcher,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,texMathError
-  syntax cluster texMathZoneGroup contains=texComment,texDelimiter,texLength,texMathDelim,texMathMatcher,texMathOper,texMathSymbol,texMathText,texRefZone,texSpecialChar,texStatement,texTypeSize,texTypeStyle,texMathError,@NoSpell
+  syntax cluster texMathMatchGroup contains=@texMathZones,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathMatcher,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,texErrorMath
+  syntax cluster texMathZoneGroup contains=texComment,texDelimiter,texLength,texMathDelim,texMathMatcher,texMathOper,texMathSymbol,texMathText,texRefZone,texSpecialChar,texStatement,texTypeSize,texTypeStyle,texErrorMath,@NoSpell
 
   syntax cluster texDocGroup contains=texPartZone,@texPartGroup
   syntax cluster texPartGroup contains=texChapterZone,texSectionZone,texParaZone
@@ -750,7 +749,8 @@ function! s:init_highlights(cfg) abort " {{{1
   " TeX highlighting groups which should share similar highlighting
   highlight def link texBadMath              texError
   highlight def link texMathDelimBad         texError
-  highlight def link texMathError            texError
+  highlight def link texErrorMath            texError
+  highlight def link texErrorStatement       texError
   highlight def link texError                 Error
   if a:cfg.is_style_document
     highlight def link texOnlyMath           texError
