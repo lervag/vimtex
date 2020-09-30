@@ -169,10 +169,10 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " {{{2 Math Zones
 
-  call vimtex#syntax#misc#new_math_zone('A', 'displaymath', 1)
-  call vimtex#syntax#misc#new_math_zone('B', 'eqnarray', 1)
-  call vimtex#syntax#misc#new_math_zone('C', 'equation', 1)
-  call vimtex#syntax#misc#new_math_zone('D', 'math', 1)
+  call vimtex#syntax#core#new_math_zone('A', 'displaymath', 1)
+  call vimtex#syntax#core#new_math_zone('B', 'eqnarray', 1)
+  call vimtex#syntax#core#new_math_zone('C', 'equation', 1)
+  call vimtex#syntax#core#new_math_zone('D', 'math', 1)
 
   " {{{2 Inline Math Zones
 
@@ -683,6 +683,32 @@ function! vimtex#syntax#core#init() abort " {{{1
   let b:current_syntax = 'tex'
 
   call vimtex#syntax#init_post()
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#new_math_zone(sfx, mathzone, starred) abort " {{{1
+  " This function is based on Charles E. Campbell's syntax script (version 119,
+  " dated 2020-06-29)
+
+  execute 'syntax match texBadMath /\\end\s*{\s*' . a:mathzone . '\*\?\s*}/'
+
+  let grp = 'texMathZone' . a:sfx
+  execute 'syntax cluster texMathZones add=' . grp
+  execute 'syntax region ' . grp
+        \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\s*}'''
+        \ . ' end=''\\end\s*{\s*' . a:mathzone . '\s*}'''
+        \ . ' keepend contains=@texMathZoneGroup'
+  execute 'highlight def link '.grp.' texMath'
+
+  if !a:starred | return | endif
+
+  let grp .= 'S'
+  execute 'syntax cluster texMathZones add=' . grp
+  execute 'syntax region ' . grp
+        \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\*\s*}'''
+        \ . ' end=''\\end\s*{\s*' . a:mathzone . '\*\s*}'''
+        \ . ' keepend contains=@texMathZoneGroup'
+  execute 'highlight def link '.grp.' texMath'
 endfunction
 
 " }}}1

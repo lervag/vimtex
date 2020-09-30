@@ -17,14 +17,14 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
         \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
         \ nextgroup=texBeginEndName
 
-  call vimtex#syntax#misc#new_math_zone('AmsA', 'align', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsB', 'alignat', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsD', 'flalign', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsC', 'gather', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsD', 'multline', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsE', 'xalignat', 1)
-  call vimtex#syntax#misc#new_math_zone('AmsF', 'xxalignat', 0)
-  call vimtex#syntax#misc#new_math_zone('AmsG', 'mathpar', 1)
+  call vimtex#syntax#core#new_math_zone('AmsA', 'align', 1)
+  call vimtex#syntax#core#new_math_zone('AmsB', 'alignat', 1)
+  call vimtex#syntax#core#new_math_zone('AmsD', 'flalign', 1)
+  call vimtex#syntax#core#new_math_zone('AmsC', 'gather', 1)
+  call vimtex#syntax#core#new_math_zone('AmsD', 'multline', 1)
+  call vimtex#syntax#core#new_math_zone('AmsE', 'xalignat', 1)
+  call vimtex#syntax#core#new_math_zone('AmsF', 'xxalignat', 0)
+  call vimtex#syntax#core#new_math_zone('AmsG', 'mathpar', 1)
 
   " Amsmath [lr][vV]ert  (Holger Mitschke)
   if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
