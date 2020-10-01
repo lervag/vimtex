@@ -197,11 +197,11 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
       break
     endif
 
-    call add(l:lines, l:line)
-
     if l:line =~# g:vimtex#re#tex_input
       let l:file = s:input_parser(l:line, a:file, a:opts.root)
       call extend(l:lines, s:parse_preamble(l:file, a:opts, a:parsed_files))
+    else
+      call add(l:lines, l:line)
     endif
   endfor
 
