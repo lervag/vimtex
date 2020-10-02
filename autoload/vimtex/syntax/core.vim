@@ -6,6 +6,11 @@
 
 function! vimtex#syntax#core#init() abort " {{{1
   let l:extension = expand('%:e')
+
+  " Syntax may be loaded without the main vimtex functionality, thus we need to
+  " ensure that the options are loaded!
+  call vimtex#options#init()
+
   let l:cfg = extend({
         \ 'is_style_document': index(
         \       ['sty', 'cls', 'clo', 'dtx', 'ltx'],
