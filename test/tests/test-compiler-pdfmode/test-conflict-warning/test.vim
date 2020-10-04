@@ -1,5 +1,5 @@
 set nocompatible
-let &rtp = '../../..,' . &rtp
+let &rtp = '../../../..,' . &rtp
 filetype plugin on
 
 nnoremap q :qall!<cr>
