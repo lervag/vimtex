@@ -294,7 +294,7 @@ function! s:compiler.get_engine() abort dict " {{{1
   return get(extend(g:vimtex_compiler_latexmk_engines,
         \ {
         \  'pdfdvi'           : '-pdfdvi',
-        \  'pdfps'           : '-pdfps',
+        \  'pdfps'            : '-pdfps',
         \  'pdflatex'         : '-pdf',
         \  'luatex'           : '-lualatex',
         \  'lualatex'         : '-lualatex',
