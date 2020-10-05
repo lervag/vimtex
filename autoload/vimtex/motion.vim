@@ -82,6 +82,12 @@ function! vimtex#motion#init_buffer() abort " {{{1
         \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[/)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[*)
         \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[*)"<cr>
+
+  " Math
+  nnoremap <silent><buffer> <plug>(vimtex-]n) :<c-u>call vimtex#motion#math(1,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[N) :<c-u>call vimtex#motion#math(0,1,0)<cr>
 endfunction
 
 " }}}1
@@ -194,6 +200,44 @@ function! vimtex#motion#comment(begin, backwards, visual) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
+  " Save cursor position first (and restore it on errors)
+  let l:curpos_saved = vimtex#pos#get_cursor()
+
+  let l:count = v:count1
+  if a:visual
+    normal! gv
+  endif
+
+  " Search for $, $$, \[, \(, \begin
+  " Use syntax to determine if we are inside math region
+  let l:re = g:vimtex#re#not_comment . (a:begin ? '%(\${1,2}|\\\[|\\\(|\\begin\s*\{)' : '%(\${1,2}|\\\]|\\\]|\\end\s*\{)')
+  let l:flags = 'W' . (a:backwards ? 'b' : '')
+
+  for l:_ in range(l:count)
+    " Ensure we are not going into infinite loop
+    let l:iter = 0
+
+    " We need to restore cursor back to it's original position if jumping
+    " to count number of math environments fail.
+    let l:restore_cursor = 1
+    while l:iter <= 5
+      let l:iter += 1
+      call search(l:re, l:flags)
+      let l:pos = vimtex#pos#get_cursor()
+      if vimtex#syntax#in_mathzone(l:pos[1],l:pos[2],l:pos[3])
+        let l:restore_cursor = 0
+        break
+      endif
+    endwhile
+  endfor
+  " Restore cursor position if fail
+  if l:restore_cursor
+    call vimtex#pos#set_cursor(l:curpos_saved)
+  else
+    call vimtex#pos#set_cursor(l:pos)
+  endif
+endfunction
 
 
 " Patterns to match section/chapter/...
