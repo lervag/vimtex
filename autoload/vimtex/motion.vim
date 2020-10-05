@@ -229,7 +229,7 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
         let l:restore_cursor = 0
         break
       elseif a:begin == 0
-        let l:pos_prev = vimtex#pos#prev(l:pos)
+        let l:pos_prev = vimtex#pos#prev(l:pos[1],l:pos[2]-1)
         if vimtex#syntax#in_mathzone(l:pos_prev[1],l:pos_prev[2],l:pos_prev[3])
             let l:restore_cursor = 0
             break
