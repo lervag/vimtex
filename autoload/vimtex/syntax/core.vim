@@ -74,7 +74,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " TeX input
   syntax match texInput         "\\input\s\+[a-zA-Z/.0-9_^]\+"hs=s+7                  contains=texStatement
   syntax match texInputFile     "\v\\include%(graphics|list)?%(\[.{-}\])?\s*\{.{-}\}" contains=texStatement,texInputCurlies,texInputFileOpt
-  syntax match texInputFile     "\v\\%(epsfig|input|usepackage)\s*%(\[.*\])?\{.{-}\}" contains=texStatement,texInputCurlies,texInputFileOpt
+  syntax match texInputFile     "\v\\%(epsfig|input)\s*%(\[.*\])?\{.{-}\}" contains=texStatement,texInputCurlies,texInputFileOpt
   syntax match texInputCurlies  "[{}]"                                                contained
   syntax region texInputFileOpt matchgroup=Delimiter start="\[" end="\]"              contains=texComment contained
 
@@ -96,10 +96,19 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax match texComment "%.*$" contains=@texCommentGroup
   endif
 
+  " Do not check URLs and acronyms in comments
+  " Source: https://github.com/lervag/vimtex/issues/562
+  syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
+        \ contains=@NoSpell containedin=texComment contained
+  syntax match texCommentAcronym '\v<(\u|\d){3,}s?>'
+        \ contains=@NoSpell containedin=texComment contained
+
   " Todo and similar within comments
   syntax case ignore
   syntax keyword texTodo contained combak fixme todo xxx
   syntax case match
+  syntax match texStatement '\\todo\w*' contains=texTodo
+  syntax match texTodo '\\todo\w*'
 
   " TeX Lengths
   syntax match texLength "\<\d\+\([.,]\d\+\)\?\s*\(true\)\?\s*\(bp\|cc\|cm\|dd\|em\|ex\|in\|mm\|pc\|pt\|sp\)\>"
@@ -123,6 +132,15 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texTypeStyle "\\emph\>"
   syntax match texTypeStyle "\\textmd\>"
   syntax match texTypeStyle "\\textrm\>"
+
+  syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texBoldGroup,@Spell
+  syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texBoldGroup,@Spell
+  syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texItalGroup,@Spell
+  syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texItalGroup,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" contains=@texItalGroup,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" contains=@texBoldGroup,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" contains=@texBoldGroup,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" contains=@texBoldGroup,@Spell
 
   syntax match texTypeStyle "\\mathbb\>"
   syntax match texTypeStyle "\\mathbf\>"
@@ -284,6 +302,26 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texEnvBgn contained matchgroup=Delimiter start="{"rs=s+1 end="}" nextgroup=texEnvEnd skipwhite skipnl contains=@texEnvGroup
   syntax region texEnvEnd contained matchgroup=Delimiter start="{"rs=s+1 end="}" skipwhite skipnl contains=@texEnvGroup
 
+  " Allow arguments in newenvironments
+  syntax region texEnvName contained matchgroup=Delimiter
+        \ start="{"rs=s+1  end="}"
+        \ nextgroup=texEnvBgn,texEnvArgs contained skipwhite skipnl
+  syntax region texEnvArgs contained matchgroup=Delimiter
+        \ start="\["rs=s+1 end="]"
+        \ nextgroup=texEnvBgn,texEnvArgs skipwhite skipnl
+  syntax cluster texEnvGroup add=texDefParm,texNewEnv,texComment
+
+  " Add support for \renewenvironment and \renewcommand
+  syntax match texNewEnv "\\renewenvironment\>"
+        \ nextgroup=texEnvName skipwhite skipnl
+  syntax match texNewCmd "\\renewcommand\>"
+        \ nextgroup=texCmdName skipwhite skipnl
+
+  " Match nested DefParms
+  syntax match texDefParmNested contained "##\+\d\+"
+  syntax cluster texEnvGroup add=texDefParmNested
+  syntax cluster texCmdGroup add=texDefParmNested
+
   " {{{2 Definitions/Commands
 
   syntax match texDefCmd              "\\def\>"       nextgroup=texDefName skipwhite skipnl
@@ -303,14 +341,14 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   if &encoding ==# 'utf-8'
     if l:cfg.conceal =~# 'b'
-      syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"   matchgroup=texTypeStyle  end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{" matchgroup=texTypeStyle  end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texItalGroup,@Spell
+      syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texItalGroup,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" concealends contains=@texItalGroup,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
     endif
 
     if l:cfg.conceal =~# 'S'
@@ -344,6 +382,15 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " }}}2
 
+  " Add nospell for commands per configuration
+  syntax region texVimtexNoSpell matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained contains=@NoSpell
+  for l:macro in g:vimtex_syntax_nospell_commands
+    execute 'syntax match texStatement /\\' . l:macro . '/'
+          \ 'nextgroup=texVimtexNospell'
+  endfor
+
   " The $..$ and $$..$$ make for impossible sync patterns (one can't tell if
   " a "$$" starts or stops a math zone by itself) The following grouptheres
   " coupled with minlines above help improve the odds of good syncing.
@@ -359,9 +406,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   call s:init_highlights(l:cfg)
 
   let b:current_syntax = 'tex'
-
-  " Load some general syntax improvements
-  call vimtex#syntax#load#general()
 
   if exists('b:vimtex')
     call vimtex#syntax#core#load()
@@ -387,7 +431,7 @@ function! vimtex#syntax#core#load() abort " {{{1
   call vimtex#syntax#misc#include_reset()
 
   " Load syntax for documentclass and packages
-  call vimtex#syntax#load#packages()
+  call vimtex#syntax#packages#init()
 endfunction
 
 " }}}1
@@ -525,6 +569,11 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texTodo           Todo
   highlight def link texType           Type
   highlight def link texZone           PreCondit
+
+  " New
+  highlight def link texCommentURL Comment
+  highlight def link texCommentAcronym Comment
+  highlight def link texDefParmNested Identifier
 endfunction
 
 " }}}1

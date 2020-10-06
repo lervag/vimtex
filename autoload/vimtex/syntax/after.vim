@@ -4,7 +4,36 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#load#general() abort " {{{1
+function! vimtex#syntax#after#load() abort " {{{1
+  if s:is_loaded() | return | endif
+
+  " Initialize project cache (used e.g. for the minted package)
+  if !has_key(b:vimtex, 'syntax')
+    let b:vimtex.syntax = {}
+  endif
+
+  " Initialize b:vimtex_syntax
+  let b:vimtex_syntax = {}
+
+  " Reset included syntaxes (necessary e.g. when doing :e)
+  call vimtex#syntax#misc#include_reset()
+
+  " Set some better defaults
+  syntax spell toplevel
+  syntax sync maxlines=500
+
+  " Load some general syntax improvements
+  call vimtex#syntax#after#general()
+
+  " Load syntax for documentclass and packages
+  call vimtex#syntax#packages#init()
+
+  " Hack to make it possible to determine if vimtex syntax was loaded
+  syntax match texVimtexLoaded 'dummyVimtexLoadedText' contained
+endfunction
+
+" }}}1
+function! vimtex#syntax#after#general() abort " {{{1
   if !exists('b:vimtex_syntax') | return | endif
 
   " I don't see why we can't match Math zones in the MatchNMGroup
@@ -98,29 +127,10 @@ function! vimtex#syntax#load#general() abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#load#packages() abort " {{{1
-  if !exists('b:vimtex_syntax') | return | endif
 
-  try
-    call vimtex#syntax#p#{b:vimtex.documentclass}#load()
-  catch /E117:/
-  endtry
-
-  for l:pkg in map(keys(b:vimtex.packages), "substitute(v:val, '-', '_', 'g')")
-    try
-      call vimtex#syntax#p#{tolower(l:pkg)}#load()
-    catch /E117:/
-    endtry
-  endfor
-
-  for l:pkg in g:vimtex_syntax_autoload_packages
-    try
-      call vimtex#syntax#p#{l:pkg}#load()
-    catch /E117:/
-      call vimtex#log#warning('Syntax package does not exist: ' . l:pkg,
-            \ 'Please see :help g:vimtex_syntax_autoload_packages')
-    endtry
-  endfor
+function! s:is_loaded() abort " {{{1
+  let l:result = vimtex#util#command('syntax')
+  return !empty(filter(l:result, 'v:val =~# "texVimtexLoaded"'))
 endfunction
 
 " }}}1
