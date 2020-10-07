@@ -201,7 +201,7 @@ endfunction
 
 " }}}1
 function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
-  " Save cursor position first (and restore it on errors)
+
   let l:curpos_saved = vimtex#pos#get_cursor()
 
   let l:count = v:count1
@@ -211,31 +211,32 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
 
   " Search for $, $$, \[, \(, \begin
   " Use syntax to determine if we are inside math region
-  let l:re = g:vimtex#re#not_comment . (a:begin ? '%(\${1,2}|\\\[|\\\(|\\begin\s*\{)' : '%(\${1,2}|\\\]|\\\)|\\end\s*\{)')
+  let l:re = g:vimtex#re#not_comment . (a:begin
+        \ ? '%(\${1,2}|\\\[|\\\(|\\begin\s*\{)'
+        \ : '%(\${1,2}|\\\]|\\\)|\\end\s*\{)')
+
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
     " Ensure we are not going into infinite loop
     let l:iter = 0
-
-    " We need to restore cursor back to it's original position if jumping
-    " to count number of math environments fail.
-    let l:restore_cursor = 1
+    let l:success = 0
     while l:iter <= 5
       let l:iter += 1
       call search(l:re, l:flags)
       let l:pos = vimtex#pos#get_cursor()
       if a:begin == 0
-          let l:pos = vimtex#pos#prev(l:pos[1],l:pos[2]-1)
+        let l:pos =vimtex#pos#prev(vimtex#pos#prev(l:pos))
       endif
-      if vimtex#syntax#in_mathzone(l:pos[1],l:pos[2],l:pos[3])
-          let l:restore_cursor = 0
-          break
+      if vimtex#syntax#in_mathzone(l:pos[1],l:pos[2])
+        let l:success = 1
+        break
       endif
     endwhile
   endfor
+
   " Restore cursor position if fail
-  if l:restore_cursor
+  if l:success == 0
     call vimtex#pos#set_cursor(l:curpos_saved)
   endif
 endfunction
