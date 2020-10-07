@@ -40,12 +40,10 @@ if s:vlty.server !=# 'lt'
       call s:installation_error('vlty compiler - lt_command not valid')
       finish
     endif
-  else
-    if !filereadable(fnamemodify(s:vlty.lt_directory
+  elseif !filereadable(fnamemodify(s:vlty.lt_directory
         \ . '/languagetool-commandline.jar', ':p'))
-      call s:installation_error('vlty compiler - lt_directory path not valid')
-      finish
-    endif
+    call s:installation_error('vlty compiler - lt_directory path not valid')
+    finish
   endif
 endif
 
@@ -57,9 +55,8 @@ let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
       \ s:python . ' -m yalafi.shell'
-      \ . ' --lt-command "' . s:vlty.lt_command . '"'
       \ . (s:vlty.lt_command != ''
-      \    ? ''
+      \    ? ' --lt-command ' . s:vlty.lt_command
       \    : ' --lt-directory ' . s:vlty.lt_directory)
       \ . (s:vlty.server ==# 'no'
       \    ? ''
