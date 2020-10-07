@@ -345,17 +345,20 @@ function! vimtex#options#init() abort " {{{1
       call s:init_option('vimtex_view_general_options',
             \ '-reuse-instance -forward-search @tex @line @pdf')
       call s:init_option('vimtex_view_general_options_latexmk',
-            \ 'reuse-instance')
+            \ '-reuse-instance')
     elseif executable('mupdf')
       call s:init_option('vimtex_view_general_viewer', 'mupdf')
+      call s:init_option('vimtex_view_general_options', '@pdf')
+      call s:init_option('vimtex_view_general_options_latexmk', '')
     else
-      call s:init_option('vimtex_view_general_viewer', '')
+      call s:init_option('vimtex_view_general_viewer', 'start')
+      call s:init_option('vimtex_view_general_options', '@pdf')
+      call s:init_option('vimtex_view_general_options_latexmk', '')
     endif
   else
     call s:init_option('vimtex_view_general_viewer', get({
           \ 'linux' : 'xdg-open',
           \ 'mac'   : 'open',
-          \ 'win'   : 'start',
           \}, l:os, ''))
     call s:init_option('vimtex_view_general_options', '@pdf')
     call s:init_option('vimtex_view_general_options_latexmk', '')
