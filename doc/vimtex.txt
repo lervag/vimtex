@@ -1616,6 +1616,8 @@ OPTIONS                                                        *vimtex-options*
 
     lt_directory~
       Path to the `LanguageTool` software.
+    lt_command~
+      Name of `LanguageTool` executable, if installed via packet manager.
 
     lt_disable~
     lt_enable~
@@ -1634,7 +1636,7 @@ OPTIONS                                                        *vimtex-options*
       `lt`    Contact the Web server provided by `LanguageTool`. In this case,
             no local installation is necessary. Please see the following page
             for conditions and restrictions:
-            http://wiki.languagetool.org/public-http-api
+            https://dev.languagetool.org/public-http-api
 
     shell_options~
       Pass additional options to `YaLafi`, e.g., `--equation-punctuation displ`;
@@ -1649,6 +1651,7 @@ OPTIONS                                                        *vimtex-options*
 
       let g:vimtex_grammar_vlty = {
             \ 'lt_directory': '~/lib/LanguageTool',
+            \ 'lt_command': '',
             \ 'lt_disable': 'WHITESPACE_RULE',
             \ 'lt_enable': '',
             \ 'lt_disablecategories': '',
@@ -4060,8 +4063,12 @@ plain text and combines this with the proofreading software `LanguageTool` [2].
 
 In order to use `vlty`, you need local installations of both components. An
 archive of `LanguageTool` can be downloaded from [3]. After uncompressing at
-a suitable place, the path to it is specified as shown below. `YaLafi` itself
-can be installed with: >
+a suitable place, the path to it is specified as shown below. On a system like
+`Arch Linux`, `LanguageTool` may also be installed with: >
+
+  pacman -S languagetool
+
+`YaLafi` itself can be installed with: >
 
   pip install --user yalafi
 
@@ -4072,8 +4079,15 @@ As a minimal example, one could write in |vimrc|: >
   set spelllang=en_gb
 
 The given directory has to contain the `LanguageTool` software, including for
-instance the file `languagetool-server.jar`. A separated `:compiler vlty` will
-raise an error message, if some component cannot be found.
+instance the file `languagetool-server.jar`.
+If `LanguageTool` has been installed via a packet manager as given above,
+one would write in |vimrc|: >
+
+  let g:vimtex_grammar_vlty = {'lt_command': 'languagetool'}
+  set spelllang=en_gb
+
+A separated `:compiler vlty` will raise an error message, if some component
+cannot be found.
 
 Note: Spell checking with `LanguageTool` is only enabled if a country code is
       specified in |'spelllang'|.
