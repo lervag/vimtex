@@ -39,6 +39,9 @@ function! s:matchparen.enable() abort dict " {{{1
     autocmd!
     autocmd CursorMoved  <buffer> call s:matchparen.highlight()
     autocmd CursorMovedI <buffer> call s:matchparen.highlight()
+    autocmd BufLeave     <buffer> call s:matchparen.clear()
+    autocmd WinLeave     <buffer> call s:matchparen.clear()
+    autocmd WinEnter     <buffer> call s:matchparen.highlight()
     try
       autocmd TextChangedP <buffer> call s:matchparen.highlight()
     catch /E216/
