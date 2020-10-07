@@ -1627,7 +1627,8 @@ OPTIONS                                                        *vimtex-options*
   with the following keys (see |vimtex-grammar-vlty| for more details):
 
     lt_directory~
-      Path to the `LanguageTool` software.
+      Path to the `LanguageTool` software, if installed manually.
+
     lt_command~
       Name of `LanguageTool` executable, if installed via packet manager.
 
@@ -4078,7 +4079,7 @@ archive of `LanguageTool` can be downloaded from [3]. After uncompressing at
 a suitable place, the path to it is specified as shown below. On a system like
 `Arch Linux`, `LanguageTool` may also be installed with: >
 
-  pacman -S languagetool
+  sudo pacman -S languagetool
 
 `YaLafi` itself can be installed with: >
 
@@ -4091,9 +4092,8 @@ As a minimal example, one could write in |vimrc|: >
   set spelllang=en_gb
 
 The given directory has to contain the `LanguageTool` software, including for
-instance the file `languagetool-server.jar`.
-If `LanguageTool` has been installed via a packet manager as given above,
-one would write in |vimrc|: >
+instance the file `languagetool-server.jar`. If `LanguageTool` has been
+installed via a packet manager as given above, one would write in |vimrc|: >
 
   let g:vimtex_grammar_vlty = {'lt_command': 'languagetool'}
   set spelllang=en_gb
