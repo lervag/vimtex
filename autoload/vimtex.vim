@@ -180,6 +180,19 @@ function! s:init_default_mappings() abort " {{{1
     call s:map(1, 'o', '[]', '<plug>(vimtex-[])')
     call s:map(1, 'o', '[[', '<plug>(vimtex-[[)')
 
+    call s:map(1, 'n', ']N', '<plug>(vimtex-]N)')
+    call s:map(1, 'n', ']n', '<plug>(vimtex-]n)')
+    call s:map(1, 'n', '[N', '<plug>(vimtex-[N)')
+    call s:map(1, 'n', '[n', '<plug>(vimtex-[n)')
+    call s:map(1, 'x', ']N', '<plug>(vimtex-]N)')
+    call s:map(1, 'x', ']n', '<plug>(vimtex-]n)')
+    call s:map(1, 'x', '[N', '<plug>(vimtex-[N)')
+    call s:map(1, 'x', '[n', '<plug>(vimtex-[n)')
+    call s:map(1, 'o', ']N', '<plug>(vimtex-]N)')
+    call s:map(1, 'o', ']n', '<plug>(vimtex-]n)')
+    call s:map(1, 'o', '[N', '<plug>(vimtex-[N)')
+    call s:map(1, 'o', '[n', '<plug>(vimtex-[n)')
+
     call s:map(1, 'n', ']M', '<plug>(vimtex-]M)')
     call s:map(1, 'n', ']m', '<plug>(vimtex-]m)')
     call s:map(1, 'n', '[M', '<plug>(vimtex-[M)')
@@ -205,11 +218,6 @@ function! s:init_default_mappings() abort " {{{1
     call s:map(1, 'o', ']*', '<plug>(vimtex-]*)')
     call s:map(1, 'o', '[/', '<plug>(vimtex-[/)')
     call s:map(1, 'o', '[*', '<plug>(vimtex-[*)')
-
-    call s:map(1, 'n', ']N', '<plug>(vimtex-]N)')
-    call s:map(1, 'n', ']n', '<plug>(vimtex-]n)')
-    call s:map(1, 'n', '[N', '<plug>(vimtex-[N)')
-    call s:map(1, 'n', '[n', '<plug>(vimtex-[n)')
   endif
 
   if g:vimtex_text_obj_enabled
