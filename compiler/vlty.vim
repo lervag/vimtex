@@ -35,7 +35,7 @@ if s:vlty.server !=# 'lt'
     finish
   endif
 
-  if s:vlty.lt_command != ''
+  if !empty(s:vlty.lt_command)
     if !executable(s:vlty.lt_command)
       call s:installation_error('vlty compiler - lt_command not valid')
       finish
@@ -55,7 +55,7 @@ let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
       \ s:python . ' -m yalafi.shell'
-      \ . (s:vlty.lt_command != ''
+      \ . (!empty(s:vlty.lt_command)
       \    ? ' --lt-command ' . s:vlty.lt_command
       \    : ' --lt-directory ' . s:vlty.lt_directory)
       \ . (s:vlty.server ==# 'no'

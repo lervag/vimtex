@@ -1630,7 +1630,8 @@ OPTIONS                                                        *vimtex-options*
       Path to the `LanguageTool` software, if installed manually.
 
     lt_command~
-      Name of `LanguageTool` executable, if installed via packet manager.
+      Name of `LanguageTool` executable, if installed via package manager. Note
+      that this has presedence over `lt_directory`!
 
     lt_disable~
     lt_enable~
@@ -4092,14 +4093,14 @@ As a minimal example, one could write in |vimrc|: >
   set spelllang=en_gb
 
 The given directory has to contain the `LanguageTool` software, including for
-instance the file `languagetool-server.jar`. If `LanguageTool` has been
-installed via a packet manager as given above, one would write in |vimrc|: >
+instance the file `languagetool-server.jar`. If instead `LanguageTool` is
+installed through a package manager as mentioned above, one could write: >
 
   let g:vimtex_grammar_vlty = {'lt_command': 'languagetool'}
   set spelllang=en_gb
 
-A separated `:compiler vlty` will raise an error message, if some component
-cannot be found.
+Calling `:compiler vlty` will raise an error message if some component cannot
+be found.
 
 Note: Spell checking with `LanguageTool` is only enabled if a country code is
       specified in |'spelllang'|.
