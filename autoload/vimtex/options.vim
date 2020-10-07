@@ -129,6 +129,7 @@ function! vimtex#options#init() abort " {{{1
         \})
   call s:init_option('vimtex_grammar_vlty', {
         \ 'lt_directory': '~/lib/LanguageTool',
+        \ 'lt_command': '',
         \ 'lt_disable': 'WHITESPACE_RULE',
         \ 'lt_enable': '',
         \ 'lt_disablecategories': '',
