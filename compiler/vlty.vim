@@ -17,8 +17,7 @@ if !executable(s:python)
   finish
 endif
 
-call system(s:python . ' -c "import sys; assert sys.version_info.major >= 3'
-            \ . ' and sys.version_info.minor >= 6"')
+call system(s:python . ' -c "import sys; assert sys.version_info >= (3, 6)"')
 if v:shell_error != 0
   call s:installation_error('vlty compiler requires at least Python version 3.6')
   finish
@@ -36,10 +35,17 @@ if s:vlty.server !=# 'lt'
     finish
   endif
 
-  if !filereadable(fnamemodify(s:vlty.lt_directory
+  if s:vlty.lt_command != ''
+    if !executable(s:vlty.lt_command)
+      call s:installation_error('vlty compiler - lt_command not valid')
+      finish
+    endif
+  else
+    if !filereadable(fnamemodify(s:vlty.lt_directory
         \ . '/languagetool-commandline.jar', ':p'))
-    call s:installation_error('vlty compiler - lt_directory path not valid')
-    finish
+      call s:installation_error('vlty compiler - lt_directory path not valid')
+      finish
+    endif
   endif
 endif
 
@@ -51,9 +57,12 @@ let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
       \ s:python . ' -m yalafi.shell'
-      \ . ' --lt-directory ' . s:vlty.lt_directory
+      \ . ' --lt-command "' . s:vlty.lt_command . '"'
+      \ . (s:vlty.lt_command != ''
+      \    ? ''
+      \    : ' --lt-directory ' . s:vlty.lt_directory)
       \ . (s:vlty.server ==# 'no'
-      \    ?  ''
+      \    ? ''
       \    : ' --server ' . s:vlty.server)
       \ . ' --language ' . s:language
       \ . ' --disable "' . s:vlty.lt_disable . '"'
