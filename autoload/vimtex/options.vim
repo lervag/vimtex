@@ -38,6 +38,12 @@ function! vimtex#options#init() abort " {{{1
         \ 'custom_patterns': [],
         \})
 
+  let l:viewer = get(g:, 'vimtex_view_method', 'general')
+  if l:viewer ==# 'general'
+    let l:viewer = 'NONE'
+  endif
+  call s:init_option('vimtex_context_pdf_viewer', l:viewer)
+
   call s:init_option('vimtex_delim_timeout', 300)
   call s:init_option('vimtex_delim_insert_timeout', 60)
   call s:init_option('vimtex_delim_stopline', 500)
@@ -370,6 +376,11 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
+
+  " Fallback option
+  if g:vimtex_context_pdf_viewer ==# 'NONE'
+    let g:vimtex_context_pdf_viewer = g:vimtex_view_general_viewer
+  endif
 
   let s:initialized = v:true
 endfunction

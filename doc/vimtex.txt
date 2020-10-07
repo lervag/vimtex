@@ -1160,6 +1160,18 @@ OPTIONS                                                        *vimtex-options*
         \ 'custom_patterns' = ['\\figref\*\?{[^}]*$']
         \ }
 
+*g:vimtex_context_pdf_viewer*
+  Specify PDF viewer to use to open PDF files with the |vimtex-context-menu|, for
+  instance for citations with the `file` key (see |vimtex-context-citation|).
+
+  The default value is based on the |vimtex-view| and is determined as follows:
+
+    * If |g:vimtex_view_method| is not `general`, then the specified viewer is
+      used. However, the viewer will by default start without any of the
+      regular options.
+
+    * Else fall back to the value of |g:vimtex_view_general_viewer|.
+
 *g:vimtex_delim_list*
   A dictionary that defines the pairs of delimiters that are recognized by
   |vimtex| for various commands and functions. The dictionary contains 5 sub
@@ -4166,7 +4178,7 @@ LATEX DOCUMENTATION                                           *vimtex-latexdoc*
 |vimtex| provides the command |VimtexDocPackage| to open documentation for
 packages and documentclasses. The command is mapped to `K` by default, and by
 default package documentation is looked up through http://texdoc.net/. This
-can be customized through |g:vimtex_doc_handler|.
+can be customized through |g:vimtex_doc_handlers|.
 
 In the following, I list some alternative and relevant options for access to
 LaTeX documentation, both online and offline.
@@ -4224,6 +4236,9 @@ the item below the cursor. The menu allows various actions relevant to the
 current context. It is mapped by default to `<cr>`.
 
 The available contexts are listed below.
+
+Associated settings:
+  |g:vimtex_context_pdf_viewer|
 
 ------------------------------------------------------------------------------
 CITATION CONTEXT                                      *vimtex-context-citation*
