@@ -2,30 +2,30 @@
 
 \begin{document}
 
-This is the test file for math motion.
+Test file for math motion.
 
-\begin{equation}                             % [n[n or 2[n
+\begin{equation}          % [n[n or 2[n
   1 + 1 = 2
-\end{equation}                               % [N[N or 2[N
+\end{equation}            % [N[N or 2[N
 
-\( 1 + 1 = 2 \)                              % Opening: [n, Closing: [N
+\( 1 + 1 = 2 \)           % Opening: [n, Closing: [N
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\linewidth]{file}
-  \caption{figure}
-  \label{fig:illustration}
-\end{figure}
-                                             % CURSOR
-\[                                           % ]n
+\begin{enumerate}
+  \item 1
+  \item 2
+  \item 3
+  \item 4
+\end{enumerate}
+                          % CURSOR
+\[                        % ]n
   1 + 1 = 2
-\]                                           % ]N
+\]                        % ]N
 
 \begin{itemize}
-    \item $1 + 1 = 2$.                       % Opening: ]n]n or 2]n, Closing: 2]N
+    \item $1 + 1 = 2$.    % Opening: ]n]n or 2]n, Closing: ]N]N or 2]N
 \end{itemize}
 
-$1 + 1 = 2$                                  % Opening: ]n]n]n or 3]n, Closing: 3]N
-$$1 + 1 = 2$$                                % Opening: ]n]n]n]n or 4]n, Closing: 4]n
+$1 + 1 = 2$               % Opening: ]n]n]n or 3]n, Closing: ]N]N]N or 3]N
+$$1 + 1 = 2$$             % Opening: ]n]n]n]n or 4]n, Closing: ]N]N]N]N or 4]N
 
 \end{document}
