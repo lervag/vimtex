@@ -44,10 +44,10 @@ function! vimtex#motion#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-[N) :<c-u>call vimtex#motion#math(0,1,0)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-]n) :<c-u>call vimtex#motion#math(1,0,1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,1)<cr>
-  xnoremap <silent><buffer> <plug>(vimtex-[N) :<c-u>call vimtex#motion#math(0,1,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-]n) :<c-u>call vimtex#motion#math(1,0,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-[N) :<c-u>call vimtex#motion#math(0,1,1)<cr>
   xmap     <silent><buffer> <plug>(vimtex-]n) <sid>(vimtex-]n)
   xmap     <silent><buffer> <plug>(vimtex-]N) <sid>(vimtex-]N)
   xmap     <silent><buffer> <plug>(vimtex-[n) <sid>(vimtex-]n)
