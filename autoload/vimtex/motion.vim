@@ -226,26 +226,63 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   " Search for $, $$, \[, \(, \begin
   " Use syntax to determine if we are inside math region.
   let l:re = g:vimtex#re#not_comment . (a:begin
-        \ ? '%(\${1,2}|\\\[|\\\(|\\begin\s*\{)'
-        \ : '%(\${1,2}|\\\]|\\\)|\\end\s*\{)')
+        \ ? '(\\\[)|(\\\()|(\\begin\s*\{)|(\$\$)|(\$)'
+        \ : '(\\\])|(\\\))|(\\end\s*\{)|(\$\$)|(\$)')
 
-  let l:flags = 'W' . (a:backwards ? 'b' : '')
+  let l:flags = 'Wp' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
-
-    " Ensure we are not going into infinite loop
+    " Ensure we are not going into an infinite loop
     let l:iter = 0
     let l:success = 0
     while l:iter <= 5
       let l:iter += 1
-      call search(l:re, l:flags)
+      let l:submatch = search(l:re, l:flags)
       let l:pos = vimtex#pos#get_cursor()
-      if a:begin == 0
-        let l:pos =vimtex#pos#prev(vimtex#pos#prev(l:pos))
-      endif
-      if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
+      if l:submatch == 0
+        break
+
+      " Jump directly to \[, \], \(, \)
+      elseif l:submatch < 4
         let l:success = 1
         break
+
+      " Check if the environment is a math environment.
+      elseif l:submatch == 4
+        if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
+          let l:success = 1
+          break
+        endif
+
+      " Handle $, $$.
+      else
+
+        " Look for beginning of mathzone
+        if a:begin
+          if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
+            let l:success = 1
+            break
+          endif
+
+        " Look for end of mathzone
+        else
+
+          " If searching for end, first check that the current search position
+          " is atleast 2 columns left from the initial position and not in mathzone
+          " in itself (Only opening $, $$ are in mathzone).
+          if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
+                    \ || (abs(l:curpos_saved[2] - l:pos[2]) == 1
+                    \ && l:curpos_saved[1] - l:pos[1] == 0)
+            continue
+          endif
+
+          " Now check if previous position is inside a mathzone or not.
+          let l:pos = vimtex#pos#prev(vimtex#pos#prev(l:pos))
+          if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
+            let l:success = 1
+            break
+          endif
+        endif
       endif
     endwhile
   endfor
