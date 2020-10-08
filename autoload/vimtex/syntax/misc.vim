@@ -5,6 +5,8 @@
 "
 
 function! vimtex#syntax#misc#add_to_section_clusters(group) abort " {{{1
+  if get(g:, 'vimtex_syntax_alpha') | return | endif
+
   for l:cluster in [
         \ 'texPartGroup',
         \ 'texChapterGroup',

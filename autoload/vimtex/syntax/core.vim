@@ -19,7 +19,29 @@ function! vimtex#syntax#core#init() abort " {{{1
   let l:cfg.is_style_document =
         \ index(['sty', 'cls', 'clo', 'dtx', 'ltx'], l:cfg.ext) >= 0
 
-  call s:init_clusters()
+  " {{{2 Define clusters
+
+  syntax cluster texClusterNewCmd contains=texCmdBody,texComment,texDefParm,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texBeginEnd,texBeginEndName,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,@texMathZones,texErrorMath,texDefParmNested
+  syntax cluster texClusterNewEnv contains=texMatcher,texMathDelim,texSpecialChar,texStatement,texDefParm,texNewEnv,texComment,texDefParmNested
+
+  syntax cluster texClusterMathText contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMatcher,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texBoldStyle,texItalStyle,texEmphStyle
+
+  syntax cluster texClusterSty contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,texStatementSty,texMatcherSty,@Spell
+  syntax cluster texClusterBold contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texBoldStyle,texBoldItalStyle,texMatcher
+  syntax cluster texClusterItal contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texItalStyle,texEmphStyle,texItalBoldStyle,texMatcher
+
+  syntax cluster texRefGroup contains=texMatcher,texComment,texDelimiter
+
+  syntax cluster texMatchGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMatcher,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,@Spell,@texMathZones
+
+  syntax cluster texMathZones contains=texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ
+  syntax cluster texMathDelimGroup contains=texMathDelimBad,texMathDelimKey,texMathDelimSet1,texMathDelimSet2
+  syntax cluster texMathMatchGroup contains=@texMathZones,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathMatcher,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,texErrorMath,texGreek,texSuperscript,texSubscript,texMathSymbol
+  syntax cluster texMathZoneGroup contains=texComment,texDelimiter,texLength,texMathDelim,texMathMatcher,texMathOper,texMathSymbol,texMathText,texRefZone,texSpecialChar,texStatement,texTypeSize,texTypeStyle,texErrorMath,@NoSpell,texGreek,texSuperscript,texSubscript,texMathSymbol
+
+  syntax cluster texClusterComment contains=texTodo,@Spell
+
+  " }}}2
 
   " {{{2 Primitives
 
@@ -74,7 +96,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " TeX input
   syntax match texInput         "\\input\s\+[a-zA-Z/.0-9_^]\+"hs=s+7                  contains=texStatement
   syntax match texInputFile     "\v\\include%(graphics|list)?%(\[.{-}\])?\s*\{.{-}\}" contains=texStatement,texInputCurlies,texInputFileOpt
-  syntax match texInputFile     "\v\\%(epsfig|input)\s*%(\[.*\])?\{.{-}\}" contains=texStatement,texInputCurlies,texInputFileOpt
+  syntax match texInputFile     "\v\\%(epsfig|input)\s*%(\[.*\])?\{.{-}\}"            contains=texStatement,texInputCurlies,texInputFileOpt
   syntax match texInputCurlies  "[{}]"                                                contained
   syntax region texInputFileOpt matchgroup=Delimiter start="\[" end="\]"              contains=texComment contained
 
@@ -90,10 +112,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Comments
   if l:cfg.ext ==# 'dtx'
     " Documented TeX Format: Only leading "^^A" and "%"
-    syntax match texComment "\^\^A.*$" contains=@texCommentGroup
-    syntax match texComment "^%\+"     contains=@texCommentGroup
+    syntax match texComment "\^\^A.*$" contains=@texClusterComment
+    syntax match texComment "^%\+"     contains=@texClusterComment
   else
-    syntax match texComment "%.*$" contains=@texCommentGroup
+    syntax match texComment "%.*$" contains=@texClusterComment
   endif
 
   " Do not check URLs and acronyms in comments
@@ -133,14 +155,14 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texTypeStyle "\\textmd\>"
   syntax match texTypeStyle "\\textrm\>"
 
-  syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texBoldGroup,@Spell
-  syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texBoldGroup,@Spell
-  syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texItalGroup,@Spell
-  syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texItalGroup,@Spell
-  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" contains=@texItalGroup,@Spell
-  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" contains=@texBoldGroup,@Spell
-  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" contains=@texBoldGroup,@Spell
-  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" contains=@texBoldGroup,@Spell
+  syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texClusterBold,@Spell
+  syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texClusterItal,@Spell
+  syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" contains=@texClusterItal,@Spell
+  syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" contains=@texClusterBold,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" contains=@texClusterItal,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" contains=@texClusterBold,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" contains=@texClusterBold,@Spell
+  syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" contains=@texClusterBold,@Spell
 
   syntax match texTypeStyle "\\mathbb\>"
   syntax match texTypeStyle "\\mathbf\>"
@@ -180,20 +202,14 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " }}}2
 
-  " {{{2 Zones! I think this should be removed!
-
-  syntax region texDocZone matchgroup=texSection start='\\begin\s*{\s*document\s*}' end='\\end\s*{\s*document\s*}' contains=@texZoneGroup,@texDocGroup,@Spell
-  syntax region texPartZone matchgroup=texSection start='\\part\>' end='\ze\s*\\\%(part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texPartGroup,@Spell
-  syntax region texChapterZone matchgroup=texSection start='\\chapter\>' end='\ze\s*\\\%(chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texChapterGroup,@Spell
-  syntax region texSectionZone matchgroup=texSection start='\\section\>' end='\ze\s*\\\%(section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSectionGroup,@Spell
-  syntax region texSubSectionZone matchgroup=texSection start='\\subsection\>' end='\ze\s*\\\%(\%(sub\)\?section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSubSectionGroup,@Spell
-  syntax region texSubSubSectionZone matchgroup=texSection start='\\subsubsection\>' end='\ze\s*\\\%(\%(sub\)\{,2}section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texSubSubSectionGroup,@Spell
-  syntax region texParaZone matchgroup=texSection start='\\paragraph\>' end='\ze\s*\\\%(paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@texParaGroup,@Spell
-  syntax region texSubParaZone matchgroup=texSection start='\\subparagraph\>' end='\ze\s*\\\%(\%(sub\)\?paragraph\>\|\%(sub\)*section\>\|chapter\>\|part\>\|end\s*{\s*document\s*}\)' contains=@texZoneGroup,@Spell
-  syntax region texTitle matchgroup=texSection start='\\\%(author\|title\)\>\s*{' end='}' contains=@texZoneGroup,@Spell
-  syntax region texAbstract matchgroup=texSection start='\\begin\s*{\s*abstract\s*}' end='\\end\s*{\s*abstract\s*}' contains=@texZoneGroup,@Spell
-
-  " }}}2
+  " Should probably add highlighting of things like this:
+  " \section
+  " \frontmatter -> \part
+  " \paragraph
+  " \chapter
+  " \author
+  " \title
+  " \begin{abstract}?
 
   " {{{2 Math stuff
 
@@ -205,7 +221,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathOper "[_^=]" contained
 
   " Text Inside Math Zones
-  syntax region texMathText matchgroup=texStatement start="\\\(\(inter\)\?text\|mbox\)\s*{" end="}" contains=@texZoneGroup,@Spell
+  syntax region texMathText matchgroup=texStatement start="\\\(\(inter\)\?text\|mbox\)\s*{" end="}" contains=@texClusterMathText,@Spell
 
   " Math environments
   call vimtex#syntax#core#new_math_zone('A', 'displaymath', 1)
@@ -284,10 +300,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match  texRefZone '\\cite\%([tp]\*\?\)\?\>' nextgroup=texRefOption,texCite
 
   " \makeatletter ... \makeatother sections
-  syntax region texStyle matchgroup=texStatement start='\\makeatletter' end='\\makeatother' contains=@texStyleGroup
-  syntax match texStyleStatement "\\[a-zA-Z@]\+" contained
-  syntax region texStyleMatcher matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=@texStyleGroup,texError contained
-  syntax region texStyleMatcher matchgroup=Delimiter start="\[" end="]" contains=@texStyleGroup,texError contained
+  " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
+  " In short: allow @ in multicharacter macro name
+  syntax region texGroupSty matchgroup=texStatement start='\\makeatletter' end='\\makeatother' contains=@texClusterSty
+  syntax match texStatementSty "\\[a-zA-Z@]\+" contained
+  syntax region texMatcherSty matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=@texClusterSty,texError contained
+  syntax region texMatcherSty matchgroup=Delimiter start="\[" end="]" contains=@texClusterSty,texError contained
 
   " }}}2
 
@@ -296,11 +314,11 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match  texNewCmd "\\newcommand\>" nextgroup=texCmdName skipwhite skipnl
   syntax region texCmdName contained matchgroup=Delimiter start="{"rs=s+1 end="}" nextgroup=texCmdArgs,texCmdBody skipwhite skipnl
   syntax region texCmdArgs contained matchgroup=Delimiter start="\["rs=s+1 end="]" nextgroup=texCmdBody skipwhite skipnl
-  syntax region texCmdBody contained matchgroup=Delimiter start="{"rs=s+1 skip="\\\\\|\\[{}]" matchgroup=Delimiter end="}" contains=@texCmdGroup
+  syntax region texCmdBody contained matchgroup=Delimiter start="{"rs=s+1 skip="\\\\\|\\[{}]" matchgroup=Delimiter end="}" contains=@texClusterNewCmd
   syntax match texNewEnv "\\newenvironment\>" nextgroup=texEnvName skipwhite skipnl
   syntax region texEnvName contained matchgroup=Delimiter start="{"rs=s+1 end="}" nextgroup=texEnvBgn skipwhite skipnl
-  syntax region texEnvBgn contained matchgroup=Delimiter start="{"rs=s+1 end="}" nextgroup=texEnvEnd skipwhite skipnl contains=@texEnvGroup
-  syntax region texEnvEnd contained matchgroup=Delimiter start="{"rs=s+1 end="}" skipwhite skipnl contains=@texEnvGroup
+  syntax region texEnvBgn contained matchgroup=Delimiter start="{"rs=s+1 end="}" nextgroup=texEnvEnd skipwhite skipnl contains=@texClusterNewEnv
+  syntax region texEnvEnd contained matchgroup=Delimiter start="{"rs=s+1 end="}" skipwhite skipnl contains=@texClusterNewEnv
 
   " Allow arguments in newenvironments
   syntax region texEnvName contained matchgroup=Delimiter
@@ -309,7 +327,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texEnvArgs contained matchgroup=Delimiter
         \ start="\["rs=s+1 end="]"
         \ nextgroup=texEnvBgn,texEnvArgs skipwhite skipnl
-  syntax cluster texEnvGroup add=texDefParm,texNewEnv,texComment
 
   " Add support for \renewenvironment and \renewcommand
   syntax match texNewEnv "\\renewenvironment\>"
@@ -319,8 +336,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Match nested DefParms
   syntax match texDefParmNested contained "##\+\d\+"
-  syntax cluster texEnvGroup add=texDefParmNested
-  syntax cluster texCmdGroup add=texDefParmNested
 
   " {{{2 Definitions/Commands
 
@@ -341,14 +356,14 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   if &encoding ==# 'utf-8'
     if l:cfg.conceal =~# 'b'
-      syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" concealends contains=@texItalGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
-      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" concealends contains=@texBoldGroup,@Spell
+      syntax region texBoldStyle     matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texClusterBold,@Spell
+      syntax region texBoldItalStyle matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texClusterItal,@Spell
+      syntax region texItalStyle     matchgroup=texTypeStyle start="\\textit\s*{"     end="}" concealends contains=@texClusterItal,@Spell
+      syntax region texItalBoldStyle matchgroup=texTypeStyle start="\\textbf\s*{"     end="}" concealends contains=@texClusterBold,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\emph\s*{"       end="}" concealends contains=@texClusterItal,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texts[cfl]\s*{" end="}" concealends contains=@texClusterBold,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\textup\s*{"     end="}" concealends contains=@texClusterBold,@Spell
+      syntax region texEmphStyle     matchgroup=texTypeStyle start="\\texttt\s*{"     end="}" concealends contains=@texClusterBold,@Spell
     endif
 
     if l:cfg.conceal =~# 'S'
@@ -390,18 +405,6 @@ function! vimtex#syntax#core#init() abort " {{{1
     execute 'syntax match texStatement /\\' . l:macro . '/'
           \ 'nextgroup=texVimtexNospell'
   endfor
-
-  " The $..$ and $$..$$ make for impossible sync patterns (one can't tell if
-  " a "$$" starts or stops a math zone by itself) The following grouptheres
-  " coupled with minlines above help improve the odds of good syncing.
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{abstract}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{center}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{description}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{enumerate}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{itemize}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{table}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\end{tabular}"
-  syntax sync match texSyncMathZoneA groupthere NONE "\\\(sub\)*section\>"
 
   call s:init_highlights(l:cfg)
 
@@ -463,39 +466,6 @@ endfunction
 
 " }}}1
 
-function! s:init_clusters() abort " {{{1
-  syntax cluster texCmdGroup contains=texCmdBody,texComment,texDefParm,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texBeginEnd,texBeginEndName,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,@texMathZones,texErrorMath
-
-  syntax cluster texEnvGroup contains=texMatcher,texMathDelim,texSpecialChar,texStatement
-  syntax cluster texZoneGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMatcher,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texItalStyle,texEmphStyle
-  syntax cluster texBoldGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texBoldStyle,texBoldItalStyle,texMatcher
-  syntax cluster texItalGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texInputFile,texLength,texLigature,texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ,texNewCmd,texNewEnv,texOnlyMath,texOption,texParen,texRefZone,texSection,texBeginEnd,texSectionZone,texSpaceCode,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,@texMathZones,texTitle,texAbstract,texItalStyle,texEmphStyle,texItalBoldStyle,texMatcher
-
-  syntax cluster texStyleGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,texStyleStatement,texStyleMatcher,@Spell
-
-  syntax cluster texRefGroup contains=texMatcher,texComment,texDelimiter
-
-  syntax cluster texMathZones contains=texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ
-  syntax cluster texMatchGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMatcher,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,@Spell,@texMathZones
-  syntax cluster texMathDelimGroup contains=texMathDelimBad,texMathDelimKey,texMathDelimSet1,texMathDelimSet2
-  syntax cluster texMathMatchGroup contains=@texMathZones,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathMatcher,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,texErrorMath
-  syntax cluster texMathZoneGroup contains=texComment,texDelimiter,texLength,texMathDelim,texMathMatcher,texMathOper,texMathSymbol,texMathText,texRefZone,texSpecialChar,texStatement,texTypeSize,texTypeStyle,texErrorMath,@NoSpell
-
-  syntax cluster texDocGroup contains=texPartZone,@texPartGroup
-  syntax cluster texPartGroup contains=texChapterZone,texSectionZone,texParaZone
-  syntax cluster texChapterGroup contains=texSectionZone,texParaZone
-  syntax cluster texSectionGroup contains=texSubSectionZone,texParaZone
-  syntax cluster texSubSectionGroup contains=texSubSubSectionZone,texParaZone
-  syntax cluster texSubSubSectionGroup contains=texParaZone
-  syntax cluster texParaGroup contains=texSubParaZone
-
-  syntax cluster texMathZoneGroup add=texGreek,texSuperscript,texSubscript,texMathSymbol
-  syntax cluster texMathMatchGroup add=texGreek,texSuperscript,texSubscript,texMathSymbol
-
-  syntax cluster texCommentGroup contains=texTodo,@Spell
-endfunction
-
-" }}}1
 function! s:init_highlights(cfg) abort " {{{1
   " TeX highlighting groups which should share similar highlighting
   highlight def link texBadMath              texError

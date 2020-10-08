@@ -13,7 +13,6 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
         \ contains=texBeginEnd
         \ nextgroup=texTabularArg
-        \ contained
   syntax region texTabularArg matchgroup=Delimiter
         \ start='{' end='}'
         \ contained
