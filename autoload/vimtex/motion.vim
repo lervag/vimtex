@@ -48,7 +48,7 @@ function! vimtex#motion#init_buffer() abort " {{{1
   xnoremap <silent><buffer> <plug>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,1)<cr>
   xnoremap <silent><buffer> <plug>(vimtex-[N) :<c-u>call vimtex#motion#math(0,1,1)<cr>
-  xmap     <silent><buffer> <plug>(vimtex-]n) <sid>(vimtex-]m)
+  xmap     <silent><buffer> <plug>(vimtex-]n) <sid>(vimtex-]n)
   xmap     <silent><buffer> <plug>(vimtex-]N) <sid>(vimtex-]N)
   xmap     <silent><buffer> <plug>(vimtex-[n) <sid>(vimtex-]n)
   xmap     <silent><buffer> <plug>(vimtex-[N) <sid>(vimtex-]N)
@@ -217,16 +217,14 @@ endfunction
 
 " }}}1
 function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
-
   let l:curpos_saved = vimtex#pos#get_cursor()
-
   let l:count = v:count1
   if a:visual
     normal! gv
   endif
 
   " Search for $, $$, \[, \(, \begin
-  " Use syntax to determine if we are inside math region
+  " Use syntax to determine if we are inside math region.
   let l:re = g:vimtex#re#not_comment . (a:begin
         \ ? '%(\${1,2}|\\\[|\\\(|\\begin\s*\{)'
         \ : '%(\${1,2}|\\\]|\\\)|\\end\s*\{)')
@@ -234,6 +232,7 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
+
     " Ensure we are not going into infinite loop
     let l:iter = 0
     let l:success = 0
@@ -244,7 +243,7 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
       if a:begin == 0
         let l:pos =vimtex#pos#prev(vimtex#pos#prev(l:pos))
       endif
-      if vimtex#syntax#in_mathzone(l:pos[1],l:pos[2])
+      if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
         let l:success = 1
         break
       endif
