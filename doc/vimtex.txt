@@ -781,6 +781,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ]M               |<plug>(vimtex-]M)|                             `nxo`
    [m               |<plug>(vimtex-[m)|                             `nxo`
    [M               |<plug>(vimtex-[M)|                             `nxo`
+   ]n               |<plug>(vimtex-]n)|                             `nxo`
+   ]N               |<plug>(vimtex-]N)|                             `nxo`
+   [n               |<plug>(vimtex-[n)|                             `nxo`
+   [N               |<plug>(vimtex-[N)|                             `nxo`
    ]/               |<plug>(vimtex-]/|                              `nxo`
    ]*               |<plug>(vimtex-]star|                           `nxo`
    [/               |<plug>(vimtex-[/|                              `nxo`
@@ -2926,6 +2930,22 @@ object, see |text-objects|.
 
 *<plug>(vimtex-[M)*
   go to [count] previous end of an environment `\end`.
+  |exlusive| motion.
+
+*<plug>(vimtex-]n)*
+  go to [count] next start of a math zone.
+  |exlusive| motion.
+
+*<plug>(vimtex-]N)*
+  go to [count] next end of a math zone.
+  |exlusive| motion.
+
+*<plug>(vimtex-[n)*
+  go to [count] previous start of a math zone.
+  |exlusive| motion.
+
+*<plug>(vimtex-[N)*
+  go to [count] previous end of a math zone.
   |exlusive| motion.
 
 *<plug>(vimtex-]/)*
