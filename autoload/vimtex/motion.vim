@@ -227,8 +227,8 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   " Search for $, $$, \[, \(, \begin
   " Use syntax to determine if we are inside math region.
   let l:re = g:vimtex#re#not_comment . (a:begin
-        \ ? '(\\\[)|(\\\()|(\\begin\s*\{)|(\$\$)|(\$)'
-        \ : '(\\\])|(\\\))|(\\end\s*\{)|(\$\$)|(\$)')
+        \ ? '%((\\\[)|(\\\()|(\\begin\s*\{)|(\$\$)|(\$))'
+        \ : '%((\\\])|(\\\))|(\\end\s*\{)|(\$\$)|(\$))')
 
   let l:flags = 'Wp' . (a:backwards ? 'b' : '')
 
