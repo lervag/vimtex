@@ -233,9 +233,12 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   let l:flags = 'Wp' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
-    " Ensure we are not going into an infinite loop
-    let l:iter = 0
     let l:success = 0
+
+    " Ensure we are not going into an infinite loop, the choice to iterate
+    " not more than 6 times is arbitrary but good enough to find the math
+    " zone in the text currently visible in the window.
+    let l:iter = 0
     while l:iter <= 5
       let l:iter += 1
       let l:submatch = search(l:re, l:flags)
@@ -287,12 +290,18 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
         endif
       endif
     endwhile
-  endfor
 
-  " Restore cursor position if fail
-  if l:success == 0
-    call vimtex#pos#set_cursor(l:curpos_saved)
-  endif
+    " Update saved cursor position after successfully finding next math zone.
+    if l:success
+      let l:curpos_saved = vimtex#pos#get_cursor()
+
+    " If not able to find the first math zone, quit. Otherwize, the jumps with
+    " a count can lead to unexpected behavior.
+    else
+      call vimtex#pos#set_cursor(l:curpos_saved)
+      break
+    endif
+  endfor
 endfunction
 
 
