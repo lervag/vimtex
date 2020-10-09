@@ -222,6 +222,7 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   if a:visual
     normal! gv
   endif
+  normal! m`
 
   " Search for $, $$, \[, \(, \begin
   " Use syntax to determine if we are inside math region.
@@ -247,14 +248,14 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
         let l:success = 1
         break
 
-      " Check if the environment is a math environment.
+      " Check if the environment is a math environment
       elseif l:submatch == 4
         if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
           let l:success = 1
           break
         endif
 
-      " Handle $, $$.
+      " Handle $, $$
       else
 
         " Look for beginning of mathzone
@@ -269,14 +270,15 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
 
           " If searching for end, first check that the current search position
           " is atleast 2 columns left from the initial position and not in mathzone
-          " in itself (Only opening $, $$ are in mathzone).
+          " already. The check works because only opening $ and $$ are in mathzone, not
+          " the closing ones.
           if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
                     \ || (abs(l:curpos_saved[2] - l:pos[2]) == 1
                     \ && l:curpos_saved[1] - l:pos[1] == 0)
             continue
           endif
 
-          " Now check if previous position is inside a mathzone or not.
+          " Now check if previous position is inside a mathzone or not
           let l:pos = vimtex#pos#prev(vimtex#pos#prev(l:pos))
           if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
             let l:success = 1
