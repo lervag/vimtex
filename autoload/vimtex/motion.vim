@@ -30,16 +30,12 @@ function! vimtex#motion#init_buffer() abort " {{{1
   xmap     <silent><buffer> <plug>(vimtex-][) <sid>(vimtex-][)
   xmap     <silent><buffer> <plug>(vimtex-[]) <sid>(vimtex-[])
   xmap     <silent><buffer> <plug>(vimtex-[[) <sid>(vimtex-[[)
-  onoremap <silent><buffer> <plug>(vimtex-]])
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]])"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-][)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-][)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[])
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[])"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[[)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[[)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]]) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]])"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-][) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-][)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[]) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[])"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[[) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[[)"<cr>
 
-  " Math
+  " Math environments ($-$, $$-$$, \(-\), \[-\], \begin-\end)
   nnoremap <silent><buffer> <plug>(vimtex-]n) :<c-u>call vimtex#motion#math(1,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-]N) :<c-u>call vimtex#motion#math(0,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-[n) :<c-u>call vimtex#motion#math(1,1,0)<cr>
@@ -52,14 +48,10 @@ function! vimtex#motion#init_buffer() abort " {{{1
   xmap     <silent><buffer> <plug>(vimtex-]N) <sid>(vimtex-]N)
   xmap     <silent><buffer> <plug>(vimtex-[n) <sid>(vimtex-]n)
   xmap     <silent><buffer> <plug>(vimtex-[N) <sid>(vimtex-]N)
-  onoremap <silent><buffer> <plug>(vimtex-]n)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]n)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-]N)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]N)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[n)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[n)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[N)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[N)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]n) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]n)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]N) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]N)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[n) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[n)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[N) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[N)"<cr>
 
   " Environments
   nnoremap <silent><buffer> <plug>(vimtex-]m) :<c-u>call vimtex#motion#environment(1,0,0)<cr>
@@ -74,14 +66,10 @@ function! vimtex#motion#init_buffer() abort " {{{1
   xmap     <silent><buffer> <plug>(vimtex-]M) <sid>(vimtex-]M)
   xmap     <silent><buffer> <plug>(vimtex-[m) <sid>(vimtex-[m)
   xmap     <silent><buffer> <plug>(vimtex-[M) <sid>(vimtex-[M)
-  onoremap <silent><buffer> <plug>(vimtex-]m)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]m)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-]M)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]M)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[m)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[m)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[M)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[M)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]m) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]m)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]M) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]M)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[m) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[m)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[M) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[M)"<cr>
 
   " Comments
   nnoremap <silent><buffer> <plug>(vimtex-]/) :<c-u>call vimtex#motion#comment(1,0,0)<cr>
@@ -96,14 +84,10 @@ function! vimtex#motion#init_buffer() abort " {{{1
   xmap     <silent><buffer> <plug>(vimtex-]*) <sid>(vimtex-]*)
   xmap     <silent><buffer> <plug>(vimtex-[/) <sid>(vimtex-[/)
   xmap     <silent><buffer> <plug>(vimtex-[*) <sid>(vimtex-[*)
-  onoremap <silent><buffer> <plug>(vimtex-]/)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]/)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-]*)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]*)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[/)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[/)"<cr>
-  onoremap <silent><buffer> <plug>(vimtex-[*)
-        \ :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[*)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]/) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]/)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]*) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]*)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[/) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[/)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[*) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[*)"<cr>
 endfunction
 
 " }}}1
@@ -123,6 +107,7 @@ function! vimtex#motion#find_matching_pair(...) abort " {{{1
   if empty(delim) | return | endif
   if empty(delim.match) | return | endif
 
+  " Hack to update the jump list so CTRL-o jumps back to the right place
   normal! m`
   call vimtex#pos#set_cursor(delim.lnum,
         \ (delim.is_open
@@ -183,6 +168,12 @@ function! vimtex#motion#section(type, backwards, visual) abort " {{{1
   endfor
 endfunction
 
+" Patterns to match section/chapter/...
+let s:re_sec = '\v^\s*\\%(%(sub)?paragraph|%(sub)*section|chapter|part|'
+      \ .        'appendi%(x|ces)|%(front|back|main)matter)>'
+let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
+let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
+
 " }}}1
 function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1
   let l:count = v:count1
@@ -222,62 +213,63 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   if a:visual
     normal! gv
   endif
+
+  " Hack to update the jump list so CTRL-o jumps back to the right place
   normal! m`
 
-  " Search for $, $$, \[, \(, \begin
-  " Use syntax to determine if we are inside math region.
+  " Search for math environment group delimiters
   let l:re = g:vimtex#re#not_comment . (a:begin
         \ ? '%((\\\[)|(\\\()|(\\begin\s*\{)|(\$\$)|(\$))'
         \ : '%((\\\])|(\\\))|(\\end\s*\{)|(\$\$)|(\$))')
 
+  " The p flag is key here and is used to specify for search to return the sub
+  " group that matches
   let l:flags = 'Wp' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
     let l:success = 0
 
-    " Ensure we are not going into an infinite loop, the choice to iterate
-    " not more than 6 times is arbitrary but good enough to find the math
-    " zone in the text currently visible in the window.
+    " Iterate a maximum of 6 times to ensure we are not going into an infinite
+    " loop. The number 6 is arbitrary, but typically good enough to find the
+    " math zone in the text currently visible in the window.
     let l:iter = 0
     while l:iter <= 5
       let l:iter += 1
       let l:submatch = search(l:re, l:flags)
       let l:pos = vimtex#pos#get_cursor()
-      if l:submatch == 0
-        break
+
+      if l:submatch == 0 | break | endif
 
       " Jump directly to \[, \], \(, \)
-      elseif l:submatch < 4
+      if l:submatch < 4
         let l:success = 1
         break
+      endif
 
-      " Check if the environment is a math environment
-      elseif l:submatch == 4
+      if l:submatch == 4
+        " The target position is inside a \begin ... \end delimited math
+        " environment, where the syntax group is properly recognized on both
+        " sides.
         if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
           let l:success = 1
           break
         endif
-
-      " Handle $, $$
       else
-
-        " Look for beginning of mathzone
+        " The target position is inside a $ ... $ or $$ ... $$ based math zone.
+        " In this case, the beginning delimiter is syntax matched as a math
+        " zone, whereas the ending delimiter is not.
         if a:begin
           if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
             let l:success = 1
             break
           endif
-
-        " Look for end of mathzone
         else
-
-          " If searching for end, first check that the current search position
-          " is atleast 2 columns left from the initial position and not in mathzone
-          " already. The check works because only opening $ and $$ are in mathzone, not
+          " First check that the current search position is at least 2 columns
+          " left from the initial position and not in mathzone already. The
+          " check works because only opening $ and $$ are in mathzone, not
           " the closing ones.
           if vimtex#syntax#in_mathzone(l:pos[1], l:pos[2])
-                    \ || (abs(l:curpos_saved[2] - l:pos[2]) == 1
-                    \ && l:curpos_saved[1] - l:pos[1] == 0)
+                \ || vimtex#pos#val(l:curpos_saved) - vimtex#pos#val(l:pos) == 1
             continue
           endif
 
@@ -291,12 +283,11 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
       endif
     endwhile
 
-    " Update saved cursor position after successfully finding next math zone.
+    " If a math group delimiter is found, update the saved cursor position. If
+    " not, then we restore the last saved position and quit. This ensures that
+    " we achieve the expected behaviour with the jumps with counts.
     if l:success
       let l:curpos_saved = vimtex#pos#get_cursor()
-
-    " If not able to find the first math zone, quit. Otherwize, the jumps with
-    " a count can lead to unexpected behavior.
     else
       call vimtex#pos#set_cursor(l:curpos_saved)
       break
@@ -304,9 +295,4 @@ function! vimtex#motion#math(begin, backwards, visual) abort " {{{1
   endfor
 endfunction
 
-
-" Patterns to match section/chapter/...
-let s:re_sec = '\v^\s*\\%(%(sub)?paragraph|%(sub)*section|chapter|part|'
-      \ .        'appendi%(x|ces)|%(front|back|main)matter)>'
-let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
-let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
+" }}}1
