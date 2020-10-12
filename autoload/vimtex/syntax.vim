@@ -10,7 +10,10 @@ function! vimtex#syntax#init() abort " {{{1
   "
   " [0]: http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
 
-  if exists('b:current_syntax') || !get(g:, 'vimtex_syntax_alpha')
+  if exists('b:current_syntax')
+    return
+  elseif !get(g:, 'vimtex_syntax_alpha')
+    source $VIMRUNTIME/syntax/tex.vim
     return
   endif
 
