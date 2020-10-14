@@ -4370,6 +4370,9 @@ A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
       \ = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
   let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
 <
+   Remark also that, by default, |surround.vim| already provides the mapping
+   `ys<text-object>l` for encapsulating a text object in a LaTeX environment.
+
    Note: Please also read the section |vimtex-nf-surround|!
 
    Note: An alternative is to use `vim-sandwich` (see |sandwich.txt| or
