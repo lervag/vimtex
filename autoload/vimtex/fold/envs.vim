@@ -178,7 +178,7 @@ function! s:folder.parse_caption_frame(line) abort dict " {{{1
   endwhile
 
   " If no caption found, check for a caption comment
-  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
+  return matchstr(a:line,'\\begin\*\?{.*}\(\[.*\]\)\?\s*%\s*\zs.*')
 endfunction
 
 " }}}1
