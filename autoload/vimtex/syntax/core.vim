@@ -35,7 +35,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texMatchGroup contains=texAccent,texBadMath,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMatcher,texNewCmd,texNewEnv,texOnlyMath,texParen,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texBoldStyle,texBoldItalStyle,texItalStyle,texItalBoldStyle,texZone,texInputFile,texOption,@Spell,@texMathZones
 
   syntax cluster texMathZones contains=texMathZoneV,texMathZoneW,texMathZoneX,texMathZoneY,texMathZoneZ
-  syntax cluster texMathDelimGroup contains=texMathDelimBad,texMathDelimKey,texMathDelimSet1,texMathDelimSet2
   syntax cluster texMathMatchGroup contains=@texMathZones,texComment,texDefCmd,texDelimiter,texDocType,texInput,texLength,texLigature,texMathDelim,texMathMatcher,texMathOper,texNewCmd,texNewEnv,texRefZone,texSection,texSpecialChar,texStatement,texString,texTypeSize,texTypeStyle,texZone,texErrorMath,texGreek,texSuperscript,texSubscript,texMathSymbol
   syntax cluster texMathZoneGroup contains=texComment,texDelimiter,texLength,texMathDelim,texMathMatcher,texMathOper,texMathSymbol,texMathText,texRefZone,texSpecialChar,texStatement,texTypeSize,texTypeStyle,texErrorMath,@NoSpell,texGreek,texSuperscript,texSubscript,texMathSymbol
 
