@@ -9,19 +9,19 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   let b:vimtex_syntax.asymptote = 1
 
   if !empty(vimtex#syntax#misc#include('asy'))
-    syntax region texZoneAsymptote
+    syntax region texRegionAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s
           \ end='\\end{asy\z1}'re=e
           \ keepend
           \ transparent
           \ contains=texBeginEnd,@vimtex_nested_asy
   else
-    syntax region texZoneAsymptote
+    syntax region texRegionAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s
           \ end='\\end{asy\z1}'re=e
           \ keepend
           \ contains=texBeginEnd
-    highlight def link texZoneAsymptote texZone
+    highlight def link texRegionAsymptote texRegion
   endif
 endfunction
 

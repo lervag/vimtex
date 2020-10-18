@@ -17,20 +17,18 @@ endfunction
 " }}}1
 
 function! s:new_math_zone(sfx, mathzone) abort " {{{1
-  if get(g:, 'tex_fast', 'M') !~# 'M' | return | endif
+  " This needs to be slightly different than vimtex#syntax#core#new_math_zone
+  " to handle options for the environment.
 
-  let foldcmd = get(g:, 'tex_fold_enabled') ? ' fold' : ''
+  execute 'syntax match texBadMath ''\\end\s*{\s*' . a:mathzone . '\*\?\s*}'''
 
   let grp = 'texMathZone' . a:sfx
-  execute 'syntax cluster texMathZones add=' . grp
   execute 'syntax region ' . grp
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\z(\*\?\)\s*}'
         \   . '\(\[.\{-}\]\)\?{\w*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\z1\s*}'''
-        \ . foldcmd . ' keepend contains=@texMathZoneGroup'
-  execute 'highlight def link '.grp.' texMath'
-
-  execute 'syntax match texBadMath ''\\end\s*{\s*' . a:mathzone . '\*\?\s*}'''
+        \ . ' keepend contains=@texClusterMath'
+  execute 'highlight def link ' . grp . ' texMath'
 endfunction
 
 " }}}1

@@ -10,7 +10,7 @@ function! vimtex#syntax#p#wiki#load() abort " {{{1
 
   call vimtex#syntax#misc#include('markdown')
 
-  syntax region texZoneWiki
+  syntax region texRegionWiki
         \ start='\\wikimarkup\>'
         \ end='\\nowikimarkup\>'re=e
         \ keepend

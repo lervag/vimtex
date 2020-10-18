@@ -9,7 +9,7 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
   let b:vimtex_syntax.dot2texi = 1
 
   call vimtex#syntax#misc#include('dot')
-  syntax region texZoneDot
+  syntax region texRegionDot
         \ start="\\begin{dot2tex}"rs=s
         \ end="\\end{dot2tex}"re=e
         \ keepend

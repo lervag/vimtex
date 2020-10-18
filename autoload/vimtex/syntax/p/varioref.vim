@@ -9,13 +9,13 @@ function! vimtex#syntax#p#varioref#load() abort " {{{1
   let b:vimtex_syntax.varioref = 1
   if get(g:, 'tex_fast', 'r') !~# 'r' | return | endif
 
-  syntax match texStatement '\\Vref\>' nextgroup=texVarioRefZone
+  syntax match texStatement '\\Vref\>' nextgroup=texRegionVarioref
 
-  syntax region texVarioRefZone contained matchgroup=Delimiter
+  syntax region texRegionVarioref contained matchgroup=Delimiter
         \ start="{" end="}"
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
 
-  highlight link texVarioRefZone texRefZone
+  highlight link texRegionVarioref texRegionRef
 endfunction
 
 " }}}1

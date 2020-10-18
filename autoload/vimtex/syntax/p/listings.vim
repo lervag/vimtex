@@ -12,11 +12,11 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
   syntax match texInputFile
         \ "\\lstinputlisting\s*\(\[.\{-}\]\)\={.\{-}}"
         \ contains=texStatement,texInputCurlies,texInputFileOpt
-  syntax match texZone "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
+  syntax match texRegion "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
 
   " Set all listings environments to listings
-  syntax cluster texFoldGroup add=texZoneListings
-  syntax region texZoneListings
+  syntax cluster texFoldGroup add=texRegionListings
+  syntax region texRegionListings
         \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"rs=s
         \ end="\\end{lstlisting}\|%stopzone\>"re=e
         \ keepend
@@ -27,7 +27,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
     let l:cluster = vimtex#syntax#misc#include(l:nested)
     if empty(l:cluster) | continue | endif
 
-    let l:group_main = 'texZoneListings' . toupper(l:nested[0]) . l:nested[1:]
+    let l:group_main = 'texRegionListings' . toupper(l:nested[0]) . l:nested[1:]
     let l:group_lstset = l:group_main . 'Lstset'
     let l:group_contained = l:group_main . 'Contained'
     execute 'syntax cluster texFoldGroup add=' . l:group_main
@@ -57,7 +57,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'contains=texStatement,texBeginEnd,@' . l:cluster
   endfor
 
-  highlight link texZoneListings texZone
+  highlight link texRegionListings texRegion
 endfunction
 
 " }}}1

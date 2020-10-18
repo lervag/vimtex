@@ -27,7 +27,7 @@ function! vimtex#syntax#p#array#load() abort " {{{1
         \ 'skip="\%(\\\\\)*\\\$"'
         \ 'end="\$"'
         \ 'end="%stopzone\>"'
-        \ 'contains=@texMathZoneGroup'
+        \ 'contains=@texClusterMath'
         \ (l:concealed ? 'concealends' : '')
 endfunction
 

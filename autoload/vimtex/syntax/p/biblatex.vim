@@ -28,7 +28,7 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
         \]
     execute 'syntax match texStatement'
           \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
-          \ 'nextgroup=texRefOption,texCite'
+          \ 'nextgroup=texRefOption,texRefCite'
   endfor
 
   for l:pattern in [
@@ -44,7 +44,7 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
         \]
     execute 'syntax match texStatement'
           \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
-          \ 'nextgroup=texRefOptions,texCites'
+          \ 'nextgroup=texRefOptions,texRefCites'
   endfor
 
   for l:pattern in [
@@ -59,22 +59,22 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
 
   syntax region texRefOptions contained matchgroup=Delimiter
         \ start='\[' end=']'
-        \ contains=@texRefGroup,texRefZone
-        \ nextgroup=texRefOptions,texCites
+        \ contains=@texClusterRef,texRegionRef
+        \ nextgroup=texRefOptions,texRefCites
 
-  syntax region texCites contained matchgroup=Delimiter
+  syntax region texRefCites contained matchgroup=Delimiter
         \ start='{' end='}'
-        \ contains=@texRefGroup,texRefZone,texCites
-        \ nextgroup=texRefOptions,texCites
+        \ contains=@texClusterRef,texRegionRef,texRefCites
+        \ nextgroup=texRefOptions,texRefCites
 
   syntax region texQuoteLang contained matchgroup=Delimiter
         \ start='{' end='}'
         \ transparent
-        \ contains=@texMatchGroup
-        \ nextgroup=texRefOption,texCite
+        \ contains=@texClusterMG
+        \ nextgroup=texRefOption,texRefCite
 
   highlight def link texRefOptions texRefOption
-  highlight def link texCites texCite
+  highlight def link texRefCites texRefCite
 endfunction
 
 " }}}1

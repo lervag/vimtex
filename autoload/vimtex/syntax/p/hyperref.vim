@@ -22,14 +22,14 @@ function! vimtex#syntax#p#hyperref#load() abort " {{{1
   syntax match texStatement '\\hyperref\>' nextgroup=texHyperref
   syntax match texStatement '\\autoref\>' nextgroup=texHyperref
   syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
   syntax region texHyperref matchgroup=Delimiter start='{' end='}' contained
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
 
   highlight link texUrl          Function
   highlight link texUrlVerb      texUrl
   highlight link texHref         texUrl
-  highlight link texHyperref     texRefZone
+  highlight link texHyperref     texRegionRef
 endfunction
 
 " }}}1

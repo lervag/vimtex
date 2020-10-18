@@ -8,8 +8,8 @@ if empty($INMAKE) | finish | endif
 call vimtex#test#assert(vimtex#syntax#in('javaScopeDecl', 72, 3))
 
 " Newminted on unrecognized languages (#1616)
-call vimtex#test#assert(vimtex#syntax#in('texZoneMintedLog', 112, 1))
-call vimtex#test#assert(vimtex#syntax#in('texZoneMintedShellsession', 116, 1))
+call vimtex#test#assert(vimtex#syntax#in('texRegionMintedLog', 112, 1))
+call vimtex#test#assert(vimtex#syntax#in('texRegionMintedShellsession', 116, 1))
 
 " Doing :e should not destroy nested syntax and similar
 call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))

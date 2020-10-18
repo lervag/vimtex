@@ -18,13 +18,13 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@vimtex_nested_python
 
-  syntax region texZonePythontex
+  syntax region texRegionPythontex
         \ start='\\begin{pyblock}'rs=s
         \ end='\\end{pyblock}'re=e
         \ keepend
         \ transparent
         \ contains=texBeginEnd,@vimtex_nested_python
-  syntax region texZonePythontex
+  syntax region texRegionPythontex
         \ start='\\begin{pycode}'rs=s
         \ end='\\end{pycode}'re=e
         \ keepend

@@ -9,14 +9,14 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
   let b:vimtex_syntax.luacode = 1
 
   call vimtex#syntax#misc#include('lua')
-  syntax region texZoneLua
+  syntax region texRegionLua
         \ start='\\begin{luacode\*\?}'rs=s
         \ end='\\end{luacode\*\?}'re=e
         \ keepend
         \ transparent
         \ contains=texBeginEnd,@vimtex_nested_lua
-  syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texZoneLuaArg
-  syntax region texZoneLuaArg matchgroup=Delimiter
+  syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texRegionLuaArg
+  syntax region texRegionLuaArg matchgroup=Delimiter
         \ start='{'
         \ end='}'
         \ contained

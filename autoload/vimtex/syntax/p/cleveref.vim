@@ -23,17 +23,17 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
 
   syntax region texCRefZone contained matchgroup=Delimiter
         \ start="{" end="}"
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
   syntax region texCRefZoneRange contained matchgroup=Delimiter
         \ start="{" end="}"
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
         \ nextgroup=texCRefZone skipwhite skipnl
   syntax region texCRefLabelOpts contained matchgroup=Delimiter
         \ start='\[' end=']'
-        \ contains=@texRefGroup,texRefZone
+        \ contains=@texClusterRef,texRegionRef
 
-  highlight link texCRefZone      texRefZone
-  highlight link texCRefZoneRange texRefZone
+  highlight link texCRefZone      texRegionRef
+  highlight link texCRefZoneRange texRegionRef
   highlight link texCRefLabelOpts texCmdArgs
 endfunction
 

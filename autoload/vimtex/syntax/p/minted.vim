@@ -43,7 +43,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
 
   " Match "unknown" environments
-  syntax region texZoneMinted
+  syntax region texRegionMinted
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
         \ end="\\end{minted}"re=e
         \ keepend
@@ -53,12 +53,12 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax match texArgMinted "{\w\+}"
         \ contained
         \ contains=texMintedName
-        \ nextgroup=texZoneMintedCmd
-  syntax region texZoneMintedCmd matchgroup=Delimiter
+        \ nextgroup=texRegionMintedCmd
+  syntax region texRegionMintedCmd matchgroup=Delimiter
         \ start='\z([|+/]\)'
         \ end='\z1'
         \ contained
-  syntax region texZoneMintedCmd matchgroup=Delimiter
+  syntax region texRegionMintedCmd matchgroup=Delimiter
         \ start='{'
         \ end='}'
         \ contained
@@ -68,7 +68,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     let l:cluster = vimtex#syntax#misc#include(l:nested)
 
     let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
-    let l:group_main = 'texZone' . l:name
+    let l:group_main = 'texRegion' . l:name
     let l:group_arg = 'texArg' . l:name
     let l:group_arg_zone = 'texArgZone' . l:name
 
@@ -76,8 +76,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
       let l:transparent = ''
       let l:contains_env = ''
       let l:contains_macro = ''
-      execute 'highlight link' l:group_main 'texZoneMinted'
-      execute 'highlight link' l:group_arg_zone 'texZoneMinted'
+      execute 'highlight link' l:group_main 'texRegionMinted'
+      execute 'highlight link' l:group_arg_zone 'texRegionMinted'
     else
       let l:transparent = 'transparent'
       let l:contains_env = ',@' . l:cluster
@@ -140,8 +140,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contained
         \ nextgroup=texArgMinted.*
 
-  highlight link texZoneMinted texZone
-  highlight link texZoneMintedCmd texZone
+  highlight link texRegionMinted texRegion
+  highlight link texRegionMintedCmd texRegion
   highlight link texMintedName texInputFileOpt
   highlight link texMintedNameOpt texMintedName
 endfunction

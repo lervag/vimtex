@@ -15,7 +15,7 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
         \ '\(\\begin\>\|\\end\>\)\ze{markdown}'
         \ nextgroup=texBeginEndName
 
-  syntax region texZoneMarkdown
+  syntax region texRegionMarkdown
         \ start='\\begin{markdown}'rs=s
         \ end='\\end{markdown}'re=e
         \ keepend

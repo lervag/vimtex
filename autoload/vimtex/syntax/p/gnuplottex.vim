@@ -9,7 +9,7 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
   let b:vimtex_syntax.gnuplottex = 1
 
   call vimtex#syntax#misc#include('gnuplot')
-  syntax region texZoneGnuplot
+  syntax region texRegionGnuplot
         \ start='\\begin{gnuplot}\(\_s*\[\_[\]]\{-}\]\)\?'rs=s
         \ end='\\end{gnuplot}'re=e
         \ keepend
