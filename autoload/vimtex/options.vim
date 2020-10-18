@@ -261,7 +261,6 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_subfile_start_local', 0)
 
-  call s:init_option('vimtex_syntax_alpha', $VIMTEX_ALPHA)
   call s:init_option('vimtex_syntax_config', {
         \ 'conceal': get(g:, 'tex_conceal', 'abdmgsS'),
         \ 'conceal_set_super':

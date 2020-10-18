@@ -8,9 +8,6 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'tikz') | return | endif
   let b:vimtex_syntax.tikz = 1
 
-  call vimtex#syntax#misc#add_to_section_clusters('texTikzSet')
-  call vimtex#syntax#misc#add_to_section_clusters('texTikzpicture')
-
   " Define clusters
   syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texStatement,texTikzSemicolon,texComment,@texVimtexGlobal
   syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texStatement,texLength,texComment

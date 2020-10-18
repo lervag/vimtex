@@ -408,32 +408,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   call s:init_highlights(l:cfg)
 
   let b:current_syntax = 'tex'
-
-  if exists('b:vimtex')
-    call vimtex#syntax#core#load()
-  else
-    augroup vimtex_syntax
-      autocmd!
-      autocmd User VimtexEventInitPost call vimtex#syntax#core#load()
-    augroup END
-  endif
-endfunction
-
-" }}}1
-function! vimtex#syntax#core#load() abort " {{{1
-  " Initialize b:vimtex_syntax
-  let b:vimtex_syntax = {}
-
-  " Initialize project cache (used e.g. for the minted package)
-  if !has_key(b:vimtex, 'syntax')
-    let b:vimtex.syntax = {}
-  endif
-
-  " Reset included syntaxes (necessary e.g. when doing :e)
-  call vimtex#syntax#misc#include_reset()
-
-  " Load syntax for documentclass and packages
-  call vimtex#syntax#packages#init()
 endfunction
 
 " }}}1

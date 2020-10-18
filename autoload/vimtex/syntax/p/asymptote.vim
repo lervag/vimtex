@@ -8,8 +8,6 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'asymptote') | return | endif
   let b:vimtex_syntax.asymptote = 1
 
-  call vimtex#syntax#misc#add_to_section_clusters('texZoneAsymptote')
-
   if !empty(vimtex#syntax#misc#include('asy'))
     syntax region texZoneAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s

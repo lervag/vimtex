@@ -18,7 +18,6 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@vimtex_nested_python
 
-  call vimtex#syntax#misc#add_to_section_clusters('texZonePythontex')
   syntax region texZonePythontex
         \ start='\\begin{pyblock}'rs=s
         \ end='\\end{pyblock}'re=e

@@ -130,7 +130,8 @@ disabled if desired.
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
-- Improved syntax highlighting
+- Syntax highlighting
+  - A consistent core syntax specification
   - Highlight matching delimiters
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package

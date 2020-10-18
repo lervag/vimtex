@@ -109,16 +109,16 @@ the plugin.
 ------------------------------------------------------------------------------
 COMMENT ON INTERNAL TEX PLUGIN                        *vimtex-comment-internal*
 
-Vim ships with some LaTeX support out of the box. In particular, it provides
+Vim ships with LaTeX support out of the box. In particular, it provides pretty
 good syntax highlighting (|ft-tex-syntax|), indentation (see the source file
 $VIMRUNTIME/indent/tex.vim for the documentation), and some sensible options
 (|ft-tex-plugin|).
 
-When |vimtex| is active, it will be used as the main |ftplugin|. It will
-define the same set of sensible settings as the internal plugin. However,
-|vimtex| does not provide its own syntax, instead it adds a few minor
-improvements to |ft-tex-syntax|, see |vimtex-syntax|. |vimtex| also provides its
-own indentation plugin, see |vimtex-indent|.
+When |vimtex| is active, it will by default be used as the main |ftplugin|,
+syntax plugin (|vimtex-syntax|) and indent plugin (|vimtex-indent|). It will
+define the same set of sensible settings as the internal plugin (and much
+more, of course). Various features may be disabled by the user, see the
+`g:vimtex_*_enabled` style of configuration options in |vimtex-options|.
 
                                                             *vimtex-tex-flavor*
 |ft-tex-plugin| supports both plain TeX, ConTeXt, and LaTeX files. This means
@@ -196,7 +196,8 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Folding
 - Indentation
-- Improved syntax highlighting
+- Syntax highlighting
+  - A consistent core syntax specification
   - Highlight matching delimiters
   - Support for `biblatex`/`natbib` package
   - Support for `cleveref` package
@@ -293,7 +294,6 @@ vimtex, but that are instead better provided by other plugins.
 
 * Linting and syntax checking                      |vimtex-nf-linting|
 * Snippets/Templates                               |vimtex-nf-snippets|
-* Syntax highlighting                              |vimtex-nf-syntax|
 * Tag navigation                                   |vimtex-nf-tag-nav|
 * Manipulate surrounding cmds/delims/envs          |vimtex-nf-surround|
 * Enhanced matching and higlighting of delimiters  |vimtex-nf-enhanced-matchparen|
@@ -325,10 +325,6 @@ Snippets/Templates~
                                                            *vimtex-nf-snippets*
   Snippets and/or templates are provided by for instance `neosnippet` and
   `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
-
-Syntax highlighting~
-                                                             *vimtex-nf-syntax*
-  See |vimtex-comment-internal|.
 
 Tag navigation~
                                                             *vimtex-nf-tag-nav*
@@ -1992,7 +1988,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: 0.
 
 *g:vimtex_syntax_enabled*
-  Use this option to disable/enable |vimtex| improved syntax highlighting.
+  Use this option to disable/enable syntax highlighting as provided by vimtex.
 
   Default value: 1.
 
@@ -3628,15 +3624,17 @@ Associated settings:
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
 
-Vim ships with syntax highlighting for LaTeX documents out of the box, please
-see |ft-tex-syntax|.  |vimtex| therefore does not provide its own syntax
-highlighting.  However, |vimtex| does add some minor improvements:
+|vimtex| provides a core syntax plugin that should generally work well out of
+the box. It includes package specific syntax highlighting for a lot of
+different packages, e.g.:
 
 - Support for `biblatex` and `natbib` package
 - Support for `cleveref` package
 - Improved highlighting of `listings` package
 - Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
   `asymptote`, `pythontex`, `listings`, and `minted`
+
+See also |vimtex-comment-internal| on the internal syntax plugin shipped with Vim.
 
                                                        *vimtex-syntax-packages*
 The syntax improvements for a specific package is loaded if that package is

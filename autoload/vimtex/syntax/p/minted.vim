@@ -43,7 +43,6 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
 
   " Match "unknown" environments
-  call vimtex#syntax#misc#add_to_section_clusters('texZoneMinted')
   syntax region texZoneMinted
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
         \ end="\\end{minted}"re=e
@@ -72,7 +71,6 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     let l:group_main = 'texZone' . l:name
     let l:group_arg = 'texArg' . l:name
     let l:group_arg_zone = 'texArgZone' . l:name
-    call vimtex#syntax#misc#add_to_section_clusters(l:group_main)
 
     if empty(l:cluster)
       let l:transparent = ''
