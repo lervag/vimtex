@@ -31,15 +31,15 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Primitives
 
   " Delimiters
+  syntax region texParen                            start="("                       end=")" transparent contains=TOP,@Spell
   syntax region texMatcher     matchgroup=Delimiter start="{"  skip="\%(\\\\\)*\\}" end="}" transparent contains=TOP
   syntax region texMatcher     matchgroup=Delimiter start="\["                      end="]" transparent contains=TOP,@NoSpell
   syntax region texMatcherMath matchgroup=Delimiter start="{"  skip="\%(\\\\\)*\\}" end="}" contained   contains=@texClusterMathMatch
-  syntax region texParen                            start="("                       end=")" transparent contains=TOP,@Spell
 
   syntax match texDelimiter "&"
 
   " TeX String Delimiters
-  syntax match texString "\(``\|''\|,,\)"
+  syntax match texString "\v%(``|''|,,)"
 
   " Flag mismatching ending delimiters } and ]
   syntax match texError "[}\]]"
@@ -286,10 +286,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   " \makeatletter ... \makeatother sections
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
   " In short: allow @ in multicharacter macro name
-  syntax match texStatementSty "\\[a-zA-Z@]\+" contained
-  syntax region texRegionSty matchgroup=texStatement start='\\makeatletter' end='\\makeatother' contains=TOP,texStatementSty
-  syntax region texMatcherSty matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=TOP,texStatementSty contained
-  syntax region texMatcherSty matchgroup=Delimiter start="\[" end="]" contains=TOP,texStatementSty contained
+  syntax region texRegionSty matchgroup=texStatement start='\\makeatletter' end='\\makeatother' contains=TOP,texErrorStatement
+  syntax region texMatcherSty matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=TOP,texErrorStatement contained
+  syntax region texMatcherSty matchgroup=Delimiter start="\[" end="]"                    contains=TOP,texErrorStatement contained
+  syntax match texStatementSty "\\[a-zA-Z@]\+" contained containedin=texRegionSty
 
   " }}}2
 
@@ -464,12 +464,12 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texMathZoneY     texMath
   highlight def link texMathZoneV     texMath
   highlight def link texMathZoneZ     texMath
-  highlight def link texBeginEnd       texCmdName
-  highlight def link texBeginEndName   texSection
-  highlight def link texSpaceCode      texStatement
-  highlight def link texStyleStatement texStatement
-  highlight def link texTypeSize       texType
-  highlight def link texTypeStyle      texType
+  highlight def link texBeginEnd      texCmdName
+  highlight def link texBeginEndName  texSection
+  highlight def link texSpaceCode     texStatement
+  highlight def link texStatementSty  texStatement
+  highlight def link texTypeSize      texType
+  highlight def link texTypeStyle     texType
 
   " Basic TeX highlighting groups
   highlight def link texCmdArgs        Number
