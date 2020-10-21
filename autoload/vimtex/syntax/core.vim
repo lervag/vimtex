@@ -497,6 +497,9 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texType           Type
   highlight def link texRegion         PreCondit
 
+  " Inherited groups
+  highlight def link texRegionVerb     texRegion
+
   " New
   highlight def link texCommentURL Comment
   highlight def link texCommentAcronym Comment
