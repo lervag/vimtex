@@ -7,7 +7,6 @@
 function! vimtex#syntax#p#varioref#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'varioref') | return | endif
   let b:vimtex_syntax.varioref = 1
-  if get(g:, 'tex_fast', 'r') !~# 'r' | return | endif
 
   syntax match texStatement '\\Vref\>' nextgroup=texRegionVarioref
 

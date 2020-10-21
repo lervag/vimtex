@@ -3644,12 +3644,6 @@ packages for new documents or documents that are not compiled. One may
 therefore specify a list of packages to autoload regardless of the package
 detection, see |g:vimtex_syntax_autoload_packages|.
 
-Before enabling additional syntax highlighting, |vimtex| also checks the
-|g:tex_fast| variable (defined by |ft-tex-syntax|) that allows one to
-selectively enable or disable highlighting for specific groups.  If
-|g:tex_fast| is set, additional syntax highlighting for bold, italic, and
-reference groups are enabled only if they are explicitly allowed.
-
 Note: The default syntax highlighting of vim maintained by Charles Campbell
       does not support any package (:h tex-package). However, C. Campbell
       provides syntax highlighting files on his website for some packages, see

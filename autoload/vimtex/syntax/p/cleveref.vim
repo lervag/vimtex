@@ -7,7 +7,6 @@
 function! vimtex#syntax#p#cleveref#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'cleveref') | return | endif
   let b:vimtex_syntax.cleveref = 1
-  if get(g:, 'tex_fast', 'r') !~# 'r' | return | endif
 
   syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\)ref\>'
         \ nextgroup=texCRefZone

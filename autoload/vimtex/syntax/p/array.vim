@@ -9,7 +9,6 @@ function! vimtex#syntax#p#array#load() abort " {{{1
   let b:vimtex_syntax.array = 1
 
   call vimtex#syntax#p#tabularx#load()
-  if !get(g:, 'tex_fast', 'M') =~# 'M' | return | endif
 
   let l:concealed = has('conceal')
         \ && &enc ==# 'utf-8'
