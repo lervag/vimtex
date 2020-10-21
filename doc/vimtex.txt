@@ -1628,8 +1628,9 @@ OPTIONS                                                        *vimtex-options*
             \}
 
 *g:vimtex_grammar_vlty*
-  This option is used to configure the `vlty` grammar checker. It is a dictionary
-  with the following keys (see |vimtex-grammar-vlty| for more details):
+  This option is used to configure the `vlty` grammar checker. It is a
+  dictionary with the following keys (see |vimtex-grammar-vlty| for more
+  details):
 
     lt_directory~
       Path to the `LanguageTool` software, if installed manually.
@@ -1651,7 +1652,8 @@ OPTIONS                                                        *vimtex-options*
       short texts. Possible values are:
 
       `no`    Do not use a server.
-      `my`    Use a local `LanguageTool` server. If not yet running, it is started.
+      `my`    Use a local `LanguageTool` server. If not yet running, it is
+              started.
       `lt`    Contact the Web server provided by `LanguageTool`. In this case,
             no local installation is necessary. Please see the following page
             for conditions and restrictions:
@@ -1666,6 +1668,10 @@ OPTIONS                                                        *vimtex-options*
       If set to 1, then `LanguageTool's` replacement suggestions are included
       in the |quickfix| or |location-list| messages.
 
+    encoding~
+      Encoding of the (La)TeX source file. For default value `auto`, the
+      encoding is taken from |fileencoding| or |encoding|.
+
   Default: >
 
       let g:vimtex_grammar_vlty = {
@@ -1678,6 +1684,7 @@ OPTIONS                                                        *vimtex-options*
             \ 'server': 'no',
             \ 'shell_options': '',
             \ 'show_suggestions': 0,
+            \ 'encoding': 'auto',
             \}
 
 *g:vimtex_imaps_enabled*
