@@ -61,6 +61,9 @@ let &l:makeprg =
       \ . (s:vlty.server ==# 'no'
       \    ? ''
       \    : ' --server ' . s:vlty.server)
+      \ . ' --encoding ' . (s:vlty.encoding ==# 'auto'
+      \    ? (empty(&l:fileencoding) ? &l:encoding : &l:fileencoding)
+      \    : s:vlty.encoding)
       \ . ' --language ' . s:language
       \ . ' --disable "' . s:vlty.lt_disable . '"'
       \ . ' --enable "' . s:vlty.lt_enable . '"'
