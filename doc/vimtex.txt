@@ -393,7 +393,7 @@ Enhanced matching and higlighting of delimiters~
 
   Alternatively, one may use the plugin |match-up| [0], which offers enhanced
   |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
-  for a variety of file types.  For LaTeX douments, it:
+  for a variety of file types.  For LaTeX documents, it:
     - Extends highlighting and the `%` motion to a number of middle
       delimiters including
         - `\bigm` and `\middle` marked delimiters
