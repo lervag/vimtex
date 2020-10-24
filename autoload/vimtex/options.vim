@@ -137,6 +137,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'server': 'no',
         \ 'shell_options': '',
         \ 'show_suggestions': 0,
+        \ 'encoding': 'auto',
         \})
 
   call s:init_option('vimtex_imaps_enabled', 1)
