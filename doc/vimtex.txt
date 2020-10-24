@@ -563,7 +563,9 @@ Subfiles package~
   |vimtex| also supports the `import` [0] and the `subfiles` [1] packages that
   can be used to make it easier to work with multi-file projects. If one uses
   the `subfiles` package, the |VimtexToggleMain| command is particularly
-  useful.
+  useful. Also note the option |g:vimtex_subfile_start_local|, which can be
+  used to automatically start in the local mode when opening a subfile
+  document.
 
   With `subfiles`, included files will typically look like this: >
 
@@ -1974,6 +1976,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_subfile_start_local*
+  This option allows to specify that one should start with the local file for
+  subfile'd documents instead of the main project file. See |vimtex-subfiles|
+  for further info.
+
+  Default value: 0.
+
 *g:vimtex_syntax_enabled*
   Use this option to disable/enable |vimtex| improved syntax highlighting.
 
@@ -2800,7 +2809,8 @@ COMMANDS                                                      *vimtex-commands*
                                 a preamble and the `\begin/\end{document}`! It is
                                 possible to have a working preamble in every
                                 file in a multi-file project with `subfiles`,
-                                see |vimtex-subfiles|.
+                                see |vimtex-subfiles|. See also
+                                |g:vimtex_subfile_start_local|.
 
 ------------------------------------------------------------------------------
 MAP DEFINITIONS                                               *vimtex-mappings*

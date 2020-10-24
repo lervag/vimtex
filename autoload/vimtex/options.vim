@@ -259,6 +259,8 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_quickfix_blgparser', {})
   call s:init_option('vimtex_quickfix_autoclose_after_keystrokes', 0)
 
+  call s:init_option('vimtex_subfile_start_local', 0)
+
   call s:init_option('vimtex_syntax_alpha', $VIMTEX_ALPHA)
   call s:init_option('vimtex_syntax_config', {
         \ 'conceal': get(g:, 'tex_conceal', 'abdmgsS'),

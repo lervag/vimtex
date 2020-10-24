@@ -42,6 +42,11 @@ call vimtex#test#main('test-subfiles/sub/sub2.tex', 'test-subfiles/sub/sub2.tex'
 " Test subfiles 3: Recursive search, not .tex extension
 call vimtex#test#main('test-subfiles/sub/sub3.tex', 'test-subfiles/main.tex')
 
+" Test subfiles 4: g:vimtex_subfile_start_local
+let g:vimtex_subfile_start_local = 1
+call vimtex#test#main('test-subfiles/sub/sub3.tex', 'test-subfiles/sub/sub3.tex')
+let g:vimtex_subfile_start_local = 0
+
 " Test mainfile specified in .latexmrc
 call vimtex#test#main('test-latexmk/preamble.tex', 'test-latexmk/main.tex')
 
