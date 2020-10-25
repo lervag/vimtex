@@ -285,14 +285,25 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texOnlyMath "[_^]" contained
   syntax match texSpecialChar "\^\^[0-9a-f]\{2}\|\^\^\S"
 
-  " {{{2 Specific commands/environments
+  " {{{2 Verbatim
 
-  " Verbatim
-  syntax region texRegionVerb start="\\begin{[vV]erbatim}" end="\\end{[vV]erbatim}"
-  syntax region texRegionVerb start="\\verb\*\?\z([^\ta-zA-Z]\)"  end="\z1"
+  " Verbatim environment
+  syntax region texRegionVerb
+        \ start="\\begin{[vV]erbatim}" end="\\end{[vV]erbatim}"
+        \ contains=texCmdEnv,texEnvName
+
+  " Verbatim inline
+  syntax match texCmd "\\verb\>\*\?" nextgroup=texRegionVerbInline
   if l:cfg.is_style_document
-    syntax region texRegionVerb start="\\verb\*\?\z([^\ta-zA-Z@]\)" end="\z1"
+    syntax region texRegionVerbInline matchgroup=Delimiter
+          \ start="\z([^\ta-zA-Z@]\)" end="\z1" contained
+  else
+    syntax region texRegionVerbInline matchgroup=Delimiter
+          \ start="\z([^\ta-zA-Z]\)" end="\z1" contained
   endif
+
+  " }}}2
+  " {{{2 Specific commands/environments
 
   " Tex Reference Zones
   syntax match  texRegionRef '\\cite\%([tp]\*\?\)\?\>' nextgroup=texRefOption,texRefCite
@@ -513,6 +524,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texRegionMathX          texMath
   highlight def link texRegionMathY          texMath
   highlight def link texRegionVerb           texRegion
+  highlight def link texRegionVerbInline     texRegionVerb
   highlight def link texSpaceCode            texCmd
   highlight def link texSubscript            texCmd
   highlight def link texSubscripts           texSubscript
