@@ -10,21 +10,14 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'amsmath') | return | endif
   let b:vimtex_syntax.amsmath = 1
 
-  " Allow subequations (fixes #1019)
-  " - This should be temporary, as it seems subequations is erroneously part of
-  "   texBadMath from Charles Campbell's syntax plugin.
-  syntax match texCmdEnv
-        \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
-        \ nextgroup=texEnvName
-
-  call vimtex#syntax#core#new_math_zone('AmsA', 'align', 1)
-  call vimtex#syntax#core#new_math_zone('AmsB', 'alignat', 1)
-  call vimtex#syntax#core#new_math_zone('AmsD', 'flalign', 1)
-  call vimtex#syntax#core#new_math_zone('AmsC', 'gather', 1)
-  call vimtex#syntax#core#new_math_zone('AmsD', 'multline', 1)
-  call vimtex#syntax#core#new_math_zone('AmsE', 'xalignat', 1)
-  call vimtex#syntax#core#new_math_zone('AmsF', 'xxalignat', 0)
-  call vimtex#syntax#core#new_math_zone('AmsG', 'mathpar', 1)
+  call vimtex#syntax#core#new_math_zone('align', 1)
+  call vimtex#syntax#core#new_math_zone('alignat', 1)
+  call vimtex#syntax#core#new_math_zone('flalign', 1)
+  call vimtex#syntax#core#new_math_zone('gather', 1)
+  call vimtex#syntax#core#new_math_zone('multline', 1)
+  call vimtex#syntax#core#new_math_zone('xalignat', 1)
+  call vimtex#syntax#core#new_math_zone('xxalignat', 0)
+  call vimtex#syntax#core#new_math_zone('mathpar', 1)
 
   " Amsmath [lr][vV]ert  (Holger Mitschke)
   if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'

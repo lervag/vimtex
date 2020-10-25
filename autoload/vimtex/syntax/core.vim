@@ -207,8 +207,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Math stuff
 
   " Bad/Mismatched math
-  syntax match texBadMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
-  syntax match texBadMath "\\[\])]"
+  syntax match texErrorMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
+  syntax match texErrorMath "\\[\])]"
 
   " Operators and similar
   syntax match texMathOper "[_^=]" contained
@@ -217,24 +217,29 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texMathText matchgroup=texCmd start="\\\(\(inter\)\?text\|mbox\)\s*{" end="}" contains=TOP,@Spell
 
   " Math environments
-  call vimtex#syntax#core#new_math_zone('A', 'displaymath', 1)
-  call vimtex#syntax#core#new_math_zone('B', 'eqnarray', 1)
-  call vimtex#syntax#core#new_math_zone('C', 'equation', 1)
-  call vimtex#syntax#core#new_math_zone('D', 'math', 1)
+  call vimtex#syntax#core#new_math_zone('displaymath', 1)
+  call vimtex#syntax#core#new_math_zone('eqnarray', 1)
+  call vimtex#syntax#core#new_math_zone('equation', 1)
+  call vimtex#syntax#core#new_math_zone('math', 1)
 
   " Inline Math Zones
-  syntax region texMathZoneZ matchgroup=texCmd start="\\ensuremath\s*{" matchgroup=texCmd end="}" contains=@texClusterMath
   if l:cfg.conceal =~# 'd' && &encoding ==# 'utf-8'
-    syntax region texMathZoneV matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  concealends contains=@texClusterMath keepend
-    syntax region texMathZoneW matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  concealends contains=@texClusterMath keepend
-    syntax region texMathZoneX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$"     matchgroup=Delimiter end="\$"   concealends contains=@texClusterMath
-    syntax region texMathZoneY matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" concealends contains=@texClusterMath keepend
+    syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  concealends contains=@texClusterMath keepend
+    syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  concealends contains=@texClusterMath keepend
+    syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$"     matchgroup=Delimiter end="\$"   concealends contains=@texClusterMath
+    syntax region texRegionMathY matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" concealends contains=@texClusterMath keepend
   else
-    syntax region texMathZoneV matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  contains=@texClusterMath keepend
-    syntax region texMathZoneW matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  contains=@texClusterMath keepend
-    syntax region texMathZoneX matchgroup=Delimiter start="\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$"   contains=@texClusterMath
-    syntax region texMathZoneY matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" contains=@texClusterMath keepend
+    syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  contains=@texClusterMath keepend
+    syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  contains=@texClusterMath keepend
+    syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\%(\\\\\)*\\\$" matchgroup=Delimiter end="\$"   contains=@texClusterMath
+    syntax region texRegionMathY matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" contains=@texClusterMath keepend
   endif
+
+  syntax match texCmd "\\ensuremath\>" nextgroup=texRegionMathEnsured
+  syntax region texRegionMathEnsured matchgroup=Delimiter
+        \ start="{" end="}"
+        \ contained
+        \ contains=@texClusterMath
 
   " Math delimiters: \left... and \right...
   syntax match texMathDelimBad contained "\S"
@@ -406,27 +411,20 @@ endfunction
 
 " }}}1
 
-function! vimtex#syntax#core#new_math_zone(sfx, mathzone, starred) abort " {{{1
-  " This function is based on Charles E. Campbell's syntax script (version 119,
-  " dated 2020-06-29)
+function! vimtex#syntax#core#new_math_zone(mathzone, starred) abort " {{{1
+  execute 'syntax match texErrorMath /\\end\s*{\s*' . a:mathzone . '\*\?\s*}/'
 
-  execute 'syntax match texBadMath /\\end\s*{\s*' . a:mathzone . '\*\?\s*}/'
-
-  let grp = 'texMathZone' . a:sfx
-  execute 'syntax region ' . grp
+  execute 'syntax region texRegionMathEnv'
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\s*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\s*}'''
         \ . ' keepend contains=@texClusterMath'
-  execute 'highlight def link ' . grp . ' texMath'
 
   if !a:starred | return | endif
 
-  let grp .= 'S'
-  execute 'syntax region ' . grp
+  execute 'syntax region texRegionMathEnvStarred'
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\*\s*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\*\s*}'''
         \ . ' keepend contains=@texClusterMath'
-  execute 'highlight def link ' . grp . ' texMath'
 endfunction
 
 " }}}1
@@ -469,7 +467,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def texItalBoldStyle gui=bold,italic cterm=bold,italic
 
   " TeX highlighting groups which should share similar highlighting
-  highlight def link texBadMath      texError
   highlight def link texMathDelimBad texError
   highlight def link texErrorMath    texError
   highlight def link texCmdError     texError
@@ -478,42 +475,42 @@ function! s:init_highlights(cfg) abort " {{{1
   endif
 
   " Inherited groups
-  highlight def link texCmdAccent     texCmd
-  highlight def link texCmdEnv        texCmdName
-  highlight def link texCmdLigature   texSpecialChar
-  highlight def link texCmdParts      texCmd
-  highlight def link texCmdSty        texCmd
-  highlight def link texDefCmd        texDef
-  highlight def link texDefName       texDef
-  highlight def link texDocType       texCmdName
-  highlight def link texDocTypeArgs   texCmdArgs
-  highlight def link texEmphStyle     texItalStyle
-  highlight def link texEnvName       texSection
-  highlight def link texGreek         texCmd
-  highlight def link texInputCurlies  texDelimiter
-  highlight def link texInputFileOpt  texCmdArgs
-  highlight def link texMatcherMath   texMath
-  highlight def link texMathDelimKey  texMathDelim
-  highlight def link texMathDelimSet1 texMathDelim
-  highlight def link texMathDelimSet2 texMathDelim
-  highlight def link texMathSymbol    texCmd
-  highlight def link texMathZoneV     texMath
-  highlight def link texMathZoneV     texMath
-  highlight def link texMathZoneW     texMath
-  highlight def link texMathZoneX     texMath
-  highlight def link texMathZoneY     texMath
-  highlight def link texMathZoneZ     texMath
-  highlight def link texPartTitle     texTitle
-  highlight def link texRefCite       texRegionRef
-  highlight def link texRegionVerb    texRegion
-  highlight def link texSpaceCode     texCmd
-  highlight def link texSubscript     texCmd
-  highlight def link texSubscripts    texSubscript
-  highlight def link texSuperscript   texCmd
-  highlight def link texSuperscripts  texSuperscript
-  highlight def link texSymbolDash    texSpecialChar
-  highlight def link texTypeSize      texType
-  highlight def link texTypeStyle     texType
+  highlight def link texCmdAccent            texCmd
+  highlight def link texCmdEnv               texCmdName
+  highlight def link texCmdLigature          texSpecialChar
+  highlight def link texCmdParts             texCmd
+  highlight def link texCmdSty               texCmd
+  highlight def link texDefCmd               texDef
+  highlight def link texDefName              texDef
+  highlight def link texDocType              texCmdName
+  highlight def link texDocTypeArgs          texCmdArgs
+  highlight def link texEmphStyle            texItalStyle
+  highlight def link texEnvName              texSection
+  highlight def link texGreek                texCmd
+  highlight def link texInputCurlies         texDelimiter
+  highlight def link texInputFileOpt         texCmdArgs
+  highlight def link texMatcherMath          texMath
+  highlight def link texMathDelimKey         texMathDelim
+  highlight def link texMathDelimSet1        texMathDelim
+  highlight def link texMathDelimSet2        texMathDelim
+  highlight def link texMathSymbol           texCmd
+  highlight def link texPartTitle            texTitle
+  highlight def link texRefCite              texRegionRef
+  highlight def link texRegionMath           texMath
+  highlight def link texRegionMathEnsured    texMath
+  highlight def link texRegionMathEnv        texMath
+  highlight def link texRegionMathEnvStarred texMath
+  highlight def link texRegionMathX          texMath
+  highlight def link texRegionMathY          texMath
+  highlight def link texRegionVerb           texRegion
+  highlight def link texSpaceCode            texCmd
+  highlight def link texSubscript            texCmd
+  highlight def link texSubscripts           texSubscript
+  highlight def link texSuperscript          texCmd
+  highlight def link texSuperscripts         texSuperscript
+  highlight def link texSymbolDash           texSpecialChar
+  highlight def link texTypeSize             texType
+  highlight def link texTypeStyle            texType
 endfunction
 
 " }}}1

@@ -10,7 +10,7 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
 
   " Define clusters
   syntax cluster texTikz contains=texTikzEnv,texCmdEnv,texCmd,texTikzSemicolon,texComment,@texVimtexGlobal
-  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texCmd,texLength,texComment
+  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texRegionMathX,texTypeSize,texCmd,texLength,texComment
 
   " Define tikz option groups
   syntax match texTikzSet /\\tikzset\>/
