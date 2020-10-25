@@ -8,8 +8,8 @@ function! vimtex#syntax#p#subfile#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'subfile') | return | endif
   let b:vimtex_syntax.subfile = 1
 
-  syntax match texInputFile /\\subfile\s*\%(\[.\{-}\]\)\=\s*{.\{-}}/
-        \ contains=texCmd,texInputCurlies,texInputFileOpt
+  syntax match texCmd "\\subfile\>" nextgroup=texFilename
+  syntax match texCmd "\\subfileinclude\>" nextgroup=texFilename
 endfunction
 
 " }}}1

@@ -279,16 +279,19 @@ function! vimtex#options#init() abort " {{{1
         \   'cs' : [
         \     'csBraces',
         \   ],
-        \   'python' : [
-        \     'pythonEscape',
-        \     'pythonBEscape',
-        \     'pythonBytesEscape',
+        \   'haskell' : [
+        \     'hsVarSym',
         \   ],
         \   'java' : [
         \     'javaError',
         \   ],
-        \   'haskell' : [
-        \     'hsVarSym',
+        \   'markdown' : [
+        \     'mkdNonListItemBlock',
+        \   ],
+        \   'python' : [
+        \     'pythonEscape',
+        \     'pythonBEscape',
+        \     'pythonBytesEscape',
         \   ],
         \ }
         \})

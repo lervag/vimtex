@@ -11,28 +11,15 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
   call vimtex#syntax#misc#include('markdown')
 
   " Don't quite know why this is necessary, but it is
-  syntax match texCmdEnv
-        \ '\(\\begin\>\|\\end\>\)\ze{markdown}'
-        \ nextgroup=texEnvName
+  syntax match texCmdEnv "\\\%(begin\|end\)\>\ze{markdown}" nextgroup=texEnvName
 
   syntax region texRegionMarkdown
-        \ start='\\begin{markdown}'rs=s
-        \ end='\\end{markdown}'re=e
-        \ keepend
-        \ transparent
-        \ contains=@texFoldGroup,@texDocGroup,@vimtex_nested_markdown
+        \ start="\\begin{markdown}"
+        \ end="\\end{markdown}"
+        \ keepend transparent
+        \ contains=texCmdEnv,texEnvName,@vimtex_nested_markdown
 
-  " Input files
-  syntax match texInputFile /\\markdownInput\>/
-        \ contains=texCmd
-        \ nextgroup=texInputFileArg
-  syntax region texInputFileArg
-        \ matchgroup=texInputCurlies
-        \ start="{" end="}"
-        \ contained
-        \ contains=texComment
-
-  highlight default link texInputFileArg texInputFile
+  syntax match texCmd "\\markdownInput\>" nextgroup=texFilename
 endfunction
 
 " }}}1

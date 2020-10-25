@@ -9,9 +9,8 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
   let b:vimtex_syntax.listings = s:get_nested_languages()
 
   " First some general support
-  syntax match texInputFile
-        \ "\\lstinputlisting\s*\(\[.\{-}\]\)\={.\{-}}"
-        \ contains=texCmd,texInputCurlies,texInputFileOpt
+  syntax match texCmd "\\lstinputlisting\>"
+        \ nextgroup=texOptGenericFile,texFilename
   syntax match texRegion "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
 
   " Set all listings environments to listings

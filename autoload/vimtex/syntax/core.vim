@@ -25,7 +25,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texClusterItal contains=TOP,texBoldStyle,texBoldItalStyle
   syntax cluster texClusterComment contains=texTodo,@Spell
   syntax cluster texClusterMath contains=texCmdEnvMath,texEnvMathName,texComment,texDelimiter,texErrorMathDelim,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texRegionRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texTypeSize,texTypeStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texDocType,texErrorMathDelim,texGreek,texInput,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
+  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texErrorMathDelim,texGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
   syntax cluster texClusterRef contains=texComment,texDelimiter,texMatcher
 
   " {{{2 Primitives
@@ -66,32 +66,20 @@ function! vimtex#syntax#core#init() abort " {{{1
   endif
 
   " Environments
-  syntax match  texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvName
+  syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvName
   syntax region texEnvName matchgroup=Delimiter
         \ start="{"  end="}"
         \ contained contains=texComment nextgroup=texEnvModifier
   syntax region texEnvModifier matchgroup=Delimiter
         \ start="\[" end="]"
         \ contained contains=texComment,@NoSpell
-  syntax match  texCmdEnvMath "\v\\%(begin|end)>" contained nextgroup=texEnvMathName
+  syntax match texCmdEnvMath "\v\\%(begin|end)>" contained nextgroup=texEnvMathName
   syntax region texEnvMathName matchgroup=Delimiter
         \ start="{"  end="}"
         \ contained contains=texComment
 
-  " Some common, specific LaTeX commands
-  " TODO: This should be updated!
-  syntax match texDocType "\v\\%(documentclass|documentstyle|usepackage)>" nextgroup=texEnvName,texDocTypeArgs
-  syntax region texDocTypeArgs matchgroup=Delimiter start="\[" end="]" contained nextgroup=texEnvName contains=texComment,@NoSpell
-
   " Other
   syntax match texOption "\v%(^|[^\\]\zs)#\d+"
-
-  " TeX input
-  syntax match texInput         "\\input\s\+[a-zA-Z/.0-9_^]\+"hs=s+7                  contains=texCmd
-  syntax match texInputFile     "\v\\include%(graphics|list)?%(\[.{-}\])?\s*\{.{-}\}" contains=texCmd,texInputCurlies,texInputFileOpt
-  syntax match texInputFile     "\v\\%(epsfig|input)\s*%(\[.*\])?\{.{-}\}"            contains=texCmd,texInputCurlies,texInputFileOpt
-  syntax match texInputCurlies  "[{}]"                                                contained
-  syntax region texInputFileOpt matchgroup=Delimiter start="\[" end="\]"              contains=texComment contained
 
   " Spacecodes (TeX'isms)
   " * \mathcode`\^^@ = "2201
@@ -305,15 +293,33 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Specific commands/environments
 
+  " Various commands that take a file argument (or similar)
+  syntax match texCmd "\\input\>" nextgroup=texFilename
+  syntax match texCmd "\\include\>" nextgroup=texFilename
+  syntax match texCmd "\\includeonly\>" nextgroup=texFilenames
+  syntax match texCmd "\\includegraphics\>" nextgroup=texOptGenericFile,texFilename
+  syntax match texCmd "\\bibliography\>" nextgroup=texFilenames
+  syntax match texCmd "\\document\%(class\|style\)\>" nextgroup=texOptGenericFile,texFilename
+  syntax match texCmd "\\usepackage\>" nextgroup=texOptGenericFiles,texFilenames
+  syntax match texCmd "\\RequirePackage\>" nextgroup=texOptGenericFiles,texFilenames
+
+  call s:add_opt_group('GenericFile', 'texFilename')
+  call s:add_opt_group('GenericFiles', 'texFilenames')
+
+  syntax region texFilename matchgroup=Delimiter
+        \ start="{" end="}" contained contains=texCmd,texComment,@NoSpell
+  syntax region texFilenames matchgroup=Delimiter
+        \ start="{" end="}" contained contains=texFilenameSeparator,texCmd,texComment,@NoSpell
+  syntax match texFilenameSeparator ",\s*" contained
+
   " Tex Reference Zones
   syntax match  texRegionRef '\\cite\%([tp]\*\?\)\?\>' nextgroup=texRefOption,texRefCite
   syntax region texRegionRef matchgroup=texCmd start="\\nocite{"          end="}" contains=@texClusterRef
-  syntax region texRegionRef matchgroup=texCmd start="\\bibliography{"    end="}" contains=@texClusterRef
   syntax region texRegionRef matchgroup=texCmd start="\\label{"           end="}" contains=@texClusterRef
   syntax region texRegionRef matchgroup=texCmd start="\\\(page\|eq\)ref{" end="}" contains=@texClusterRef
   syntax region texRegionRef matchgroup=texCmd start="\\v\?ref{"          end="}" contains=@texClusterRef
-  syntax region texRefOption matchgroup=Delimiter    start='\['                 end=']' contains=@texClusterRef,texRegionRef nextgroup=texRefOption,texRefCite contained
-  syntax region texRefCite   matchgroup=Delimiter    start='{'                  end='}' contains=@texClusterRef,texRegionRef,texRefCite contained
+  syntax region texRefOption matchgroup=Delimiter start='\['              end=']' contains=@texClusterRef,texRegionRef nextgroup=texRefOption,texRefCite contained
+  syntax region texRefCite   matchgroup=Delimiter start='{'               end='}' contains=@texClusterRef,texRegionRef,texRefCite contained
 
   " \makeatletter ... \makeatother sections
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
@@ -449,36 +455,38 @@ endfunction
 " }}}1
 
 function! s:init_highlights(cfg) abort " {{{1
+  " See :help group-names for list of conventional group names
+
   " Basic TeX highlighting groups
-  highlight def link texCmd            Statement
-  highlight def link texCmdArgs        Number
-  highlight def link texCmdName        Statement
-  highlight def link texComment        Comment
-  highlight def link texCommentAcronym Comment
-  highlight def link texCommentURL     Comment
-  highlight def link texDef            Statement
-  highlight def link texDefParm        Special
-  highlight def link texDefParmNested  Identifier
-  highlight def link texDelimiter      Delimiter
-  highlight def link texError          Error
-  highlight def link texInput          Special
-  highlight def link texInputFile      Special
-  highlight def link texLength         Number
-  highlight def link texMath           Special
-  highlight def link texMathDelim      Statement
-  highlight def link texMathOper       Operator
-  highlight def link texNewCmd         Statement
-  highlight def link texNewEnv         Statement
-  highlight def link texOption         Number
-  highlight def link texRegion         PreCondit
-  highlight def link texRegionRef      Special
-  highlight def link texSection        PreCondit
-  highlight def link texSpaceCodeChar  Special
-  highlight def link texSpecialChar    SpecialChar
-  highlight def link texSymbolString   String
-  highlight def link texTitle          String
-  highlight def link texTodo           Todo
-  highlight def link texType           Type
+  highlight def link texCmd               Statement
+  highlight def link texCmdArgs           Number
+  highlight def link texCmdName           Statement
+  highlight def link texComment           Comment
+  highlight def link texCommentAcronym    Comment
+  highlight def link texCommentURL        Comment
+  highlight def link texDef               Statement
+  highlight def link texDefParm           Special
+  highlight def link texDefParmNested     Identifier
+  highlight def link texDelimiter         Delimiter
+  highlight def link texError             Error
+  highlight def link texFilename          Include
+  highlight def link texFilenameSeparator NormalNC
+  highlight def link texLength            Number
+  highlight def link texMath              Special
+  highlight def link texMathDelim         Statement
+  highlight def link texMathOper          Operator
+  highlight def link texNewCmd            Statement
+  highlight def link texNewEnv            Statement
+  highlight def link texOption            Number
+  highlight def link texRegion            PreCondit
+  highlight def link texRegionRef         Special
+  highlight def link texSection           PreCondit
+  highlight def link texSpaceCodeChar     Special
+  highlight def link texSpecialChar       SpecialChar
+  highlight def link texSymbolString      String
+  highlight def link texTitle             String
+  highlight def link texTodo              Todo
+  highlight def link texType              Type
 
   highlight def texBoldStyle     gui=bold        cterm=bold
   highlight def texItalStyle     gui=italic      cterm=italic
@@ -502,19 +510,18 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdSty               texCmd
   highlight def link texDefCmd               texDef
   highlight def link texDefName              texDef
-  highlight def link texDocType              texCmdName
-  highlight def link texDocTypeArgs          texCmdArgs
   highlight def link texEmphStyle            texItalStyle
   highlight def link texEnvMathName          Delimiter
   highlight def link texEnvName              texSection
+  highlight def link texFilenames            texFilename
   highlight def link texGreek                texCmd
-  highlight def link texInputCurlies         texDelimiter
-  highlight def link texInputFileOpt         texCmdArgs
   highlight def link texMatcherMath          texMath
   highlight def link texMathDelimKey         texMathDelim
   highlight def link texMathDelimSet1        texMathDelim
   highlight def link texMathDelimSet2        texMathDelim
   highlight def link texMathSymbol           texCmd
+  highlight def link texOptGenericFile       texCmdArgs
+  highlight def link texOptGenericFiles      texCmdArgs
   highlight def link texPartTitle            texTitle
   highlight def link texRefCite              texRegionRef
   highlight def link texRegionMath           texMath
@@ -536,6 +543,16 @@ function! s:init_highlights(cfg) abort " {{{1
 endfunction
 
 " }}}1
+
+  function! s:add_opt_group(grp, next) abort " {{{1
+    execute 'syntax region texOpt' . a:grp
+          \ 'matchgroup=Delimiter'
+          \ 'start="\[" end="\]" contained'
+          \ 'contains=texComment'
+          \ 'nextgroup=' . a:next
+  endfunction
+
+  " }}}1
 
 function! s:match_conceal_math_delims() abort " {{{1
   syntax match texMathSymbol "\\[bB]igg\?[lr]\?<"             contained conceal cchar=<

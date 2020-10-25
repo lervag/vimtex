@@ -14,9 +14,9 @@ function! vimtex#syntax#p#beamer#load() abort " {{{1
   syntax match texCmdBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
   syntax match texCmdBeamer '\\item<[^>]*>' contains=texBeamerOpt
 
-  syntax match texInputFile
-        \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
-        \ contains=texCmd,texBeamerOpt,texInputCurlies,texInputFileOpt
+  syntax match texCmd "\\includegraphics<[^>]*>"
+        \ contains=texBeamerOpt,
+        \ nextgroup=texOptGenericFile,texFilename
 
   highlight link texCmdBeamer texCmd
   highlight link texBeamerOpt Identifier
