@@ -14,7 +14,7 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
         \ end='\\end{luacode\*\?}'re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_lua
+        \ contains=texCmdEnv,@vimtex_nested_lua
   syntax match texCmd '\\\(directlua\|luadirect\)' nextgroup=texRegionLuaArg
   syntax region texRegionLuaArg matchgroup=Delimiter
         \ start='{'

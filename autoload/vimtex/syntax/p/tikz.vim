@@ -9,7 +9,7 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   let b:vimtex_syntax.tikz = 1
 
   " Define clusters
-  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texCmd,texTikzSemicolon,texComment,@texVimtexGlobal
+  syntax cluster texTikz contains=texTikzEnv,texCmdEnv,texCmd,texTikzSemicolon,texComment,@texVimtexGlobal
   syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texCmd,texLength,texComment
 
   " Define tikz option groups
@@ -27,7 +27,7 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
         \ transparent
         \ contains=@texTikz
   syntax match texTikzEnv /\v\\begin\{tikzpicture\}/
-        \ contains=texBeginEnd nextgroup=texTikzOpts skipwhite
+        \ contains=texCmdEnv nextgroup=texTikzOpts skipwhite
 
   syntax match texTikzEqual /=/ contained
   syntax match texTikzSemicolon /;/ contained

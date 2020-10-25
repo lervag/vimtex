@@ -13,9 +13,9 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   " Allow subequations (fixes #1019)
   " - This should be temporary, as it seems subequations is erroneously part of
   "   texBadMath from Charles Campbell's syntax plugin.
-  syntax match texBeginEnd
+  syntax match texCmdEnv
         \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
-        \ nextgroup=texBeginEndName
+        \ nextgroup=texEnvName
 
   call vimtex#syntax#core#new_math_zone('AmsA', 'align', 1)
   call vimtex#syntax#core#new_math_zone('AmsB', 'alignat', 1)

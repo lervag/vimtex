@@ -20,7 +20,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
         \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"rs=s
         \ end="\\end{lstlisting}\|%stopzone\>"re=e
         \ keepend
-        \ contains=texBeginEnd
+        \ contains=texCmdEnv
 
   " Next add nested syntax support for desired languages
   for l:nested in b:vimtex_syntax.listings
@@ -39,7 +39,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'end="\\end{lstlisting}"re=e'
           \ 'keepend'
           \ 'transparent'
-          \ 'contains=texBeginEnd,@' . l:cluster
+          \ 'contains=texCmdEnv,@' . l:cluster
 
     execute 'syntax match' l:group_lstset
           \ '"\c\\lstset{.*language=' . l:nested . '\%(\s*,\|}\)"'
@@ -54,7 +54,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'keepend'
           \ 'transparent'
           \ 'containedin=' . l:group_lstset
-          \ 'contains=texCmd,texBeginEnd,@' . l:cluster
+          \ 'contains=texCmd,texCmdEnv,@' . l:cluster
   endfor
 
   highlight link texRegionListings texRegion

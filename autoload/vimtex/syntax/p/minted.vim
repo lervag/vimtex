@@ -18,10 +18,10 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Match boundaries of minted environments
   syntax match texMintedBounds '\\end{minted}'
         \ contained
-        \ contains=texBeginEnd
+        \ contains=texCmdEnv
   syntax match texMintedBounds '\\begin{minted}'
         \ contained
-        \ contains=texBeginEnd
+        \ contains=texCmdEnv
         \ nextgroup=texMintedBoundsOpts,texMintedName
   syntax region texMintedBoundsOpts matchgroup=Delimiter
         \ start="\[" end="\]"
@@ -31,7 +31,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Match starred custom minted environments with options
   syntax match texMintedStarred "\\begin{\w\+\*}"
         \ contained
-        \ contains=texBeginEnd
+        \ contains=texCmdEnv
         \ nextgroup=texMintedStarredOpts
   syntax region texMintedStarredOpts matchgroup=Delimiter
         \ start='{'
@@ -99,7 +99,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
             \ 'end="\\end{\z1}"re=e'
             \ 'keepend'
             \ l:transparent
-            \ 'contains=texMintedStarred,texBeginEnd' . l:contains_env
+            \ 'contains=texMintedStarred,texCmdEnv' . l:contains_env
     endfor
 
     " Match minted macros

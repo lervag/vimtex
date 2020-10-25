@@ -14,7 +14,7 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
         \ end="\\end{dot2tex}"re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_dot
+        \ contains=texCmdEnv,@vimtex_nested_dot
 endfunction
 
 " }}}1

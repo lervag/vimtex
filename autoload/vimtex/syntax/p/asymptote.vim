@@ -14,13 +14,13 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
           \ end='\\end{asy\z1}'re=e
           \ keepend
           \ transparent
-          \ contains=texBeginEnd,@vimtex_nested_asy
+          \ contains=texCmdEnv,@vimtex_nested_asy
   else
     syntax region texRegionAsymptote
           \ start='\\begin{asy\z(def\)\?}'rs=s
           \ end='\\end{asy\z1}'re=e
           \ keepend
-          \ contains=texBeginEnd
+          \ contains=texCmdEnv
     highlight def link texRegionAsymptote texRegion
   endif
 endfunction

@@ -25,7 +25,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texClusterItal contains=TOP,texBoldStyle,texBoldItalStyle
   syntax cluster texClusterComment contains=texTodo,@Spell
   syntax cluster texClusterMath contains=texComment,texDelimiter,texErrorMath,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texRegionRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texTypeSize,texTypeStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texDocType,texErrorMath,texGreek,texInput,texLength,texLigature,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
+  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texDocType,texErrorMath,texGreek,texInput,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
   syntax cluster texClusterRef contains=texComment,texDelimiter,texMatcher
 
   " {{{2 Primitives
@@ -38,42 +38,42 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   syntax match texDelimiter "&"
 
-  " TeX String Delimiters
-  syntax match texString "\v%(``|''|,,)"
-
   " Flag mismatching ending delimiters } and ]
   syntax match texError "[}\]]"
   syntax match texErrorMath "}" contained
 
   " Tex commands
   syntax match texCmd "\\\a\+"
-  syntax match texErrorStatement "\\\a*@\a*"
+  syntax match texCmdError "\\\a*@\a*"
 
   " Accents and ligatures
-  syntax match texAccent "\\[bcdvuH]$"
-  syntax match texAccent "\\[bcdvuH]\ze\A"
-  syntax match texAccent /\\[=^.\~"`']/
-  syntax match texAccent /\\['=t'.c^ud"vb~Hr]{\a}/
-  syntax match texLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
-  syntax match texLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze\A"
-  syntax match texLigature '--'
-  syntax match texLigature '---'
+  syntax match texCmdAccent "\\[bcdvuH]$"
+  syntax match texCmdAccent "\\[bcdvuH]\ze\A"
+  syntax match texCmdAccent /\\[=^.\~"`']/
+  syntax match texCmdAccent /\\['=t'.c^ud"vb~Hr]{\a}/
+  syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
+  syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze\A"
+
+  " Various TeX symbols
+  syntax match texSymbolString "\v%(``|''|,,)"
+  syntax match texSymbolDash '--'
+  syntax match texSymbolDash '---'
 
   if l:cfg.is_style_document
     syntax match texCmd "\\[a-zA-Z@]\+"
-    syntax match texAccent "\\[bcdvuH]\ze[^a-zA-Z@]"
-    syntax match texLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]"
+    syntax match texCmdAccent "\\[bcdvuH]\ze[^a-zA-Z@]"
+    syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]"
   endif
 
   " Environments
-  syntax match  texBeginEnd "\v\\%(begin|end)>" nextgroup=texBeginEndName
-  syntax region texBeginEndName     matchgroup=Delimiter start="{"  end="}" contained contains=texComment nextgroup=texBeginEndModifier
-  syntax region texBeginEndModifier matchgroup=Delimiter start="\[" end="]" contained contains=texComment,@NoSpell
+  syntax match  texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvName
+  syntax region texEnvName     matchgroup=Delimiter start="{"  end="}" contained contains=texComment nextgroup=texEnvModifier
+  syntax region texEnvModifier matchgroup=Delimiter start="\[" end="]" contained contains=texComment,@NoSpell
 
   " Some common, specific LaTeX commands
   " TODO: This should be updated!
-  syntax match texDocType "\v\\%(documentclass|documentstyle|usepackage)>" nextgroup=texBeginEndName,texDocTypeArgs
-  syntax region texDocTypeArgs matchgroup=Delimiter start="\[" end="]" contained nextgroup=texBeginEndName contains=texComment,@NoSpell
+  syntax match texDocType "\v\\%(documentclass|documentstyle|usepackage)>" nextgroup=texEnvName,texDocTypeArgs
+  syntax region texDocTypeArgs matchgroup=Delimiter start="\[" end="]" contained nextgroup=texEnvName contains=texComment,@NoSpell
 
   " Other
   syntax match texOption "\v%(^|[^\\]\zs)#\d+"
@@ -187,14 +187,22 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " }}}2
 
-  " Should probably add highlighting of things like this:
-  " \section
-  " \frontmatter -> \part
-  " \paragraph
-  " \chapter
   " \author
   " \title
   " \begin{abstract}?
+
+  " {{{2 Sections and parts
+
+  syntax match texCmdParts "\\\(front\|main\|back\)matter\>"
+  syntax match texCmdParts "\\part\>" nextgroup=texPartTitle
+  syntax match texCmdParts "\\chapter\>" nextgroup=texPartTitle
+  syntax match texCmdParts "\\\(sub\)*section\>" nextgroup=texPartTitle
+  syntax match texCmdParts "\\\(sub\)\?paragraph\>" nextgroup=texPartTitle
+  syntax region texPartTitle matchgroup=Delimiter
+        \ start='{' end='}'
+        \ contained contains=TOP
+
+  " }}}2
 
   " {{{2 Math stuff
 
@@ -286,9 +294,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   " \makeatletter ... \makeatother sections
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
   " In short: allow @ in multicharacter macro name
-  syntax region texRegionSty matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP,texErrorStatement
-  syntax region texMatcherSty matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=TOP,texErrorStatement contained
-  syntax region texMatcherSty matchgroup=Delimiter start="\[" end="]"                    contains=TOP,texErrorStatement contained
+  syntax region texRegionSty matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP,texCmdError
+  syntax region texMatcherSty matchgroup=Delimiter start="{" skip="\\\\\|\\[{}]" end="}" contains=TOP,texCmdError contained
+  syntax region texMatcherSty matchgroup=Delimiter start="\[" end="]"                    contains=TOP,texCmdError contained
   syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texRegionSty
 
   " }}}2
@@ -424,86 +432,88 @@ endfunction
 " }}}1
 
 function! s:init_highlights(cfg) abort " {{{1
+  " Basic TeX highlighting groups
+  highlight def link texCmd            Statement
+  highlight def link texCmdArgs        Number
+  highlight def link texCmdName        Statement
+  highlight def link texComment        Comment
+  highlight def link texCommentAcronym Comment
+  highlight def link texCommentURL     Comment
+  highlight def link texDef            Statement
+  highlight def link texDefParm        Special
+  highlight def link texDefParmNested  Identifier
+  highlight def link texDelimiter      Delimiter
+  highlight def link texError          Error
+  highlight def link texInput          Special
+  highlight def link texInputFile      Special
+  highlight def link texLength         Number
+  highlight def link texMath           Special
+  highlight def link texMathDelim      Statement
+  highlight def link texMathOper       Operator
+  highlight def link texNewCmd         Statement
+  highlight def link texNewEnv         Statement
+  highlight def link texOption         Number
+  highlight def link texRegion         PreCondit
+  highlight def link texRegionRef      Special
+  highlight def link texSection        PreCondit
+  highlight def link texSpaceCodeChar  Special
+  highlight def link texSpecialChar    SpecialChar
+  highlight def link texSymbolString   String
+  highlight def link texTitle          String
+  highlight def link texTodo           Todo
+  highlight def link texType           Type
+
+  highlight def texBoldStyle     gui=bold        cterm=bold
+  highlight def texItalStyle     gui=italic      cterm=italic
+  highlight def texBoldItalStyle gui=bold,italic cterm=bold,italic
+  highlight def texItalBoldStyle gui=bold,italic cterm=bold,italic
+
   " TeX highlighting groups which should share similar highlighting
-  highlight def link texBadMath              texError
-  highlight def link texMathDelimBad         texError
-  highlight def link texErrorMath            texError
-  highlight def link texErrorStatement       texError
-  highlight def link texError                 Error
+  highlight def link texBadMath      texError
+  highlight def link texMathDelimBad texError
+  highlight def link texErrorMath    texError
+  highlight def link texCmdError     texError
   if a:cfg.is_style_document
-    highlight def link texOnlyMath           texError
+    highlight def link texOnlyMath   texError
   endif
 
-  highlight texBoldStyle               gui=bold        cterm=bold
-  highlight texItalStyle               gui=italic      cterm=italic
-  highlight texBoldItalStyle           gui=bold,italic cterm=bold,italic
-  highlight texItalBoldStyle           gui=bold,italic cterm=bold,italic
-  highlight def link texEmphStyle     texItalStyle
-  highlight def link texRefCite       texRegionRef
+  " Inherited groups
+  highlight def link texCmdAccent     texCmd
+  highlight def link texCmdEnv        texCmdName
+  highlight def link texCmdLigature   texSpecialChar
+  highlight def link texCmdParts      texCmd
+  highlight def link texCmdSty        texCmd
   highlight def link texDefCmd        texDef
   highlight def link texDefName       texDef
   highlight def link texDocType       texCmdName
   highlight def link texDocTypeArgs   texCmdArgs
-  highlight def link texInputFileOpt  texCmdArgs
+  highlight def link texEmphStyle     texItalStyle
+  highlight def link texEnvName       texSection
+  highlight def link texGreek         texCmd
   highlight def link texInputCurlies  texDelimiter
-  highlight def link texLigature      texSpecialChar
+  highlight def link texInputFileOpt  texCmdArgs
+  highlight def link texMatcherMath   texMath
+  highlight def link texMathDelimKey  texMathDelim
   highlight def link texMathDelimSet1 texMathDelim
   highlight def link texMathDelimSet2 texMathDelim
-  highlight def link texMathDelimKey  texMathDelim
-  highlight def link texMatcherMath   texMath
-  highlight def link texAccent        texCmd
-  highlight def link texGreek         texCmd
-  highlight def link texSuperscript   texCmd
-  highlight def link texSubscript     texCmd
-  highlight def link texSuperscripts  texSuperscript
-  highlight def link texSubscripts    texSubscript
   highlight def link texMathSymbol    texCmd
+  highlight def link texMathZoneV     texMath
   highlight def link texMathZoneV     texMath
   highlight def link texMathZoneW     texMath
   highlight def link texMathZoneX     texMath
   highlight def link texMathZoneY     texMath
-  highlight def link texMathZoneV     texMath
   highlight def link texMathZoneZ     texMath
-  highlight def link texBeginEnd      texCmdName
-  highlight def link texBeginEndName  texSection
+  highlight def link texPartTitle     texTitle
+  highlight def link texRefCite       texRegionRef
+  highlight def link texRegionVerb    texRegion
   highlight def link texSpaceCode     texCmd
-  highlight def link texCmdSty        texCmd
+  highlight def link texSubscript     texCmd
+  highlight def link texSubscripts    texSubscript
+  highlight def link texSuperscript   texCmd
+  highlight def link texSuperscripts  texSuperscript
+  highlight def link texSymbolDash    texSpecialChar
   highlight def link texTypeSize      texType
   highlight def link texTypeStyle     texType
-
-  " Basic TeX highlighting groups
-  highlight def link texCmdArgs       Number
-  highlight def link texCmdName       Statement
-  highlight def link texComment       Comment
-  highlight def link texDef           Statement
-  highlight def link texDefParm       Special
-  highlight def link texDelimiter     Delimiter
-  highlight def link texInput         Special
-  highlight def link texInputFile     Special
-  highlight def link texLength        Number
-  highlight def link texMath          Special
-  highlight def link texMathDelim     Statement
-  highlight def link texMathOper      Operator
-  highlight def link texNewCmd        Statement
-  highlight def link texNewEnv        Statement
-  highlight def link texOption        Number
-  highlight def link texRegionRef     Special
-  highlight def link texSection       PreCondit
-  highlight def link texSpaceCodeChar Special
-  highlight def link texSpecialChar   SpecialChar
-  highlight def link texCmd           Statement
-  highlight def link texString        String
-  highlight def link texTodo          Todo
-  highlight def link texType          Type
-  highlight def link texRegion        PreCondit
-
-  " Inherited groups
-  highlight def link texRegionVerb texRegion
-
-  " New
-  highlight def link texCommentURL     Comment
-  highlight def link texCommentAcronym Comment
-  highlight def link texDefParmNested  Identifier
 endfunction
 
 " }}}1
@@ -801,24 +811,24 @@ function! s:match_conceal_accents() " {{{1
         let l:accent = s:key_accents[i]
         let l:target = l:targets[i]
         if l:accent =~# '\a'
-          execute 'syntax match texAccent /' . l:accent . '\%(\s*{' . l:chr . '}\|\s\+' . l:chr . '\)' . '/ conceal cchar=' . l:target
+          execute 'syntax match texCmdAccent /' . l:accent . '\%(\s*{' . l:chr . '}\|\s\+' . l:chr . '\)' . '/ conceal cchar=' . l:target
         else
-          execute 'syntax match texAccent /' . l:accent . '\s*\%({' . l:chr . '}\|' . l:chr . '\)' . '/ conceal cchar=' . l:target
+          execute 'syntax match texCmdAccent /' . l:accent . '\s*\%({' . l:chr . '}\|' . l:chr . '\)' . '/ conceal cchar=' . l:target
         endif
     endfor
   endfor
 
-  syntax match texAccent   '\\aa\>' conceal cchar=å
-  syntax match texAccent   '\\AA\>' conceal cchar=Å
-  syntax match texAccent   '\\o\>'  conceal cchar=ø
-  syntax match texAccent   '\\O\>'  conceal cchar=Ø
-  syntax match texLigature '\\AE\>' conceal cchar=Æ
-  syntax match texLigature '\\ae\>' conceal cchar=æ
-  syntax match texLigature '\\oe\>' conceal cchar=œ
-  syntax match texLigature '\\OE\>' conceal cchar=Œ
-  syntax match texLigature '\\ss\>' conceal cchar=ß
-  syntax match texLigature '--'     conceal cchar=–
-  syntax match texLigature '---'    conceal cchar=—
+  syntax match texCmdAccent   '\\aa\>' conceal cchar=å
+  syntax match texCmdAccent   '\\AA\>' conceal cchar=Å
+  syntax match texCmdAccent   '\\o\>'  conceal cchar=ø
+  syntax match texCmdAccent   '\\O\>'  conceal cchar=Ø
+  syntax match texCmdLigature '\\AE\>' conceal cchar=Æ
+  syntax match texCmdLigature '\\ae\>' conceal cchar=æ
+  syntax match texCmdLigature '\\oe\>' conceal cchar=œ
+  syntax match texCmdLigature '\\OE\>' conceal cchar=Œ
+  syntax match texCmdLigature '\\ss\>' conceal cchar=ß
+  syntax match texSymbolDash  '--'     conceal cchar=–
+  syntax match texSymbolDash  '---'    conceal cchar=—
 endfunction
 
 let s:key_accents = [

@@ -11,9 +11,9 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
   call vimtex#syntax#misc#include('markdown')
 
   " Don't quite know why this is necessary, but it is
-  syntax match texBeginEnd
+  syntax match texCmdEnv
         \ '\(\\begin\>\|\\end\>\)\ze{markdown}'
-        \ nextgroup=texBeginEndName
+        \ nextgroup=texEnvName
 
   syntax region texRegionMarkdown
         \ start='\\begin{markdown}'rs=s

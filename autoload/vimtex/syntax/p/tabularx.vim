@@ -9,7 +9,7 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   let b:vimtex_syntax.tabularx = 1
 
   syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
-        \ contains=texBeginEnd
+        \ contains=texCmdEnv
         \ nextgroup=texTabularArg
   syntax region texTabularArg matchgroup=Delimiter
         \ start='{' end='}'

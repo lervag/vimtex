@@ -23,13 +23,13 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ end='\\end{pyblock}'re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_python
+        \ contains=texCmdEnv,@vimtex_nested_python
   syntax region texRegionPythontex
         \ start='\\begin{pycode}'rs=s
         \ end='\\end{pycode}'re=e
         \ keepend
         \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_python
+        \ contains=texCmdEnv,@vimtex_nested_python
 endfunction
 
 " }}}1
