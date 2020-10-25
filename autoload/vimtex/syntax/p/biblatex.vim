@@ -8,6 +8,8 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'biblatex') | return | endif
   let b:vimtex_syntax.biblatex = 1
 
+  syntax match texCmd "\\addbibresource\>" nextgroup=texFilenames
+
   for l:pattern in [
         \ 'bibentry',
         \ 'cite[pt]?\*?',

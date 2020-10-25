@@ -25,7 +25,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texClusterItal contains=TOP,texBoldStyle,texBoldItalStyle
   syntax cluster texClusterComment contains=texTodo,@Spell
   syntax cluster texClusterMath contains=texCmdEnvMath,texEnvMathName,texComment,texDelimiter,texErrorMathDelim,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texRegionRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texTypeSize,texTypeStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texErrorMathDelim,texGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
+  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texErrorMathDelim,texGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
   syntax cluster texClusterRef contains=texComment,texDelimiter,texMatcher
 
   " {{{2 Primitives
@@ -299,6 +299,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmd "\\includeonly\>" nextgroup=texFilenames
   syntax match texCmd "\\includegraphics\>" nextgroup=texOptGenericFile,texFilename
   syntax match texCmd "\\bibliography\>" nextgroup=texFilenames
+  syntax match texCmd "\\bibliographystyle\>" nextgroup=texFilename
   syntax match texCmd "\\document\%(class\|style\)\>" nextgroup=texOptGenericFile,texFilename
   syntax match texCmd "\\usepackage\>" nextgroup=texOptGenericFiles,texFilenames
   syntax match texCmd "\\RequirePackage\>" nextgroup=texOptGenericFiles,texFilenames
@@ -459,7 +460,7 @@ function! s:init_highlights(cfg) abort " {{{1
 
   " Basic TeX highlighting groups
   highlight def link texCmd               Statement
-  highlight def link texCmdArgs           Number
+  highlight def link texCmdArgs           Identifier
   highlight def link texCmdName           Statement
   highlight def link texComment           Comment
   highlight def link texCommentAcronym    Comment
@@ -468,6 +469,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texDefParm           Special
   highlight def link texDefParmNested     Identifier
   highlight def link texDelimiter         Delimiter
+  highlight def link texEnvName           PreCondit
   highlight def link texError             Error
   highlight def link texFilename          Include
   highlight def link texFilenameSeparator NormalNC
@@ -480,7 +482,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texOption            Number
   highlight def link texRegion            PreCondit
   highlight def link texRegionRef         Special
-  highlight def link texSection           PreCondit
   highlight def link texSpaceCodeChar     Special
   highlight def link texSpecialChar       SpecialChar
   highlight def link texSymbolString      String
@@ -512,7 +513,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texDefName              texDef
   highlight def link texEmphStyle            texItalStyle
   highlight def link texEnvMathName          Delimiter
-  highlight def link texEnvName              texSection
   highlight def link texFilenames            texFilename
   highlight def link texGreek                texCmd
   highlight def link texMatcherMath          texMath
