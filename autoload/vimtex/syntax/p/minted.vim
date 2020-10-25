@@ -40,7 +40,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ containedin=texMintedStarred
 
   " Match \newminted type macros
-  syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
+  syntax match texCmd '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
 
   " Match "unknown" environments
   syntax region texRegionMinted
@@ -126,14 +126,14 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
     " Match minted custom macros
     for l:cmd in sort(get(l:config, 'commands', []))
-      execute printf('syntax match texStatement ''\\%s'' nextgroup=%s',
+      execute printf('syntax match texCmd ''\\%s'' nextgroup=%s',
             \ l:cmd, l:group_arg_zone)
     endfor
   endfor
 
   " Main matcher for the minted statements/commands
   " - Note: This comes last to allow the nextgroup pattern
-  syntax match texStatement '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
+  syntax match texCmd '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
   syntax region texArgOptMinted matchgroup=Delimiter
         \ start='\['
         \ end='\]'

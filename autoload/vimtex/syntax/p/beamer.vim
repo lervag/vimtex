@@ -11,14 +11,14 @@ function! vimtex#syntax#p#beamer#load() abort " {{{1
   syntax match texBeamerDelimiter '<\|>' contained
   syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
 
-  syntax match texStatementBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
-  syntax match texStatementBeamer '\\item<[^>]*>' contains=texBeamerOpt
+  syntax match texCmdBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
+  syntax match texCmdBeamer '\\item<[^>]*>' contains=texBeamerOpt
 
   syntax match texInputFile
         \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
-        \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
+        \ contains=texCmd,texBeamerOpt,texInputCurlies,texInputFileOpt
 
-  highlight link texStatementBeamer texStatement
+  highlight link texCmdBeamer texCmd
   highlight link texBeamerOpt Identifier
   highlight link texBeamerDelimiter Delimiter
 endfunction

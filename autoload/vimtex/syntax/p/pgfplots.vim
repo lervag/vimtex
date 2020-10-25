@@ -16,7 +16,7 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
 
   " Match pgfplotsset and axis environments
   syntax match texTikzSet /\\pgfplotsset\>/
-        \ contains=texStatement skipwhite nextgroup=texTikzOptsCurly
+        \ contains=texCmd skipwhite nextgroup=texTikzOptsCurly
   syntax match texTikzEnv /\v\\begin\{%(log)*axis}/
         \ contains=texBeginEnd nextgroup=texTikzOpts skipwhite
   syntax match texTikzEnv /\v\\begin\{groupplot}/
@@ -28,7 +28,7 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
   syntax match texAxisStatement /\\nextgroupplot\>/
         \ contained skipwhite nextgroup=texTikzOpts
 
-  highlight def link texAxisStatement texStatement
+  highlight def link texAxisStatement texCmd
 endfunction
 
 " }}}1

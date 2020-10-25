@@ -15,7 +15,7 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
         \ keepend
         \ transparent
         \ contains=texBeginEnd,@vimtex_nested_lua
-  syntax match texStatement '\\\(directlua\|luadirect\)' nextgroup=texRegionLuaArg
+  syntax match texCmd '\\\(directlua\|luadirect\)' nextgroup=texRegionLuaArg
   syntax region texRegionLuaArg matchgroup=Delimiter
         \ start='{'
         \ end='}'

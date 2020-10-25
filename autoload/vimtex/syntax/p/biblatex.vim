@@ -24,7 +24,7 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
         \ '[Ppf]?[Nn]otecite',
         \ '%(text|block)cquote\*?',
         \]
-    execute 'syntax match texStatement'
+    execute 'syntax match texCmd'
           \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
           \ 'nextgroup=texRefOption,texRefCite'
   endfor
@@ -40,7 +40,7 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
         \ '[pPfFsStTaA]?[Vv]olcites?',
         \ 'cite%(field|list|name)',
         \]
-    execute 'syntax match texStatement'
+    execute 'syntax match texCmd'
           \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
           \ 'nextgroup=texRefOptions,texRefCites'
   endfor
@@ -50,7 +50,7 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
         \ '%(foreign|hyphen)blockcquote',
         \ 'hybridblockcquote',
         \]
-    execute 'syntax match texStatement'
+    execute 'syntax match texCmd'
           \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
           \ 'nextgroup=texQuoteLang'
   endfor

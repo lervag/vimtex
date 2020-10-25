@@ -9,7 +9,7 @@ function! vimtex#syntax#p#pdfpages#load() abort " {{{1
   let b:vimtex_syntax.pdfpages = 1
 
   syntax match texInputFile /\\includepdf\>/
-        \ contains=texStatement
+        \ contains=texCmd
         \ nextgroup=texInputFileOpt,texInputFileArg
   syntax region texInputFileOpt
         \ matchgroup=Delimiter

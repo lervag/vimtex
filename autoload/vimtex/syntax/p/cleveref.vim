@@ -8,15 +8,15 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'cleveref') | return | endif
   let b:vimtex_syntax.cleveref = 1
 
-  syntax match texStatement '\\\(\(label\)\?c\(page\)\?\|C\)ref\>'
+  syntax match texCmd '\\\(\(label\)\?c\(page\)\?\|C\)ref\>'
         \ nextgroup=texCRefZone
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
-  syntax match texStatement '\\c\(page\)\?refrange\>'
+  syntax match texCmd '\\c\(page\)\?refrange\>'
         \ nextgroup=texCRefZoneRange skipwhite skipnl
 
   " \label[xxx]{asd}
-  syntax match texStatement '\\label\[.\{-}\]'
+  syntax match texCmd '\\label\[.\{-}\]'
         \ nextgroup=texCRefZone skipwhite skipnl
         \ contains=texCRefLabelOpts
 

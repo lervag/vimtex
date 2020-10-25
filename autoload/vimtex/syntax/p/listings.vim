@@ -11,7 +11,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
   " First some general support
   syntax match texInputFile
         \ "\\lstinputlisting\s*\(\[.\{-}\]\)\={.\{-}}"
-        \ contains=texStatement,texInputCurlies,texInputFileOpt
+        \ contains=texCmd,texInputCurlies,texInputFileOpt
   syntax match texRegion "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
 
   " Set all listings environments to listings
@@ -44,7 +44,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
     execute 'syntax match' l:group_lstset
           \ '"\c\\lstset{.*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'transparent'
-          \ 'contains=texStatement,texMatcher'
+          \ 'contains=texCmd,texMatcher'
           \ 'skipwhite skipempty'
           \ 'nextgroup=' . l:group_contained
 
@@ -54,7 +54,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'keepend'
           \ 'transparent'
           \ 'containedin=' . l:group_lstset
-          \ 'contains=texStatement,texBeginEnd,@' . l:cluster
+          \ 'contains=texCmd,texBeginEnd,@' . l:cluster
   endfor
 
   highlight link texRegionListings texRegion

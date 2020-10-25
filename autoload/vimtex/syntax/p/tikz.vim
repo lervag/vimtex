@@ -9,12 +9,12 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   let b:vimtex_syntax.tikz = 1
 
   " Define clusters
-  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texStatement,texTikzSemicolon,texComment,@texVimtexGlobal
-  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texStatement,texLength,texComment
+  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texCmd,texTikzSemicolon,texComment,@texVimtexGlobal
+  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texCmd,texLength,texComment
 
   " Define tikz option groups
   syntax match texTikzSet /\\tikzset\>/
-        \ contains=texStatement skipwhite nextgroup=texTikzOptsCurly
+        \ contains=texCmd skipwhite nextgroup=texTikzOptsCurly
   syntax region texTikzOpts matchgroup=Delimiter
         \ start='\[' end='\]' contained contains=@texTikzOS
   syntax region texTikzOptsCurly matchgroup=Delimiter

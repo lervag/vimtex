@@ -9,7 +9,7 @@ function! vimtex#syntax#p#subfile#load() abort " {{{1
   let b:vimtex_syntax.subfile = 1
 
   syntax match texInputFile /\\subfile\s*\%(\[.\{-}\]\)\=\s*{.\{-}}/
-        \ contains=texStatement,texInputCurlies,texInputFileOpt
+        \ contains=texCmd,texInputCurlies,texInputFileOpt
 endfunction
 
 " }}}1

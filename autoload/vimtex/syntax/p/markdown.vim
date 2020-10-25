@@ -24,7 +24,7 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
 
   " Input files
   syntax match texInputFile /\\markdownInput\>/
-        \ contains=texStatement
+        \ contains=texCmd
         \ nextgroup=texInputFileArg
   syntax region texInputFileArg
         \ matchgroup=texInputCurlies

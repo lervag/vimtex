@@ -10,7 +10,7 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
 
   call vimtex#syntax#misc#include('python')
 
-  syntax match texStatement /\\py[bsc]\?/ contained nextgroup=texPythontexArg
+  syntax match texCmd /\\py[bsc]\?/ contained nextgroup=texPythontexArg
   syntax region texPythontexArg matchgroup=Delimiter
         \ start='{' end='}'
         \ contained contains=@vimtex_nested_python

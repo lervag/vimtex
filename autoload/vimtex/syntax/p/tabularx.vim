@@ -47,13 +47,13 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   syntax region texTabularPostPreArg matchgroup=Delimiter
         \ start='{' end='}'
         \ containedin=texTabularArg
-        \ contains=texLength,texStatement,texMathDelimSingle
+        \ contains=texLength,texCmd,texMathDelimSingle
         \ contained
 
   syntax region texTabularLength matchgroup=Delimiter
         \ start='{' end='}'
         \ containedin=texTabularArg
-        \ contains=texLength,texStatement
+        \ contains=texLength,texCmd
         \ contained
 
   syntax match texMathDelimSingle /\$\$\?/
