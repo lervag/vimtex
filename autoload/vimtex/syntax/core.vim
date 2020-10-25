@@ -24,8 +24,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texClusterBold contains=TOP,texItalStyle,texItalBoldStyle,texEmphStyle
   syntax cluster texClusterItal contains=TOP,texBoldStyle,texBoldItalStyle
   syntax cluster texClusterComment contains=texTodo,@Spell
-  syntax cluster texClusterMath contains=texComment,texDelimiter,texErrorMath,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texRegionRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texTypeSize,texTypeStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texDocType,texErrorMath,texGreek,texInput,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
+  syntax cluster texClusterMath contains=texCmdEnvMath,texEnvMathName,texComment,texDelimiter,texErrorMathDelim,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texRegionRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texTypeSize,texTypeStyle,@NoSpell
+  syntax cluster texClusterMathMatch contains=texComment,texDefCmd,texDelimiter,texDocType,texErrorMathDelim,texGreek,texInput,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texNewCmd,texNewEnv,texRegion,texRegionRef,texSection,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texTypeSize,texTypeStyle
   syntax cluster texClusterRef contains=texComment,texDelimiter,texMatcher
 
   " {{{2 Primitives
@@ -40,7 +40,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Flag mismatching ending delimiters } and ]
   syntax match texError "[}\]]"
-  syntax match texErrorMath "}" contained
+  syntax match texErrorMathDelim "}" contained
 
   " Tex commands
   syntax match texCmd "\\\a\+"
@@ -67,8 +67,16 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Environments
   syntax match  texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvName
-  syntax region texEnvName     matchgroup=Delimiter start="{"  end="}" contained contains=texComment nextgroup=texEnvModifier
-  syntax region texEnvModifier matchgroup=Delimiter start="\[" end="]" contained contains=texComment,@NoSpell
+  syntax region texEnvName matchgroup=Delimiter
+        \ start="{"  end="}"
+        \ contained contains=texComment nextgroup=texEnvModifier
+  syntax region texEnvModifier matchgroup=Delimiter
+        \ start="\[" end="]"
+        \ contained contains=texComment,@NoSpell
+  syntax match  texCmdEnvMath "\v\\%(begin|end)>" contained nextgroup=texEnvMathName
+  syntax region texEnvMathName matchgroup=Delimiter
+        \ start="{"  end="}"
+        \ contained contains=texComment
 
   " Some common, specific LaTeX commands
   " TODO: This should be updated!
@@ -477,6 +485,7 @@ function! s:init_highlights(cfg) abort " {{{1
   " Inherited groups
   highlight def link texCmdAccent            texCmd
   highlight def link texCmdEnv               texCmdName
+  highlight def link texCmdEnvMath           texCmdEnv
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdParts             texCmd
   highlight def link texCmdSty               texCmd
@@ -485,6 +494,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texDocType              texCmdName
   highlight def link texDocTypeArgs          texCmdArgs
   highlight def link texEmphStyle            texItalStyle
+  highlight def link texEnvMathName          Delimiter
   highlight def link texEnvName              texSection
   highlight def link texGreek                texCmd
   highlight def link texInputCurlies         texDelimiter
