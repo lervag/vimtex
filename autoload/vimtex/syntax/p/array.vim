@@ -10,9 +10,9 @@ function! vimtex#syntax#p#array#load() abort " {{{1
 
   call vimtex#syntax#p#tabularx#load()
 
-  let l:concealed = has('conceal')
-        \ && &enc ==# 'utf-8'
-        \ && get(g:, 'tex_conceal', 'd') =~# 'd'
+  let l:concealends = &encoding ==# 'utf-8'
+        \ && g:vimtex_syntax_config.conceal.math_delimiters
+        \ ? 'concealends' : ''
 
   " Change inline math to improve column specifiers, e.g.
   "
@@ -27,7 +27,7 @@ function! vimtex#syntax#p#array#load() abort " {{{1
         \ 'end="\$"'
         \ 'end="%stopzone\>"'
         \ 'contains=@texClusterMath'
-        \ (l:concealed ? 'concealends' : '')
+        \ l:concealends
 endfunction
 
 " }}}1

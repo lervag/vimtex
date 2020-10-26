@@ -262,11 +262,15 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_subfile_start_local', 0)
 
   call s:init_option('vimtex_syntax_config', {
-        \ 'conceal': get(g:, 'tex_conceal', 'abdmgsS'),
-        \ 'conceal_set_super':
-        \   get(g:, 'tex_superscripts', '[0-9a-zA-W.,:;+-<>/()=]'),
-        \ 'conceal_set_sub':
-        \   get(g:, 'tex_subscripts', '[0-9aehijklmnoprstuvx,+-/().]'),
+        \ 'conceal': {
+        \   'accents': 1,
+        \   'greek': 1,
+        \   'math_bounds': 1,
+        \   'math_delimiters': 1,
+        \   'special_chars': 1,
+        \   'styles': 1,
+        \   'super_sub': 1,
+        \ },
         \})
 
   call s:init_option('vimtex_syntax_enabled', 1)

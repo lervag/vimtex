@@ -309,7 +309,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_math_zone('math', 1)
 
   " Inline Math Zones
-  if l:cfg.conceal =~# 'd' && &encoding ==# 'utf-8'
+  if l:cfg.conceal.math_bounds && &encoding ==# 'utf-8'
     syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  concealends contains=@texClusterMath keepend
     syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  concealends contains=@texClusterMath keepend
     syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$"     matchgroup=Delimiter end="\$"   concealends contains=@texClusterMath
@@ -329,7 +329,13 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Math delimiters: \left... and \right...
   syntax match texMathDelimBad contained "\S"
-  if l:cfg.conceal !~# 'm' || &encoding !=# 'utf-8'
+  if l:cfg.conceal.math_delimiters && &encoding ==# 'utf-8'
+    syntax match texMathDelim "\\left\["        contained
+    syntax match texMathDelim "\\left\\{"       contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar={
+    syntax match texMathDelim "\\right\\}"      contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar=}
+    syntax match texMathDelim '\\[bB]igg\?[lr]' contained           nextgroup=texMathDelimBad
+    call s:match_conceal_math_delims()
+  else
     syntax match   texMathDelim      "\\\(left\|right\)\>"   contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad
     syntax match   texMathDelim      "\\[bB]igg\?[lr]\?\>"   contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad
     syntax match   texMathDelimSet2  "\\"                    contained           nextgroup=texMathDelimKey,texMathDelimBad
@@ -339,24 +345,17 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax keyword texMathDelimKey contained Downarrow lgroup     rbrace rvert      updownarrow
     syntax keyword texMathDelimKey contained langle    lmoustache rceil  rVert      Updownarrow
     syntax keyword texMathDelimKey contained lbrace    lvert      rfloor
-  else
-    syntax match texMathDelim "\\left\["        contained
-    syntax match texMathDelim "\\left\\{"       contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar={
-    syntax match texMathDelim "\\right\\}"      contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar=}
-    syntax match texMathDelim '\\[bB]igg\?[lr]' contained           nextgroup=texMathDelimBad
-    call s:match_conceal_math_delims()
   endif
   syntax match texMathDelim contained "\\\(left\|right\)arrow\>\|\<\([aA]rrow\|brace\)\?vert\>"
   syntax match texMathDelim contained "\\lefteqn\>"
 
-
-
+  " }}}2
   " {{{2 Conceal mode support
 
   " Add support for conceal with custom replacement (conceallevel = 2)
 
   if &encoding ==# 'utf-8'
-    if l:cfg.conceal =~# 'S'
+    if l:cfg.conceal.special_chars
       syntax match texSpecialChar '\\glq\>'  contained conceal cchar=‚
       syntax match texSpecialChar '\\grq\>'  contained conceal cchar=‘
       syntax match texSpecialChar '\\glqq\>' contained conceal cchar=„
@@ -365,22 +364,22 @@ function! vimtex#syntax#core#init() abort " {{{1
     endif
 
     " Many of these symbols were contributed by Björn Winckler
-    if l:cfg.conceal =~# 'm'
+    if l:cfg.conceal.math_delimiters
       call s:match_conceal_math_symbols()
     endif
 
     " Conceal replace greek letters
-    if l:cfg.conceal =~# 'g'
+    if l:cfg.conceal.greek
       call s:match_conceal_greek()
     endif
 
     " Conceal replace superscripts and subscripts
-    if l:cfg.conceal =~# 's'
+    if l:cfg.conceal.super_sub
       call s:match_conceal_super_sub(l:cfg)
     endif
 
     " Conceal replace accented characters and ligatures
-    if l:cfg.conceal =~# 'a' && !l:cfg.is_style_document
+    if l:cfg.conceal.accents && !l:cfg.is_style_document
       call s:match_conceal_accents()
     endif
   endif
@@ -519,7 +518,7 @@ endfunction
 
 function! s:match_bold_italic(cfg) abort " {{{1
   let [l:conceal, l:concealends] =
-        \ (a:cfg.conceal =~# 'b' ? ['conceal', 'concealends'] : ['', ''])
+        \ (a:cfg.conceal.styles ? ['conceal', 'concealends'] : ['', ''])
 
   syntax cluster texClusterBold contains=TOP,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold
   syntax cluster texClusterItal contains=TOP,texCmdStyleItal,texCmdStyleBold,texCmdStyleBoldItal
@@ -981,13 +980,13 @@ function! s:match_conceal_super_sub(cfg) " {{{1
   syntax region texSubscript   matchgroup=Delimiter start='_{'  skip="\\\\\|\\[{}]" end='}' contained concealends contains=texSpecialChar,texSubscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
 
   for [l:from, l:to] in filter(copy(s:map_super),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# a:cfg.conceal_set_super})
+        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
     execute 'syntax match texSuperscript /\^' . l:from . '/ contained conceal cchar=' . l:to
     execute 'syntax match texSuperscripts /'  . l:from . '/ contained conceal cchar=' . l:to 'nextgroup=texSuperscripts'
   endfor
 
   for [l:from, l:to] in filter(copy(s:map_sub),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# a:cfg.conceal_set_sub})
+        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/().]'})
     execute 'syntax match texSubscript /_' . l:from . '/ contained conceal cchar=' . l:to
     execute 'syntax match texSubscripts /' . l:from . '/ contained conceal cchar=' . l:to . ' nextgroup=texSubscripts'
   endfor

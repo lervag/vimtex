@@ -20,7 +20,7 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   call vimtex#syntax#core#new_math_zone('mathpar', 1)
 
   " Amsmath [lr][vV]ert  (Holger Mitschke)
-  if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
+  if &encoding ==# 'utf-8' && g:vimtex_syntax_config.conceal.math_delimiters
     for l:texmath in [
           \ ['\\lvert', '|'] ,
           \ ['\\rvert', '|'] ,
