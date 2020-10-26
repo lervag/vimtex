@@ -1,6 +1,5 @@
 set nocompatible
 let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
 filetype plugin on
 syntax enable
 

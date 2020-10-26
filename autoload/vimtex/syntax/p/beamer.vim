@@ -19,7 +19,7 @@ function! vimtex#syntax#p#beamer#load() abort " {{{1
         \ nextgroup=texOptGenericFile,texFilename
 
   highlight link texCmdBeamer texCmd
-  highlight link texBeamerOpt texCmdArgs
+  highlight link texBeamerOpt texNewcmdArgs
   highlight link texBeamerDelimiter texDelimiter
 endfunction
 
