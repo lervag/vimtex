@@ -33,7 +33,7 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
 
   highlight link texCRefZone      texRegionRef
   highlight link texCRefZoneRange texRegionRef
-  highlight link texCRefLabelOpts texNewcmdArgs
+  highlight link texCRefLabelOpts texNewcmdOpt
 endfunction
 
 " }}}1

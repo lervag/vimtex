@@ -10,7 +10,7 @@ function! vimtex#syntax#p#cases#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'cases') | return | endif
   let b:vimtex_syntax.cases = 1
 
-  call VimtexNewMathZone('E', '\(sub\)\?numcases', 0)
+  call vimtex#syntax#core#new_math_region('\(sub\)\?numcases', 0)
 endfunction
 
 " }}}1

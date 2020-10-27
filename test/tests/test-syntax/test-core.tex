@@ -8,12 +8,39 @@
 \@asd{asd}
 \makeatother
 
+% TODO fixme
+%
+% bad speled text
+% ABC
+% https://www.example.com
+%
+
+\newcommand{\testnc}[2]{#1 something #1 here #2}
+\def \foo #1#2 {#1 foo #1 bar #2 baz}
+\newenvironment{test}[3]{#1 before #2}{#3 after #1}
+
 \begin{document}
 
-\v!
-\v@
+Test accents \v! and \v@ here.
 
 Line with inline verbatim: \verb+verb+
 Line with inline verbatim: \verb*+verb+
+
+Line with $inline math$ here.
+
+\section{First}
+\label{sec:first}
+
+% Various cite and ref commands
+\ref{sec:first}
+\pageref{sec:second}
+\nocite{bibkey0}
+\cite{bibkey1}
+\citet*{bibkey2}
+\citep{bibkey3}
+\citep[e.g.][]{bibkey4}
+
+\section{Second}
+\label{sec:second}
 
 \end{document}

@@ -19,7 +19,7 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
         \ keepend transparent
         \ contains=texCmdEnv,texEnvName,@vimtex_nested_markdown
 
-  syntax match texCmd "\\markdownInput\>" nextgroup=texFilename
+  syntax match texCmd "\\markdownInput\>" nextgroup=texFileArg
 endfunction
 
 " }}}1
