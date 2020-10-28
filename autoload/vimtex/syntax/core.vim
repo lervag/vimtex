@@ -99,6 +99,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdTodo '\\todo\w*'
 
   " Author and title commands
+  " TODO: Option groups here
   syntax match texCmd nextgroup=texArgAuthor skipwhite skipnl "\\author\>"
   syntax match texCmd nextgroup=texArgTitle skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texComment,@NoSpell')
@@ -308,15 +309,15 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Inline Math Zones
   if l:cfg.conceal.math_bounds
-    syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  concealends contains=@texClusterMath keepend
-    syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  concealends contains=@texClusterMath keepend
-    syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$"     matchgroup=Delimiter end="\$"   concealends contains=@texClusterMath
-    syntax region texRegionMathXX matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" concealends contains=@texClusterMath keepend
+    syntax region texRegionMath   matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texRegionMath   matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texRegionMathX  matchgroup=Delimiter concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texRegionMathXX matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
   else
-    syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  contains=@texClusterMath keepend
-    syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  contains=@texClusterMath keepend
-    syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$" matchgroup=Delimiter end="\$"   contains=@texClusterMath
-    syntax region texRegionMathXX matchgroup=Delimiter start="\$\$"                     matchgroup=Delimiter end="\$\$" contains=@texClusterMath keepend
+    syntax region texRegionMath   matchgroup=Delimiter contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texRegionMath   matchgroup=Delimiter contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texRegionMathX  matchgroup=Delimiter contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texRegionMathXX matchgroup=Delimiter contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
 
   syntax match texCmd "\\ensuremath\>" nextgroup=texRegionMathEnsured
