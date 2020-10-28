@@ -16,10 +16,10 @@ function! vimtex#syntax#p#beamer#load() abort " {{{1
 
   syntax match texCmd "\\includegraphics<[^>]*>"
         \ contains=texBeamerOpt
-        \ nextgroup=texFileOpt,texFileArg
+        \ nextgroup=texOptFile,texArgFile
 
   highlight link texCmdBeamer texCmd
-  highlight link texBeamerOpt texNewcmdOpt
+  highlight link texBeamerOpt texOptNewcmd
   highlight link texBeamerDelimiter texDelimiter
 endfunction
 

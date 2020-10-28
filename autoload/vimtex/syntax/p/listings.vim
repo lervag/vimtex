@@ -10,7 +10,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
 
   " First some general support
   syntax match texCmd "\\lstinputlisting\>"
-        \ nextgroup=texFileOpt,texFileArg
+        \ nextgroup=texOptFile,texArgFile
   syntax match texRegion "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
 
   " Set all listings environments to listings

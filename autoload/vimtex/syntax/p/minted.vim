@@ -142,7 +142,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
   highlight link texRegionMinted texRegion
   highlight link texRegionMintedCmd texRegion
-  highlight link texMintedName texNewcmdOpt
+  highlight link texMintedName texOptNewcmd
   highlight link texMintedNameOpt texMintedName
 endfunction
 

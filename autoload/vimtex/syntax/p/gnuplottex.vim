@@ -14,7 +14,7 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
         \ end='\\end{gnuplot}'re=e
         \ keepend
         \ transparent
-        \ contains=texCmdEnv,texEnvModifier,@vimtex_nested_gnuplot
+        \ contains=texCmdEnv,texOptEnvModifier,@vimtex_nested_gnuplot
 endfunction
 
 " }}}1

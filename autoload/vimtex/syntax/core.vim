@@ -21,15 +21,22 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " {{{2 Primitives
 
-  " Delimiters
-  syntax region texMatcher matchgroup=Delimiter start="{" skip="\\\\\|\\}" end="}" contains=TOP
+  " Match TeX braces in general
+  " TODO: Do we really need this??
+  syntax region texMatcher matchgroup=Delimiter
+        \ start="{" skip="\\\\\|\\}" end="}" contains=TOP
 
   " Flag mismatching ending brace delimiter
   syntax match texError "}"
 
   " Comments
+  " * In documented TeX Format, actual comments are defined by leading "^^A".
+  "   Almost all other lines start with one or more "%", which may be matched
+  "   as comment characters. The remaining part of the line can be interpreted
+  "   as TeX syntax.
+  " * For more info on dtx files, see e.g.
+  "   https://ctan.uib.no/info/dtxtut/dtxtut.pdf
   if l:cfg.ext ==# 'dtx'
-    " Documented TeX Format: Only leading "^^A" and "%"
     syntax match texComment "\^\^A.*$"
     syntax match texComment "^%\+"
   else
@@ -91,24 +98,26 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Todo commands
   syntax match texCmdTodo '\\todo\w*'
 
-  " TODO: Special for author and title type of commands?
-  " \author
-  " \title
+  " Author and title commands
+  syntax match texCmd nextgroup=texArgAuthor skipwhite skipnl "\\author\>"
+  syntax match texCmd nextgroup=texArgTitle skipwhite skipnl "\\title\>"
+  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texComment')
 
   " Various commands that take a file argument (or similar)
-  syntax match texCmd nextgroup=texFileArg              skipwhite skipnl "\\input\>"
-  syntax match texCmd nextgroup=texFileArg              skipwhite skipnl "\\include\>"
-  syntax match texCmd nextgroup=texFileArgs             skipwhite skipnl "\\includeonly\>"
-  syntax match texCmd nextgroup=texFileOpt,texFileArg   skipwhite skipnl "\\includegraphics\>"
-  syntax match texCmd nextgroup=texFileArgs             skipwhite skipnl "\\bibliography\>"
-  syntax match texCmd nextgroup=texFileArg              skipwhite skipnl "\\bibliographystyle\>"
-  syntax match texCmd nextgroup=texFileOpt,texFileArg   skipwhite skipnl "\\document\%(class\|style\)\>"
-  syntax match texCmd nextgroup=texFileOpts,texFileArgs skipwhite skipnl "\\usepackage\>"
-  syntax match texCmd nextgroup=texFileOpts,texFileArgs skipwhite skipnl "\\RequirePackage\>"
-  call vimtex#syntax#core#new_cmd_opt('texFileOpt', 'texFileArg')
-  call vimtex#syntax#core#new_cmd_opt('texFileOpts', 'texFileArgs')
-  call vimtex#syntax#core#new_cmd_arg('texFileArg', '', 'texCmd,texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texFileArgs', '', 'texOptSep,texCmd,texComment,@NoSpell')
+  syntax match texCmd nextgroup=texArgFile              skipwhite skipnl "\\input\>"
+  syntax match texCmd nextgroup=texArgFile              skipwhite skipnl "\\include\>"
+  syntax match texCmd nextgroup=texArgFiles             skipwhite skipnl "\\includeonly\>"
+  syntax match texCmd nextgroup=texOptFile,texArgFile   skipwhite skipnl "\\includegraphics\>"
+  syntax match texCmd nextgroup=texArgFiles             skipwhite skipnl "\\bibliography\>"
+  syntax match texCmd nextgroup=texArgFile              skipwhite skipnl "\\bibliographystyle\>"
+  syntax match texCmd nextgroup=texOptFile,texArgFile   skipwhite skipnl "\\document\%(class\|style\)\>"
+  syntax match texCmd nextgroup=texOptFiles,texArgFiles skipwhite skipnl "\\usepackage\>"
+  syntax match texCmd nextgroup=texOptFiles,texArgFiles skipwhite skipnl "\\RequirePackage\>"
+  call vimtex#syntax#core#new_cmd_opt('texOptFile', 'texArgFile')
+  call vimtex#syntax#core#new_cmd_opt('texOptFiles', 'texArgFiles')
+  call vimtex#syntax#core#new_cmd_arg('texArgFile', '', 'texCmd,texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgFiles', '', 'texOptSep,texCmd,texComment,@NoSpell')
 
   " LaTeX 2.09 type styles
   syntax match texCmdStyle "\\rm\>"
@@ -168,43 +177,43 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdSize "\\Huge\>"
 
   " \newcommand
-  syntax match texCmdNewcmd nextgroup=texNewcmdName skipwhite skipnl "\\\%(re\)\?newcommand\>"
-  call vimtex#syntax#core#new_cmd_arg('texNewcmdName', 'texNewcmdOpt,texNewcmdBody')
-  call vimtex#syntax#core#new_cmd_opt('texNewcmdOpt', 'texNewcmdOpt,texNewcmdBody', '', 'oneline')
-  call vimtex#syntax#core#new_cmd_arg('texNewcmdBody', '', 'TOP')
-  syntax match texNewcmdParm contained "#\d\+" containedin=texNewcmdBody
+  syntax match texCmd nextgroup=texArgNewcmdName skipwhite skipnl "\\\%(re\)\?newcommand\>"
+  call vimtex#syntax#core#new_cmd_arg('texArgNewcmdName', 'texOptNewcmd,texArgNewcmdBody')
+  call vimtex#syntax#core#new_cmd_opt('texOptNewcmd', 'texOptNewcmd,texArgNewcmdBody', '', 'oneline')
+  call vimtex#syntax#core#new_cmd_arg('texArgNewcmdBody', '', 'TOP')
+  syntax match texParmNewcmd contained "#\d\+" containedin=texArgNewcmdBody
 
   " \newenvironment
-  syntax match texCmdNewenv nextgroup=texNewenvName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
-  call vimtex#syntax#core#new_cmd_arg('texNewenvName', 'texNewenvBgn,texNewenvOpt')
-  call vimtex#syntax#core#new_cmd_opt('texNewenvOpt', 'texNewenvBgn,texNewenvOpt', '', 'oneline')
-  call vimtex#syntax#core#new_cmd_arg('texNewenvBgn', 'texNewenvEnd', 'TOP')
-  call vimtex#syntax#core#new_cmd_arg('texNewenvEnd', '', 'TOP')
-  syntax match texNewenvParm contained "#\d\+" containedin=texNewenvBgn,texNewenvEnd
+  syntax match texCmd nextgroup=texArgNewenvName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
+  call vimtex#syntax#core#new_cmd_arg('texArgNewenvName', 'texArgNewenvBegin,texOptNewenv')
+  call vimtex#syntax#core#new_cmd_opt('texOptNewenv', 'texArgNewenvBegin,texOptNewenv', '', 'oneline')
+  call vimtex#syntax#core#new_cmd_arg('texArgNewenvBegin', 'texArgNewenvEnd', 'TOP')
+  call vimtex#syntax#core#new_cmd_arg('texArgNewenvEnd', '', 'TOP')
+  syntax match texParmNewenv contained "#\d\+" containedin=texArgNewenvBegin,texArgNewenvEnd
 
   " Definitions/Commands
   " E.g. \def \foo #1#2 {foo #1 bar #2 baz}
-  syntax match texCmdDef "\\def\>" nextgroup=texDefName skipwhite skipnl
+  syntax match texCmd "\\def\>" nextgroup=texArgDefName skipwhite skipnl
   if l:cfg.is_style_document
-    syntax match texDefName contained nextgroup=texDefParmPre,texDefBody skipwhite skipnl "\\[a-zA-Z@]\+"
-    syntax match texDefName contained nextgroup=texDefParmPre,texDefBody skipwhite skipnl "\\[^a-zA-Z@]"
+    syntax match texArgDefName contained nextgroup=texParmDefPre,texArgDefBody skipwhite skipnl "\\[a-zA-Z@]\+"
+    syntax match texArgDefName contained nextgroup=texParmDefPre,texArgDefBody skipwhite skipnl "\\[^a-zA-Z@]"
   else
-    syntax match texDefName contained nextgroup=texDefParmPre,texDefBody skipwhite skipnl "\\\a\+"
-    syntax match texDefName contained nextgroup=texDefParmPre,texDefBody skipwhite skipnl "\\\A"
+    syntax match texArgDefName contained nextgroup=texParmDefPre,texArgDefBody skipwhite skipnl "\\\a\+"
+    syntax match texArgDefName contained nextgroup=texParmDefPre,texArgDefBody skipwhite skipnl "\\\A"
   endif
-  syntax match texDefParmPre contained nextgroup=texDefBody skipwhite skipnl "#[^{]*"
-  syntax match texDefParm contained "#\d\+" containedin=texDefParmPre,texDefBody
-  call vimtex#syntax#core#new_cmd_arg('texDefBody', '', 'TOP')
+  syntax match texParmDefPre contained nextgroup=texArgDefBody skipwhite skipnl "#[^{]*"
+  syntax match texParmDef contained "#\d\+" containedin=texParmDefPre,texArgDefBody
+  call vimtex#syntax#core#new_cmd_arg('texArgDefBody', '', 'TOP')
 
   " Reference and cite commands
-  syntax match texCmdRef nextgroup=texRef           skipwhite skipnl "\\nocite\>"
-  syntax match texCmdRef nextgroup=texRef           skipwhite skipnl "\\label\>"
-  syntax match texCmdRef nextgroup=texRef           skipwhite skipnl "\\\(page\|eq\)ref\>"
-  syntax match texCmdRef nextgroup=texRef           skipwhite skipnl "\\v\?ref\>"
-  syntax match texCmdRef nextgroup=texRefOpt,texRef skipwhite skipnl "\\cite\>"
-  syntax match texCmdRef nextgroup=texRefOpt,texRef skipwhite skipnl "\\cite[tp]\>\*\?"
-  call vimtex#syntax#core#new_cmd_arg('texRef', '', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_opt('texRefOpt', 'texRefOpt,texRef')
+  syntax match texCmd nextgroup=texArgRef           skipwhite skipnl "\\nocite\>"
+  syntax match texCmd nextgroup=texArgRef           skipwhite skipnl "\\label\>"
+  syntax match texCmd nextgroup=texArgRef           skipwhite skipnl "\\\(page\|eq\)ref\>"
+  syntax match texCmd nextgroup=texArgRef           skipwhite skipnl "\\v\?ref\>"
+  syntax match texCmd nextgroup=texOptRef,texArgRef skipwhite skipnl "\\cite\>"
+  syntax match texCmd nextgroup=texOptRef,texArgRef skipwhite skipnl "\\cite[tp]\>\*\?"
+  call vimtex#syntax#core#new_cmd_arg('texArgRef', '', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_opt('texOptRef', 'texOptRef,texArgRef')
 
   " \makeatletter ... \makeatother sections
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
@@ -215,27 +224,27 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Add @NoSpell for commands per configuration
   for l:macro in g:vimtex_syntax_nospell_commands
     execute 'syntax match texCmd skipwhite skipnl "\\' . l:macro . '"'
-          \ 'nextgroup=texVimtexNoSpell'
+          \ 'nextgroup=texArgNoSpell'
   endfor
-  call vimtex#syntax#core#new_cmd_arg('texVimtexNoSpell', '', '@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgNoSpell', '', '@NoSpell')
 
   " Sections and parts
   syntax match texCmdParts "\\\(front\|main\|back\)matter\>"
-  syntax match texCmdParts nextgroup=texPartTitle "\\part\>"
-  syntax match texCmdParts nextgroup=texPartTitle "\\chapter\>"
-  syntax match texCmdParts nextgroup=texPartTitle "\\\(sub\)*section\>"
-  syntax match texCmdParts nextgroup=texPartTitle "\\\(sub\)\?paragraph\>"
-  call vimtex#syntax#core#new_cmd_arg('texPartTitle', '', 'TOP')
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\part\>"
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\chapter\>"
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)*section\>"
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)\?paragraph\>"
+  call vimtex#syntax#core#new_cmd_arg('texArgPartTitle', '', 'TOP')
 
   " }}}2
   " {{{2 Environments
 
-  syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvName
-  call vimtex#syntax#core#new_cmd_arg('texEnvName', 'texEnvModifier')
-  call vimtex#syntax#core#new_cmd_opt('texEnvModifier', '', 'texComment,@NoSpell')
+  syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texArgEnvName
+  call vimtex#syntax#core#new_cmd_arg('texArgEnvName', 'texOptEnvModifier')
+  call vimtex#syntax#core#new_cmd_opt('texOptEnvModifier', '', 'texComment,@NoSpell')
 
-  syntax match texCmdEnvMath "\v\\%(begin|end)>" contained nextgroup=texEnvMathName
-  call vimtex#syntax#core#new_cmd_arg('texEnvMathName', '')
+  syntax match texCmdEnvMath "\v\\%(begin|end)>" contained nextgroup=texArgEnvMathName
+  call vimtex#syntax#core#new_cmd_arg('texArgEnvMathName', '')
 
   " }}}2
   " {{{2 Verbatim
@@ -243,7 +252,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Verbatim environment
   syntax region texRegionVerb
         \ start="\\begin{[vV]erbatim}" end="\\end{[vV]erbatim}"
-        \ keepend contains=texCmdEnv,texEnvName
+        \ keepend contains=texCmdEnv,texArgEnvName
 
   " Verbatim inline
   syntax match texCmd "\\verb\>\*\?" nextgroup=texRegionVerbInline
@@ -276,15 +285,14 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Math
 
-  syntax match texOnlyMath "[_^]" contained
-
-  syntax cluster texClusterMath contains=texCmdEnvMath,texEnvMathName,texComment,texSymbolAmp,texGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texCmdRef,texSpecialChar,texCmd,texSubscript,texSuperscript,texCmdSize,texCmdStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texCmdDef,texSymbolAmp,texGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texCmdNewcmd,texCmdNewenv,texRegion,texCmdRef,texSpecialChar,texCmd,texSymbolString,texSubscript,texSuperscript,texCmdSize,texCmdStyle
+  syntax cluster texClusterMath contains=texCmdEnvMath,texArgEnvMathName,texComment,texSymbolAmp,texCmdGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texSpecialChar,texCmd,texSubscript,texSuperscript,texCmdSize,texCmdStyle,@NoSpell
+  syntax cluster texClusterMathMatch contains=texComment,texCmd,texSymbolAmp,texCmdGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texRegion,texSpecialChar,texSymbolString,texSubscript,texSuperscript,texCmdSize,texCmdStyle
   syntax region texMatcherMath matchgroup=Delimiter start="{"  skip="\\\\\|\\}" end="}" contained   contains=@texClusterMathMatch
 
   " Bad/Mismatched math
-  syntax match texErrorMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
+  syntax match texErrorOnlyMath "[_^]"
   syntax match texErrorMath "\\[\])]"
+  syntax match texErrorMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
 
   " Operators and similar
   syntax match texMathOper "[_^=]" contained
@@ -299,7 +307,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_math_region('math', 1)
 
   " Inline Math Zones
-  if l:cfg.conceal.math_bounds && &encoding ==# 'utf-8'
+  if l:cfg.conceal.math_bounds
     syntax region texRegionMath matchgroup=Delimiter start="\\("                      matchgroup=Delimiter end="\\)"  concealends contains=@texClusterMath keepend
     syntax region texRegionMath matchgroup=Delimiter start="\\\["                     matchgroup=Delimiter end="\\]"  concealends contains=@texClusterMath keepend
     syntax region texRegionMathX matchgroup=Delimiter start="\$" skip="\\\\\|\\\$"     matchgroup=Delimiter end="\$"   concealends contains=@texClusterMath
@@ -427,26 +435,28 @@ endfunction
 
 
 function! s:init_highlights(cfg) abort " {{{1
-  " See :help group-names for list of conventional group names
+  " See :help group-name for list of conventional group names
 
   " Basic TeX highlighting groups
+  highlight def link texArg              Include
+  highlight def link texArgAuthor        Identifier
+  highlight def link texArgEnvMathName   Delimiter
+  highlight def link texArgEnvName       PreCondit
+  highlight def link texArgRef           Special
+  highlight def link texArgTitle         Underlined
   highlight def link texCmd              Statement
   highlight def link texCmdSpaceCodeChar Special
   highlight def link texCmdTodo          Todo
   highlight def link texComment          Comment
   highlight def link texCommentTodo      Todo
-  highlight def link texEnvName          PreCondit
-  highlight def link texEnvMathName      Delimiter
   highlight def link texError            Error
-  highlight def link texGenericArg       Include
-  highlight def link texGenericOpt       Identifier
-  highlight def link texGenericParm      Special
-  highlight def link texGenericSep       NormalNC
   highlight def link texLength           Number
   highlight def link texMath             Special
   highlight def link texMathDelim        Statement
   highlight def link texMathOper         Operator
-  highlight def link texRef              Special
+  highlight def link texOpt              Identifier
+  highlight def link texOptSep           NormalNC
+  highlight def link texParm             Special
   highlight def link texRegion           PreCondit
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
@@ -459,16 +469,20 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def texStyleBoth gui=bold,italic cterm=bold,italic
 
   " Inherited groups
+  highlight def link texArgDefName           texCmd
+  highlight def link texArgFile              texArg
+  highlight def link texArgFiles             texArg
+  highlight def link texArgNewcmdName        texCmd
+  highlight def link texArgNewenvName        texArgEnvName
+  highlight def link texArgPartTitle         texTitle
+  highlight def link texCmd                  texCmd
   highlight def link texCmdAccent            texCmd
-  highlight def link texCmdDef               texCmd
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdEnvMath           texCmdEnv
   highlight def link texCmdError             texError
+  highlight def link texCmdGreek             texCmd
   highlight def link texCmdLigature          texSpecialChar
-  highlight def link texCmdNewcmd            texCmd
-  highlight def link texCmdNewenv            texCmd
   highlight def link texCmdParts             texCmd
-  highlight def link texCmdRef               texCmd
   highlight def link texCmdSize              texType
   highlight def link texCmdSpaceCode         texCmd
   highlight def link texCmdSty               texCmd
@@ -480,31 +494,24 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdStyleItalBold     texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
-  highlight def link texDefName              texCmd
   highlight def link texErrorMath            texError
-  highlight def link texFileArg              texGenericArg
-  highlight def link texFileArgs             texGenericArg
-  highlight def link texFileOpt              texGenericOpt
-  highlight def link texFileOpts             texGenericOpt
-  highlight def link texGreek                texCmd
   highlight def link texMatcherMath          texMath
   highlight def link texMathDelimBad         texError
   highlight def link texMathDelimKey         texMathDelim
   highlight def link texMathDelimSet1        texMathDelim
   highlight def link texMathDelimSet2        texMathDelim
   highlight def link texMathSymbol           texCmd
-  highlight def link texNewcmdName           texCmd
-  highlight def link texNewcmdOpt            texGenericOpt
-  highlight def link texNewcmdParm           texGenericParm
-  highlight def link texNewenvName           texEnvName
-  highlight def link texNewenvOpt            texGenericOpt
-  highlight def link texNewenvParm           texGenericParm
+  highlight def link texErrorOnlyMath        texError
   highlight def link texOptEqual             texSymbol
-  highlight def link texOptSep               texGenericSep
-  highlight def link texOnlyMath             texError
-  highlight def link texPartTitle            texTitle
+  highlight def link texOptFile              texOpt
+  highlight def link texOptFiles             texOpt
+  highlight def link texOptNewcmd            texOpt
+  highlight def link texOptNewenv            texOpt
+  highlight def link texOptRef               texOpt
+  highlight def link texParmDef              texParm
+  highlight def link texParmNewcmd           texParm
+  highlight def link texParmNewenv           texParm
   highlight def link texRefCite              texRegionRef
-  highlight def link texRefOpt               texGenericOpt
   highlight def link texRegionMath           texMath
   highlight def link texRegionMathEnsured    texMath
   highlight def link texRegionMathEnv        texMath
@@ -938,47 +945,47 @@ let s:map_accents = [
 
 " }}}1
 function! s:match_conceal_greek() " {{{1
-  syntax match texGreek "\\alpha\>"      contained conceal cchar=α
-  syntax match texGreek "\\beta\>"       contained conceal cchar=β
-  syntax match texGreek "\\gamma\>"      contained conceal cchar=γ
-  syntax match texGreek "\\delta\>"      contained conceal cchar=δ
-  syntax match texGreek "\\epsilon\>"    contained conceal cchar=ϵ
-  syntax match texGreek "\\varepsilon\>" contained conceal cchar=ε
-  syntax match texGreek "\\zeta\>"       contained conceal cchar=ζ
-  syntax match texGreek "\\eta\>"        contained conceal cchar=η
-  syntax match texGreek "\\theta\>"      contained conceal cchar=θ
-  syntax match texGreek "\\vartheta\>"   contained conceal cchar=ϑ
-  syntax match texGreek "\\iota\>"       contained conceal cchar=ι
-  syntax match texGreek "\\kappa\>"      contained conceal cchar=κ
-  syntax match texGreek "\\lambda\>"     contained conceal cchar=λ
-  syntax match texGreek "\\mu\>"         contained conceal cchar=μ
-  syntax match texGreek "\\nu\>"         contained conceal cchar=ν
-  syntax match texGreek "\\xi\>"         contained conceal cchar=ξ
-  syntax match texGreek "\\pi\>"         contained conceal cchar=π
-  syntax match texGreek "\\varpi\>"      contained conceal cchar=ϖ
-  syntax match texGreek "\\rho\>"        contained conceal cchar=ρ
-  syntax match texGreek "\\varrho\>"     contained conceal cchar=ϱ
-  syntax match texGreek "\\sigma\>"      contained conceal cchar=σ
-  syntax match texGreek "\\varsigma\>"   contained conceal cchar=ς
-  syntax match texGreek "\\tau\>"        contained conceal cchar=τ
-  syntax match texGreek "\\upsilon\>"    contained conceal cchar=υ
-  syntax match texGreek "\\phi\>"        contained conceal cchar=ϕ
-  syntax match texGreek "\\varphi\>"     contained conceal cchar=φ
-  syntax match texGreek "\\chi\>"        contained conceal cchar=χ
-  syntax match texGreek "\\psi\>"        contained conceal cchar=ψ
-  syntax match texGreek "\\omega\>"      contained conceal cchar=ω
-  syntax match texGreek "\\Gamma\>"      contained conceal cchar=Γ
-  syntax match texGreek "\\Delta\>"      contained conceal cchar=Δ
-  syntax match texGreek "\\Theta\>"      contained conceal cchar=Θ
-  syntax match texGreek "\\Lambda\>"     contained conceal cchar=Λ
-  syntax match texGreek "\\Xi\>"         contained conceal cchar=Ξ
-  syntax match texGreek "\\Pi\>"         contained conceal cchar=Π
-  syntax match texGreek "\\Sigma\>"      contained conceal cchar=Σ
-  syntax match texGreek "\\Upsilon\>"    contained conceal cchar=Υ
-  syntax match texGreek "\\Phi\>"        contained conceal cchar=Φ
-  syntax match texGreek "\\Chi\>"        contained conceal cchar=Χ
-  syntax match texGreek "\\Psi\>"        contained conceal cchar=Ψ
-  syntax match texGreek "\\Omega\>"      contained conceal cchar=Ω
+  syntax match texCmdGreek "\\alpha\>"      contained conceal cchar=α
+  syntax match texCmdGreek "\\beta\>"       contained conceal cchar=β
+  syntax match texCmdGreek "\\gamma\>"      contained conceal cchar=γ
+  syntax match texCmdGreek "\\delta\>"      contained conceal cchar=δ
+  syntax match texCmdGreek "\\epsilon\>"    contained conceal cchar=ϵ
+  syntax match texCmdGreek "\\varepsilon\>" contained conceal cchar=ε
+  syntax match texCmdGreek "\\zeta\>"       contained conceal cchar=ζ
+  syntax match texCmdGreek "\\eta\>"        contained conceal cchar=η
+  syntax match texCmdGreek "\\theta\>"      contained conceal cchar=θ
+  syntax match texCmdGreek "\\vartheta\>"   contained conceal cchar=ϑ
+  syntax match texCmdGreek "\\iota\>"       contained conceal cchar=ι
+  syntax match texCmdGreek "\\kappa\>"      contained conceal cchar=κ
+  syntax match texCmdGreek "\\lambda\>"     contained conceal cchar=λ
+  syntax match texCmdGreek "\\mu\>"         contained conceal cchar=μ
+  syntax match texCmdGreek "\\nu\>"         contained conceal cchar=ν
+  syntax match texCmdGreek "\\xi\>"         contained conceal cchar=ξ
+  syntax match texCmdGreek "\\pi\>"         contained conceal cchar=π
+  syntax match texCmdGreek "\\varpi\>"      contained conceal cchar=ϖ
+  syntax match texCmdGreek "\\rho\>"        contained conceal cchar=ρ
+  syntax match texCmdGreek "\\varrho\>"     contained conceal cchar=ϱ
+  syntax match texCmdGreek "\\sigma\>"      contained conceal cchar=σ
+  syntax match texCmdGreek "\\varsigma\>"   contained conceal cchar=ς
+  syntax match texCmdGreek "\\tau\>"        contained conceal cchar=τ
+  syntax match texCmdGreek "\\upsilon\>"    contained conceal cchar=υ
+  syntax match texCmdGreek "\\phi\>"        contained conceal cchar=ϕ
+  syntax match texCmdGreek "\\varphi\>"     contained conceal cchar=φ
+  syntax match texCmdGreek "\\chi\>"        contained conceal cchar=χ
+  syntax match texCmdGreek "\\psi\>"        contained conceal cchar=ψ
+  syntax match texCmdGreek "\\omega\>"      contained conceal cchar=ω
+  syntax match texCmdGreek "\\Gamma\>"      contained conceal cchar=Γ
+  syntax match texCmdGreek "\\Delta\>"      contained conceal cchar=Δ
+  syntax match texCmdGreek "\\Theta\>"      contained conceal cchar=Θ
+  syntax match texCmdGreek "\\Lambda\>"     contained conceal cchar=Λ
+  syntax match texCmdGreek "\\Xi\>"         contained conceal cchar=Ξ
+  syntax match texCmdGreek "\\Pi\>"         contained conceal cchar=Π
+  syntax match texCmdGreek "\\Sigma\>"      contained conceal cchar=Σ
+  syntax match texCmdGreek "\\Upsilon\>"    contained conceal cchar=Υ
+  syntax match texCmdGreek "\\Phi\>"        contained conceal cchar=Φ
+  syntax match texCmdGreek "\\Chi\>"        contained conceal cchar=Χ
+  syntax match texCmdGreek "\\Psi\>"        contained conceal cchar=Ψ
+  syntax match texCmdGreek "\\Omega\>"      contained conceal cchar=Ω
 endfunction
 
 " }}}1
