@@ -22,7 +22,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Primitives
 
   " Delimiters
-  syntax region texMatcher matchgroup=Delimiter start="{" skip="\\\\\|\\}" end="}"
+  syntax region texMatcher matchgroup=Delimiter start="{" skip="\\\\\|\\}" end="}" contains=TOP
 
   " Flag mismatching ending brace delimiter
   syntax match texError "}"
@@ -55,8 +55,13 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Commands
 
+  " Most general version first
   syntax match texCmd "\\\a\+"
   syntax match texCmdError "\\\a*@\a*"
+
+  " Add some standard contained stuff
+  syntax match texOptEqual contained "="
+  syntax match texOptSep contained ",\s*"
 
   " Accents and ligatures
   syntax match texCmdAccent "\\[bcdvuH]$"
@@ -103,8 +108,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_cmd_opt('texFileOpt', 'texFileArg')
   call vimtex#syntax#core#new_cmd_opt('texFileOpts', 'texFileArgs')
   call vimtex#syntax#core#new_cmd_arg('texFileArg', '', 'texCmd,texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texFileArgs', '', 'texFileArgSep,texCmd,texComment,@NoSpell')
-  syntax match texFileArgSep ",\s*" contained
+  call vimtex#syntax#core#new_cmd_arg('texFileArgs', '', 'texOptSep,texCmd,texComment,@NoSpell')
 
   " LaTeX 2.09 type styles
   syntax match texCmdStyle "\\rm\>"
@@ -239,7 +243,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Verbatim environment
   syntax region texRegionVerb
         \ start="\\begin{[vV]erbatim}" end="\\end{[vV]erbatim}"
-        \ contains=texCmdEnv,texEnvName
+        \ keepend contains=texCmdEnv,texEnvName
 
   " Verbatim inline
   syntax match texCmd "\\verb\>\*\?" nextgroup=texRegionVerbInline
@@ -392,7 +396,7 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#core#new_cmd_opt(grp, next, ...) abort " {{{1
-  let l:contains = a:0 > 0 ? a:1 : 'texComment'
+  let l:contains = a:0 > 0 ? a:1 : 'texComment,texCmd,texLength,texOptSep,texOptEqual'
   let l:options = a:0 >= 2 ? a:2 : ''
 
   execute 'syntax region' a:grp
@@ -479,7 +483,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texDefName              texCmd
   highlight def link texErrorMath            texError
   highlight def link texFileArg              texGenericArg
-  highlight def link texFileArgSep           texGenericSep
   highlight def link texFileArgs             texGenericArg
   highlight def link texFileOpt              texGenericOpt
   highlight def link texFileOpts             texGenericOpt
@@ -496,6 +499,8 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texNewenvName           texEnvName
   highlight def link texNewenvOpt            texGenericOpt
   highlight def link texNewenvParm           texGenericParm
+  highlight def link texOptEqual             texSymbol
+  highlight def link texOptSep               texGenericSep
   highlight def link texOnlyMath             texError
   highlight def link texPartTitle            texTitle
   highlight def link texRefCite              texRegionRef
