@@ -23,7 +23,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Match TeX braces in general
   " TODO: Do we really need this??
-  syntax region texMatcher matchgroup=Delimiter
+  syntax region texMatcher matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}" contains=TOP
 
   " Flag mismatching ending brace delimiter
@@ -258,10 +258,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Verbatim inline
   syntax match texCmd "\\verb\>\*\?" nextgroup=texRegionVerbInline
   if l:cfg.is_style_document
-    syntax region texRegionVerbInline matchgroup=Delimiter
+    syntax region texRegionVerbInline matchgroup=texDelim
           \ start="\z([^\ta-zA-Z@]\)" end="\z1" contained
   else
-    syntax region texRegionVerbInline matchgroup=Delimiter
+    syntax region texRegionVerbInline matchgroup=texDelim
           \ start="\z([^\ta-zA-Z]\)" end="\z1" contained
   endif
 
@@ -286,9 +286,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Math
 
-  syntax cluster texClusterMath contains=texCmdEnvMath,texArgEnvMathName,texComment,texSymbolAmp,texCmdGreek,texLength,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texMathSymbol,texMathText,texSpecialChar,texCmd,texSubscript,texSuperscript,texCmdSize,texCmdStyle,@NoSpell
-  syntax cluster texClusterMathMatch contains=texComment,texCmd,texSymbolAmp,texCmdGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texMathDelim,texMathOper,texMathSymbol,texRegion,texSpecialChar,texSymbolString,texSubscript,texSuperscript,texCmdSize,texCmdStyle
-  syntax region texMatcherMath matchgroup=Delimiter start="{"  skip="\\\\\|\\}" end="}" contained   contains=@texClusterMathMatch
+  syntax cluster texClusterMath contains=texCmdEnvMath,texArgEnvMathName,texComment,texSymbolAmp,texCmdGreek,texLength,texMatcherMath,texDelimMath,texMathOper,texMathSymbol,texMathSymbol,texSpecialChar,texCmd,texSubscript,texSuperscript,texCmdSize,texCmdStyle,@NoSpell
+  syntax cluster texClusterMatcherMath contains=texComment,texCmd,texSymbolAmp,texCmdGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texDelimMath,texMathOper,texMathSymbol,texRegion,texSpecialChar,texSymbolString,texSubscript,texSuperscript,texCmdSize,texCmdStyle
+  syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMatcherMath
 
   " Bad/Mismatched math
   syntax match texErrorOnlyMath "[_^]"
@@ -298,9 +298,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Operators and similar
   syntax match texMathOper "[_^=]" contained
 
-  " Text Inside Math regions
-  syntax region texMathText matchgroup=texCmd start="\\\(\(inter\)\?text\|mbox\)\s*{" end="}" contains=TOP,@Spell
-
   " Math environments
   call vimtex#syntax#core#new_math_region('displaymath', 1)
   call vimtex#syntax#core#new_math_region('eqnarray', 1)
@@ -309,44 +306,45 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Inline Math Zones
   if l:cfg.conceal.math_bounds
-    syntax region texRegionMath   matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texRegionMath   matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texRegionMathX  matchgroup=Delimiter concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texRegionMathXX matchgroup=Delimiter concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texRegionMath   matchgroup=texDelimMathmode concealends contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texRegionMath   matchgroup=texDelimMathmode concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texRegionMathX  matchgroup=texDelimMathmode concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texRegionMathXX matchgroup=texDelimMathmode concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
   else
-    syntax region texRegionMath   matchgroup=Delimiter contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texRegionMath   matchgroup=Delimiter contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texRegionMathX  matchgroup=Delimiter contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texRegionMathXX matchgroup=Delimiter contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texRegionMath   matchgroup=texDelimMathmode contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texRegionMath   matchgroup=texDelimMathmode contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texRegionMathX  matchgroup=texDelimMathmode contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texRegionMathXX matchgroup=texDelimMathmode contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
+
+  " Text Inside Math regions
+  syntax match texCmd "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texArgMathText
+  call vimtex#syntax#core#new_cmd_arg('texArgMathText', '', 'TOP,@Spell')
 
   syntax match texCmd "\\ensuremath\>" nextgroup=texRegionMathEnsured
-  syntax region texRegionMathEnsured matchgroup=Delimiter
-        \ start="{" end="}"
-        \ contained
-        \ contains=@texClusterMath
+  call vimtex#syntax#core#new_cmd_arg('texRegionMathEnsured', '', '@texClusterMath')
 
   " Math delimiters: \left... and \right...
-  syntax match texMathDelimBad contained "\S"
+  syntax match texErrorMathDelim contained "\S"
   if l:cfg.conceal.math_delimiters && &encoding ==# 'utf-8'
-    syntax match texMathDelim "\\left\["        contained
-    syntax match texMathDelim "\\left\\{"       contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar={
-    syntax match texMathDelim "\\right\\}"      contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad contains=texMathSymbol cchar=}
-    syntax match texMathDelim '\\[bB]igg\?[lr]' contained           nextgroup=texMathDelimBad
+    syntax match texDelimMath "\\left\["        contained
+    syntax match texDelimMath "\\left\\{"       contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim contains=texMathSymbol cchar={
+    syntax match texDelimMath "\\right\\}"      contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim contains=texMathSymbol cchar=}
+    syntax match texDelimMath '\\[bB]igg\?[lr]' contained           nextgroup=texErrorMathDelim
     call s:match_conceal_math_delims()
   else
-    syntax match   texMathDelim      "\\\(left\|right\)\>"   contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad
-    syntax match   texMathDelim      "\\[bB]igg\?[lr]\?\>"   contained skipwhite nextgroup=texMathDelimSet1,texMathDelimSet2,texMathDelimBad
-    syntax match   texMathDelimSet2  "\\"                    contained           nextgroup=texMathDelimKey,texMathDelimBad
-    syntax match   texMathDelimSet1  "[<>()[\]|/.]\|\\[{}|]" contained
-    syntax keyword texMathDelimKey contained backslash lceil      lVert  rgroup     uparrow
-    syntax keyword texMathDelimKey contained downarrow lfloor     rangle rmoustache Uparrow
-    syntax keyword texMathDelimKey contained Downarrow lgroup     rbrace rvert      updownarrow
-    syntax keyword texMathDelimKey contained langle    lmoustache rceil  rVert      Updownarrow
-    syntax keyword texMathDelimKey contained lbrace    lvert      rfloor
+    syntax match   texDelimMath      "\\\(left\|right\)\>"   contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim
+    syntax match   texDelimMath      "\\[bB]igg\?[lr]\?\>"   contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim
+    syntax match   texDelimMathSet2  "\\"                    contained           nextgroup=texDelimMathKey,texErrorMathDelim
+    syntax match   texDelimMathSet1  "[<>()[\]|/.]\|\\[{}|]" contained
+    syntax keyword texDelimMathKey contained backslash lceil      lVert  rgroup     uparrow
+    syntax keyword texDelimMathKey contained downarrow lfloor     rangle rmoustache Uparrow
+    syntax keyword texDelimMathKey contained Downarrow lgroup     rbrace rvert      updownarrow
+    syntax keyword texDelimMathKey contained langle    lmoustache rceil  rVert      Updownarrow
+    syntax keyword texDelimMathKey contained lbrace    lvert      rfloor
   endif
-  syntax match texMathDelim contained "\\\(left\|right\)arrow\>\|\<\([aA]rrow\|brace\)\?vert\>"
-  syntax match texMathDelim contained "\\lefteqn\>"
+  syntax match texDelimMath contained "\\\(left\|right\)arrow\>\|\<\([aA]rrow\|brace\)\?vert\>"
+  syntax match texDelimMath contained "\\lefteqn\>"
 
   " }}}2
   " {{{2 Conceal mode support
@@ -397,7 +395,7 @@ function! vimtex#syntax#core#new_cmd_arg(grp, next, ...) abort " {{{1
   let l:options = a:0 >= 2 ? a:2 : ''
 
   execute 'syntax region' a:grp
-        \ 'contained matchgroup=Delimiter start="{" skip="\\\\\|\\}" end="}"'
+        \ 'contained matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}"'
         \ (empty(l:contains) ? '' : 'contains=' . l:contains)
         \ (empty(a:next) ? '' : 'nextgroup=' . a:next . ' skipwhite skipnl')
         \ l:options
@@ -409,7 +407,7 @@ function! vimtex#syntax#core#new_cmd_opt(grp, next, ...) abort " {{{1
   let l:options = a:0 >= 2 ? a:2 : ''
 
   execute 'syntax region' a:grp
-        \ 'contained matchgroup=Delimiter start="\[" skip="\\\\\|\\\]" end="\]"'
+        \ 'contained matchgroup=texDelim start="\[" skip="\\\\\|\\\]" end="\]"'
         \ (empty(l:contains) ? '' : 'contains=' . l:contains)
         \ (empty(a:next) ? '' : 'nextgroup=' . a:next . ' skipwhite skipnl')
         \ l:options
@@ -450,10 +448,11 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdTodo          Todo
   highlight def link texComment          Comment
   highlight def link texCommentTodo      Todo
+  highlight def link texDelim            Delimiter
   highlight def link texError            Error
   highlight def link texLength           Number
   highlight def link texMath             Special
-  highlight def link texMathDelim        Statement
+  highlight def link texDelimMath        Statement
   highlight def link texMathOper         Operator
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
@@ -470,6 +469,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def texStyleBoth gui=bold,italic cterm=bold,italic
 
   " Inherited groups
+  highlight def link texDelimMathmode    texDelim
   highlight def link texArgDefName           texCmd
   highlight def link texArgFile              texArg
   highlight def link texArgFiles             texArg
@@ -497,10 +497,10 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCommentURL           texComment
   highlight def link texErrorMath            texError
   highlight def link texMatcherMath          texMath
-  highlight def link texMathDelimBad         texError
-  highlight def link texMathDelimKey         texMathDelim
-  highlight def link texMathDelimSet1        texMathDelim
-  highlight def link texMathDelimSet2        texMathDelim
+  highlight def link texErrorMathDelim       texError
+  highlight def link texDelimMathKey         texDelimMath
+  highlight def link texDelimMathSet1        texDelimMath
+  highlight def link texDelimMathSet2        texDelimMath
   highlight def link texMathSymbol           texCmd
   highlight def link texErrorOnlyMath        texError
   highlight def link texOptEqual             texSymbol
@@ -564,11 +564,11 @@ function! s:match_bold_italic(cfg) abort " {{{1
           \ 'nextgroup=' . l:map[l:group] l:conceal
   endfor
 
-  execute 'syntax region texStyleBold matchgroup=Delimiter start=/{/ end=/}/'
+  execute 'syntax region texStyleBold matchgroup=texDelim start=/{/ end=/}/'
         \ 'contained contains=@texClusterBold' l:concealends
-  execute 'syntax region texStyleItal matchgroup=Delimiter start=/{/ end=/}/'
+  execute 'syntax region texStyleItal matchgroup=texDelim start=/{/ end=/}/'
         \ 'contained contains=@texClusterItal' l:concealends
-  execute 'syntax region texStyleBoth matchgroup=Delimiter start=/{/ end=/}/'
+  execute 'syntax region texStyleBoth matchgroup=texDelim start=/{/ end=/}/'
         \ 'contained contains=@texClusterItalBold' l:concealends
 endfunction
 
@@ -991,8 +991,8 @@ endfunction
 
 " }}}1
 function! s:match_conceal_super_sub(cfg) " {{{1
-  syntax region texSuperscript matchgroup=Delimiter start='\^{' skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSuperscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
-  syntax region texSubscript   matchgroup=Delimiter start='_{'  skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSubscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
+  syntax region texSuperscript matchgroup=texDelim start='\^{' skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSuperscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
+  syntax region texSubscript   matchgroup=texDelim start='_{'  skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSubscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
 
   for [l:from, l:to] in filter(copy(s:map_super),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})

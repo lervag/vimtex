@@ -27,7 +27,7 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
           \ ['\\lVert', '‖'] ,
           \ ['\\rVert', '‖'] ,
           \ ]
-        execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
+        execute "syntax match texDelimMath '\\\\[bB]igg\\=[lr]\\="
               \ . l:texmath[0] . "' contained conceal cchar=" . l:texmath[1]
     endfor
   endif
