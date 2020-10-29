@@ -5,19 +5,15 @@
 "
 
 function! vimtex#syntax#core#init() abort " {{{1
-  " Syntax may be loaded without the main vimtex functionality, thus we need to
-  " ensure that the options are loaded!
-  call vimtex#options#init()
+  let l:cfg = deepcopy(g:vimtex_syntax_config)
+  let l:cfg.ext = expand('%:e')
+  let l:cfg.is_style_document =
+        \ index(['sty', 'cls', 'clo', 'dtx', 'ltx'], l:cfg.ext) >= 0
 
   syntax spell toplevel
 
   syntax sync maxlines=500
   syntax sync minlines=50
-
-  let l:cfg = deepcopy(g:vimtex_syntax_config)
-  let l:cfg.ext = expand('%:e')
-  let l:cfg.is_style_document =
-        \ index(['sty', 'cls', 'clo', 'dtx', 'ltx'], l:cfg.ext) >= 0
 
   " {{{2 Primitives
 

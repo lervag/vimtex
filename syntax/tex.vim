@@ -12,6 +12,11 @@
 if !get(g:, 'vimtex_syntax_enabled', 1) | finish | endif
 if exists('b:current_syntax') | finish | endif
 
+" Syntax may be loaded without the main vimtex functionality, thus we need to
+" ensure that the options are loaded!
+call vimtex#options#init()
+
+
 " Load core syntax (does not depend on vimtex state)
 call vimtex#syntax#core#init()
 
