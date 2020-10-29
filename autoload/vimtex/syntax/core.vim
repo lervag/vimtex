@@ -449,10 +449,10 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texComment          Comment
   highlight def link texCommentTodo      Todo
   highlight def link texDelim            Delimiter
+  highlight def link texDelimMath        Statement
   highlight def link texError            Error
   highlight def link texLength           Number
   highlight def link texMath             Special
-  highlight def link texDelimMath        Statement
   highlight def link texMathOper         Operator
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
@@ -469,7 +469,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def texStyleBoth gui=bold,italic cterm=bold,italic
 
   " Inherited groups
-  highlight def link texDelimMathmode    texDelim
   highlight def link texArgDefName           texCmd
   highlight def link texArgFile              texArg
   highlight def link texArgFiles             texArg
@@ -495,14 +494,15 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdStyleItalBold     texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
-  highlight def link texErrorMath            texError
-  highlight def link texMatcherMath          texMath
-  highlight def link texErrorMathDelim       texError
   highlight def link texDelimMathKey         texDelimMath
   highlight def link texDelimMathSet1        texDelimMath
   highlight def link texDelimMathSet2        texDelimMath
-  highlight def link texMathSymbol           texCmd
+  highlight def link texDelimMathmode        texDelim
+  highlight def link texErrorMath            texError
+  highlight def link texErrorMathDelim       texError
   highlight def link texErrorOnlyMath        texError
+  highlight def link texMatcherMath          texMath
+  highlight def link texMathSymbol           texCmd
   highlight def link texOptEqual             texSymbol
   highlight def link texOptFile              texOpt
   highlight def link texOptFiles             texOpt
