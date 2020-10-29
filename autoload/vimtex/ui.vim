@@ -70,20 +70,16 @@ function! s:choose_from(list, options) abort " {{{1
 
   while 1
     redraw!
-    echohl VimtexMsg
-    unsilent echo a:options.prompt
-    echohl None
+    unsilent call vimtex#echo#echo(a:options.prompt)
 
     let l:choices = 0
     if a:options.abort
-      unsilent call vimtex#echo#formatted(
-            \ [['VimtexWarning', '0'], ': Abort'])
+      unsilent call vimtex#echo#formatted([['VimtexWarning', '0'], ': Abort'])
     endif
     for l:x in a:list
       let l:choices += 1
       unsilent call vimtex#echo#formatted(
-            \ [['VimtexWarning', l:choices],
-            \ ': ',
+            \ [['VimtexWarning', l:choices], ': ',
             \  type(l:x) == v:t_dict ? l:x.name : l:x]
             \)
     endfor
@@ -92,7 +88,6 @@ function! s:choose_from(list, options) abort " {{{1
       let l:choice = l:choices > 9
               \ ? s:_get_choice_many()
               \ : s:_get_choice_few()
-      echon l:choice
 
       if a:options.abort && l:choice == 0
         return -1
@@ -110,7 +105,9 @@ endfunction
 
 function! s:_get_choice_few() abort " {{{1
   echo '> '
-  return nr2char(getchar())
+  let l:choice = nr2char(getchar())
+  echon l:choice
+  return l:choice
 endfunction
 
 " }}}1
