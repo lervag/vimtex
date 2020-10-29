@@ -286,25 +286,17 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Math
 
-  syntax cluster texClusterMath contains=texCmdEnvMath,texArgEnvMathName,texComment,texSymbolAmp,texCmdGreek,texLength,texMatcherMath,texDelimMath,texMathOper,texMathSymbol,texMathSymbol,texSpecialChar,texCmd,texSubscript,texSuperscript,texCmdSize,texCmdStyle,@NoSpell
-  syntax cluster texClusterMatcherMath contains=texComment,texCmd,texSymbolAmp,texCmdGreek,texLength,texCmdLigature,texSymbolDash,texMatcherMath,texDelimMath,texMathOper,texMathSymbol,texRegion,texSpecialChar,texSymbolString,texSubscript,texSuperscript,texCmdSize,texCmdStyle
-  syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMatcherMath
+  " Math clusters for use in math regions
+  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texMatcherMath,texMathOper,texSymbolMath,texSpecialChar,texSubscript,texSuperscript,texSymbolAmp,texSymbolDash,@NoSpell
+  syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
-  " Bad/Mismatched math
-  syntax match texErrorOnlyMath "[_^]"
-  syntax match texErrorMath "\\[\])]"
-  syntax match texErrorMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
-
-  " Operators and similar
-  syntax match texMathOper "[_^=]" contained
-
-  " Math environments
+  " Math regions: environments
   call vimtex#syntax#core#new_math_region('displaymath', 1)
   call vimtex#syntax#core#new_math_region('eqnarray', 1)
   call vimtex#syntax#core#new_math_region('equation', 1)
   call vimtex#syntax#core#new_math_region('math', 1)
 
-  " Inline Math Zones
+  " Math regions: Inline Math Zones
   if l:cfg.conceal.math_bounds
     syntax region texRegionMath   matchgroup=texDelimMathmode concealends contains=@texClusterMath keepend start="\\("  end="\\)"
     syntax region texRegionMath   matchgroup=texDelimMathmode concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
@@ -317,34 +309,24 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax region texRegionMathXX matchgroup=texDelimMathmode contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
 
+  " Math regions: \ensuremath{...}
+  syntax match texCmd "\\ensuremath\>" nextgroup=texRegionMathEnsured
+  call vimtex#syntax#core#new_cmd_arg('texRegionMathEnsured', '', '@texClusterMath')
+
+  " Bad/Mismatched math
+  syntax match texErrorOnlyMath "[_^]"
+  syntax match texErrorMath "\\[\])]"
+  syntax match texErrorMath "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
+
+  " Operators and similar
+  syntax match texMathOper "[_^=]" contained
+
   " Text Inside Math regions
   syntax match texCmd "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texArgMathText
   call vimtex#syntax#core#new_cmd_arg('texArgMathText', '', 'TOP,@Spell')
 
-  syntax match texCmd "\\ensuremath\>" nextgroup=texRegionMathEnsured
-  call vimtex#syntax#core#new_cmd_arg('texRegionMathEnsured', '', '@texClusterMath')
-
   " Math delimiters: \left... and \right...
-  syntax match texErrorMathDelim contained "\S"
-  if l:cfg.conceal.math_delimiters && &encoding ==# 'utf-8'
-    syntax match texDelimMath "\\left\["        contained
-    syntax match texDelimMath "\\left\\{"       contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim contains=texMathSymbol cchar={
-    syntax match texDelimMath "\\right\\}"      contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim contains=texMathSymbol cchar=}
-    syntax match texDelimMath '\\[bB]igg\?[lr]' contained           nextgroup=texErrorMathDelim
-    call s:match_conceal_math_delims()
-  else
-    syntax match   texDelimMath      "\\\(left\|right\)\>"   contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim
-    syntax match   texDelimMath      "\\[bB]igg\?[lr]\?\>"   contained skipwhite nextgroup=texDelimMathSet1,texDelimMathSet2,texErrorMathDelim
-    syntax match   texDelimMathSet2  "\\"                    contained           nextgroup=texDelimMathKey,texErrorMathDelim
-    syntax match   texDelimMathSet1  "[<>()[\]|/.]\|\\[{}|]" contained
-    syntax keyword texDelimMathKey contained backslash lceil      lVert  rgroup     uparrow
-    syntax keyword texDelimMathKey contained downarrow lfloor     rangle rmoustache Uparrow
-    syntax keyword texDelimMathKey contained Downarrow lgroup     rbrace rvert      updownarrow
-    syntax keyword texDelimMathKey contained langle    lmoustache rceil  rVert      Updownarrow
-    syntax keyword texDelimMathKey contained lbrace    lvert      rfloor
-  endif
-  syntax match texDelimMath contained "\\\(left\|right\)arrow\>\|\<\([aA]rrow\|brace\)\?vert\>"
-  syntax match texDelimMath contained "\\lefteqn\>"
+  call s:match_math_delims(l:cfg)
 
   " }}}2
   " {{{2 Conceal mode support
@@ -420,14 +402,14 @@ function! vimtex#syntax#core#new_math_region(mathzone, starred) abort " {{{1
   execute 'syntax region texRegionMathEnv'
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\s*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\s*}'''
-        \ . ' keepend contains=@texClusterMath'
+        \ . ' keepend contains=texCmdEnvMath,texArgEnvMathName,@texClusterMath'
 
   if !a:starred | return | endif
 
   execute 'syntax region texRegionMathEnvStarred'
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\*\s*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\*\s*}'''
-        \ . ' keepend contains=@texClusterMath'
+        \ . ' keepend contains=texCmdEnvMath,texArgEnvMathName,@texClusterMath'
 endfunction
 
 " }}}1
@@ -449,7 +431,8 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texComment          Comment
   highlight def link texCommentTodo      Todo
   highlight def link texDelim            Delimiter
-  highlight def link texDelimMath        Statement
+  highlight def link texDelimMath        Type
+  highlight def link texDelimMathMod     Statement
   highlight def link texError            Error
   highlight def link texLength           Number
   highlight def link texMath             Special
@@ -502,7 +485,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texErrorMathDelim       texError
   highlight def link texErrorOnlyMath        texError
   highlight def link texMatcherMath          texMath
-  highlight def link texMathSymbol           texCmd
+  highlight def link texSymbolMath           texCmd
   highlight def link texOptEqual             texSymbol
   highlight def link texOptFile              texOpt
   highlight def link texOptFiles             texOpt
@@ -561,7 +544,7 @@ function! s:match_bold_italic(cfg) abort " {{{1
         \ ['texCmdStyleItal', 'textup'],
         \]
     execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*"'
-          \ 'nextgroup=' . l:map[l:group] l:conceal
+          \ 'skipwhite skipnl nextgroup=' . l:map[l:group] l:conceal
   endfor
 
   execute 'syntax region texStyleBold matchgroup=texDelim start=/{/ end=/}/'
@@ -573,290 +556,321 @@ function! s:match_bold_italic(cfg) abort " {{{1
 endfunction
 
 " }}}1
+function! s:match_math_delims(cfg) abort " {{{1
+  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMath "\\\(left\|right\)\>"
+  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMath "\\[bB]igg\?[lr]\?\>"
+  syntax match texDelimMath contained "[<>()[\]|/.]\|\\[{}|]"
+  syntax match texDelimMath contained "\\backslash"
+  syntax match texDelimMath contained "\\downarrow"
+  syntax match texDelimMath contained "\\Downarrow"
+  syntax match texDelimMath contained "\\lVert"
+  syntax match texDelimMath contained "\\langle"
+  syntax match texDelimMath contained "\\lbrace"
+  syntax match texDelimMath contained "\\lceil"
+  syntax match texDelimMath contained "\\lfloor"
+  syntax match texDelimMath contained "\\lgroup"
+  syntax match texDelimMath contained "\\lmoustache"
+  syntax match texDelimMath contained "\\lvert"
+  syntax match texDelimMath contained "\\rVert"
+  syntax match texDelimMath contained "\\rangle"
+  syntax match texDelimMath contained "\\rbrace"
+  syntax match texDelimMath contained "\\rceil"
+  syntax match texDelimMath contained "\\rfloor"
+  syntax match texDelimMath contained "\\rgroup"
+  syntax match texDelimMath contained "\\rmoustache"
+  syntax match texDelimMath contained "\\rvert"
+  syntax match texDelimMath contained "\\uparrow"
+  syntax match texDelimMath contained "\\Uparrow"
+  syntax match texDelimMath contained "\\updownarrow"
+  syntax match texDelimMath contained "\\Updownarrow"
 
-function! s:match_conceal_math_delims() abort " {{{1
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?<"             contained conceal cchar=<
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?>"             contained conceal cchar=>
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?("             contained conceal cchar=(
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?)"             contained conceal cchar=)
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\["            contained conceal cchar=[
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?]"             contained conceal cchar=]
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\{"           contained conceal cchar={
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\}"           contained conceal cchar=}
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?|"             contained conceal cchar=|
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\|"           contained conceal cchar=‖
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\downarrow"   contained conceal cchar=↓
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\Downarrow"   contained conceal cchar=⇓
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\lbrace"      contained conceal cchar=[
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\lceil"       contained conceal cchar=⌈
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\lfloor"      contained conceal cchar=⌊
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\lgroup"      contained conceal cchar=⌊
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\lmoustache"  contained conceal cchar=⎛
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rbrace"      contained conceal cchar=]
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rceil"       contained conceal cchar=⌉
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rfloor"      contained conceal cchar=⌋
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rgroup"      contained conceal cchar=⌋
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rmoustache"  contained conceal cchar=⎞
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\uparrow"     contained conceal cchar=↑
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\Uparrow"     contained conceal cchar=↑
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\updownarrow" contained conceal cchar=↕
-  syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\Updownarrow" contained conceal cchar=⇕
+  if !a:cfg.conceal.math_delimiters || &encoding !=# 'utf-8'
+    return
+  endif
+
+  syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)<"
+  syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)>"
+  syntax match texDelimMath contained conceal cchar=( "\\\%([bB]igg\?l\|left\)("
+  syntax match texDelimMath contained conceal cchar=) "\\\%([bB]igg\?r\|right\))"
+  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\["
+  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)]"
+  syntax match texDelimMath contained conceal cchar={ "\\\%([bB]igg\?l\|left\)\\{"
+  syntax match texDelimMath contained conceal cchar=} "\\\%([bB]igg\?r\|right\)\\}"
+  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\\lbrace"
+  syntax match texDelimMath contained conceal cchar=⌈ "\\\%([bB]igg\?l\|left\)\\lceil"
+  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lfloor"
+  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lgroup"
+  syntax match texDelimMath contained conceal cchar=⎛ "\\\%([bB]igg\?l\|left\)\\lmoustache"
+  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)\\rbrace"
+  syntax match texDelimMath contained conceal cchar=⌉ "\\\%([bB]igg\?r\|right\)\\rceil"
+  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rfloor"
+  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rgroup"
+  syntax match texDelimMath contained conceal cchar=⎞ "\\\%([bB]igg\?r\|right\)\\rmoustache"
+  syntax match texDelimMath contained conceal cchar=| "\\\%([bB]igg\?[lr]\?\|left\|right\)|"
+  syntax match texDelimMath contained conceal cchar=‖ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\|"
+  syntax match texDelimMath contained conceal cchar=↓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\downarrow"
+  syntax match texDelimMath contained conceal cchar=⇓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Downarrow"
+  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\uparrow"
+  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Uparrow"
+  syntax match texDelimMath contained conceal cchar=↕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\updownarrow"
+  syntax match texDelimMath contained conceal cchar=⇕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Updownarrow"
 
   if &ambiwidth ==# 'double'
-    syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\langle" contained conceal cchar=〈
-    syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rangle" contained conceal cchar=〉
+    syntax match texDelimMath contained conceal cchar=〈 "\\\%([bB]igg\?l\|left\)\\langle"
+    syntax match texDelimMath contained conceal cchar=〉 "\\\%([bB]igg\?r\|right\)\\rangle"
   else
-    syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\langle" contained conceal cchar=<
-    syntax match texMathSymbol "\\[bB]igg\?[lr]\?\\rangle" contained conceal cchar=>
+    syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)\\langle"
+    syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)\\rangle"
   endif
 endfunction
 
 " }}}1
+
 function! s:match_conceal_math_symbols() abort " {{{1
-  syntax match texMathSymbol "\\|"                   contained conceal cchar=‖
-  syntax match texMathSymbol "\\aleph\>"             contained conceal cchar=ℵ
-  syntax match texMathSymbol "\\amalg\>"             contained conceal cchar=∐
-  syntax match texMathSymbol "\\angle\>"             contained conceal cchar=∠
-  syntax match texMathSymbol "\\approx\>"            contained conceal cchar=≈
-  syntax match texMathSymbol "\\ast\>"               contained conceal cchar=∗
-  syntax match texMathSymbol "\\asymp\>"             contained conceal cchar=≍
-  syntax match texMathSymbol "\\backslash\>"         contained conceal cchar=∖
-  syntax match texMathSymbol "\\bigcap\>"            contained conceal cchar=∩
-  syntax match texMathSymbol "\\bigcirc\>"           contained conceal cchar=○
-  syntax match texMathSymbol "\\bigcup\>"            contained conceal cchar=∪
-  syntax match texMathSymbol "\\bigodot\>"           contained conceal cchar=⊙
-  syntax match texMathSymbol "\\bigoplus\>"          contained conceal cchar=⊕
-  syntax match texMathSymbol "\\bigotimes\>"         contained conceal cchar=⊗
-  syntax match texMathSymbol "\\bigsqcup\>"          contained conceal cchar=⊔
-  syntax match texMathSymbol "\\bigtriangledown\>"   contained conceal cchar=∇
-  syntax match texMathSymbol "\\bigtriangleup\>"     contained conceal cchar=∆
-  syntax match texMathSymbol "\\bigvee\>"            contained conceal cchar=⋁
-  syntax match texMathSymbol "\\bigwedge\>"          contained conceal cchar=⋀
-  syntax match texMathSymbol "\\bot\>"               contained conceal cchar=⊥
-  syntax match texMathSymbol "\\bowtie\>"            contained conceal cchar=⋈
-  syntax match texMathSymbol "\\bullet\>"            contained conceal cchar=•
-  syntax match texMathSymbol "\\cap\>"               contained conceal cchar=∩
-  syntax match texMathSymbol "\\cdot\>"              contained conceal cchar=·
-  syntax match texMathSymbol "\\cdots\>"             contained conceal cchar=⋯
-  syntax match texMathSymbol "\\circ\>"              contained conceal cchar=∘
-  syntax match texMathSymbol "\\clubsuit\>"          contained conceal cchar=♣
-  syntax match texMathSymbol "\\cong\>"              contained conceal cchar=≅
-  syntax match texMathSymbol "\\coprod\>"            contained conceal cchar=∐
-  syntax match texMathSymbol "\\copyright\>"         contained conceal cchar=©
-  syntax match texMathSymbol "\\cup\>"               contained conceal cchar=∪
-  syntax match texMathSymbol "\\dagger\>"            contained conceal cchar=†
-  syntax match texMathSymbol "\\dashv\>"             contained conceal cchar=⊣
-  syntax match texMathSymbol "\\ddagger\>"           contained conceal cchar=‡
-  syntax match texMathSymbol "\\ddots\>"             contained conceal cchar=⋱
-  syntax match texMathSymbol "\\diamond\>"           contained conceal cchar=⋄
-  syntax match texMathSymbol "\\diamondsuit\>"       contained conceal cchar=♢
-  syntax match texMathSymbol "\\div\>"               contained conceal cchar=÷
-  syntax match texMathSymbol "\\doteq\>"             contained conceal cchar=≐
-  syntax match texMathSymbol "\\dots\>"              contained conceal cchar=…
-  syntax match texMathSymbol "\\downarrow\>"         contained conceal cchar=↓
-  syntax match texMathSymbol "\\Downarrow\>"         contained conceal cchar=⇓
-  syntax match texMathSymbol "\\ell\>"               contained conceal cchar=ℓ
-  syntax match texMathSymbol "\\emptyset\>"          contained conceal cchar=∅
-  syntax match texMathSymbol "\\equiv\>"             contained conceal cchar=≡
-  syntax match texMathSymbol "\\exists\>"            contained conceal cchar=∃
-  syntax match texMathSymbol "\\flat\>"              contained conceal cchar=♭
-  syntax match texMathSymbol "\\forall\>"            contained conceal cchar=∀
-  syntax match texMathSymbol "\\frown\>"             contained conceal cchar=⁔
-  syntax match texMathSymbol "\\ge\>"                contained conceal cchar=≥
-  syntax match texMathSymbol "\\geq\>"               contained conceal cchar=≥
-  syntax match texMathSymbol "\\gets\>"              contained conceal cchar=←
-  syntax match texMathSymbol "\\gg\>"                contained conceal cchar=⟫
-  syntax match texMathSymbol "\\hbar\>"              contained conceal cchar=ℏ
-  syntax match texMathSymbol "\\heartsuit\>"         contained conceal cchar=♡
-  syntax match texMathSymbol "\\hookleftarrow\>"     contained conceal cchar=↩
-  syntax match texMathSymbol "\\hookrightarrow\>"    contained conceal cchar=↪
-  syntax match texMathSymbol "\\iff\>"               contained conceal cchar=⇔
-  syntax match texMathSymbol "\\Im\>"                contained conceal cchar=ℑ
-  syntax match texMathSymbol "\\imath\>"             contained conceal cchar=ɩ
-  syntax match texMathSymbol "\\in\>"                contained conceal cchar=∈
-  syntax match texMathSymbol "\\infty\>"             contained conceal cchar=∞
-  syntax match texMathSymbol "\\int\>"               contained conceal cchar=∫
-  syntax match texMathSymbol "\\jmath\>"             contained conceal cchar=𝚥
-  syntax match texMathSymbol "\\land\>"              contained conceal cchar=∧
-  syntax match texMathSymbol "\\lceil\>"             contained conceal cchar=⌈
-  syntax match texMathSymbol "\\ldots\>"             contained conceal cchar=…
-  syntax match texMathSymbol "\\le\>"                contained conceal cchar=≤
-  syntax match texMathSymbol "\\left|"               contained conceal cchar=|
-  syntax match texMathSymbol "\\left\\|"             contained conceal cchar=‖
-  syntax match texMathSymbol "\\left("               contained conceal cchar=(
-  syntax match texMathSymbol "\\left\["              contained conceal cchar=[
-  syntax match texMathSymbol "\\left\\{"             contained conceal cchar={
-  syntax match texMathSymbol "\\leftarrow\>"         contained conceal cchar=←
-  syntax match texMathSymbol "\\Leftarrow\>"         contained conceal cchar=⇐
-  syntax match texMathSymbol "\\leftharpoondown\>"   contained conceal cchar=↽
-  syntax match texMathSymbol "\\leftharpoonup\>"     contained conceal cchar=↼
-  syntax match texMathSymbol "\\leftrightarrow\>"    contained conceal cchar=↔
-  syntax match texMathSymbol "\\Leftrightarrow\>"    contained conceal cchar=⇔
-  syntax match texMathSymbol "\\leq\>"               contained conceal cchar=≤
-  syntax match texMathSymbol "\\leq\>"               contained conceal cchar=≤
-  syntax match texMathSymbol "\\lfloor\>"            contained conceal cchar=⌊
-  syntax match texMathSymbol "\\ll\>"                contained conceal cchar=≪
-  syntax match texMathSymbol "\\lmoustache\>"        contained conceal cchar=╭
-  syntax match texMathSymbol "\\lor\>"               contained conceal cchar=∨
-  syntax match texMathSymbol "\\mapsto\>"            contained conceal cchar=↦
-  syntax match texMathSymbol "\\mid\>"               contained conceal cchar=∣
-  syntax match texMathSymbol "\\models\>"            contained conceal cchar=╞
-  syntax match texMathSymbol "\\mp\>"                contained conceal cchar=∓
-  syntax match texMathSymbol "\\nabla\>"             contained conceal cchar=∇
-  syntax match texMathSymbol "\\natural\>"           contained conceal cchar=♮
-  syntax match texMathSymbol "\\ne\>"                contained conceal cchar=≠
-  syntax match texMathSymbol "\\nearrow\>"           contained conceal cchar=↗
-  syntax match texMathSymbol "\\neg\>"               contained conceal cchar=¬
-  syntax match texMathSymbol "\\neq\>"               contained conceal cchar=≠
-  syntax match texMathSymbol "\\ni\>"                contained conceal cchar=∋
-  syntax match texMathSymbol "\\notin\>"             contained conceal cchar=∉
-  syntax match texMathSymbol "\\nwarrow\>"           contained conceal cchar=↖
-  syntax match texMathSymbol "\\odot\>"              contained conceal cchar=⊙
-  syntax match texMathSymbol "\\oint\>"              contained conceal cchar=∮
-  syntax match texMathSymbol "\\ominus\>"            contained conceal cchar=⊖
-  syntax match texMathSymbol "\\oplus\>"             contained conceal cchar=⊕
-  syntax match texMathSymbol "\\oslash\>"            contained conceal cchar=⊘
-  syntax match texMathSymbol "\\otimes\>"            contained conceal cchar=⊗
-  syntax match texMathSymbol "\\owns\>"              contained conceal cchar=∋
-  syntax match texMathSymbol "\\P\>"                 contained conceal cchar=¶
-  syntax match texMathSymbol "\\parallel\>"          contained conceal cchar=║
-  syntax match texMathSymbol "\\partial\>"           contained conceal cchar=∂
-  syntax match texMathSymbol "\\perp\>"              contained conceal cchar=⊥
-  syntax match texMathSymbol "\\pm\>"                contained conceal cchar=±
-  syntax match texMathSymbol "\\prec\>"              contained conceal cchar=≺
-  syntax match texMathSymbol "\\preceq\>"            contained conceal cchar=⪯
-  syntax match texMathSymbol "\\prime\>"             contained conceal cchar=′
-  syntax match texMathSymbol "\\prod\>"              contained conceal cchar=∏
-  syntax match texMathSymbol "\\propto\>"            contained conceal cchar=∝
-  syntax match texMathSymbol "\\rceil\>"             contained conceal cchar=⌉
-  syntax match texMathSymbol "\\Re\>"                contained conceal cchar=ℜ
-  syntax match texMathSymbol "\\quad\>"              contained conceal cchar= 
-  syntax match texMathSymbol "\\qquad\>"             contained conceal cchar= 
-  syntax match texMathSymbol "\\rfloor\>"            contained conceal cchar=⌋
-  syntax match texMathSymbol "\\right|"              contained conceal cchar=|
-  syntax match texMathSymbol "\\right\\|"            contained conceal cchar=‖
-  syntax match texMathSymbol "\\right)"              contained conceal cchar=)
-  syntax match texMathSymbol "\\right]"              contained conceal cchar=]
-  syntax match texMathSymbol "\\right\\}"            contained conceal cchar=}
-  syntax match texMathSymbol "\\rightarrow\>"        contained conceal cchar=→
-  syntax match texMathSymbol "\\Rightarrow\>"        contained conceal cchar=⇒
-  syntax match texMathSymbol "\\rightleftharpoons\>" contained conceal cchar=⇌
-  syntax match texMathSymbol "\\rmoustache\>"        contained conceal cchar=╮
-  syntax match texMathSymbol "\\S\>"                 contained conceal cchar=§
-  syntax match texMathSymbol "\\searrow\>"           contained conceal cchar=↘
-  syntax match texMathSymbol "\\setminus\>"          contained conceal cchar=∖
-  syntax match texMathSymbol "\\sharp\>"             contained conceal cchar=♯
-  syntax match texMathSymbol "\\sim\>"               contained conceal cchar=∼
-  syntax match texMathSymbol "\\simeq\>"             contained conceal cchar=⋍
-  syntax match texMathSymbol "\\smile\>"             contained conceal cchar=‿
-  syntax match texMathSymbol "\\spadesuit\>"         contained conceal cchar=♠
-  syntax match texMathSymbol "\\sqcap\>"             contained conceal cchar=⊓
-  syntax match texMathSymbol "\\sqcup\>"             contained conceal cchar=⊔
-  syntax match texMathSymbol "\\sqsubset\>"          contained conceal cchar=⊏
-  syntax match texMathSymbol "\\sqsubseteq\>"        contained conceal cchar=⊑
-  syntax match texMathSymbol "\\sqsupset\>"          contained conceal cchar=⊐
-  syntax match texMathSymbol "\\sqsupseteq\>"        contained conceal cchar=⊒
-  syntax match texMathSymbol "\\star\>"              contained conceal cchar=✫
-  syntax match texMathSymbol "\\subset\>"            contained conceal cchar=⊂
-  syntax match texMathSymbol "\\subseteq\>"          contained conceal cchar=⊆
-  syntax match texMathSymbol "\\succ\>"              contained conceal cchar=≻
-  syntax match texMathSymbol "\\succeq\>"            contained conceal cchar=⪰
-  syntax match texMathSymbol "\\sum\>"               contained conceal cchar=∑
-  syntax match texMathSymbol "\\supset\>"            contained conceal cchar=⊃
-  syntax match texMathSymbol "\\supseteq\>"          contained conceal cchar=⊇
-  syntax match texMathSymbol "\\surd\>"              contained conceal cchar=√
-  syntax match texMathSymbol "\\swarrow\>"           contained conceal cchar=↙
-  syntax match texMathSymbol "\\times\>"             contained conceal cchar=×
-  syntax match texMathSymbol "\\to\>"                contained conceal cchar=→
-  syntax match texMathSymbol "\\top\>"               contained conceal cchar=⊤
-  syntax match texMathSymbol "\\triangle\>"          contained conceal cchar=∆
-  syntax match texMathSymbol "\\triangleleft\>"      contained conceal cchar=⊲
-  syntax match texMathSymbol "\\triangleright\>"     contained conceal cchar=⊳
-  syntax match texMathSymbol "\\uparrow\>"           contained conceal cchar=↑
-  syntax match texMathSymbol "\\Uparrow\>"           contained conceal cchar=⇑
-  syntax match texMathSymbol "\\updownarrow\>"       contained conceal cchar=↕
-  syntax match texMathSymbol "\\Updownarrow\>"       contained conceal cchar=⇕
-  syntax match texMathSymbol "\\vdash\>"             contained conceal cchar=⊢
-  syntax match texMathSymbol "\\vdots\>"             contained conceal cchar=⋮
-  syntax match texMathSymbol "\\vee\>"               contained conceal cchar=∨
-  syntax match texMathSymbol "\\wedge\>"             contained conceal cchar=∧
-  syntax match texMathSymbol "\\wp\>"                contained conceal cchar=℘
-  syntax match texMathSymbol "\\wr\>"                contained conceal cchar=≀
+  syntax match texSymbolMath "\\|"                   contained conceal cchar=‖
+  syntax match texSymbolMath "\\aleph\>"             contained conceal cchar=ℵ
+  syntax match texSymbolMath "\\amalg\>"             contained conceal cchar=∐
+  syntax match texSymbolMath "\\angle\>"             contained conceal cchar=∠
+  syntax match texSymbolMath "\\approx\>"            contained conceal cchar=≈
+  syntax match texSymbolMath "\\ast\>"               contained conceal cchar=∗
+  syntax match texSymbolMath "\\asymp\>"             contained conceal cchar=≍
+  syntax match texSymbolMath "\\backslash\>"         contained conceal cchar=∖
+  syntax match texSymbolMath "\\bigcap\>"            contained conceal cchar=∩
+  syntax match texSymbolMath "\\bigcirc\>"           contained conceal cchar=○
+  syntax match texSymbolMath "\\bigcup\>"            contained conceal cchar=∪
+  syntax match texSymbolMath "\\bigodot\>"           contained conceal cchar=⊙
+  syntax match texSymbolMath "\\bigoplus\>"          contained conceal cchar=⊕
+  syntax match texSymbolMath "\\bigotimes\>"         contained conceal cchar=⊗
+  syntax match texSymbolMath "\\bigsqcup\>"          contained conceal cchar=⊔
+  syntax match texSymbolMath "\\bigtriangledown\>"   contained conceal cchar=∇
+  syntax match texSymbolMath "\\bigtriangleup\>"     contained conceal cchar=∆
+  syntax match texSymbolMath "\\bigvee\>"            contained conceal cchar=⋁
+  syntax match texSymbolMath "\\bigwedge\>"          contained conceal cchar=⋀
+  syntax match texSymbolMath "\\bot\>"               contained conceal cchar=⊥
+  syntax match texSymbolMath "\\bowtie\>"            contained conceal cchar=⋈
+  syntax match texSymbolMath "\\bullet\>"            contained conceal cchar=•
+  syntax match texSymbolMath "\\cap\>"               contained conceal cchar=∩
+  syntax match texSymbolMath "\\cdot\>"              contained conceal cchar=·
+  syntax match texSymbolMath "\\cdots\>"             contained conceal cchar=⋯
+  syntax match texSymbolMath "\\circ\>"              contained conceal cchar=∘
+  syntax match texSymbolMath "\\clubsuit\>"          contained conceal cchar=♣
+  syntax match texSymbolMath "\\cong\>"              contained conceal cchar=≅
+  syntax match texSymbolMath "\\coprod\>"            contained conceal cchar=∐
+  syntax match texSymbolMath "\\copyright\>"         contained conceal cchar=©
+  syntax match texSymbolMath "\\cup\>"               contained conceal cchar=∪
+  syntax match texSymbolMath "\\dagger\>"            contained conceal cchar=†
+  syntax match texSymbolMath "\\dashv\>"             contained conceal cchar=⊣
+  syntax match texSymbolMath "\\ddagger\>"           contained conceal cchar=‡
+  syntax match texSymbolMath "\\ddots\>"             contained conceal cchar=⋱
+  syntax match texSymbolMath "\\diamond\>"           contained conceal cchar=⋄
+  syntax match texSymbolMath "\\diamondsuit\>"       contained conceal cchar=♢
+  syntax match texSymbolMath "\\div\>"               contained conceal cchar=÷
+  syntax match texSymbolMath "\\doteq\>"             contained conceal cchar=≐
+  syntax match texSymbolMath "\\dots\>"              contained conceal cchar=…
+  syntax match texSymbolMath "\\downarrow\>"         contained conceal cchar=↓
+  syntax match texSymbolMath "\\Downarrow\>"         contained conceal cchar=⇓
+  syntax match texSymbolMath "\\ell\>"               contained conceal cchar=ℓ
+  syntax match texSymbolMath "\\emptyset\>"          contained conceal cchar=∅
+  syntax match texSymbolMath "\\equiv\>"             contained conceal cchar=≡
+  syntax match texSymbolMath "\\exists\>"            contained conceal cchar=∃
+  syntax match texSymbolMath "\\flat\>"              contained conceal cchar=♭
+  syntax match texSymbolMath "\\forall\>"            contained conceal cchar=∀
+  syntax match texSymbolMath "\\frown\>"             contained conceal cchar=⁔
+  syntax match texSymbolMath "\\ge\>"                contained conceal cchar=≥
+  syntax match texSymbolMath "\\geq\>"               contained conceal cchar=≥
+  syntax match texSymbolMath "\\gets\>"              contained conceal cchar=←
+  syntax match texSymbolMath "\\gg\>"                contained conceal cchar=⟫
+  syntax match texSymbolMath "\\hbar\>"              contained conceal cchar=ℏ
+  syntax match texSymbolMath "\\heartsuit\>"         contained conceal cchar=♡
+  syntax match texSymbolMath "\\hookleftarrow\>"     contained conceal cchar=↩
+  syntax match texSymbolMath "\\hookrightarrow\>"    contained conceal cchar=↪
+  syntax match texSymbolMath "\\iff\>"               contained conceal cchar=⇔
+  syntax match texSymbolMath "\\Im\>"                contained conceal cchar=ℑ
+  syntax match texSymbolMath "\\imath\>"             contained conceal cchar=ɩ
+  syntax match texSymbolMath "\\in\>"                contained conceal cchar=∈
+  syntax match texSymbolMath "\\infty\>"             contained conceal cchar=∞
+  syntax match texSymbolMath "\\int\>"               contained conceal cchar=∫
+  syntax match texSymbolMath "\\jmath\>"             contained conceal cchar=𝚥
+  syntax match texSymbolMath "\\land\>"              contained conceal cchar=∧
+  syntax match texSymbolMath "\\lceil\>"             contained conceal cchar=⌈
+  syntax match texSymbolMath "\\ldots\>"             contained conceal cchar=…
+  syntax match texSymbolMath "\\le\>"                contained conceal cchar=≤
+  syntax match texSymbolMath "\\left|"               contained conceal cchar=|
+  syntax match texSymbolMath "\\left\\|"             contained conceal cchar=‖
+  syntax match texSymbolMath "\\left("               contained conceal cchar=(
+  syntax match texSymbolMath "\\left\["              contained conceal cchar=[
+  syntax match texSymbolMath "\\left\\{"             contained conceal cchar={
+  syntax match texSymbolMath "\\leftarrow\>"         contained conceal cchar=←
+  syntax match texSymbolMath "\\Leftarrow\>"         contained conceal cchar=⇐
+  syntax match texSymbolMath "\\leftharpoondown\>"   contained conceal cchar=↽
+  syntax match texSymbolMath "\\leftharpoonup\>"     contained conceal cchar=↼
+  syntax match texSymbolMath "\\leftrightarrow\>"    contained conceal cchar=↔
+  syntax match texSymbolMath "\\Leftrightarrow\>"    contained conceal cchar=⇔
+  syntax match texSymbolMath "\\leq\>"               contained conceal cchar=≤
+  syntax match texSymbolMath "\\leq\>"               contained conceal cchar=≤
+  syntax match texSymbolMath "\\lfloor\>"            contained conceal cchar=⌊
+  syntax match texSymbolMath "\\ll\>"                contained conceal cchar=≪
+  syntax match texSymbolMath "\\lmoustache\>"        contained conceal cchar=╭
+  syntax match texSymbolMath "\\lor\>"               contained conceal cchar=∨
+  syntax match texSymbolMath "\\mapsto\>"            contained conceal cchar=↦
+  syntax match texSymbolMath "\\mid\>"               contained conceal cchar=∣
+  syntax match texSymbolMath "\\models\>"            contained conceal cchar=╞
+  syntax match texSymbolMath "\\mp\>"                contained conceal cchar=∓
+  syntax match texSymbolMath "\\nabla\>"             contained conceal cchar=∇
+  syntax match texSymbolMath "\\natural\>"           contained conceal cchar=♮
+  syntax match texSymbolMath "\\ne\>"                contained conceal cchar=≠
+  syntax match texSymbolMath "\\nearrow\>"           contained conceal cchar=↗
+  syntax match texSymbolMath "\\neg\>"               contained conceal cchar=¬
+  syntax match texSymbolMath "\\neq\>"               contained conceal cchar=≠
+  syntax match texSymbolMath "\\ni\>"                contained conceal cchar=∋
+  syntax match texSymbolMath "\\notin\>"             contained conceal cchar=∉
+  syntax match texSymbolMath "\\nwarrow\>"           contained conceal cchar=↖
+  syntax match texSymbolMath "\\odot\>"              contained conceal cchar=⊙
+  syntax match texSymbolMath "\\oint\>"              contained conceal cchar=∮
+  syntax match texSymbolMath "\\ominus\>"            contained conceal cchar=⊖
+  syntax match texSymbolMath "\\oplus\>"             contained conceal cchar=⊕
+  syntax match texSymbolMath "\\oslash\>"            contained conceal cchar=⊘
+  syntax match texSymbolMath "\\otimes\>"            contained conceal cchar=⊗
+  syntax match texSymbolMath "\\owns\>"              contained conceal cchar=∋
+  syntax match texSymbolMath "\\P\>"                 contained conceal cchar=¶
+  syntax match texSymbolMath "\\parallel\>"          contained conceal cchar=║
+  syntax match texSymbolMath "\\partial\>"           contained conceal cchar=∂
+  syntax match texSymbolMath "\\perp\>"              contained conceal cchar=⊥
+  syntax match texSymbolMath "\\pm\>"                contained conceal cchar=±
+  syntax match texSymbolMath "\\prec\>"              contained conceal cchar=≺
+  syntax match texSymbolMath "\\preceq\>"            contained conceal cchar=⪯
+  syntax match texSymbolMath "\\prime\>"             contained conceal cchar=′
+  syntax match texSymbolMath "\\prod\>"              contained conceal cchar=∏
+  syntax match texSymbolMath "\\propto\>"            contained conceal cchar=∝
+  syntax match texSymbolMath "\\rceil\>"             contained conceal cchar=⌉
+  syntax match texSymbolMath "\\Re\>"                contained conceal cchar=ℜ
+  syntax match texSymbolMath "\\quad\>"              contained conceal cchar= 
+  syntax match texSymbolMath "\\qquad\>"             contained conceal cchar= 
+  syntax match texSymbolMath "\\rfloor\>"            contained conceal cchar=⌋
+  syntax match texSymbolMath "\\right|"              contained conceal cchar=|
+  syntax match texSymbolMath "\\right\\|"            contained conceal cchar=‖
+  syntax match texSymbolMath "\\right)"              contained conceal cchar=)
+  syntax match texSymbolMath "\\right]"              contained conceal cchar=]
+  syntax match texSymbolMath "\\right\\}"            contained conceal cchar=}
+  syntax match texSymbolMath "\\rightarrow\>"        contained conceal cchar=→
+  syntax match texSymbolMath "\\Rightarrow\>"        contained conceal cchar=⇒
+  syntax match texSymbolMath "\\rightleftharpoons\>" contained conceal cchar=⇌
+  syntax match texSymbolMath "\\rmoustache\>"        contained conceal cchar=╮
+  syntax match texSymbolMath "\\S\>"                 contained conceal cchar=§
+  syntax match texSymbolMath "\\searrow\>"           contained conceal cchar=↘
+  syntax match texSymbolMath "\\setminus\>"          contained conceal cchar=∖
+  syntax match texSymbolMath "\\sharp\>"             contained conceal cchar=♯
+  syntax match texSymbolMath "\\sim\>"               contained conceal cchar=∼
+  syntax match texSymbolMath "\\simeq\>"             contained conceal cchar=⋍
+  syntax match texSymbolMath "\\smile\>"             contained conceal cchar=‿
+  syntax match texSymbolMath "\\spadesuit\>"         contained conceal cchar=♠
+  syntax match texSymbolMath "\\sqcap\>"             contained conceal cchar=⊓
+  syntax match texSymbolMath "\\sqcup\>"             contained conceal cchar=⊔
+  syntax match texSymbolMath "\\sqsubset\>"          contained conceal cchar=⊏
+  syntax match texSymbolMath "\\sqsubseteq\>"        contained conceal cchar=⊑
+  syntax match texSymbolMath "\\sqsupset\>"          contained conceal cchar=⊐
+  syntax match texSymbolMath "\\sqsupseteq\>"        contained conceal cchar=⊒
+  syntax match texSymbolMath "\\star\>"              contained conceal cchar=✫
+  syntax match texSymbolMath "\\subset\>"            contained conceal cchar=⊂
+  syntax match texSymbolMath "\\subseteq\>"          contained conceal cchar=⊆
+  syntax match texSymbolMath "\\succ\>"              contained conceal cchar=≻
+  syntax match texSymbolMath "\\succeq\>"            contained conceal cchar=⪰
+  syntax match texSymbolMath "\\sum\>"               contained conceal cchar=∑
+  syntax match texSymbolMath "\\supset\>"            contained conceal cchar=⊃
+  syntax match texSymbolMath "\\supseteq\>"          contained conceal cchar=⊇
+  syntax match texSymbolMath "\\surd\>"              contained conceal cchar=√
+  syntax match texSymbolMath "\\swarrow\>"           contained conceal cchar=↙
+  syntax match texSymbolMath "\\times\>"             contained conceal cchar=×
+  syntax match texSymbolMath "\\to\>"                contained conceal cchar=→
+  syntax match texSymbolMath "\\top\>"               contained conceal cchar=⊤
+  syntax match texSymbolMath "\\triangle\>"          contained conceal cchar=∆
+  syntax match texSymbolMath "\\triangleleft\>"      contained conceal cchar=⊲
+  syntax match texSymbolMath "\\triangleright\>"     contained conceal cchar=⊳
+  syntax match texSymbolMath "\\uparrow\>"           contained conceal cchar=↑
+  syntax match texSymbolMath "\\Uparrow\>"           contained conceal cchar=⇑
+  syntax match texSymbolMath "\\updownarrow\>"       contained conceal cchar=↕
+  syntax match texSymbolMath "\\Updownarrow\>"       contained conceal cchar=⇕
+  syntax match texSymbolMath "\\vdash\>"             contained conceal cchar=⊢
+  syntax match texSymbolMath "\\vdots\>"             contained conceal cchar=⋮
+  syntax match texSymbolMath "\\vee\>"               contained conceal cchar=∨
+  syntax match texSymbolMath "\\wedge\>"             contained conceal cchar=∧
+  syntax match texSymbolMath "\\wp\>"                contained conceal cchar=℘
+  syntax match texSymbolMath "\\wr\>"                contained conceal cchar=≀
 
   if &ambiwidth ==# 'double'
-    syntax match texMathSymbol "right\\rangle\>" contained conceal cchar=〉
-    syntax match texMathSymbol "left\\langle\>"  contained conceal cchar=〈
-    syntax match texMathSymbol '\\gg\>'          contained conceal cchar=≫
-    syntax match texMathSymbol '\\ll\>'          contained conceal cchar=≪
+    syntax match texSymbolMath "right\\rangle\>" contained conceal cchar=〉
+    syntax match texSymbolMath "left\\langle\>"  contained conceal cchar=〈
+    syntax match texSymbolMath '\\gg\>'          contained conceal cchar=≫
+    syntax match texSymbolMath '\\ll\>'          contained conceal cchar=≪
   else
-    syntax match texMathSymbol "right\\rangle\>" contained conceal cchar=>
-    syntax match texMathSymbol "left\\langle\>"  contained conceal cchar=<
-    syntax match texMathSymbol '\\gg\>'          contained conceal cchar=⟫
-    syntax match texMathSymbol '\\ll\>'          contained conceal cchar=⟪
+    syntax match texSymbolMath "right\\rangle\>" contained conceal cchar=>
+    syntax match texSymbolMath "left\\langle\>"  contained conceal cchar=<
+    syntax match texSymbolMath '\\gg\>'          contained conceal cchar=⟫
+    syntax match texSymbolMath '\\ll\>'          contained conceal cchar=⟪
   endif
 
-  syntax match texMathSymbol '\\bar{a}' contained conceal cchar=a̅
+  syntax match texSymbolMath '\\bar{a}' contained conceal cchar=a̅
 
-  syntax match texMathSymbol '\\dot{A}' contained conceal cchar=Ȧ
-  syntax match texMathSymbol '\\dot{a}' contained conceal cchar=ȧ
-  syntax match texMathSymbol '\\dot{B}' contained conceal cchar=Ḃ
-  syntax match texMathSymbol '\\dot{b}' contained conceal cchar=ḃ
-  syntax match texMathSymbol '\\dot{C}' contained conceal cchar=Ċ
-  syntax match texMathSymbol '\\dot{c}' contained conceal cchar=ċ
-  syntax match texMathSymbol '\\dot{D}' contained conceal cchar=Ḋ
-  syntax match texMathSymbol '\\dot{d}' contained conceal cchar=ḋ
-  syntax match texMathSymbol '\\dot{E}' contained conceal cchar=Ė
-  syntax match texMathSymbol '\\dot{e}' contained conceal cchar=ė
-  syntax match texMathSymbol '\\dot{F}' contained conceal cchar=Ḟ
-  syntax match texMathSymbol '\\dot{f}' contained conceal cchar=ḟ
-  syntax match texMathSymbol '\\dot{G}' contained conceal cchar=Ġ
-  syntax match texMathSymbol '\\dot{g}' contained conceal cchar=ġ
-  syntax match texMathSymbol '\\dot{H}' contained conceal cchar=Ḣ
-  syntax match texMathSymbol '\\dot{h}' contained conceal cchar=ḣ
-  syntax match texMathSymbol '\\dot{I}' contained conceal cchar=İ
-  syntax match texMathSymbol '\\dot{M}' contained conceal cchar=Ṁ
-  syntax match texMathSymbol '\\dot{m}' contained conceal cchar=ṁ
-  syntax match texMathSymbol '\\dot{N}' contained conceal cchar=Ṅ
-  syntax match texMathSymbol '\\dot{n}' contained conceal cchar=ṅ
-  syntax match texMathSymbol '\\dot{O}' contained conceal cchar=Ȯ
-  syntax match texMathSymbol '\\dot{o}' contained conceal cchar=ȯ
-  syntax match texMathSymbol '\\dot{P}' contained conceal cchar=Ṗ
-  syntax match texMathSymbol '\\dot{p}' contained conceal cchar=ṗ
-  syntax match texMathSymbol '\\dot{R}' contained conceal cchar=Ṙ
-  syntax match texMathSymbol '\\dot{r}' contained conceal cchar=ṙ
-  syntax match texMathSymbol '\\dot{S}' contained conceal cchar=Ṡ
-  syntax match texMathSymbol '\\dot{s}' contained conceal cchar=ṡ
-  syntax match texMathSymbol '\\dot{T}' contained conceal cchar=Ṫ
-  syntax match texMathSymbol '\\dot{t}' contained conceal cchar=ṫ
-  syntax match texMathSymbol '\\dot{W}' contained conceal cchar=Ẇ
-  syntax match texMathSymbol '\\dot{w}' contained conceal cchar=ẇ
-  syntax match texMathSymbol '\\dot{X}' contained conceal cchar=Ẋ
-  syntax match texMathSymbol '\\dot{x}' contained conceal cchar=ẋ
-  syntax match texMathSymbol '\\dot{Y}' contained conceal cchar=Ẏ
-  syntax match texMathSymbol '\\dot{y}' contained conceal cchar=ẏ
-  syntax match texMathSymbol '\\dot{Z}' contained conceal cchar=Ż
-  syntax match texMathSymbol '\\dot{z}' contained conceal cchar=ż
+  syntax match texSymbolMath '\\dot{A}' contained conceal cchar=Ȧ
+  syntax match texSymbolMath '\\dot{a}' contained conceal cchar=ȧ
+  syntax match texSymbolMath '\\dot{B}' contained conceal cchar=Ḃ
+  syntax match texSymbolMath '\\dot{b}' contained conceal cchar=ḃ
+  syntax match texSymbolMath '\\dot{C}' contained conceal cchar=Ċ
+  syntax match texSymbolMath '\\dot{c}' contained conceal cchar=ċ
+  syntax match texSymbolMath '\\dot{D}' contained conceal cchar=Ḋ
+  syntax match texSymbolMath '\\dot{d}' contained conceal cchar=ḋ
+  syntax match texSymbolMath '\\dot{E}' contained conceal cchar=Ė
+  syntax match texSymbolMath '\\dot{e}' contained conceal cchar=ė
+  syntax match texSymbolMath '\\dot{F}' contained conceal cchar=Ḟ
+  syntax match texSymbolMath '\\dot{f}' contained conceal cchar=ḟ
+  syntax match texSymbolMath '\\dot{G}' contained conceal cchar=Ġ
+  syntax match texSymbolMath '\\dot{g}' contained conceal cchar=ġ
+  syntax match texSymbolMath '\\dot{H}' contained conceal cchar=Ḣ
+  syntax match texSymbolMath '\\dot{h}' contained conceal cchar=ḣ
+  syntax match texSymbolMath '\\dot{I}' contained conceal cchar=İ
+  syntax match texSymbolMath '\\dot{M}' contained conceal cchar=Ṁ
+  syntax match texSymbolMath '\\dot{m}' contained conceal cchar=ṁ
+  syntax match texSymbolMath '\\dot{N}' contained conceal cchar=Ṅ
+  syntax match texSymbolMath '\\dot{n}' contained conceal cchar=ṅ
+  syntax match texSymbolMath '\\dot{O}' contained conceal cchar=Ȯ
+  syntax match texSymbolMath '\\dot{o}' contained conceal cchar=ȯ
+  syntax match texSymbolMath '\\dot{P}' contained conceal cchar=Ṗ
+  syntax match texSymbolMath '\\dot{p}' contained conceal cchar=ṗ
+  syntax match texSymbolMath '\\dot{R}' contained conceal cchar=Ṙ
+  syntax match texSymbolMath '\\dot{r}' contained conceal cchar=ṙ
+  syntax match texSymbolMath '\\dot{S}' contained conceal cchar=Ṡ
+  syntax match texSymbolMath '\\dot{s}' contained conceal cchar=ṡ
+  syntax match texSymbolMath '\\dot{T}' contained conceal cchar=Ṫ
+  syntax match texSymbolMath '\\dot{t}' contained conceal cchar=ṫ
+  syntax match texSymbolMath '\\dot{W}' contained conceal cchar=Ẇ
+  syntax match texSymbolMath '\\dot{w}' contained conceal cchar=ẇ
+  syntax match texSymbolMath '\\dot{X}' contained conceal cchar=Ẋ
+  syntax match texSymbolMath '\\dot{x}' contained conceal cchar=ẋ
+  syntax match texSymbolMath '\\dot{Y}' contained conceal cchar=Ẏ
+  syntax match texSymbolMath '\\dot{y}' contained conceal cchar=ẏ
+  syntax match texSymbolMath '\\dot{Z}' contained conceal cchar=Ż
+  syntax match texSymbolMath '\\dot{z}' contained conceal cchar=ż
 
-  syntax match texMathSymbol '\\hat{a}' contained conceal cchar=â
-  syntax match texMathSymbol '\\hat{A}' contained conceal cchar=Â
-  syntax match texMathSymbol '\\hat{c}' contained conceal cchar=ĉ
-  syntax match texMathSymbol '\\hat{C}' contained conceal cchar=Ĉ
-  syntax match texMathSymbol '\\hat{e}' contained conceal cchar=ê
-  syntax match texMathSymbol '\\hat{E}' contained conceal cchar=Ê
-  syntax match texMathSymbol '\\hat{g}' contained conceal cchar=ĝ
-  syntax match texMathSymbol '\\hat{G}' contained conceal cchar=Ĝ
-  syntax match texMathSymbol '\\hat{i}' contained conceal cchar=î
-  syntax match texMathSymbol '\\hat{I}' contained conceal cchar=Î
-  syntax match texMathSymbol '\\hat{o}' contained conceal cchar=ô
-  syntax match texMathSymbol '\\hat{O}' contained conceal cchar=Ô
-  syntax match texMathSymbol '\\hat{s}' contained conceal cchar=ŝ
-  syntax match texMathSymbol '\\hat{S}' contained conceal cchar=Ŝ
-  syntax match texMathSymbol '\\hat{u}' contained conceal cchar=û
-  syntax match texMathSymbol '\\hat{U}' contained conceal cchar=Û
-  syntax match texMathSymbol '\\hat{w}' contained conceal cchar=ŵ
-  syntax match texMathSymbol '\\hat{W}' contained conceal cchar=Ŵ
-  syntax match texMathSymbol '\\hat{y}' contained conceal cchar=ŷ
-  syntax match texMathSymbol '\\hat{Y}' contained conceal cchar=Ŷ
+  syntax match texSymbolMath '\\hat{a}' contained conceal cchar=â
+  syntax match texSymbolMath '\\hat{A}' contained conceal cchar=Â
+  syntax match texSymbolMath '\\hat{c}' contained conceal cchar=ĉ
+  syntax match texSymbolMath '\\hat{C}' contained conceal cchar=Ĉ
+  syntax match texSymbolMath '\\hat{e}' contained conceal cchar=ê
+  syntax match texSymbolMath '\\hat{E}' contained conceal cchar=Ê
+  syntax match texSymbolMath '\\hat{g}' contained conceal cchar=ĝ
+  syntax match texSymbolMath '\\hat{G}' contained conceal cchar=Ĝ
+  syntax match texSymbolMath '\\hat{i}' contained conceal cchar=î
+  syntax match texSymbolMath '\\hat{I}' contained conceal cchar=Î
+  syntax match texSymbolMath '\\hat{o}' contained conceal cchar=ô
+  syntax match texSymbolMath '\\hat{O}' contained conceal cchar=Ô
+  syntax match texSymbolMath '\\hat{s}' contained conceal cchar=ŝ
+  syntax match texSymbolMath '\\hat{S}' contained conceal cchar=Ŝ
+  syntax match texSymbolMath '\\hat{u}' contained conceal cchar=û
+  syntax match texSymbolMath '\\hat{U}' contained conceal cchar=Û
+  syntax match texSymbolMath '\\hat{w}' contained conceal cchar=ŵ
+  syntax match texSymbolMath '\\hat{W}' contained conceal cchar=Ŵ
+  syntax match texSymbolMath '\\hat{y}' contained conceal cchar=ŷ
+  syntax match texSymbolMath '\\hat{Y}' contained conceal cchar=Ŷ
 endfunction
 
 " }}}1

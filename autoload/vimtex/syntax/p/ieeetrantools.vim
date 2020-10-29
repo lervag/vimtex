@@ -26,7 +26,7 @@ function! s:new_math_region(mathzone) abort " {{{1
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\z(\*\?\)\s*}'
         \   . '\(\[.\{-}\]\)\?{\w*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\z1\s*}'''
-        \ . ' keepend contains=@texClusterMath'
+        \ . ' keepend contains=texCmdEnvMath,texArgEnvMathName,@texClusterMath'
 endfunction
 
 " }}}1
