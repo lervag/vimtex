@@ -96,8 +96,9 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Author and title commands
   " TODO: Option groups here
-  syntax match texCmd nextgroup=texArgAuthor skipwhite skipnl "\\author\>"
+  syntax match texCmd nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
   syntax match texCmd nextgroup=texArgTitle skipwhite skipnl "\\title\>"
+  call vimtex#syntax#core#new_cmd_opt('texOptAuthor', 'texArgAuthor')
   call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texComment,@NoSpell')
   call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texComment')
 
@@ -416,7 +417,6 @@ function! s:init_highlights(cfg) abort " {{{1
 
   " Basic TeX highlighting groups
   highlight def link texArg              Include
-  highlight def link texArgAuthor        Identifier
   highlight def link texArgEnvMathName   Delimiter
   highlight def link texArgEnvName       PreCondit
   highlight def link texArgRef           Special
@@ -482,6 +482,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texErrorOnlyMath        texError
   highlight def link texMatcherMath          texMath
   highlight def link texSymbolMath           texCmd
+  highlight def link texOptAuthor            texOpt
   highlight def link texOptEqual             texSymbol
   highlight def link texOptFile              texOpt
   highlight def link texOptFiles             texOpt
