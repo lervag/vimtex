@@ -95,7 +95,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdTodo '\\todo\w*'
 
   " Author and title commands
-  " TODO: Option groups here
   syntax match texCmd nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
   syntax match texCmd nextgroup=texArgTitle skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_opt('texOptAuthor', 'texArgAuthor')
@@ -284,7 +283,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Math
 
   " Math clusters for use in math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texMatcherMath,texMathOper,texSymbolMath,texSpecialChar,texSubscript,texSuperscript,texSymbolAmp,texSymbolDash,@NoSpell
+  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texMatcherMath,texMathOper,texSymbolMath,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,@NoSpell
   syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
@@ -322,7 +321,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmd "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texArgMathText
   call vimtex#syntax#core#new_cmd_arg('texArgMathText', '', 'TOP,@Spell')
 
-  " Math delimiters: \left... and \right...
+
+  call s:match_math_sub_super(l:cfg)
+  call s:match_math_symbols(l:cfg)
   call s:match_math_delims(l:cfg)
 
   " }}}2
@@ -339,19 +340,9 @@ function! vimtex#syntax#core#init() abort " {{{1
       syntax match texSpecialChar '\\hyp\>'  contained conceal cchar=-
     endif
 
-    " Many of these symbols were contributed by Björn Winckler
-    if l:cfg.conceal.math_delimiters
-      call s:match_conceal_math_symbols()
-    endif
-
     " Conceal replace greek letters
     if l:cfg.conceal.greek
       call s:match_conceal_greek()
-    endif
-
-    " Conceal replace superscripts and subscripts
-    if l:cfg.conceal.super_sub
-      call s:match_conceal_super_sub(l:cfg)
     endif
 
     " Conceal replace accented characters and ligatures
@@ -473,15 +464,14 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdStyleItalBold     texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
-  highlight def link texDelimMathKey         texDelimMath
-  highlight def link texDelimMathSet1        texDelimMath
-  highlight def link texDelimMathSet2        texDelimMath
   highlight def link texDelimMathmode        texDelim
+  highlight def link texDelimMathSet         texDelimMath
   highlight def link texErrorMath            texError
   highlight def link texErrorMathDelim       texError
   highlight def link texErrorOnlyMath        texError
   highlight def link texMatcherMath          texMath
-  highlight def link texSymbolMath           texCmd
+  highlight def link texMathSub              texMath
+  highlight def link texMathSuper            texMath
   highlight def link texOptAuthor            texOpt
   highlight def link texOptEqual             texSymbol
   highlight def link texOptFile              texOpt
@@ -501,12 +491,9 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texRegionMathXX         texMath
   highlight def link texRegionVerb           texRegion
   highlight def link texRegionVerbInline     texRegionVerb
-  highlight def link texSubscript            texCmd
-  highlight def link texSubscripts           texSubscript
-  highlight def link texSuperscript          texCmd
-  highlight def link texSuperscripts         texSuperscript
   highlight def link texSymbolAmp            texSymbol
   highlight def link texSymbolDash           texSymbol
+  highlight def link texSymbolMath           texCmd
 endfunction
 
 " }}}1
@@ -540,90 +527,149 @@ function! s:match_bold_italic(cfg) abort " {{{1
         \ ['texCmdStyleItal', 'texttt'],
         \ ['texCmdStyleItal', 'textup'],
         \]
-    execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*"'
-          \ 'skipwhite skipnl nextgroup=' . l:map[l:group] l:conceal
+    execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*" skipwhite skipnl nextgroup=' . l:map[l:group] l:conceal
   endfor
 
-  execute 'syntax region texStyleBold matchgroup=texDelim start=/{/ end=/}/'
-        \ 'contained contains=@texClusterBold' l:concealends
-  execute 'syntax region texStyleItal matchgroup=texDelim start=/{/ end=/}/'
-        \ 'contained contains=@texClusterItal' l:concealends
-  execute 'syntax region texStyleBoth matchgroup=texDelim start=/{/ end=/}/'
-        \ 'contained contains=@texClusterItalBold' l:concealends
-endfunction
-
-" }}}1
-function! s:match_math_delims(cfg) abort " {{{1
-  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMath "\\\(left\|right\)\>"
-  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMath "\\[bB]igg\?[lr]\?\>"
-  syntax match texDelimMath contained "[<>()[\]|/.]\|\\[{}|]"
-  syntax match texDelimMath contained "\\backslash"
-  syntax match texDelimMath contained "\\downarrow"
-  syntax match texDelimMath contained "\\Downarrow"
-  syntax match texDelimMath contained "\\lVert"
-  syntax match texDelimMath contained "\\langle"
-  syntax match texDelimMath contained "\\lbrace"
-  syntax match texDelimMath contained "\\lceil"
-  syntax match texDelimMath contained "\\lfloor"
-  syntax match texDelimMath contained "\\lgroup"
-  syntax match texDelimMath contained "\\lmoustache"
-  syntax match texDelimMath contained "\\lvert"
-  syntax match texDelimMath contained "\\rVert"
-  syntax match texDelimMath contained "\\rangle"
-  syntax match texDelimMath contained "\\rbrace"
-  syntax match texDelimMath contained "\\rceil"
-  syntax match texDelimMath contained "\\rfloor"
-  syntax match texDelimMath contained "\\rgroup"
-  syntax match texDelimMath contained "\\rmoustache"
-  syntax match texDelimMath contained "\\rvert"
-  syntax match texDelimMath contained "\\uparrow"
-  syntax match texDelimMath contained "\\Uparrow"
-  syntax match texDelimMath contained "\\updownarrow"
-  syntax match texDelimMath contained "\\Updownarrow"
-
-  if !a:cfg.conceal.math_delimiters || &encoding !=# 'utf-8'
-    return
-  endif
-
-  syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)<"
-  syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)>"
-  syntax match texDelimMath contained conceal cchar=( "\\\%([bB]igg\?l\|left\)("
-  syntax match texDelimMath contained conceal cchar=) "\\\%([bB]igg\?r\|right\))"
-  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\["
-  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)]"
-  syntax match texDelimMath contained conceal cchar={ "\\\%([bB]igg\?l\|left\)\\{"
-  syntax match texDelimMath contained conceal cchar=} "\\\%([bB]igg\?r\|right\)\\}"
-  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\\lbrace"
-  syntax match texDelimMath contained conceal cchar=⌈ "\\\%([bB]igg\?l\|left\)\\lceil"
-  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lfloor"
-  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lgroup"
-  syntax match texDelimMath contained conceal cchar=⎛ "\\\%([bB]igg\?l\|left\)\\lmoustache"
-  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)\\rbrace"
-  syntax match texDelimMath contained conceal cchar=⌉ "\\\%([bB]igg\?r\|right\)\\rceil"
-  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rfloor"
-  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rgroup"
-  syntax match texDelimMath contained conceal cchar=⎞ "\\\%([bB]igg\?r\|right\)\\rmoustache"
-  syntax match texDelimMath contained conceal cchar=| "\\\%([bB]igg\?[lr]\?\|left\|right\)|"
-  syntax match texDelimMath contained conceal cchar=‖ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\|"
-  syntax match texDelimMath contained conceal cchar=↓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\downarrow"
-  syntax match texDelimMath contained conceal cchar=⇓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Downarrow"
-  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\uparrow"
-  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Uparrow"
-  syntax match texDelimMath contained conceal cchar=↕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\updownarrow"
-  syntax match texDelimMath contained conceal cchar=⇕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Updownarrow"
-
-  if &ambiwidth ==# 'double'
-    syntax match texDelimMath contained conceal cchar=〈 "\\\%([bB]igg\?l\|left\)\\langle"
-    syntax match texDelimMath contained conceal cchar=〉 "\\\%([bB]igg\?r\|right\)\\rangle"
-  else
-    syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)\\langle"
-    syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)\\rangle"
-  endif
+  execute 'syntax region texStyleBold matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterBold' l:concealends
+  execute 'syntax region texStyleItal matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterItal' l:concealends
+  execute 'syntax region texStyleBoth matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterItalBold' l:concealends
 endfunction
 
 " }}}1
 
-function! s:match_conceal_math_symbols() abort " {{{1
+function! s:match_math_sub_super(cfg) " {{{1
+  if !a:cfg.conceal.super_sub | return | endif
+
+  for [l:from, l:to] in filter(copy(s:map_super),
+        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
+    execute 'syntax match texMathSuper /\^' . l:from . '/ contained conceal cchar=' . l:to 'contains=texMathOper'
+  endfor
+
+  for [l:from, l:to] in filter(copy(s:map_sub),
+        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/().]'})
+    execute 'syntax match texMathSub /_' . l:from . '/ contained conceal cchar=' . l:to 'contains=texMathOper'
+  endfor
+endfunction
+
+let s:map_sub = [
+      \ ['0',         '₀'],
+      \ ['1',         '₁'],
+      \ ['2',         '₂'],
+      \ ['3',         '₃'],
+      \ ['4',         '₄'],
+      \ ['5',         '₅'],
+      \ ['6',         '₆'],
+      \ ['7',         '₇'],
+      \ ['8',         '₈'],
+      \ ['9',         '₉'],
+      \ ['a',         'ₐ'],
+      \ ['e',         'ₑ'],
+      \ ['h',         'ₕ'],
+      \ ['i',         'ᵢ'],
+      \ ['j',         'ⱼ'],
+      \ ['k',         'ₖ'],
+      \ ['l',         'ₗ'],
+      \ ['m',         'ₘ'],
+      \ ['n',         'ₙ'],
+      \ ['o',         'ₒ'],
+      \ ['p',         'ₚ'],
+      \ ['r',         'ᵣ'],
+      \ ['s',         'ₛ'],
+      \ ['t',         'ₜ'],
+      \ ['u',         'ᵤ'],
+      \ ['v',         'ᵥ'],
+      \ ['x',         'ₓ'],
+      \ [',',         '︐'],
+      \ ['+',         '₊'],
+      \ ['-',         '₋'],
+      \ ['\/',         'ˏ'],
+      \ ['(',         '₍'],
+      \ [')',         '₎'],
+      \ ['\.',        '‸'],
+      \ ['r',         'ᵣ'],
+      \ ['v',         'ᵥ'],
+      \ ['x',         'ₓ'],
+      \ ['\\beta\>',  'ᵦ'],
+      \ ['\\delta\>', 'ᵨ'],
+      \ ['\\phi\>',   'ᵩ'],
+      \ ['\\gamma\>', 'ᵧ'],
+      \ ['\\chi\>',   'ᵪ'],
+      \]
+
+let s:map_super = [
+      \ ['0',  '⁰'],
+      \ ['1',  '¹'],
+      \ ['2',  '²'],
+      \ ['3',  '³'],
+      \ ['4',  '⁴'],
+      \ ['5',  '⁵'],
+      \ ['6',  '⁶'],
+      \ ['7',  '⁷'],
+      \ ['8',  '⁸'],
+      \ ['9',  '⁹'],
+      \ ['a',  'ᵃ'],
+      \ ['b',  'ᵇ'],
+      \ ['c',  'ᶜ'],
+      \ ['d',  'ᵈ'],
+      \ ['e',  'ᵉ'],
+      \ ['f',  'ᶠ'],
+      \ ['g',  'ᵍ'],
+      \ ['h',  'ʰ'],
+      \ ['i',  'ⁱ'],
+      \ ['j',  'ʲ'],
+      \ ['k',  'ᵏ'],
+      \ ['l',  'ˡ'],
+      \ ['m',  'ᵐ'],
+      \ ['n',  'ⁿ'],
+      \ ['o',  'ᵒ'],
+      \ ['p',  'ᵖ'],
+      \ ['r',  'ʳ'],
+      \ ['s',  'ˢ'],
+      \ ['t',  'ᵗ'],
+      \ ['u',  'ᵘ'],
+      \ ['v',  'ᵛ'],
+      \ ['w',  'ʷ'],
+      \ ['x',  'ˣ'],
+      \ ['y',  'ʸ'],
+      \ ['z',  'ᶻ'],
+      \ ['A',  'ᴬ'],
+      \ ['B',  'ᴮ'],
+      \ ['D',  'ᴰ'],
+      \ ['E',  'ᴱ'],
+      \ ['G',  'ᴳ'],
+      \ ['H',  'ᴴ'],
+      \ ['I',  'ᴵ'],
+      \ ['J',  'ᴶ'],
+      \ ['K',  'ᴷ'],
+      \ ['L',  'ᴸ'],
+      \ ['M',  'ᴹ'],
+      \ ['N',  'ᴺ'],
+      \ ['O',  'ᴼ'],
+      \ ['P',  'ᴾ'],
+      \ ['R',  'ᴿ'],
+      \ ['T',  'ᵀ'],
+      \ ['U',  'ᵁ'],
+      \ ['V',  'ⱽ'],
+      \ ['W',  'ᵂ'],
+      \ [',',  '︐'],
+      \ [':',  '︓'],
+      \ [';',  '︔'],
+      \ ['+',  '⁺'],
+      \ ['-',  '⁻'],
+      \ ['<',  '˂'],
+      \ ['>',  '˃'],
+      \ ['\/',  'ˊ'],
+      \ ['(',  '⁽'],
+      \ [')',  '⁾'],
+      \ ['\.', '˙'],
+      \ ['=',  '˭'],
+      \]
+
+" }}}1
+function! s:match_math_symbols(cfg) abort " {{{1
+  " Many of these symbols were contributed by Björn Winckler
+  if !a:cfg.conceal.math_delimiters | return | endif
+
   syntax match texSymbolMath "\\|"                   contained conceal cchar=‖
   syntax match texSymbolMath "\\aleph\>"             contained conceal cchar=ℵ
   syntax match texSymbolMath "\\amalg\>"             contained conceal cchar=∐
@@ -795,13 +841,9 @@ function! s:match_conceal_math_symbols() abort " {{{1
   syntax match texSymbolMath "\\wr\>"                contained conceal cchar=≀
 
   if &ambiwidth ==# 'double'
-    syntax match texSymbolMath "right\\rangle\>" contained conceal cchar=〉
-    syntax match texSymbolMath "left\\langle\>"  contained conceal cchar=〈
     syntax match texSymbolMath '\\gg\>'          contained conceal cchar=≫
     syntax match texSymbolMath '\\ll\>'          contained conceal cchar=≪
   else
-    syntax match texSymbolMath "right\\rangle\>" contained conceal cchar=>
-    syntax match texSymbolMath "left\\langle\>"  contained conceal cchar=<
     syntax match texSymbolMath '\\gg\>'          contained conceal cchar=⟫
     syntax match texSymbolMath '\\ll\>'          contained conceal cchar=⟪
   endif
@@ -871,17 +913,86 @@ function! s:match_conceal_math_symbols() abort " {{{1
 endfunction
 
 " }}}1
+function! s:match_math_delims(cfg) abort " {{{1
+  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMathSet "\\\(left\|right\)\>"
+  syntax match texDelimMathMod contained skipwhite nextgroup=texDelimMathSet "\\[bB]igg\?[lr]\?\>"
+  syntax match texDelimMathSet contained "[<>()[\]|/.]\|\\[{}|]"
+  syntax match texDelimMathSet contained "\\backslash"
+  syntax match texDelimMathSet contained "\\downarrow"
+  syntax match texDelimMathSet contained "\\Downarrow"
+  syntax match texDelimMathSet contained "\\lVert"
+  syntax match texDelimMathSet contained "\\langle"
+  syntax match texDelimMathSet contained "\\lbrace"
+  syntax match texDelimMathSet contained "\\lceil"
+  syntax match texDelimMathSet contained "\\lfloor"
+  syntax match texDelimMathSet contained "\\lgroup"
+  syntax match texDelimMathSet contained "\\lmoustache"
+  syntax match texDelimMathSet contained "\\lvert"
+  syntax match texDelimMathSet contained "\\rVert"
+  syntax match texDelimMathSet contained "\\rangle"
+  syntax match texDelimMathSet contained "\\rbrace"
+  syntax match texDelimMathSet contained "\\rceil"
+  syntax match texDelimMathSet contained "\\rfloor"
+  syntax match texDelimMathSet contained "\\rgroup"
+  syntax match texDelimMathSet contained "\\rmoustache"
+  syntax match texDelimMathSet contained "\\rvert"
+  syntax match texDelimMathSet contained "\\uparrow"
+  syntax match texDelimMathSet contained "\\Uparrow"
+  syntax match texDelimMathSet contained "\\updownarrow"
+  syntax match texDelimMathSet contained "\\Updownarrow"
+
+  if !a:cfg.conceal.math_delimiters || &encoding !=# 'utf-8'
+    return
+  endif
+
+  syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)<"
+  syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)>"
+  syntax match texDelimMath contained conceal cchar=( "\\\%([bB]igg\?l\|left\)("
+  syntax match texDelimMath contained conceal cchar=) "\\\%([bB]igg\?r\|right\))"
+  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\["
+  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)]"
+  syntax match texDelimMath contained conceal cchar={ "\\\%([bB]igg\?l\|left\)\\{"
+  syntax match texDelimMath contained conceal cchar=} "\\\%([bB]igg\?r\|right\)\\}"
+  syntax match texDelimMath contained conceal cchar=[ "\\\%([bB]igg\?l\|left\)\\lbrace"
+  syntax match texDelimMath contained conceal cchar=⌈ "\\\%([bB]igg\?l\|left\)\\lceil"
+  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lfloor"
+  syntax match texDelimMath contained conceal cchar=⌊ "\\\%([bB]igg\?l\|left\)\\lgroup"
+  syntax match texDelimMath contained conceal cchar=⎛ "\\\%([bB]igg\?l\|left\)\\lmoustache"
+  syntax match texDelimMath contained conceal cchar=] "\\\%([bB]igg\?r\|right\)\\rbrace"
+  syntax match texDelimMath contained conceal cchar=⌉ "\\\%([bB]igg\?r\|right\)\\rceil"
+  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rfloor"
+  syntax match texDelimMath contained conceal cchar=⌋ "\\\%([bB]igg\?r\|right\)\\rgroup"
+  syntax match texDelimMath contained conceal cchar=⎞ "\\\%([bB]igg\?r\|right\)\\rmoustache"
+  syntax match texDelimMath contained conceal cchar=| "\\\%([bB]igg\?[lr]\?\|left\|right\)|"
+  syntax match texDelimMath contained conceal cchar=‖ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\|"
+  syntax match texDelimMath contained conceal cchar=↓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\downarrow"
+  syntax match texDelimMath contained conceal cchar=⇓ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Downarrow"
+  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\uparrow"
+  syntax match texDelimMath contained conceal cchar=↑ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Uparrow"
+  syntax match texDelimMath contained conceal cchar=↕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\updownarrow"
+  syntax match texDelimMath contained conceal cchar=⇕ "\\\%([bB]igg\?[lr]\?\|left\|right\)\\Updownarrow"
+
+  if &ambiwidth ==# 'double'
+    syntax match texDelimMath contained conceal cchar=〈 "\\\%([bB]igg\?l\|left\)\\langle"
+    syntax match texDelimMath contained conceal cchar=〉 "\\\%([bB]igg\?r\|right\)\\rangle"
+  else
+    syntax match texDelimMath contained conceal cchar=< "\\\%([bB]igg\?l\|left\)\\langle"
+    syntax match texDelimMath contained conceal cchar=> "\\\%([bB]igg\?r\|right\)\\rangle"
+  endif
+endfunction
+
+" }}}1
+
 function! s:match_conceal_accents() " {{{1
   for [l:chr; l:targets] in s:map_accents
     for i in range(13)
-      if empty(l:targets[i]) | continue | endif
-        let l:accent = s:key_accents[i]
-        let l:target = l:targets[i]
-        if l:accent =~# '\a'
-          execute 'syntax match texCmdAccent /' . l:accent . '\%(\s*{' . l:chr . '}\|\s\+' . l:chr . '\)' . '/ conceal cchar=' . l:target
-        else
-          execute 'syntax match texCmdAccent /' . l:accent . '\s*\%({' . l:chr . '}\|' . l:chr . '\)' . '/ conceal cchar=' . l:target
-        endif
+      let l:target = l:targets[i]
+      let l:accent = s:key_accents[i]
+      if empty(l:target) | continue | endif
+
+      let l:re = l:accent . '\%(\s*{' . l:chr . '}\|'
+            \ . (l:accent =~# '\a' ? '\s\+' : '\s*') . l:chr . '\)'
+      execute 'syntax match texCmdAccent /' . l:re . '/ conceal cchar=' . l:target
     endfor
   endfor
 
@@ -999,137 +1110,5 @@ function! s:match_conceal_greek() " {{{1
   syntax match texCmdGreek "\\Psi\>"        contained conceal cchar=Ψ
   syntax match texCmdGreek "\\Omega\>"      contained conceal cchar=Ω
 endfunction
-
-" }}}1
-function! s:match_conceal_super_sub(cfg) " {{{1
-  syntax region texSuperscript matchgroup=texDelim start='\^{' skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSuperscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
-  syntax region texSubscript   matchgroup=texDelim start='_{'  skip="\\\\\|\\}" end='}' contained concealends contains=texSpecialChar,texSubscripts,texCmd,texSubscript,texSuperscript,texMatcherMath
-
-  for [l:from, l:to] in filter(copy(s:map_super),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
-    execute 'syntax match texSuperscript /\^' . l:from . '/ contained conceal cchar=' . l:to
-    execute 'syntax match texSuperscripts /'  . l:from . '/ contained conceal cchar=' . l:to 'nextgroup=texSuperscripts'
-  endfor
-
-  for [l:from, l:to] in filter(copy(s:map_sub),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/().]'})
-    execute 'syntax match texSubscript /_' . l:from . '/ contained conceal cchar=' . l:to
-    execute 'syntax match texSubscripts /' . l:from . '/ contained conceal cchar=' . l:to . ' nextgroup=texSubscripts'
-  endfor
-endfunction
-
-let s:map_sub = [
-      \ ['0',         '₀'],
-      \ ['1',         '₁'],
-      \ ['2',         '₂'],
-      \ ['3',         '₃'],
-      \ ['4',         '₄'],
-      \ ['5',         '₅'],
-      \ ['6',         '₆'],
-      \ ['7',         '₇'],
-      \ ['8',         '₈'],
-      \ ['9',         '₉'],
-      \ ['a',         'ₐ'],
-      \ ['e',         'ₑ'],
-      \ ['h',         'ₕ'],
-      \ ['i',         'ᵢ'],
-      \ ['j',         'ⱼ'],
-      \ ['k',         'ₖ'],
-      \ ['l',         'ₗ'],
-      \ ['m',         'ₘ'],
-      \ ['n',         'ₙ'],
-      \ ['o',         'ₒ'],
-      \ ['p',         'ₚ'],
-      \ ['r',         'ᵣ'],
-      \ ['s',         'ₛ'],
-      \ ['t',         'ₜ'],
-      \ ['u',         'ᵤ'],
-      \ ['v',         'ᵥ'],
-      \ ['x',         'ₓ'],
-      \ [',',         '︐'],
-      \ ['+',         '₊'],
-      \ ['-',         '₋'],
-      \ ['\/',         'ˏ'],
-      \ ['(',         '₍'],
-      \ [')',         '₎'],
-      \ ['\.',        '‸'],
-      \ ['r',         'ᵣ'],
-      \ ['v',         'ᵥ'],
-      \ ['x',         'ₓ'],
-      \ ['\\beta\>',  'ᵦ'],
-      \ ['\\delta\>', 'ᵨ'],
-      \ ['\\phi\>',   'ᵩ'],
-      \ ['\\gamma\>', 'ᵧ'],
-      \ ['\\chi\>',   'ᵪ'],
-      \]
-
-let s:map_super = [
-      \ ['0',  '⁰'],
-      \ ['1',  '¹'],
-      \ ['2',  '²'],
-      \ ['3',  '³'],
-      \ ['4',  '⁴'],
-      \ ['5',  '⁵'],
-      \ ['6',  '⁶'],
-      \ ['7',  '⁷'],
-      \ ['8',  '⁸'],
-      \ ['9',  '⁹'],
-      \ ['a',  'ᵃ'],
-      \ ['b',  'ᵇ'],
-      \ ['c',  'ᶜ'],
-      \ ['d',  'ᵈ'],
-      \ ['e',  'ᵉ'],
-      \ ['f',  'ᶠ'],
-      \ ['g',  'ᵍ'],
-      \ ['h',  'ʰ'],
-      \ ['i',  'ⁱ'],
-      \ ['j',  'ʲ'],
-      \ ['k',  'ᵏ'],
-      \ ['l',  'ˡ'],
-      \ ['m',  'ᵐ'],
-      \ ['n',  'ⁿ'],
-      \ ['o',  'ᵒ'],
-      \ ['p',  'ᵖ'],
-      \ ['r',  'ʳ'],
-      \ ['s',  'ˢ'],
-      \ ['t',  'ᵗ'],
-      \ ['u',  'ᵘ'],
-      \ ['v',  'ᵛ'],
-      \ ['w',  'ʷ'],
-      \ ['x',  'ˣ'],
-      \ ['y',  'ʸ'],
-      \ ['z',  'ᶻ'],
-      \ ['A',  'ᴬ'],
-      \ ['B',  'ᴮ'],
-      \ ['D',  'ᴰ'],
-      \ ['E',  'ᴱ'],
-      \ ['G',  'ᴳ'],
-      \ ['H',  'ᴴ'],
-      \ ['I',  'ᴵ'],
-      \ ['J',  'ᴶ'],
-      \ ['K',  'ᴷ'],
-      \ ['L',  'ᴸ'],
-      \ ['M',  'ᴹ'],
-      \ ['N',  'ᴺ'],
-      \ ['O',  'ᴼ'],
-      \ ['P',  'ᴾ'],
-      \ ['R',  'ᴿ'],
-      \ ['T',  'ᵀ'],
-      \ ['U',  'ᵁ'],
-      \ ['V',  'ⱽ'],
-      \ ['W',  'ᵂ'],
-      \ [',',  '︐'],
-      \ [':',  '︓'],
-      \ [';',  '︔'],
-      \ ['+',  '⁺'],
-      \ ['-',  '⁻'],
-      \ ['<',  '˂'],
-      \ ['>',  '˃'],
-      \ ['\/',  'ˊ'],
-      \ ['(',  '⁽'],
-      \ [')',  '⁾'],
-      \ ['\.', '˙'],
-      \ ['=',  '˭'],
-      \]
 
 " }}}1
