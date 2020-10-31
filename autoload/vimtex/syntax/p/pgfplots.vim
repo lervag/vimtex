@@ -4,31 +4,29 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#pgfplots#load() abort " {{{1
+function! vimtex#syntax#p#pgfplots#load() abort " 
   if has_key(b:vimtex_syntax, 'pgfplots') | return | endif
   let b:vimtex_syntax.pgfplots = 1
 
-  " Load Tikz first
   call vimtex#syntax#p#tikz#load()
 
-  " Add texAxisStatement to Tikz cluster
-  syntax cluster texTikz add=texAxisStatement
+  syntax cluster texClusterTikz add=texCmdAxis
 
-  " Match pgfplotsset and axis environments
-  syntax match texTikzSet /\\pgfplotsset\>/
-        \ contains=texCmd skipwhite nextgroup=texTikzOptsCurly
-  syntax match texTikzEnv /\v\\begin\{%(log)*axis}/
-        \ contains=texCmdEnv nextgroup=texTikzOpts skipwhite
-  syntax match texTikzEnv /\v\\begin\{groupplot}/
-        \ contains=texCmdEnv nextgroup=texTikzOpts skipwhite
+  syntax match texCmd nextgroup=texArgTikzset skipwhite "\\pgfplotsset\>"
 
-  " Match some custom pgfplots macros
-  syntax match texAxisStatement /\\addplot3\>/
-        \ contained skipwhite nextgroup=texTikzOpts
-  syntax match texAxisStatement /\\nextgroupplot\>/
-        \ contained skipwhite nextgroup=texTikzOpts
+  syntax match texCmdAxis contained nextgroup=texOptTikzpic skipwhite "\\addplot3\?\>"
+  syntax match texCmdAxis contained nextgroup=texOptTikzpic skipwhite "\\nextgroupplot\>"
 
-  highlight def link texAxisStatement texCmd
+  syntax match texEnvBgnTikz contains=texCmdEnv nextgroup=texOptTikzpic skipwhite skipnl "\\begin{\%(log\)*axis}"
+  syntax match texEnvBgnTikz contains=texCmdEnv nextgroup=texOptTikzpic skipwhite skipnl "\\begin{groupplot}"
+  syntax region texRegionTikz
+        \ start="\\begin{\z(\%(log\)*axis\)}" end="\\end{\z1}"
+        \ keepend transparent contains=@texClusterTikz
+  syntax region texRegionTikz
+        \ start="\\begin{groupplot}" end="\\end{groupplot}"
+        \ keepend transparent contains=@texClusterTikz
+
+  highlight def link texCmdAxis texCmd
 endfunction
 
-" }}}1
+" 

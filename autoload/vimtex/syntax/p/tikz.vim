@@ -8,33 +8,23 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'tikz') | return | endif
   let b:vimtex_syntax.tikz = 1
 
-  " Define clusters
-  syntax cluster texTikz contains=texTikzEnv,texCmdEnv,texCmd,texTikzSemicolon,texComment,@texVimtexGlobal
-  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texRegionMathX,texTypeSize,texCmd,texLength,texComment
+  syntax cluster texClusterTikz contains=texEnvBgnTikz,texCmdEnv,texCmd,texTikzSemicolon,texComment,texMatcher
+  syntax cluster texClusterTikzset contains=texArgTikzset,texOptSep,texOptEqual,texRegionMathX,texTypeSize,texCmd,texLength,texComment
 
-  " Define tikz option groups
-  syntax match texTikzSet /\\tikzset\>/
-        \ contains=texCmd skipwhite nextgroup=texTikzOptsCurly
-  syntax region texTikzOpts matchgroup=Delimiter
-        \ start='\[' end='\]' contained contains=@texTikzOS
-  syntax region texTikzOptsCurly matchgroup=Delimiter
-        \ start='{'  end='}'  contained contains=@texTikzOS
+  syntax match texCmd /\\tikzset\>/ skipwhite skipnl nextgroup=texArgTikzset
+  call vimtex#syntax#core#new_cmd_arg('texArgTikzset', '', '@texClusterTikzset')
 
-  syntax region texTikzpicture
-        \ start='\\begin{tikzpicture}'rs=s
-        \ end='\\end{tikzpicture}'re=e
-        \ keepend
-        \ transparent
-        \ contains=@texTikz
-  syntax match texTikzEnv /\v\\begin\{tikzpicture\}/
-        \ contains=texCmdEnv nextgroup=texTikzOpts skipwhite
+  syntax match texEnvBgnTikz /\v\\begin\{tikzpicture\}/
+        \ nextgroup=texOptTikzpic skipwhite skipnl contains=texCmdEnv
+  syntax region texRegionTikz
+        \ start='\\begin{tikzpicture}'
+        \ end='\\end{tikzpicture}'
+        \ keepend transparent contains=@texClusterTikz
+  call vimtex#syntax#core#new_cmd_opt('texOptTikzpic', '', '@texClusterTikzset')
 
-  syntax match texTikzEqual /=/ contained
   syntax match texTikzSemicolon /;/ contained
 
-  highlight def link texTikzEqual Operator
-  highlight def link texTikzSemicolon Delimiter
+  highlight def link texTikzSemicolon texDelim
 endfunction
 
 " }}}1
-
