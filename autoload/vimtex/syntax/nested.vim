@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#misc#include(name) abort " {{{1
+function! vimtex#syntax#nested#include(name) abort " {{{1
   let l:inc_name = 'vimtex_nested_' . a:name
 
   if !has_key(s:included, l:inc_name)
@@ -15,7 +15,7 @@ function! vimtex#syntax#misc#include(name) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#misc#include_reset() abort " {{{1
+function! vimtex#syntax#nested#reset() abort " {{{1
   let s:included = {'vimtex_nested_tex': 0}
 endfunction
 

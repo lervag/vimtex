@@ -44,8 +44,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
   " Match "unknown" environments
   syntax region texRegionMinted
-        \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
-        \ end="\\end{minted}"re=e
+        \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"
+        \ end="\\end{minted}"
         \ keepend
         \ contains=texMintedBounds.*
 
@@ -65,7 +65,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
   " Next add nested syntax support for desired languages
   for [l:nested, l:config] in items(b:vimtex.syntax.minted)
-    let l:cluster = vimtex#syntax#misc#include(l:nested)
+    let l:cluster = vimtex#syntax#nested#include(l:nested)
 
     let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
     let l:group_main = 'texRegion' . l:name
@@ -86,8 +86,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
     " Match minted environment
     execute 'syntax region' l:group_main
-          \ 'start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{' . l:nested . '}"rs=s'
-          \ 'end="\\end{minted}"re=e'
+          \ 'start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{' . l:nested . '}"'
+          \ 'end="\\end{minted}"'
           \ 'keepend'
           \ l:transparent
           \ 'contains=texMintedBounds.*' . l:contains_env
@@ -95,8 +95,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     " Match custom environment names
     for l:env in get(l:config, 'environments', [])
       execute 'syntax region' l:group_main
-            \ 'start="\\begin{\z(' . l:env . '\*\?\)}"rs=s'
-            \ 'end="\\end{\z1}"re=e'
+            \ 'start="\\begin{\z(' . l:env . '\*\?\)}"'
+            \ 'end="\\end{\z1}"'
             \ 'keepend'
             \ l:transparent
             \ 'contains=texMintedStarred,texCmdEnv' . l:contains_env

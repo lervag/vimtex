@@ -19,17 +19,12 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   call vimtex#syntax#core#new_math_region('xxalignat', 0)
   call vimtex#syntax#core#new_math_region('mathpar', 1)
 
-  " Amsmath [lr][vV]ert  (Holger Mitschke)
+  " Amsmath [lr][vV]ert
   if &encoding ==# 'utf-8' && g:vimtex_syntax_config.conceal.math_delimiters
-    for l:texmath in [
-          \ ['\\lvert', '|'] ,
-          \ ['\\rvert', '|'] ,
-          \ ['\\lVert', '‖'] ,
-          \ ['\\rVert', '‖'] ,
-          \ ]
-        execute "syntax match texDelimMath '\\\\[bB]igg\\=[lr]\\="
-              \ . l:texmath[0] . "' contained conceal cchar=" . l:texmath[1]
-    endfor
+    syntax match texDelimMath contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert"
+    syntax match texDelimMath contained conceal cchar=| "\\\%([bB]igg\?r\|right\)\\rvert"
+    syntax match texDelimMath contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert"
+    syntax match texDelimMath contained conceal cchar=‖ "\\\%([bB]igg\?r\|right\)\\rVert"
   endif
 endfunction
 

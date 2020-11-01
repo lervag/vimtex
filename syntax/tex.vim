@@ -23,7 +23,7 @@ call vimtex#syntax#core#init()
 
 " Initialize buffer local syntax state
 let b:vimtex_syntax = {}
-call vimtex#syntax#misc#include_reset()
+call vimtex#syntax#nested#reset()
 
 
 " Load package specific syntax (may depend on vimtex state)

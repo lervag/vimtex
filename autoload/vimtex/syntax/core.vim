@@ -69,7 +69,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Accents and ligatures
   syntax match texCmdAccent "\\[bcdvuH]$"
   syntax match texCmdAccent "\\[bcdvuH]\ze\A"
-  syntax match texCmdAccent /\\[=^.\~"`']/
+  syntax match texCmdAccent /\\[=^.~"`']/
   syntax match texCmdAccent /\\['=t'.c^ud"vb~Hr]{\a}/
   syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
   syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze\A"
@@ -95,10 +95,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdTodo '\\todo\w*'
 
   " Author and title commands
-  syntax match texCmd nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
-  syntax match texCmd nextgroup=texArgTitle skipwhite skipnl "\\title\>"
+  syntax match texCmdAuthor nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
+  syntax match texCmdTitle nextgroup=texArgTitle skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_opt('texOptAuthor', 'texArgAuthor')
-  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texCmdAccent,texCmdLigature,texSpecialChar,texComment,@NoSpell')
   call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texComment')
 
   " Various commands that take a file argument (or similar)
@@ -220,8 +220,8 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Add @NoSpell for commands per configuration
   for l:macro in g:vimtex_syntax_nospell_commands
-    execute 'syntax match texCmd skipwhite skipnl "\\' . l:macro . '"'
-          \ 'nextgroup=texArgNoSpell'
+    execute 'syntax match texCmd nextgroup=texArgNoSpell skipwhite skipnl'
+          \ '"\\' . l:macro . '"'
   endfor
   call vimtex#syntax#core#new_cmd_arg('texArgNoSpell', '', '@NoSpell')
 
@@ -232,6 +232,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)*section\>"
   syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)\?paragraph\>"
   call vimtex#syntax#core#new_cmd_arg('texArgPartTitle', '', 'TOP')
+
+  " Item elements in lists
+  syntax match texCmdItem "\\item\>"
 
   " }}}2
   " {{{2 Environments
@@ -441,16 +444,18 @@ function! s:init_highlights(cfg) abort " {{{1
   " Inherited groups
   highlight def link texArgDefName           texCmd
   highlight def link texArgFile              texArg
-  highlight def link texArgFiles             texArg
+  highlight def link texArgFiles             texArgFile
   highlight def link texArgNewcmdName        texCmd
   highlight def link texArgNewenvName        texArgEnvName
   highlight def link texArgPartTitle         texTitle
   highlight def link texCmd                  texCmd
   highlight def link texCmdAccent            texCmd
+  highlight def link texCmdAuthor            texCmd
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdEnvMath           texCmdEnv
   highlight def link texCmdError             texError
   highlight def link texCmdGreek             texCmd
+  highlight def link texCmdItem              texArgEnvName
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdParts             texCmd
   highlight def link texCmdSize              texType
@@ -462,6 +467,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdStyleBoldItal     texCmd
   highlight def link texCmdStyleItal         texCmd
   highlight def link texCmdStyleItalBold     texCmd
+  highlight def link texCmdTitle             texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
   highlight def link texDelimMathmode        texDelim

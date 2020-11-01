@@ -8,32 +8,23 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'cleveref') | return | endif
   let b:vimtex_syntax.cleveref = 1
 
-  syntax match texCmd '\\\(\(label\)\?c\(page\)\?\|C\)ref\>'
-        \ nextgroup=texCRefZone
+  syntax match texCmd nextgroup=texArgCRef skipwhite skipnl
+        \ "\\\%(\%(label\)\?c\%(page\)\?\|C\)ref\>"
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
-  syntax match texCmd '\\c\(page\)\?refrange\>'
-        \ nextgroup=texCRefZoneRange skipwhite skipnl
+  syntax match texCmd nextgroup=texArgCRefRange skipwhite skipnl
+        \ "\\c\(page\)\?refrange\>"
 
   " \label[xxx]{asd}
-  syntax match texCmd '\\label\[.\{-}\]'
-        \ nextgroup=texCRefZone skipwhite skipnl
-        \ contains=texCRefLabelOpts
+  syntax match texCmd nextgroup=texOptCRef,texArgRef skipwhite skipnl "\\label\>"
 
-  syntax region texCRefZone contained matchgroup=Delimiter
-        \ start="{" end="}"
-        \ contains=@texClusterRef,texRegionRef
-  syntax region texCRefZoneRange contained matchgroup=Delimiter
-        \ start="{" end="}"
-        \ contains=@texClusterRef,texRegionRef
-        \ nextgroup=texCRefZone skipwhite skipnl
-  syntax region texCRefLabelOpts contained matchgroup=Delimiter
-        \ start='\[' end=']'
-        \ contains=@texClusterRef,texRegionRef
+  call vimtex#syntax#core#new_cmd_arg('texArgCRef', '', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgCRefRange', 'texArgCRef', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_opt('texOptCRef', 'texArgRef', '', 'oneline')
 
-  highlight link texCRefZone      texRegionRef
-  highlight link texCRefZoneRange texRegionRef
-  highlight link texCRefLabelOpts texOptNewcmd
+  highlight link texArgCRef      texArgRef
+  highlight link texArgCRefRange texArgRef
+  highlight link texOptCRef      texOpt
 endfunction
 
 " }}}1

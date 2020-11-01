@@ -8,13 +8,11 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'dot2texi') | return | endif
   let b:vimtex_syntax.dot2texi = 1
 
-  call vimtex#syntax#misc#include('dot')
+  call vimtex#syntax#nested#include('dot')
   syntax region texRegionDot
-        \ start="\\begin{dot2tex}"rs=s
-        \ end="\\end{dot2tex}"re=e
-        \ keepend
-        \ transparent
-        \ contains=texCmdEnv,@vimtex_nested_dot
+        \ start="\\begin{dot2tex}"
+        \ end="\\end{dot2tex}"
+        \ keepend transparent contains=texCmdEnv,@vimtex_nested_dot
 endfunction
 
 " }}}1

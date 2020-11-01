@@ -10,20 +10,20 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
 
   " First some general support
   syntax match texCmd "\\lstinputlisting\>"
-        \ nextgroup=texOptFile,texArgFile
+        \ nextgroup=texOptFile,texArgFile skipwhite skipnl
   syntax match texRegion "\\lstinline\s*\(\[.\{-}\]\)\={.\{-}}"
 
   " Set all listings environments to listings
   syntax cluster texFoldGroup add=texRegionListings
   syntax region texRegionListings
-        \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"rs=s
-        \ end="\\end{lstlisting}\|%stopzone\>"re=e
+        \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"
+        \ end="\\end{lstlisting}\|%stopzone\>"
         \ keepend
         \ contains=texCmdEnv
 
   " Next add nested syntax support for desired languages
   for l:nested in b:vimtex_syntax.listings
-    let l:cluster = vimtex#syntax#misc#include(l:nested)
+    let l:cluster = vimtex#syntax#nested#include(l:nested)
     if empty(l:cluster) | continue | endif
 
     let l:group_main = 'texRegionListings' . toupper(l:nested[0]) . l:nested[1:]
@@ -34,8 +34,8 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
 
     execute 'syntax region' l:group_main
           \ 'start="\c\\begin{lstlisting}\s*'
-          \ . '\[\_[^\]]\{-}language=' . l:nested . '\%(\s*,\_[^\]]\{-}\)\?\]"rs=s'
-          \ 'end="\\end{lstlisting}"re=e'
+          \ . '\[\_[^\]]\{-}language=' . l:nested . '\%(\s*,\_[^\]]\{-}\)\?\]"'
+          \ 'end="\\end{lstlisting}"'
           \ 'keepend'
           \ 'transparent'
           \ 'contains=texCmdEnv,@' . l:cluster
@@ -48,8 +48,8 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
           \ 'nextgroup=' . l:group_contained
 
     execute 'syntax region' l:group_contained
-          \ 'start="\\begin{lstlisting}"rs=s'
-          \ 'end="\\end{lstlisting}"re=e'
+          \ 'start="\\begin{lstlisting}"'
+          \ 'end="\\end{lstlisting}"'
           \ 'keepend'
           \ 'transparent'
           \ 'containedin=' . l:group_lstset

@@ -8,7 +8,7 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'markdown') | return | endif
   let b:vimtex_syntax.markdown = 1
 
-  call vimtex#syntax#misc#include('markdown')
+  call vimtex#syntax#nested#include('markdown')
 
   " Don't quite know why this is necessary, but it is
   syntax match texCmdEnv "\\\%(begin\|end\)\>\ze{markdown}" nextgroup=texArgEnvName

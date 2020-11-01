@@ -8,7 +8,7 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'pythontex') | return | endif
   let b:vimtex_syntax.pythontex = 1
 
-  call vimtex#syntax#misc#include('python')
+  call vimtex#syntax#nested#include('python')
 
   syntax match texCmd /\\py[bsc]\?/ contained nextgroup=texPythontexArg
   syntax region texPythontexArg matchgroup=Delimiter
@@ -19,14 +19,14 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ contained contains=@vimtex_nested_python
 
   syntax region texRegionPythontex
-        \ start='\\begin{pyblock}'rs=s
-        \ end='\\end{pyblock}'re=e
+        \ start='\\begin{pyblock}'
+        \ end='\\end{pyblock}'
         \ keepend
         \ transparent
         \ contains=texCmdEnv,@vimtex_nested_python
   syntax region texRegionPythontex
-        \ start='\\begin{pycode}'rs=s
-        \ end='\\end{pycode}'re=e
+        \ start='\\begin{pycode}'
+        \ end='\\end{pycode}'
         \ keepend
         \ transparent
         \ contains=texCmdEnv,@vimtex_nested_python

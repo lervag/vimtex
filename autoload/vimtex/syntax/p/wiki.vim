@@ -8,11 +8,11 @@ function! vimtex#syntax#p#wiki#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'wiki') | return | endif
   let b:vimtex_syntax.wiki = 1
 
-  call vimtex#syntax#misc#include('markdown')
+  call vimtex#syntax#nested#include('markdown')
 
   syntax region texRegionWiki
         \ start='\\wikimarkup\>'
-        \ end='\\nowikimarkup\>'re=e
+        \ end='\\nowikimarkup\>'
         \ keepend
         \ transparent
         \ contains=@vimtex_nested_markdown,@texFoldGroup,@texDocGroup
