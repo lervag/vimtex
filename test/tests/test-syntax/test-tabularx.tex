@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage{tabularx}
+\usepackage{array}
+
+\begin{document}
+
+\begin{tabular}{*{3}{>{$}c<{$}}}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+\begin{tabular}{l*{4}{m{1cm}}}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+% Array specific math separators
+\begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
+  \hline
+  Hello world !\tabularnewline
+  \hline
+\end{tabular}
+
+\end{document}

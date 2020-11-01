@@ -7,10 +7,10 @@ silent edit test-large.tex
 
 if empty($INMAKE) | finish | endif
 
-call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 18)
+call vimtex#test#assert_equal(len(keys(b:vimtex_syntax)), 16)
 
 " PythonTeX inside tikzpictures (#1563)
-call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 241, 11))
-call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 246, 11))
+call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 219, 11))
+call vimtex#test#assert(vimtex#syntax#in('pythonRawString', 224, 11))
 
 quit!

@@ -7,8 +7,6 @@
 \usepackage{biblatex}
 \usepackage{csquotes}
 \usepackage{cleveref}
-\usepackage{tabularx}
-\usepackage{array}
 \usepackage{varioref}
 \usepackage{amsmath}
 \usepackage{cases}
@@ -91,26 +89,6 @@ This text is \emph{emphasized}, \textit{italized}, \textbf{bolded}.
 \crefname{equation}{Eq}{Eqs}
 \cref{eq:test}
 \crefrange{eq:test}{eq:test2}
-
-\section{Package: tabularx and array}
-\begin{tabular}{*{3}{>{$}c<{$}}}
-  \hline
-  Hello world !\tabularnewline
-  \hline
-\end{tabular}
-
-\begin{tabular}{l*{4}{m{1cm}}}
-  \hline
-  Hello world !\tabularnewline
-  \hline
-\end{tabular}
-
-% Array specific math separators
-\begin{tabular}[ht]{|>{\centering$}@{.}m{1cm}<{$}|}
-  \hline
-  Hello world !\tabularnewline
-  \hline
-\end{tabular}
 
 \section{Package: varioref}
 \Vref{sec_one} does what you need. Still \vref{sec_one} works.

@@ -8,63 +8,29 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'tabularx') | return | endif
   let b:vimtex_syntax.tabularx = 1
 
-  syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
-        \ contains=texCmdEnv
-        \ nextgroup=texTabularArg
-  syntax region texTabularArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contained
+  syntax match texTabularCol       /[lcr]/  contained
+  syntax match texTabularCol       /[pmb]/  contained nextgroup=texTabularLength
+  syntax match texTabularCol       /\*/     contained nextgroup=texTabularMulti
+  syntax match texTabularAtSep     /@/      contained nextgroup=texTabularLength
+  syntax match texTabularVertline  /||\?/   contained
+  syntax match texTabularPostPre   /[<>]/   contained nextgroup=texTabularPostPreArg
+  syntax match texDelimMathmodeTab /\$\$\?/ contained
 
-  syntax match texTabularCol /[lcr]/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularCol /[pmb]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularCol /\*/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularMulti
-        \ contained
-  syntax region texTabularMulti matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularArg
-        \ contained
+  syntax match texCmdTabular '\\begin{tabular}'
+        \ nextgroup=texOptEnvModifierTab,texArgTabular skipwhite skipnl contains=texCmdEnv
+  call vimtex#syntax#core#new_cmd_opt('texOptEnvModifierTab', 'texArgTabular', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgTabular', '', 'texTabular.*')
 
-  syntax match texTabularAtSep /@/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularVertline /||\?/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularPostPre /[<>]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularPostPreArg
-        \ contained
+  call vimtex#syntax#core#new_cmd_arg('texTabularMulti', 'texArgTabular')
+  call vimtex#syntax#core#new_cmd_arg('texTabularLength', '', 'texLength,texCmd')
+  call vimtex#syntax#core#new_cmd_arg('texTabularPostPreArg', '', 'texLength,texCmd,texDelimMathmodeTab')
 
-  syntax region texTabularPostPreArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texCmd,texMathDelimSingle
-        \ contained
-
-  syntax region texTabularLength matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texCmd
-        \ contained
-
-  syntax match texMathDelimSingle /\$\$\?/
-        \ containedin=texTabularPostPreArg
-        \ contained
-
-  highlight def link texTabularCol        Directory
-  highlight def link texTabularAtSep      Type
-  highlight def link texTabularVertline   Type
-  highlight def link texTabularPostPre    Type
-  highlight def link texMathDelimSingle   Delimiter
+  highlight def link texTabularCol        texOpt
+  highlight def link texTabularAtSep      texDelimMath
+  highlight def link texTabularVertline   texDelimMath
+  highlight def link texTabularPostPre    texDelimMath
+  highlight def link texOptEnvModifierTab texOptEnvModifier
+  highlight def link texDelimMathmodeTab  texDelimMathmode
 endfunction
 
 " }}}1
