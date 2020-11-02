@@ -16,18 +16,8 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@vimtex_nested_python keepend
 
-  syntax region texRegionPythontex
-        \ start='\\begin{pyblock}'
-        \ end='\\end{pyblock}'
-        \ keepend
-        \ transparent
-        \ contains=texCmdEnv,@vimtex_nested_python
-  syntax region texRegionPythontex
-        \ start='\\begin{pycode}'
-        \ end='\\end{pycode}'
-        \ keepend
-        \ transparent
-        \ contains=texCmdEnv,@vimtex_nested_python
+  call vimtex#syntax#core#new_region_env('texRegionPythontex', 'pyblock', '@vimtex_nested_python')
+  call vimtex#syntax#core#new_region_env('texRegionPythontex', 'pycode', '@vimtex_nested_python')
 endfunction
 
 " }}}1

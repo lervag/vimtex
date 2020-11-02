@@ -10,14 +10,14 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'amsmath') | return | endif
   let b:vimtex_syntax.amsmath = 1
 
-  call vimtex#syntax#core#new_math_region('align', 1)
-  call vimtex#syntax#core#new_math_region('alignat', 1)
-  call vimtex#syntax#core#new_math_region('flalign', 1)
-  call vimtex#syntax#core#new_math_region('gather', 1)
-  call vimtex#syntax#core#new_math_region('multline', 1)
-  call vimtex#syntax#core#new_math_region('xalignat', 1)
-  call vimtex#syntax#core#new_math_region('xxalignat', 0)
-  call vimtex#syntax#core#new_math_region('mathpar', 1)
+  call vimtex#syntax#core#new_region_math('align', 1)
+  call vimtex#syntax#core#new_region_math('alignat', 1)
+  call vimtex#syntax#core#new_region_math('flalign', 1)
+  call vimtex#syntax#core#new_region_math('gather', 1)
+  call vimtex#syntax#core#new_region_math('multline', 1)
+  call vimtex#syntax#core#new_region_math('xalignat', 1)
+  call vimtex#syntax#core#new_region_math('xxalignat', 0)
+  call vimtex#syntax#core#new_region_math('mathpar', 1)
 
   " Amsmath [lr][vV]ert
   if &encoding ==# 'utf-8' && g:vimtex_syntax_config.conceal.math_delimiters

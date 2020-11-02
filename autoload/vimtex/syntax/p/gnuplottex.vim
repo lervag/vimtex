@@ -9,12 +9,8 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
   let b:vimtex_syntax.gnuplottex = 1
 
   call vimtex#syntax#nested#include('gnuplot')
-  syntax region texRegionGnuplot
-        \ start='\\begin{gnuplot}'
-        \ end='\\end{gnuplot}'
-        \ keepend
-        \ transparent
-        \ contains=texCmdEnv,texOptEnvModifier,@vimtex_nested_gnuplot
+  call vimtex#syntax#core#new_region_env(
+        \ 'texRegionGnuplot', 'gnuplot', '@vimtex_nested_gnuplot')
 endfunction
 
 " }}}1

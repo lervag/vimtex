@@ -16,10 +16,8 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
 
   syntax match texEnvBgnTikz /\v\\begin\{tikzpicture\}/
         \ nextgroup=texOptTikzpic skipwhite skipnl contains=texCmdEnv
-  syntax region texRegionTikz
-        \ start='\\begin{tikzpicture}'
-        \ end='\\end{tikzpicture}'
-        \ keepend transparent contains=@texClusterTikz
+  call vimtex#syntax#core#new_region_env(
+        \ 'texRegionTikz', 'tikzpicture', '@texClusterTikz')
   call vimtex#syntax#core#new_cmd_opt('texOptTikzpic', '', '@texClusterTikzset')
 
   syntax match texTikzSemicolon /;/ contained

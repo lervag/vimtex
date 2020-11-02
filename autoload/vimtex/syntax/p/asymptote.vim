@@ -9,17 +9,11 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   let b:vimtex_syntax.asymptote = 1
 
   if !empty(vimtex#syntax#nested#include('asy'))
-    syntax region texRegionAsymptote
-          \ start="\\begin{asy\z(def\)\?}"
-          \ end="\\end{asy\z1}"
-          \ keepend
-          \ transparent
-          \ keepend contains=texCmdEnv,@vimtex_nested_asy
+    call vimtex#syntax#core#new_region_env('texRegionAsymptote', 'asy', '@vimtex_nested_asy')
+    call vimtex#syntax#core#new_region_env('texRegionAsymptote', 'asydef', '@vimtex_nested_asy')
   else
-    syntax region texRegionAsymptote
-          \ start="\\begin{asy\z(def\)\?}"
-          \ end="\\end{asy\z1}"
-          \ keepend contains=texCmdEnv
+    call vimtex#syntax#core#new_region_env('texRegionAsymptote', 'asy')
+    call vimtex#syntax#core#new_region_env('texRegionAsymptote', 'asydef')
     highlight def link texRegionAsymptote texRegion
   endif
 endfunction

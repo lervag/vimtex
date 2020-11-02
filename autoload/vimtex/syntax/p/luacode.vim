@@ -10,12 +10,8 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
 
   call vimtex#syntax#nested#include('lua')
 
-  syntax region texRegionLua
-        \ start="\\begin{luacode\*\?}"
-        \ end="\\end{luacode\*\?}"
-        \ keepend
-        \ transparent
-        \ contains=texCmdEnv,@vimtex_nested_lua
+  call vimtex#syntax#core#new_region_env(
+        \ 'texRegionLua', 'luacode\*\?', '@vimtex_nested_lua')
 
   syntax match texCmd "\\\%(directlua\|luadirect\)\>" nextgroup=texRegionLuaArg skipwhite skipnl
   call vimtex#syntax#core#new_cmd_arg(

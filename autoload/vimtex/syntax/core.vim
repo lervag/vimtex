@@ -250,9 +250,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Verbatim
 
   " Verbatim environment
-  syntax region texRegionVerb
-        \ start="\\begin{[vV]erbatim}" end="\\end{[vV]erbatim}"
-        \ keepend contains=texCmdEnv,texArgEnvName
+  call vimtex#syntax#core#new_region_env('texRegionVerb', '[vV]erbatim')
 
   " Verbatim inline
   syntax match texCmd "\\verb\>\*\?" nextgroup=texRegionVerbInline
@@ -290,10 +288,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
-  call vimtex#syntax#core#new_math_region('displaymath', 1)
-  call vimtex#syntax#core#new_math_region('eqnarray', 1)
-  call vimtex#syntax#core#new_math_region('equation', 1)
-  call vimtex#syntax#core#new_math_region('math', 1)
+  call vimtex#syntax#core#new_region_math('displaymath', 1)
+  call vimtex#syntax#core#new_region_math('eqnarray', 1)
+  call vimtex#syntax#core#new_region_math('equation', 1)
+  call vimtex#syntax#core#new_region_math('math', 1)
 
   " Math regions: Inline Math Zones
   if l:cfg.conceal.math_bounds
@@ -323,7 +321,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Text Inside Math regions
   syntax match texCmd "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texArgMathText
   call vimtex#syntax#core#new_cmd_arg('texArgMathText', '', 'TOP,@Spell')
-
 
   call s:match_math_sub_super(l:cfg)
   call s:match_math_symbols(l:cfg)
@@ -387,7 +384,24 @@ function! vimtex#syntax#core#new_cmd_opt(grp, next, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#core#new_math_region(mathzone, starred) abort " {{{1
+function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
+  let l:contains = 'texCmdEnv,texArgEnvName'
+  let l:options = 'keepend'
+
+  if a:0 > 0
+    let l:contains .= ',' . a:1
+    let l:options .= ' transparent'
+  endif
+
+  execute 'syntax region' a:grp
+        \ 'start="\\begin{' . a:envname .'}"'
+        \ 'end="\\end{' . a:envname .'}"'
+        \ (empty(l:contains) ? '' : 'contains=' . l:contains)
+        \ l:options
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#new_region_math(mathzone, starred) abort " {{{1
   execute 'syntax match texErrorMath /\\end\s*{\s*' . a:mathzone . '\*\?\s*}/'
 
   execute 'syntax region texRegionMathEnv'

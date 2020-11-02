@@ -15,11 +15,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
 
   " Set all listings environments to listings
   syntax cluster texFoldGroup add=texRegionListings
-  syntax region texRegionListings
-        \ start="\\begin{lstlisting}\(\_s*\[\_[^\]]\{-}\]\)\?"
-        \ end="\\end{lstlisting}\|%stopzone\>"
-        \ keepend
-        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_region_env('texRegionListings', 'lstlisting')
 
   " Next add nested syntax support for desired languages
   for l:nested in b:vimtex_syntax.listings
