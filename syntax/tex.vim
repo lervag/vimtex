@@ -11,6 +11,8 @@
 
 if !get(g:, 'vimtex_syntax_enabled', 1) | finish | endif
 if exists('b:current_syntax') | finish | endif
+if exists('s:is_loading') | finish | endif
+let s:is_loading = 1
 
 " Syntax may be loaded without the main vimtex functionality, thus we need to
 " ensure that the options are loaded!
@@ -35,3 +37,5 @@ else
     autocmd User VimtexEventInitPost ++once call vimtex#syntax#packages#init()
   augroup END
 endif
+
+unlet s:is_loading

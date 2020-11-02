@@ -12,6 +12,7 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
     syntax region texRegionAsymptote
           \ start="\\begin{asy\z(def\)\?}"
           \ end="\\end{asy\z1}"
+          \ keepend
           \ transparent
           \ keepend contains=texCmdEnv,@vimtex_nested_asy
   else

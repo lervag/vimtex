@@ -10,16 +10,13 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
 
   call vimtex#syntax#nested#include('markdown')
 
-  " Don't quite know why this is necessary, but it is
-  syntax match texCmdEnv "\\\%(begin\|end\)\>\ze{markdown}" nextgroup=texArgEnvName
-
   syntax region texRegionMarkdown
         \ start="\\begin{markdown}"
         \ end="\\end{markdown}"
         \ keepend transparent
-        \ contains=texCmdEnv,texArgEnvName,@vimtex_nested_markdown
+        \ contains=texCmd,texCmdEnv,texArgEnvName,@vimtex_nested_markdown
 
-  syntax match texCmd "\\markdownInput\>" nextgroup=texArgFile
+  syntax match texCmd "\\markdownInput\>" nextgroup=texArgFile skipwhite skipnl
 endfunction
 
 " }}}1

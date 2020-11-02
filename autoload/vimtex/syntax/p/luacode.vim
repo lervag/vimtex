@@ -9,18 +9,17 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
   let b:vimtex_syntax.luacode = 1
 
   call vimtex#syntax#nested#include('lua')
+
   syntax region texRegionLua
-        \ start='\\begin{luacode\*\?}'
-        \ end='\\end{luacode\*\?}'
+        \ start="\\begin{luacode\*\?}"
+        \ end="\\end{luacode\*\?}"
         \ keepend
         \ transparent
         \ contains=texCmdEnv,@vimtex_nested_lua
-  syntax match texCmd '\\\(directlua\|luadirect\)' nextgroup=texRegionLuaArg
-  syntax region texRegionLuaArg matchgroup=Delimiter
-        \ start='{'
-        \ end='}'
-        \ contained
-        \ contains=@vimtex_nested_lua
+
+  syntax match texCmd "\\\%(directlua\|luadirect\)\>" nextgroup=texRegionLuaArg skipwhite skipnl
+  call vimtex#syntax#core#new_cmd_arg(
+        \ 'texRegionLuaArg', '', '@vimtex_nested_lua', 'keepend')
 endfunction
 
 " }}}1

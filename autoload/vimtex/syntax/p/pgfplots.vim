@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#pgfplots#load() abort " 
+function! vimtex#syntax#p#pgfplots#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'pgfplots') | return | endif
   let b:vimtex_syntax.pgfplots = 1
 
@@ -29,4 +29,4 @@ function! vimtex#syntax#p#pgfplots#load() abort "
   highlight def link texCmdAxis texCmd
 endfunction
 
-" 
+" }}}1

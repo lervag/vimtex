@@ -8,7 +8,7 @@ function! vimtex#syntax#p#pdfpages#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'pdfpages') | return | endif
   let b:vimtex_syntax.pdfpages = 1
 
-  syntax match texCmd "\\includepdf\>" nextgroup=texOptFile,texArgFile
+  syntax match texCmd "\\includepdf\>" nextgroup=texOptFile,texArgFile skipwhite skipnl
 endfunction
 
 " }}}1

@@ -15,7 +15,7 @@ function! vimtex#syntax#p#wiki#load() abort " {{{1
         \ end='\\nowikimarkup\>'
         \ keepend
         \ transparent
-        \ contains=@vimtex_nested_markdown,@texFoldGroup,@texDocGroup
+        \ contains=texCmd,@vimtex_nested_markdown
 endfunction
 
 " }}}1

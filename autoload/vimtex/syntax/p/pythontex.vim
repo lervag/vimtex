@@ -10,13 +10,11 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
 
   call vimtex#syntax#nested#include('python')
 
-  syntax match texCmd /\\py[bsc]\?/ contained nextgroup=texPythontexArg
-  syntax region texPythontexArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contained contains=@vimtex_nested_python
-  syntax region texPythontexArg matchgroup=Delimiter
+  syntax match texCmd /\\py[bsc]\?/ nextgroup=texPythontexArg skipwhite skipnl
+  call vimtex#syntax#core#new_cmd_arg('texPythontexArg', '', '@vimtex_nested_python', 'keepend')
+  syntax region texPythontexArg matchgroup=texDelim
         \ start='\z([#@]\)' end='\z1'
-        \ contained contains=@vimtex_nested_python
+        \ contained contains=@vimtex_nested_python keepend
 
   syntax region texRegionPythontex
         \ start='\\begin{pyblock}'

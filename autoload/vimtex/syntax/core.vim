@@ -448,7 +448,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texArgNewcmdName        texCmd
   highlight def link texArgNewenvName        texArgEnvName
   highlight def link texArgPartTitle         texTitle
-  highlight def link texCmd                  texCmd
   highlight def link texCmdAccent            texCmd
   highlight def link texCmdAuthor            texCmd
   highlight def link texCmdEnv               texCmd
