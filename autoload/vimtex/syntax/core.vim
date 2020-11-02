@@ -432,6 +432,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmd              Statement
   highlight def link texCmdSpaceCodeChar Special
   highlight def link texCmdTodo          Todo
+  highlight def link texCmdType          Type
   highlight def link texComment          Comment
   highlight def link texCommentTodo      Todo
   highlight def link texDelim            Delimiter
@@ -448,8 +449,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texSymbolString     String
-  highlight def link texTitle            String
-  highlight def link texType             Type
+  highlight def link texArgPartTitle     String
 
   highlight def texStyleBold gui=bold        cterm=bold
   highlight def texStyleItal gui=italic      cterm=italic
@@ -461,7 +461,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texArgFiles             texArgFile
   highlight def link texArgNewcmdName        texCmd
   highlight def link texArgNewenvName        texArgEnvName
-  highlight def link texArgPartTitle         texTitle
   highlight def link texCmdAccent            texCmd
   highlight def link texCmdAuthor            texCmd
   highlight def link texCmdEnv               texCmd
@@ -471,11 +470,11 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdItem              texArgEnvName
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdParts             texCmd
-  highlight def link texCmdSize              texType
+  highlight def link texCmdSize              texCmdType
   highlight def link texCmdSpaceCode         texCmd
   highlight def link texCmdSty               texCmd
   highlight def link texCmdStyle             texCmd
-  highlight def link texCmdStyle             texType
+  highlight def link texCmdStyle             texCmdType
   highlight def link texCmdStyleBold         texCmd
   highlight def link texCmdStyleBoldItal     texCmd
   highlight def link texCmdStyleItal         texCmd
