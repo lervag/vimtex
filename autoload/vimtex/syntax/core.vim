@@ -98,8 +98,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdAuthor nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
   syntax match texCmdTitle nextgroup=texArgTitle skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_opt('texOptAuthor', 'texArgAuthor')
-  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texCmdAccent,texCmdLigature,texSpecialChar,texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texComment')
+  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texMatcher,texCmdAccent,texCmdLigature,texSpecialChar,texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texMatcher,texComment')
 
   " Various commands that take a file argument (or similar)
   syntax match texCmd nextgroup=texArgFile              skipwhite skipnl "\\input\>"
@@ -228,8 +228,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Sections and parts
   syntax match texCmdParts "\\\(front\|main\|back\)matter\>"
   syntax match texCmdParts nextgroup=texArgPartTitle "\\part\>"
-  syntax match texCmdParts nextgroup=texArgPartTitle "\\chapter\>"
-  syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)*section\>"
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\chapter\>\*\?"
+  syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)*section\>\*\?"
   syntax match texCmdParts nextgroup=texArgPartTitle "\\\(sub\)\?paragraph\>"
   call vimtex#syntax#core#new_cmd_arg('texArgPartTitle', '', 'TOP')
 
@@ -279,6 +279,21 @@ function! vimtex#syntax#core#init() abort " {{{1
   endif
   syntax match texSpecialChar "\\\\"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
+
+  " }}}2
+  " {{{2 Expl3
+
+  syntax region texRegionExpl3 matchgroup=texCmdExpl3
+        \ start='\\ExplSyntaxOn' end='\\ExplSyntaxOff'
+        \ transparent keepend contains=@texClusterExpl3
+
+  syntax match texE3Var contained "\\[a-zA-Z_]\+\>"
+  syntax match texE3Func contained "\\[a-zA-Z_]\+:[a-zA-Z]*"
+  syntax match texE3Parm contained "#\d\+"
+  syntax match texE3Delim contained "[{}]"
+
+  syntax cluster texClusterExpl3 contains=TOP
+  syntax cluster texClusterExpl3 add=texE3Var,texE3Func,texE3Parm,texE3Delim
 
   " }}}2
   " {{{2 Math
@@ -427,6 +442,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texArg              Include
   highlight def link texArgEnvMathName   Delimiter
   highlight def link texArgEnvName       PreCondit
+  highlight def link texArgPartTitle     String
   highlight def link texArgRef           Special
   highlight def link texArgTitle         Underlined
   highlight def link texCmd              Statement
@@ -449,7 +465,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texSymbolString     String
-  highlight def link texArgPartTitle     String
 
   highlight def texStyleBold gui=bold        cterm=bold
   highlight def texStyleItal gui=italic      cterm=italic
@@ -466,6 +481,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdEnvMath           texCmdEnv
   highlight def link texCmdError             texError
+  highlight def link texCmdExpl3             texCmd
   highlight def link texCmdGreek             texCmd
   highlight def link texCmdItem              texArgEnvName
   highlight def link texCmdLigature          texSpecialChar
@@ -482,8 +498,12 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdTitle             texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
-  highlight def link texDelimMathmode        texDelim
   highlight def link texDelimMathSet         texDelimMath
+  highlight def link texDelimMathmode        texDelim
+  highlight def link texE3Delim              texDelim
+  highlight def link texE3Func               texCmdType
+  highlight def link texE3Parm               texParm
+  highlight def link texE3Var                texCmd
   highlight def link texErrorMath            texError
   highlight def link texErrorMathDelim       texError
   highlight def link texErrorOnlyMath        texError
@@ -500,7 +520,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texParmDef              texParm
   highlight def link texParmNewcmd           texParm
   highlight def link texParmNewenv           texParm
-  highlight def link texRefCite              texRegionRef
   highlight def link texRegionMath           texMath
   highlight def link texRegionMathEnsured    texMath
   highlight def link texRegionMathEnv        texMath
