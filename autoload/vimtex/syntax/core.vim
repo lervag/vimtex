@@ -483,7 +483,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdError             texError
   highlight def link texCmdExpl3             texCmd
   highlight def link texCmdGreek             texCmd
-  highlight def link texCmdItem              texArgEnvName
+  highlight def link texCmdItem              texCmdEnv
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdParts             texCmd
   highlight def link texCmdSize              texCmdType
