@@ -17,8 +17,8 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " {{{2 Primitives
 
-  " Match TeX braces in general
-  " TODO: Do we really need this??
+  " Match unspecified TeX groups (this is necessary to always match the
+  " corresponding end brace for specific argument groups)
   syntax region texMatcher matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}" contains=TOP
 
@@ -53,7 +53,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax case match
 
   " TeX Lengths
-  syntax match texLength "\<\d\+\([.,]\d\+\)\?\s*\(true\)\?\s*\(bp\|cc\|cm\|dd\|em\|ex\|in\|mm\|pc\|pt\|sp\)\>"
+  syntax match texLength contained "\<\d\+\([.,]\d\+\)\?\s*\(true\)\?\s*\(bp\|cc\|cm\|dd\|em\|ex\|in\|mm\|pc\|pt\|sp\)\>"
 
   " }}}2
   " {{{2 Commands
@@ -298,7 +298,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Math
 
-  " Math clusters for use in math regions
+  " Syntax clusters for math regions
   syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texMatcherMath,texMathOper,texSymbolMath,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,@NoSpell
   syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
