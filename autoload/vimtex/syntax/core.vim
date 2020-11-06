@@ -284,16 +284,13 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Expl3
 
   syntax region texRegionExpl3 matchgroup=texCmdExpl3
-        \ start='\\ExplSyntaxOn' end='\\ExplSyntaxOff'
-        \ transparent keepend contains=@texClusterExpl3
-
-  syntax region texRegionExpl3 matchgroup=texCmdExpl3
-        \ start='\\ProvidesExpl\%(Package\|Class\|File\)'
+        \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
         \ end='\\ExplSyntaxOff\|\%$'
         \ transparent keepend contains=@texClusterExpl3
 
   syntax region texE3Matcher matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}"
+        \ contained
         \ contains=@texClusterExpl3
 
   syntax match texE3Var contained "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
