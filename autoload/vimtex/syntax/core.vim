@@ -19,7 +19,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Match unspecified TeX groups (this is necessary to always match the
   " corresponding end brace for specific argument groups)
-  syntax region texMatcher matchgroup=texDelim
+  syntax region texGroup matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}" contains=TOP
 
   " Flag mismatching ending brace delimiter
@@ -98,8 +98,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdAuthor nextgroup=texOptAuthor,texArgAuthor skipwhite skipnl "\\author\>"
   syntax match texCmdTitle nextgroup=texArgTitle skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_opt('texOptAuthor', 'texArgAuthor')
-  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texMatcher,texCmdAccent,texCmdLigature,texSpecialChar,texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texMatcher,texComment')
+  call vimtex#syntax#core#new_cmd_arg('texArgAuthor', '', 'texCmd,texGroup,texCmdAccent,texCmdLigature,texSpecialChar,texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texArgTitle', '', 'texCmd,texGroup,texComment')
 
   " Various commands that take a file argument (or similar)
   syntax match texCmd nextgroup=texArgFile              skipwhite skipnl "\\input\>"
@@ -286,25 +286,25 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texRegionExpl3 matchgroup=texCmdExpl3
         \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
         \ end='\\ExplSyntaxOff\|\%$'
-        \ transparent keepend contains=@texClusterExpl3
+        \ transparent keepend
+        \ contains=TOP
 
-  syntax region texE3Matcher matchgroup=texDelim
+  syntax region texGroupE3 matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}"
         \ contained
-        \ contains=@texClusterExpl3
+        \ containedin=texRegionExpl3,texGroupE3
+        \ contains=TOP
 
-  syntax match texE3Var contained "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
-  syntax match texE3Func contained "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
-  syntax match texE3Parm contained "#\d\+"
-
-  syntax cluster texClusterExpl3 contains=texCmd,texE3Matcher,texE3Var,texE3Func,texE3Parm,texE3Delim
+  syntax match texE3Var  contained containedin=texRegionExpl3,texGroupE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
+  syntax match texE3Func contained containedin=texRegionExpl3,texGroupE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
+  syntax match texE3Parm contained containedin=texRegionExpl3,texGroupE3 "#\d\+"
 
   " }}}2
   " {{{2 Math
 
   " Syntax clusters for math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texMatcherMath,texMathOper,texSymbolMath,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,@NoSpell
-  syntax region texMatcherMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
+  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texDelimMath,texDelimMathMod,texLength,texGroupMath,texMathOper,texSymbolMath,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,@NoSpell
+  syntax region texGroupMath matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
   call vimtex#syntax#core#new_region_math('displaymath', 1)
@@ -460,12 +460,12 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texDelimMathMod     Statement
   highlight def link texError            Error
   highlight def link texLength           Number
-  highlight def link texMath             Special
   highlight def link texMathOper         Operator
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
   highlight def link texParm             Special
   highlight def link texRegion           PreCondit
+  highlight def link texRegionMath       Special
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texSymbolString     String
@@ -511,9 +511,9 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texErrorMath            texError
   highlight def link texErrorMathDelim       texError
   highlight def link texErrorOnlyMath        texError
-  highlight def link texMatcherMath          texMath
-  highlight def link texMathSub              texMath
-  highlight def link texMathSuper            texMath
+  highlight def link texGroupMath            texRegionMath
+  highlight def link texMathSub              texRegionMath
+  highlight def link texMathSuper            texRegionMath
   highlight def link texOptAuthor            texOpt
   highlight def link texOptEqual             texSymbol
   highlight def link texOptFile              texOpt
@@ -524,12 +524,11 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texParmDef              texParm
   highlight def link texParmNewcmd           texParm
   highlight def link texParmNewenv           texParm
-  highlight def link texRegionMath           texMath
-  highlight def link texRegionMathEnsured    texMath
-  highlight def link texRegionMathEnv        texMath
-  highlight def link texRegionMathEnvStarred texMath
-  highlight def link texRegionMathX          texMath
-  highlight def link texRegionMathXX         texMath
+  highlight def link texRegionMathEnsured    texRegionMath
+  highlight def link texRegionMathEnv        texRegionMath
+  highlight def link texRegionMathEnvStarred texRegionMath
+  highlight def link texRegionMathX          texRegionMath
+  highlight def link texRegionMathXX         texRegionMath
   highlight def link texRegionVerb           texRegion
   highlight def link texRegionVerbInline     texRegionVerb
   highlight def link texSymbolAmp            texSymbol

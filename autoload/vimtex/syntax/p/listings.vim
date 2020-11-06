@@ -39,7 +39,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
     execute 'syntax match' l:group_lstset
           \ '"\c\\lstset{.*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'transparent'
-          \ 'contains=texCmd,texMatcher'
+          \ 'contains=texCmd,texGroup'
           \ 'skipwhite skipempty'
           \ 'nextgroup=' . l:group_contained
 
