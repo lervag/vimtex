@@ -8,7 +8,7 @@ function! vimtex#syntax#p#varioref#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'varioref') | return | endif
   let b:vimtex_syntax.varioref = 1
 
-  syntax match texCmd '\\Vref\>' nextgroup=texArgRef skipwhite skipnl
+  syntax match texCmdRef '\\Vref\>' nextgroup=texRefArg skipwhite skipnl
 endfunction
 
 " }}}1

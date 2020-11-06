@@ -591,7 +591,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
         \ 'close' : '\m' . escape(a:match, '$'),
         \}
   let result.side = vimtex#syntax#in(
-        \   (a:match ==# '$' ? 'texRegionMathX' : 'texRegionMathXX'),
+        \   (a:match ==# '$' ? 'texMathRegionX' : 'texMathRegionXX'),
         \   a:lnum, a:cnum+1)
         \ ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'

@@ -10,7 +10,7 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
 
   call vimtex#syntax#nested#include('gnuplot')
   call vimtex#syntax#core#new_region_env(
-        \ 'texRegionGnuplot', 'gnuplot', '@vimtex_nested_gnuplot')
+        \ 'texGnuplotRegion', 'gnuplot', '@vimtex_nested_gnuplot')
 endfunction
 
 " }}}1

@@ -14,23 +14,24 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
   syntax match texTabularAtSep     /@/      contained nextgroup=texTabularLength
   syntax match texTabularVertline  /||\?/   contained
   syntax match texTabularPostPre   /[<>]/   contained nextgroup=texTabularPostPreArg
-  syntax match texDelimMathmodeTab /\$\$\?/ contained
+  syntax match texTabularMathdelim /\$\$\?/ contained
+  syntax cluster texClusterTabular contains=texTabular.*
 
   syntax match texCmdTabular '\\begin{tabular}'
-        \ nextgroup=texOptEnvModifierTab,texArgTabular skipwhite skipnl contains=texCmdEnv
-  call vimtex#syntax#core#new_cmd_opt('texOptEnvModifierTab', 'texArgTabular', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texArgTabular', '', 'texTabular.*')
+        \ nextgroup=texTabularOpt,texTabularArg skipwhite skipnl contains=texCmdEnv
+  call vimtex#syntax#core#new_cmd_opt('texTabularOpt', 'texTabularArg', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texTabularArg', '', '@texClusterTabular')
 
-  call vimtex#syntax#core#new_cmd_arg('texTabularMulti', 'texArgTabular')
+  call vimtex#syntax#core#new_cmd_arg('texTabularMulti', 'texTabularArg')
   call vimtex#syntax#core#new_cmd_arg('texTabularLength', '', 'texLength,texCmd')
-  call vimtex#syntax#core#new_cmd_arg('texTabularPostPreArg', '', 'texLength,texCmd,texDelimMathmodeTab')
+  call vimtex#syntax#core#new_cmd_arg('texTabularPostPreArg', '', 'texLength,texCmd,texTabularMathdelim')
 
   highlight def link texTabularCol        texOpt
-  highlight def link texTabularAtSep      texDelimMath
-  highlight def link texTabularVertline   texDelimMath
-  highlight def link texTabularPostPre    texDelimMath
-  highlight def link texOptEnvModifierTab texOptEnvModifier
-  highlight def link texDelimMathmodeTab  texDelimMathmode
+  highlight def link texTabularAtSep      texMathDelim
+  highlight def link texTabularVertline   texMathDelim
+  highlight def link texTabularPostPre    texMathDelim
+  highlight def link texTabularMathdelim  texMathRegionDelim
+  highlight def link texTabularOpt        texEnvOpt
 endfunction
 
 " }}}1

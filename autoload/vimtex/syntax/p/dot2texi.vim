@@ -10,7 +10,7 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
 
   call vimtex#syntax#nested#include('dot')
   call vimtex#syntax#core#new_region_env(
-        \ 'texRegionDot', 'dot2tex', '@vimtex_nested_dot')
+        \ 'texDotRegion', 'dot2tex', '@vimtex_nested_dot')
 endfunction
 
 " }}}1

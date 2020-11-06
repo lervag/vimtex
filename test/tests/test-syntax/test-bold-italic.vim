@@ -9,8 +9,7 @@ if empty($INMAKE) | finish | endif
 
 call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 5, 50))
 call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 6, 50))
-call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 7, 50))
-call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 10, 50))
-call vimtex#test#assert(vimtex#syntax#in('texCmdStyle', 8, 14))
+call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 8, 50))
+call vimtex#test#assert(vimtex#syntax#in('texCmdStyle', 7, 14))
 
 quit!

@@ -10,8 +10,8 @@ function! vimtex#syntax#p#glossaries#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'glossaries') | return | endif
   let b:vimtex_syntax.glossaries = 1
 
-  syntax match texCmd nextgroup=texGls skipwhite skipnl "\\gls\>"
-  call vimtex#syntax#core#new_cmd_arg('texGls', '', '@NoSpell')
+  syntax match texCmd nextgroup=texGlsArg skipwhite skipnl "\\gls\>"
+  call vimtex#syntax#core#new_cmd_arg('texGlsArg', '', '@NoSpell')
 endfunction
 
 " }}}1

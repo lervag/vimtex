@@ -11,11 +11,13 @@ function! vimtex#syntax#p#luacode#load() abort " {{{1
   call vimtex#syntax#nested#include('lua')
 
   call vimtex#syntax#core#new_region_env(
-        \ 'texRegionLua', 'luacode\*\?', '@vimtex_nested_lua')
+        \ 'texLuaRegion', 'luacode\*\?', '@vimtex_nested_lua')
 
-  syntax match texCmd "\\\%(directlua\|luadirect\)\>" nextgroup=texRegionLuaArg skipwhite skipnl
+  syntax match texCmdLua "\\\%(directlua\|luadirect\)\>" nextgroup=texLuaArg skipwhite skipnl
   call vimtex#syntax#core#new_cmd_arg(
-        \ 'texRegionLuaArg', '', '@vimtex_nested_lua', 'keepend')
+        \ 'texLuaArg', '', '@vimtex_nested_lua', 'keepend')
+
+  highlight def link texCmdLua texCmd
 endfunction
 
 " }}}1

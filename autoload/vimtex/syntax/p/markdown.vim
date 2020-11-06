@@ -10,9 +10,9 @@ function! vimtex#syntax#p#markdown#load() abort " {{{1
 
   call vimtex#syntax#nested#include('markdown')
   call vimtex#syntax#core#new_region_env(
-        \ 'texRegionMarkdown', 'markdown', 'texCmd,@vimtex_nested_markdown')
+        \ 'texMarkdownRegion', 'markdown', 'texCmd,@vimtex_nested_markdown')
 
-  syntax match texCmd "\\markdownInput\>" nextgroup=texArgFile skipwhite skipnl
+  syntax match texCmdInput "\\markdownInput\>" nextgroup=texFileArg skipwhite skipnl
 endfunction
 
 " }}}1

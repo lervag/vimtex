@@ -12,17 +12,17 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
 
   syntax cluster texClusterTikz add=texCmdAxis
 
-  syntax match texCmd nextgroup=texArgTikzset skipwhite "\\pgfplotsset\>"
+  syntax match texCmdTikzset nextgroup=texTikzsetArg skipwhite "\\pgfplotsset\>"
 
-  syntax match texCmdAxis contained nextgroup=texOptTikzpic skipwhite "\\addplot3\?\>"
-  syntax match texCmdAxis contained nextgroup=texOptTikzpic skipwhite "\\nextgroupplot\>"
+  syntax match texCmdAxis contained nextgroup=texTikzOpt skipwhite "\\addplot3\?\>"
+  syntax match texCmdAxis contained nextgroup=texTikzOpt skipwhite "\\nextgroupplot\>"
 
-  syntax match texEnvBgnTikz contains=texCmdEnv nextgroup=texOptTikzpic skipwhite skipnl "\\begin{\%(log\)*axis}"
-  syntax match texEnvBgnTikz contains=texCmdEnv nextgroup=texOptTikzpic skipwhite skipnl "\\begin{groupplot}"
-  call vimtex#syntax#core#new_region_env('texRegionTikz', 'axis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texRegionTikz', 'logaxis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texRegionTikz', 'loglogaxis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texRegionTikz', 'groupplot', '@texClusterTikz')
+  syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{\%(log\)*axis}"
+  syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{groupplot}"
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'axis', '@texClusterTikz')
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'logaxis', '@texClusterTikz')
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'loglogaxis', '@texClusterTikz')
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'groupplot', '@texClusterTikz')
 
   highlight def link texCmdAxis texCmd
 endfunction

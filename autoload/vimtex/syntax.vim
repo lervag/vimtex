@@ -26,7 +26,7 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
-  return call('vimtex#syntax#in', ['texRegionMath'] + a:000)
+  return call('vimtex#syntax#in', ['texMathRegion'] + a:000)
 endfunction
 
 " }}}1

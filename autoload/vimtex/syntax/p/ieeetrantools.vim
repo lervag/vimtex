@@ -20,13 +20,13 @@ function! s:new_region_math(mathzone) abort " {{{1
   " This needs to be slightly different than vimtex#syntax#core#new_region_math
   " to handle options for the environment.
 
-  execute 'syntax match texErrorMath ''\\end\s*{\s*' . a:mathzone . '\*\?\s*}'''
+  execute 'syntax match texMathError ''\\end\s*{\s*' . a:mathzone . '\*\?\s*}'''
 
-  execute 'syntax region texRegionMathEnv'
+  execute 'syntax region texMathRegionEnv'
         \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\z(\*\?\)\s*}'
         \   . '\(\[.\{-}\]\)\?{\w*}'''
         \ . ' end=''\\end\s*{\s*' . a:mathzone . '\z1\s*}'''
-        \ . ' keepend contains=texCmdEnvMath,texArgEnvMathName,@texClusterMath'
+        \ . ' keepend contains=texCmdMathenv,texMathenvArgName,@texClusterMath'
 endfunction
 
 " }}}1
