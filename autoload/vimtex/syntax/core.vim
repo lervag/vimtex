@@ -287,13 +287,20 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ start='\\ExplSyntaxOn' end='\\ExplSyntaxOff'
         \ transparent keepend contains=@texClusterExpl3
 
-  syntax match texE3Var contained "\\[a-zA-Z_]\+\>"
-  syntax match texE3Func contained "\\[a-zA-Z_]\+:[a-zA-Z]*"
-  syntax match texE3Parm contained "#\d\+"
-  syntax match texE3Delim contained "[{}]"
+  syntax region texRegionExpl3 matchgroup=texCmdExpl3
+        \ start='\\ProvidesExpl\%(Package\|Class\|File\)'
+        \ end='\\ExplSyntaxOff\|\%$'
+        \ transparent keepend contains=@texClusterExpl3
 
-  syntax cluster texClusterExpl3 contains=TOP
-  syntax cluster texClusterExpl3 add=texE3Var,texE3Func,texE3Parm,texE3Delim
+  syntax region texE3Matcher matchgroup=texDelim
+        \ start="{" skip="\\\\\|\\}" end="}"
+        \ contains=@texClusterExpl3
+
+  syntax match texE3Var contained "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
+  syntax match texE3Func contained "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
+  syntax match texE3Parm contained "#\d\+"
+
+  syntax cluster texClusterExpl3 contains=texCmd,texE3Matcher,texE3Var,texE3Func,texE3Parm,texE3Delim
 
   " }}}2
   " {{{2 Math
