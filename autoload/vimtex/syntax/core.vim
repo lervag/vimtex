@@ -325,15 +325,15 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Math regions: Inline Math Zones
   if l:cfg.conceal.math_bounds
-    syntax region texMathRegion   matchgroup=texMathRegionDelim concealends contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathRegion   matchgroup=texMathRegionDelim concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathRegionX  matchgroup=texMathRegionDelim concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texMathRegionXX matchgroup=texMathRegionDelim concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texMathRegionX  matchgroup=texMathDelimRegion concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texMathRegionXX matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
   else
-    syntax region texMathRegion   matchgroup=texMathRegionDelim contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathRegion   matchgroup=texMathRegionDelim contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathRegionX  matchgroup=texMathRegionDelim contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texMathRegionXX matchgroup=texMathRegionDelim contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texMathRegion   matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texMathRegion   matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texMathRegionX  matchgroup=texMathDelimRegion contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texMathRegionXX matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
 
   " Math regions: \ensuremath{...}
@@ -532,11 +532,11 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texFilesArg             texFileArg
   highlight def link texFilesOpt             texOpt
   highlight def link texGroupError           texError
+  highlight def link texMathDelimRegion      texDelim
   highlight def link texMathDelimSet         texMathDelim
   highlight def link texMathError            texError
   highlight def link texMathErrorDelim       texError
   highlight def link texMathGroup            texMathRegion
-  highlight def link texMathRegionDelim      texDelim
   highlight def link texMathRegionEnsured    texMathRegion
   highlight def link texMathRegionEnv        texMathRegion
   highlight def link texMathRegionEnvStarred texMathRegion
