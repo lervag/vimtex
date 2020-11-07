@@ -314,7 +314,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_cmd_arg('texMathenvArgName', '')
 
   " Syntax clusters for math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdGreek,texCmdSize,texCmdStyle,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,texSymbolNewline,@NoSpell
+  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,texSymbolNewline,@NoSpell
   syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
