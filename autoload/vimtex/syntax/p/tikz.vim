@@ -8,7 +8,7 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'tikz') | return | endif
   let b:vimtex_syntax.tikz = 1
 
-  syntax cluster texClusterTikz contains=texTikzEnvBgn,texTikzSemicolon,texCmd,texCmdEnv,texGroup,texComment
+  syntax cluster texClusterTikz contains=texTikzEnvBgn,texTikzSemicolon,texCmd,texGroup,texComment
   syntax cluster texClusterTikzset contains=texTikzsetArg,texOptSep,texOptEqual,texMathRegionX,texTypeSize,texCmd,texLength,texComment
 
   syntax match texCmdTikzset /\\tikzset\>/ skipwhite skipnl nextgroup=texTikzsetArg

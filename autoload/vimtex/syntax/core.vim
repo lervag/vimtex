@@ -414,7 +414,7 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
-  let l:contains = 'texCmdEnv,texEnvArgName'
+  let l:contains = 'texCmdEnv'
   let l:options = 'keepend'
 
   if a:0 > 0
