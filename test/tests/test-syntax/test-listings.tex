@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{listings}
+
+\begin{document}
+
+% Comment out to compile!
+\lstinputlisting[options]{file}
+
+\lstinline|asdasd|
+
+\begin{lstlisting}
+testing
+\end{lstlisting}
+
+\begin{lstlisting}[directivestyle={\color{black}},
+                   language=C,
+                   emph={int,char,double,float,unsigned},
+                   emphstyle={\color{blue}}]
+#include<stdio.h>
+main() {
+  int i = 0;
+  printf("Hello World");
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=python]
+def function(arg):
+    pass
+\end{lstlisting}
+
+\lstset{language=rust,numbers=none}
+\begin{lstlisting}
+fn main() {
+    println!("Hello World!");
+}
+\end{lstlisting}
+
+\lstset{language=x,numbers=none}
+
+\end{document}
