@@ -11,9 +11,9 @@ call vimtex#test#assert(vimtex#syntax#in('javaScopeDecl', 72, 3))
 call vimtex#test#assert(vimtex#syntax#in('texMintedRegionLog', 112, 1))
 call vimtex#test#assert(vimtex#syntax#in('texMintedRegionShellsession', 116, 1))
 
-" Doing :e should not destroy nested syntax and similar
-call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
-edit
-call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
+" " Doing :e should not destroy nested syntax and similar
+" call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
+" edit
+" call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
 
 quit!

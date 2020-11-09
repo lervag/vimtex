@@ -50,7 +50,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contains=texMintedBounds.*
 
   " Match "unknown" commands
-  syntax match texArgMinted "{\w\+}"
+  syntax match texMintedArg "{\w\+}"
         \ contained
         \ contains=texMintedName
         \ nextgroup=texMintedRegionArg
@@ -67,10 +67,10 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   for [l:nested, l:config] in items(b:vimtex.syntax.minted)
     let l:cluster = vimtex#syntax#nested#include(l:nested)
 
-    let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
-    let l:group_main = 'texRegion' . l:name
-    let l:group_arg = 'texArg' . l:name
-    let l:group_arg_zone = 'texArgZone' . l:name
+    let l:name = toupper(l:nested[0]) . l:nested[1:]
+    let l:group_main = 'texMintedRegion' . l:name
+    let l:group_arg = 'texMintedArg' . l:name
+    let l:group_arg_zone = 'texMintedRegion' . l:name . 'Inline'
 
     if empty(l:cluster)
       let l:transparent = ''
@@ -133,11 +133,11 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
   " Main matcher for the minted statements/commands
   " - Note: This comes last to allow the nextgroup pattern
-  syntax match texCmd '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
+  syntax match texCmd '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texMintedArg.*
   syntax region texArgOptMinted matchgroup=texDelim
         \ start='\[' end='\]'
         \ contained
-        \ nextgroup=texArgMinted.*
+        \ nextgroup=texMintedArg.*
 
   highlight link texMintedRegion texRegion
   highlight link texMintedRegionArg texRegion
