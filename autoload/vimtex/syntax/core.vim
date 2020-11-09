@@ -208,7 +208,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texNewcmdParm contained "#\d\+" containedin=texNewcmdArgBody
 
   " \newenvironment
-  syntax match texCmdenv nextgroup=texNewenvArgName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
+  syntax match texCmdNewenv nextgroup=texNewenvArgName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
   call vimtex#syntax#core#new_cmd_arg('texNewenvArgName', 'texNewenvArgBegin,texNewenvOpt')
   call vimtex#syntax#core#new_cmd_opt('texNewenvOpt', 'texNewenvArgBegin,texNewenvOpt', '', 'oneline')
   call vimtex#syntax#core#new_cmd_arg('texNewenvArgBegin', 'texNewenvArgEnd', 'TOP')
@@ -271,8 +271,8 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
   " In short: allow @ in multicharacter macro name
-  syntax region texRegionSty matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP
-  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texRegionSty
+  syntax region texStyRegion matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP
+  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texStyRegion
 
   " }}}2
   " {{{2 Region: Verbatim

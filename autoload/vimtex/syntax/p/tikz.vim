@@ -11,10 +11,10 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   syntax cluster texClusterTikz contains=texTikzEnvBgn,texTikzSemicolon,texCmd,texGroup,texComment
   syntax cluster texClusterTikzset contains=texTikzsetArg,texOptSep,texOptEqual,texMathRegionX,texTypeSize,texCmd,texLength,texComment
 
-  syntax match texCmdTikzset /\\tikzset\>/ skipwhite skipnl nextgroup=texTikzsetArg
+  syntax match texCmdTikzset "\\tikzset\>" skipwhite skipnl nextgroup=texTikzsetArg
   call vimtex#syntax#core#new_cmd_arg('texTikzsetArg', '', '@texClusterTikzset')
 
-  syntax match texTikzEnvBgn /\v\\begin\{tikzpicture\}/
+  syntax match texTikzEnvBgn "\\begin{tikzpicture}"
         \ nextgroup=texTikzOpt skipwhite skipnl contains=texCmdEnv
   call vimtex#syntax#core#new_region_env(
         \ 'texTikzRegion', 'tikzpicture', '@texClusterTikz')
