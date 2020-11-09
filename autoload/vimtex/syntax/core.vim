@@ -49,8 +49,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texSymbolString "\v%(``|''|,,)"
   syntax match texSymbolDash "--"
   syntax match texSymbolDash "---"
-  syntax match texSymbolAmp "&"
-  syntax match texSymbolNewline "\\\\"
+  syntax match texTabularChar "&"
+  syntax match texTabularChar "\\\\"
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
   syntax match texSpecialChar "\\[$&%#{}_]"
@@ -60,6 +60,7 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax match texSpecialChar "\\[SP@]\ze\A"
   endif
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
+  syntax match texSpecialChar "\\[,;:!]"
 
   " }}}2
   " {{{2 Commands: general
@@ -314,7 +315,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_cmd_arg('texMathenvArgName', '')
 
   " Syntax clusters for math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texCmdMathtext,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,texSymbolNewline,@NoSpell
+  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texCmdMathtext,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texTabularChar,texSymbolDash,@NoSpell
   syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
@@ -552,9 +553,8 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texNewenvParm           texParm
   highlight def link texOptEqual             texSymbol
   highlight def link texRefOpt               texOpt
-  highlight def link texSymbolAmp            texSymbol
   highlight def link texSymbolDash           texSymbol
-  highlight def link texSymbolNewline        texSymbol
+  highlight def link texTabularChar          texSymbol
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
 endfunction
