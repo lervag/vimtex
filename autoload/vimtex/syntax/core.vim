@@ -314,7 +314,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_cmd_arg('texMathenvArgName', '')
 
   " Syntax clusters for math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,texSymbolNewline,@NoSpell
+  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texCmdMathtext,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texSymbolAmp,texSymbolDash,texSymbolNewline,@NoSpell
   syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
@@ -452,7 +452,7 @@ endfunction
 function! s:init_highlights(cfg) abort " {{{1
   " See :help group-name for list of conventional group names
 
-  " Basic TeX highlighting groups
+  " Primitive TeX highlighting groups
   highlight def link texArg              Include
   highlight def link texCmd              Statement
   highlight def link texCmdSpaceCodeChar Special
@@ -479,10 +479,9 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texSymbol           SpecialChar
   highlight def link texSymbolString     String
   highlight def link texTitleArg         Underlined
-
   highlight def texStyleBold gui=bold        cterm=bold
-  highlight def texStyleItal gui=italic      cterm=italic
   highlight def texStyleBoth gui=bold,italic cterm=bold,italic
+  highlight def texStyleItal gui=italic      cterm=italic
 
   " Inherited groups
   highlight def link texAuthorOpt            texOpt
