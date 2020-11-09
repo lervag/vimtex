@@ -466,7 +466,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texError            Error
   highlight def link texLength           Number
   highlight def link texMathDelim        Type
-  highlight def link texMathDelimMod     Statement
   highlight def link texMathOper         Operator
   highlight def link texMathRegion       Special
   highlight def link texMathenvArgName   Delimiter
@@ -533,7 +532,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texFilesOpt             texOpt
   highlight def link texGroupError           texError
   highlight def link texMathDelimRegion      texDelim
-  highlight def link texMathDelimSet         texMathDelim
+  highlight def link texMathDelimMod         texMathDelim
   highlight def link texMathError            texError
   highlight def link texMathErrorDelim       texError
   highlight def link texMathGroup            texMathRegion
@@ -971,32 +970,32 @@ endfunction
 
 " }}}1
 function! s:match_math_delims(cfg) abort " {{{1
-  syntax match texMathDelimMod contained skipwhite nextgroup=texMathDelimSet "\\\(left\|right\)\>"
-  syntax match texMathDelimMod contained skipwhite nextgroup=texMathDelimSet "\\[bB]igg\?[lr]\?\>"
-  syntax match texMathDelimSet contained "[<>()[\]|/.]\|\\[{}|]"
-  syntax match texMathDelimSet contained "\\backslash"
-  syntax match texMathDelimSet contained "\\downarrow"
-  syntax match texMathDelimSet contained "\\Downarrow"
-  syntax match texMathDelimSet contained "\\lVert"
-  syntax match texMathDelimSet contained "\\langle"
-  syntax match texMathDelimSet contained "\\lbrace"
-  syntax match texMathDelimSet contained "\\lceil"
-  syntax match texMathDelimSet contained "\\lfloor"
-  syntax match texMathDelimSet contained "\\lgroup"
-  syntax match texMathDelimSet contained "\\lmoustache"
-  syntax match texMathDelimSet contained "\\lvert"
-  syntax match texMathDelimSet contained "\\rVert"
-  syntax match texMathDelimSet contained "\\rangle"
-  syntax match texMathDelimSet contained "\\rbrace"
-  syntax match texMathDelimSet contained "\\rceil"
-  syntax match texMathDelimSet contained "\\rfloor"
-  syntax match texMathDelimSet contained "\\rgroup"
-  syntax match texMathDelimSet contained "\\rmoustache"
-  syntax match texMathDelimSet contained "\\rvert"
-  syntax match texMathDelimSet contained "\\uparrow"
-  syntax match texMathDelimSet contained "\\Uparrow"
-  syntax match texMathDelimSet contained "\\updownarrow"
-  syntax match texMathDelimSet contained "\\Updownarrow"
+  syntax match texMathDelimMod contained "\\\(left\|right\)\>"
+  syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
+  syntax match texMathDelim contained "[<>()[\]|/.]\|\\[{}|]"
+  syntax match texMathDelim contained "\\backslash"
+  syntax match texMathDelim contained "\\downarrow"
+  syntax match texMathDelim contained "\\Downarrow"
+  syntax match texMathDelim contained "\\lVert"
+  syntax match texMathDelim contained "\\langle"
+  syntax match texMathDelim contained "\\lbrace"
+  syntax match texMathDelim contained "\\lceil"
+  syntax match texMathDelim contained "\\lfloor"
+  syntax match texMathDelim contained "\\lgroup"
+  syntax match texMathDelim contained "\\lmoustache"
+  syntax match texMathDelim contained "\\lvert"
+  syntax match texMathDelim contained "\\rVert"
+  syntax match texMathDelim contained "\\rangle"
+  syntax match texMathDelim contained "\\rbrace"
+  syntax match texMathDelim contained "\\rceil"
+  syntax match texMathDelim contained "\\rfloor"
+  syntax match texMathDelim contained "\\rgroup"
+  syntax match texMathDelim contained "\\rmoustache"
+  syntax match texMathDelim contained "\\rvert"
+  syntax match texMathDelim contained "\\uparrow"
+  syntax match texMathDelim contained "\\Uparrow"
+  syntax match texMathDelim contained "\\updownarrow"
+  syntax match texMathDelim contained "\\Updownarrow"
 
   if !a:cfg.conceal.math_delimiters || &encoding !=# 'utf-8'
     return
