@@ -12,8 +12,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   call s:parse_minted_constructs()
 
   " Match minted language names
-  syntax region texMintedName matchgroup=Delimiter start="{" end="}" contained
-  syntax region texMintedNameOpt matchgroup=Delimiter start="\[" end="\]" contained
+  syntax region texMintedName matchgroup=texDelim start="{" end="}" contained
+  syntax region texMintedNameOpt matchgroup=texDelim start="\[" end="\]" contained
 
   " Match boundaries of minted environments
   syntax match texMintedBounds '\\end{minted}'
@@ -23,7 +23,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contained
         \ contains=texCmdEnv
         \ nextgroup=texMintedBoundsOpts,texMintedName
-  syntax region texMintedBoundsOpts matchgroup=Delimiter
+  syntax region texMintedBoundsOpts matchgroup=texDelim
         \ start="\[" end="\]"
         \ contained
         \ nextgroup=texMintedName
@@ -33,17 +33,17 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
         \ contained
         \ contains=texCmdEnv
         \ nextgroup=texMintedStarredOpts
-  syntax region texMintedStarredOpts matchgroup=Delimiter
+  syntax region texMintedStarredOpts matchgroup=texDelim
         \ start='{'
         \ end='}'
         \ contained
         \ containedin=texMintedStarred
 
   " Match \newminted type macros
-  syntax match texCmd '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
+  syntax match texCmd '\\newmint\%(ed\|inline\)\?\>' skipwhite skipnl nextgroup=texMintedName,texMintedNameOpt
 
   " Match "unknown" environments
-  syntax region texRegionMinted
+  syntax region texMintedRegion
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"
         \ end="\\end{minted}"
         \ keepend
@@ -53,12 +53,12 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   syntax match texArgMinted "{\w\+}"
         \ contained
         \ contains=texMintedName
-        \ nextgroup=texRegionMintedCmd
-  syntax region texRegionMintedCmd matchgroup=Delimiter
+        \ nextgroup=texMintedRegionArg
+  syntax region texMintedRegionArg matchgroup=texDelim
         \ start='\z([|+/]\)'
         \ end='\z1'
         \ contained
-  syntax region texRegionMintedCmd matchgroup=Delimiter
+  syntax region texMintedRegionArg matchgroup=texDelim
         \ start='{'
         \ end='}'
         \ contained
@@ -76,8 +76,8 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
       let l:transparent = ''
       let l:contains_env = ''
       let l:contains_macro = ''
-      execute 'highlight link' l:group_main 'texRegionMinted'
-      execute 'highlight link' l:group_arg_zone 'texRegionMinted'
+      execute 'highlight link' l:group_main 'texMintedRegion'
+      execute 'highlight link' l:group_arg_zone 'texMintedRegion'
     else
       let l:transparent = 'transparent'
       let l:contains_env = ',@' . l:cluster
@@ -112,13 +112,13 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
           \ 'contains=texMintedName'
           \ 'nextgroup=' . l:group_arg_zone
     execute 'syntax region' l:group_arg_zone
-          \ 'matchgroup=Delimiter'
+          \ 'matchgroup=texDelim'
           \ 'start=''\z([|+/]\)'''
           \ 'end=''\z1'''
           \ 'contained'
           \ l:contains_macro
     execute 'syntax region' l:group_arg_zone
-          \ 'matchgroup=Delimiter'
+          \ 'matchgroup=texDelim'
           \ 'start=''{'''
           \ 'end=''}'''
           \ 'contained'
@@ -134,14 +134,13 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Main matcher for the minted statements/commands
   " - Note: This comes last to allow the nextgroup pattern
   syntax match texCmd '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
-  syntax region texArgOptMinted matchgroup=Delimiter
-        \ start='\['
-        \ end='\]'
+  syntax region texArgOptMinted matchgroup=texDelim
+        \ start='\[' end='\]'
         \ contained
         \ nextgroup=texArgMinted.*
 
-  highlight link texRegionMinted texRegion
-  highlight link texRegionMintedCmd texRegion
+  highlight link texMintedRegion texRegion
+  highlight link texMintedRegionArg texRegion
   highlight link texMintedName texOpt
   highlight link texMintedNameOpt texMintedName
 endfunction
