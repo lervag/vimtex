@@ -11,57 +11,54 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
   " Parse minted macros in the current project
   call s:parse_minted_constructs()
 
-  " Match minted language names
-  syntax region texMintedName matchgroup=texDelim start="{" end="}" contained
-  syntax region texMintedNameOpt matchgroup=texDelim start="\[" end="\]" contained
-
-  " Match boundaries of minted environments
-  syntax match texMintedBounds '\\end{minted}'
-        \ contained
-        \ contains=texCmdEnv
-  syntax match texMintedBounds '\\begin{minted}'
-        \ contained
-        \ contains=texCmdEnv
-        \ nextgroup=texMintedBoundsOpts,texMintedName
-  syntax region texMintedBoundsOpts matchgroup=texDelim
-        \ start="\[" end="\]"
-        \ contained
-        \ nextgroup=texMintedName
-
-  " Match starred custom minted environments with options
-  syntax match texMintedStarred "\\begin{\w\+\*}"
-        \ contained
-        \ contains=texCmdEnv
-        \ nextgroup=texMintedStarredOpts
-  syntax region texMintedStarredOpts matchgroup=texDelim
-        \ start='{'
-        \ end='}'
-        \ contained
-        \ containedin=texMintedStarred
-
   " Match \newminted type macros
-  syntax match texCmd '\\newmint\%(ed\|inline\)\?\>' skipwhite skipnl nextgroup=texMintedName,texMintedNameOpt
+  syntax match texCmdNewmint '\\newmint\%(ed\|inline\)\?\>'
+        \ skipwhite skipnl nextgroup=texNewmintOpt,texNewmintArgX
+  syntax region texNewmintOpt contained matchgroup=texDelim
+        \ start="\[" end="\]"
+        \ skipwhite skipnl nextgroup=texNewmintArgY
+  syntax region texNewmintArgX contained matchgroup=texDelim
+        \ start="{" end="}"
+        \ skipwhite skipnl nextgroup=texNewmintArgOpts
+  syntax region texNewmintArgY contained matchgroup=texDelim
+        \ start="{" end="}"
+        \ skipwhite skipnl nextgroup=texNewmintArgOpts
+  syntax region texNewmintArgOpts contained matchgroup=texDelim
+        \ start="{" end="}"
+
+  " Match minted environment boundaries
+  syntax match texMintedEnvBgn contained '\\begin{minted}'
+        \ contains=texCmdEnv
+        \ skipwhite skipnl nextgroup=texMintedEnvOpt,texMintedEnvArg
+  syntax region texMintedEnvOpt contained matchgroup=texDelim
+        \ start="\[" end="\]"
+        \ skipwhite skipnl nextgroup=texMintedEnvArg
+  syntax region texMintedEnvArg contained matchgroup=texDelim
+        \ start="{" end="}"
+
+  " Match custom starred minted environments and their options
+  syntax match texMintedEnvBgn "\\begin{\w\+\*}"
+        \ contained
+        \ contains=texCmdEnv
+        \ nextgroup=texMintedEnvOptStarred
+  syntax region texMintedEnvOptStarred contained matchgroup=texDelim
+        \ start='{' end='}'
 
   " Match "unknown" environments
   syntax region texMintedRegion
         \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"
         \ end="\\end{minted}"
         \ keepend
-        \ contains=texMintedBounds.*
+        \ contains=texCmdEnv,texMintedEnvBgn
 
   " Match "unknown" commands
-  syntax match texMintedArg "{\w\+}"
-        \ contained
-        \ contains=texMintedName
-        \ nextgroup=texMintedRegionArg
-  syntax region texMintedRegionArg matchgroup=texDelim
-        \ start='\z([|+/]\)'
-        \ end='\z1'
-        \ contained
-  syntax region texMintedRegionArg matchgroup=texDelim
-        \ start='{'
-        \ end='}'
-        \ contained
+  syntax region texMintedArg contained matchgroup=texDelim
+        \ start='{' end='}'
+        \ skipwhite skipnl nextgroup=texMintedRegionArg
+  syntax region texMintedRegionArg contained matchgroup=texDelim
+        \ start='\z([|+/]\)' end='\z1'
+  syntax region texMintedRegionArg contained matchgroup=texDelim
+        \ start='{' end='}'
 
   " Next add nested syntax support for desired languages
   for [l:nested, l:config] in items(b:vimtex.syntax.minted)
@@ -90,7 +87,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
           \ 'end="\\end{minted}"'
           \ 'keepend'
           \ l:transparent
-          \ 'contains=texMintedBounds.*' . l:contains_env
+          \ 'contains=texCmdEnv,texMintedEnvBgn' . l:contains_env
 
     " Match custom environment names
     for l:env in get(l:config, 'environments', [])
@@ -99,7 +96,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
             \ 'end="\\end{\z1}"'
             \ 'keepend'
             \ l:transparent
-            \ 'contains=texMintedStarred,texCmdEnv' . l:contains_env
+            \ 'contains=texCmdEnv,texMintedEnvBgn' . l:contains_env
     endfor
 
     " Match minted macros
@@ -109,7 +106,7 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
     " - \mintinline[]{lang}{...}
     execute 'syntax match' l:group_arg '''{' . l:nested . '}'''
           \ 'contained'
-          \ 'contains=texMintedName'
+          \ 'contains=texMintedArg'
           \ 'nextgroup=' . l:group_arg_zone
     execute 'syntax region' l:group_arg_zone
           \ 'matchgroup=texDelim'
@@ -133,16 +130,27 @@ function! vimtex#syntax#p#minted#load() abort " {{{1
 
   " Main matcher for the minted statements/commands
   " - Note: This comes last to allow the nextgroup pattern
-  syntax match texCmd '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texMintedArg.*
-  syntax region texArgOptMinted matchgroup=texDelim
+  syntax match texCmdMinted '\\mint\(inline\)\?'
+        \ skipwhite skipnl nextgroup=texMintedOpt,texMintedArg.*
+  syntax region texMintedOpt contained matchgroup=texDelim
         \ start='\[' end='\]'
-        \ contained
-        \ nextgroup=texMintedArg.*
+        \ skipwhite skipnl nextgroup=texMintedArg.*
 
-  highlight link texMintedRegion texRegion
-  highlight link texMintedRegionArg texRegion
-  highlight link texMintedName texOpt
-  highlight link texMintedNameOpt texMintedName
+  highlight def link texCmdMinted           texCmd
+  highlight def link texMintedOpt           texOpt
+  highlight def link texMintedArg           texSymbol
+
+  highlight def link texMintedRegion        texRegion
+  highlight def link texMintedRegionArg     texRegion
+  highlight def link texMintedEnvOpt        texOpt
+  highlight def link texMintedEnvOptStarred texOpt
+  highlight def link texMintedEnvArg        texSymbol
+
+  highlight def link texCmdNewmint      texCmd
+  highlight def link texNewmintOpt      texSymbol
+  highlight def link texNewmintArgX     texSymbol
+  highlight def link texNewmintArgY     texComment
+  highlight def link texNewmintArgOpts  texOpt
 endfunction
 
 " }}}1
