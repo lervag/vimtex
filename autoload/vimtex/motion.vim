@@ -71,6 +71,24 @@ function! vimtex#motion#init_buffer() abort " {{{1
   onoremap <silent><buffer> <plug>(vimtex-[m) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[m)"<cr>
   onoremap <silent><buffer> <plug>(vimtex-[M) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[M)"<cr>
 
+  " Frames
+  nnoremap <silent><buffer> <plug>(vimtex-]r) :<c-u>call vimtex#motion#frame(1,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-]R) :<c-u>call vimtex#motion#frame(0,0,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[r) :<c-u>call vimtex#motion#frame(1,1,0)<cr>
+  nnoremap <silent><buffer> <plug>(vimtex-[R) :<c-u>call vimtex#motion#frame(0,1,0)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-]r) :<c-u>call vimtex#motion#frame(1,0,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-]R) :<c-u>call vimtex#motion#frame(0,0,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-[r) :<c-u>call vimtex#motion#frame(1,1,1)<cr>
+  xnoremap <silent><buffer>  <sid>(vimtex-[R) :<c-u>call vimtex#motion#frame(0,1,1)<cr>
+  xmap     <silent><buffer> <plug>(vimtex-]r) <sid>(vimtex-]r)
+  xmap     <silent><buffer> <plug>(vimtex-]R) <sid>(vimtex-]R)
+  xmap     <silent><buffer> <plug>(vimtex-[r) <sid>(vimtex-[r)
+  xmap     <silent><buffer> <plug>(vimtex-[R) <sid>(vimtex-[R)
+  onoremap <silent><buffer> <plug>(vimtex-]r) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]r)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-]R) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-]R)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[r) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[r)"<cr>
+  onoremap <silent><buffer> <plug>(vimtex-[R) :execute "normal \<sid>(V)" . v:count1 . "\<sid>(vimtex-[R)"<cr>
+
   " Comments
   nnoremap <silent><buffer> <plug>(vimtex-]/) :<c-u>call vimtex#motion#comment(1,0,0)<cr>
   nnoremap <silent><buffer> <plug>(vimtex-]*) :<c-u>call vimtex#motion#comment(0,0,0)<cr>
@@ -182,6 +200,21 @@ function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1
   endif
 
   let l:re = g:vimtex#re#not_comment . (a:begin ? '\\begin\s*\{' : '\\end\s*\{')
+  let l:flags = 'W' . (a:backwards ? 'b' : '')
+
+  for l:_ in range(l:count)
+    call search(l:re, l:flags)
+  endfor
+endfunction
+
+" }}}1
+function! vimtex#motion#frame(begin, backwards, visual) abort " {{{1
+  let l:count = v:count1
+  if a:visual
+    normal! gv
+  endif
+
+  let l:re = g:vimtex#re#not_comment . (a:begin ? '\\begin\s*\{frame\}' : '\\end\s*\{frame\}')
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
   for l:_ in range(l:count)
