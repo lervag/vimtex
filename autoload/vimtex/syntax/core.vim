@@ -150,7 +150,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Unspecified TeX groups
   " Note: This is necessary to keep track of all nested braces
-  syntax region texGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contains=TOP,@NoSpell
+  call vimtex#syntax#core#new_arg('texGroup', {'opts': ''})
 
   " Flag mismatching ending brace delimiter
   syntax match texGroupError "}"
