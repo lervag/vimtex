@@ -17,52 +17,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " {{{2 Define main syntax clusters
 
-  " Note: These clusters can be updated for specific package syntax if
-  "       a package defines items that should be available at top level.
-
-  syntax cluster texClusterMain contains=
-        \texGroup,
-        \texGroupError,
-        \@texClusterCmds,
-        \@texClusterOther
-
-  syntax cluster texClusterCmds contains=
-        \texCmd,
-        \texCmdAccent,
-        \texCmdAuthor,
-        \texCmdBib,
-        \texCmdClass,
-        \texCmdDef,
-        \texCmdEnv,
-        \texCmdError,
-        \texCmdFootnote,
-        \texCmdGreek,
-        \texCmdInput,
-        \texCmdItem,
-        \texCmdLigature,
-        \texCmdNewcmd,
-        \texCmdNewenv,
-        \texCmdPackage,
-        \texCmdParts,
-        \texCmdRef,
-        \texCmdSize,
-        \texCmdSpaceCode,
-        \texCmdSpaceCodeChar,
-        \texCmdStyle,
-        \texCmdStyleBold,
-        \texCmdStyleBoldItal,
-        \texCmdStyleItal,
-        \texCmdStyleItalBold,
-        \texCmdTitle,
-        \texCmdTodo,
-        \texCmdVerb
-
-  syntax cluster texClusterOther contains=
-        \texComment,
-        \texLigature,
-        \texSpecialChar,
-        \texTabularChar
-
   syntax cluster texClusterOpt contains=
         \texCmd,
         \texComment,
