@@ -15,6 +15,84 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax sync maxlines=500
   syntax sync minlines=50
 
+  " {{{2 Define main syntax clusters
+
+  " Note: These clusters can be updated for specific package syntax if
+  "       a package defines items that should be available at top level.
+
+  syntax cluster texClusterMain contains=
+        \texGroup,
+        \texGroupError,
+        \@texClusterCmds,
+        \@texClusterOther
+
+  syntax cluster texClusterCmds contains=
+        \texCmd,
+        \texCmdAccent,
+        \texCmdAuthor,
+        \texCmdBib,
+        \texCmdClass,
+        \texCmdDef,
+        \texCmdEnv,
+        \texCmdError,
+        \texCmdFootnote,
+        \texCmdGreek,
+        \texCmdInput,
+        \texCmdItem,
+        \texCmdLigature,
+        \texCmdNewcmd,
+        \texCmdNewenv,
+        \texCmdPackage,
+        \texCmdParts,
+        \texCmdRef,
+        \texCmdSize,
+        \texCmdSpaceCode,
+        \texCmdSpaceCodeChar,
+        \texCmdStyle,
+        \texCmdStyleBold,
+        \texCmdStyleBoldItal,
+        \texCmdStyleItal,
+        \texCmdStyleItalBold,
+        \texCmdTitle,
+        \texCmdTodo,
+        \texCmdVerb
+
+  syntax cluster texClusterOther contains=
+        \texComment,
+        \texSpecialChar,
+        \texSymbolDash,
+        \texSymbolString,
+        \texTabularChar
+
+  syntax cluster texClusterOpt contains=texOptEqual,texOptSep
+
+  syntax cluster texClusterMath contains=
+        \texCmd,
+        \texCmdEnv,
+        \texCmdError,
+        \texCmdFootnote,
+        \texCmdGreek,
+        \texCmdMathtext,
+        \texCmdRef,
+        \texCmdSize,
+        \texCmdStyle,
+        \texCmdTodo,
+        \texCmdVerb,
+        \texComment,
+        \texGroupError,
+        \texMathDelim,
+        \texMathDelimMod,
+        \texMathGroup,
+        \texMathOper,
+        \texMathSub,
+        \texMathSuper,
+        \texMathSymbol,
+        \texSpecialChar,
+        \texTabularChar,
+        \@NoSpell
+
+  " }}}2
+
   " {{{2 Comments
 
   " * In documented TeX Format, actual comments are defined by leading "^^A".
@@ -121,12 +199,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdAuthor nextgroup=texAuthorOpt,texAuthorArg skipwhite skipnl "\\author\>"
   syntax match texCmdTitle nextgroup=texTitleArg skipwhite skipnl "\\title\>"
   call vimtex#syntax#core#new_cmd_opt('texAuthorOpt', 'texAuthorArg')
-  call vimtex#syntax#core#new_cmd_arg('texAuthorArg', '', '@texClusterTL,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texTitleArg', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texAuthorArg', '', '@texClusterMain,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texTitleArg', '', '@texClusterMain')
 
   " Footnotes
   syntax match texCmdFootnote nextgroup=texFootnoteArg skipwhite skipnl "\\footnote\>"
-  call vimtex#syntax#core#new_cmd_arg('texFootnoteArg', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texFootnoteArg', '', '@texClusterMain')
 
   " Various commands that take a file argument (or similar)
   syntax match texCmdInput   nextgroup=texFileArg              skipwhite skipnl "\\input\>"
@@ -204,7 +282,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdNewcmd nextgroup=texNewcmdArgName skipwhite skipnl "\\\%(re\)\?newcommand\>"
   call vimtex#syntax#core#new_cmd_arg('texNewcmdArgName', 'texNewcmdOpt,texNewcmdArgBody')
   call vimtex#syntax#core#new_cmd_opt('texNewcmdOpt', 'texNewcmdOpt,texNewcmdArgBody', '', 'oneline')
-  call vimtex#syntax#core#new_cmd_arg('texNewcmdArgBody', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texNewcmdArgBody', '', '@texClusterMain')
   syntax match texNewcmdParm contained "#\d\+" containedin=texNewcmdArgBody
 
   " \newenvironment
@@ -212,7 +290,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_cmd_arg('texNewenvArgName', 'texNewenvArgBegin,texNewenvOpt')
   call vimtex#syntax#core#new_cmd_opt('texNewenvOpt', 'texNewenvArgBegin,texNewenvOpt', '', 'oneline')
   call vimtex#syntax#core#new_cmd_arg('texNewenvArgBegin', 'texNewenvArgEnd', 'TOP')
-  call vimtex#syntax#core#new_cmd_arg('texNewenvArgEnd', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texNewenvArgEnd', '', '@texClusterMain')
   syntax match texNewenvParm contained "#\d\+" containedin=texNewenvArgBegin,texNewenvArgEnd
 
   " Definitions/Commands
@@ -227,7 +305,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   endif
   syntax match texDefParmPre contained nextgroup=texDefArgBody skipwhite skipnl "#[^{]*"
   syntax match texDefParm contained "#\d\+" containedin=texDefParmPre,texDefArgBody
-  call vimtex#syntax#core#new_cmd_arg('texDefArgBody', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texDefArgBody', '', '@texClusterMain')
 
   " Reference and cite commands
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\nocite\>"
@@ -245,7 +323,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdParts nextgroup=texPartArgTitle "\\chapter\>\*\?"
   syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)*section\>\*\?"
   syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)\?paragraph\>"
-  call vimtex#syntax#core#new_cmd_arg('texPartArgTitle', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texPartArgTitle', '', '@texClusterMain')
 
   " Item elements in lists
   syntax match texCmdItem "\\item\>"
@@ -254,17 +332,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   for l:macro in g:vimtex_syntax_nospell_commands
     execute 'syntax match texCmdNoSpell nextgroup=texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
   endfor
-  call vimtex#syntax#core#new_cmd_arg('texNoSpellArg', '', '@texClusterTL,@NoSpell')
+  call vimtex#syntax#core#new_cmd_arg('texNoSpellArg', '', '@texClusterMain,@NoSpell')
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
   call vimtex#syntax#core#new_cmd_arg('texEnvArgName', 'texEnvOpt')
   call vimtex#syntax#core#new_cmd_opt('texEnvOpt', '', 'texComment,@NoSpell')
-
-  " Specify clusters for use in regions
-  syntax cluster texClusterCmd contains=texCmd.*,texGroup.*
-  syntax cluster texClusterOpt contains=texOptEqual,texOptSep
-  syntax cluster texClusterTL  contains=@texClusterCmd,texSpecialChar,texSymbol.*,texComment
 
   " }}}2
   " {{{2 Region: \makeatletter ... \makeatother
@@ -282,7 +355,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Verbatim inline
   syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbRegionInline
-  syntax cluster texClusterCmd add=texCmdVerb
   if l:cfg.is_style_document
     syntax region texVerbRegionInline matchgroup=texDelim start="\z([^\ta-zA-Z@]\)" end="\z1" contained
   else
@@ -314,8 +386,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdMathenv "\v\\%(begin|end)>" contained nextgroup=texMathenvArgName
   call vimtex#syntax#core#new_cmd_arg('texMathenvArgName', '')
 
-  " Syntax clusters for math regions
-  syntax cluster texClusterMath contains=texCmd,texCmdRef,texCmdGreek,texCmdSize,texCmdStyle,texCmdMathtext,texComment,texMathDelim,texMathDelimMod,texLength,texMathGroup,texMathOper,texMathSymbol,texSpecialChar,texMathSub,texMathSuper,texTabularChar,texSymbolDash,@NoSpell
   syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
   " Math regions: environments
@@ -350,7 +420,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Text Inside Math regions
   syntax match texCmdMathtext "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathtextArg
-  call vimtex#syntax#core#new_cmd_arg('texMathtextArg', '', '@texClusterTL,@Spell')
+  call vimtex#syntax#core#new_cmd_arg('texMathtextArg', '', '@texClusterMain,@Spell')
 
   call s:match_math_sub_super(l:cfg)
   call s:match_math_symbols(l:cfg)

@@ -12,7 +12,7 @@ function! vimtex#syntax#p#hyperref#load() abort " {{{1
   syntax match texCmdHyperref '\\hyperref\>' nextgroup=texRefOpt,texRefArg
   syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
   call vimtex#syntax#core#new_cmd_arg('texHrefArgLink', 'texHrefArgText', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texHrefArgText', '', '@texClusterTL')
+  call vimtex#syntax#core#new_cmd_arg('texHrefArgText', '', '@texClusterMain')
 
   syntax match texCmdHyperref "\\url\>" nextgroup=texUrlArg skipwhite
   syntax region texUrlArg matchgroup=texDelim
