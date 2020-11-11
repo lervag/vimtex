@@ -59,9 +59,8 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   syntax cluster texClusterOther contains=
         \texComment,
+        \texLigature,
         \texSpecialChar,
-        \texSymbolDash,
-        \texSymbolString,
         \texTabularChar
 
   syntax cluster texClusterOpt contains=texOptEqual,texOptSep
@@ -124,9 +123,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 TeX symbols and special characters
 
-  syntax match texSymbolString "\v%(``|''|,,)"
-  syntax match texSymbolDash "--"
-  syntax match texSymbolDash "---"
+  syntax match texLigature "--"
+  syntax match texLigature "---"
+  syntax match texLigature "\v%(``|''|,,)"
   syntax match texTabularChar "&"
   syntax match texTabularChar "\\\\"
 
@@ -547,7 +546,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texRegion           PreCondit
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
-  highlight def link texSymbolString     String
   highlight def link texTitleArg         Underlined
   highlight def texStyleBold gui=bold        cterm=bold
   highlight def texStyleBoth gui=bold,italic cterm=bold,italic
@@ -622,7 +620,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texNewenvParm           texParm
   highlight def link texOptEqual             texSymbol
   highlight def link texRefOpt               texOpt
-  highlight def link texSymbolDash           texSymbol
+  highlight def link texLigature             texSymbol
   highlight def link texTabularChar          texSymbol
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
@@ -1122,17 +1120,20 @@ function! s:match_conceal_accents() " {{{1
     endfor
   endfor
 
-  syntax match texCmdAccent   '\\aa\>' conceal cchar=å
-  syntax match texCmdAccent   '\\AA\>' conceal cchar=Å
-  syntax match texCmdAccent   '\\o\>'  conceal cchar=ø
-  syntax match texCmdAccent   '\\O\>'  conceal cchar=Ø
-  syntax match texCmdLigature '\\AE\>' conceal cchar=Æ
-  syntax match texCmdLigature '\\ae\>' conceal cchar=æ
-  syntax match texCmdLigature '\\oe\>' conceal cchar=œ
-  syntax match texCmdLigature '\\OE\>' conceal cchar=Œ
-  syntax match texCmdLigature '\\ss\>' conceal cchar=ß
-  syntax match texSymbolDash  '--'     conceal cchar=–
-  syntax match texSymbolDash  '---'    conceal cchar=—
+  syntax match texCmdAccent   "\\aa\>" conceal cchar=å
+  syntax match texCmdAccent   "\\AA\>" conceal cchar=Å
+  syntax match texCmdAccent   "\\o\>"  conceal cchar=ø
+  syntax match texCmdAccent   "\\O\>"  conceal cchar=Ø
+  syntax match texCmdLigature "\\AE\>" conceal cchar=Æ
+  syntax match texCmdLigature "\\ae\>" conceal cchar=æ
+  syntax match texCmdLigature "\\oe\>" conceal cchar=œ
+  syntax match texCmdLigature "\\OE\>" conceal cchar=Œ
+  syntax match texCmdLigature "\\ss\>" conceal cchar=ß
+  syntax match texLigature    "--"     conceal cchar=–
+  syntax match texLigature    "---"    conceal cchar=—
+  syntax match texLigature    "``"     conceal cchar=“
+  syntax match texLigature    "''"     conceal cchar=”
+  syntax match texLigature    ",,"     conceal cchar=„
 endfunction
 
 let s:key_accents = [
