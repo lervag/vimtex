@@ -172,6 +172,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
   - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
   - Move between math environment boundaries with `[n`, `[N`, `]n`, and `]N`
+  - Move between frame environment boundaries with `[r`, `[R`, `]r`, and `]R`
   - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
 - Text objects
@@ -787,6 +788,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ]N               |<plug>(vimtex-]N)|                             `nxo`
    [n               |<plug>(vimtex-[n)|                             `nxo`
    [N               |<plug>(vimtex-[N)|                             `nxo`
+   ]r               |<plug>(vimtex-]r)|                             `nxo`
+   ]R               |<plug>(vimtex-]R)|                             `nxo`
+   [r               |<plug>(vimtex-[r)|                             `nxo`
+   [R               |<plug>(vimtex-[R)|                             `nxo`
    ]/               |<plug>(vimtex-]/|                              `nxo`
    ]*               |<plug>(vimtex-]star|                           `nxo`
    [/               |<plug>(vimtex-[/|                              `nxo`
@@ -2963,6 +2968,22 @@ object, see |text-objects|.
 
 *<plug>(vimtex-[N)*
   go to [count] previous end of a math zone.
+  |exlusive| motion.
+
+*<plug>(vimtex-]r)*
+  go to [count] next start of a frame environment.
+  |exlusive| motion.
+
+*<plug>(vimtex-]R)*
+  go to [count] next end of a frame environment.
+  |exlusive| motion.
+
+*<plug>(vimtex-[r)*
+  go to [count] previous start of a frame environment.
+  |exlusive| motion.
+
+*<plug>(vimtex-[R)*
+  go to [count] previous end of a frame environment.
   |exlusive| motion.
 
 *<plug>(vimtex-]/)*
