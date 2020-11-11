@@ -29,7 +29,7 @@ function! vimtex#syntax#p#listings#load() abort " {{{1
   " Match unspecified lstlisting environment
   syntax match texLstEnvBgn "\\begin{lstlisting}"
         \ nextgroup=texLstOpt skipwhite skipnl contains=texCmdEnv
-  call vimtex#syntax#core#new_cmd_opt('texLstOpt', '')
+  call vimtex#syntax#core#new_opt('texLstOpt')
   syntax region texLstRegion
         \ start="\\begin{lstlisting}"
         \ end="\\end{lstlisting}"

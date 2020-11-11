@@ -19,12 +19,12 @@ function! vimtex#syntax#p#tabularx#load() abort " {{{1
 
   syntax match texCmdTabular '\\begin{tabular}'
         \ nextgroup=texTabularOpt,texTabularArg skipwhite skipnl contains=texCmdEnv
-  call vimtex#syntax#core#new_cmd_opt('texTabularOpt', 'texTabularArg', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texTabularArg', '', '@texClusterTabular')
+  call vimtex#syntax#core#new_opt('texTabularOpt', {'next': 'texTabularArg', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': '@texClusterTabular'})
 
-  call vimtex#syntax#core#new_cmd_arg('texTabularMulti', 'texTabularArg')
-  call vimtex#syntax#core#new_cmd_arg('texTabularLength', '', 'texLength,texCmd')
-  call vimtex#syntax#core#new_cmd_arg('texTabularPostPreArg', '', 'texLength,texCmd,texTabularMathdelim')
+  call vimtex#syntax#core#new_arg('texTabularMulti', {'next': 'texTabularArg'})
+  call vimtex#syntax#core#new_arg('texTabularLength', {'contains': 'texLength,texCmd'})
+  call vimtex#syntax#core#new_arg('texTabularPostPreArg', {'contains': 'texLength,texCmd,texTabularMathdelim'})
 
   highlight def link texTabularCol        texOpt
   highlight def link texTabularAtSep      texMathDelim

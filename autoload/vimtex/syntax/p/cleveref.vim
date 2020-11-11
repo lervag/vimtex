@@ -18,9 +18,9 @@ function! vimtex#syntax#p#cleveref#load() abort " {{{1
   " \label[xxx]{asd}
   syntax match texCmdCRef nextgroup=texCRefOpt,texRefArg skipwhite skipnl "\\label\>"
 
-  call vimtex#syntax#core#new_cmd_arg('texCRefArg', '', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texCRefRangeArg', 'texCRefArg', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_opt('texCRefOpt', 'texRefArg', '', 'oneline')
+  call vimtex#syntax#core#new_arg('texCRefArg', {'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texCRefRangeArg', {'next': 'texCRefArg', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_opt('texCRefOpt', {'next': 'texRefArg', 'opts': 'oneline'})
 
   highlight def link texCRefArg      texRefArg
   highlight def link texCRefOpt      texOpt

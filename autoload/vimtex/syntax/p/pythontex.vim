@@ -11,7 +11,7 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
   call vimtex#syntax#nested#include('python')
 
   syntax match texCmdPythontex /\\py[bsc]\?/ nextgroup=texPythontexArg skipwhite skipnl
-  call vimtex#syntax#core#new_cmd_arg('texPythontexArg', '', '@vimtex_nested_python', 'keepend')
+  call vimtex#syntax#core#new_arg('texPythontexArg', {'contains': '@vimtex_nested_python', 'opts': 'contained keepend'})
   syntax region texPythontexArg matchgroup=texDelim
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@vimtex_nested_python keepend

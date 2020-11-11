@@ -11,7 +11,7 @@ function! vimtex#syntax#p#glossaries#load() abort " {{{1
   let b:vimtex_syntax.glossaries = 1
 
   syntax match texCmd nextgroup=texGlsArg skipwhite skipnl "\\gls\>"
-  call vimtex#syntax#core#new_cmd_arg('texGlsArg', '', '@NoSpell')
+  call vimtex#syntax#core#new_arg('texGlsArg', {'contains': '@NoSpell'})
 endfunction
 
 " }}}1

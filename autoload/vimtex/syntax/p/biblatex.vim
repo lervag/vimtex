@@ -34,8 +34,8 @@ function! vimtex#syntax#p#biblatex#load() abort " {{{1
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Aa]utocites\>"
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[pPfFsStTaA]\?[Vv]olcites\?\>"
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\cite\%(field\|list\|name\)>"
-  call vimtex#syntax#core#new_cmd_arg('texRefArgs', 'texRefOpts,texRefArgs', 'texComment,@NoSpell')
-  call vimtex#syntax#core#new_cmd_opt('texRefOpts', 'texRefOpt,texRefArg')
+  call vimtex#syntax#core#new_arg('texRefArgs', {'next': 'texRefOpts,texRefArgs', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpt,texRefArg'})
 endfunction
 
 " }}}1

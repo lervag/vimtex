@@ -63,7 +63,13 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texSpecialChar,
         \texTabularChar
 
-  syntax cluster texClusterOpt contains=texOptEqual,texOptSep
+  syntax cluster texClusterOpt contains=
+        \texCmd,
+        \texComment,
+        \texLength,
+        \texOptEqual,
+        \texOptSep,
+        \@NoSpell
 
   syntax cluster texClusterMath contains=
         \texCmd,
@@ -142,21 +148,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Commands: general
 
-  " Match unspecified TeX groups
-  " Note: This is necessary to always match the corresponding end brace for
-  "       specific argument groups.
-  syntax region texGroup matchgroup=texDelim
-        \ start="{" skip="\\\\\|\\}" end="}" contains=TOP
+  " Unspecified TeX groups
+  " Note: This is necessary to keep track of all nested braces
+  syntax region texGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contains=TOP,@NoSpell
 
   " Flag mismatching ending brace delimiter
   syntax match texGroupError "}"
-
-  " Match general commands first
-  if l:cfg.is_style_document
-    syntax match texCmdSty "\\[a-zA-Z@]\+"
-  endif
-  syntax match texCmd "\\\a\+"
-  syntax match texCmdError "\\\a*@\a*"
 
   " Add generic option elements contained in common option groups
   syntax match texOptEqual contained "="
@@ -164,6 +161,15 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " TeX Lengths (matched in options and some arguments)
   syntax match texLength contained "\<\d\+\([.,]\d\+\)\?\s*\(true\)\?\s*\(bp\|cc\|cm\|dd\|em\|ex\|in\|mm\|pc\|pt\|sp\)\>"
+
+  " Match general commands first
+  if l:cfg.is_style_document
+    syntax match texCmdSty "\\[a-zA-Z@]\+"
+  endif
+  syntax match texCmd nextgroup=texOpt,texArg skipwhite skipnl "\\\a\+"
+  call vimtex#syntax#core#new_opt('texOpt', {'next': 'texArg'})
+  call vimtex#syntax#core#new_arg('texArg', {'next': 'texArg', 'opts': 'contained transparent'})
+  syntax match texCmdError "\\\a*@\a*"
 
   " {{{2 Commands: core set
 
@@ -194,16 +200,18 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Todo commands
   syntax match texCmdTodo '\\todo\w*'
 
-  " Author and title commands
+  " \author
   syntax match texCmdAuthor nextgroup=texAuthorOpt,texAuthorArg skipwhite skipnl "\\author\>"
-  syntax match texCmdTitle nextgroup=texTitleArg skipwhite skipnl "\\title\>"
-  call vimtex#syntax#core#new_cmd_opt('texAuthorOpt', 'texAuthorArg')
-  call vimtex#syntax#core#new_cmd_arg('texAuthorArg', '', '@texClusterMain,@NoSpell')
-  call vimtex#syntax#core#new_cmd_arg('texTitleArg', '', '@texClusterMain')
+  call vimtex#syntax#core#new_opt('texAuthorOpt', {'next': 'texAuthorArg'})
+  call vimtex#syntax#core#new_arg('texAuthorArg', {'contains': 'TOP,@Spell'})
 
-  " Footnotes
+  " \title
+  syntax match texCmdTitle nextgroup=texTitleArg skipwhite skipnl "\\title\>"
+  call vimtex#syntax#core#new_arg('texTitleArg')
+
+  " \footnote
   syntax match texCmdFootnote nextgroup=texFootnoteArg skipwhite skipnl "\\footnote\>"
-  call vimtex#syntax#core#new_cmd_arg('texFootnoteArg', '', '@texClusterMain')
+  call vimtex#syntax#core#new_arg('texFootnoteArg')
 
   " Various commands that take a file argument (or similar)
   syntax match texCmdInput   nextgroup=texFileArg              skipwhite skipnl "\\input\>"
@@ -215,10 +223,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdClass   nextgroup=texFileOpt,texFileArg   skipwhite skipnl "\\document\%(class\|style\)\>"
   syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\usepackage\>"
   syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\RequirePackage\>"
-  call vimtex#syntax#core#new_cmd_opt('texFileOpt', 'texFileArg')
-  call vimtex#syntax#core#new_cmd_arg('texFileArg', '', '@NoSpell,texCmd,texComment')
-  call vimtex#syntax#core#new_cmd_opt('texFilesOpt', 'texFilesArg')
-  call vimtex#syntax#core#new_cmd_arg('texFilesArg', '', '@NoSpell,texCmd,texComment,texOptSep')
+  call vimtex#syntax#core#new_arg('texFileArg', {'contains': '@NoSpell,texCmd,texComment'})
+  call vimtex#syntax#core#new_arg('texFilesArg', {'contains': '@NoSpell,texCmd,texComment,texOptSep'})
+  call vimtex#syntax#core#new_opt('texFileOpt', {'next': 'texFileArg'})
+  call vimtex#syntax#core#new_opt('texFilesOpt', {'next': 'texFilesArg'})
 
   " LaTeX 2.09 type styles
   syntax match texCmdStyle "\\rm\>"
@@ -279,17 +287,23 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " \newcommand
   syntax match texCmdNewcmd nextgroup=texNewcmdArgName skipwhite skipnl "\\\%(re\)\?newcommand\>"
-  call vimtex#syntax#core#new_cmd_arg('texNewcmdArgName', 'texNewcmdOpt,texNewcmdArgBody')
-  call vimtex#syntax#core#new_cmd_opt('texNewcmdOpt', 'texNewcmdOpt,texNewcmdArgBody', '', 'oneline')
-  call vimtex#syntax#core#new_cmd_arg('texNewcmdArgBody', '', '@texClusterMain')
+  call vimtex#syntax#core#new_arg('texNewcmdArgName', {'next': 'texNewcmdOpt,texNewcmdArgBody'})
+  call vimtex#syntax#core#new_opt('texNewcmdOpt', {
+        \ 'next': 'texNewcmdOpt,texNewcmdArgBody',
+        \ 'opts': 'oneline',
+        \})
+  call vimtex#syntax#core#new_arg('texNewcmdArgBody')
   syntax match texNewcmdParm contained "#\d\+" containedin=texNewcmdArgBody
 
   " \newenvironment
   syntax match texCmdNewenv nextgroup=texNewenvArgName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
-  call vimtex#syntax#core#new_cmd_arg('texNewenvArgName', 'texNewenvArgBegin,texNewenvOpt')
-  call vimtex#syntax#core#new_cmd_opt('texNewenvOpt', 'texNewenvArgBegin,texNewenvOpt', '', 'oneline')
-  call vimtex#syntax#core#new_cmd_arg('texNewenvArgBegin', 'texNewenvArgEnd', 'TOP')
-  call vimtex#syntax#core#new_cmd_arg('texNewenvArgEnd', '', '@texClusterMain')
+  call vimtex#syntax#core#new_arg('texNewenvArgName', {'next': 'texNewenvArgBegin,texNewenvOpt'})
+  call vimtex#syntax#core#new_opt('texNewenvOpt', {
+        \ 'next': 'texNewenvArgBegin,texNewenvOpt',
+        \ 'opts': 'oneline'
+        \})
+  call vimtex#syntax#core#new_arg('texNewenvArgBegin', {'next': 'texNewenvArgEnd'})
+  call vimtex#syntax#core#new_arg('texNewenvArgEnd')
   syntax match texNewenvParm contained "#\d\+" containedin=texNewenvArgBegin,texNewenvArgEnd
 
   " Definitions/Commands
@@ -304,7 +318,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   endif
   syntax match texDefParmPre contained nextgroup=texDefArgBody skipwhite skipnl "#[^{]*"
   syntax match texDefParm contained "#\d\+" containedin=texDefParmPre,texDefArgBody
-  call vimtex#syntax#core#new_cmd_arg('texDefArgBody', '', '@texClusterMain')
+  call vimtex#syntax#core#new_arg('texDefArgBody')
 
   " Reference and cite commands
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\nocite\>"
@@ -313,8 +327,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\v\?ref\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[tp]\>\*\?"
-  call vimtex#syntax#core#new_cmd_opt('texRefOpt', 'texRefOpt,texRefArg')
-  call vimtex#syntax#core#new_cmd_arg('texRefArg', '', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_opt('texRefOpt', {'next': 'texRefOpt,texRefArg'})
+  call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
   " Sections and parts
   syntax match texCmdParts "\\\(front\|main\|back\)matter\>"
@@ -322,21 +336,21 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdParts nextgroup=texPartArgTitle "\\chapter\>\*\?"
   syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)*section\>\*\?"
   syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)\?paragraph\>"
-  call vimtex#syntax#core#new_cmd_arg('texPartArgTitle', '', '@texClusterMain')
+  call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
   syntax match texCmdItem "\\item\>"
 
-  " Add @NoSpell for commands per configuration
+  " Add @NoSpell for commands per configuration (TOP,@Spell implies NoSpell!)
   for l:macro in g:vimtex_syntax_nospell_commands
     execute 'syntax match texCmdNoSpell nextgroup=texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
   endfor
-  call vimtex#syntax#core#new_cmd_arg('texNoSpellArg', '', '@texClusterMain,@NoSpell')
+  call vimtex#syntax#core#new_arg('texNoSpellArg', {'contains': 'TOP,@Spell'})
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
-  call vimtex#syntax#core#new_cmd_arg('texEnvArgName', 'texEnvOpt')
-  call vimtex#syntax#core#new_cmd_opt('texEnvOpt', '', 'texComment,@NoSpell')
+  call vimtex#syntax#core#new_arg('texEnvArgName', {'next': 'texEnvOpt'})
+  call vimtex#syntax#core#new_opt('texEnvOpt', {'contains': 'texComment,@NoSpell'})
 
   " }}}2
   " {{{2 Region: \makeatletter ... \makeatother
@@ -367,13 +381,13 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
         \ end='\\ExplSyntaxOff\|\%$'
         \ transparent keepend
-        \ contains=TOP
+        \ contains=TOP,@NoSpell
 
   syntax region texE3Group matchgroup=texDelim
         \ start="{" skip="\\\\\|\\}" end="}"
         \ contained
         \ containedin=texE3Region,texE3Group
-        \ contains=TOP
+        \ contains=TOP,@NoSpell
 
   syntax match texE3Var  contained containedin=texE3Region,texE3Group "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
   syntax match texE3Func contained containedin=texE3Region,texE3Group "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
@@ -383,7 +397,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Region: Math
 
   syntax match texCmdMathenv "\v\\%(begin|end)>" contained nextgroup=texMathenvArgName
-  call vimtex#syntax#core#new_cmd_arg('texMathenvArgName', '')
+  call vimtex#syntax#core#new_arg('texMathenvArgName')
 
   syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
 
@@ -408,7 +422,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Math regions: \ensuremath{...}
   syntax match texCmdMath "\\ensuremath\>" nextgroup=texMathRegionEnsured
-  call vimtex#syntax#core#new_cmd_arg('texMathRegionEnsured', '', '@texClusterMath')
+  call vimtex#syntax#core#new_arg('texMathRegionEnsured', {'contains': '@texClusterMath'})
 
   " Bad/Mismatched math
   syntax match texMathError "\\[\])]"
@@ -419,7 +433,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Text Inside Math regions
   syntax match texCmdMathtext "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathtextArg
-  call vimtex#syntax#core#new_cmd_arg('texMathtextArg', '', '@texClusterMain,@Spell')
+  call vimtex#syntax#core#new_arg('texMathtextArg')
 
   call s:match_math_sub_super(l:cfg)
   call s:match_math_symbols(l:cfg)
@@ -459,30 +473,39 @@ endfunction
 
 " }}}1
 
-function! vimtex#syntax#core#new_cmd_arg(grp, next, ...) abort " {{{1
-  let l:contains = a:0 >= 1 ? a:1 : 'texComment'
-  let l:options = a:0 >= 2 ? a:2 : ''
+function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'opts': 'contained',
+        \ 'next': '',
+        \ 'contains': 'TOP,@NoSpell',
+        \}, a:0 > 0 ? a:1 : {})
 
   execute 'syntax region' a:grp
-        \ 'contained matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}"'
-        \ (empty(l:contains) ? '' : 'contains=' . l:contains)
-        \ (empty(a:next) ? '' : 'nextgroup=' . a:next . ' skipwhite skipnl')
-        \ l:options
+        \ 'matchgroup=texDelim'
+        \ 'start="{" skip="\\\\\|\\}" end="}"'
+        \ l:cfg.opts
+        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
 endfunction
 
 " }}}1
-function! vimtex#syntax#core#new_cmd_opt(grp, next, ...) abort " {{{1
-  let l:contains = a:0 > 0 ? a:1 : 'texComment,texCmd,texLength,texOptSep,texOptEqual'
-  let l:options = a:0 >= 2 ? a:2 : ''
+function! vimtex#syntax#core#new_opt(grp, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'opts': '',
+        \ 'next': '',
+        \ 'contains': '@texClusterOpt',
+        \}, a:0 > 0 ? a:1 : {})
 
   execute 'syntax region' a:grp
-        \ 'contained matchgroup=texDelim start="\[" skip="\\\\\|\\\]" end="\]"'
-        \ (empty(l:contains) ? '' : 'contains=' . l:contains)
-        \ (empty(a:next) ? '' : 'nextgroup=' . a:next . ' skipwhite skipnl')
-        \ l:options
+        \ 'contained matchgroup=texDelim'
+        \ 'start="\[" skip="\\\\\|\\\]" end="\]"'
+        \ l:cfg.opts
+        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
 endfunction
 
 " }}}1
+
 function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
   let l:contains = 'texCmdEnv'
   let l:options = 'keepend'
@@ -632,9 +655,9 @@ function! s:match_bold_italic(cfg) abort " {{{1
   let [l:conceal, l:concealends] =
         \ (a:cfg.conceal.styles ? ['conceal', 'concealends'] : ['', ''])
 
-  syntax cluster texClusterBold contains=TOP,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold
-  syntax cluster texClusterItal contains=TOP,texCmdStyleItal,texCmdStyleBold,texCmdStyleBoldItal
-  syntax cluster texClusterItalBold contains=TOP,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold,texCmdStyleBoldItal
+  syntax cluster texClusterBold     contains=TOP,@NoSpell,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold
+  syntax cluster texClusterItal     contains=TOP,@NoSpell,texCmdStyleItal,texCmdStyleBold,texCmdStyleBoldItal
+  syntax cluster texClusterItalBold contains=TOP,@NoSpell,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold,texCmdStyleBoldItal
 
   let l:map = {
         \ 'texCmdStyleBold': 'texStyleBold',
