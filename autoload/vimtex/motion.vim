@@ -140,6 +140,9 @@ function! vimtex#motion#section(type, backwards, visual) abort " {{{1
     normal! gv
   endif
 
+  " Hack to update the jump list so CTRL-o jumps back to the right place
+  normal! m`
+
   " Check trivial cases
   let l:top = search(s:re_sec, 'nbW') == 0
   let l:bottom = search(a:type == 1 ? s:re_sec_t2 : s:re_sec, 'nW') == 0
@@ -199,6 +202,9 @@ function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1
     normal! gv
   endif
 
+  " Hack to update the jump list so CTRL-o jumps back to the right place
+  normal! m`
+
   let l:re = g:vimtex#re#not_comment . (a:begin ? '\\begin\s*\{' : '\\end\s*\{')
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
@@ -214,6 +220,9 @@ function! vimtex#motion#frame(begin, backwards, visual) abort " {{{1
     normal! gv
   endif
 
+  " Hack to update the jump list so CTRL-o jumps back to the right place
+  normal! m`
+
   let l:re = g:vimtex#re#not_comment . (a:begin ? '\\begin\s*\{frame\}' : '\\end\s*\{frame\}')
   let l:flags = 'W' . (a:backwards ? 'b' : '')
 
@@ -228,6 +237,9 @@ function! vimtex#motion#comment(begin, backwards, visual) abort " {{{1
   if a:visual
     normal! gv
   endif
+
+  " Hack to update the jump list so CTRL-o jumps back to the right place
+  normal! m`
 
   let l:re = a:begin
         \ ? '\v%(^\s*\%.*\n)@<!\s*\%'
