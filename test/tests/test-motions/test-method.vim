@@ -4,7 +4,7 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-silent edit test-method-motions.tex
+silent edit test-method.tex
 
 if empty($INMAKE) | finish | endif
 

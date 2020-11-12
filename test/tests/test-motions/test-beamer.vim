@@ -5,7 +5,7 @@ syntax on
 
 nnoremap q :qall!<cr>
 
-silent edit test-beamer-motions.tex
+silent edit test-beamer.tex
 
 if empty($INMAKE) | finish | endif
 

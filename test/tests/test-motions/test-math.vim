@@ -5,7 +5,7 @@ syntax on
 
 nnoremap q :qall!<cr>
 
-silent edit test-math-motions.tex
+silent edit test-math.tex
 
 if empty($INMAKE) | finish | endif
 
