@@ -16,8 +16,10 @@ function! vimtex#syntax#p#pythontex#load() abort " {{{1
         \ start='\z([#@]\)' end='\z1'
         \ contained contains=@vimtex_nested_python keepend
 
-  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pyblock', '@vimtex_nested_python')
-  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pycode', '@vimtex_nested_python')
+  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pyblock',
+        \ {'contains': '@vimtex_nested_python'})
+  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pycode',
+        \ {'contains': '@vimtex_nested_python'})
 
   highlight def link texCmdPythontex texCmd
 endfunction

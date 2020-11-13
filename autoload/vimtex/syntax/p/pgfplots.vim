@@ -19,10 +19,10 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
 
   syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{\%(log\)*axis}"
   syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{groupplot}"
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'axis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'logaxis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'loglogaxis', '@texClusterTikz')
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'groupplot', '@texClusterTikz')
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'axis', {'contains': '@texClusterTikz'})
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'logaxis', {'contains': '@texClusterTikz'})
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'loglogaxis', {'contains': '@texClusterTikz'})
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'groupplot', {'contains': '@texClusterTikz'})
 
   highlight def link texCmdAxis texCmd
 endfunction

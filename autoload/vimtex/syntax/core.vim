@@ -467,19 +467,20 @@ endfunction
 " }}}1
 
 function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
-  let l:contains = 'texCmdEnv'
-  let l:options = 'keepend'
+  let l:cfg = extend({
+        \ 'contains': '',
+        \}, a:0 > 0 ? a:1 : {})
 
-  if a:0 > 0
-    let l:contains .= ',' . a:1
-    let l:options .= ' transparent'
+  let l:contains = 'contains=texCmdEnv'
+  if !empty(l:cfg.contains)
+    let l:contains .= ',' . l:cfg.contains
   endif
 
   execute 'syntax region' a:grp
         \ 'start="\\begin{' . a:envname .'}"'
         \ 'end="\\end{' . a:envname .'}"'
-        \ (empty(l:contains) ? '' : 'contains=' . l:contains)
-        \ l:options
+        \ l:contains
+        \ 'keepend transparent'
 endfunction
 
 " }}}1

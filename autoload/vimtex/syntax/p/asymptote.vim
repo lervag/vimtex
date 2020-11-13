@@ -9,13 +9,14 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   let b:vimtex_syntax.asymptote = 1
 
   if !empty(vimtex#syntax#nested#include('asy'))
-    call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asy', '@vimtex_nested_asy')
-    call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asydef', '@vimtex_nested_asy')
+    let l:opts = {'contains': '@vimtex_nested_asy'}
   else
-    call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asy')
-    call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asydef')
+    let l:opts = {}
     highlight def link texAsymptoteRegion texRegion
   endif
+
+  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asy', l:opts)
+  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asydef', l:opts)
 endfunction
 
 " }}}1

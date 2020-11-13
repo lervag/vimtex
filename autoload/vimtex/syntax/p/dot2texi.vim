@@ -9,8 +9,8 @@ function! vimtex#syntax#p#dot2texi#load() abort " {{{1
   let b:vimtex_syntax.dot2texi = 1
 
   call vimtex#syntax#nested#include('dot')
-  call vimtex#syntax#core#new_region_env(
-        \ 'texDotRegion', 'dot2tex', '@vimtex_nested_dot')
+  call vimtex#syntax#core#new_region_env('texDotRegion', 'dot2tex',
+               \ {'contains': '@vimtex_nested_dot'})
 endfunction
 
 " }}}1

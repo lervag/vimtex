@@ -9,8 +9,8 @@ function! vimtex#syntax#p#gnuplottex#load() abort " {{{1
   let b:vimtex_syntax.gnuplottex = 1
 
   call vimtex#syntax#nested#include('gnuplot')
-  call vimtex#syntax#core#new_region_env(
-        \ 'texGnuplotRegion', 'gnuplot', '@vimtex_nested_gnuplot')
+  call vimtex#syntax#core#new_region_env('texGnuplotRegion', 'gnuplot',
+        \ {'contains': '@vimtex_nested_gnuplot'})
 endfunction
 
 " }}}1
