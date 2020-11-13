@@ -26,7 +26,6 @@ function! vimtex#syntax#core#init() abort " {{{1
         \@NoSpell
 
   syntax cluster texClusterMath contains=
-        \texCmd,
         \texCmdEnv,
         \texCmdError,
         \texCmdFootnote,
@@ -39,6 +38,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texCmdVerb,
         \texComment,
         \texGroupError,
+        \texMathCmd,
         \texMathDelim,
         \texMathDelimMod,
         \texMathGroup,
@@ -357,6 +357,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdMathEnv "\v\\%(begin|end)>" contained nextgroup=texMathEnvArgName
   call vimtex#syntax#core#new_arg('texMathEnvArgName')
 
+  " Define separate "generic" commands inside math regions
+  syntax match texMathCmd nextgroup=texMathArg skipwhite skipnl "\\\a\+"
+  call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
+
   " Math regions: environments
   call vimtex#syntax#core#new_region_math('displaymath')
   call vimtex#syntax#core#new_region_math('eqnarray')
@@ -581,6 +585,8 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texFilesArg             texFileArg
   highlight def link texFilesOpt             texOpt
   highlight def link texGroupError           texError
+  highlight def link texMathArg              texMathRegion
+  highlight def link texMathCmd              texCmd
   highlight def link texMathDelimRegion      texDelim
   highlight def link texMathDelimMod         texMathDelim
   highlight def link texMathError            texError
