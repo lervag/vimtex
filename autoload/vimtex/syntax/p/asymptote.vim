@@ -11,7 +11,7 @@ function! vimtex#syntax#p#asymptote#load() abort " {{{1
   if !empty(vimtex#syntax#nested#include('asy'))
     let l:opts = {'contains': '@vimtex_nested_asy'}
   else
-    let l:opts = {}
+    let l:opts = {'transparent': 0}
     highlight def link texAsymptoteRegion texRegion
   endif
 

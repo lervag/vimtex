@@ -8,9 +8,9 @@ function! vimtex#syntax#p#moreverb#load() abort " {{{1
   if has_key(b:vimtex_syntax, 'moreverb') | return | endif
   let b:vimtex_syntax.moreverb = 1
 
-  call vimtex#syntax#core#new_region_env('texVerbRegion', 'verbatimtab')
-  call vimtex#syntax#core#new_region_env('texVerbRegion', 'verbatimwrite')
-  call vimtex#syntax#core#new_region_env('texVerbRegion', 'boxedverbatim')
+  call vimtex#syntax#core#new_region_env('texVerbRegion', 'verbatimtab', {'transparent': 0})
+  call vimtex#syntax#core#new_region_env('texVerbRegion', 'verbatimwrite', {'transparent': 0})
+  call vimtex#syntax#core#new_region_env('texVerbRegion', 'boxedverbatim', {'transparent': 0})
 endfunction
 
 " }}}1
