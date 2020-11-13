@@ -31,7 +31,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texCmdError,
         \texCmdFootnote,
         \texCmdGreek,
-        \texCmdMathtext,
+        \texCmdMathText,
         \texCmdRef,
         \texCmdSize,
         \texCmdStyle,
@@ -350,16 +350,18 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Region: Math
 
-  syntax match texCmdMathenv "\v\\%(begin|end)>" contained nextgroup=texMathenvArgName
-  call vimtex#syntax#core#new_arg('texMathenvArgName')
+  " Define math region group
+  call vimtex#syntax#core#new_arg('texMathGroup', {'contains': '@texClusterMath'})
 
-  syntax region texMathGroup matchgroup=texDelim start="{" skip="\\\\\|\\}" end="}" contained contains=@texClusterMath
+  " Define math environment boundaries
+  syntax match texCmdMathEnv "\v\\%(begin|end)>" contained nextgroup=texMathEnvArgName
+  call vimtex#syntax#core#new_arg('texMathEnvArgName')
 
   " Math regions: environments
-  call vimtex#syntax#core#new_region_math('displaymath', 1)
-  call vimtex#syntax#core#new_region_math('eqnarray', 1)
-  call vimtex#syntax#core#new_region_math('equation', 1)
-  call vimtex#syntax#core#new_region_math('math', 1)
+  call vimtex#syntax#core#new_region_math('displaymath')
+  call vimtex#syntax#core#new_region_math('eqnarray')
+  call vimtex#syntax#core#new_region_math('equation')
+  call vimtex#syntax#core#new_region_math('math')
 
   " Math regions: Inline Math Zones
   if l:cfg.conceal.math_bounds
@@ -386,7 +388,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathOper "[_^=]" contained
 
   " Text Inside Math regions
-  syntax match texCmdMathtext "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathtextArg
+  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathtextArg
   call vimtex#syntax#core#new_arg('texMathtextArg')
 
   call s:match_math_sub_super(l:cfg)
@@ -477,20 +479,23 @@ function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#core#new_region_math(mathzone, starred) abort " {{{1
-  execute 'syntax match texMathError /\\end\s*{\s*' . a:mathzone . '\*\?\s*}/'
+function! vimtex#syntax#core#new_region_math(mathzone, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'starred': 1,
+        \ 'next': '',
+        \}, a:0 > 0 ? a:1 : {})
 
+  let l:envname = a:mathzone . (l:cfg.starred ? '\*\?' : '')
+
+  execute 'syntax match texMathEnvBgnEnd "\\\%(begin\|end\)\>{' . l:envname . '}"'
+        \ 'contained contains=texCmdMathEnv'
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
+  execute 'syntax match texMathError "\\end{' . l:envname . '}"'
   execute 'syntax region texMathRegionEnv'
-        \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\s*}'''
-        \ . ' end=''\\end\s*{\s*' . a:mathzone . '\s*}'''
-        \ . ' keepend contains=texCmdMathenv,texMathenvArgName,@texClusterMath'
-
-  if !a:starred | return | endif
-
-  execute 'syntax region texMathRegionEnvStarred'
-        \ . ' start=''\\begin\s*{\s*' . a:mathzone . '\*\s*}'''
-        \ . ' end=''\\end\s*{\s*' . a:mathzone . '\*\s*}'''
-        \ . ' keepend contains=texCmdMathenv,texMathenvArgName,@texClusterMath'
+        \ 'start="\\begin{\z(' . l:envname . '\)}"'
+        \ 'end="\\end{\z1}"'
+        \ 'contains=texMathEnvBgnEnd,@texClusterMath'
+        \ 'keepend'
 endfunction
 
 " }}}1
@@ -514,7 +519,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texMathDelim        Type
   highlight def link texMathOper         Operator
   highlight def link texMathRegion       Special
-  highlight def link texMathenvArgName   Delimiter
+  highlight def link texMathEnvArgName   Delimiter
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
   highlight def link texParm             Special
@@ -544,8 +549,8 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdItem              texCmdEnv
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdMath              texCmd
-  highlight def link texCmdMathenv           texCmdEnv
-  highlight def link texCmdMathtext          texCmd
+  highlight def link texCmdMathEnv           texCmdEnv
+  highlight def link texCmdMathText          texCmd
   highlight def link texCmdNewcmd            texCmd
   highlight def link texCmdNewenv            texCmd
   highlight def link texCmdNoSpell           texCmd
