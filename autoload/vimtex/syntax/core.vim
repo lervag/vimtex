@@ -326,11 +326,12 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Verbatim inline
   syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbRegionInline
-  if l:cfg.is_style_document
-    syntax region texVerbRegionInline matchgroup=texDelim start="\z([^\ta-zA-Z@]\)" end="\z1" contained
-  else
-    syntax region texVerbRegionInline matchgroup=texDelim start="\z([^\ta-zA-Z]\)"  end="\z1" contained
-  endif
+  call vimtex#syntax#core#new_arg('texVerbRegionInline', {
+        \ 'contains': '',
+        \ 'matcher': (l:cfg.is_style_document
+        \   ? 'start="\z([^\ta-zA-Z@]\)" end="\z1"'
+        \   : 'start="\z([^\ta-zA-Z]\)" end="\z1"'),
+        \})
 
   " }}}2
   " {{{2 Region: Expl3
@@ -435,14 +436,15 @@ endfunction
 
 function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
   let l:cfg = extend({
-        \ 'opts': 'contained',
-        \ 'next': '',
         \ 'contains': 'TOP,@NoSpell',
+        \ 'matcher': 'start="{" skip="\\\\\|\\}" end="}"',
+        \ 'next': '',
+        \ 'opts': 'contained',
         \}, a:0 > 0 ? a:1 : {})
 
   execute 'syntax region' a:grp
         \ 'matchgroup=texDelim'
-        \ 'start="{" skip="\\\\\|\\}" end="}"'
+        \ l:cfg.matcher
         \ l:cfg.opts
         \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
         \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
