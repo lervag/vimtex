@@ -125,6 +125,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texArg', {'next': 'texArg', 'opts': 'contained transparent'})
   syntax match texCmdError "\\\a*@\a*"
 
+  " Define separate "generic" commands inside math regions
+  syntax match texMathCmd contained nextgroup=texMathArg skipwhite skipnl "\\\a\+"
+  call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
+
   " {{{2 Commands: core set
 
   " Accents and ligatures
@@ -356,10 +360,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Define math environment boundaries
   syntax match texCmdMathEnv "\v\\%(begin|end)>" contained nextgroup=texMathEnvArgName
   call vimtex#syntax#core#new_arg('texMathEnvArgName')
-
-  " Define separate "generic" commands inside math regions
-  syntax match texMathCmd contained nextgroup=texMathArg skipwhite skipnl "\\\a\+"
-  call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
 
   " Math regions: environments
   call vimtex#syntax#core#new_region_math('displaymath')
