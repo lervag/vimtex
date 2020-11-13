@@ -358,7 +358,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathEnvArgName')
 
   " Define separate "generic" commands inside math regions
-  syntax match texMathCmd nextgroup=texMathArg skipwhite skipnl "\\\a\+"
+  syntax match texMathCmd contained nextgroup=texMathArg skipwhite skipnl "\\\a\+"
   call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
 
   " Math regions: environments
