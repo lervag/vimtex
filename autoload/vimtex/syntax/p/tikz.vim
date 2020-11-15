@@ -36,6 +36,8 @@ function! vimtex#syntax#p#tikz#load() abort " {{{1
   highlight def link texTikzSemicolon texDelim
   highlight def link texTikzDraw      texDelim
   highlight def link texTikzCycle     texMathDelim
+  highlight def link texTikzsetArg    texOpt
+  highlight def link texTikzOpt       texOpt
 endfunction
 
 " }}}1

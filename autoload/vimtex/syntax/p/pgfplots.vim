@@ -46,12 +46,14 @@ function! vimtex#syntax#p#pgfplots#load() abort " {{{1
   syntax match texPgfNode "node" contained nextgroup=texTikzNodeOpt skipwhite skipnl
 
 
-  highlight def link texCmdAxis     texCmd
-  highlight def link texPgfNode     texCmd
-  highlight def link texPgfType     texMathDelim
-  highlight def link texPgfFunc     texArg
-  highlight def link texPgfTableArg texFileArg
+  highlight def link texCmdAxis        texCmd
+  highlight def link texPgfNode        texCmd
+  highlight def link texPgfType        texMathDelim
+  highlight def link texPgfFunc        texArg
+  highlight def link texPgfTableArg    texFileArg
   highlight def link texPgfCoordinates texOpt
+  highlight def link texPgfAddplotOpt  texOpt
+  highlight def link texPgfTableOpt    texOpt
 endfunction
 
 " }}}1
