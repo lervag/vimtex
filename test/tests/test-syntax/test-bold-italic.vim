@@ -1,6 +1,6 @@
 source common.vim
 
-" let g:vimtex_syntax_config = {'conceal': {'styles': 0}}
+" let g:vimtex_syntax_conceal = {'styles': 0}
 set conceallevel=2
 
 silent edit test-bold-italic.tex

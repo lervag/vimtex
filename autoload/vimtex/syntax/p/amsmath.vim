@@ -20,7 +20,7 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
   call vimtex#syntax#core#new_region_math('xxalignat', {'starred': 0})
 
   " Amsmath [lr][vV]ert
-  if &encoding ==# 'utf-8' && g:vimtex_syntax_config.conceal.math_delimiters
+  if &encoding ==# 'utf-8' && g:vimtex_syntax_conceal.math_delimiters
     syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert"
     syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?r\|right\)\\rvert"
     syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert"

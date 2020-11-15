@@ -5,8 +5,9 @@
 "
 
 function! vimtex#syntax#core#init() abort " {{{1
-  let l:cfg = deepcopy(g:vimtex_syntax_config)
+  let l:cfg = {}
   let l:cfg.ext = expand('%:e')
+  let l:cfg.conceal = deepcopy(g:vimtex_syntax_conceal)
   let l:cfg.is_style_document =
         \ index(['sty', 'cls', 'clo', 'dtx', 'ltx'], l:cfg.ext) >= 0
 
@@ -667,7 +668,7 @@ endfunction
 " }}}1
 
 function! s:match_math_sub_super(cfg) " {{{1
-  if !a:cfg.conceal.super_sub | return | endif
+  if !a:cfg.conceal.math_super_sub | return | endif
 
   for [l:from, l:to] in filter(copy(s:map_super),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
@@ -797,7 +798,7 @@ let s:map_super = [
 " }}}1
 function! s:match_math_symbols(cfg) abort " {{{1
   " Many of these symbols were contributed by Björn Winckler
-  if !a:cfg.conceal.math_delimiters | return | endif
+  if !a:cfg.conceal.math_symbols | return | endif
 
   syntax match texMathSymbol "\\|"                   contained conceal cchar=‖
   syntax match texMathSymbol "\\aleph\>"             contained conceal cchar=ℵ

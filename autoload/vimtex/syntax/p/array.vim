@@ -19,7 +19,7 @@ function! vimtex#syntax#p#array#load() abort " {{{1
         \ 'start="\([<>]{\)\@<!\$" skip="\%(\\\\\)*\\\$" end="\$"'
         \ 'contains=@texClusterMath'
         \ (&encoding ==# 'utf-8'
-        \     && g:vimtex_syntax_config.conceal.math_delimiters
+        \     && g:vimtex_syntax_conceal.math_delimiters
         \   ? 'concealends' : '')
 endfunction
 
