@@ -606,7 +606,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texFileArg              texArg
   highlight def link texFileOpt              texOpt
   highlight def link texFilesArg             texFileArg
-  highlight def link texFilesOpt             texOpt
+  highlight def link texFilesOpt             texFileOpt
   highlight def link texGroupError           texError
   highlight def link texMathArg              texMathRegion
   highlight def link texMathCmd              texCmd
