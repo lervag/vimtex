@@ -416,14 +416,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Add support for conceal with custom replacement (conceallevel = 2)
 
   if &encoding ==# 'utf-8'
-    if l:cfg.conceal.special_chars
-      syntax match texSpecialChar '\\glq\>'  contained conceal cchar=‚
-      syntax match texSpecialChar '\\grq\>'  contained conceal cchar=‘
-      syntax match texSpecialChar '\\glqq\>' contained conceal cchar=„
-      syntax match texSpecialChar '\\grqq\>' contained conceal cchar=“
-      syntax match texSpecialChar '\\hyp\>'  contained conceal cchar=-
-    endif
-
     " Conceal replace greek letters
     if l:cfg.conceal.greek
       call s:match_conceal_greek()

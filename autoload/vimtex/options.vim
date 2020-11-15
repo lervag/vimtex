@@ -268,7 +268,6 @@ function! vimtex#options#init() abort " {{{1
         \   'greek': g:vimtex_syntax_conceal,
         \   'math_bounds': g:vimtex_syntax_conceal,
         \   'math_delimiters': g:vimtex_syntax_conceal,
-        \   'special_chars': g:vimtex_syntax_conceal,
         \   'styles': g:vimtex_syntax_conceal,
         \   'super_sub': g:vimtex_syntax_conceal,
         \ },
@@ -302,6 +301,9 @@ function! vimtex#options#init() abort " {{{1
         \})
   call s:init_option('vimtex_syntax_autoload_packages', ['amsmath'])
   call s:init_option('vimtex_syntax_nospell_commands', [])
+  call s:init_option('vimtex_syntax_packages', {
+        \ 'babel': {'conceal': g:vimtex_syntax_conceal_default},
+        \})
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 
