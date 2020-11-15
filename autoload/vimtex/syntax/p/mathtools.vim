@@ -17,6 +17,10 @@ function! vimtex#syntax#p#mathtools#load() abort " {{{1
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[lr]gathered}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[pbBvV]\?\%(small\)\?matrix\*}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos2 "\\begin{multlined}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{aligned}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{[lr]gathered}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{[pbBvV]\?\%(small\)\?matrix\*}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{multlined}"
   call vimtex#syntax#core#new_opt('texMathToolsOptPos1', {'contains': ''})
   call vimtex#syntax#core#new_opt('texMathToolsOptPos2', {'contains': '', 'next': 'texMathToolsOptWidth'})
   call vimtex#syntax#core#new_opt('texMathToolsOptWidth', {'contains': 'texLength'})

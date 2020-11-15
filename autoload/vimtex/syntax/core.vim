@@ -402,7 +402,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Support for array environment
-  syntax match texMathCmdEnv "\\begin{array}" contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\begin{array}" nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\end{array}"
   call vimtex#syntax#core#new_arg('texMathArrayArg', {'contains': ''})
 
   call s:match_math_sub_super(l:cfg)

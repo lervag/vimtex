@@ -27,9 +27,12 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
     syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?r\|right\)\\rVert"
   endif
 
-  syntax match texMathCmdEnv "\\begin{subarray}"       contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
-  syntax match texMathCmdEnv "\\begin{x\?alignat\*\?}" contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
-  syntax match texMathCmdEnv "\\begin{xxalignat}"      contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{subarray}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{x\?alignat\*\?}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{xxalignat}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{subarray}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
 endfunction
 
 " }}}1
