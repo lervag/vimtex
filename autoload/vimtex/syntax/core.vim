@@ -39,6 +39,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texComment,
         \texGroupError,
         \texMathCmd,
+        \texMathCmdEnv,
         \texMathDelim,
         \texMathDelimMod,
         \texMathGroup,
@@ -310,6 +311,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texEnvArgName', {'next': 'texEnvOpt'})
   call vimtex#syntax#core#new_opt('texEnvOpt', {'contains': 'texComment,@NoSpell'})
 
+  " Tabular arguments
+  syntax match texCmdEnv "\\begin{tabular}" contains=texCmdEnv nextgroup=texTabularArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': ''})
+
   " }}}2
   " {{{2 Region: \makeatletter ... \makeatother
 
@@ -393,12 +398,16 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathOper "[_^=]" contained
 
   " Text Inside Math regions
-  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathtextArg
-  call vimtex#syntax#core#new_arg('texMathtextArg')
+  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
+  call vimtex#syntax#core#new_arg('texMathTextArg')
 
   call s:match_math_sub_super(l:cfg)
   call s:match_math_symbols(l:cfg)
   call s:match_math_delims(l:cfg)
+
+  " Support for array environment
+  syntax match texMathCmdEnv "\\begin{array}" contained contains=texCmdEnv nextgroup=texMathArrayArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texMathArrayArg', {'contains': ''})
 
   " }}}2
   " {{{2 Conceal mode support
@@ -600,6 +609,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texGroupError           texError
   highlight def link texMathArg              texMathRegion
   highlight def link texMathCmd              texCmd
+  highlight def link texMathArrayArg         texOpt
   highlight def link texMathDelimRegion      texDelim
   highlight def link texMathDelimMod         texMathDelim
   highlight def link texMathError            texError
@@ -622,6 +632,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texOptEqual             texSymbol
   highlight def link texRefOpt               texOpt
   highlight def link texLigature             texSymbol
+  highlight def link texTabularArg           texOpt
   highlight def link texTabularChar          texSymbol
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
