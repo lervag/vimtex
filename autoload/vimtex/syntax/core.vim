@@ -401,13 +401,13 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
-  call s:match_math_sub_super(l:cfg)
-  call s:match_math_symbols(l:cfg)
-  call s:match_math_delims(l:cfg)
-
   " Support for array environment
   syntax match texMathCmdEnv "\\begin{array}" contained contains=texCmdEnv nextgroup=texMathArrayArg skipwhite skipnl
   call vimtex#syntax#core#new_arg('texMathArrayArg', {'contains': ''})
+
+  call s:match_math_sub_super(l:cfg)
+  call s:match_math_symbols(l:cfg)
+  call s:match_math_delims(l:cfg)
 
   " }}}2
   " {{{2 Conceal mode support
