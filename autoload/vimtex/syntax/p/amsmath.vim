@@ -27,9 +27,9 @@ function! vimtex#syntax#p#amsmath#load() abort " {{{1
     syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?r\|right\)\\rVert"
   endif
 
-  syntax match texMathCmdEnv "\\begin{subarray}"       contained contains=texCmdEnv nextgroup=texMathArrayArg skipwhite skipnl
-  syntax match texMathCmdEnv "\\begin{x\?alignat\*\?}" contained contains=texCmdEnv nextgroup=texMathArrayArg skipwhite skipnl
-  syntax match texMathCmdEnv "\\begin{xxalignat}"      contained contains=texCmdEnv nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv "\\begin{subarray}"       contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv "\\begin{x\?alignat\*\?}" contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
+  syntax match texMathCmdEnv "\\begin{xxalignat}"      contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl
 endfunction
 
 " }}}1
