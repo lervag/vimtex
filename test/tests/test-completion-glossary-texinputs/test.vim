@@ -6,8 +6,6 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 let g:vimtex_cache_persistent = 0
 
 silent edit texwork/example.tex

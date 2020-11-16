@@ -5,10 +5,8 @@
 "
 
 if !get(g:, 'vimtex_enabled', 1)
+      \ || get(g:, 'tex_flavor', 'latex') !=# 'latex'
   finish
 endif
 
-if !exists('g:tex_flavor')
-  call vimtex#log#warning(['g:tex_flavor not specified',
-        \ 'Please read :help vimtex-tex-flavor!'])
-endif
+autocmd BufNewFile,BufRead *.tex set filetype=tex

@@ -4,8 +4,6 @@ filetype plugin on
 
 set nomore
 
-let g:tex_flavor = 'latex'
-
 " Ugly paths
 call vimtex#test#main('test-ugly-paths/[code college-1] title/test.tex',
       \ 'test-ugly-paths/[code college-1] title/test.tex')

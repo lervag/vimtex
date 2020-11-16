@@ -8,7 +8,6 @@ set nomore
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
 " let g:vimtex_matchparen_enabled = 0
 
 silent edit test.tex

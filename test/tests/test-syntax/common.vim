@@ -5,8 +5,6 @@ syntax enable
 
 set nomore
 
-let g:tex_flavor = 'latex'
-
 nnoremap q :qall!<cr>
 
 " Use a more colorful colorscheme

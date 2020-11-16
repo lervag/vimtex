@@ -115,25 +115,13 @@ file $VIMRUNTIME/indent/tex.vim for the documentation), and some sensible
 options (|ft-tex-plugin|).
 
                                                             *vimtex-tex-flavor*
-When Vimtex is active, it will by default override the internal TeX plugin. In
-particular, Vimtex is loaded when the 'filetype' is set to `tex`. This is
-usually the case for most files with the `.tex` extension. However, the `.tex`
-extension is ambiguous in that it may be used for both plain TeX, ConTeXt, and
-LaTeX files. The built-in |ft-tex-plugin| provides an |ftdetect| mechanism for
-detecting the filetype by looking at the top lines of a file. In most cases,
-the filetype is specified as `tex`, but by default it will fall back to
-`plaintex`. To prevent this behaviour and ensure that Vimtex is loaded for all
-`.tex` files, one should set the |g:tex_flavor| option to `'latex'`. As this
-behaviour may be surprising to a lot of people, Vimtex will give a warning if
-it is installed and if the |g:tex_flavor| option is not defined. In most
-cases, you want to set: >
-
-  let g:tex_flavor = 'latex'
-
-Some people may want to keep the default behaviour. If so, one may explicitly
-set the default value: >
-
-  let g:tex_flavor = 'plain'
+When Vimtex is active, it will override the internal TeX plugin for the
+filetype `tex` (|ft-tex-plugin|), both for syntax highlighting and for
+filetype specific features. To prevent the unexpected behaviour where `.tex`
+files by default will be recognized as the filetype `plaintex`
+(|ft-plaintex-syntax|) for e.g. empty documents, Vimtex overrides the filetype
+detection for `.tex`. The user may prevent this overriding by specifying the
+|g:tex_flavor| option something different than `'latex'`.
 
 -----------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
