@@ -6,10 +6,7 @@
 
 scriptencoding utf-8
 
-function! vimtex#syntax#p#ieeetrantools#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'ieeetrantools') | return | endif
-  let b:vimtex_syntax.ieeetrantools = 1
-
+function! vimtex#syntax#p#ieeetrantools#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texMathEnvIEEEArg')
   call vimtex#syntax#core#new_opt('texMathEnvIEEEOpt',
         \ {'next': 'texMathEnvIEEEArg'})

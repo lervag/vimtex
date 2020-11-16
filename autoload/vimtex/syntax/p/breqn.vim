@@ -6,10 +6,7 @@
 
 scriptencoding utf-8
 
-function! vimtex#syntax#p#breqn#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'breqn') | return | endif
-  let b:vimtex_syntax.breqn = 1
-
+function! vimtex#syntax#p#breqn#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_region_math('dmath')
   call vimtex#syntax#core#new_region_math('dseries')
   call vimtex#syntax#core#new_region_math('dgroup')

@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#tabularx#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'tabularx') | return | endif
-  let b:vimtex_syntax.tabularx = 1
-
+function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
   syntax match texTabularCol       /[lcr]/  contained
   syntax match texTabularCol       /[pmb]/  contained nextgroup=texTabularLength
   syntax match texTabularCol       /\*/     contained nextgroup=texTabularMulti

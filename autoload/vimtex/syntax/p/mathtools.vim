@@ -4,13 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-scriptencoding utf-8
-
-function! vimtex#syntax#p#mathtools#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'mathtools') | return | endif
-  let b:vimtex_syntax.mathtools = 1
-
-  call vimtex#syntax#p#amsmath#load()
+function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load('amsmath')
 
   " Support for various envionrments with option groups
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{aligned}"

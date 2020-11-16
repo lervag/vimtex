@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#beamer#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'beamer') | return | endif
-  let b:vimtex_syntax.beamer = 1
-
+function! vimtex#syntax#p#beamer#load(cfg) abort " {{{1
   syntax match texBeamerDelim '<\|>' contained
   syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelim
 

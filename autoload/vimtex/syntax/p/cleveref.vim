@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#cleveref#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'cleveref') | return | endif
-  let b:vimtex_syntax.cleveref = 1
-
+function! vimtex#syntax#p#cleveref#load(cfg) abort " {{{1
   syntax match texCmdCRef nextgroup=texCRefArg skipwhite skipnl
         \ "\\\%(\%(label\)\?c\%(page\)\?\|C\)ref\>"
 

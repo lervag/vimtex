@@ -6,10 +6,7 @@
 
 scriptencoding utf-8
 
-function! vimtex#syntax#p#amsmath#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'amsmath') | return | endif
-  let b:vimtex_syntax.amsmath = 1
-
+function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_region_math('align')
   call vimtex#syntax#core#new_region_math('alignat')
   call vimtex#syntax#core#new_region_math('flalign')

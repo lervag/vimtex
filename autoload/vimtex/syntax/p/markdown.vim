@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#markdown#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'markdown') | return | endif
-  let b:vimtex_syntax.markdown = 1
-
+function! vimtex#syntax#p#markdown#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('markdown')
   call vimtex#syntax#core#new_region_env('texMarkdownRegion', 'markdown',
         \ {'contains': 'texCmd,@vimtex_nested_markdown'})

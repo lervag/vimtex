@@ -4,11 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#pgfplots#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'pgfplots') | return | endif
-  let b:vimtex_syntax.pgfplots = 1
-
-  call vimtex#syntax#p#tikz#load()
+function! vimtex#syntax#p#pgfplots#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load('tikz')
 
   syntax cluster texClusterTikz add=texCmdAxis
 

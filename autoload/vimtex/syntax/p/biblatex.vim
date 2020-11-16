@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#biblatex#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'biblatex') | return | endif
-  let b:vimtex_syntax.biblatex = 1
-
+function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   syntax match texCmdBib nextgroup=texFilesArg "\\addbibresource\>"
 
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\bibentry\>"

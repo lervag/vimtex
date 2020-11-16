@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#hyperref#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'hyperref') | return | endif
-  let b:vimtex_syntax.hyperref = 1
-
+function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   syntax match texCmdHyperref '\\autoref\>' nextgroup=texRefOpt,texRefArg
   syntax match texCmdHyperref '\\hyperref\>' nextgroup=texRefOpt,texRefArg
   syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite

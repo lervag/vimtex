@@ -4,11 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#array#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'array') | return | endif
-  let b:vimtex_syntax.array = 1
-
-  call vimtex#syntax#p#tabularx#load()
+function! vimtex#syntax#p#array#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load('tabularx')
 
   " Change inline math to improve column specifiers, e.g.
   "

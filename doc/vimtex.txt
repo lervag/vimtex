@@ -1974,12 +1974,6 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
-*g:vimtex_syntax_autoload_packages*
-  Specify list of syntax packages to load on start. See |vimtex-syntax-packages|
-  for more info.
-
-  Default value: ['amsmath']
-
 *g:vimtex_syntax_conceal*
   A dictionary for specifying which core conceal features to activate. This
   mostly implies concealing particular elements with a replacement unicode
@@ -2071,15 +2065,53 @@ OPTIONS                                                        *vimtex-options*
   Default value: []
 
 *g:vimtex_syntax_packages*
-  A dictionary for package specific configuration. The following keys are
-  currently available:
+  A dictionary for package specific syntax configuration. Each key represent
+  a single package and the values are themselves configuration dictionaries.
+  All packages share the following options:
 
+    `load`  Specify when to load the package syntax addon.
+      0 = disable this syntax package
+      1 = enable this syntax package if it is detected (DEFAULT)
+      2 = always enable this syntax package
+
+  The following is a list of the available packages and, if applicable, their
+  configuration keys or where they deviate from the above specified defaults.
+
+    amsmath~
+      `load`  is 2 by default
+    array~
+    asymptote~
     babel~
-      Dictionary. Default value: >
-
-        {
-          'conceal': g:vimtex_syntax_conceal_default
-        }
+      `conceal`  whether to enable conceal
+        Default: |g:vimtex_syntax_conceal_default|
+    biblatex~
+    booktabs~
+    breqn~
+    cases~
+    cleveref~
+    csquotes~
+    dot2texi~
+    glossaries_extra~
+    glossaries~
+    gnuplottex~
+    hyperref~
+    ieeetrantools~
+    listings~
+    luacode~
+    markdown~
+    mathtools~
+    minted~
+    moreverb~
+    natbib~
+    pdfpages~
+    pgfplots~
+    pythontex~
+    subfile~
+    tabularx~
+    tikz~
+    url~
+    varioref~
+    wiki~
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
@@ -3681,8 +3713,11 @@ packages, e.g.:
 
 Associated settings:
   |g:vimtex_syntax_enabled|
+  |g:vimtex_syntax_conceal|
+  |g:vimtex_syntax_conceal_default|
   |g:vimtex_syntax_nested|
-  |g:vimtex_syntax_autoload_packages|
+  |g:vimtex_syntax_nospell_commands|
+  |g:vimtex_syntax_packages|
 
 ------------------------------------------------------------------------------
 SYNTAX CORE SPECIFICATION                                  *vimtex-syntax-core*
@@ -4717,6 +4752,11 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2020-11-16: More flexible package syntax options~
+Deprecate *g:vimtex_syntax_autoload_packages* in favor of
+|g:vimtex_syntax_packages|, which allows more fine grained control over each
+package.
 
 2020-09-24: More consise grammar options~
 Deprecate *g:vimtex_textidote_jar* in favor of |g:vimtex_grammar_textidote|.

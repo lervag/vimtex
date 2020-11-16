@@ -4,10 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#minted#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'minted') | return | endif
-  let b:vimtex_syntax.minted = 1
-
+function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   " Parse minted macros in the current project
   call s:parse_minted_constructs()
 

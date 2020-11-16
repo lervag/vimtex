@@ -4,9 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#listings#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'listings') | return | endif
-
+function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   let b:vimtex_syntax.listings = map(
         \ filter(getline(1, '$'), "v:val =~# 'language='"),
         \ {_, x -> matchstr(x, 'language=\zs\w\+')})
