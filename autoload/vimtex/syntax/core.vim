@@ -537,9 +537,9 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texError            Error
   highlight def link texLength           Number
   highlight def link texMathDelim        Type
+  highlight def link texMathEnvArgName   Delimiter
   highlight def link texMathOper         Operator
   highlight def link texMathRegion       Special
-  highlight def link texMathEnvArgName   Delimiter
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
   highlight def link texParm             Special
@@ -601,11 +601,12 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texFilesArg             texFileArg
   highlight def link texFilesOpt             texFileOpt
   highlight def link texGroupError           texError
+  highlight def link texLigature             texSymbol
   highlight def link texMathArg              texMathRegion
-  highlight def link texMathCmd              texCmd
   highlight def link texMathArrayArg         texOpt
-  highlight def link texMathDelimRegion      texDelim
+  highlight def link texMathCmd              texCmd
   highlight def link texMathDelimMod         texMathDelim
+  highlight def link texMathDelimRegion      texDelim
   highlight def link texMathError            texError
   highlight def link texMathErrorDelim       texError
   highlight def link texMathGroup            texMathRegion
@@ -625,7 +626,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texNewenvParm           texParm
   highlight def link texOptEqual             texSymbol
   highlight def link texRefOpt               texOpt
-  highlight def link texLigature             texSymbol
   highlight def link texTabularArg           texOpt
   highlight def link texTabularChar          texSymbol
   highlight def link texVerbRegion           texRegion

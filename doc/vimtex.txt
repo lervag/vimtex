@@ -3702,14 +3702,15 @@ Vimtex provides a core syntax plugin combined with package specific addons.
 The syntax plugin aims to be both consistent, structured, and efficient. The
 package specific addons are generally only loaded when applicable.
 
-Package specific syntax highlighting is provided for a lot of different
-packages, e.g.:
+LaTeX syntax is in a way very simple, but it is also complicated in that it is
+often very hard to know if any given command has one or more optional or real
+arguments. Vimtex aims to be pragmatic and will not aim to fully parse all
+LaTeX syntax to top precision, but instead aims to provide a decent trade of
+between simplicity and completeness.
 
-- Support for `biblatex` and `natbib` package
-- Support for `cleveref` package
-- Improved highlighting of `listings` package
-- Nested syntax highlighting for `dot2tex`, `lualatex`, `gnuplottex`,
-  `asymptote`, `pythontex`, `listings`, and `minted`
+The Vimtex syntax plugin is loosely based on Dr Chip's syntax plugin for LaTeX
+which is shipped by default with Vim and neovim (|ft-tex-syntax|):
+http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
 
 Associated settings:
   |g:vimtex_syntax_enabled|
@@ -3721,6 +3722,82 @@ Associated settings:
 
 ------------------------------------------------------------------------------
 SYNTAX CORE SPECIFICATION                                  *vimtex-syntax-core*
+
+As it is relatively common for some users to customize their colorschemes, it
+is useful to describe some of the underlying "philosophy" of the syntax rules.
+
+The main philosophy of the Vimtex syntax plugin is to keep things simple,
+structured, and consistent. There is a small set of primitive syntax elements
+whose higlighting rules are linked to conventional highlight groups (see
+|group-name|). More specialized syntax elements are then linked to
+a corresponding primitive syntax element. This allows a user to change the
+highlighting of primitives with the effect that corresponding elements are
+automatically also updated. This gives a high degree of flexibility with
+regards to customizing colorschemes for LaTeX files.
+
+The following is a list of the main primitive groups and which of the
+conventional syntax groups are used by default for highlighting (again, see
+|group-name|).
+
+  `texCmd` -> `Statement`
+    Most rules are based on the "generic" LaTeX command `\cmd[...]{...}...`
+    where the number of optional and real arguments is generally unknown.
+
+  `texOpt` -> `Identifier`
+    Optional argument groups, `[...]`.
+
+  `texArg` -> `Include`
+    Real argument groups, `{...}`.
+
+  `texComment` -> `Comment`
+    Needs no introduction...
+
+  `texDelim` -> `Delimiter`
+  `texError` -> `Error`
+  `texLength` -> `Number`
+  `texMathRegion` -> `Special`
+  `texOpt` -> `Identifier`
+  `texParm` -> `Special`
+  `texRegion` -> `PreCondit`
+  `texSpecialChar` -> `SpecialChar`
+  `texSymbol` -> `SpecialChar`
+
+In addition, some more specific groups are also linked directly to
+a conventional syntax group:
+
+  `texCmdSpaceCodeChar` -> `Special`
+  `texCmdTodo` -> `Todo`
+  `texCmdType` -> `Type`
+  `texCommentTodo` -> `Todo`
+  `texEnvArgName` -> `PreCondit`
+  `texMathDelim` -> `Type`
+  `texMathEnvArgName` -> `Delimiter`
+  `texMathOper` -> `Operator`
+  `texOptSep` -> `NormalNC`
+  `texPartArgTitle` -> `String`
+  `texRefArg` -> `Special`
+  `texTitleArg` -> `Underlined`
+
+Finally, the following is a simplified description of how the more
+specialised groups and syntax rules are structured and named.
+
+  `texCmd{type}`
+  `tex{type}Opt`
+  `tex{type}Arg`
+    A lot of LaTeX macros and commands are specified specifically with a given
+    number of optional and real arguments. They may also specify what those
+    arguments are. For instance, `\include{...}` wants a file argument. This
+    is matched as `texCmdInput`, and it is followed by a `texFileArg` argument
+    group. In most cases, the highlighting of `texCmd{type}` is linked to
+    `texCmd` and the highlighting of `tex{type}Opt` and `tex{type}Arg` are
+    respectively linked to `texOpt` and `texArg`.
+
+  `tex{type}Region`
+    Some commands open specific syntax regions that have different rules. Math
+    mode is a good example. Math mode is highlighted differently, and the
+    syntax regions are name `texMathRegion.*`. These regions may typically
+    contain their own (sub)sets of syntax groups, many that will only match
+    within a specific region.
 
 ------------------------------------------------------------------------------
 SYNTAX PACKAGE SPECIFICATION                           *vimtex-syntax-packages*
