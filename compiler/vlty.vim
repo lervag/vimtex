@@ -77,9 +77,15 @@ silent CompilerSet makeprg
 
 let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#,'
 if s:vlty.show_suggestions == 0
-  let &l:errorformat .= '%ZMessage: %m,%-G%.%#'
+  let &l:errorformat .= '%CMessage: %m,'
+  " see vimtex issue #1854: properly consume all message lines,
+  " otherwise problems with plugin vim-dispatch
+  let &l:errorformat .= '%C%.%#,%C%.%#,%C%.%#,%Z,'
+  let &l:errorformat .= '%-G=== %.%#'
 else
-  let &l:errorformat .= '%CMessage: %m,%Z%m,%-G%.%#'
+  let &l:errorformat .= '%CMessage: %m,%+CSuggestion:%m,'
+  let &l:errorformat .= '%C%.%#,%C%.%#,%Z,'
+  let &l:errorformat .= '%-G=== %.%#'
 endif
 silent CompilerSet errorformat
 
