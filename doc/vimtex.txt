@@ -65,6 +65,8 @@ CONTENTS                                                      *vimtex-contents*
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
+    Syntax core specification                   |vimtex-syntax-core|
+    Syntax package specification                |vimtex-syntax-packages|
   Navigation                                    |vimtex-navigation|
     Include expression (|gf| command)           |vimtex-includeexpr|
     Table of contents                           |vimtex-toc|
@@ -3802,12 +3804,18 @@ specialised groups and syntax rules are structured and named.
 ------------------------------------------------------------------------------
 SYNTAX PACKAGE SPECIFICATION                           *vimtex-syntax-packages*
 
-The syntax improvements for a specific package is loaded if that package is
-detected in the current document, see |vimtex-package-detection|. This
-generally works well when a document is compiled, but may fail to detect
-packages for new documents or documents that are not compiled. One may
-therefore specify a list of packages to autoload regardless of the package
-detection, see |g:vimtex_syntax_autoload_packages|.
+Vimtex provides several package specific syntax addons that provide richer
+syntax highlighting. These are built around the same principles as explained
+in |vimtex-syntax-core|.
+
+The syntax improvements for a specific package are by default loaded only if
+that package is detected in the current document (as explained in
+|vimtex-package-detection|). This generally works well when a document is
+compiled, but Vimtex may fail to detect packages for new documents or
+documents that are not compiled. It is therefore possible to configure that
+individual syntax packages should always load. One may also disable individual
+syntax packages. See |g:vimtex_syntax_packages| for a full list of which
+syntax addons exist and how to configure them.
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
