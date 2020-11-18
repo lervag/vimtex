@@ -1,0 +1,12 @@
+\documentclass[border=10pt]{standalone}
+\usepackage[siunitx, RPvoltages]{circuitikz}
+\newcommand{\myflow}[3][above]{%arguments: [options (default above)] {component name} {label to add}
+  \draw [-{Triangle[open]}] (#2-Ffrom) -- (#2-Fto) node[pos=0.5, #1]{#3};
+}
+
+\begin{document}
+\begin{circuitikz}
+  \draw (0,0) to[short, f, name=S1] ++(3,0);
+  \myflow{S1}{$I$}
+\end{circuitikz}
+\end{document}
