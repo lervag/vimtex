@@ -1622,7 +1622,10 @@ OPTIONS                                                        *vimtex-options*
 
     jar~
       The path to `textidote.jar`. This key must be defined if you want to use
-      the TeXtidote wrapper!
+      the TeXtidote wrapper! Please note that if one installs `textidote` with
+      a package manager e.g. in some common Linux distributions, the `.jar`
+      file might be missing. If so, it should be possible to download it
+      manually.
 
     args~
        Specify arguments to be passed to the TeXtidote grammar checker.
@@ -4124,7 +4127,10 @@ spell checking.
 
 Configuration of the wrapper is controlled by the Vim dictionary
 |g:vimtex_grammar_textidote|. In particular, it is important to specify the
-`jar` key to the path of the executable jar file `textidote.jar`.
+`jar` key to the path of the executable jar file `textidote.jar`. Please note
+that if one installs `textidote` with a package manager e.g. in some common
+Linux distributions, the `.jar` file might be missing. If so, it should be
+possible to download it manually from [1].
 
 [1]: https://sylvainhalle.github.io/textidote/
 
