@@ -322,7 +322,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
   " In short: allow @ in multicharacter macro name
   syntax region texStyRegion matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP
-  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texStyRegion
+  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texStyRegion,texStyArg nextgroup=texStyOpt,texStyArg skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texStyOpt', {'next': 'texStyArg'})
+  call vimtex#syntax#core#new_arg('texStyArg', {'next': 'texStyArg', 'opts': 'contained transparent'})
 
   " }}}2
   " {{{2 Region: Verbatim
@@ -628,6 +630,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texRefOpt               texOpt
   highlight def link texTabularArg           texOpt
   highlight def link texTabularChar          texSymbol
+  highlight def link texStyOpt               texOpt
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
 endfunction
