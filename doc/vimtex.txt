@@ -3704,10 +3704,9 @@ Vimtex provides a core syntax plugin combined with package specific addons.
 The syntax plugin aims to be both consistent, structured, and efficient. The
 package specific addons are generally only loaded when applicable.
 
-LaTeX syntax is in a way very simple, but it is also complicated in that it is
-often very hard to know if any given command has one or more optional or real
-arguments. Vimtex aims to be pragmatic and will not aim to fully parse all
-LaTeX syntax to top precision, but instead aims to provide a decent trade of
+LaTeX is a macro expansion language and it impossible to write a fully correct
+syntax parser without running the `tex` compiler itself. Vimtex aims to be
+pragmatic and provide a best-effort syntax highlighting - a decent trade of
 between simplicity and completeness.
 
 The Vimtex syntax plugin is loosely based on Dr Chip's syntax plugin for LaTeX
@@ -3724,6 +3723,11 @@ Associated settings:
 
 ------------------------------------------------------------------------------
 SYNTAX CORE SPECIFICATION                                  *vimtex-syntax-core*
+
+TODO
+* make sure to explain the math regions
+* explain difference between top level and regions, and how commands contained
+  in regions can make things complicated
 
 As it is relatively common for some users to customize their colorschemes, it
 is useful to describe some of the underlying "philosophy" of the syntax rules.
@@ -3797,7 +3801,7 @@ specialised groups and syntax rules are structured and named.
   `tex{type}Region`
     Some commands open specific syntax regions that have different rules. Math
     mode is a good example. Math mode is highlighted differently, and the
-    syntax regions are name `texMathRegion.*`. These regions may typically
+    syntax regions are name `texMathRegion*`. These regions may typically
     contain their own (sub)sets of syntax groups, many that will only match
     within a specific region.
 
