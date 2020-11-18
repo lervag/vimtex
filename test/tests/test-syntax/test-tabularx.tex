@@ -2,6 +2,9 @@
 \usepackage{tabularx}
 \usepackage{array}
 
+\newcolumntype\vcenter[1]{>{$\vcenter\bgroup\hbox\bgroup}#1<{\egroup\egroup$}}
+\newcolumntype{d}[1]{>{\rightdots{#1}}r<{\endrightdots}}
+
 \begin{document}
 
 \begin{tabular}{*{3}{>{$}c<{$}}}
