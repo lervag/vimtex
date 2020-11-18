@@ -22,6 +22,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texCmd,
         \texComment,
         \texLength,
+        \texOpt,
         \texOptEqual,
         \texOptSep,
         \@NoSpell
