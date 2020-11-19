@@ -3751,9 +3751,11 @@ whose higlighting rules are linked to conventional highlight groups (see
 |group-name|). More specialized syntax elements are then linked to
 a corresponding primitive syntax element. This allows a user to change the
 highlighting of primitives with the effect that corresponding elements are
-automatically also updated. It gives a high degree of flexibility with regards
-to customizing colorschemes for LaTeX files. See |vimtex-syntax-reference| for
-tables of the most important syntax groups with examples and descriptions.
+automatically also updated. It is also possible to override specialized groups
+to link them to other conventional groups or set colors directly. This gives
+a high degree of flexibility with regards to customizing colorschemes for
+LaTeX files. See |vimtex-syntax-reference| for tables of the most important
+syntax groups with examples and descriptions.
 
 Most of LaTeX syntax is based around the macro expansion where forms are of
 the type `\name` + `[optional group(s)]` + `{argument group(s)}`, where there
@@ -3828,8 +3830,12 @@ highlighting, as well as one ore more examples of what it matches. Most of the
 primitive groups are linked to conventional syntax groups as listed in
 |group-name|. In the examples, capital letters are used to indicate which
 parts are matched by the current group. For even more details, please refer to
-the code itself in `autoload/vimtex/syntax/core.vim` for the core elements and
-`autoload/vimtex/syntax/p/*.vim` for package specific elements.
+the code itself:
+* Core elements: The `s:init_highlights()` function in the file
+  `autoload/vimtex/syntax/core.vim` specifies the highlighting of the core
+  groups.
+* Package specific groups and elements are defined in the package specific
+  scripts: `autoload/vimtex/syntax/p/*.vim`.
 
 Table 1: A list of groups that are only primitive link targets.~
 >
@@ -3854,16 +3860,28 @@ Table 2: A list of the most common normal LaTeX groups.~
   texOptEqual          texSymbol    [a=b]
   texArg               Include      \cmd[...]{ARG}
   texSpecialChar       SpecialChar  \S, \P, \$, \;, ...
-  texCmdClass          texCmd       \DOCUMENTCLASS
-  texFileOpt           texOpt       \documentclass[CLASS OPTIONS]
-  texFileArg           texArg       \documentclass[...]{CLASS}
-  texCmdPackage        texCmd       \USEPACKAGE
-  texFilesOpt          texOpt       \usepackage[PACKAGE OPTIONS]
-  texFilesArg          texArg       \usepackage[...]{PACKAGE1, PACKAGE2}
   texCmdInput          texCmd       \INPUT
-  texCmdInput          texCmd       \INCLUDEONLY
+                                    \INCLUDE
+                                    \INCLUDEONLY
+                                    \INCLUDEGRAPHICS
+  texCmdBib            texCmd       \BIBLIOGRAPHY
+                                    \BIBLIOGRAPHYSTYLE
+  texCmdClass          texCmd       \DOCUMENTCLASS
+  texCmdPackage        texCmd       \USEPACKAGE
+                                    \REQUIREPACKAGE
+  texFileOpt           texOpt       \includegraphics[PACKAGE OPTIONS]
+                                    \documentclass[CLASS OPTIONS]
   texFileArg           texArg       \input{FILE}
-  texFilesArg          texArg       \includeonly{FILE1, FILE2}
+                                    \include{FILE}
+                                    \includegraphics[...]{FILE}
+                                    \bibliographystyle{FILE}
+                                    \documentclass[...]{CLASS}
+  texFilesOpt          texFileOpt   \usepackage[PACKAGE OPTIONS]
+                                    \RequirePackage[PACKAGE OPTIONS]
+  texFilesArg          texFileArg   \includeonly{FILE1, FILE2}
+                                    \bibliography{FILE1, FILE2}
+                                    \usepackage[...]{PACKAGE1, PACKAGE2}
+                                    \RequirePackage[...]{PACKAGE1, PACKAGE2}
   texCmdTitle          texCmd       \TITLE
   texTitleArg          Underlined   \title{MAIN TITLE}
   texCmdAuthor         texCmd       \AUTHOR
@@ -3905,7 +3923,8 @@ Table 4: A list of other important groups.~
   texLigature          texSymbol       --; ---; ``; ''; ,,
   texCmdAccent         texCmd          \"{a}
   texCmdLigature       texSpecialChar  \ss; \ae
-  texCmdSpaceCodeChar  Special         https://en.wikibooks.org/wiki/TeX/catcode
+  texCmdSpaceCodeChar  Special         Catcodes. For more info, see:
+                                       https://en.wikibooks.org/wiki/TeX/catcode
   texCmdTodo           Todo            \TODOSOMETHING
   texCmdVerb           texCmd          \VERB
   texVerbRegionInline  texRegion       \verb+VERB TEXT+
