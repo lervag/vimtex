@@ -5,12 +5,6 @@
 "
 
 function! vimtex#syntax#core#init() abort " {{{1
-  let l:cfg = {}
-  let l:cfg.ext = expand('%:e')
-  let l:cfg.conceal = deepcopy(g:vimtex_syntax_conceal)
-  let l:cfg.is_style_document =
-        \ index(['sty', 'cls', 'clo', 'dtx', 'ltx'], l:cfg.ext) >= 0
-
   syntax spell toplevel
 
   syntax sync maxlines=500
@@ -29,7 +23,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   syntax cluster texClusterMath contains=
         \texCmdEnv,
-        \texCmdError,
         \texCmdFootnote,
         \texCmdGreek,
         \texCmdMathText,
@@ -63,7 +56,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   "   as TeX syntax.
   " * For more info on dtx files, see e.g.
   "   https://ctan.uib.no/info/dtxtut/dtxtut.pdf
-  if l:cfg.ext ==# 'dtx'
+  if expand('%:e') ==# 'dtx'
     syntax match texComment "\^\^A.*$"
     syntax match texComment "^%\+"
   else
@@ -94,11 +87,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
   syntax match texSpecialChar "\\[$&%#{}_]"
-  if l:cfg.is_style_document
-    syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
-  else
-    syntax match texSpecialChar "\\[SP@]\ze\A"
-  endif
+  syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
   syntax match texSpecialChar "\\[,;:!]"
 
@@ -120,32 +109,24 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texLength contained "\<\d\+\([.,]\d\+\)\?\s*\(true\)\?\s*\(bp\|cc\|cm\|dd\|em\|ex\|in\|mm\|pc\|pt\|sp\)\>"
 
   " Match general commands first
-  if l:cfg.is_style_document
-    syntax match texCmdSty "\\[a-zA-Z@]\+"
-  endif
-  syntax match texCmd nextgroup=texOpt,texArg skipwhite skipnl "\\\a\+"
+  syntax match texCmd nextgroup=texOpt,texArg skipwhite skipnl "\\[a-zA-Z@]\+"
   call vimtex#syntax#core#new_opt('texOpt', {'next': 'texArg'})
   call vimtex#syntax#core#new_arg('texArg', {'next': 'texArg', 'opts': 'contained transparent'})
-  syntax match texCmdError "\\\a*@\a*"
 
   " Define separate "generic" commands inside math regions
+  " Note: Defined here because order matters!
   syntax match texMathCmd contained nextgroup=texMathArg skipwhite skipnl "\\\a\+"
   call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
 
   " {{{2 Commands: core set
 
   " Accents and ligatures
-  if l:cfg.is_style_document
-    syntax match texCmdAccent "\\[bcdvuH]\ze[^a-zA-Z@]"
-    syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]"
-  else
-    syntax match texCmdAccent "\\[bcdvuH]$"
-    syntax match texCmdAccent "\\[bcdvuH]\ze\A"
-    syntax match texCmdAccent /\\[=^.~"`']/
-    syntax match texCmdAccent /\\['=t'.c^ud"vb~Hr]{\a}/
-    syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
-    syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze\A"
-  endif
+  syntax match texCmdAccent "\\[bcdvuH]$"
+  syntax match texCmdAccent "\\[bcdvuH]\ze[^a-zA-Z@]"
+  syntax match texCmdAccent /\\[=^.~"`']/
+  syntax match texCmdAccent /\\['=t'.c^ud"vb~Hr]{\a}/
+  syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
+  syntax match texCmdLigature "\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]"
 
   " Spacecodes (TeX'isms)
   " * See e.g. https://en.wikibooks.org/wiki/TeX/catcode
@@ -232,7 +213,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdStyle "\\mdseries\>"
 
   " Bold and italic commands
-  call s:match_bold_italic(l:cfg)
+  call s:match_bold_italic()
 
   " Type sizes
   syntax match texCmdSize "\\tiny\>"
@@ -270,13 +251,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Definitions/Commands
   " E.g. \def \foo #1#2 {foo #1 bar #2 baz}
   syntax match texCmdDef "\\def\>" nextgroup=texDefArgName skipwhite skipnl
-  if l:cfg.is_style_document
-    syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[a-zA-Z@]\+"
-    syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[^a-zA-Z@]"
-  else
-    syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\\a\+"
-    syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\\A"
-  endif
+  syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[a-zA-Z@]\+"
+  syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[^a-zA-Z@]"
   syntax match texDefParmPre contained nextgroup=texDefArgBody skipwhite skipnl "#[^{]*"
   syntax match texDefParm contained "#\d\+" containedin=texDefParmPre,texDefArgBody
   call vimtex#syntax#core#new_arg('texDefArgBody')
@@ -318,23 +294,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texTabularArg', {'contains': ''})
 
   " }}}2
-  " {{{2 Region: Sty (\makeatletter ... \makeatother)
-
-  " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
-  " In short: allow @ in multicharacter macro name
-  syntax region texStyRegion matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP,@NoSpell
-
-  call vimtex#syntax#core#new_arg('texStyGroup', {'opts': 'contained containedin=@texClusterSty'})
-
-  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=@texClusterSty nextgroup=texStyOpt,texStyArg skipwhite skipnl
-  call vimtex#syntax#core#new_opt('texStyOpt', {'next': 'texStyArg'})
-  call vimtex#syntax#core#new_arg('texStyArg', {'next': 'texStyArg', 'opts': 'contained transparent'})
-
-  syntax match texStyParm contained "#\d\+" containedin=@texClusterSty
-
-  syntax cluster texClusterSty contains=texStyRegion,texStyArg,texStyGroup
-
-  " }}}2
   " {{{2 Region: Verbatim
 
   " Verbatim environment
@@ -344,9 +303,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbRegionInline
   call vimtex#syntax#core#new_arg('texVerbRegionInline', {
         \ 'contains': '',
-        \ 'matcher': (l:cfg.is_style_document
-        \   ? 'start="\z([^\ta-zA-Z@]\)" end="\z1"'
-        \   : 'start="\z([^\ta-zA-Z]\)" end="\z1"'),
+        \ 'matcher': 'start="\z([^\ta-zA-Z]\)" end="\z1"'
         \})
 
   " }}}2
@@ -394,7 +351,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_region_math('math')
 
   " Math regions: Inline Math Zones
-  if l:cfg.conceal.math_bounds
+  if g:vimtex_syntax_conceal.math_bounds
     syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\("  end="\\)"
     syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
     syntax region texMathRegionX  matchgroup=texMathDelimRegion concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
@@ -426,9 +383,9 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\end{array}"
   call vimtex#syntax#core#new_arg('texMathArrayArg', {'contains': ''})
 
-  call s:match_math_sub_super(l:cfg)
-  call s:match_math_symbols(l:cfg)
-  call s:match_math_delims(l:cfg)
+  call s:match_math_sub_super()
+  call s:match_math_symbols()
+  call s:match_math_delims()
 
   " }}}2
   " {{{2 Conceal mode support
@@ -437,19 +394,19 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   if &encoding ==# 'utf-8'
     " Conceal replace greek letters
-    if l:cfg.conceal.greek
+    if g:vimtex_syntax_conceal.greek
       call s:match_conceal_greek()
     endif
 
     " Conceal replace accented characters and ligatures
-    if l:cfg.conceal.accents && !l:cfg.is_style_document
+    if g:vimtex_syntax_conceal.accents
       call s:match_conceal_accents()
     endif
   endif
 
   " }}}2
 
-  call s:init_highlights(l:cfg)
+  call s:init_highlights()
 
   let b:current_syntax = 'tex'
 endfunction
@@ -540,7 +497,7 @@ endfunction
 " }}}1
 
 
-function! s:init_highlights(cfg) abort " {{{1
+function! s:init_highlights() abort " {{{1
   " See :help group-name for list of conventional group names
 
   " Primitive TeX highlighting groups
@@ -580,7 +537,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdClass             texCmd
   highlight def link texCmdDef               texCmd
   highlight def link texCmdEnv               texCmd
-  highlight def link texCmdError             texError
   highlight def link texCmdE3                texCmd
   highlight def link texCmdFootnote          texCmd
   highlight def link texCmdGreek             texCmd
@@ -598,7 +554,6 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdRef               texCmd
   highlight def link texCmdSize              texCmdType
   highlight def link texCmdSpaceCode         texCmd
-  highlight def link texCmdSty               texCmd
   highlight def link texCmdStyle             texCmd
   highlight def link texCmdStyle             texCmdType
   highlight def link texCmdStyleBold         texCmd
@@ -649,17 +604,15 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texRefOpt               texOpt
   highlight def link texTabularArg           texOpt
   highlight def link texTabularChar          texSymbol
-  highlight def link texStyOpt               texOpt
-  highlight def link texStyParm              texParm
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
 endfunction
 
 " }}}1
 
-function! s:match_bold_italic(cfg) abort " {{{1
+function! s:match_bold_italic() abort " {{{1
   let [l:conceal, l:concealends] =
-        \ (a:cfg.conceal.styles ? ['conceal', 'concealends'] : ['', ''])
+        \ (g:vimtex_syntax_conceal.styles ? ['conceal', 'concealends'] : ['', ''])
 
   syntax cluster texClusterBold     contains=TOP,@NoSpell,texCmdStyleItal,texCmdStyleBold,texCmdStyleItalBold
   syntax cluster texClusterItal     contains=TOP,@NoSpell,texCmdStyleItal,texCmdStyleBold,texCmdStyleBoldItal
@@ -690,8 +643,8 @@ endfunction
 
 " }}}1
 
-function! s:match_math_sub_super(cfg) " {{{1
-  if !a:cfg.conceal.math_super_sub | return | endif
+function! s:match_math_sub_super() " {{{1
+  if !g:vimtex_syntax_conceal.math_super_sub | return | endif
 
   for [l:from, l:to] in filter(copy(s:map_super),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
@@ -819,9 +772,9 @@ let s:map_super = [
       \]
 
 " }}}1
-function! s:match_math_symbols(cfg) abort " {{{1
+function! s:match_math_symbols() abort " {{{1
   " Many of these symbols were contributed by Björn Winckler
-  if !a:cfg.conceal.math_symbols | return | endif
+  if !g:vimtex_syntax_conceal.math_symbols | return | endif
 
   syntax match texMathSymbol "\\|"                   contained conceal cchar=‖
   syntax match texMathSymbol "\\aleph\>"             contained conceal cchar=ℵ
@@ -1066,7 +1019,7 @@ function! s:match_math_symbols(cfg) abort " {{{1
 endfunction
 
 " }}}1
-function! s:match_math_delims(cfg) abort " {{{1
+function! s:match_math_delims() abort " {{{1
   syntax match texMathDelimMod contained "\\\(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
   syntax match texMathDelim contained "[<>()[\]|/.]\|\\[{}|]"
@@ -1094,7 +1047,7 @@ function! s:match_math_delims(cfg) abort " {{{1
   syntax match texMathDelim contained "\\updownarrow"
   syntax match texMathDelim contained "\\Updownarrow"
 
-  if !a:cfg.conceal.math_delimiters || &encoding !=# 'utf-8'
+  if !g:vimtex_syntax_conceal.math_delimiters || &encoding !=# 'utf-8'
     return
   endif
 
