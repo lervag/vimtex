@@ -268,11 +268,11 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
   " Sections and parts
-  syntax match texCmdParts "\\\(front\|main\|back\)matter\>"
-  syntax match texCmdParts nextgroup=texPartArgTitle "\\part\>"
-  syntax match texCmdParts nextgroup=texPartArgTitle "\\chapter\>\*\?"
-  syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)*section\>\*\?"
-  syntax match texCmdParts nextgroup=texPartArgTitle "\\\(sub\)\?paragraph\>"
+  syntax match texCmdPart "\\\(front\|main\|back\)matter\>"
+  syntax match texCmdPart nextgroup=texPartArgTitle "\\part\>"
+  syntax match texCmdPart nextgroup=texPartArgTitle "\\chapter\>\*\?"
+  syntax match texCmdPart nextgroup=texPartArgTitle "\\\(sub\)*section\>\*\?"
+  syntax match texCmdPart nextgroup=texPartArgTitle "\\\(sub\)\?paragraph\>"
   call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
@@ -550,7 +550,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCmdNewenv            texCmd
   highlight def link texCmdNoSpell           texCmd
   highlight def link texCmdPackage           texCmd
-  highlight def link texCmdParts             texCmd
+  highlight def link texCmdPart              texCmd
   highlight def link texCmdRef               texCmd
   highlight def link texCmdSize              texCmdType
   highlight def link texCmdSpaceCode         texCmd
