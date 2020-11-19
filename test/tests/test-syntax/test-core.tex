@@ -8,6 +8,13 @@
 \newlength{\my@beamer@itemsepi}\setlength{\my@beamer@itemsepi}{3ex}
 \newlength{\my@beamer@itemsepii}\setlength{\my@beamer@itemsepii}{1.5ex}
 \newlength{\my@beamer@itemsepiii}\setlength{\my@beamer@itemsepiii}{1.5ex}
+\def\extractcoord#1#2#3{
+  \path let \p1=(#3) in \pgfextra{
+    \pgfmathsetmacro#1{\x{1}/\pgf@xx}
+    \pgfmathsetmacro#2{\y{1}/\pgf@yy}
+    \xdef#1{#1} \xdef#2{#2}
+  };
+}
 \makeatother
 
 % TODO fixme

@@ -318,14 +318,21 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texTabularArg', {'contains': ''})
 
   " }}}2
-  " {{{2 Region: \makeatletter ... \makeatother
+  " {{{2 Region: Sty (\makeatletter ... \makeatother)
 
   " https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
   " In short: allow @ in multicharacter macro name
-  syntax region texStyRegion matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP
-  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=texStyRegion,texStyArg nextgroup=texStyOpt,texStyArg skipwhite skipnl
+  syntax region texStyRegion matchgroup=texCmd start='\\makeatletter' end='\\makeatother' contains=TOP,@NoSpell
+
+  call vimtex#syntax#core#new_arg('texStyGroup', {'opts': 'contained containedin=@texClusterSty'})
+
+  syntax match texCmdSty "\\[a-zA-Z@]\+" contained containedin=@texClusterSty nextgroup=texStyOpt,texStyArg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texStyOpt', {'next': 'texStyArg'})
   call vimtex#syntax#core#new_arg('texStyArg', {'next': 'texStyArg', 'opts': 'contained transparent'})
+
+  syntax match texStyParm contained "#\d\+" containedin=@texClusterSty
+
+  syntax cluster texClusterSty contains=texStyRegion,texStyArg,texStyGroup
 
   " }}}2
   " {{{2 Region: Verbatim
@@ -643,6 +650,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texTabularArg           texOpt
   highlight def link texTabularChar          texSymbol
   highlight def link texStyOpt               texOpt
+  highlight def link texStyParm              texParm
   highlight def link texVerbRegion           texRegion
   highlight def link texVerbRegionInline     texVerbRegion
 endfunction
