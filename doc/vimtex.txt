@@ -3710,8 +3710,14 @@ pragmatic and provide a best-effort syntax highlighting - a decent trade of
 between simplicity and completeness.
 
 The Vimtex syntax plugin is loosely based on Dr Chip's syntax plugin for LaTeX
-which is shipped by default with Vim and neovim (|ft-tex-syntax|):
-http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
+which is shipped by default with Vim and neovim (|ft-tex-syntax|) [0]. There
+are several major differences that users may want to be aware of:
+* Vimtex syntax use different names for almost all syntax groups.
+* Vimtex syntax does not support syntax based folding.
+* Vimtex syntax does not lint `@` in commands, e.g. `\@cmd` (you should know
+  what you are doing).
+
+[0]: http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
 
 Associated settings:
   |g:vimtex_syntax_enabled|
@@ -3724,13 +3730,19 @@ Associated settings:
 ------------------------------------------------------------------------------
 SYNTAX CORE SPECIFICATION                                  *vimtex-syntax-core*
 
-TODO
-* make sure to explain the math regions
-* explain difference between top level and regions, and how commands contained
-  in regions can make things complicated
-
 As it is relatively common for some users to customize their colorschemes, it
 is useful to describe some of the underlying "philosophy" of the syntax rules.
+Note that, for the following information to be useful, the reader should have
+at least some basic understanding of how to customize their colorschemes and
+syntax highlighting. The best resources to learn about this are:
+
+  i)   |usr_06|  "Using syntax highlighting" (READ THIS FIRST)
+  ii)  https://gist.github.com/romainl/379904f91fa40533175dfaec4c833f2f
+       "The right way to override any highlighting if you don't want to edit
+       the colorscheme file directly"
+       This is a good resource that describes how to properly customize
+       the highlighting of syntax groups on top of a basic colorscheme.
+  iii) |usr_44|  "Your own syntax highlighted" (ADVANCED)
 
 The main philosophy of the Vimtex syntax plugin is to keep things simple,
 structured, and consistent. There is a small set of primitive syntax elements
@@ -3738,72 +3750,152 @@ whose higlighting rules are linked to conventional highlight groups (see
 |group-name|). More specialized syntax elements are then linked to
 a corresponding primitive syntax element. This allows a user to change the
 highlighting of primitives with the effect that corresponding elements are
-automatically also updated. This gives a high degree of flexibility with
-regards to customizing colorschemes for LaTeX files.
+automatically also updated. It gives a high degree of flexibility with regards
+to customizing colorschemes for LaTeX files.
 
-The following is a list of the main primitive groups and which of the
-conventional syntax groups are used by default for highlighting (again, see
-|group-name|).
+Most of LaTeX syntax is based around the macro expansion where forms are of
+the type `\name` + `[optional group(s)]` + `{argument group(s)}`, where there
+can often (not always) be white spaces and newlines between the elements. An
+argument group can often consist of other top level elements, but not always.
+Further, since LaTeX is designed to have very strong support for typing
+mathematical equations, there are several ways to start math mode, e.g.
+`$ ... $`, `$$ ... $$`, `\( ... \)`, `\[ ... \]`, and `\begin{equation}`
+matched with `\end{equation}`. Within math mode, there's a different subset of
+commands available, and it is common to want a slightly different highlighting
+of the math mode regions.
 
-  `texCmd` -> `Statement`
-    Most rules are based on the "generic" LaTeX command `\cmd[...]{...}...`
-    where the number of optional and real arguments is generally unknown.
+Vimtex's syntax script is implemented to support these basic structures as
+well as a large set of more specific commands and elements. The more specific
+rules define groups whose names are are more specific, and it is usually
+possible to define custom highlighting of specific commands and argument
+groups.
 
-  `texOpt` -> `Identifier`
-    Optional argument groups, `[...]`.
-
-  `texArg` -> `Include`
-    Real argument groups, `{...}`.
-
-  `texComment` -> `Comment`
-    Needs no introduction...
-
-  `texDelim` -> `Delimiter`
-  `texError` -> `Error`
-  `texLength` -> `Number`
-  `texMathRegion` -> `Special`
-  `texOpt` -> `Identifier`
-  `texParm` -> `Special`
-  `texRegion` -> `PreCondit`
-  `texSpecialChar` -> `SpecialChar`
-  `texSymbol` -> `SpecialChar`
-
-In addition, some more specific groups are also linked directly to
-a conventional syntax group:
-
-  `texCmdSpaceCodeChar` -> `Special`
-  `texCmdTodo` -> `Todo`
-  `texCmdType` -> `Type`
-  `texCommentTodo` -> `Todo`
-  `texEnvArgName` -> `PreCondit`
-  `texMathDelim` -> `Type`
-  `texMathEnvArgName` -> `Delimiter`
-  `texMathOper` -> `Operator`
-  `texOptSep` -> `NormalNC`
-  `texPartArgTitle` -> `String`
-  `texRefArg` -> `Special`
-  `texTitleArg` -> `Underlined`
-
-Finally, the following is a simplified description of how the more
-specialised groups and syntax rules are structured and named.
+Finally, it is useful to explain the naming scheme of specialized groups. The
+general idea can be described as follows.
 
   `texCmd{type}`
   `tex{type}Opt`
   `tex{type}Arg`
-    A lot of LaTeX macros and commands are specified specifically with a given
-    number of optional and real arguments. They may also specify what those
-    arguments are. For instance, `\include{...}` wants a file argument. This
-    is matched as `texCmdInput`, and it is followed by a `texFileArg` argument
-    group. In most cases, the highlighting of `texCmd{type}` is linked to
-    `texCmd` and the highlighting of `tex{type}Opt` and `tex{type}Arg` are
-    respectively linked to `texOpt` and `texArg`.
+      A lot of LaTeX macros and commands are specified specifically with
+    a given number of optional and real arguments. They may also specify what
+    those arguments are. In most cases, the highlighting of `texCmd{type}` is
+    linked to `texCmd` and the highlighting of `tex{type}Opt` and
+    `tex{type}Arg` are respectively linked to `texOpt` and `texArg`. An
+    example of this scheme is `texCmdAuthor`, `texAuthorOpt`, and
+    `texAuthorArg` for `\author[...]{...}`.
+      Often, but not always, `texCmd{name}` is coupled with `tex{name}*`
+    groups. For example, `\include{...}` wants a file argument. The command is
+    matched as `texCmdInput`, but it is followed by a `texFileArg` argument
+    group.
 
   `tex{type}Region`
     Some commands open specific syntax regions that have different rules. Math
     mode is a good example. Math mode is highlighted differently, and the
-    syntax regions are name `texMathRegion*`. These regions may typically
-    contain their own (sub)sets of syntax groups, many that will only match
-    within a specific region.
+    syntax regions are name `texMathRegion*`. The `tex{type}Region`s may typically
+    contain their own (sub)sets of syntax groups that are only matched within
+    the specific region. Another example is the inclusion of nested syntax
+    highlighting with e.g. the `minted` or `listings` packages.
+
+  `tex{type}{element}`
+    Some regions or commands include other types of elements, e.g. parameters
+    like in `\def\name #1` where `#1` is matched as `texDefParm`. For
+    completeness: `\def` is matched as `texCmdDef` and `\name` is matched as
+    `texDefArgName`.
+
+------------------------------------------------------------------------------
+SYNTAX CORE REFERENCE                                 *vimtex-syntax-reference*
+
+The following is a reference of the main syntax groups and its default
+highlighting, as well as one ore more examples of what it matches. Most of the
+primitive groups are linked to conventional syntax groups as listed in
+|group-name|. In the examples, capital letters are used to indicate which
+parts are matched by the current group. For even more details, please refer to
+the code itself in `autoload/vimtex/syntax/core.vim` for the core elements and
+`autoload/vimtex/syntax/p/*.vim` for package specific elements.
+
+Table 1: A list of groups that are only primitive link targets.~
+>
+  GROUP                DEFAULT
+  ----------------------------------------------------------------------------
+  texCmdType           Type
+  texError             Error
+  texParm              Special
+  texRegion            PreCondit
+  texSymbol            SpecialChar
+
+Table 2: A list of the most common normal LaTeX groups.~
+>
+  GROUP                DEFAULT      EXAMPLE
+  ----------------------------------------------------------------------------
+  texComment           Comment      % COMMENT
+  texCommentTodo       Todo         % TODO
+  texDelim             Delimiter    {, }, [, and ]
+  texCmd               Statement    \CMD
+  texOpt               Identifier   \cmd[OPT]
+  texOptSep            NormalNC     [a, b] (commas)
+  texOptEqual          texSymbol    [a=b]
+  texArg               Include      \cmd[...]{ARG}
+  texSpecialChar       SpecialChar  \S, \P, \$, \;, ...
+  texCmdClass          texCmd       \DOCUMENTCLASS
+  texFileOpt           texOpt       \documentclass[CLASS OPTIONS]
+  texFileArg           texArg       \documentclass[...]{CLASS}
+  texCmdPackage        texCmd       \USEPACKAGE
+  texFilesOpt          texOpt       \usepackage[PACKAGE OPTIONS]
+  texFilesArg          texArg       \usepackage[...]{PACKAGE1, PACKAGE2}
+  texCmdInput          texCmd       \INPUT
+  texCmdInput          texCmd       \INCLUDEONLY
+  texFileArg           texArg       \input{FILE}
+  texFilesArg          texArg       \includeonly{FILE1, FILE2}
+  texCmdTitle          texCmd       \TITLE
+  texTitleArg          Underlined   \title{MAIN TITLE}
+  texCmdAuthor         texCmd       \AUTHOR
+  texAuthorOpt         texOpt       \author[OPT]
+  texAuthorArg         NONE         \author[...]{AUTHOR LIST}
+  texCmdPart           texCmd       \(SUB*)SECTION
+  texPartArgTitle      String       \(sub*)section{TITLE}
+  texCmdEnv            texCmd       \BEGIN; \END
+  texEnvArgName        PreCondit    \begin{ENVNAME}
+  texCmdRef            texCmd       \CITE; \LABEL
+  texRefArg            Special      \cite{REFERENCE}; \label{REF}
+  texE3Func            texCmdType   \STR_NEW:N
+  texE3Var             texCmd       \G_MYFILE_NAME_STR
+
+Table 3: A list of math mode groups.~
+>
+  GROUP                    DEFAULT        EXAMPLE
+  ----------------------------------------------------------------------------
+  texMathRegion            Special        \( HERE \); \[ HERE \]
+  texMathRegionEnv         texMathRegion  \begin{menv}  HERE \end{menv}
+  texMathRegionEnvStarred  texMathRegion  \begin{menv*} HERE \end{menv*}
+  texMathRegionX           texMathRegion  $ HERE $
+  texMathRegionXX          texMathRegion  $$ HERE $$
+  texMathRegionEnsured     texMathRegion  \ensuremath{HERE}
+  texCmdMathEnv            texCmdEnv      \BEGIN; \END (for math environments)
+  texMathEnvArgName        Delimiter      \begin{EQUATION}
+  texCmdMath               texCmd         \ENSUREMATH
+  texMathDelim             Type           \LVERT
+  texMathDelimMod          texMathDelim   \LEFT\lvert \RIGHT\rvert
+  texMathOper              Operator       Basic operators: =; _; ^
+  texMathError             texError       Unmatched region endings
+
+Table 4: A list of other important groups.~
+>
+  GROUP                DEFAULT         EXAMPLE
+  ----------------------------------------------------------------------------
+  texLength            Number          Length units, e.g. "4 cm". Only when
+                                       contained e.g. in option groups.
+  texLigature          texSymbol       --; ---; ``; ''; ,,
+  texCmdAccent         texCmd          \"{a}
+  texCmdLigature       texSpecialChar  \ss; \ae
+  texCmdSpaceCodeChar  Special         https://en.wikibooks.org/wiki/TeX/catcode
+  texCmdTodo           Todo            \TODOSOMETHING
+  texCmdVerb           texCmd          \VERB
+  texVerbRegionInline  texRegion       \verb+VERB TEXT+
+  texVerbRegion        texRegion       \begin{verbatim} VERB TEXT \end{verbatim}
+  texCmdDef            texCmd          \DEF
+  texDefArgName        texArg          \def\NAME
+  texDefParm           texParm         \def\name #1
+  texCmdItem           texCmd          \item
 
 ------------------------------------------------------------------------------
 SYNTAX PACKAGE SPECIFICATION                           *vimtex-syntax-packages*
