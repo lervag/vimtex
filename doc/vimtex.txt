@@ -67,6 +67,7 @@ CONTENTS                                                      *vimtex-contents*
   Syntax highlighting                           |vimtex-syntax|
     Syntax core specification                   |vimtex-syntax-core|
     Syntax package specification                |vimtex-syntax-packages|
+    Syntax group reference                      |vimtex-syntax-reference|
   Navigation                                    |vimtex-navigation|
     Include expression (|gf| command)           |vimtex-includeexpr|
     Table of contents                           |vimtex-toc|
@@ -3751,7 +3752,8 @@ whose higlighting rules are linked to conventional highlight groups (see
 a corresponding primitive syntax element. This allows a user to change the
 highlighting of primitives with the effect that corresponding elements are
 automatically also updated. It gives a high degree of flexibility with regards
-to customizing colorschemes for LaTeX files.
+to customizing colorschemes for LaTeX files. See |vimtex-syntax-reference| for
+tables of the most important syntax groups with examples and descriptions.
 
 Most of LaTeX syntax is based around the macro expansion where forms are of
 the type `\name` + `[optional group(s)]` + `{argument group(s)}`, where there
@@ -3803,7 +3805,23 @@ general idea can be described as follows.
     `texDefArgName`.
 
 ------------------------------------------------------------------------------
-SYNTAX CORE REFERENCE                                 *vimtex-syntax-reference*
+SYNTAX PACKAGE SPECIFICATION                           *vimtex-syntax-packages*
+
+Vimtex provides several package specific syntax addons that provide richer
+syntax highlighting. These are built around the same principles as explained
+in |vimtex-syntax-core|.
+
+The syntax improvements for a specific package are by default loaded only if
+that package is detected in the current document (as explained in
+|vimtex-package-detection|). This generally works well when a document is
+compiled, but Vimtex may fail to detect packages for new documents or
+documents that are not compiled. It is therefore possible to configure that
+individual syntax packages should always load. One may also disable individual
+syntax packages. See |g:vimtex_syntax_packages| for a full list of which
+syntax addons exist and how to configure them.
+
+------------------------------------------------------------------------------
+SYNTAX GROUP REFERENCE                                *vimtex-syntax-reference*
 
 The following is a reference of the main syntax groups and its default
 highlighting, as well as one ore more examples of what it matches. Most of the
@@ -3896,22 +3914,6 @@ Table 4: A list of other important groups.~
   texDefArgName        texArg          \def\NAME
   texDefParm           texParm         \def\name #1
   texCmdItem           texCmd          \item
-
-------------------------------------------------------------------------------
-SYNTAX PACKAGE SPECIFICATION                           *vimtex-syntax-packages*
-
-Vimtex provides several package specific syntax addons that provide richer
-syntax highlighting. These are built around the same principles as explained
-in |vimtex-syntax-core|.
-
-The syntax improvements for a specific package are by default loaded only if
-that package is detected in the current document (as explained in
-|vimtex-package-detection|). This generally works well when a document is
-compiled, but Vimtex may fail to detect packages for new documents or
-documents that are not compiled. It is therefore possible to configure that
-individual syntax packages should always load. One may also disable individual
-syntax packages. See |g:vimtex_syntax_packages| for a full list of which
-syntax addons exist and how to configure them.
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
