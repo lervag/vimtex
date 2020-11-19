@@ -345,21 +345,30 @@ function! vimtex#syntax#core#init() abort " {{{1
   " }}}2
   " {{{2 Region: Expl3
 
-  syntax region texE3Region matchgroup=texCmdExpl3
+  syntax region texE3Region matchgroup=texCmdE3
         \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
         \ end='\\ExplSyntaxOff\|\%$'
-        \ transparent keepend
+        \ transparent
         \ contains=TOP,@NoSpell
 
-  syntax region texE3Group matchgroup=texDelim
-        \ start="{" skip="\\\\\|\\}" end="}"
-        \ contained
-        \ containedin=texE3Region,texE3Group
+  call vimtex#syntax#core#new_arg('texE3Group', {'opts': 'contained containedin=@texClusterE3'})
+
+  syntax match texE3Cmd  contained containedin=@texClusterE3 "\\\w\+" nextgroup=texE3Opt,texE3Arg skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
+  call vimtex#syntax#core#new_arg('texE3Arg', {'next': 'texE3Arg', 'opts': 'contained transparent'})
+
+  syntax region texE3RegionNested matchgroup=texCmdE3
+        \ start='\\\ExplSyntaxOn'
+        \ end='\\ExplSyntaxOff'
+        \ contained containedin=@texClusterE3
+        \ transparent
         \ contains=TOP,@NoSpell
 
-  syntax match texE3Var  contained containedin=texE3Region,texE3Group "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
-  syntax match texE3Func contained containedin=texE3Region,texE3Group "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
-  syntax match texE3Parm contained containedin=texE3Region,texE3Group "#\d\+"
+  syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
+  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
+  syntax match texE3Parm contained containedin=@texClusterE3 "#\d\+"
+
+  syntax cluster texClusterE3 contains=texE3RegionNested,texE3Region,texE3Arg,texE3Group
 
   " }}}2
   " {{{2 Region: Math
@@ -565,7 +574,7 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCmdDef               texCmd
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdError             texError
-  highlight def link texCmdExpl3             texCmd
+  highlight def link texCmdE3                texCmd
   highlight def link texCmdFootnote          texCmd
   highlight def link texCmdGreek             texCmd
   highlight def link texCmdInput             texCmd
@@ -595,8 +604,10 @@ function! s:init_highlights(cfg) abort " {{{1
   highlight def link texCommentURL           texComment
   highlight def link texDefArgName           texCmd
   highlight def link texDefParm              texParm
+  highlight def link texE3Cmd                texCmd
   highlight def link texE3Delim              texDelim
   highlight def link texE3Func               texCmdType
+  highlight def link texE3Opt                texOpt
   highlight def link texE3Parm               texParm
   highlight def link texE3Var                texCmd
   highlight def link texFileArg              texArg
