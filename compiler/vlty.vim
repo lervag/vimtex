@@ -75,14 +75,16 @@ let &l:makeprg =
       \ . ' %:S'
 silent CompilerSet makeprg
 
-let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#,'
-if s:vlty.show_suggestions == 0
-  " final duplicated '%-G%.%#': compatibility with vim-dispatch;
-  " see issue #199 of vim-dispatch and issue #1854 of vimtex
-  let &l:errorformat .= '%ZMessage: %m,%-G%.%#,%-G%.%#'
-else
-  let &l:errorformat .= '%CMessage: %m,%Z%m,%-G%.%#,%-G%.%#'
-endif
+let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#'
+
+let &l:errorformat .= s:vlty.show_suggestions
+      \ ? ',%CMessage: %m,%Z%m'
+      \ : ',%ZMessage: %m'
+
+" For compatibility with vim-dispatch we need duplicated '%-G%.%#'.
+" See issues #199 of vim-dispatch and #1854 of vimtex.
+let &l:errorformat .= ',%-G%.%#,%-G%.%#'
+
 silent CompilerSet errorformat
 
 let &cpo = s:cpo_save
