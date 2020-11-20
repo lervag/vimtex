@@ -190,16 +190,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdStyle "\\textup\>"
   syntax match texCmdStyle "\\emph\>"
 
-  syntax match texCmdStyle "\\mathbb\>"
-  syntax match texCmdStyle "\\mathbf\>"
-  syntax match texCmdStyle "\\mathcal\>"
-  syntax match texCmdStyle "\\mathfrak\>"
-  syntax match texCmdStyle "\\mathit\>"
-  syntax match texCmdStyle "\\mathnormal\>"
-  syntax match texCmdStyle "\\mathrm\>"
-  syntax match texCmdStyle "\\mathsf\>"
-  syntax match texCmdStyle "\\mathtt\>"
-
   syntax match texCmdStyle "\\rmfamily\>"
   syntax match texCmdStyle "\\sffamily\>"
   syntax match texCmdStyle "\\ttfamily\>"
@@ -377,6 +367,17 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Text Inside Math regions
   syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
   call vimtex#syntax#core#new_arg('texMathTextArg')
+
+  " Math style commands
+  syntax match texMathCmdStyle "\\mathbb\>"
+  syntax match texMathCmdStyle "\\mathbf\>"
+  syntax match texMathCmdStyle "\\mathcal\>"
+  syntax match texMathCmdStyle "\\mathfrak\>"
+  syntax match texMathCmdStyle "\\mathit\>"
+  syntax match texMathCmdStyle "\\mathnormal\>"
+  syntax match texMathCmdStyle "\\mathrm\>"
+  syntax match texMathCmdStyle "\\mathsf\>"
+  syntax match texMathCmdStyle "\\mathtt\>"
 
   " Support for array environment
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\begin{array}" nextgroup=texMathArrayArg skipwhite skipnl
@@ -581,6 +582,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texMathArg              texMathRegion
   highlight def link texMathArrayArg         texOpt
   highlight def link texMathCmd              texCmd
+  highlight def link texMathCmdStyle         texMathCmd
   highlight def link texMathDelimMod         texMathDelim
   highlight def link texMathDelimRegion      texDelim
   highlight def link texMathError            texError
