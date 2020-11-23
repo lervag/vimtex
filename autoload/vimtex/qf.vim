@@ -81,7 +81,7 @@ function! vimtex#qf#open(force) abort " {{{1
 
   if a:force || (g:vimtex_quickfix_mode > 0 && l:errors_or_warnings)
     let s:previous_window = win_getid()
-    botright cwindow
+    noautocmd botright cwindow
     if g:vimtex_quickfix_mode == 2
       call win_gotoid(s:previous_window)
     endif
