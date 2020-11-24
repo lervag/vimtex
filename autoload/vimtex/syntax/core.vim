@@ -858,14 +858,13 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\leftrightarrow\>"    contained conceal cchar=↔
   syntax match texMathSymbol "\\Leftrightarrow\>"    contained conceal cchar=⇔
   syntax match texMathSymbol "\\leq\>"               contained conceal cchar=≤
-  syntax match texMathSymbol "\\leq\>"               contained conceal cchar=≤
   syntax match texMathSymbol "\\lfloor\>"            contained conceal cchar=⌊
   syntax match texMathSymbol "\\ll\>"                contained conceal cchar=≪
   syntax match texMathSymbol "\\lmoustache\>"        contained conceal cchar=╭
   syntax match texMathSymbol "\\lor\>"               contained conceal cchar=∨
   syntax match texMathSymbol "\\mapsto\>"            contained conceal cchar=↦
   syntax match texMathSymbol "\\mid\>"               contained conceal cchar=∣
-  syntax match texMathSymbol "\\models\>"            contained conceal cchar=╞
+  syntax match texMathSymbol "\\models\>"            contained conceal cchar=⊨
   syntax match texMathSymbol "\\mp\>"                contained conceal cchar=∓
   syntax match texMathSymbol "\\nabla\>"             contained conceal cchar=∇
   syntax match texMathSymbol "\\natural\>"           contained conceal cchar=♮
@@ -1084,8 +1083,8 @@ function! s:match_math_delims() abort " {{{1
     syntax match texMathDelim contained conceal cchar=〈 "\\\%([bB]igg\?l\|left\)\\langle"
     syntax match texMathDelim contained conceal cchar=〉 "\\\%([bB]igg\?r\|right\)\\rangle"
   else
-    syntax match texMathDelim contained conceal cchar=< "\\\%([bB]igg\?l\|left\)\\langle"
-    syntax match texMathDelim contained conceal cchar=> "\\\%([bB]igg\?r\|right\)\\rangle"
+    syntax match texMathDelim contained conceal cchar=⟨ "\\\%([bB]igg\?l\|left\)\\langle"
+    syntax match texMathDelim contained conceal cchar=⟩ "\\\%([bB]igg\?r\|right\)\\rangle"
   endif
 endfunction
 
