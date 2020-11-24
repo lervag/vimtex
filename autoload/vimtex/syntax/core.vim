@@ -225,7 +225,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'opts': 'oneline',
         \})
   call vimtex#syntax#core#new_arg('texNewcmdArgBody')
-  syntax match texNewcmdParm contained "#\d\+" containedin=texNewcmdArgBody
+  syntax match texNewcmdParm contained "#\+\d" containedin=texNewcmdArgBody
 
   " \newenvironment
   syntax match texCmdNewenv nextgroup=texNewenvArgName skipwhite skipnl "\\\%(re\)\?newenvironment\>"
@@ -236,7 +236,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texNewenvArgBegin', {'next': 'texNewenvArgEnd'})
   call vimtex#syntax#core#new_arg('texNewenvArgEnd')
-  syntax match texNewenvParm contained "#\d\+" containedin=texNewenvArgBegin,texNewenvArgEnd
+  syntax match texNewenvParm contained "#\+\d" containedin=texNewenvArgBegin,texNewenvArgEnd
 
   " Definitions/Commands
   " E.g. \def \foo #1#2 {foo #1 bar #2 baz}
@@ -244,7 +244,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[a-zA-Z@]\+"
   syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\\[^a-zA-Z@]"
   syntax match texDefParmPre contained nextgroup=texDefArgBody skipwhite skipnl "#[^{]*"
-  syntax match texDefParm contained "#\d\+" containedin=texDefParmPre,texDefArgBody
+  syntax match texDefParm contained "#\+\d" containedin=texDefParmPre,texDefArgBody
   call vimtex#syntax#core#new_arg('texDefArgBody')
 
   " Reference and cite commands
@@ -320,7 +320,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
   syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
-  syntax match texE3Parm contained containedin=@texClusterE3 "#\d\+"
+  syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
 
   syntax cluster texClusterE3 contains=texE3RegionNested,texE3Region,texE3Arg,texE3Group
 
