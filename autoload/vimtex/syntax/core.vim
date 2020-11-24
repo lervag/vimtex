@@ -311,18 +311,14 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
   call vimtex#syntax#core#new_arg('texE3Arg', {'next': 'texE3Arg', 'opts': 'contained transparent'})
 
-  syntax region texE3RegionNested matchgroup=texCmdE3
-        \ start='\\\ExplSyntaxOn'
-        \ end='\\ExplSyntaxOff'
-        \ contained containedin=@texClusterE3
-        \ transparent
-        \ contains=TOP,@NoSpell
+  syntax match texE3CmdNestedRegionEnd '\\\ExplSyntaxOff'
+        \ contained containedin=texE3Arg,texE3Group
 
   syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
   syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
   syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
 
-  syntax cluster texClusterE3 contains=texE3RegionNested,texE3Region,texE3Arg,texE3Group
+  syntax cluster texClusterE3 contains=texE3Region,texE3Arg,texE3Group
 
   " }}}2
   " {{{2 Region: Math
