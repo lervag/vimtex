@@ -130,13 +130,11 @@ disabled if desired.
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
-- Improved syntax highlighting
+- Syntax highlighting
+  - A consistent core syntax specification
+  - General syntax highlighting for several popular LaTeX packages
+  - Nested syntax highlighting for several popular LaTeX packages
   - Highlight matching delimiters
-  - Support for `biblatex`/`natbib` package
-  - Support for `cleveref` package
-  - Support for `listings` package
-  - Nested syntax highlighting (`minted`, `dot2tex`, `lualatex`,
-    `gnuplottex`, `asymptote`, `pythontex`)
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)

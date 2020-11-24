@@ -4,11 +4,8 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#url#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'url') | return | endif
-  let b:vimtex_syntax.url = 1
-
-  call vimtex#syntax#p#hyperref#load()
+function! vimtex#syntax#p#url#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load('hyperref')
 endfunction
 
 " }}}1

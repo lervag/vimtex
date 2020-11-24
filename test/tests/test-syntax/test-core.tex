@@ -5,12 +5,86 @@
 \@asd{asd}
 
 \makeatletter
-\@asd{asd}
+\newlength{\my@beamer@itemsepi}\setlength{\my@beamer@itemsepi}{3ex}
+\newlength{\my@beamer@itemsepii}\setlength{\my@beamer@itemsepii}{1.5ex}
+\newlength{\my@beamer@itemsepiii}\setlength{\my@beamer@itemsepiii}{1.5ex}
+\def\extractcoord#1#2#3{
+  \path let \p1=(#3) in \pgfextra{
+    \pgfmathsetmacro#1{\x{1}/\pgf@xx}
+    \pgfmathsetmacro#2{\y{1}/\pgf@yy}
+    \xdef#1{#1} \xdef#2{#2}
+  };
+}
 \makeatother
+
+% TODO fixme
+%
+% bad speled text
+% ABC
+% https://www.example.com
+%
+
+\newcommand{\testnc}[2]{#1 something #1 here #2}
+\def \foo #1#2 {#1 foo #1 bar #2 baz}
+\newenvironment{test}[3]{#1 before #2}{#3 after #1}
 
 \begin{document}
 
-\v!
-\v@
+Test accents \v! and \v@ here.
+
+Line with inline verbatim: \verb+verb+
+Line with inline verbatim: \verb*+verb+
+
+Line with $inline math$ here.\footnote{here {asd} with \cmd also}.
+
+\section{First}
+\label{sec:first}
+
+% Various cite and ref commands
+\ref{sec:first}
+\pageref{sec:second}
+\nocite{bibkey0}
+\cite{bibkey1}
+\citet*{bibkey2}
+\citep{bibkey3}
+\citep[e.g.][]{bibkey4}
+
+\section{Second}
+\label{sec:second}
+
+\author{A. Author\thanks{An Institute}}
+
+\section{Math}
+\label{sec:math}
+
+\begin{equation}
+  ( )
+  [ ]
+
+  \left( \right)
+  \left\{ \right\}
+  \left\lvert \right\rvert
+  \left] \right[
+\end{equation}
+
+\begin{table}
+  \centering
+  \caption{asdfasdf}
+  \label{tab:}
+  \begin{tabular}{cr}
+    1234 \\
+    2345 \\
+  \end{tabular}
+\end{table}
+
+\begin{equation}
+  \begin{array}{ccc}
+    asd & \left( f \right] & c \\
+    asd & f & c \\
+    asd & f & c
+  \end{array}
+\end{equation}
+
+\section*{Acknowledgement}
 
 \end{document}

@@ -4,27 +4,16 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#asymptote#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'asymptote') | return | endif
-  let b:vimtex_syntax.asymptote = 1
-
-  call vimtex#syntax#misc#add_to_section_clusters('texZoneAsymptote')
-
-  if !empty(vimtex#syntax#misc#include('asy'))
-    syntax region texZoneAsymptote
-          \ start='\\begin{asy\z(def\)\?}'rs=s
-          \ end='\\end{asy\z1}'re=e
-          \ keepend
-          \ transparent
-          \ contains=texBeginEnd,@vimtex_nested_asy
+function! vimtex#syntax#p#asymptote#load(cfg) abort " {{{1
+  if !empty(vimtex#syntax#nested#include('asy'))
+    let l:opts = {'contains': '@vimtex_nested_asy'}
   else
-    syntax region texZoneAsymptote
-          \ start='\\begin{asy\z(def\)\?}'rs=s
-          \ end='\\end{asy\z1}'re=e
-          \ keepend
-          \ contains=texBeginEnd
-    highlight def link texZoneAsymptote texZone
+    let l:opts = {'transparent': 0}
+    highlight def link texAsymptoteRegion texRegion
   endif
+
+  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asy', l:opts)
+  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asydef', l:opts)
 endfunction
 
 " }}}1

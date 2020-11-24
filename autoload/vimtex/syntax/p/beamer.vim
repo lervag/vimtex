@@ -4,25 +4,20 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#beamer#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'beamer') | return | endif
-  let b:vimtex_syntax.beamer = 1
+function! vimtex#syntax#p#beamer#load(cfg) abort " {{{1
+  syntax match texBeamerDelim '<\|>' contained
+  syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelim
 
-  syntax match texBeamerDelimiter '<\|>' contained
-  syntax match texBeamerOpt '<[^>]*>' contained contains=texBeamerDelimiter
+  syntax match texCmdBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
+  syntax match texCmdItem '\\item<[^>]*>' contains=texBeamerOpt
 
-  syntax match texStatementBeamer '\\only\(<[^>]*>\)\?' contains=texBeamerOpt
-  syntax match texStatementBeamer '\\item<[^>]*>' contains=texBeamerOpt
+  syntax match texCmdInput "\\includegraphics<[^>]*>"
+        \ contains=texBeamerOpt
+        \ nextgroup=texFileOpt,texFileArg
 
-  syntax match texInputFile
-        \ '\\includegraphics<[^>]*>\(\[.\{-}\]\)\=\s*{.\{-}}'
-        \ contains=texStatement,texBeamerOpt,texInputCurlies,texInputFileOpt
-
-  call vimtex#syntax#misc#add_to_section_clusters('texStatementBeamer')
-
-  highlight link texStatementBeamer texStatement
-  highlight link texBeamerOpt Identifier
-  highlight link texBeamerDelimiter Delimiter
+  highlight link texCmdBeamer texCmd
+  highlight link texBeamerOpt texOpt
+  highlight link texBeamerDelim texDelim
 endfunction
 
 " }}}1

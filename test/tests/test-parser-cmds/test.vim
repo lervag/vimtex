@@ -4,8 +4,6 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 silent edit test.tex
 
 if empty($INMAKE) | finish | endif

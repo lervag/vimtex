@@ -6,7 +6,6 @@ nnoremap q :qall!<cr>
 
 set nomore
 
-let g:tex_flavor = 'latex'
 let g:vimtex_view_automatic = 0
 
 if empty($INMAKE)

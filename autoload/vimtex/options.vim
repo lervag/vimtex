@@ -261,16 +261,17 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_subfile_start_local', 0)
 
-  call s:init_option('vimtex_syntax_alpha', $VIMTEX_ALPHA)
-  call s:init_option('vimtex_syntax_config', {
-        \ 'conceal': get(g:, 'tex_conceal', 'abdmgsS'),
-        \ 'conceal_set_super':
-        \   get(g:, 'tex_superscripts', '[0-9a-zA-W.,:;+-<>/()=]'),
-        \ 'conceal_set_sub':
-        \   get(g:, 'tex_subscripts', '[0-9aehijklmnoprstuvx,+-/().]'),
-        \})
-
   call s:init_option('vimtex_syntax_enabled', 1)
+  call s:init_option('vimtex_syntax_conceal_default', 1)
+  call s:init_option('vimtex_syntax_conceal', {
+        \ 'accents': g:vimtex_syntax_conceal_default,
+        \ 'greek': g:vimtex_syntax_conceal_default,
+        \ 'math_bounds': g:vimtex_syntax_conceal_default,
+        \ 'math_delimiters': g:vimtex_syntax_conceal_default,
+        \ 'math_super_sub': g:vimtex_syntax_conceal_default,
+        \ 'math_symbols': g:vimtex_syntax_conceal_default,
+        \ 'styles': g:vimtex_syntax_conceal_default,
+        \})
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
         \   'C' : 'c',
@@ -280,21 +281,27 @@ function! vimtex#options#init() abort " {{{1
         \   'cs' : [
         \     'csBraces',
         \   ],
+        \   'haskell' : [
+        \     'hsVarSym',
+        \   ],
+        \   'java' : [
+        \     'javaError',
+        \   ],
+        \   'markdown' : [
+        \     'mkdNonListItemBlock',
+        \   ],
         \   'python' : [
         \     'pythonEscape',
         \     'pythonBEscape',
         \     'pythonBytesEscape',
         \   ],
-        \   'java' : [
-        \     'javaError',
-        \   ],
-        \   'haskell' : [
-        \     'hsVarSym',
-        \   ],
         \ }
         \})
-  call s:init_option('vimtex_syntax_autoload_packages', ['amsmath'])
   call s:init_option('vimtex_syntax_nospell_commands', [])
+  call s:init_option('vimtex_syntax_packages', {
+        \ 'amsmath': {'load': 2},
+        \ 'babel': {'conceal': g:vimtex_syntax_conceal_default},
+        \})
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 
@@ -429,6 +436,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_quickfix_ignored_warnings',
         \ 'g:vimtex_quickfix_latexlog',
         \ 'g:vimtex_quickfix_warnings',
+        \ 'g:vimtex_syntax_autoload_packages',
         \ 'g:vimtex_textidote_jar',
         \ 'g:vimtex_toc_fold',
         \ 'g:vimtex_toc_fold_level_start',

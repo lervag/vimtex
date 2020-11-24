@@ -6,38 +6,30 @@
 
 scriptencoding utf-8
 
-function! vimtex#syntax#p#amsmath#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'amsmath') | return | endif
-  let b:vimtex_syntax.amsmath = 1
+function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
+  call vimtex#syntax#core#new_region_math('align')
+  call vimtex#syntax#core#new_region_math('alignat')
+  call vimtex#syntax#core#new_region_math('flalign')
+  call vimtex#syntax#core#new_region_math('gather')
+  call vimtex#syntax#core#new_region_math('mathpar')
+  call vimtex#syntax#core#new_region_math('multline')
+  call vimtex#syntax#core#new_region_math('xalignat')
+  call vimtex#syntax#core#new_region_math('xxalignat', {'starred': 0})
 
-  " Allow subequations (fixes #1019)
-  " - This should be temporary, as it seems subequations is erroneously part of
-  "   texBadMath from Charles Campbell's syntax plugin.
-  syntax match texBeginEnd
-        \ "\(\\begin\>\|\\end\>\)\ze{subequations}"
-        \ nextgroup=texBeginEndName
-
-  call vimtex#syntax#core#new_math_zone('AmsA', 'align', 1)
-  call vimtex#syntax#core#new_math_zone('AmsB', 'alignat', 1)
-  call vimtex#syntax#core#new_math_zone('AmsD', 'flalign', 1)
-  call vimtex#syntax#core#new_math_zone('AmsC', 'gather', 1)
-  call vimtex#syntax#core#new_math_zone('AmsD', 'multline', 1)
-  call vimtex#syntax#core#new_math_zone('AmsE', 'xalignat', 1)
-  call vimtex#syntax#core#new_math_zone('AmsF', 'xxalignat', 0)
-  call vimtex#syntax#core#new_math_zone('AmsG', 'mathpar', 1)
-
-  " Amsmath [lr][vV]ert  (Holger Mitschke)
-  if has('conceal') && &enc ==# 'utf-8' && get(g:, 'tex_conceal', 'd') =~# 'd'
-    for l:texmath in [
-          \ ['\\lvert', '|'] ,
-          \ ['\\rvert', '|'] ,
-          \ ['\\lVert', '‖'] ,
-          \ ['\\rVert', '‖'] ,
-          \ ]
-        execute "syntax match texMathDelim '\\\\[bB]igg\\=[lr]\\="
-              \ . l:texmath[0] . "' contained conceal cchar=" . l:texmath[1]
-    endfor
+  " Amsmath [lr][vV]ert
+  if &encoding ==# 'utf-8' && g:vimtex_syntax_conceal.math_delimiters
+    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert"
+    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?r\|right\)\\rvert"
+    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert"
+    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?r\|right\)\\rVert"
   endif
+
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{subarray}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{x\?alignat\*\?}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{xxalignat}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{subarray}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
 endfunction
 
 " }}}1

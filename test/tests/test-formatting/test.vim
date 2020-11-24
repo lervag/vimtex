@@ -10,7 +10,6 @@ set textwidth=79
 set nojoinspaces
 set shiftwidth=2
 
-let g:tex_flavor = 'latex'
 let g:vimtex_format_enabled = 1
 
 let s:file = empty($FILE) ? 'test-01' : $FILE

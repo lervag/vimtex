@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{pythontex}
+
+\begin{document}
+
+\py{1+1}
+\pyb#1+1#
+\pyc@1+1@
+\pys#1+1#
+
+\pyb{print('Python says hi!')}
+
+\begin{pycode}
+  print(r'\begin{center}')
+    print(r'\textit{A message from Python!}')
+  print(r'\end{center}')
+\end{pycode}
+
+\begin{pyblock}
+  mytext = '$1 + 1 = {0}$'.format(1 + 1)
+
+  def myfunction(arg1, arg2):
+      """docstring"""
+      pass
+\end{pyblock}
+
+\begin{pycode}
+print(r'\node {This is python};')
+\end{pycode}
+
+\begin{tikzpicture}
+  \begin{pycode}
+  print(r'\node {This is python};')
+  \end{pycode}
+\end{tikzpicture}
+
+\end{document}

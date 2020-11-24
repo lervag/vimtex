@@ -4,148 +4,130 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#minted#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'minted') | return | endif
-  let b:vimtex_syntax.minted = 1
-
+function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   " Parse minted macros in the current project
   call s:parse_minted_constructs()
 
-  " Match minted language names
-  syntax region texMintedName matchgroup=Delimiter start="{" end="}" contained
-  syntax region texMintedNameOpt matchgroup=Delimiter start="\[" end="\]" contained
-
-  " Match boundaries of minted environments
-  syntax match texMintedBounds '\\end{minted}'
-        \ contained
-        \ contains=texBeginEnd
-  syntax match texMintedBounds '\\begin{minted}'
-        \ contained
-        \ contains=texBeginEnd
-        \ nextgroup=texMintedBoundsOpts,texMintedName
-  syntax region texMintedBoundsOpts matchgroup=Delimiter
-        \ start="\[" end="\]"
-        \ contained
-        \ nextgroup=texMintedName
-
-  " Match starred custom minted environments with options
-  syntax match texMintedStarred "\\begin{\w\+\*}"
-        \ contained
-        \ contains=texBeginEnd
-        \ nextgroup=texMintedStarredOpts
-  syntax region texMintedStarredOpts matchgroup=Delimiter
-        \ start='{'
-        \ end='}'
-        \ contained
-        \ containedin=texMintedStarred
-
   " Match \newminted type macros
-  syntax match texStatement '\\newmint\%(ed\|inline\)\?' nextgroup=texMintedName,texMintedNameOpt
+  syntax match texCmdNewmint '\\newmint\%(ed\|inline\)\?\>'
+        \ skipwhite skipnl nextgroup=texNewmintOpt,texNewmintArgX
+  call vimtex#syntax#core#new_opt('texNewmintOpt', {'next': 'texNewmintArgY'})
+  call vimtex#syntax#core#new_arg('texNewmintArgX', {'contains': '', 'next': 'texNewmintArgOpts'})
+  call vimtex#syntax#core#new_arg('texNewmintArgY', {'contains': '', 'next': 'texNewmintArgOpts'})
+  call vimtex#syntax#core#new_arg('texNewmintArgOpts', {'contains': ''})
 
-  " Match "unknown" environments
-  call vimtex#syntax#misc#add_to_section_clusters('texZoneMinted')
-  syntax region texZoneMinted
-        \ start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{\w\+}"rs=s
-        \ end="\\end{minted}"re=e
-        \ keepend
-        \ contains=texMintedBounds.*
+  " Match minted environment boundaries
+  syntax match texMintedEnvBgn contained '\\begin{minted}'
+        \ nextgroup=texMintedEnvOpt,texMintedEnvArg skipwhite
+        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_opt('texMintedEnvOpt', {'next': 'texMintedEnvArg'})
+  call vimtex#syntax#core#new_arg('texMintedEnvArg', {'contains': ''})
 
-  " Match "unknown" commands
-  syntax match texArgMinted "{\w\+}"
-        \ contained
-        \ contains=texMintedName
-        \ nextgroup=texZoneMintedCmd
-  syntax region texZoneMintedCmd matchgroup=Delimiter
-        \ start='\z([|+/]\)'
-        \ end='\z1'
-        \ contained
-  syntax region texZoneMintedCmd matchgroup=Delimiter
-        \ start='{'
-        \ end='}'
-        \ contained
+  " Match starred custom minted environments and the option group
+  syntax match texMintedEnvBgn contained "\\begin{\w\+\*}"
+        \ nextgroup=texMintedEnvArgOpt skipwhite
+        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_arg('texMintedEnvArgOpt', {'contains': ''})
+
+  " Match generic minted environment regions
+  call vimtex#syntax#core#new_region_env('texMintedRegion', 'minted', {
+        \ 'contains': 'texCmdEnv,texMintedEnvBgn',
+        \ 'transparent': 0,
+        \})
+
+  " Match generic minted command regions
+  call vimtex#syntax#core#new_arg('texMintedArg', {'contains': '', 'next': 'texMintedRegionInline'})
+  call vimtex#syntax#core#new_arg('texMintedRegionInline', {'contains': ''})
+  call vimtex#syntax#core#new_arg('texMintedRegionInline', {
+        \ 'contains': '',
+        \ 'matcher': 'start="\z([|+/]\)" end="\z1"',
+        \})
 
   " Next add nested syntax support for desired languages
   for [l:nested, l:config] in items(b:vimtex.syntax.minted)
-    let l:cluster = vimtex#syntax#misc#include(l:nested)
+    let l:cluster = vimtex#syntax#nested#include(l:nested)
 
-    let l:name = 'Minted' . toupper(l:nested[0]) . l:nested[1:]
-    let l:group_main = 'texZone' . l:name
-    let l:group_arg = 'texArg' . l:name
-    let l:group_arg_zone = 'texArgZone' . l:name
-    call vimtex#syntax#misc#add_to_section_clusters(l:group_main)
+    let l:name = toupper(l:nested[0]) . l:nested[1:]
+    let l:grp_env = 'texMintedRegion' . l:name
+    let l:grp_inline = 'texMintedRegionInline' . l:name
+    let l:grp_inline_matcher = 'texMintedArg' . l:name
 
-    if empty(l:cluster)
-      let l:transparent = ''
-      let l:contains_env = ''
-      let l:contains_macro = ''
-      execute 'highlight link' l:group_main 'texZoneMinted'
-      execute 'highlight link' l:group_arg_zone 'texZoneMinted'
+    let l:options = 'keepend'
+    let l:contains = 'contains=texCmdEnv,texMintedEnvBgn'
+    let l:contains_inline = ''
+
+    if !empty(l:cluster)
+      let l:options .= ' transparent'
+      let l:contains .= ',@' . l:cluster
+      let l:contains_inline = '@' . l:cluster
     else
-      let l:transparent = 'transparent'
-      let l:contains_env = ',@' . l:cluster
-      let l:contains_macro = 'contains=@' . l:cluster
+      execute 'highlight def link' l:grp_env 'texMintedRegion'
+      execute 'highlight def link' l:grp_inline 'texMintedRegionInline'
     endif
 
-    " Match minted environment
-    execute 'syntax region' l:group_main
-          \ 'start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{' . l:nested . '}"rs=s'
-          \ 'end="\\end{minted}"re=e'
-          \ 'keepend'
-          \ l:transparent
-          \ 'contains=texMintedBounds.*' . l:contains_env
+    " Match normal minted environments
+    execute 'syntax region' l:grp_env
+          \ 'start="\\begin{minted}\%(\_s*\[\_[^\]]\{-}\]\)\?\_s*{' . l:nested . '}"'
+          \ 'end="\\end{minted}"'
+          \ l:options
+          \ l:contains
 
-    " Match custom environment names
+    " Match custom minted environments
     for l:env in get(l:config, 'environments', [])
-      execute 'syntax region' l:group_main
-            \ 'start="\\begin{\z(' . l:env . '\*\?\)}"rs=s'
-            \ 'end="\\end{\z1}"re=e'
-            \ 'keepend'
-            \ l:transparent
-            \ 'contains=texMintedStarred,texBeginEnd' . l:contains_env
+      execute 'syntax region' l:grp_env
+            \ 'start="\\begin{\z(' . l:env . '\*\?\)}"'
+            \ 'end="\\end{\z1}"'
+            \ l:options
+            \ l:contains
     endfor
 
-    " Match minted macros
-    " - \mint[]{lang}|...|
-    " - \mint[]{lang}{...}
-    " - \mintinline[]{lang}|...|
-    " - \mintinline[]{lang}{...}
-    execute 'syntax match' l:group_arg '''{' . l:nested . '}'''
+    " Match normal inline minted command regions
+    " Note: These are the language specific arguments for the commands
+    "       \mint and \mintinline
+    execute 'syntax match' l:grp_inline_matcher '"{' . l:nested . '}"'
           \ 'contained'
-          \ 'contains=texMintedName'
-          \ 'nextgroup=' . l:group_arg_zone
-    execute 'syntax region' l:group_arg_zone
-          \ 'matchgroup=Delimiter'
-          \ 'start=''\z([|+/]\)'''
-          \ 'end=''\z1'''
-          \ 'contained'
-          \ l:contains_macro
-    execute 'syntax region' l:group_arg_zone
-          \ 'matchgroup=Delimiter'
-          \ 'start=''{'''
-          \ 'end=''}'''
-          \ 'contained'
-          \ l:contains_macro
+          \ 'contains=texMintedArg'
+          \ 'nextgroup=' . l:grp_inline 'skipwhite skipnl'
+    call vimtex#syntax#core#new_arg(l:grp_inline, {
+          \ 'contains': l:contains_inline,
+          \ 'matcher': 'start="\z([|+/]\)" end="\z1"',
+          \})
+    call vimtex#syntax#core#new_arg(l:grp_inline, {
+          \ 'contains': l:contains_inline
+          \})
 
-    " Match minted custom macros
+    " Match custom inline minted commands
     for l:cmd in sort(get(l:config, 'commands', []))
-      execute printf('syntax match texStatement ''\\%s'' nextgroup=%s',
-            \ l:cmd, l:group_arg_zone)
+      execute 'syntax match texCmdMinted'
+            \ '"\\' . l:cmd . '\>"'
+            \ 'nextgroup=' . l:grp_inline 'skipwhite skipnl'
     endfor
   endfor
 
-  " Main matcher for the minted statements/commands
-  " - Note: This comes last to allow the nextgroup pattern
-  syntax match texStatement '\\mint\(inline\)\?' nextgroup=texArgOptMinted,texArgMinted.*
-  syntax region texArgOptMinted matchgroup=Delimiter
-        \ start='\['
-        \ end='\]'
-        \ contained
-        \ nextgroup=texArgMinted.*
+  " Match inline minted commands
+  " - \mint[]{lang}|...|
+  " - \mint[]{lang}{...}
+  " - \mintinline[]{lang}|...|
+  " - \mintinline[]{lang}{...}
+  " Note: This comes last to allow the nextgroup pattern
+  syntax match texCmdMinted "\\mint\%(inline\)\?"
+        \ nextgroup=texMintedOpt,texMintedArg.* skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texMintedOpt', {'next': 'texMintedArg.*'})
 
-  highlight link texZoneMinted texZone
-  highlight link texZoneMintedCmd texZone
-  highlight link texMintedName texInputFileOpt
-  highlight link texMintedNameOpt texMintedName
+  " Specify default highlight groups
+  highlight def link texCmdMinted          texCmd
+  highlight def link texCmdNewmint         texCmd
+  highlight def link texMintedArg          texSymbol
+  highlight def link texMintedEnvArg       texSymbol
+  highlight def link texMintedEnvArgOpt    texOpt
+  highlight def link texMintedEnvOpt       texOpt
+  highlight def link texMintedOpt          texOpt
+  highlight def link texMintedRegion       texRegion
+  highlight def link texMintedRegionInline texRegion
+  highlight def link texNewmintArgOpts     texOpt
+  highlight def link texNewmintArgX        texSymbol
+  highlight def link texNewmintArgY        texComment
+  highlight def link texNewmintOpt         texSymbol
 endfunction
 
 " }}}1

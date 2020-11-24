@@ -1,12 +1,9 @@
 set nocompatible
 let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
 filetype plugin on
 syntax enable
 
 set nomore
-
-let g:tex_flavor = 'latex'
 
 nnoremap q :qall!<cr>
 

@@ -4,25 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#misc#add_to_section_clusters(group) abort " {{{1
-  if get(g:, 'vimtex_syntax_alpha') | return | endif
-
-  for l:cluster in [
-        \ 'texPartGroup',
-        \ 'texChapterGroup',
-        \ 'texSectionGroup',
-        \ 'texSubSectionGroup',
-        \ 'texSubSubSectionGroup',
-        \ 'texParaGroup',
-        \]
-    execute printf('syntax cluster %s add=%s', l:cluster, a:group)
-  endfor
-
-  execute printf('syntax cluster texVimtexGlobal add=%s', a:group)
-endfunction
-
-" }}}1
-function! vimtex#syntax#misc#include(name) abort " {{{1
+function! vimtex#syntax#nested#include(name) abort " {{{1
   let l:inc_name = 'vimtex_nested_' . a:name
 
   if !has_key(s:included, l:inc_name)
@@ -33,7 +15,7 @@ function! vimtex#syntax#misc#include(name) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#misc#include_reset() abort " {{{1
+function! vimtex#syntax#nested#reset() abort " {{{1
   let s:included = {'vimtex_nested_tex': 0}
 endfunction
 

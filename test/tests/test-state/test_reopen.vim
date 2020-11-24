@@ -6,8 +6,6 @@ set nomore
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 if empty($INMAKE) | finish | endif
 
 silent edit minimal.tex

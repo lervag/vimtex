@@ -8,7 +8,6 @@ set foldcolumn=4
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 0
 let g:vimtex_fold_enabled = 1
 let g:vimtex_fold_types = {'comments' : {'enabled': 1}}
 

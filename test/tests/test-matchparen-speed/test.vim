@@ -8,8 +8,6 @@ set noswapfile
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 " let g:vimtex_matchparen_enabled = 0
 " let g:vimtex_delim_stopline = 1000
 " let g:vimtex_delim_timeout = 100

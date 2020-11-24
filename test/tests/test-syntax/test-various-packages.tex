@@ -1,0 +1,119 @@
+\documentclass{beamer}
+\usepackage{subfile}
+\usepackage{includegraphics}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+\usepackage{testx} " Package does not exist - test try catch block
+\usepackage{biblatex}
+\usepackage{csquotes}
+\usepackage{cleveref}
+\usepackage{varioref}
+\usepackage{dot2texi}
+\usepackage{luacode}
+\usepackage{gnuplottex}
+
+\begin{document}
+
+\section{General}
+\todostuff \todocommand \todo{content}
+
+This text is \emph{emphasized}, \textit{italized}, \textbf{bolded}.
+
+\def\A{A}
+\def\B{\V{B}}
+
+\newenvironment{example}[1][]{Start #1}{Stop}
+\renewenvironment{example}[1][]{Start #1}{Stop}
+\newenvironment{nestedexample}[1][]{%
+  \renewenvironment{nested}[1][0]{%
+    Outerarg #1}{%
+    Innerarg ##1
+  }%
+  \begin{nested}{title}}{%
+  \end{nested}%
+}
+
+\newcommand{\testA}[1]{Test #1}
+\renewcommand{\testA}[1]{Test #1}
+\newcommand{\mycommand}[1]{%
+  \renewcommand{\myothercommand}[1]{%
+    \dosomethingwithouterarg{#1}%
+    \dosomethingwithinnerarg{##1}%
+  }%
+}
+
+\section{Documentclass: beamer}
+\begin{frame}[asd]
+  \includegraphics[height=0.5062\linewidth]{test.png}
+  \includegraphics<2>[height=0.5062\linewidth]{test.png}
+
+  \only{asd}
+  \only<2>{asd}
+
+  \item asdasd
+  \item<1-3> asdasd
+\end{frame}
+
+\section{Package: minor stuff}
+% subfile
+\subfile{test-syntax.tex}
+
+% pdfpages
+\includepdf{test.pdf}
+
+\section{Package: biblatex and csquotes}
+\cite{}
+\citet*{}
+\citep{bibtexkey1}
+\citep[e.g.][]{bibtexkey2}
+\citealt{}
+\citealt*{}
+\citealp{}
+\citealp*{}
+\citenum{}
+\citetext{}
+\citeauthor{asd}
+\citeauthor*{}
+\citeyear{}
+\citeyearpar{}
+\bibentry{}
+
+\section{Package: cleveref}
+\label[asd]{sec:cleveref}
+
+\crefname{equation}{Eq}{Eqs}
+\cref{eq:test}
+\crefrange{eq:test}{eq:test2}
+
+\section{Package: varioref}
+\Vref{sec_one} does what you need. Still \vref{sec_one} works.
+
+\section{Package: dot2texi}
+\begin{dot2tex}
+  graph graphname {
+    a -- b;
+    b -- c;
+    b -- d;
+    d -- a;
+  }
+\end{dot2tex}
+
+\section{Package: luacode}
+\directlua{
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+}
+
+\begin{luacode}
+  if pdf.getminorversion() \string~= 7 then
+    print "pfd version 1.7"
+  end
+\end{luacode}
+
+\section{Package: gnuplottex}
+\begin{gnuplot}[terminal=..., terminaloptions=...]
+    plot file using 1:2 with lines
+\end{gnuplot}
+
+\end{document}
