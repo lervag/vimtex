@@ -31,6 +31,7 @@ function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
 
   highlight def link texCmdTikz       texCmd
   highlight def link texCmdTikzset    texCmd
+  highlight def link texTikzNodeOpt   texOpt
   highlight def link texTikzSemicolon texDelim
   highlight def link texTikzDraw      texDelim
   highlight def link texTikzCycle     texMathDelim
