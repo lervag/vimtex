@@ -3743,7 +3743,10 @@ syntax highlighting. The best resources to learn about this are:
        the colorscheme file directly"
        This is a good resource that describes how to properly customize
        the highlighting of syntax groups on top of a basic colorscheme.
-  iii) |usr_44|  "Your own syntax highlighted" (ADVANCED)
+  iii) https://github.com/lervag/vimtex/wiki/Highlight-groups
+       This wiki page gives an example of how to customize and fine-tune
+       syntax highlighting of TeX and BibTeX files.
+  iv)  |usr_44|  "Your own syntax highlighted" (ADVANCED)
 
 The main philosophy of the Vimtex syntax plugin is to keep things simple,
 structured, and consistent. There is a small set of primitive syntax elements
