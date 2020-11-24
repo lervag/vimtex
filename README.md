@@ -1,6 +1,6 @@
 # vimtex
 
-vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype plugin for LaTeX files.
+vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype and syntax plugin for LaTeX files.
 
 [![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ![CI tests](https://github.com/lervag/vimtex/workflows/CI%20tests/badge.svg)
