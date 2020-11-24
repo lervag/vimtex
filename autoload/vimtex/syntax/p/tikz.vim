@@ -29,6 +29,7 @@ function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax match texCmdTikz "\\node\>" contained nextgroup=texTikzNodeOpt skipwhite skipnl
   call vimtex#syntax#core#new_opt('texTikzNodeOpt', {'contains': '@texClusterTikzset'})
 
+  highlight def link texCmdTikz       texCmd
   highlight def link texCmdTikzset    texCmd
   highlight def link texTikzSemicolon texDelim
   highlight def link texTikzDraw      texDelim
