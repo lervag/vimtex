@@ -9,7 +9,7 @@ NB! Before posting an issue:
 * Learn at least a minimum of Markdown formatting (https://guides.github.com/features/mastering-markdown).
 
 Note, the following can be useful tips to try before posting the issue:
-* Run `:chechhealth` (if available, e.g. on neovim).
+* Run `:checkhealth` (if available, e.g. on neovim).
 * Inspect output of `:VimtexCompileOutput`.
 
 Finally, please remove any boilerplate template content that is not relevant!
