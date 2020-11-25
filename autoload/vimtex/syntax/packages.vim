@@ -39,6 +39,8 @@ function! s:register_packages() abort " {{{1
         \ {_, x -> tolower(substitute(x, '-', '_', 'g'))})
 
   for l:pkg in s:addons
+    if empty(l:pkg) | continue | endif
+
     " Register "state" for package in current buffer
     if !has_key(b:vimtex_syntax, l:pkg)
       let b:vimtex_syntax[l:pkg] = extend({

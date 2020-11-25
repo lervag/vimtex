@@ -5,7 +5,7 @@
 "
 
 function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
-  let b:vimtex_syntax.listings = map(
+  let b:vimtex_syntax.listings.nested = map(
         \ filter(getline(1, '$'), "v:val =~# 'language='"),
         \ {_, x -> matchstr(x, 'language=\zs\w\+')})
 
@@ -33,7 +33,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
         \})
 
   " Add nested syntax support for desired languages
-  for l:nested in b:vimtex_syntax.listings
+  for l:nested in b:vimtex_syntax.listings.nested
     let l:cluster = vimtex#syntax#nested#include(l:nested)
     if empty(l:cluster) | continue | endif
 
