@@ -34,7 +34,7 @@ if exists('b:vimtex')
 else
   augroup vimtex_syntax
     autocmd!
-    autocmd User VimtexEventInitPost ++once call vimtex#syntax#packages#init()
+    autocmd User VimtexEventInitPost call vimtex#syntax#packages#init()
   augroup END
 endif
 
