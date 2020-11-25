@@ -107,6 +107,7 @@ disabled if desired.
   - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
   - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
   - Move between math environment boundaries with `[n`, `[N`, `]n`, and `]N`
+  - Move between frame environment boundaries with `[r`, `[R`, `]r`, and `]R`
   - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
 - Text objects
