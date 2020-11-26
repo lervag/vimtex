@@ -646,12 +646,12 @@ function! s:match_math_sub_super() " {{{1
 
   for [l:from, l:to] in filter(copy(s:map_super),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
-    execute 'syntax match texMathSuper /\^' . l:from . '/ contained conceal cchar=' . l:to 'contains=texMathOper'
+    execute 'syntax match texMathSuper "\^' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathOper'
   endfor
 
   for [l:from, l:to] in filter(copy(s:map_sub),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/().]'})
-    execute 'syntax match texMathSub /_' . l:from . '/ contained conceal cchar=' . l:to 'contains=texMathOper'
+    execute 'syntax match texMathSub "_' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathOper'
   endfor
 endfunction
 
