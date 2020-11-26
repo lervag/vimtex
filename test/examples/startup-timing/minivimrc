@@ -6,15 +6,7 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let g:vimtex_toc_todo_labels = {
-      \ 'TODO': 'TODO: ',
-      \ 'FIXME': 'FIXME: ',
-      \ 'IMPORTANT': 'IMPORTANT: ',
-      \ 'IMPORTANTE': 'IMPORTANT: ',
-      \}
-
 silent edit thesis.tex
+" call vimtex#profile#file('thesis.tex')
 
-" VimtexTocOpen
-" echo ''
 quitall

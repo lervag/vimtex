@@ -9,4 +9,7 @@ if !get(g:, 'vimtex_enabled', 1)
   finish
 endif
 
-autocmd BufNewFile,BufRead *.tex set filetype=tex
+" For some reason, it seems the best way to ensure filetype "tex" is to just
+" set the g:tex_flavor option. Overriding the autocmds or similar seems to make
+" startup slower, for some unknown reason.
+let g:tex_flavor = 'latex'
