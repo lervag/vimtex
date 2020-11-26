@@ -210,6 +210,14 @@ Vim version~
   to one's `vimrc` file.  This might work, but issues due to older versions
   than the mentioned here will be ignored.
 
+Vim configuration~
+
+  Some of the Vimtex scripts contain UTF-8 characters, and as such, it is
+  necessary to have the 'encoding' option set to utf8. This is not necessary
+  in neovim, only in Vim. Add the following to your vimrc file: >
+
+    set encoding=utf8
+
 Compiler backend~
 
   Vimtex uses `latexmk`, `latexrun`, `tectonic` or `arara` to compile the LaTeX document.
