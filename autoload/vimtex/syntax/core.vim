@@ -276,8 +276,11 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
-  call vimtex#syntax#core#new_arg('texEnvArgName', {'next': 'texEnvOpt'})
-  call vimtex#syntax#core#new_opt('texEnvOpt', {'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texEnvArgName',
+        \ {'contains': 'texComment,@NoSpell'},
+        \ {'next': 'texEnvOpt'})
+  call vimtex#syntax#core#new_opt('texEnvOpt',
+        \ {'contains': 'texComment,@NoSpell'})
 
   " Tabular arguments
   syntax match texCmdEnv "\\begin{tabular}" contains=texCmdEnv nextgroup=texTabularArg skipwhite skipnl
@@ -328,7 +331,8 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Define math environment boundaries
   syntax match texCmdMathEnv "\v\\%(begin|end)>" contained nextgroup=texMathEnvArgName
-  call vimtex#syntax#core#new_arg('texMathEnvArgName')
+  call vimtex#syntax#core#new_arg('texMathEnvArgName',
+        \ {'contains': 'texComment,@NoSpell'})
 
   " Math regions: environments
   call vimtex#syntax#core#new_region_math('displaymath')
