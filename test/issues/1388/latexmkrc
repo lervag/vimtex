@@ -1,7 +1,0 @@
-$pdflatex = 'internal internalexample %R %O %S';
-
-sub internalexample {
-    my @args = @_;
-    print "This line should be printed\n";
-    return system("pdflatex @args");
-}

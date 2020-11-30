@@ -1,5 +1,0 @@
-$pdf_mode = 1;
-$dvi_mode = $postscript_mode = 0;
-$pdflatex = "pdflatex -file-line-error -synctex=1 -interaction=nonstopmode %O %S";
-$pdflatex = "lualatex --file-line-error --synctex=1 --interaction=nonstopmode %O %S";
-#$pdflatex = "pdflatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S";

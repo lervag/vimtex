@@ -1,8 +1,0 @@
-set nocompatible
-let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
-filetype plugin indent on
-syntax enable
-
-let g:tex_flavor = 'latex'
-let g:vimtex_disable_recursive_main_file_detection = 1
