@@ -220,7 +220,10 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " \newcommand
   syntax match texCmdNewcmd nextgroup=texNewcmdArgName skipwhite skipnl "\\\%(re\)\?newcommand\>"
-  call vimtex#syntax#core#new_arg('texNewcmdArgName', {'next': 'texNewcmdOpt,texNewcmdArgBody'})
+  call vimtex#syntax#core#new_arg('texNewcmdArgName', {
+        \ 'next': 'texNewcmdOpt,texNewcmdArgBody',
+        \ 'contains': ''
+        \})
   call vimtex#syntax#core#new_opt('texNewcmdOpt', {
         \ 'next': 'texNewcmdOpt,texNewcmdArgBody',
         \ 'opts': 'oneline',
