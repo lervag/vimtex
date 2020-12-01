@@ -250,6 +250,15 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texDefParm contained "#\+\d" containedin=texDefParmPre,texDefArgBody
   call vimtex#syntax#core#new_arg('texDefArgBody')
 
+  " \let
+  " Note: define texLetArgEqual after texLetArgBody; order matters
+  " E.g. in '\def\eq==' we want: 1st = is texLetArgEqual, 2nd = is texLetArgBody
+  syntax match texCmdLet "\\let\>" nextgroup=texLetArgName skipwhite skipnl
+  syntax match texLetArgName  contained nextgroup=texLetArgBody,texLetArgEqual skipwhite skipnl "\\[a-zA-Z@]\+"
+  syntax match texLetArgName  contained nextgroup=texLetArgBody,texLetArgEqual skipwhite skipnl "\\[^a-zA-Z@]"
+  syntax match texLetArgBody  contained contains=TOP,@Nospell "\\[a-zA-Z@]\+\|\\[^a-zA-Z@]\|\S"
+  syntax match texLetArgEqual contained nextgroup=texLetArgBody skipwhite skipnl "="
+
   " Reference and cite commands
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\nocite\>"
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\label\>"
@@ -570,6 +579,8 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCommentURL           texComment
   highlight def link texDefArgName           texCmd
   highlight def link texDefParm              texParm
+  highlight def link texLetArgName           texCmd
+  highlight def link texLetArgEqual          texSymbol
   highlight def link texE3Cmd                texCmd
   highlight def link texE3Delim              texDelim
   highlight def link texE3Func               texCmdType
