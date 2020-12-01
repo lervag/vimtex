@@ -549,6 +549,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCmdBib               texCmd
   highlight def link texCmdClass             texCmd
   highlight def link texCmdDef               texCmd
+  highlight def link texCmdLet               texCmd
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdE3                texCmd
   highlight def link texCmdFootnote          texCmd
