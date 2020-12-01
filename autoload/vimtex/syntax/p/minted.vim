@@ -32,7 +32,6 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   " Match generic minted environment regions
   call vimtex#syntax#core#new_region_env('texMintedRegion', 'minted', {
         \ 'contains': 'texCmdEnv,texMintedEnvBgn',
-        \ 'transparent': 0,
         \})
 
   " Match generic minted command regions
