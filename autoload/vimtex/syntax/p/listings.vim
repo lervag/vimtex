@@ -29,7 +29,6 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_opt('texLstOpt')
   call vimtex#syntax#core#new_region_env('texLstRegion', 'lstlisting', {
         \ 'contains': 'texLstEnvBgn',
-        \ 'transparent': 0,
         \})
 
   " Add nested syntax support for desired languages
@@ -42,7 +41,6 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
     execute 'syntax match texLstsetArg'
           \ '"\c{\_[^}]*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'nextgroup=' . l:grp 'skipwhite skipnl'
-          \ 'transparent'
           \ 'contains=texLstsetGroup'
 
     call vimtex#syntax#core#new_region_env(l:grp, 'lstlisting', {
@@ -54,7 +52,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
           \ 'start="\c\\begin{lstlisting}\s*'
           \ . '\[\_[^\]]\{-}language=' . l:nested . '\%(\s*,\_[^\]]\{-}\)\?\]"'
           \ 'end="\\end{lstlisting}"'
-          \ 'keepend transparent'
+          \ 'keepend'
           \ 'contains=texCmdEnv,texLstEnvBgn,@' . l:cluster
   endfor
 

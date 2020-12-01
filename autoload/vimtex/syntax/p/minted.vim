@@ -57,7 +57,6 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
     let l:contains_inline = ''
 
     if !empty(l:cluster)
-      let l:options .= ' transparent'
       let l:contains .= ',@' . l:cluster
       let l:contains_inline = '@' . l:cluster
     else

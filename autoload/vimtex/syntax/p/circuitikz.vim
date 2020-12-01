@@ -10,8 +10,10 @@ function! vimtex#syntax#p#circuitikz#load(cfg) abort " {{{1
   syntax match texTikzEnvBgn "\\begin{circuitikz}"
         \ nextgroup=texTikzOpt skipwhite skipnl
         \ contains=texCmdEnv
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'circuitikz',
-        \ {'contains': '@texClusterTikz'})
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'circuitikz', {
+        \ 'contains': '@texClusterTikz',
+        \ 'transparent': 1,
+        \})
 endfunction
 
 " }}}1

@@ -13,17 +13,19 @@ function! vimtex#syntax#p#pgfplots#load(cfg) abort " {{{1
 
   syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{\%(log\)*axis}"
   syntax match texTikzEnvBgn contains=texCmdEnv nextgroup=texTikzOpt skipwhite skipnl "\\begin{groupplot}"
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'axis', {'contains': '@texClusterTikz'})
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'logaxis', {'contains': '@texClusterTikz'})
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'loglogaxis', {'contains': '@texClusterTikz'})
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'groupplot', {'contains': '@texClusterTikz'})
+  for l:env in ['axis', 'logaxis', 'loglogaxis', 'groupplot']
+    call vimtex#syntax#core#new_region_env('texTikzRegion', l:env, {
+          \ 'contains': '@texClusterTikz',
+          \ 'transparent': 1,
+          \})
+  endfor
 
 
   syntax match texCmdAxis contained nextgroup=texTikzOpt skipwhite skipnl "\\nextgroupplot\>"
   syntax match texCmdAxis contained nextgroup=texPgfAddplotOpt,texPgfType,texPgfFunc skipwhite skipnl "\\addplot3\?\>+\?"
 
   call vimtex#syntax#core#new_opt('texPgfAddplotOpt', {'contains': '@texClusterTikzset', 'next': 'texPgfType,texPgfFunc'})
-  call vimtex#syntax#core#new_arg('texPgfFunc', {'contains': '', 'opts': 'transparent'})
+  call vimtex#syntax#core#new_arg('texPgfFunc', {'contains': '', 'opts': 'contained transparent'})
 
 
   syntax match texPgfType "table" contained nextgroup=texPgfTableOpt,texPgfTableArg skipwhite skipnl

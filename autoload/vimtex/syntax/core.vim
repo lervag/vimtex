@@ -290,7 +290,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Region: Verbatim
 
   " Verbatim environment
-  call vimtex#syntax#core#new_region_env('texVerbRegion', '[vV]erbatim', {'transparent': 0})
+  call vimtex#syntax#core#new_region_env('texVerbRegion', '[vV]erbatim')
 
   " Verbatim inline
   syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbRegionInline
@@ -452,7 +452,7 @@ function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
   let l:cfg = extend({
         \ 'contains': '',
         \ 'opts': '',
-        \ 'transparent': 1,
+        \ 'transparent': 0,
         \}, a:0 > 0 ? a:1 : {})
 
   let l:contains = 'contains=texCmdEnv'
