@@ -276,9 +276,10 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
-  call vimtex#syntax#core#new_arg('texEnvArgName',
-        \ {'contains': 'texComment,@NoSpell'},
-        \ {'next': 'texEnvOpt'})
+  call vimtex#syntax#core#new_arg('texEnvArgName', {
+        \ 'contains': 'texComment,@NoSpell',
+        \ 'next': 'texEnvOpt'
+        \})
   call vimtex#syntax#core#new_opt('texEnvOpt',
         \ {'contains': 'texComment,@NoSpell'})
 
@@ -573,6 +574,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texE3Opt                texOpt
   highlight def link texE3Parm               texParm
   highlight def link texE3Var                texCmd
+  highlight def link texEnvOpt               texOpt
   highlight def link texFileArg              texArg
   highlight def link texFileOpt              texOpt
   highlight def link texFilesArg             texFileArg
