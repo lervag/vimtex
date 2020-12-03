@@ -41,7 +41,6 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
 
   highlight link texCmdDeclmathoper     texCmd
   highlight link texDeclmathoperArgName texCmd
-
 endfunction
 
 " }}}1
