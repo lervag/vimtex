@@ -544,24 +544,26 @@ function! s:init_highlights() abort " {{{1
   highlight def texStyleItal gui=italic      cterm=italic
 
   " Inherited groups
+  highlight def link texArgNew               texCmd
   highlight def link texAuthorOpt            texOpt
   highlight def link texCmdAccent            texCmd
   highlight def link texCmdAuthor            texCmd
   highlight def link texCmdBib               texCmd
   highlight def link texCmdClass             texCmd
-  highlight def link texCmdDef               texCmd
+  highlight def link texCmdDef               texCmdNew
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdE3                texCmd
   highlight def link texCmdFootnote          texCmd
   highlight def link texCmdGreek             texCmd
   highlight def link texCmdInput             texCmd
   highlight def link texCmdItem              texCmdEnv
-  highlight def link texCmdLet               texCmd
+  highlight def link texCmdLet               texCmdNew
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdMath              texCmd
   highlight def link texCmdMathEnv           texCmdEnv
   highlight def link texCmdMathText          texCmd
-  highlight def link texCmdNewcmd            texCmd
+  highlight def link texCmdNew               texCmd
+  highlight def link texCmdNewcmd            texCmdNew
   highlight def link texCmdNewenv            texCmd
   highlight def link texCmdNoSpell           texCmd
   highlight def link texCmdPackage           texCmd
@@ -579,7 +581,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCmdVerb              texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
-  highlight def link texDefArgName           texCmd
+  highlight def link texDefArgName           texArgNew
   highlight def link texDefParm              texParm
   highlight def link texE3Cmd                texCmd
   highlight def link texE3Delim              texDelim
@@ -593,7 +595,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texFilesOpt             texFileOpt
   highlight def link texGroupError           texError
   highlight def link texLetArgEqual          texSymbol
-  highlight def link texLetArgName           texCmd
+  highlight def link texLetArgName           texArgNew
   highlight def link texLigature             texSymbol
   highlight def link texMathArg              texMathRegion
   highlight def link texMathArrayArg         texOpt
@@ -612,7 +614,7 @@ function! s:init_highlights() abort " {{{1
   highlight def link texMathSub              texMathRegion
   highlight def link texMathSuper            texMathRegion
   highlight def link texMathSymbol           texCmd
-  highlight def link texNewcmdArgName        texCmd
+  highlight def link texNewcmdArgName        texArgNew
   highlight def link texNewcmdOpt            texOpt
   highlight def link texNewcmdParm           texParm
   highlight def link texNewenvArgName        texEnvArgName

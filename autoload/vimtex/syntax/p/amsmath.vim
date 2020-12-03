@@ -39,8 +39,8 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody')
 
-  highlight link texCmdDeclmathoper     texCmd
-  highlight link texDeclmathoperArgName texCmd
+  highlight link texCmdDeclmathoper     texCmdNew
+  highlight link texDeclmathoperArgName texArgNew
 endfunction
 
 " }}}1
