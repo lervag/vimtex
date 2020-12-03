@@ -252,11 +252,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texDefArgBody')
 
   " \let
-  " Note: define texLetArgEqual after texLetArgBody; order matters
-  " E.g. in '\def\eq==' we want: 1st = is texLetArgEqual, 2nd = is texLetArgBody
   syntax match texCmdLet "\\let\>" nextgroup=texLetArgName skipwhite skipnl
   syntax match texLetArgName  contained nextgroup=texLetArgBody,texLetArgEqual skipwhite skipnl "\\[a-zA-Z@]\+"
   syntax match texLetArgName  contained nextgroup=texLetArgBody,texLetArgEqual skipwhite skipnl "\\[^a-zA-Z@]"
+  " Note: define texLetArgEqual after texLetArgBody; order matters
+  " E.g. in '\let\eq==' we want: 1st = is texLetArgEqual, 2nd = is texLetArgBody
+  " Reversing lines results in:  1st = is texLetArgBody,  2nd = is unmatched
   syntax match texLetArgBody  contained contains=TOP,@Nospell "\\[a-zA-Z@]\+\|\\[^a-zA-Z@]\|\S"
   syntax match texLetArgEqual contained nextgroup=texLetArgBody skipwhite skipnl "="
 
@@ -551,13 +552,13 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCmdBib               texCmd
   highlight def link texCmdClass             texCmd
   highlight def link texCmdDef               texCmd
-  highlight def link texCmdLet               texCmd
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdE3                texCmd
   highlight def link texCmdFootnote          texCmd
   highlight def link texCmdGreek             texCmd
   highlight def link texCmdInput             texCmd
   highlight def link texCmdItem              texCmdEnv
+  highlight def link texCmdLet               texCmd
   highlight def link texCmdLigature          texSpecialChar
   highlight def link texCmdMath              texCmd
   highlight def link texCmdMathEnv           texCmdEnv
@@ -582,8 +583,6 @@ function! s:init_highlights() abort " {{{1
   highlight def link texCommentURL           texComment
   highlight def link texDefArgName           texCmd
   highlight def link texDefParm              texParm
-  highlight def link texLetArgName           texCmd
-  highlight def link texLetArgEqual          texSymbol
   highlight def link texE3Cmd                texCmd
   highlight def link texE3Delim              texDelim
   highlight def link texE3Func               texCmdType
@@ -596,6 +595,8 @@ function! s:init_highlights() abort " {{{1
   highlight def link texFilesArg             texFileArg
   highlight def link texFilesOpt             texFileOpt
   highlight def link texGroupError           texError
+  highlight def link texLetArgEqual          texSymbol
+  highlight def link texLetArgName           texCmd
   highlight def link texLigature             texSymbol
   highlight def link texMathArg              texMathRegion
   highlight def link texMathArrayArg         texOpt
