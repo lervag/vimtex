@@ -9,6 +9,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   syntax sync maxlines=500
   syntax sync minlines=50
+  syntax iskeyword 48-57,a-z,A-Z,192-255
 
   " {{{2 Define main syntax clusters
 
