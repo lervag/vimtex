@@ -265,9 +265,11 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_syntax_conceal_default', 1)
   call s:init_option('vimtex_syntax_conceal', {
         \ 'accents': g:vimtex_syntax_conceal_default,
+        \ 'fancy': g:vimtex_syntax_conceal_default,
         \ 'greek': g:vimtex_syntax_conceal_default,
         \ 'math_bounds': g:vimtex_syntax_conceal_default,
         \ 'math_delimiters': g:vimtex_syntax_conceal_default,
+        \ 'math_fracs': g:vimtex_syntax_conceal_default,
         \ 'math_super_sub': g:vimtex_syntax_conceal_default,
         \ 'math_symbols': g:vimtex_syntax_conceal_default,
         \ 'styles': g:vimtex_syntax_conceal_default,

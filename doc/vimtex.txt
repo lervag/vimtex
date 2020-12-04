@@ -1992,8 +1992,11 @@ OPTIONS                                                        *vimtex-options*
   following keys are available:
 
     accents~
-      Replace TeX accents into the accented character, e.g. `\aa` -> å. This
+      Replace TeX accents into the accented character, e.g. `\aa` --> å. This
       will also replace a few ligatures.
+
+    fancy~
+      Some extra fancy replacements, e.g. `\item` --> ○.
 
     greek~
       Replace TeX greek letter commands into the equivalent unicode greek
@@ -2010,11 +2013,15 @@ OPTIONS                                                        *vimtex-options*
 
         `\Biggl\langle ... \Biggr\rangle` --> `〈 ... 〉`
 
+    math_fracs~
+    Replace some simple fractions like `\frac 1 2` --> ½.
+
     math_super_sub~
       Replace simple math super and sub operators, e.g. `x^2` --> `x²`.
 
     math_symbols~
       Replace various math symbol commands to an equivalent unicode character.
+      This includes quite a lot of replacements, so be warned!
 
     styles~
       Conceal the LaTeX command "boundaries" for italized and bolded style

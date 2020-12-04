@@ -402,6 +402,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call s:match_math_sub_super()
   call s:match_math_symbols()
   call s:match_math_delims()
+  call s:match_math_fracs()
 
   " }}}2
   " {{{2 Conceal mode support
@@ -409,6 +410,11 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Add support for conceal with custom replacement (conceallevel = 2)
 
   if &encoding ==# 'utf-8'
+    " Conceal various commands - be fancy
+    if g:vimtex_syntax_conceal.greek
+      call s:match_conceal_fancy()
+    endif
+
     " Conceal replace greek letters
     if g:vimtex_syntax_conceal.greek
       call s:match_conceal_greek()
@@ -663,7 +669,7 @@ endfunction
 
 " }}}1
 
-function! s:match_math_sub_super() " {{{1
+function! s:match_math_sub_super() abort " {{{1
   if !g:vimtex_syntax_conceal.math_super_sub | return | endif
 
   for [l:from, l:to] in filter(copy(s:map_super),
@@ -839,7 +845,7 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\downarrow\>"         contained conceal cchar=↓
   syntax match texMathSymbol "\\Downarrow\>"         contained conceal cchar=⇓
   syntax match texMathSymbol "\\ell\>"               contained conceal cchar=ℓ
-  syntax match texMathSymbol "\\emptyset\>"          contained conceal cchar=∅
+  syntax match texMathSymbol "\\emptyset\>"          contained conceal cchar=Ø
   syntax match texMathSymbol "\\equiv\>"             contained conceal cchar=≡
   syntax match texMathSymbol "\\exists\>"            contained conceal cchar=∃
   syntax match texMathSymbol "\\flat\>"              contained conceal cchar=♭
@@ -861,6 +867,7 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\int\>"               contained conceal cchar=∫
   syntax match texMathSymbol "\\jmath\>"             contained conceal cchar=𝚥
   syntax match texMathSymbol "\\land\>"              contained conceal cchar=∧
+  syntax match texMathSymbol '\\lnot\>'              contained conceal cchar=¬
   syntax match texMathSymbol "\\lceil\>"             contained conceal cchar=⌈
   syntax match texMathSymbol "\\ldots\>"             contained conceal cchar=…
   syntax match texMathSymbol "\\le\>"                contained conceal cchar=≤
@@ -871,6 +878,8 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\left\\{"             contained conceal cchar={
   syntax match texMathSymbol "\\leftarrow\>"         contained conceal cchar=←
   syntax match texMathSymbol "\\Leftarrow\>"         contained conceal cchar=⇐
+  syntax match texMathSymbol '\\langle\>'            contained conceal cchar=⟨
+  syntax match texMathSymbol '\\rangle\>'            contained conceal cchar=⟩
   syntax match texMathSymbol "\\leftharpoondown\>"   contained conceal cchar=↽
   syntax match texMathSymbol "\\leftharpoonup\>"     contained conceal cchar=↼
   syntax match texMathSymbol "\\leftrightarrow\>"    contained conceal cchar=↔
@@ -922,11 +931,13 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\right\\}"            contained conceal cchar=}
   syntax match texMathSymbol "\\rightarrow\>"        contained conceal cchar=→
   syntax match texMathSymbol "\\Rightarrow\>"        contained conceal cchar=⇒
+  syntax match texMathSymbol '\\leftarrow\>'         contained conceal cchar=←
+  syntax match texMathSymbol '\\Leftarrow\>'         contained conceal cchar=⇐
   syntax match texMathSymbol "\\rightleftharpoons\>" contained conceal cchar=⇌
   syntax match texMathSymbol "\\rmoustache\>"        contained conceal cchar=╮
   syntax match texMathSymbol "\\S\>"                 contained conceal cchar=§
   syntax match texMathSymbol "\\searrow\>"           contained conceal cchar=↘
-  syntax match texMathSymbol "\\setminus\>"          contained conceal cchar=∖
+  syntax match texMathSymbol "\\setminus\>"          contained conceal cchar=\
   syntax match texMathSymbol "\\sharp\>"             contained conceal cchar=♯
   syntax match texMathSymbol "\\sim\>"               contained conceal cchar=∼
   syntax match texMathSymbol "\\simeq\>"             contained conceal cchar=⋍
@@ -948,7 +959,7 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\supseteq\>"          contained conceal cchar=⊇
   syntax match texMathSymbol "\\surd\>"              contained conceal cchar=√
   syntax match texMathSymbol "\\swarrow\>"           contained conceal cchar=↙
-  syntax match texMathSymbol "\\times\>"             contained conceal cchar=×
+  syntax match texMathSymbol "\\times\>"             contained conceal cchar=x
   syntax match texMathSymbol "\\to\>"                contained conceal cchar=→
   syntax match texMathSymbol "\\top\>"               contained conceal cchar=⊤
   syntax match texMathSymbol "\\triangle\>"          contained conceal cchar=∆
@@ -964,6 +975,14 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\wedge\>"             contained conceal cchar=∧
   syntax match texMathSymbol "\\wp\>"                contained conceal cchar=℘
   syntax match texMathSymbol "\\wr\>"                contained conceal cchar=≀
+  syntax match texMathSymbol '\\implies\>'           contained conceal cchar=⇒
+  syntax match texMathSymbol '\\geqslant\>'          contained conceal cchar=⩾
+  syntax match texMathSymbol '\\leqslant\>'          contained conceal cchar=⩽
+  syntax match texMathSymbol '\\choose\>'            contained conceal cchar=C
+  syntax match texMathSymbol '\\sqrt\>'              contained conceal cchar=√
+  syntax match texMathSymbol '\\sqrt\[3]'            contained conceal cchar=∛
+  syntax match texMathSymbol '\\sqrt\[4]'            contained conceal cchar=∜
+  syntax match texMathSymbol '\\coloneqq\>'          contained conceal cchar=≔
 
   if &ambiwidth ==# 'double'
     syntax match texMathSymbol '\\gg\>'          contained conceal cchar=≫
@@ -1035,6 +1054,136 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol '\\hat{W}' contained conceal cchar=Ŵ
   syntax match texMathSymbol '\\hat{y}' contained conceal cchar=ŷ
   syntax match texMathSymbol '\\hat{Y}' contained conceal cchar=Ŷ
+
+  " \mathbb characters
+  syntax match texMathSymbol '\\mathbb{\s*A\s*}' contained conceal cchar=𝔸
+  syntax match texMathSymbol '\\mathbb{\s*B\s*}' contained conceal cchar=𝔹
+  syntax match texMathSymbol '\\mathbb{\s*C\s*}' contained conceal cchar=ℂ
+  syntax match texMathSymbol '\\mathbb{\s*D\s*}' contained conceal cchar=𝔻
+  syntax match texMathSymbol '\\mathbb{\s*E\s*}' contained conceal cchar=𝔼
+  syntax match texMathSymbol '\\mathbb{\s*F\s*}' contained conceal cchar=𝔽
+  syntax match texMathSymbol '\\mathbb{\s*G\s*}' contained conceal cchar=𝔾
+  syntax match texMathSymbol '\\mathbb{\s*H\s*}' contained conceal cchar=ℍ
+  syntax match texMathSymbol '\\mathbb{\s*I\s*}' contained conceal cchar=𝕀
+  syntax match texMathSymbol '\\mathbb{\s*J\s*}' contained conceal cchar=𝕁
+  syntax match texMathSymbol '\\mathbb{\s*K\s*}' contained conceal cchar=𝕂
+  syntax match texMathSymbol '\\mathbb{\s*L\s*}' contained conceal cchar=𝕃
+  syntax match texMathSymbol '\\mathbb{\s*M\s*}' contained conceal cchar=𝕄
+  syntax match texMathSymbol '\\mathbb{\s*N\s*}' contained conceal cchar=ℕ
+  syntax match texMathSymbol '\\mathbb{\s*O\s*}' contained conceal cchar=𝕆
+  syntax match texMathSymbol '\\mathbb{\s*P\s*}' contained conceal cchar=ℙ
+  syntax match texMathSymbol '\\mathbb{\s*Q\s*}' contained conceal cchar=ℚ
+  syntax match texMathSymbol '\\mathbb{\s*R\s*}' contained conceal cchar=ℝ
+  syntax match texMathSymbol '\\mathbb{\s*S\s*}' contained conceal cchar=𝕊
+  syntax match texMathSymbol '\\mathbb{\s*T\s*}' contained conceal cchar=𝕋
+  syntax match texMathSymbol '\\mathbb{\s*U\s*}' contained conceal cchar=𝕌
+  syntax match texMathSymbol '\\mathbb{\s*V\s*}' contained conceal cchar=𝕍
+  syntax match texMathSymbol '\\mathbb{\s*W\s*}' contained conceal cchar=𝕎
+  syntax match texMathSymbol '\\mathbb{\s*X\s*}' contained conceal cchar=𝕏
+  syntax match texMathSymbol '\\mathbb{\s*Y\s*}' contained conceal cchar=𝕐
+  syntax match texMathSymbol '\\mathbb{\s*Z\s*}' contained conceal cchar=ℤ
+
+  " \mathfrak characters
+  syntax match texMathSymbol '\\mathfrak{\s*a\s*}' contained conceal cchar=𝔞
+  syntax match texMathSymbol '\\mathfrak{\s*b\s*}' contained conceal cchar=𝔟
+  syntax match texMathSymbol '\\mathfrak{\s*c\s*}' contained conceal cchar=𝔠
+  syntax match texMathSymbol '\\mathfrak{\s*d\s*}' contained conceal cchar=𝔡
+  syntax match texMathSymbol '\\mathfrak{\s*e\s*}' contained conceal cchar=𝔢
+  syntax match texMathSymbol '\\mathfrak{\s*f\s*}' contained conceal cchar=𝔣
+  syntax match texMathSymbol '\\mathfrak{\s*g\s*}' contained conceal cchar=𝔤
+  syntax match texMathSymbol '\\mathfrak{\s*h\s*}' contained conceal cchar=𝔥
+  syntax match texMathSymbol '\\mathfrak{\s*i\s*}' contained conceal cchar=𝔦
+  syntax match texMathSymbol '\\mathfrak{\s*j\s*}' contained conceal cchar=𝔧
+  syntax match texMathSymbol '\\mathfrak{\s*k\s*}' contained conceal cchar=𝔨
+  syntax match texMathSymbol '\\mathfrak{\s*l\s*}' contained conceal cchar=𝔩
+  syntax match texMathSymbol '\\mathfrak{\s*m\s*}' contained conceal cchar=𝔪
+  syntax match texMathSymbol '\\mathfrak{\s*n\s*}' contained conceal cchar=𝔫
+  syntax match texMathSymbol '\\mathfrak{\s*o\s*}' contained conceal cchar=𝔬
+  syntax match texMathSymbol '\\mathfrak{\s*p\s*}' contained conceal cchar=𝔭
+  syntax match texMathSymbol '\\mathfrak{\s*q\s*}' contained conceal cchar=𝔮
+  syntax match texMathSymbol '\\mathfrak{\s*r\s*}' contained conceal cchar=𝔯
+  syntax match texMathSymbol '\\mathfrak{\s*s\s*}' contained conceal cchar=𝔰
+  syntax match texMathSymbol '\\mathfrak{\s*t\s*}' contained conceal cchar=𝔱
+  syntax match texMathSymbol '\\mathfrak{\s*u\s*}' contained conceal cchar=𝔲
+  syntax match texMathSymbol '\\mathfrak{\s*v\s*}' contained conceal cchar=𝔳
+  syntax match texMathSymbol '\\mathfrak{\s*w\s*}' contained conceal cchar=𝔴
+  syntax match texMathSymbol '\\mathfrak{\s*x\s*}' contained conceal cchar=𝔵
+  syntax match texMathSymbol '\\mathfrak{\s*y\s*}' contained conceal cchar=𝔶
+  syntax match texMathSymbol '\\mathfrak{\s*z\s*}' contained conceal cchar=𝔷
+  syntax match texMathSymbol '\\mathfrak{\s*A\s*}' contained conceal cchar=𝔄
+  syntax match texMathSymbol '\\mathfrak{\s*B\s*}' contained conceal cchar=𝔅
+  syntax match texMathSymbol '\\mathfrak{\s*C\s*}' contained conceal cchar=ℭ
+  syntax match texMathSymbol '\\mathfrak{\s*D\s*}' contained conceal cchar=𝔇
+  syntax match texMathSymbol '\\mathfrak{\s*E\s*}' contained conceal cchar=𝔈
+  syntax match texMathSymbol '\\mathfrak{\s*F\s*}' contained conceal cchar=𝔉
+  syntax match texMathSymbol '\\mathfrak{\s*G\s*}' contained conceal cchar=𝔊
+  syntax match texMathSymbol '\\mathfrak{\s*H\s*}' contained conceal cchar=ℌ
+  syntax match texMathSymbol '\\mathfrak{\s*I\s*}' contained conceal cchar=ℑ
+  syntax match texMathSymbol '\\mathfrak{\s*J\s*}' contained conceal cchar=𝔍
+  syntax match texMathSymbol '\\mathfrak{\s*K\s*}' contained conceal cchar=𝔎
+  syntax match texMathSymbol '\\mathfrak{\s*L\s*}' contained conceal cchar=𝔏
+  syntax match texMathSymbol '\\mathfrak{\s*M\s*}' contained conceal cchar=𝔐
+  syntax match texMathSymbol '\\mathfrak{\s*N\s*}' contained conceal cchar=𝔑
+  syntax match texMathSymbol '\\mathfrak{\s*O\s*}' contained conceal cchar=𝔒
+  syntax match texMathSymbol '\\mathfrak{\s*P\s*}' contained conceal cchar=𝔓
+  syntax match texMathSymbol '\\mathfrak{\s*Q\s*}' contained conceal cchar=𝔔
+  syntax match texMathSymbol '\\mathfrak{\s*R\s*}' contained conceal cchar=ℜ
+  syntax match texMathSymbol '\\mathfrak{\s*S\s*}' contained conceal cchar=𝔖
+  syntax match texMathSymbol '\\mathfrak{\s*T\s*}' contained conceal cchar=𝔗
+  syntax match texMathSymbol '\\mathfrak{\s*U\s*}' contained conceal cchar=𝔘
+  syntax match texMathSymbol '\\mathfrak{\s*V\s*}' contained conceal cchar=𝔙
+  syntax match texMathSymbol '\\mathfrak{\s*W\s*}' contained conceal cchar=𝔚
+  syntax match texMathSymbol '\\mathfrak{\s*X\s*}' contained conceal cchar=𝔛
+  syntax match texMathSymbol '\\mathfrak{\s*Y\s*}' contained conceal cchar=𝔜
+  syntax match texMathSymbol '\\mathfrak{\s*Z\s*}' contained conceal cchar=ℨ
+
+  " \mathcal characters
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*A\s*}' contained conceal cchar=𝓐
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*B\s*}' contained conceal cchar=𝓑
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*C\s*}' contained conceal cchar=𝓒
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*D\s*}' contained conceal cchar=𝓓
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*E\s*}' contained conceal cchar=𝓔
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*F\s*}' contained conceal cchar=𝓕
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*G\s*}' contained conceal cchar=𝓖
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*H\s*}' contained conceal cchar=𝓗
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*I\s*}' contained conceal cchar=𝓘
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*J\s*}' contained conceal cchar=𝓙
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*K\s*}' contained conceal cchar=𝓚
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*L\s*}' contained conceal cchar=𝓛
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*M\s*}' contained conceal cchar=𝓜
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*N\s*}' contained conceal cchar=𝓝
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*O\s*}' contained conceal cchar=𝓞
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*P\s*}' contained conceal cchar=𝓟
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*Q\s*}' contained conceal cchar=𝓠
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*R\s*}' contained conceal cchar=𝓡
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*S\s*}' contained conceal cchar=𝓢
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*T\s*}' contained conceal cchar=𝓣
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*U\s*}' contained conceal cchar=𝓤
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*V\s*}' contained conceal cchar=𝓥
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*W\s*}' contained conceal cchar=𝓦
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*X\s*}' contained conceal cchar=𝓧
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*Y\s*}' contained conceal cchar=𝓨
+  syntax match texMathSymbol '\\math\%(scr\|cal\){\s*Z\s*}' contained conceal cchar=𝓩
+endfunction
+
+" }}}1
+function! s:match_math_fracs() abort " {{{1
+  if !g:vimtex_syntax_conceal.math_fracs | return | endif
+
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(2\|{2}\)' contained conceal cchar=½
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(3\|{3}\)' contained conceal cchar=⅓
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(2\|{2}\)\s\*\%(3\|{3}\)' contained conceal cchar=⅔
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(4\|{4}\)' contained conceal cchar=¼
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(5\|{5}\)' contained conceal cchar=⅕
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(2\|{2}\)\s\*\%(5\|{5}\)' contained conceal cchar=⅖
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(3\|{3}\)\s\*\%(5\|{5}\)' contained conceal cchar=⅗
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(4\|{4}\)\s\*\%(5\|{5}\)' contained conceal cchar=⅘
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(6\|{6}\)' contained conceal cchar=⅙
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(5\|{5}\)\s\*\%(6\|{6}\)' contained conceal cchar=⅚
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(1\|{1}\)\s\*\%(8\|{8}\)' contained conceal cchar=⅛
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(3\|{3}\)\s\*\%(8\|{8}\)' contained conceal cchar=⅜
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(5\|{5}\)\s\*\%(8\|{8}\)' contained conceal cchar=⅝
+  syntax match texMathSymbol '\\[dt]\?frac\s\*\%(7\|{7}\)\s\*\%(8\|{8}\)' contained conceal cchar=⅞
 endfunction
 
 " }}}1
@@ -1108,7 +1257,7 @@ endfunction
 
 " }}}1
 
-function! s:match_conceal_accents() " {{{1
+function! s:match_conceal_accents() abort " {{{1
   for [l:chr; l:targets] in s:map_accents
     for i in range(13)
       let l:target = l:targets[i]
@@ -1195,7 +1344,16 @@ let s:map_accents = [
       \]
 
 " }}}1
-function! s:match_conceal_greek() " {{{1
+function! s:match_conceal_fancy() abort " {{{1
+  syntax match texCmd         '\\colon\>' contained conceal cchar=:
+  syntax match texCmd         '\\dots'    contained conceal cchar=…
+  syntax match texCmd         '\\ldots'   contained conceal cchar=…
+  syntax match texCmdItem     '\\item\>'  contained conceal cchar=○
+  syntax match texTabularChar '\\\\'      contained conceal cchar=⏎
+endfunction
+
+" }}}1
+function! s:match_conceal_greek() abort " {{{1
   syntax match texCmdGreek "\\alpha\>"      contained conceal cchar=α
   syntax match texCmdGreek "\\beta\>"       contained conceal cchar=β
   syntax match texCmdGreek "\\gamma\>"      contained conceal cchar=γ
