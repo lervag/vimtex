@@ -416,7 +416,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   if &encoding ==# 'utf-8'
     " Conceal various commands - be fancy
-    if g:vimtex_syntax_conceal.greek
+    if g:vimtex_syntax_conceal.fancy
       call s:match_conceal_fancy()
     endif
 
@@ -1352,11 +1352,11 @@ let s:map_accents = [
 
 " }}}1
 function! s:match_conceal_fancy() abort " {{{1
-  syntax match texCmd         '\\colon\>' contained conceal cchar=:
-  syntax match texCmd         '\\dots'    contained conceal cchar=…
-  syntax match texCmd         '\\ldots'   contained conceal cchar=…
-  syntax match texCmdItem     '\\item\>'  contained conceal cchar=○
-  syntax match texTabularChar '\\\\'      contained conceal cchar=⏎
+  syntax match texCmd         '\\colon\>' conceal cchar=:
+  syntax match texCmd         '\\dots'    conceal cchar=…
+  syntax match texCmd         '\\ldots'   conceal cchar=…
+  syntax match texCmdItem     '\\item\>'  conceal cchar=○
+  syntax match texTabularChar '\\\\'      conceal cchar=⏎
 endfunction
 
 " }}}1
