@@ -3848,6 +3848,12 @@ the code itself:
 * Package specific groups and elements are defined in the package specific
   scripts: `autoload/vimtex/syntax/p/*.vim`.
 
+Note:
+* This is only a reference of the main groups. There are also other groups
+  available. See the source files for the full lists.
+* The following lists might not be always completely up to date. If you find
+  inconsistencies or errors, please open an issue.
+
 Table 1: A list of groups that are only primitive link targets.~
 >
   GROUP                DEFAULT
@@ -3940,8 +3946,8 @@ Table 4: A list of other important groups.~
   texCmdVerb           texCmd          \VERB
   texVerbRegionInline  texRegion       \verb+VERB TEXT+
   texVerbRegion        texRegion       \begin{verbatim} VERB TEXT \end{verbatim}
-  texCmdDef            texCmd          \DEF
-  texDefArgName        texArg          \def\NAME
+  texCmdDef            texCmdNew       \DEF
+  texDefArgName        texArgNew       \def\NAME
   texDefParm           texParm         \def\name #1
   texCmdItem           texCmd          \item
 
