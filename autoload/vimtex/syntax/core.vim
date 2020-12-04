@@ -219,7 +219,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdSize "\\Huge\>"
 
   " \newcommand
-  syntax match texCmdNewcmd nextgroup=texNewcmdArgName skipwhite skipnl "\\\%(re\)\?newcommand\>"
+  syntax match texCmdNewcmd nextgroup=texNewcmdArgName skipwhite skipnl "\\\%(re\)\?newcommand\>\*\?"
   call vimtex#syntax#core#new_arg('texNewcmdArgName', {
         \ 'next': 'texNewcmdOpt,texNewcmdArgBody',
         \ 'contains': ''
@@ -422,98 +422,11 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " }}}2
 
-  call s:init_highlights()
-
   let b:current_syntax = 'tex'
 endfunction
 
 " }}}1
-
-function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
-  let l:cfg = extend({
-        \ 'contains': 'TOP,@NoSpell',
-        \ 'matcher': 'start="{" skip="\\\\\|\\}" end="}"',
-        \ 'next': '',
-        \ 'opts': 'contained',
-        \}, a:0 > 0 ? a:1 : {})
-
-  execute 'syntax region' a:grp
-        \ 'matchgroup=texDelim'
-        \ l:cfg.matcher
-        \ l:cfg.opts
-        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
-        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
-endfunction
-
-" }}}1
-function! vimtex#syntax#core#new_opt(grp, ...) abort " {{{1
-  let l:cfg = extend({
-        \ 'opts': '',
-        \ 'next': '',
-        \ 'contains': '@texClusterOpt',
-        \}, a:0 > 0 ? a:1 : {})
-
-  execute 'syntax region' a:grp
-        \ 'contained matchgroup=texDelim'
-        \ 'start="\[" skip="\\\\\|\\\]" end="\]"'
-        \ l:cfg.opts
-        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
-        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
-endfunction
-
-" }}}1
-
-function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
-  let l:cfg = extend({
-        \ 'contains': '',
-        \ 'opts': '',
-        \ 'transparent': 0,
-        \}, a:0 > 0 ? a:1 : {})
-
-  let l:contains = 'contains=texCmdEnv'
-  if !empty(l:cfg.contains)
-    let l:contains .= ',' . l:cfg.contains
-  endif
-
-  let l:options = 'keepend'
-  if l:cfg.transparent
-    let l:options .= ' transparent'
-  endif
-  if !empty(l:cfg.opts)
-    let l:options .= ' ' . l:cfg.opts
-  endif
-
-  execute 'syntax region' a:grp
-        \ 'start="\\begin{' . a:envname .'}"'
-        \ 'end="\\end{' . a:envname .'}"'
-        \ l:contains
-        \ l:options
-endfunction
-
-" }}}1
-function! vimtex#syntax#core#new_region_math(mathzone, ...) abort " {{{1
-  let l:cfg = extend({
-        \ 'starred': 1,
-        \ 'next': '',
-        \}, a:0 > 0 ? a:1 : {})
-
-  let l:envname = a:mathzone . (l:cfg.starred ? '\*\?' : '')
-
-  execute 'syntax match texMathEnvBgnEnd "\\\%(begin\|end\)\>{' . l:envname . '}"'
-        \ 'contained contains=texCmdMathEnv'
-        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
-  execute 'syntax match texMathError "\\end{' . l:envname . '}"'
-  execute 'syntax region texMathRegionEnv'
-        \ 'start="\\begin{\z(' . l:envname . '\)}"'
-        \ 'end="\\end{\z1}"'
-        \ 'contains=texMathEnvBgnEnd,@texClusterMath'
-        \ 'keepend'
-endfunction
-
-" }}}1
-
-
-function! s:init_highlights() abort " {{{1
+function! vimtex#syntax#core#init_highlights() abort " {{{1
   " See :help group-name for list of conventional group names
 
   " Primitive TeX highlighting groups
@@ -632,6 +545,90 @@ function! s:init_highlights() abort " {{{1
 endfunction
 
 " }}}1
+
+function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'contains': 'TOP,@NoSpell',
+        \ 'matcher': 'start="{" skip="\\\\\|\\}" end="}"',
+        \ 'next': '',
+        \ 'opts': 'contained',
+        \}, a:0 > 0 ? a:1 : {})
+
+  execute 'syntax region' a:grp
+        \ 'matchgroup=texDelim'
+        \ l:cfg.matcher
+        \ l:cfg.opts
+        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#new_opt(grp, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'opts': '',
+        \ 'next': '',
+        \ 'contains': '@texClusterOpt',
+        \}, a:0 > 0 ? a:1 : {})
+
+  execute 'syntax region' a:grp
+        \ 'contained matchgroup=texDelim'
+        \ 'start="\[" skip="\\\\\|\\\]" end="\]"'
+        \ l:cfg.opts
+        \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
+endfunction
+
+" }}}1
+
+function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'contains': '',
+        \ 'opts': '',
+        \ 'transparent': 0,
+        \}, a:0 > 0 ? a:1 : {})
+
+  let l:contains = 'contains=texCmdEnv'
+  if !empty(l:cfg.contains)
+    let l:contains .= ',' . l:cfg.contains
+  endif
+
+  let l:options = 'keepend'
+  if l:cfg.transparent
+    let l:options .= ' transparent'
+  endif
+  if !empty(l:cfg.opts)
+    let l:options .= ' ' . l:cfg.opts
+  endif
+
+  execute 'syntax region' a:grp
+        \ 'start="\\begin{' . a:envname .'}"'
+        \ 'end="\\end{' . a:envname .'}"'
+        \ l:contains
+        \ l:options
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#new_region_math(mathzone, ...) abort " {{{1
+  let l:cfg = extend({
+        \ 'starred': 1,
+        \ 'next': '',
+        \}, a:0 > 0 ? a:1 : {})
+
+  let l:envname = a:mathzone . (l:cfg.starred ? '\*\?' : '')
+
+  execute 'syntax match texMathEnvBgnEnd "\\\%(begin\|end\)\>{' . l:envname . '}"'
+        \ 'contained contains=texCmdMathEnv'
+        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
+  execute 'syntax match texMathError "\\end{' . l:envname . '}"'
+  execute 'syntax region texMathRegionEnv'
+        \ 'start="\\begin{\z(' . l:envname . '\)}"'
+        \ 'end="\\end{\z1}"'
+        \ 'contains=texMathEnvBgnEnd,@texClusterMath'
+        \ 'keepend'
+endfunction
+
+" }}}1
+
 
 function! s:match_bold_italic() abort " {{{1
   let [l:conceal, l:concealends] =

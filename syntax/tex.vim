@@ -22,6 +22,8 @@ call vimtex#options#init()
 " Load core syntax (does not depend on vimtex state)
 call vimtex#syntax#core#init()
 
+" Load core highlighting rules
+call vimtex#syntax#core#init_highlights()
 
 " Initialize buffer local syntax state
 let b:vimtex_syntax = {}
