@@ -30,6 +30,17 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{subarray}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
+
+  " DeclareMathOperator
+  syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
+  call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
+        \ 'next': 'texDeclmathoperArgBody',
+        \ 'contains': ''
+        \})
+  call vimtex#syntax#core#new_arg('texDeclmathoperArgBody')
+
+  highlight link texCmdDeclmathoper     texCmdNew
+  highlight link texDeclmathoperArgName texArgNew
 endfunction
 
 " }}}1
