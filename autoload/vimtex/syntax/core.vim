@@ -156,6 +156,10 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdFootnote nextgroup=texFootnoteArg skipwhite skipnl "\\footnote\>"
   call vimtex#syntax#core#new_arg('texFootnoteArg')
 
+  " \if \else \fi
+  syntax match texCmdConditional nextgroup=texConditionalArg skipwhite skipnl "\\\(if[a-zA-Z@]\+\|fi\|else\)\>"
+  call vimtex#syntax#core#new_arg('texConditionalArg')
+
   " Various commands that take a file argument (or similar)
   syntax match texCmdInput   nextgroup=texFileArg              skipwhite skipnl "\\input\>"
   syntax match texCmdInput   nextgroup=texFileArg              skipwhite skipnl "\\include\>"
@@ -166,6 +170,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdClass   nextgroup=texFileOpt,texFileArg   skipwhite skipnl "\\document\%(class\|style\)\>"
   syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\usepackage\>"
   syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\RequirePackage\>"
+  syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\ProvidesPackage\>"
   call vimtex#syntax#core#new_arg('texFileArg', {'contains': '@NoSpell,texCmd,texComment'})
   call vimtex#syntax#core#new_arg('texFilesArg', {'contains': '@NoSpell,texCmd,texComment,texOptSep'})
   call vimtex#syntax#core#new_opt('texFileOpt', {'next': 'texFileArg'})
@@ -471,6 +476,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdAuthor            texCmd
   highlight def link texCmdBib               texCmd
   highlight def link texCmdClass             texCmd
+  highlight def link texCmdConditional       texCmd
   highlight def link texCmdDef               texCmdNew
   highlight def link texCmdEnv               texCmd
   highlight def link texCmdE3                texCmd
@@ -502,6 +508,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdVerb              texCmd
   highlight def link texCommentAcronym       texComment
   highlight def link texCommentURL           texComment
+  highlight def link texConditionalArg       texArg
   highlight def link texDefArgName           texArgNew
   highlight def link texDefParm              texParm
   highlight def link texE3Cmd                texCmd
