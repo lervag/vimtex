@@ -2463,7 +2463,10 @@ OPTIONS                                                        *vimtex-options*
       viewer is started after successful compilation with the options provided
       by |g:vimtex_view_general_options_latexmk|.  The interface allows the
       general viewer to support forward search with a lot of different
-      applications:
+      applications, such as the ones listed below.
+
+      Note: For backward search to work, one needs to have a proper
+            |clientserver|, see |vimtex-clientserver| for more info.
 
         *vimtex_viewer_okular*
           https://okular.kde.org/
@@ -4539,7 +4542,8 @@ for the option is: >
 Note: Inverse search relies on the |clientserver| functionality of vim.  Each
       instance of vim runs its own server.  The above mentioned standard value
       implies the default server name, which might not be the actual name of
-      the server for the vim instance you are using.
+      the server for the vim instance you are using. For more info, see
+      |vimtex-clientserver|.
 
 Note: For backward search to work on windows, one must ensure that the folder
       that contains `gVim.exe` is in your `%PATH%` environment variable.
