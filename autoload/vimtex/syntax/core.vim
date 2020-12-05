@@ -263,7 +263,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Note: define texLetArgEqual after texLetArgBody; order matters
   " E.g. in '\let\eq==' we want: 1st = is texLetArgEqual, 2nd = is texLetArgBody
   " Reversing lines results in:  1st = is texLetArgBody,  2nd = is unmatched
-  syntax match texLetArgBody  contained contains=TOP,@Nospell "\\[a-zA-Z@]\+\|\\[^a-zA-Z@]\|\S"
+  syntax match texLetArgBody  contained "\\[a-zA-Z@]\+\|\\[^a-zA-Z@]\|\S" contains=TOP,@Nospell
   syntax match texLetArgEqual contained nextgroup=texLetArgBody skipwhite skipnl "="
 
   " Reference and cite commands
@@ -382,7 +382,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathError "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
 
   " Operators and similar
-  syntax match texMathOper "[_^=]" contained
+  syntax match texMathOper "[_^=+-]" contained
 
   " Text Inside Math regions
   syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
@@ -944,7 +944,7 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\rmoustache\>"        contained conceal cchar=╮
   syntax match texMathSymbol "\\S\>"                 contained conceal cchar=§
   syntax match texMathSymbol "\\searrow\>"           contained conceal cchar=↘
-  syntax match texMathSymbol "\\setminus\>"          contained conceal cchar=\
+  syntax match texMathSymbol "\\setminus\>"          contained conceal cchar=⧵
   syntax match texMathSymbol "\\sharp\>"             contained conceal cchar=♯
   syntax match texMathSymbol "\\sim\>"               contained conceal cchar=∼
   syntax match texMathSymbol "\\simeq\>"             contained conceal cchar=⋍
