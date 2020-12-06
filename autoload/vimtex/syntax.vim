@@ -25,7 +25,7 @@ function! vimtex#syntax#in_comment(...) abort " {{{1
 endfunction
 
 " }}}1
-let s:mathzones = 'texMathRegion'
+let s:mathzones = g:vimtex_syntax_enabled ? 'texMathRegion' : 'texMathZone'
 let s:textzones = 'texMathText'
 
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
