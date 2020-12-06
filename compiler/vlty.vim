@@ -17,8 +17,7 @@ if !executable(s:python)
   finish
 endif
 
-call system(s:python . ' -c "import sys; assert sys.version_info.major >= 3'
-            \ . ' and sys.version_info.minor >= 6"')
+call system(s:python . ' -c "import sys; assert sys.version_info >= (3, 6)"')
 if v:shell_error != 0
   call s:installation_error('vlty compiler requires at least Python version 3.6')
   finish
@@ -36,7 +35,12 @@ if s:vlty.server !=# 'lt'
     finish
   endif
 
-  if !filereadable(fnamemodify(s:vlty.lt_directory
+  if !empty(s:vlty.lt_command)
+    if !executable(s:vlty.lt_command)
+      call s:installation_error('vlty compiler - lt_command not valid')
+      finish
+    endif
+  elseif !filereadable(fnamemodify(s:vlty.lt_directory
         \ . '/languagetool-commandline.jar', ':p'))
     call s:installation_error('vlty compiler - lt_directory path not valid')
     finish
@@ -51,10 +55,15 @@ let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
       \ s:python . ' -m yalafi.shell'
-      \ . ' --lt-directory ' . s:vlty.lt_directory
+      \ . (!empty(s:vlty.lt_command)
+      \    ? ' --lt-command ' . s:vlty.lt_command
+      \    : ' --lt-directory ' . s:vlty.lt_directory)
       \ . (s:vlty.server ==# 'no'
-      \    ?  ''
+      \    ? ''
       \    : ' --server ' . s:vlty.server)
+      \ . ' --encoding ' . (s:vlty.encoding ==# 'auto'
+      \    ? (empty(&l:fileencoding) ? &l:encoding : &l:fileencoding)
+      \    : s:vlty.encoding)
       \ . ' --language ' . s:language
       \ . ' --disable "' . s:vlty.lt_disable . '"'
       \ . ' --enable "' . s:vlty.lt_enable . '"'
@@ -66,12 +75,16 @@ let &l:makeprg =
       \ . ' %:S'
 silent CompilerSet makeprg
 
-let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#,'
-if s:vlty.show_suggestions == 0
-  let &l:errorformat .= '%ZMessage: %m,%-G%.%#'
-else
-  let &l:errorformat .= '%CMessage: %m,%Z%m,%-G%.%#'
-endif
+let &l:errorformat = '%I=== %f ===,%C%*\d.) Line %l\, column %v\, Rule ID:%.%#'
+
+let &l:errorformat .= s:vlty.show_suggestions
+      \ ? ',%CMessage: %m,%Z%m'
+      \ : ',%ZMessage: %m'
+
+" For compatibility with vim-dispatch we need duplicated '%-G%.%#'.
+" See issues #199 of vim-dispatch and #1854 of vimtex.
+let &l:errorformat .= ',%-G%.%#,%-G%.%#'
+
 silent CompilerSet errorformat
 
 let &cpo = s:cpo_save

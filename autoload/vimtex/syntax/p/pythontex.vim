@@ -4,33 +4,21 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#pythontex#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'pythontex') | return | endif
-  let b:vimtex_syntax.pythontex = 1
+function! vimtex#syntax#p#pythontex#load(cfg) abort " {{{1
+  call vimtex#syntax#nested#include('python')
 
-  call vimtex#syntax#misc#include('python')
-
-  syntax match texStatement /\\py[bsc]\?/ contained nextgroup=texPythontexArg
-  syntax region texPythontexArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contained contains=@vimtex_nested_python
-  syntax region texPythontexArg matchgroup=Delimiter
+  syntax match texCmdPythontex /\\py[bsc]\?/ nextgroup=texPythontexArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texPythontexArg', {'contains': '@vimtex_nested_python', 'opts': 'contained keepend'})
+  syntax region texPythontexArg matchgroup=texDelim
         \ start='\z([#@]\)' end='\z1'
-        \ contained contains=@vimtex_nested_python
+        \ contained contains=@vimtex_nested_python keepend
 
-  call vimtex#syntax#misc#add_to_section_clusters('texZonePythontex')
-  syntax region texZonePythontex
-        \ start='\\begin{pyblock}'rs=s
-        \ end='\\end{pyblock}'re=e
-        \ keepend
-        \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_python
-  syntax region texZonePythontex
-        \ start='\\begin{pycode}'rs=s
-        \ end='\\end{pycode}'re=e
-        \ keepend
-        \ transparent
-        \ contains=texBeginEnd,@vimtex_nested_python
+  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pyblock',
+        \ {'contains': '@vimtex_nested_python'})
+  call vimtex#syntax#core#new_region_env('texPythontexRegion', 'pycode',
+        \ {'contains': '@vimtex_nested_python'})
+
+  highlight def link texCmdPythontex texCmd
 endfunction
 
 " }}}1

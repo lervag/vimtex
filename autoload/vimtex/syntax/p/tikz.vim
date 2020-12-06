@@ -4,40 +4,41 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#tikz#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'tikz') | return | endif
-  let b:vimtex_syntax.tikz = 1
+function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
+  syntax cluster texClusterTikz    contains=texCmdTikz,texTikzEnvBgn,texTikzSemicolon,texTikzDraw,texTikzCycle,texCmd,texGroup,texComment
+  syntax cluster texClusterTikzset contains=texTikzsetArg,texMathRegionX,texTypeSize,@texClusterOpt
 
-  call vimtex#syntax#misc#add_to_section_clusters('texTikzSet')
-  call vimtex#syntax#misc#add_to_section_clusters('texTikzpicture')
+  syntax match texCmdTikzset "\\tikzset\>"
+        \ nextgroup=texTikzsetArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texTikzsetArg',
+        \ {'contains': '@texClusterTikzset'})
 
-  " Define clusters
-  syntax cluster texTikz contains=texTikzEnv,texBeginEnd,texStatement,texTikzSemicolon,texComment,@texVimtexGlobal
-  syntax cluster texTikzOS contains=texTikzOptsCurly,texTikzEqual,texMathZoneX,texTypeSize,texStatement,texLength,texComment
+  syntax match texTikzEnvBgn "\\begin{tikzpicture}"
+        \ nextgroup=texTikzOpt skipwhite skipnl
+        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_region_env('texTikzRegion', 'tikzpicture', {
+        \ 'contains': '@texClusterTikz',
+        \ 'transparent': 1
+        \})
+  call vimtex#syntax#core#new_opt('texTikzOpt',
+        \ {'contains': '@texClusterTikzset'})
 
-  " Define tikz option groups
-  syntax match texTikzSet /\\tikzset\>/
-        \ contains=texStatement skipwhite nextgroup=texTikzOptsCurly
-  syntax region texTikzOpts matchgroup=Delimiter
-        \ start='\[' end='\]' contained contains=@texTikzOS
-  syntax region texTikzOptsCurly matchgroup=Delimiter
-        \ start='{'  end='}'  contained contains=@texTikzOS
+  syntax keyword texTikzCycle cycle contained
+  syntax match texTikzSemicolon ";"  contained
+  syntax match texTikzDraw      "--" contained
+  syntax match texTikzDraw      "|-" contained
 
-  syntax region texTikzpicture
-        \ start='\\begin{tikzpicture}'rs=s
-        \ end='\\end{tikzpicture}'re=e
-        \ keepend
-        \ transparent
-        \ contains=@texTikz
-  syntax match texTikzEnv /\v\\begin\{tikzpicture\}/
-        \ contains=texBeginEnd nextgroup=texTikzOpts skipwhite
+  syntax match texCmdTikz "\\node\>" contained nextgroup=texTikzNodeOpt skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texTikzNodeOpt', {'contains': '@texClusterTikzset'})
 
-  syntax match texTikzEqual /=/ contained
-  syntax match texTikzSemicolon /;/ contained
-
-  highlight def link texTikzEqual Operator
-  highlight def link texTikzSemicolon Delimiter
+  highlight def link texCmdTikz       texCmd
+  highlight def link texCmdTikzset    texCmd
+  highlight def link texTikzNodeOpt   texOpt
+  highlight def link texTikzSemicolon texDelim
+  highlight def link texTikzDraw      texDelim
+  highlight def link texTikzCycle     texMathDelim
+  highlight def link texTikzsetArg    texOpt
+  highlight def link texTikzOpt       texOpt
 endfunction
 
 " }}}1
-

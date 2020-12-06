@@ -27,6 +27,8 @@ let s:handlers = map(
 
 function! vimtex#context#menu() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) | return | endif
+
   let l:word = expand('<cword>')
 
   for l:handler in b:vimtex.context_menu

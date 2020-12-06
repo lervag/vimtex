@@ -1,0 +1,30 @@
+\documentclass[fleqn]{article}
+\usepackage{amsmath}
+\usepackage{expl3}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\seq_new:N \l_test_A_seq
+\seq_new:N \l_test_B_seq
+\seq_new:N \l_test_C_seq
+
+\cs_new:Npn \fillmyseq #1 #2 {
+    \seq_set_split:Nnn #1 {,} {#2}
+}
+
+\fillmyseq{\l_test_A_seq}{A_1, A_2, A_3}
+\fillmyseq{\l_test_B_seq}{B_1, B_2, B_3}
+\fillmyseq{\l_test_C_seq}{C_1, C_2, C_3}
+
+\cs_new:Nn \__test_do: {
+    \seq_show:N  \l_test_A_seq
+    \seq_show:N  \l_test_B_seq
+    \seq_show:N  \l_test_C_seq
+}
+
+\NewDocumentCommand\mydo {} {\__test_do:}
+\ExplSyntaxOff
+
+\begin{document}
+\mydo
+\end{document}

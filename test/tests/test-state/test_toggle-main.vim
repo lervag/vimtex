@@ -6,8 +6,6 @@ set nomore
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 if empty($INMAKE) | finish | endif
 
 " Open included file should create two states (main and included)

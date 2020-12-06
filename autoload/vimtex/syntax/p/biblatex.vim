@@ -4,77 +4,35 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#biblatex#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'biblatex') | return | endif
-  let b:vimtex_syntax.biblatex = 1
+function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
+  syntax match texCmdBib nextgroup=texFilesArg "\\addbibresource\>"
 
-  if get(g:, 'tex_fast', 'r') !~# 'r' | return | endif
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\bibentry\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[pt]\?\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\citeal[tp]\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\%(num\|text\|url\)\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Cc]ite\%(title\|author\|year\%(par\)\?\|date\)\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Pp]arencite\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\foot\%(full\)\?cite\%(text\)\?\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\fullcite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Tt]extcite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Ss]martcite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\supercite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Aa]utocite\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\[Ppf]\?[Nn]otecite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\\%(text\|block\)cquote\>\*\?"
 
-  for l:pattern in [
-        \ 'bibentry',
-        \ 'cite[pt]?\*?',
-        \ 'citeal[tp]\*?',
-        \ 'cite(num|text|url)',
-        \ '[Cc]ite%(title|author|year(par)?|date)\*?',
-        \ '[Pp]arencite\*?',
-        \ 'foot%(full)?cite%(text)?',
-        \ 'fullcite',
-        \ '[Tt]extcite',
-        \ '[Ss]martcite',
-        \ 'supercite',
-        \ '[Aa]utocite\*?',
-        \ '[Ppf]?[Nn]otecite',
-        \ '%(text|block)cquote\*?',
-        \]
-    execute 'syntax match texStatement'
-          \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
-          \ 'nextgroup=texRefOption,texCite'
-  endfor
-
-  for l:pattern in [
-        \ '[Cc]ites',
-        \ '[Pp]arencites',
-        \ 'footcite%(s|texts)',
-        \ '[Tt]extcites',
-        \ '[Ss]martcites',
-        \ 'supercites',
-        \ '[Aa]utocites',
-        \ '[pPfFsStTaA]?[Vv]olcites?',
-        \ 'cite%(field|list|name)',
-        \]
-    execute 'syntax match texStatement'
-          \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
-          \ 'nextgroup=texRefOptions,texCites'
-  endfor
-
-  for l:pattern in [
-        \ '%(foreign|hyphen)textcquote\*?',
-        \ '%(foreign|hyphen)blockcquote',
-        \ 'hybridblockcquote',
-        \]
-    execute 'syntax match texStatement'
-          \ '/\v\\' . l:pattern . '\ze\s*%(\[|\{)/'
-          \ 'nextgroup=texQuoteLang'
-  endfor
-
-  syntax region texRefOptions contained matchgroup=Delimiter
-        \ start='\[' end=']'
-        \ contains=@texRefGroup,texRefZone
-        \ nextgroup=texRefOptions,texCites
-
-  syntax region texCites contained matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contains=@texRefGroup,texRefZone,texCites
-        \ nextgroup=texRefOptions,texCites
-
-  syntax region texQuoteLang contained matchgroup=Delimiter
-        \ start='{' end='}'
-        \ transparent
-        \ contains=@texMatchGroup
-        \ nextgroup=texRefOption,texCite
-
-  highlight def link texRefOptions texRefOption
-  highlight def link texCites texCite
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Cc]ites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Pp]arencites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\footcite\%(s\|texts\)\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Tt]extcites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Ss]martcites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\supercites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[Aa]utocites\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[pPfFsStTaA]\?[Vv]olcites\?\>"
+  syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\cite\%(field\|list\|name\)>"
+  call vimtex#syntax#core#new_arg('texRefArgs', {'next': 'texRefOpts,texRefArgs', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpt,texRefArg'})
 endfunction
 
 " }}}1

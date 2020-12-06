@@ -2,8 +2,6 @@ set nocompatible
 let &rtp = '../../..,' . &rtp
 filetype plugin on
 
-let g:tex_flavor = 'latex'
-
 silent edit test-sources/main.tex
 
 call vimtex#test#assert_equal([

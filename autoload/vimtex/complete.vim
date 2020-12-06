@@ -85,6 +85,7 @@ let s:completer_bib = {
       \   '\v\\bibentry\s*\{[^}]*$',
       \   '\v\\%(text|block)cquote\*?%(\s*\[[^]]*\]){0,2}\{[^}]*$',
       \   '\v\\%(for|hy)\w+cquote\*?\{[^}]*\}%(\s*\[[^]]*\]){0,2}\{[^}]*$',
+      \   '\v\\defbibentryset\{[^}]*\}\{[^}]*$',
       \  ],
       \ 'initialized' : 0,
       \}

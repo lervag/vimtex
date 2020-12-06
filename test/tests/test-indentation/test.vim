@@ -7,7 +7,6 @@ nnoremap q :qall!<cr>
 set nomore
 set shiftwidth=2
 set expandtab
-let g:tex_flavor = 'latex'
 
 if !empty($FLAGS)
   if $FLAGS == 1

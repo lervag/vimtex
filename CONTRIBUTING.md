@@ -1,14 +1,3 @@
-# Issue descriptions
-
-Please see the [issue template](ISSUE_TEMPLATE.md) for how to write a good
-issue description. In short, it should contain the following:
-
-1. Describe the issue in detail, include steps to reproduce the issue
-2. Include a minimal working example
-3. Include a minimal vimrc file
-4. If you have a `.latexmkrc` file, please mention it and provide the relevant
-   content
-
 # Guide for code contributions
 
 ## Branch model
@@ -19,8 +8,7 @@ be [fork based](https://help.github.com/articles/using-pull-requests/).
 ## Documentation style
 
 Vim help files have their own specific syntax. There is a Vim help section on
-how to write them, see [`:h
-help-writing`](http://vimdoc.sourceforge.net/htmldoc/helphelp.html#help-writing).
+how to write them, see [`:h help-writing`](http://vimdoc.sourceforge.net/htmldoc/helphelp.html#help-writing).
 
 The vimtex documentation style should be relatively clear, and it should be
 easy to see from the existing documentation how to write it. Still, here are

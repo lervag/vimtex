@@ -4,70 +4,62 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#tabularx#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'tabularx') | return | endif
-  let b:vimtex_syntax.tabularx = 1
+function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
+  syntax match texTabularCol       "[lcr]"  contained
+  syntax match texTabularCol       "[pmb]"  contained nextgroup=texTabularLength
+  syntax match texTabularCol       "\*"     contained nextgroup=texTabularMulti
+  syntax match texTabularAtSep     "@"      contained nextgroup=texTabularLength
+  syntax match texTabularVertline  "||\?"   contained
+  syntax match texTabularPostPre   "[<>]"   contained nextgroup=texTabularPostPreArg
+  syntax match texTabularMathdelim "\$\$\?" contained
+  syntax cluster texClusterTabular contains=texTabular.*
 
-  call vimtex#syntax#misc#add_to_section_clusters('texTabular')
+  syntax match texTabularCmd contained nextgroup=texTabularCmdOpt,texTabularCmdArg skipwhite skipnl "\\\a\+"
+  call vimtex#syntax#core#new_opt('texTabularCmdOpt', {'next': 'texTabularCmdArg'})
+  call vimtex#syntax#core#new_arg('texTabularCmdArg', {
+        \ 'next': 'texTabularCmdArg',
+        \ 'opts': 'contained transparent',
+        \})
 
-  syntax match texTabular '\\begin{tabular}\_[^{]\{-}\ze{'
-        \ contains=texBeginEnd
-        \ nextgroup=texTabularArg
-        \ contained
-  syntax region texTabularArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ contained
 
-  syntax match texTabularCol /[lcr]/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularCol /[pmb]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularCol /\*/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularMulti
-        \ contained
-  syntax region texTabularMulti matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularArg
-        \ contained
+  syntax match texCmdTabular "\\begin{tabular}"
+        \ nextgroup=texTabularOpt,texTabularArg skipwhite skipnl contains=texCmdEnv
+  call vimtex#syntax#core#new_opt('texTabularOpt', {'next': 'texTabularArg', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': '@texClusterTabular'})
 
-  syntax match texTabularAtSep /@/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularLength
-        \ contained
-  syntax match texTabularVertline /||\?/
-        \ containedin=texTabularArg
-        \ contained
-  syntax match texTabularPostPre /[<>]/
-        \ containedin=texTabularArg
-        \ nextgroup=texTabularPostPreArg
-        \ contained
+  call vimtex#syntax#core#new_arg('texTabularMulti', {'next': 'texTabularArg'})
+  call vimtex#syntax#core#new_arg('texTabularLength', {'contains': 'texLength,texCmd'})
+  call vimtex#syntax#core#new_arg('texTabularPostPreArg', {'contains': 'texLength,texTabularCmd,texTabularMathdelim'})
 
-  syntax region texTabularPostPreArg matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texStatement,texMathDelimSingle
-        \ contained
+  syntax match texCmdNewcolumn "\\newcolumntype\>"
+        \ nextgroup=texCmdNewcolumnName,texNewcolumnArgName skipwhite skipnl
+  syntax match texCmdNewcolumnName contained "\\\w\+"
+        \ nextgroup=texNewcolumnOpt,texNewcolumnArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texNewcolumnArgName', {
+        \ 'next': 'texNewcolumnOpt,texNewcolumnArg',
+        \})
 
-  syntax region texTabularLength matchgroup=Delimiter
-        \ start='{' end='}'
-        \ containedin=texTabularArg
-        \ contains=texLength,texStatement
-        \ contained
+  call vimtex#syntax#core#new_opt('texNewcolumnOpt', {
+        \ 'next': 'texNewcolumnArg',
+        \ 'opts': 'oneline',
+        \})
+  call vimtex#syntax#core#new_arg('texNewcolumnArg', {'contains': '@texClusterTabular'})
+  syntax match texNewcolumnParm contained "#\d\+"
+        \ containedin=texNewcolumnArg,texTabularPostPreArg,texTabularCmdArg
 
-  syntax match texMathDelimSingle /\$\$\?/
-        \ containedin=texTabularPostPreArg
-        \ contained
-
-  highlight def link texTabularCol        Directory
-  highlight def link texTabularAtSep      Type
-  highlight def link texTabularVertline   Type
-  highlight def link texTabularPostPre    Type
-  highlight def link texMathDelimSingle   Delimiter
+  highlight def link texTabularCmd        texCmd
+  highlight def link texTabularCmdOpt     texOpt
+  highlight def link texCmdNewcolumn      texCmd
+  highlight def link texCmdNewcolumnName  texCmd
+  highlight def link texNewcolumnArgName  texArg
+  highlight def link texNewcolumnOpt      texOpt
+  highlight def link texNewcolumnParm     texParm
+  highlight def link texTabularCol        texOpt
+  highlight def link texTabularAtSep      texMathDelim
+  highlight def link texTabularVertline   texMathDelim
+  highlight def link texTabularPostPre    texMathDelim
+  highlight def link texTabularMathdelim  texMathDelimRegion
+  highlight def link texTabularOpt        texEnvOpt
 endfunction
 
 " }}}1

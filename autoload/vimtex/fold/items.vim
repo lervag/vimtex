@@ -33,6 +33,10 @@ endfunction
 
 " }}}1
 function! s:folder.level(line, lnum) dict abort " {{{1
+  let l:env_val = has_key(b:vimtex.fold_types_dict, 'envs')
+        \ ? b:vimtex.fold_types_dict['envs'].level(a:line, a:lnum)
+        \ : 0
+
   let l:next = getline(a:lnum + 1)
 
   if a:line =~# self.re.env_start
@@ -46,7 +50,7 @@ function! s:folder.level(line, lnum) dict abort " {{{1
   elseif a:line =~# self.re.start
     if l:next !~# self.re.end
       let self.state[-1].folded = v:true
-      return 'a1'
+      return l:env_val is# 'a1' ? 'a2' : 'a1'
     endif
   elseif self.state[-1].folded && l:next =~# self.re.end
     let self.state[-1].folded = v:false

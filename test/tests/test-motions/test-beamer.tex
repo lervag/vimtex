@@ -1,0 +1,45 @@
+\documentclass[]{beamer}
+
+\begin{document}
+
+Test file for frame/beamer motion.
+
+\begin{frame}                         % [r[r or 2[r
+  \frametitle{Test I}
+  Simple frame                        % [R[R or 2[R
+\end{frame}
+
+\begin{frame}                         % [r
+  \frametitle{Test II}
+  Frame with nested environments.
+  \begin{equation}
+    \begin{aligned}
+      1 + 1 = & 2
+    \end{aligned}
+  \end{equation}
+\end{frame}                           % [R
+
+\begin{enumerate}
+  \item 1
+  \item 2
+  \item 3
+  \item 4
+\end{enumerate}
+                                      % CURSOR
+\begin{frame}                         % ]r
+  \frametitle{Test III}
+  Frame with nested environments.
+  \begin{block}{A block}
+    Block body
+  \end{block}
+\end{frame}                           % ]R
+
+\begin{frame}                         % ]r]r or 2]r
+  \frametitle{Test IV}
+  Frame with nested environments.
+  \begin{exampleblock}{A block}
+    Block body
+  \end{exampleblock}
+\end{frame}                          % ]R]R or 2]R
+
+\end{document}

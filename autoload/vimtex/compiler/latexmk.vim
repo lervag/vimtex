@@ -167,6 +167,8 @@ function! s:compiler.init_pdf_mode_option() abort dict " {{{1
   " override the value of self.tex_program.
   if l:pdf_mode == 1
     let l:tex_program = 'pdflatex'
+  elseif l:pdf_mode == 2
+    let l:tex_program = 'pdfps'
   elseif l:pdf_mode == 3
     let l:tex_program = 'pdfdvi'
   elseif l:pdf_mode == 4
@@ -292,6 +294,7 @@ function! s:compiler.get_engine() abort dict " {{{1
   return get(extend(g:vimtex_compiler_latexmk_engines,
         \ {
         \  'pdfdvi'           : '-pdfdvi',
+        \  'pdfps'            : '-pdfps',
         \  'pdflatex'         : '-pdf',
         \  'luatex'           : '-lualatex',
         \  'lualatex'         : '-lualatex',
@@ -493,7 +496,8 @@ endfunction
 
 " }}}1
 function! s:callback_continuous_output(channel, msg) abort " {{{1
-  if exists('b:vimtex') && filewritable(b:vimtex.compiler.output)
+  if exists('b:vimtex.compiler.output')
+        \ && filewritable(b:vimtex.compiler.output)
     call writefile([a:msg], b:vimtex.compiler.output, 'a')
   endif
 

@@ -1,6 +1,6 @@
 # vimtex
 
-vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype plugin for LaTeX files.
+vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype and syntax plugin for LaTeX files.
 
 [![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ![CI tests](https://github.com/lervag/vimtex/workflows/CI%20tests/badge.svg)
@@ -106,6 +106,8 @@ disabled if desired.
 - Motions
   - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
   - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
+  - Move between math environment boundaries with `[n`, `[N`, `]n`, and `]N`
+  - Move between frame environment boundaries with `[r`, `[R`, `]r`, and `]R`
   - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
 - Text objects
@@ -129,13 +131,11 @@ disabled if desired.
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
 - Improved folding (`:h 'foldexpr'`)
 - Improved indentation (`:h 'indentexpr'`)
-- Improved syntax highlighting
+- Syntax highlighting
+  - A consistent core syntax specification
+  - General syntax highlighting for several popular LaTeX packages
+  - Nested syntax highlighting for several popular LaTeX packages
   - Highlight matching delimiters
-  - Support for `biblatex`/`natbib` package
-  - Support for `cleveref` package
-  - Support for `listings` package
-  - Nested syntax highlighting (`minted`, `dot2tex`, `lualatex`,
-    `gnuplottex`, `asymptote`, `pythontex`)
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)

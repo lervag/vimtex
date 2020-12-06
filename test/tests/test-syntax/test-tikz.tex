@@ -1,0 +1,97 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\begin{document}
+
+\tikzset{
+  a = b,
+}
+
+\pgfplotsset{
+  a = b,
+}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+      font = \small,
+      % A comment here
+      xlabel = $f(x)$,
+      very thick,
+    ]
+
+    % A simple line
+    \draw (0,0) -- (1,0);
+  \end{tikzpicture}
+  \caption{A simple tikz example.}
+  \label{fig:tikz-example}
+\end{figure}
+
+\begin{figure}[tbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{groupplot}[
+        height=0.35\textwidth,
+        width=0.375\textwidth,
+        xlabel={$V_0$ [\si{\meter\cubed}]},
+        ylabel={$t$ [\si{\second}]},
+        xmax=26,
+        ymax=90,
+        grid=both,
+        grid style={line width=.2pt, draw=gray!20},
+        group style={
+          group size=3 by 1,
+          horizontal sep=0.5cm,
+          x descriptions at=edge bottom,
+          y descriptions at=edge left,
+        },
+        table/x = V0,
+        table/y = t_RPT,
+        domain=0.05:25.26,
+      ]
+
+      \nextgroupplot[
+        title={Composition $z_1$},
+        legend columns=3,
+        transpose legend,
+        legend style={
+          at={(0.05,1.20)},
+          /tikz/column 2/.style={
+            column sep=5pt,
+          },
+          anchor=south west,
+        },
+      ]
+      \addplot[cl3-1] {t_rpt(x, 437.0, 0.6*0.135294, 0.891)};
+      \addplot[cl3-1, sim] table {data/instspill_m0_eps0.6.csv};
+      \addlegendentry{$\epsilon = 1.2$}
+      \addlegendentry{Simulation}
+
+      \nextgroupplot[
+        title={Composition $z_2$},
+      ]
+      \addplot[cl3-1] {t_rpt(x, 437.0, 0.6*0.135294, 0.781)};
+      \addplot[cl3-3, sim] table {data/instspill_m1_eps1.2.csv};
+
+      \nextgroupplot[
+        title={Composition $z_3$},
+      ]
+      \addplot[cl3-1] {t_rpt(x, 437.0, 0.6*0.135294, 0.672)};
+      \addplot[cl3-3, sim] table {data/instspill_m2_eps1.2.csv};
+
+      \addplot+ [id=parable,domain=-5:5,] gnuplot {4*x**2 - 5} node [pin=180:{$4x^2-5$}] {};
+
+      \addplot+ coordinates {
+          (0.0, 0.10) (0.1, 0.15) (0.2, 0.50)
+          (0.3, 0.62) (0.4, 0.56) (0.5, 0.58)
+          (0.6, 0.65) (0.7, 0.60) (0.8, 0.58)
+          (0.9, 0.55) (1.0, 0.52)
+        } |- (0,0) -- cycle;
+    \end{groupplot}
+  \end{tikzpicture}
+  \caption{This example will not compile!}
+  \label{fig:instspill-t}
+\end{figure}
+
+\end{document}

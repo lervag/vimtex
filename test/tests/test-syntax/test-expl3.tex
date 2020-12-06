@@ -1,0 +1,38 @@
+\ExplSyntaxOn
+\str_new:N \g_myfile_name_str
+\str_gset:Nn \g_myfile_name_str {myfile.txt}
+\str_new:N \g_myfile_old_mdfive_str
+\str_new:N \l_myfile_mdfive_str
+\cs_new_protected:Npn \getmdfive % get hash is not expandable, so protect
+{
+  \file_get_mdfive_hash:nN {\str_use:N \g_myfile_name_str} \l_myfile_mdfive_str
+  \str_use:N \l_myfile_mdfive_str
+}
+\cs_new:Npn \getoldmdfive
+{
+  \str_use:N \g_myfile_old_mdfive_str
+}
+\cs_new:Npn \IfMyfileChanged #1 #2
+{
+  \str_if_eq:NNTF \g_myfile_old_mdfive_str \l_myfile_mdfive_str {#2} {#1}
+}
+\AtEndDocument
+{
+  \iow_now:cx { @auxout }
+  {
+    \token_to_str:N \ExplSyntaxOn
+    \iow_newline:
+    \str_gset:Nn \token_to_str:N \g_myfile_old_mdfive_str {\str_use:N \l_myfile_mdfive_str}
+    \iow_newline:
+    \token_to_str:N \ExplSyntaxOff
+  }
+}
+\ExplSyntaxOff
+
+\ExplSyntaxOn
+\ExplSyntaxOn
+\ExplSyntaxOn
+\str_new:N \g_myfile_name_str
+\ExplSyntaxOff
+\str_new:N \g_myfile_name_str
+

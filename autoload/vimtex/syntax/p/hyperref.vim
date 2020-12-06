@@ -4,32 +4,26 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#hyperref#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'hyperref') | return | endif
-  let b:vimtex_syntax.hyperref = 1
+function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
+  syntax match texCmdHyperref '\\autoref\>' nextgroup=texRefOpt,texRefArg
+  syntax match texCmdHyperref '\\hyperref\>' nextgroup=texRefOpt,texRefArg
+  syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
+  call vimtex#syntax#core#new_arg('texHrefArgLink', {
+        \ 'next': 'texHrefArgText',
+        \ 'contains': 'texComment,@NoSpell',
+        \})
+  call vimtex#syntax#core#new_arg('texHrefArgText')
 
-  syntax match texStatement '\\url\ze[^\ta-zA-Z]' nextgroup=texUrlVerb
-  syntax region texUrlVerb matchgroup=Delimiter
-        \ start='\z([^\ta-zA-Z]\)' end='\z1' contained
+  syntax match texCmdHyperref "\\url\>" nextgroup=texUrlArg skipwhite
+  syntax region texUrlArg matchgroup=texDelim
+        \ contained contains=@NoSpell,texComment
+        \ start="\z([^\ta-zA-Z]\)" end="\z1"
+  call vimtex#syntax#core#new_arg('texUrlArg', {'contains': 'texComment,@NoSpell'})
 
-  syntax match texStatement '\\url\ze\s*{' nextgroup=texUrl
-  syntax region texUrl     matchgroup=Delimiter start='{' end='}' contained
 
-  syntax match texStatement '\\href' nextgroup=texHref
-  syntax region texHref matchgroup=Delimiter start='{' end='}' contained
-        \ nextgroup=texMatcher
-
-  syntax match texStatement '\\hyperref\>' nextgroup=texHyperref
-  syntax match texStatement '\\autoref\>' nextgroup=texHyperref
-  syntax region texHyperref matchgroup=Delimiter start='\[' end='\]' contained
-        \ contains=@texRefGroup,texRefZone
-  syntax region texHyperref matchgroup=Delimiter start='{' end='}' contained
-        \ contains=@texRefGroup,texRefZone
-
-  highlight link texUrl          Function
-  highlight link texUrlVerb      texUrl
-  highlight link texHref         texUrl
-  highlight link texHyperref     texRefZone
+  highlight def link texCmdHyperref texCmd
+  highlight def link texHrefArgLink texOpt
+  highlight def link texUrlArg      texOpt
 endfunction
 
 " }}}1

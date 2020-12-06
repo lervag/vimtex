@@ -6,11 +6,8 @@
 
 scriptencoding utf-8
 
-function! vimtex#syntax#p#cases#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'cases') | return | endif
-  let b:vimtex_syntax.cases = 1
-
-  call VimtexNewMathZone('E', '\(sub\)\?numcases', 0)
+function! vimtex#syntax#p#cases#load(cfg) abort " {{{1
+  call vimtex#syntax#core#new_region_math('\(sub\)\?numcases', {'starred': 0})
 endfunction
 
 " }}}1

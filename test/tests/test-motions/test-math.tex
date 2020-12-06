@@ -1,0 +1,31 @@
+\documentclass[]{article}
+
+\begin{document}
+
+Test file for math motion.
+
+\begin{equation}          % [n[n or 2[n
+  1 + 1 = 2
+\end{equation}            % [N[N or 2[N
+
+\( 1 + 1 = 2 \)           % Opening: [n, Closing: [N
+
+\begin{enumerate}
+  \item 1
+  \item 2
+  \item 3
+  \item 4
+\end{enumerate}
+                          % CURSOR
+\[                        % ]n
+  1 + 1 = 2
+\]                        % ]N
+
+\begin{itemize}
+    \item $1 + 1 = 2$.    % Opening: ]n]n or 2]n, Closing: ]N]N or 2]N
+\end{itemize}
+
+$1 + 1 = 2$               % Opening: ]n]n]n or 3]n, Closing: ]N]N]N or 3]N
+$$1 + 1 = 2$$             % Opening: ]n]n]n]n or 4]n, Closing: ]N]N]N]N or 4]N
+
+\end{document}

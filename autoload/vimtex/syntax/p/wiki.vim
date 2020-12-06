@@ -4,19 +4,15 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#syntax#p#wiki#load() abort " {{{1
-  if has_key(b:vimtex_syntax, 'wiki') | return | endif
-  let b:vimtex_syntax.wiki = 1
+function! vimtex#syntax#p#wiki#load(cfg) abort " {{{1
+  call vimtex#syntax#nested#include('markdown')
 
-  call vimtex#syntax#misc#add_to_section_clusters('texZoneWiki')
-  call vimtex#syntax#misc#include('markdown')
-
-  syntax region texZoneWiki
+  syntax region texWikiRegion
         \ start='\\wikimarkup\>'
-        \ end='\\nowikimarkup\>'re=e
+        \ end='\\nowikimarkup\>'
         \ keepend
         \ transparent
-        \ contains=@vimtex_nested_markdown,@texFoldGroup,@texDocGroup
+        \ contains=texCmd,@vimtex_nested_markdown
 endfunction
 
 " }}}1

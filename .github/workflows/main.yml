@@ -18,6 +18,8 @@ jobs:
   run-tests:
     name: Test on ubuntu-latest
     runs-on: ubuntu-latest
+    if: |
+      ! startsWith(github.event.head_commit.message, 'doc:')
     steps:
     - name: Install packages
       run: |

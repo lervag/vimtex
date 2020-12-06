@@ -1,12 +1,15 @@
 source common.vim
 
-let g:tex_conceal = ''
+" let g:vimtex_syntax_conceal = {'styles': 0}
+set conceallevel=2
 
 silent edit test-bold-italic.tex
 
 if empty($INMAKE) | finish | endif
 
-call vimtex#test#assert(vimtex#syntax#in('texItalBoldStyle', 5, 55))
-call vimtex#test#assert(vimtex#syntax#in('texBoldItalStyle', 6, 55))
+call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 5, 50))
+call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 6, 50))
+call vimtex#test#assert(vimtex#syntax#in('texStyleBoth', 8, 50))
+call vimtex#test#assert(vimtex#syntax#in('texCmdStyle', 7, 14))
 
 quit!

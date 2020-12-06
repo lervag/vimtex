@@ -56,7 +56,9 @@ endfunction
 " }}}1
 
 function! vimtex#compiler#callback(status) abort " {{{1
-  if exists('b:vimtex') && get(b:vimtex.compiler, 'silence_next_callback')
+  if !exists('b:vimtex.compiler') | return | endif
+
+  if get(b:vimtex.compiler, 'silence_next_callback')
     let b:vimtex.compiler.silence_next_callback = 0
     return
   endif
@@ -76,7 +78,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
 
   if a:status && exists('b:vimtex')
     call b:vimtex.parse_packages()
-    call vimtex#syntax#load#packages()
+    call vimtex#syntax#packages#init()
   endif
 
   if a:status

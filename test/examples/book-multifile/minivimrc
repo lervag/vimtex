@@ -6,8 +6,6 @@ syntax enable
 
 nnoremap q :qall!<cr>
 
-let g:tex_flavor = 'latex'
-
 let g:vimtex_toc_config = {
       \ 'layer_status' : {'include' : 0},
       \ 'layer_keys' : {'content' : '<c-c>'},

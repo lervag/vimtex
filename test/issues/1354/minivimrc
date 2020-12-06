@@ -1,9 +1,0 @@
-set nocompatible
-let &rtp = '../../..,' . &rtp
-let &rtp .= ',../../../after'
-syntax enable
-filetype plugin indent on
-
-nnoremap q :qall!<cr>
-
-silent edit minimal.tex

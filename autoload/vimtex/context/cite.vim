@@ -153,7 +153,9 @@ function! s:actions.open_pdf() abort dict " {{{1
         \})
   if empty(l:file) | return | endif
 
-  call vimtex#view#view(l:file)
+  call vimtex#process#start(
+        \ g:vimtex_context_pdf_viewer
+        \ . ' ' . vimtex#util#shellescape(l:file))
 endfunction
 
 " }}}1

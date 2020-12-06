@@ -78,7 +78,7 @@ call vimtex#test#keys('ocool',
       \['\begin{enumerate}', '  \item', '\end{enumerate}'])
 
 " Test inside align environment: ;b -> \beta (#1648)
-call vimtex#syntax#p#amsmath#load()
+call vimtex#syntax#packages#load('amsmath')
 call vimtex#test#keys('o;b',
       \ ['\begin{align}', '\end{align}'],
       \ ['\begin{align}', '  \beta', '\end{align}'])
