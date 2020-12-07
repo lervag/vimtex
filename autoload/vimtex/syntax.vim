@@ -27,11 +27,9 @@ endfunction
 " }}}1
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
   let l:ids = reverse(call('vimtex#syntax#stack', a:000))
-  let l:index = match(l:ids, '^texMath\%(' . s:mathzones . '\|Text\)')
+  let l:index = match(l:ids, '^texMath\%(Zone\|Text\)')
   return l:index >= 0
         \ && match(l:ids[l:index], '^texMathText') == -1
 endfunction
-
-let s:mathzones = g:vimtex_syntax_enabled ? 'Region' : 'Zone'
 
 " }}}1

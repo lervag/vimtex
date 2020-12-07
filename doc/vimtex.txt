@@ -3813,10 +3813,10 @@ general idea can be described as follows.
     matched as `texCmdInput`, but it is followed by a `texFileArg` argument
     group.
 
-  `tex{type}Region`
+  `tex{type}Zone`
     Some commands open specific syntax regions that have different rules. Math
     mode is a good example. Math mode is highlighted differently, and the
-    syntax regions are name `texMathRegion*`. The `tex{type}Region`s may typically
+    syntax regions are name `texMathZone*`. The `tex{type}Zone`s may typically
     contain their own (sub)sets of syntax groups that are only matched within
     the specific region. Another example is the inclusion of nested syntax
     highlighting with e.g. the `minted` or `listings` packages.
@@ -3871,7 +3871,7 @@ Table 1: A list of groups that are only primitive link targets.~
   texCmdType           Type
   texError             Error
   texParm              Special
-  texRegion            PreCondit
+  texZone              PreCondit
   texSymbol            SpecialChar
 
 Table 2: A list of the most common normal LaTeX groups.~
@@ -3927,12 +3927,12 @@ Table 3: A list of math mode groups.~
 >
   GROUP                    DEFAULT        EXAMPLE
   ----------------------------------------------------------------------------
-  texMathRegion            Special        \( HERE \); \[ HERE \]
-  texMathRegionEnv         texMathRegion  \begin{menv}  HERE \end{menv}
-  texMathRegionEnvStarred  texMathRegion  \begin{menv*} HERE \end{menv*}
-  texMathRegionX           texMathRegion  $ HERE $
-  texMathRegionXX          texMathRegion  $$ HERE $$
-  texMathRegionEnsured     texMathRegion  \ensuremath{HERE}
+  texMathZone              Special        \( HERE \); \[ HERE \]
+  texMathZoneEnv           texMathZone    \begin{menv}  HERE \end{menv}
+  texMathZoneEnvStarred    texMathZone    \begin{menv*} HERE \end{menv*}
+  texMathZoneX             texMathZone    $ HERE $
+  texMathZoneXX            texMathZone    $$ HERE $$
+  texMathZoneEnsured       texMathZone    \ensuremath{HERE}
   texCmdMathEnv            texCmdEnv      \BEGIN; \END (for math environments)
   texMathEnvArgName        Delimiter      \begin{EQUATION}
   texCmdMath               texCmd         \ENSUREMATH
@@ -3954,8 +3954,8 @@ Table 4: A list of other important groups.~
                                        https://en.wikibooks.org/wiki/TeX/catcode
   texCmdTodo           Todo            \TODOSOMETHING
   texCmdVerb           texCmd          \VERB
-  texVerbRegionInline  texRegion       \verb+VERB TEXT+
-  texVerbRegion        texRegion       \begin{verbatim} VERB TEXT \end{verbatim}
+  texVerbZoneInline    texZone         \verb+VERB TEXT+
+  texVerbZone          texZone         \begin{verbatim} VERB TEXT \end{verbatim}
   texCmdDef            texCmdNew       \DEF
   texDefArgName        texArgNew       \def\NAME
   texDefParm           texParm         \def\name #1

@@ -307,22 +307,22 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texTabularArg', {'contains': ''})
 
   " }}}2
-  " {{{2 Region: Verbatim
+  " {{{2 Zone: Verbatim
 
   " Verbatim environment
-  call vimtex#syntax#core#new_region_env('texVerbRegion', '[vV]erbatim')
+  call vimtex#syntax#core#new_region_env('texVerbZone', '[vV]erbatim')
 
   " Verbatim inline
-  syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbRegionInline
-  call vimtex#syntax#core#new_arg('texVerbRegionInline', {
+  syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbZoneInline
+  call vimtex#syntax#core#new_arg('texVerbZoneInline', {
         \ 'contains': '',
         \ 'matcher': 'start="\z([^\ta-zA-Z]\)" end="\z1"'
         \})
 
   " }}}2
-  " {{{2 Region: Expl3
+  " {{{2 Zone: Expl3
 
-  syntax region texE3Region matchgroup=texCmdE3
+  syntax region texE3Zone matchgroup=texCmdE3
         \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
         \ end='\\ExplSyntaxOff\|\%$'
         \ transparent
@@ -334,17 +334,17 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
   call vimtex#syntax#core#new_arg('texE3Arg', {'next': 'texE3Arg', 'opts': 'contained transparent'})
 
-  syntax match texE3CmdNestedRegionEnd '\\\ExplSyntaxOff'
+  syntax match texE3CmdNestedZoneEnd '\\\ExplSyntaxOff'
         \ contained containedin=texE3Arg,texE3Group
 
   syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
   syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
   syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
 
-  syntax cluster texClusterE3 contains=texE3Region,texE3Arg,texE3Group
+  syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group
 
   " }}}2
-  " {{{2 Region: Math
+  " {{{2 Zone: Math
 
   " Define math region group
   call vimtex#syntax#core#new_arg('texMathGroup', {'contains': '@texClusterMath'})
@@ -362,20 +362,20 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Math regions: Inline Math Zones
   if g:vimtex_syntax_conceal.math_bounds
-    syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathRegion   matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathRegionX  matchgroup=texMathDelimRegion concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texMathRegionXX matchgroup=texMathDelimRegion concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texMathZoneX  matchgroup=texMathDelimZone concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texMathZoneXX matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
   else
-    syntax region texMathRegion   matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathRegion   matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathRegionX  matchgroup=texMathDelimRegion contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-    syntax region texMathRegionXX matchgroup=texMathDelimRegion contains=@texClusterMath keepend start="\$\$" end="\$\$"
+    syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\("  end="\\)"
+    syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\\[" end="\\]"
+    syntax region texMathZoneX  matchgroup=texMathDelimZone contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+    syntax region texMathZoneXX matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
 
   " Math regions: \ensuremath{...}
-  syntax match texCmdMath "\\ensuremath\>" nextgroup=texMathRegionEnsured
-  call vimtex#syntax#core#new_arg('texMathRegionEnsured', {'contains': '@texClusterMath'})
+  syntax match texCmdMath "\\ensuremath\>" nextgroup=texMathZoneEnsured
+  call vimtex#syntax#core#new_arg('texMathZoneEnsured', {'contains': '@texClusterMath'})
 
   " Bad/Mismatched math
   syntax match texMathError "\\[\])]"
@@ -455,13 +455,13 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathDelim        Type
   highlight def link texMathEnvArgName   Delimiter
   highlight def link texMathOper         Operator
-  highlight def link texMathRegion       Special
+  highlight def link texMathZone         Special
   highlight def link texOpt              Identifier
   highlight def link texOptSep           NormalNC
   highlight def link texParm             Special
   highlight def link texPartArgTitle     String
   highlight def link texRefArg           Special
-  highlight def link texRegion           PreCondit
+  highlight def link texZone             PreCondit
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texTitleArg         Underlined
@@ -470,91 +470,91 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def texStyleItal gui=italic      cterm=italic
 
   " Inherited groups
-  highlight def link texArgNew               texCmd
-  highlight def link texAuthorOpt            texOpt
-  highlight def link texCmdAccent            texCmd
-  highlight def link texCmdAuthor            texCmd
-  highlight def link texCmdBib               texCmd
-  highlight def link texCmdClass             texCmd
-  highlight def link texCmdConditional       texCmd
-  highlight def link texCmdDef               texCmdNew
-  highlight def link texCmdEnv               texCmd
-  highlight def link texCmdE3                texCmd
-  highlight def link texCmdFootnote          texCmd
-  highlight def link texCmdGreek             texCmd
-  highlight def link texCmdInput             texCmd
-  highlight def link texCmdItem              texCmdEnv
-  highlight def link texCmdLet               texCmdNew
-  highlight def link texCmdLigature          texSpecialChar
-  highlight def link texCmdMath              texCmd
-  highlight def link texCmdMathEnv           texCmdEnv
-  highlight def link texCmdMathText          texCmd
-  highlight def link texCmdNew               texCmd
-  highlight def link texCmdNewcmd            texCmdNew
-  highlight def link texCmdNewenv            texCmd
-  highlight def link texCmdNoSpell           texCmd
-  highlight def link texCmdPackage           texCmd
-  highlight def link texCmdPart              texCmd
-  highlight def link texCmdRef               texCmd
-  highlight def link texCmdSize              texCmdType
-  highlight def link texCmdSpaceCode         texCmd
-  highlight def link texCmdStyle             texCmd
-  highlight def link texCmdStyle             texCmdType
-  highlight def link texCmdStyleBold         texCmd
-  highlight def link texCmdStyleBoldItal     texCmd
-  highlight def link texCmdStyleItal         texCmd
-  highlight def link texCmdStyleItalBold     texCmd
-  highlight def link texCmdTitle             texCmd
-  highlight def link texCmdVerb              texCmd
-  highlight def link texCommentAcronym       texComment
-  highlight def link texCommentURL           texComment
-  highlight def link texConditionalArg       texArg
-  highlight def link texDefArgName           texArgNew
-  highlight def link texDefParm              texParm
-  highlight def link texE3Cmd                texCmd
-  highlight def link texE3Delim              texDelim
-  highlight def link texE3Func               texCmdType
-  highlight def link texE3Opt                texOpt
-  highlight def link texE3Parm               texParm
-  highlight def link texE3Var                texCmd
-  highlight def link texEnvOpt               texOpt
-  highlight def link texFileArg              texArg
-  highlight def link texFileOpt              texOpt
-  highlight def link texFilesArg             texFileArg
-  highlight def link texFilesOpt             texFileOpt
-  highlight def link texGroupError           texError
-  highlight def link texLetArgEqual          texSymbol
-  highlight def link texLetArgName           texArgNew
-  highlight def link texLigature             texSymbol
-  highlight def link texMathArg              texMathRegion
-  highlight def link texMathArrayArg         texOpt
-  highlight def link texMathCmd              texCmd
-  highlight def link texMathCmdStyle         texMathCmd
-  highlight def link texMathDelimMod         texMathDelim
-  highlight def link texMathDelimRegion      texDelim
-  highlight def link texMathError            texError
-  highlight def link texMathErrorDelim       texError
-  highlight def link texMathGroup            texMathRegion
-  highlight def link texMathRegionEnsured    texMathRegion
-  highlight def link texMathRegionEnv        texMathRegion
-  highlight def link texMathRegionEnvStarred texMathRegion
-  highlight def link texMathRegionX          texMathRegion
-  highlight def link texMathRegionXX         texMathRegion
-  highlight def link texMathSub              texMathRegion
-  highlight def link texMathSuper            texMathRegion
-  highlight def link texMathSymbol           texCmd
-  highlight def link texNewcmdArgName        texArgNew
-  highlight def link texNewcmdOpt            texOpt
-  highlight def link texNewcmdParm           texParm
-  highlight def link texNewenvArgName        texEnvArgName
-  highlight def link texNewenvOpt            texOpt
-  highlight def link texNewenvParm           texParm
-  highlight def link texOptEqual             texSymbol
-  highlight def link texRefOpt               texOpt
-  highlight def link texTabularArg           texOpt
-  highlight def link texTabularChar          texSymbol
-  highlight def link texVerbRegion           texRegion
-  highlight def link texVerbRegionInline     texVerbRegion
+  highlight def link texArgNew             texCmd
+  highlight def link texAuthorOpt          texOpt
+  highlight def link texCmdAccent          texCmd
+  highlight def link texCmdAuthor          texCmd
+  highlight def link texCmdBib             texCmd
+  highlight def link texCmdClass           texCmd
+  highlight def link texCmdConditional     texCmd
+  highlight def link texCmdDef             texCmdNew
+  highlight def link texCmdEnv             texCmd
+  highlight def link texCmdE3              texCmd
+  highlight def link texCmdFootnote        texCmd
+  highlight def link texCmdGreek           texCmd
+  highlight def link texCmdInput           texCmd
+  highlight def link texCmdItem            texCmdEnv
+  highlight def link texCmdLet             texCmdNew
+  highlight def link texCmdLigature        texSpecialChar
+  highlight def link texCmdMath            texCmd
+  highlight def link texCmdMathEnv         texCmdEnv
+  highlight def link texCmdMathText        texCmd
+  highlight def link texCmdNew             texCmd
+  highlight def link texCmdNewcmd          texCmdNew
+  highlight def link texCmdNewenv          texCmd
+  highlight def link texCmdNoSpell         texCmd
+  highlight def link texCmdPackage         texCmd
+  highlight def link texCmdPart            texCmd
+  highlight def link texCmdRef             texCmd
+  highlight def link texCmdSize            texCmdType
+  highlight def link texCmdSpaceCode       texCmd
+  highlight def link texCmdStyle           texCmd
+  highlight def link texCmdStyle           texCmdType
+  highlight def link texCmdStyleBold       texCmd
+  highlight def link texCmdStyleBoldItal   texCmd
+  highlight def link texCmdStyleItal       texCmd
+  highlight def link texCmdStyleItalBold   texCmd
+  highlight def link texCmdTitle           texCmd
+  highlight def link texCmdVerb            texCmd
+  highlight def link texCommentAcronym     texComment
+  highlight def link texCommentURL         texComment
+  highlight def link texConditionalArg     texArg
+  highlight def link texDefArgName         texArgNew
+  highlight def link texDefParm            texParm
+  highlight def link texE3Cmd              texCmd
+  highlight def link texE3Delim            texDelim
+  highlight def link texE3Func             texCmdType
+  highlight def link texE3Opt              texOpt
+  highlight def link texE3Parm             texParm
+  highlight def link texE3Var              texCmd
+  highlight def link texEnvOpt             texOpt
+  highlight def link texFileArg            texArg
+  highlight def link texFileOpt            texOpt
+  highlight def link texFilesArg           texFileArg
+  highlight def link texFilesOpt           texFileOpt
+  highlight def link texGroupError         texError
+  highlight def link texLetArgEqual        texSymbol
+  highlight def link texLetArgName         texArgNew
+  highlight def link texLigature           texSymbol
+  highlight def link texMathArg            texMathZone
+  highlight def link texMathArrayArg       texOpt
+  highlight def link texMathCmd            texCmd
+  highlight def link texMathCmdStyle       texMathCmd
+  highlight def link texMathDelimMod       texMathDelim
+  highlight def link texMathDelimZone      texDelim
+  highlight def link texMathError          texError
+  highlight def link texMathErrorDelim     texError
+  highlight def link texMathGroup          texMathZone
+  highlight def link texMathZoneEnsured    texMathZone
+  highlight def link texMathZoneEnv        texMathZone
+  highlight def link texMathZoneEnvStarred texMathZone
+  highlight def link texMathZoneX          texMathZone
+  highlight def link texMathZoneXX         texMathZone
+  highlight def link texMathSub            texMathZone
+  highlight def link texMathSuper          texMathZone
+  highlight def link texMathSymbol         texCmd
+  highlight def link texNewcmdArgName      texArgNew
+  highlight def link texNewcmdOpt          texOpt
+  highlight def link texNewcmdParm         texParm
+  highlight def link texNewenvArgName      texEnvArgName
+  highlight def link texNewenvOpt          texOpt
+  highlight def link texNewenvParm         texParm
+  highlight def link texOptEqual           texSymbol
+  highlight def link texRefOpt             texOpt
+  highlight def link texTabularArg         texOpt
+  highlight def link texTabularChar        texSymbol
+  highlight def link texVerbZone           texZone
+  highlight def link texVerbZoneInline     texVerbZone
 endfunction
 
 " }}}1
@@ -633,7 +633,7 @@ function! vimtex#syntax#core#new_region_math(mathzone, ...) abort " {{{1
         \ 'contained contains=texCmdMathEnv'
         \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
   execute 'syntax match texMathError "\\end{' . l:envname . '}"'
-  execute 'syntax region texMathRegionEnv'
+  execute 'syntax region texMathZoneEnv'
         \ 'start="\\begin{\z(' . l:envname . '\)}"'
         \ 'end="\\end{\z1}"'
         \ 'contains=texMathEnvBgnEnd,@texClusterMath'

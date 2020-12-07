@@ -6,7 +6,7 @@
 
 function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax cluster texClusterTikz    contains=texCmdTikz,texTikzEnvBgn,texTikzSemicolon,texTikzDraw,texTikzCycle,texCmd,texGroup,texComment
-  syntax cluster texClusterTikzset contains=texTikzsetArg,texMathRegionX,texTypeSize,@texClusterOpt
+  syntax cluster texClusterTikzset contains=texTikzsetArg,texMathZoneX,texTypeSize,@texClusterOpt
 
   syntax match texCmdTikzset "\\tikzset\>"
         \ nextgroup=texTikzsetArg skipwhite skipnl
@@ -16,7 +16,7 @@ function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax match texTikzEnvBgn "\\begin{tikzpicture}"
         \ nextgroup=texTikzOpt skipwhite skipnl
         \ contains=texCmdEnv
-  call vimtex#syntax#core#new_region_env('texTikzRegion', 'tikzpicture', {
+  call vimtex#syntax#core#new_region_env('texTikzZone', 'tikzpicture', {
         \ 'contains': '@texClusterTikz',
         \ 'transparent': 1
         \})

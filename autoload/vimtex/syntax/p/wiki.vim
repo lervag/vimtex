@@ -7,7 +7,7 @@
 function! vimtex#syntax#p#wiki#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('markdown')
 
-  syntax region texWikiRegion
+  syntax region texWikiZone
         \ start='\\wikimarkup\>'
         \ end='\\nowikimarkup\>'
         \ keepend

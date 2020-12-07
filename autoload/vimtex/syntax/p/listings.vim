@@ -10,7 +10,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
         \ {_, x -> matchstr(x, 'language=\zs\w\+')})
 
   " Match inline listings
-  syntax match texCmdVerb "\\lstinline\>" nextgroup=texVerbRegionInline
+  syntax match texCmdVerb "\\lstinline\>" nextgroup=texVerbZoneInline
 
   " Match input file commands
   syntax match texCmd "\\lstinputlisting\>"
@@ -27,7 +27,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   syntax match texLstEnvBgn "\\begin{lstlisting}"
         \ nextgroup=texLstOpt skipwhite skipnl contains=texCmdEnv
   call vimtex#syntax#core#new_opt('texLstOpt')
-  call vimtex#syntax#core#new_region_env('texLstRegion', 'lstlisting', {
+  call vimtex#syntax#core#new_region_env('texLstZone', 'lstlisting', {
         \ 'contains': 'texLstEnvBgn',
         \})
 
@@ -36,7 +36,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
     let l:cluster = vimtex#syntax#nested#include(l:nested)
     if empty(l:cluster) | continue | endif
 
-    let l:grp = 'texLstRegion' . toupper(l:nested[0]) . l:nested[1:]
+    let l:grp = 'texLstZone' . toupper(l:nested[0]) . l:nested[1:]
 
     execute 'syntax match texLstsetArg'
           \ '"\c{\_[^}]*language=' . l:nested . '\%(\s*,\|}\)"'
@@ -56,10 +56,10 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
           \ 'contains=texCmdEnv,texLstEnvBgn,@' . l:cluster
   endfor
 
-  highlight def link texCmdLstset texCmd
+  highlight def link texCmdLstset   texCmd
   highlight def link texLstsetGroup texOpt
-  highlight def link texLstRegion texRegion
-  highlight def link texLstOpt texOpt
+  highlight def link texLstZone     texZone
+  highlight def link texLstOpt      texOpt
 endfunction
 
 " }}}1

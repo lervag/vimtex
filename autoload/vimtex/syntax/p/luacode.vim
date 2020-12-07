@@ -7,7 +7,7 @@
 function! vimtex#syntax#p#luacode#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('lua')
 
-  call vimtex#syntax#core#new_region_env('texLuaRegion', 'luacode\*\?',
+  call vimtex#syntax#core#new_region_env('texLuaZone', 'luacode\*\?',
         \ {'contains': '@vimtex_nested_lua'})
 
   syntax match texCmdLua "\\\%(directlua\|luadirect\)\>" nextgroup=texLuaArg skipwhite skipnl

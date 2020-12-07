@@ -30,14 +30,14 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texMintedEnvArgOpt', {'contains': ''})
 
   " Match generic minted environment regions
-  call vimtex#syntax#core#new_region_env('texMintedRegion', 'minted', {
+  call vimtex#syntax#core#new_region_env('texMintedZone', 'minted', {
         \ 'contains': 'texCmdEnv,texMintedEnvBgn',
         \})
 
   " Match generic minted command regions
-  call vimtex#syntax#core#new_arg('texMintedArg', {'contains': '', 'next': 'texMintedRegionInline'})
-  call vimtex#syntax#core#new_arg('texMintedRegionInline', {'contains': ''})
-  call vimtex#syntax#core#new_arg('texMintedRegionInline', {
+  call vimtex#syntax#core#new_arg('texMintedArg', {'contains': '', 'next': 'texMintedZoneInline'})
+  call vimtex#syntax#core#new_arg('texMintedZoneInline', {'contains': ''})
+  call vimtex#syntax#core#new_arg('texMintedZoneInline', {
         \ 'contains': '',
         \ 'matcher': 'start="\z([|+/]\)" end="\z1"',
         \})
@@ -47,8 +47,8 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
     let l:cluster = vimtex#syntax#nested#include(l:nested)
 
     let l:name = toupper(l:nested[0]) . l:nested[1:]
-    let l:grp_env = 'texMintedRegion' . l:name
-    let l:grp_inline = 'texMintedRegionInline' . l:name
+    let l:grp_env = 'texMintedZone' . l:name
+    let l:grp_inline = 'texMintedZoneInline' . l:name
     let l:grp_inline_matcher = 'texMintedArg' . l:name
 
     let l:options = 'keepend'
@@ -59,8 +59,8 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
       let l:contains .= ',@' . l:cluster
       let l:contains_inline = '@' . l:cluster
     else
-      execute 'highlight def link' l:grp_env 'texMintedRegion'
-      execute 'highlight def link' l:grp_inline 'texMintedRegionInline'
+      execute 'highlight def link' l:grp_env 'texMintedZone'
+      execute 'highlight def link' l:grp_inline 'texMintedZoneInline'
     endif
 
     " Match normal minted environments
@@ -113,19 +113,19 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_opt('texMintedOpt', {'next': 'texMintedArg.*'})
 
   " Specify default highlight groups
-  highlight def link texCmdMinted          texCmd
-  highlight def link texCmdNewmint         texCmd
-  highlight def link texMintedArg          texSymbol
-  highlight def link texMintedEnvArg       texSymbol
-  highlight def link texMintedEnvArgOpt    texOpt
-  highlight def link texMintedEnvOpt       texOpt
-  highlight def link texMintedOpt          texOpt
-  highlight def link texMintedRegion       texRegion
-  highlight def link texMintedRegionInline texRegion
-  highlight def link texNewmintArgOpts     texOpt
-  highlight def link texNewmintArgX        texSymbol
-  highlight def link texNewmintArgY        texComment
-  highlight def link texNewmintOpt         texSymbol
+  highlight def link texCmdMinted        texCmd
+  highlight def link texCmdNewmint       texCmd
+  highlight def link texMintedArg        texSymbol
+  highlight def link texMintedEnvArg     texSymbol
+  highlight def link texMintedEnvArgOpt  texOpt
+  highlight def link texMintedEnvOpt     texOpt
+  highlight def link texMintedOpt        texOpt
+  highlight def link texMintedZone       texZone
+  highlight def link texMintedZoneInline texZone
+  highlight def link texNewmintArgOpts   texOpt
+  highlight def link texNewmintArgX      texSymbol
+  highlight def link texNewmintArgY      texComment
+  highlight def link texNewmintOpt       texSymbol
 endfunction
 
 " }}}1

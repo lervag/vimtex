@@ -9,10 +9,10 @@ function! vimtex#syntax#p#asymptote#load(cfg) abort " {{{1
         \ ? {}
         \ : {'contains': '@vimtex_nested_asy'}
 
-  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asy', l:opts)
-  call vimtex#syntax#core#new_region_env('texAsymptoteRegion', 'asydef', l:opts)
+  call vimtex#syntax#core#new_region_env('texAsymptoteZone', 'asy', l:opts)
+  call vimtex#syntax#core#new_region_env('texAsymptoteZone', 'asydef', l:opts)
 
-  highlight def link texAsymptoteRegion texRegion
+  highlight def link texAsymptoteZone texZone
 endfunction
 
 " }}}1

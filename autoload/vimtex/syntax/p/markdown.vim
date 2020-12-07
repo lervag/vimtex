@@ -6,7 +6,7 @@
 
 function! vimtex#syntax#p#markdown#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('markdown')
-  call vimtex#syntax#core#new_region_env('texMarkdownRegion', 'markdown',
+  call vimtex#syntax#core#new_region_env('texMarkdownZone', 'markdown',
         \ {'contains': 'texCmd,@vimtex_nested_markdown'})
 
   syntax match texCmdInput "\\markdownInput\>" nextgroup=texFileArg skipwhite skipnl

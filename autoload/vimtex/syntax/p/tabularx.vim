@@ -58,7 +58,7 @@ function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
   highlight def link texTabularAtSep      texMathDelim
   highlight def link texTabularVertline   texMathDelim
   highlight def link texTabularPostPre    texMathDelim
-  highlight def link texTabularMathdelim  texMathDelimRegion
+  highlight def link texTabularMathdelim  texMathDelimZone
   highlight def link texTabularOpt        texEnvOpt
 endfunction
 
