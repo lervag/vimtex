@@ -4392,17 +4392,8 @@ Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
 ==============================================================================
 GRAMMAR CHECKING                                               *vimtex-grammar*
 
-Vimtex provides grammar checking for TeX files through the |compiler-select|
-feature in Vim for a few selected checkers. They may be activated with the
-|:compiler| command. A selected compiler may then be used e.g. with |:make| or
-|:lmake|. The language of the Tex file is determined by |'spelllang'|. As an
-example, one may do the following to use the |location-list| with a given
-checker: >
-
-    :compiler {checker}|lmake
-
-See also |vimtex-lint| above for some tips on how to use this feature. The
-following is a list of the available checkers:
+Vimtex provides several compilers for grammar checking TeX files through the
+|compiler-select| feature in Vim:
 
   style-check~
     http://www.cs.umd.edu/~nspring/software/style-check-readme.html
@@ -4412,6 +4403,20 @@ following is a list of the available checkers:
 
   vlty~
     See more details here: |vimtex-grammar-vlty|
+
+A compiler may be activated with the |:compiler| command. The selected compiler
+may then be used e.g. with |:make| or |:lmake|. As an example, one may do the
+following to use the |location-list| with a given checker: >
+
+    :compiler {checker}|lmake
+
+See |vimtex-lint| above for some tips on how to use this feature. The
+following is a list of the available checkers:
+
+The language of the Tex file is determined by the option |'spelllang'|. This
+option can be specified in ones vimrc file, but it can also be specified in
+a |modeline| (see also the user manual section |21.6| for a gentle
+introduction to the use of modelines).
 
 ------------------------------------------------------------------------------
 TEXTIDOTE                                            *vimtex-grammar-textidote*
