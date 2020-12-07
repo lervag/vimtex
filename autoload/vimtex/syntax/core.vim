@@ -382,7 +382,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathError "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
 
   " Operators and similar
-  syntax match texMathOper "[_^=+-]" contained
+  syntax match texMathOper "[_^/=+-]" contained
 
   " Text Inside Math regions
   syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
