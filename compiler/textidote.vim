@@ -14,10 +14,14 @@ if empty(s:cfg.jar) || !filereadable(fnamemodify(s:cfg.jar, ':p'))
   finish
 endif
 
+let s:language = vimtex#ui#choose(split(&spelllang, ','), {
+      \ 'prompt': 'Multiple spelllang languages detected, please select one:',
+      \ 'abort': v:false,
+      \})
 let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
       \ . (has_key(s:cfg, 'args') ? ' ' . s:cfg.args : '')
       \ . ' --no-color --output singleline --check '
-      \ . s:get_textidote_lang(&spelllang) . ' %:S'
+      \ . s:get_textidote_lang(s:language) . ' %:S'
 
 setlocal errorformat=
 setlocal errorformat+=%f(L%lC%c-L%\\d%\\+C%\\d%\\+):\ %m

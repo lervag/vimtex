@@ -50,7 +50,10 @@ endif
 let s:vimtex = get(b:, 'vimtex', {'documentclass': '', 'packages': {}})
 let s:documentclass = s:vimtex.documentclass
 let s:packages = join(keys(s:vimtex.packages), ',')
-let s:language = matchstr(&spelllang, '\v^\a\a([-_]\a\a)?')
+let s:language = vimtex#ui#choose(split(&spelllang, ','), {
+      \ 'prompt': 'Multiple spelllang languages detected, please select one:',
+      \ 'abort': v:false,
+      \})
 let s:language = substitute(s:language, '_', '-', '')
 
 let &l:makeprg =
