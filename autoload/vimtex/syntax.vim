@@ -25,13 +25,13 @@ function! vimtex#syntax#in_comment(...) abort " {{{1
 endfunction
 
 " }}}1
-let s:mathzones = g:vimtex_syntax_enabled ? 'texMathRegion' : 'texMathZone'
-let s:textzones = 'texMathText'
-
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
-  let ids = reverse(call('vimtex#syntax#stack', a:000))
-  let first = match(ids, '^' . s:mathzones . '\|' . s:textzones)
-  return (first >= 0 && match(ids[first], '^' . s:textzones) == -1)
+  let l:ids = reverse(call('vimtex#syntax#stack', a:000))
+  let l:index = match(l:ids, '^texMath\%(' . s:mathzones . '\|Text\)')
+  return l:index >= 0
+        \ && match(l:ids[l:index], '^texMathText') == -1
 endfunction
+
+let s:mathzones = g:vimtex_syntax_enabled ? 'Region' : 'Zone'
 
 " }}}1
