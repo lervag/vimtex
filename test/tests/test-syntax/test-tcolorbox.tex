@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{tcolorbox}
+
+\tcbuselibrary{minted}
+\tcbuselibrary{xparse}
+
+\DeclareTCBListing{mintedbox}{ m !O{} }{%
+  listing only,
+  minted language=#1, #2
+}
+
+\begin{document}
+
+This part of the document is in regular syntax highlighting.
+
+\begin{mintedbox}{text}
+$ This is a minted box that contains a single dollar sign.
+\end{mintedbox}
+
+Now this part of the document has math-mode syntax highlighting.
+
+\end{document}
