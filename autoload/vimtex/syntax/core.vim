@@ -1385,8 +1385,8 @@ function! s:match_conceal_greek() abort " {{{1
   syntax match texCmdGreek "\\varsigma\>"   contained conceal cchar=ς
   syntax match texCmdGreek "\\tau\>"        contained conceal cchar=τ
   syntax match texCmdGreek "\\upsilon\>"    contained conceal cchar=υ
-  syntax match texCmdGreek "\\phi\>"        contained conceal cchar=ϕ
-  syntax match texCmdGreek "\\varphi\>"     contained conceal cchar=φ
+  syntax match texCmdGreek "\\phi\>"        contained conceal cchar=φ
+  syntax match texCmdGreek "\\varphi\>"     contained conceal cchar=ϕ
   syntax match texCmdGreek "\\chi\>"        contained conceal cchar=χ
   syntax match texCmdGreek "\\psi\>"        contained conceal cchar=ψ
   syntax match texCmdGreek "\\omega\>"      contained conceal cchar=ω
