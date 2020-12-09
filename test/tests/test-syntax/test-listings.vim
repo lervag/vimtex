@@ -1,8 +1,5 @@
 source common.vim
 
-let &rtp = '.,' . &rtp
-let g:vimtex_fold_enabled = 1
-
 silent edit test-listings.tex
 
 if empty($INMAKE) | finish | endif
