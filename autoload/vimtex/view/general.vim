@@ -8,7 +8,10 @@ function! vimtex#view#general#new() abort " {{{1
   " Check if the viewer is executable
   " * split to ensure that we handle stuff like "gio open"
   let l:exe = get(split(g:vimtex_view_general_viewer), 0, '')
-  if empty(l:exe) || !executable(l:exe)
+  if empty(l:exe)
+        \ || (!executable(l:exe)
+        \     && !(vimtex#util#get_os() ==# 'win'
+        \          && g:vimtex_view_general_viewer ==# 'start'))
     call vimtex#log#warning(
           \ 'Selected viewer is not executable!',
           \ '- Selection: ' . g:vimtex_view_general_viewer,
