@@ -20,9 +20,9 @@ function! vimtex#syntax#p#cleveref#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_opt('texCRefOpt', {'next': 'texRefArg', 'opts': 'oneline'})
 
   highlight def link texCRefArg      texRefArg
-  highlight def link texCRefOpt      texOpt
+  highlight def link texCRefOpt      texRefOpt
   highlight def link texCRefRangeArg texRefArg
-  highlight def link texCmdCRef      texCmd
+  highlight def link texCmdCRef      texCmdRef
 endfunction
 
 " }}}1
