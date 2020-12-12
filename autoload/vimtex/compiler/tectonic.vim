@@ -123,8 +123,8 @@ function! s:compiler.clean(...) abort dict " {{{1
     call extend(l:files, ['pdf'])
   endif
 
-  let l:basename = self.build_dir . '/' . fnamemodify(self.target_path, ':t:r:S')
-  call map(l:files, 'l:basename . "." . v:val')
+  call map(l:files, {_, x -> printf('%s/%s.%s',
+        \ self.build_dir, fnamemodify(self.target_path, ':t:r:S'), x)})
   call vimtex#process#run('rm -f ' . join(l:files))
   call vimtex#log#info('Compiler clean finished')
 endfunction
