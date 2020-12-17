@@ -3938,7 +3938,8 @@ Table 3: A list of math mode groups.~
   texCmdMath               texCmd         \ENSUREMATH
   texMathDelim             Type           \LVERT
   texMathDelimMod          texMathDelim   \LEFT\lvert \RIGHT\rvert
-  texMathOper              Operator       Basic operators: =; _; ^
+  texMathOper              Operator       Basic operators: +-=/
+  texMathSuperSub          texMathOper    Sub and super operators (^, _)
   texMathError             texError       Unmatched region endings
 
 Table 4: A list of other important groups.~

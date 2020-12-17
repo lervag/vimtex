@@ -40,6 +40,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texMathDelimMod,
         \texMathGroup,
         \texMathOper,
+        \texMathSuperSub,
         \texMathSub,
         \texMathSuper,
         \texMathSymbol,
@@ -382,7 +383,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathError "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
 
   " Operators and similar
-  syntax match texMathOper "[_^/=+-]" contained
+  syntax match texMathOper "[/=+-]" contained
+  syntax match texMathSuperSub "[_^]" contained
 
   " Text Inside Math regions
   syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
@@ -542,6 +544,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathZoneXX         texMathZone
   highlight def link texMathSub            texMathZone
   highlight def link texMathSuper          texMathZone
+  highlight def link texMathSuperSub       texMathOper
   highlight def link texMathSymbol         texCmd
   highlight def link texNewcmdArgName      texArgNew
   highlight def link texNewcmdOpt          texOpt
@@ -681,12 +684,12 @@ function! s:match_math_sub_super() abort " {{{1
 
   for [l:from, l:to] in filter(copy(s:map_super),
         \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
-    execute 'syntax match texMathSuper "\^' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathOper'
+    execute 'syntax match texMathSuper "\^' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathSuperSub'
   endfor
 
   for [l:from, l:to] in filter(copy(s:map_sub),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/().]'})
-    execute 'syntax match texMathSub "_' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathOper'
+        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/()=.]'})
+    execute 'syntax match texMathSub "_' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathSuperSub'
   endfor
 endfunction
 
@@ -721,6 +724,7 @@ let s:map_sub = [
       \ [',',         '︐'],
       \ ['+',         '₊'],
       \ ['-',         '₋'],
+      \ ['=',         '₌'],
       \ ['\/',         'ˏ'],
       \ ['(',         '₍'],
       \ [')',         '₎'],
