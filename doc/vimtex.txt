@@ -279,6 +279,8 @@ Clientserver~
   To test whether a server was successfully started, |serverlist()| can be
   used. E.g. `:echo serverlist()`
 
+  Note: For |+clientserver| on neovim, see |vimtex-faq-neovim|.
+
 ------------------------------------------------------------------------------
 FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
 
