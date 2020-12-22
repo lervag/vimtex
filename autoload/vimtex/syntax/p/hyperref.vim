@@ -10,7 +10,7 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
   call vimtex#syntax#core#new_arg('texHrefArgLink', {
         \ 'next': 'texHrefArgText',
-        \ 'contains': 'texComment,@NoSpell',
+        \ 'contains': '@NoSpell',
         \})
   call vimtex#syntax#core#new_arg('texHrefArgText')
 
