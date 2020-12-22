@@ -10,9 +10,14 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
   call vimtex#syntax#core#new_arg('texHrefArgLink', {
         \ 'next': 'texHrefArgText',
-        \ 'contains': '@NoSpell',
+        \ 'contains': 'texHrefLinkGroup,@NoSpell',
         \})
   call vimtex#syntax#core#new_arg('texHrefArgText')
+
+  " To match possibly nested groups of {}s in an url string
+  syntax region texHrefLinkGroup
+        \ start="{" end="}"
+        \ contained contains=texHrefLinkGroup
 
   syntax match texCmdHyperref "\\url\>" nextgroup=texUrlArg skipwhite
   syntax region texUrlArg matchgroup=texDelim
@@ -21,9 +26,10 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texUrlArg', {'contains': 'texComment,@NoSpell'})
 
 
-  highlight def link texCmdHyperref texCmd
-  highlight def link texHrefArgLink texOpt
-  highlight def link texUrlArg      texOpt
+  highlight def link texCmdHyperref   texCmd
+  highlight def link texHrefArgLink   texOpt
+  highlight def link texUrlArg        texOpt
+  highlight def link texHrefLinkGroup texHrefArgLink
 endfunction
 
 " }}}1
