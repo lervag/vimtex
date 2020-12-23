@@ -41,8 +41,6 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texMathGroup,
         \texMathOper,
         \texMathSuperSub,
-        \texMathSub,
-        \texMathSuper,
         \texMathSymbol,
         \texSpecialChar,
         \texTabularChar,
@@ -684,18 +682,49 @@ endfunction
 function! s:match_math_sub_super() abort " {{{1
   if !g:vimtex_syntax_conceal.math_super_sub | return | endif
 
-  for [l:from, l:to] in filter(copy(s:map_super),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9a-zA-W.,:;+-<>/()=]'})
-    execute 'syntax match texMathSuper "\^' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathSuperSub'
+  execute 'syntax match texMathSuperSub'
+        \ '"\^\%(' . s:re_super . '\)"'
+        \ 'conceal contained contains=texMathSuper'
+  execute 'syntax match texMathSuperSub'
+        \ '"\^{\%(' . s:re_super . '\|\s\)\+}"'
+        \ 'conceal contained contains=texMathSuper'
+  for [l:from, l:to] in s:map_super
+    execute 'syntax match texMathSuper'
+          \ '"' . l:from . '"'
+          \ 'contained conceal cchar=' . l:to
   endfor
 
-  for [l:from, l:to] in filter(copy(s:map_sub),
-        \ {_, x -> x[0][0] ==# '\' || x[0] =~# '[0-9aehijklmnoprstuvx,+-/()=.]'})
-    execute 'syntax match texMathSub "_' . l:from . '" contained conceal cchar=' . l:to 'contains=texMathSuperSub'
+  execute 'syntax match texMathSuperSub'
+        \ '"_\%(' . s:re_sub . '\)"'
+        \ 'conceal contained contains=texMathSub'
+  execute 'syntax match texMathSuperSub'
+        \ '"_{\%(' . s:re_sub . '\|\s\)\+}"'
+        \ 'conceal contained contains=texMathSub'
+  for [l:from, l:to] in copy(s:map_sub)
+    execute 'syntax match texMathSub'
+          \ '"' . l:from . '"'
+          \ 'contained conceal cchar=' . l:to
   endfor
 endfunction
 
+let s:re_sub =
+      \ '[-+=()0-9aehijklmnoprstuvx]\|\\\%('
+      \ . join([
+      \     'beta', 'delta', 'phi', 'gamma', 'chi'
+      \ ], '\|') . '\)\>'
+let s:re_super = '[-+=()<>:;0-9a-pr-zABDEG-PRTUVW]'
+
 let s:map_sub = [
+      \ ['\\beta\>',  'ᵦ'],
+      \ ['\\delta\>', 'ᵨ'],
+      \ ['\\phi\>',   'ᵩ'],
+      \ ['\\gamma\>', 'ᵧ'],
+      \ ['\\chi\>',   'ᵪ'],
+      \ ['(',         '₍'],
+      \ [')',         '₎'],
+      \ ['+',         '₊'],
+      \ ['-',         '₋'],
+      \ ['=',         '₌'],
       \ ['0',         '₀'],
       \ ['1',         '₁'],
       \ ['2',         '₂'],
@@ -723,25 +752,18 @@ let s:map_sub = [
       \ ['u',         'ᵤ'],
       \ ['v',         'ᵥ'],
       \ ['x',         'ₓ'],
-      \ [',',         '︐'],
-      \ ['+',         '₊'],
-      \ ['-',         '₋'],
-      \ ['=',         '₌'],
-      \ ['\/',         'ˏ'],
-      \ ['(',         '₍'],
-      \ [')',         '₎'],
-      \ ['\.',        '‸'],
-      \ ['r',         'ᵣ'],
-      \ ['v',         'ᵥ'],
-      \ ['x',         'ₓ'],
-      \ ['\\beta\>',  'ᵦ'],
-      \ ['\\delta\>', 'ᵨ'],
-      \ ['\\phi\>',   'ᵩ'],
-      \ ['\\gamma\>', 'ᵧ'],
-      \ ['\\chi\>',   'ᵪ'],
       \]
 
 let s:map_super = [
+      \ ['(',  '⁽'],
+      \ [')',  '⁾'],
+      \ ['+',  '⁺'],
+      \ ['-',  '⁻'],
+      \ ['=',  '⁼'],
+      \ [':',  '︓'],
+      \ [';',  '︔'],
+      \ ['<',  '˂'],
+      \ ['>',  '˃'],
       \ ['0',  '⁰'],
       \ ['1',  '¹'],
       \ ['2',  '²'],
@@ -796,18 +818,6 @@ let s:map_super = [
       \ ['U',  'ᵁ'],
       \ ['V',  'ⱽ'],
       \ ['W',  'ᵂ'],
-      \ [',',  '︐'],
-      \ [':',  '︓'],
-      \ [';',  '︔'],
-      \ ['+',  '⁺'],
-      \ ['-',  '⁻'],
-      \ ['<',  '˂'],
-      \ ['>',  '˃'],
-      \ ['\/',  'ˊ'],
-      \ ['(',  '⁽'],
-      \ [')',  '⁾'],
-      \ ['\.', '˙'],
-      \ ['=',  '˭'],
       \]
 
 " }}}1
