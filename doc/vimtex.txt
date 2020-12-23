@@ -4438,7 +4438,9 @@ Configuration of the wrapper is controlled by the Vim dictionary
 `jar` key to the path of the executable jar file `textidote.jar`. Please note
 that if one installs `textidote` with a package manager e.g. in some common
 Linux distributions, the `.jar` file might be missing. If so, it should be
-possible to download it manually from [1].
+possible to download it manually from [1]. However, before one does that, it
+can be smart to check the top lines of the installed executable, as it may be
+a simple Bash script wrapper.
 
 [1]: https://sylvainhalle.github.io/textidote/
 
