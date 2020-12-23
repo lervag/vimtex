@@ -300,6 +300,7 @@ function! vimtex#options#init() abort " {{{1
         \ }
         \})
   call s:init_option('vimtex_syntax_nospell_commands', [])
+  call s:init_option('vimtex_syntax_nospell_comments', 0)
   call s:init_option('vimtex_syntax_packages', {
         \ 'amsmath': {'load': 2},
         \ 'babel': {'conceal': g:vimtex_syntax_conceal_default},

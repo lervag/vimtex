@@ -2084,6 +2084,11 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: []
 
+*g:vimtex_syntax_nospell_comments*
+  Set to 1 to disable spell checking in comments.
+
+  Default value: 0
+
 *g:vimtex_syntax_packages*
   A dictionary for package specific syntax configuration. Each key represent
   a single package and the values are themselves configuration dictionaries.

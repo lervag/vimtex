@@ -61,6 +61,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   if expand('%:e') ==# 'dtx'
     syntax match texComment "\^\^A.*$"
     syntax match texComment "^%\+"
+  elseif g:vimtex_syntax_nospell_comments
+    syntax match texComment "%.*$" contains=@NoSpell
   else
     syntax match texComment "%.*$" contains=@Spell
   endif
