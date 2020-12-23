@@ -4,6 +4,23 @@ let current_compiler = 'textidote'
 let s:cpo_save = &cpo
 set cpo&vim
 
+function! s:get_textidote_lang(lang) " {{{1
+  " Match specific language(s)
+  if a:lang ==# 'en_gb'
+    return 'en_UK'
+  endif
+
+  " Convert normal lang strings to textidote format
+  let l:matched = matchlist(a:lang, '^\v(\a\a)%(_(\a\a))?')
+  let l:string = l:matched[1]
+  if !empty(l:matched[2])
+    let l:string .= toupper(l:matched[2])
+  endif
+  return l:string
+endfunction
+
+" }}}1
+
 let s:cfg = g:vimtex_grammar_textidote
 
 if empty(s:cfg.jar) || !filereadable(fnamemodify(s:cfg.jar, ':p'))
@@ -32,18 +49,3 @@ silent CompilerSet errorformat
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-function! s:get_textidote_lang(lang)
-  " Match specific language(s)
-  if a:lang ==# 'en_gb'
-    return 'en_UK'
-  endif
-
-  " Convert normal lang strings to textidote format
-  let l:matched = matchlist(a:lang, '^\v(\a\a)%(_(\a\a))?')
-  let l:string = l:matched[1]
-  if !empty(l:matched[2])
-    let l:string .= toupper(l:matched[2])
-  endif
-  return l:string
-endfunction
