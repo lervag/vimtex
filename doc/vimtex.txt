@@ -91,6 +91,7 @@ CONTENTS                                                      *vimtex-contents*
   Context menu                                  |vimtex-context-menu|
     Citation context                            |vimtex-context-citation|
   Code structure                                |vimtex-code|
+    API                                         |vimtex-code-api|
   FAQ                                           |vimtex-faq|
   Troubleshooting                               |vimtex-troubleshooting|
   Credits                                       |vimtex-credits|
@@ -4679,6 +4680,18 @@ argument.
 The command |VimtexInfo| (mapped to <localleader>li by default) will show the
 (relevant) contents of the local state, as well as some auxiliary information
 that may be useful for debugging purposes.
+
+------------------------------------------------------------------------------
+API REFERENCE                                                 *vimtex-code-api*
+
+This is an API reference of the most useful vimtex functions available to
+users for customization.
+
+Note: This API is currently a work in progress!
+
+*vimtex#compiler#is_running()*
+  Function returns 0 if a compiler is not running, 1 if it is running, or -1
+  if the compiler backend is not available (e.g. for non Vimtex buffers).
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*

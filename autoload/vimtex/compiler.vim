@@ -290,12 +290,19 @@ function! vimtex#compiler#status(detailed) abort " {{{1
       call vimtex#log#info('Compiler is running', l:running)
     endif
   else
-    if b:vimtex.compiler.is_running()
+    if vimtex#compiler#is_running() > 0
       call vimtex#log#info('Compiler is running')
     else
       call vimtex#log#warning('Compiler is not running!')
     endif
   endif
+endfunction
+
+" }}}1
+function! vimtex#compiler#is_running() abort " {{{1
+  return exists('b:vimtex.compiler')
+        \ ? b:vimtex.compiler.is_running()
+        \ : -1
 endfunction
 
 " }}}1
