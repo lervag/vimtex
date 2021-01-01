@@ -1711,7 +1711,7 @@ OPTIONS                                                        *vimtex-options*
   The list of mappings to generate on start up. The list of activated mappings
   can be viewed with |VimtexImapsList|.
 
-  Default value: See `autoload/vimtex.vim` (it's a long list)
+  Default value: See `autoload/vimtex/options.vim` (it's a long list)
 
 *g:vimtex_include_indicators*
   Vimtex will recognize included files for a lot of different purposes. Most
