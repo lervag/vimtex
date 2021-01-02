@@ -7,27 +7,29 @@
 function! vimtex#ui#choose(container, ...) abort " {{{1
   if empty(a:container) | return '' | endif
 
-  if type(a:container) == v:t_dict
-    let l:choose_list = values(a:container)
-    let l:return_list = keys(a:container)
-  else
-    let l:choose_list = a:container
-    let l:return_list = a:container
-  endif
-
   let l:options = extend(
         \ {
-        \   'prompt': 'Please choose item:',
         \   'abort': v:true,
+        \   'prompt': 'Please choose item:',
+        \   'return': 'value',
         \ },
         \ a:0 > 0 ? a:1 : {})
 
-  let l:index = s:choose_from(l:choose_list, l:options)
-
-  sleep 50m
+  let [l:index, l:value] = s:choose_from(
+        \ type(a:container) == v:t_dict ? values(a:container) : a:container,
+        \ l:options)
+  sleep 75m
   redraw!
 
-  return l:index < 0 ? '' : l:return_list[l:index]
+  if l:options.return ==# 'value'
+    return l:value
+  endif
+
+  if type(a:container) == v:t_dict
+    return l:index >= 0 ? keys(a:container)[l:index] : ''
+  endif
+
+  return l:index
 endfunction
 
 " }}}1
@@ -77,15 +79,14 @@ function! s:choose_from(list, options) abort " {{{1
   for l:x in a:list
     let l:i += 1
     call add(l:menu, [
-          \ ['VimtexWarning', printf(l:format, l:i)],
-          \ ': ',
+          \ ['VimtexWarning', printf(l:format, l:i) . ': '],
           \ type(l:x) == v:t_dict ? l:x.name : l:x
           \])
   endfor
   if a:options.abort
     call add(l:menu, [
-          \ ['VimtexWarning', repeat(' ', l:digits - 1) . 'x'],
-          \ ': Abort'
+          \ ['VimtexWarning', repeat(' ', l:digits - 1) . 'x: '],
+          \ 'Abort'
           \])
   endif
 
@@ -101,11 +102,11 @@ function! s:choose_from(list, options) abort " {{{1
     try
       let l:choice = s:get_number(l:length, l:digits, a:options.abort)
       if a:options.abort && l:choice == -2
-        return -1
+        return [-1, '']
       endif
 
       if l:choice >= 0 && l:choice < len(a:list)
-        return l:choice
+        return [l:choice, a:list[l:choice]]
       endif
     endtry
   endwhile
