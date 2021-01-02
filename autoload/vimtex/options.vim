@@ -142,6 +142,7 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_imaps_enabled', 1)
   call s:init_option('vimtex_imaps_disabled', [])
+  call s:init_option('vimtex_imaps_leader', '`')
   call s:init_option('vimtex_imaps_list', [
         \ { 'lhs' : '0',  'rhs' : '\emptyset' },
         \ { 'lhs' : '6',  'rhs' : '\partial' },
@@ -214,6 +215,9 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : 'c',  'rhs' : 'vimtex#imaps#style_math("mathcal")', 'expr' : 1, 'leader' : '#'},
         \ { 'lhs' : '-',  'rhs' : 'vimtex#imaps#style_math("overline")', 'expr' : 1, 'leader' : '#'},
         \ { 'lhs' : 'B',  'rhs' : 'vimtex#imaps#style_math("mathbb")', 'expr' : 1, 'leader' : '#'},
+        \ { 'lhs' : g:vimtex_imaps_leader,
+        \   'rhs' : repeat(g:vimtex_imaps_leader, 2),
+        \   'wrapper' : 'vimtex#imaps#wrap_trivial'},
         \])
 
   call s:init_option('vimtex_indent_enabled', 1)
