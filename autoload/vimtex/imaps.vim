@@ -48,7 +48,7 @@ function! vimtex#imaps#list() abort " {{{1
 
   for l:map in l:maps
     call append('$', printf('%5S  ->  %-30S %S',
-          \ get(l:map, 'leader', get(g:, 'vimtex_imaps_leader', '`')) . l:map.lhs,
+          \ get(l:map, 'leader', g:vimtex_imaps_leader) . l:map.lhs,
           \ l:map.rhs,
           \ get(l:map, 'wrapper', 'vimtex#imaps#wrap_math')))
   endfor
@@ -86,7 +86,7 @@ function! s:create_map(map) abort " {{{1
   if index(b:vimtex_imaps, a:map) >= 0 | return | endif
   let l:map = deepcopy(a:map)
 
-  let l:leader = get(l:map, 'leader', get(g:, 'vimtex_imaps_leader', '`'))
+  let l:leader = get(l:map, 'leader', g:vimtex_imaps_leader)
   if l:leader !=# '' && !hasmapto(l:leader, 'i')
     silent execute 'inoremap <silent><buffer><nowait>' l:leader . l:leader l:leader
   endif
