@@ -30,7 +30,7 @@ setfiletype tex
 " Test ;b -> \beta
 call vimtex#test#keys('$i;b;;',
       \['$2+2 = $'],
-      \['$2+2 = \beta;$'])
+      \['$2+2 = \beta;;$'])
 
 " Test #bv -> \mathbf{v}
 call vimtex#test#keys('$i#bv',
@@ -45,7 +45,7 @@ call vimtex#test#keys('$a#bv',
 " Test ;; -> ; (leader escape)
 call vimtex#test#keys('$i;;',
       \['$;; = $'],
-      \['$;; = ;$'])
+      \['$;; = ;;$'])
 
 " Test ;a -> ;a (disabled imap)
 call vimtex#test#keys('$i;a',
