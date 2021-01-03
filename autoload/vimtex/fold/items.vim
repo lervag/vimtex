@@ -54,7 +54,7 @@ function! s:folder.level(line, lnum) dict abort " {{{1
     endif
   elseif self.state[-1].folded && l:next =~# self.re.end
     let self.state[-1].folded = v:false
-    return 's1'
+    return l:env_val is# 's1' ? 's2' : 's1'
   endif
 endfunction
 

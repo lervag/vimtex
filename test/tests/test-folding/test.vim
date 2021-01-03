@@ -54,7 +54,9 @@ call vimtex#test#assert_equal(5, foldlevel(179))
 call vimtex#test#assert_equal(4, foldlevel(184))
 call vimtex#test#assert_equal(3, foldlevel(186))
 call vimtex#test#assert_equal(1, foldlevel(190))
-call vimtex#test#assert_equal(1, foldlevel(199))
+call vimtex#test#assert_equal(2, foldlevel(202))
+
+call vimtex#test#assert_equal(1, foldlevel(line('$')-1))
 
 quit!
 
