@@ -1132,6 +1132,9 @@ OPTIONS                                                        *vimtex-options*
     If the key is set to an empty string, then the `menu` entry is not added
     to the completion canidates.
 
+    Note: If you change this option, you should also clear the related cache
+    files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
+
   abbr_fmt~
     Default value: `''`
     The format used for the `abbr` entry for bib completion candidates. See
