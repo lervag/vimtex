@@ -716,7 +716,7 @@ let s:re_super = '[-+=()<>:;0-9a-pr-zABDEG-PRTUVW]'
 
 let s:map_sub = [
       \ ['\\beta\>',  'ᵦ'],
-      \ ['\\delta\>', 'ᵨ'],
+      \ ['\\rho\>', 'ᵨ'],
       \ ['\\phi\>',   'ᵩ'],
       \ ['\\gamma\>', 'ᵧ'],
       \ ['\\chi\>',   'ᵪ'],
