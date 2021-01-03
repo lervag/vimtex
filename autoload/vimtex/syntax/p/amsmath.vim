@@ -39,8 +39,17 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody')
 
+  " Conceal the command and delims of "\operatorname{ ... }"
+  if g:vimtex_syntax_conceal.math_delimiters
+    syntax region texMathConcealedArg contained matchgroup=texMathCmd
+          \ start="\\operatorname\*\?\s*{" end="}"
+          \ concealends
+    syntax cluster texClusterMath add=texMathConcealedArg
+  endif
+
   highlight link texCmdDeclmathoper     texCmdNew
   highlight link texDeclmathoperArgName texArgNew
+  highlight link texMathConcealedArg    texMathTextArg
 endfunction
 
 " }}}1
