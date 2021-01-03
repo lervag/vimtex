@@ -70,7 +70,7 @@ endfunction
 function! s:choose_from(list, options) abort " {{{1
   let l:length = len(a:list)
   let l:digits = len(l:length)
-  if l:length == 1 | return a:list[0] | endif
+  if l:length == 1 | return [0, a:list[0]] | endif
 
   " Create the menu
   let l:menu = []
