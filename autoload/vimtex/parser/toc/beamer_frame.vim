@@ -17,7 +17,7 @@ let s:matcher = {
       \}
 function! s:matcher.get_entry(context) abort dict " {{{1
   let l:title = vimtex#util#trim(
-        \ matchstr(a:context.line, self.re . '\s*{\zs.*\ze}\s*$'))
+        \ matchstr(a:context.line, self.re . '\%(\[[^]]\+\]\)\?{\zs.*\ze}\s*$'))
 
   return {
         \ 'title'  : 'Frame' . (empty(l:title) ? '' : ': ' . l:title),
