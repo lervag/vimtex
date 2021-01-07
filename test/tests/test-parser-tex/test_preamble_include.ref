@@ -1,0 +1,3 @@
+\documentclass{minimal}
+\newcommand{\test}{...}
+
