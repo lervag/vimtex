@@ -138,6 +138,7 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
   let l:file.tex = l:file.root . '/' . l:file.base . '.tex'
   let l:file.pdf = l:file.root . '/' . l:file.base . '.pdf'
   let l:file.log = l:file.root . '/' . l:file.base . '.log'
+  let l:file.base .= '.tex'
   call writefile(l:lines, l:file.tex)
 
   return l:file
