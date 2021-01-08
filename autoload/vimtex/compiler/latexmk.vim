@@ -434,6 +434,18 @@ function! s:compiler.stop() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.wait() abort dict " {{{1
+  for l:dummy in range(50)
+    sleep 100m
+    if !self.is_running()
+      return
+    endif
+  endfor
+
+  call self.stop()
+endfunction
+
+" }}}1
 
 let s:compiler_jobs = {}
 function! s:compiler_jobs.exec() abort dict " {{{1

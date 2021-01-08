@@ -144,22 +144,21 @@ endfunction
 
 " }}}1
 function! s:compiler.stop() abort dict " {{{1
-  " Pass
+  if self.is_running()
+    call self.kill()
+  endif
 endfunction
 
 " }}}1
-function! s:compiler.is_running() abort dict " {{{1
-  return 0
-endfunction
+function! s:compiler.wait() abort dict " {{{1
+  for l:dummy in range(50)
+    sleep 100m
+    if !self.is_running()
+      return
+    endif
+  endfor
 
-" }}}1
-function! s:compiler.kill() abort dict " {{{1
-  " Pass
-endfunction
-
-" }}}1
-function! s:compiler.get_pid() abort dict " {{{1
-  return 0
+  call self.stop()
 endfunction
 
 " }}}1
@@ -186,6 +185,22 @@ function! s:compiler_jobs.exec() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler_jobs.kill() abort dict " {{{1
+  call job_stop(self.job)
+endfunction
+
+" }}}1
+function! s:compiler_jobs.is_running() abort dict " {{{1
+  return has_key(self, 'job') && job_status(self.job) ==# 'run'
+endfunction
+
+" }}}1
+function! s:compiler_jobs.get_pid() abort dict " {{{1
+  return has_key(self, 'job')
+        \ ? get(job_info(self.job), 'process') : 0
+endfunction
+
+" }}}1
 function! s:callback(ch, msg) abort " {{{1
   call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
 endfunction
@@ -209,6 +224,30 @@ function! s:compiler_nvim.exec() abort dict " {{{1
         \}
 
   let self.job = jobstart(l:cmd, l:shell)
+endfunction
+
+" }}}1
+function! s:compiler_nvim.kill() abort dict " {{{1
+  call jobstop(self.job)
+endfunction
+
+" }}}1
+function! s:compiler_nvim.is_running() abort dict " {{{1
+  try
+    let pid = jobpid(self.job)
+    return 1
+  catch
+    return 0
+  endtry
+endfunction
+
+" }}}1
+function! s:compiler_nvim.get_pid() abort dict " {{{1
+  try
+    return jobpid(self.job)
+  catch
+    return 0
+  endtry
 endfunction
 
 " }}}1
