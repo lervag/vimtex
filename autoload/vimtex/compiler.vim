@@ -125,16 +125,16 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
         \ 'root' : l:file.root,
         \ 'target' : l:file.base,
         \ 'target_path' : l:file.tex,
-        \ 'backend' : 'process',
         \ 'tex_program' : b:vimtex.tex_program,
-        \ 'background' : 1,
         \ 'continuous' : 0,
         \ 'callback' : 0,
         \}
   let l:compiler = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
 
+  call vimtex#log#info('Compiling selected lines ...')
   call vimtex#log#toggle_verbose()
   call l:compiler.start()
+  call l:compiler.wait()
 
   " Check if successful
   if vimtex#qf#inquire(l:file.base)

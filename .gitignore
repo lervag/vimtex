@@ -3,3 +3,4 @@ doc/tags
 test/test-compiler/latexrun
 test/test-syntax/syntax/
 test/test-textobj-targets/targets.vim/
+test/issues
