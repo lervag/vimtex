@@ -37,8 +37,8 @@ jobs:
       with:
         fetch-depth: 1
     - name: Test with neovim
-      run: cd test/tests && make -j1
+      run: cd test && make -j1
     - name: Test with vim
       env:
         MYVIM: vim -T dumb --not-a-term -n
-      run: cd test/tests && make -j1
+      run: cd test && make -j1
