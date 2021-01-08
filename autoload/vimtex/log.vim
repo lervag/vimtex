@@ -50,6 +50,17 @@ function! vimtex#log#toggle_verbose() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#log#set_silent() abort " {{{1
+  let s:logger.verbose_old = get(s:logger, 'verbose_old', s:logger.verbose)
+  let s:logger.verbose = 0
+endfunction
+
+" }}}1
+function! vimtex#log#set_silent_restore() abort " {{{1
+  let s:logger.verbose = get(s:logger, 'verbose_old', s:logger.verbose)
+endfunction
+
+" }}}1
 
 
 let s:logger = {
