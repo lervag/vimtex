@@ -1,0 +1,21 @@
+set nocompatible
+let &rtp = '../..,' . &rtp
+let &rtp .= ',../../after'
+filetype plugin indent on
+syntax enable
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_view_automatic = 0
+
+silent edit main.tex
+
+" Functions for profiling
+" call vimtex#profile#file('some_file')
+" call vimtex#profile#filter([
+"       \ 'FUNCTIONS SORTED ON SELF',
+"       \ 'FUNCTIONS SORTED ON TOTAL',
+"       \ 'FUNCTION  vimtex#fold#level',
+"       \])
+" call vimtex#profile#print()
+" call vimtex#profile#open()

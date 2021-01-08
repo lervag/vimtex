@@ -1,6 +1,5 @@
 doc/tags
 
-test/issues/*
-test/tests/test-compiler/latexrun
-test/tests/test-syntax/syntax/
-test/tests/test-textobj-targets/targets.vim/
+test/test-compiler/latexrun
+test/test-syntax/syntax/
+test/test-textobj-targets/targets.vim/

@@ -48,7 +48,7 @@ When submitting code for vimtex, please adhere to the following standards:
 ## Running tests
 
 New functionality should be accompanied by tests. Tests can be run from the
-`test/tests` folder with `make`. The tests currently only run on Linux, and the
+`test` folder with `make`. The tests currently only run on Linux, and the
 following utilities are required to run all the tests:
 
 - `wget`
