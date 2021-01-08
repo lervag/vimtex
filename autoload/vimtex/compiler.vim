@@ -111,8 +111,13 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#compile_selected(type) abort range " {{{1
-  let l:file = vimtex#parser#selection_to_texfile(
-        \ {'type':  a:type =~# 'line\|char\|block' ? 'operator' : a:type})
+  " Values of a:firstline and a:lastline are not available in nested function
+  " calls, so we must handle them here.
+  let l:opts = a:type ==# 'command'
+        \ ? {'type': 'range', 'range': [a:firstline, a:lastline]}
+        \ : {'type':  a:type =~# 'line\|char\|block' ? 'operator' : a:type}
+
+  let l:file = vimtex#parser#selection_to_texfile(l:opts)
   if empty(l:file) | return | endif
 
   " Create and initialize temporary compiler
