@@ -376,7 +376,7 @@ Manipulate surrounding commands/delimiters/environments~
   [2]: https://github.com/tpope/vim-repeat
   [3]: http://www.vim.org/scripts/script.php?script_id=3848
 
-Enhanced matching and higlighting of delimiters~
+Enhanced matching and highlighting of delimiters~
                                                 *vimtex-nf-enhanced-matchparen*
   Vimtex highlights and allows navigation between matching pairs of
   delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
