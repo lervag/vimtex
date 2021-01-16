@@ -555,7 +555,7 @@ TeX root directive~
 Subfiles package~
   Vimtex also supports the `import` [0] and the `subfiles` [1] packages that
   can be used to make it easier to work with multi-file projects. If one uses
-  the `subfiles` package, the |VimtexToggleMain| command is particularly
+  the `subfiles` package, the |:VimtexToggleMain| command is particularly
   useful. Also note the option |g:vimtex_subfile_start_local|, which can be
   used to automatically start in the local mode when opening a subfile
   document.
@@ -633,7 +633,7 @@ see |vimtex-tex-root|.
 The TeX program directive works by specifying the TeX compiler program in
 a comment in one of the first lines of the main project file. It is parsed
 during initialization, but if desired one may manually reload vimtex in order
-to reset the program during an editing session. See |VimtexReload| and
+to reset the program during an editing session. See |:VimtexReload| and
 |<plug>(vimtex-reload)| (by default mapped to `<localleader>lx`).
 
 The syntax is best explained with an example: >
@@ -672,7 +672,7 @@ The package list is determined in two ways: >
    slower and less accurate than `.fls` file parsing. Therefore, it is only
    done during vimtex initialization. If desired, one may manually reload
    vimtex to parse the preamble again during an editing session. See
-   |VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
+   |:VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
    `<localleader>lx`).
 
 ==============================================================================
@@ -1040,7 +1040,7 @@ OPTIONS                                                        *vimtex-options*
       errors/warnings in the quickfix list when compilations finish.
     - By default, `tectonic` cleans all auxiliary files (such as `.aux`,
       `.toc`, etc.). If you omit the `--keep-logs` (or similar) options that
-      specify to keep these files, |VimtexClean| and |<plug>(vimtex-clean)|
+      specify to keep these files, |:VimtexClean| and |<plug>(vimtex-clean)|
       won't delete anything (as there is nothing to delete).
 
 *g:vimtex_compiler_arara*
@@ -1402,7 +1402,7 @@ OPTIONS                                                        *vimtex-options*
   With this option enabled, Vimtex uses |fold-manual| as the main
   |foldmethod|.  It still uses the |foldexpr| function to compute the fold
   levels, but it only computes the fold levels on demand, see
-  |VimtexRefreshFolds| and |vimtex-zx|.
+  |:VimtexRefreshFolds| and |vimtex-zx|.
 
   The reasoning behind this option is that the |fold-expr| method of folding
   may sometimes be slow, e.g. for long lines and large files. |fold-manual| is
@@ -1712,7 +1712,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_imaps_list*
   The list of mappings to generate on start up. The list of activated mappings
-  can be viewed with |VimtexImapsList|.
+  can be viewed with |:VimtexImapsList|.
 
   Default value: See `autoload/vimtex/options.vim` (it's a long list)
 
@@ -1870,7 +1870,7 @@ OPTIONS                                                        *vimtex-options*
   message matches any of the regexes in this list, the message will not be
   printed to screen.
 
-  Note: All messages may still be viewed with |VimtexLog|.
+  Note: All messages may still be viewed with |:VimtexLog|.
 
   Default: []
 
@@ -2144,7 +2144,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
-  |VimtexCountWords| and |VimtexCountLetters|.
+  |:VimtexCountWords| and |:VimtexCountLetters|.
 
   Default value: ''
 
@@ -2580,7 +2580,7 @@ OPTIONS                                                        *vimtex-options*
       https://www.mupdf.com/
       A very minimalistic and quick PDF viewer.  Supports forward and backward
       search.  Backward search is available via xdotool (under Unix) with
-      |VimtexViewRSearch|, which is mapped to '<localleader>lr'.  One may also
+      |:VimtexViewRSearch|, which is mapped to '<localleader>lr'.  One may also
       define a set of keys that is sent to MuPDF on startup with
       |g:vimtex_view_mupdf_send_keys|.
 
@@ -2610,12 +2610,14 @@ OPTIONS                                                        *vimtex-options*
 
     *vimtex_viewer_zathura*
       https://pwmt.org/projects/zathura/
-      Zathura is like MuPDF a very fast and minimalistic viewer, but it allows
-      more user configuration.  Zathura supports forward search and backward
-      search.
+      Zathura is, like MuPDF, a very fast and minimalistic viewer, but it
+      allows more user configuration.  Zathura supports forward search and
+      backward search.  Zathura should be straightforward to install and use
+      on Linux with Xorg.  It should also work on OSX, but users may want to 
+      read |vimtex-faq-zathura-osx|.
 
       Note: Forward search requires `xdotool` to work properly, in order to
-            not open a new Zathura instance for invocation of |VimtexView|.
+            not open a new Zathura instance for invocation of |:VimtexView|.
 
       Note: vimtex attempts to pass the server name to zathura for use in
             reverse searches. neovim users should read |vimtex-faq-neovim|
@@ -2711,24 +2713,24 @@ OPTIONS                                                        *vimtex-options*
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
 
-                                             *VimtexContextMenu*
+                                             *:VimtexContextMenu*
                                              *<plug>(vimtex-context-menu)*
 :VimtexContextMenu        Show a context menu on the item below cursor. See
                           |vimtex-context-menu| for more information.
 
-                                             *VimtexInfo*
+                                             *:VimtexInfo*
                                              *<plug>(vimtex-info)*
 :VimtexInfo               Show information that is stored by vimtex about the
                           current LaTeX project (available mostly for debug
                           purposes).
 
-                                             *VimtexInfo!*
+                                             *:VimtexInfo!*
                                              *<plug>(vimtex-info-full)*
 :VimtexInfo!              Show information that is stored by vimtex about all
                           open LaTeX projects (available mostly for debug
                           purposes).
 
-                                             *VimtexDocPackage*
+                                             *:VimtexDocPackage*
                                              *<plug>(vimtex-doc-package)*
 :VimtexDocPackage         Show documentation for packages. The command takes
                           one optional argument, which is the name of the
@@ -2736,36 +2738,36 @@ COMMANDS                                                      *vimtex-commands*
                           supplied, it parses the command under the cursor and
                           opens the most relevant documentation.
 
-                                             *VimtexRefreshFolds*
+                                             *:VimtexRefreshFolds*
 :VimtexRefreshFolds       Refresh folds, see |vimtex-zx|.
 
-                                             *VimtexTocOpen*
+                                             *:VimtexTocOpen*
                                              *<plug>(vimtex-toc-open)*
 :VimtexTocOpen            Open table of contents.
 
-                                             *VimtexTocToggle*
+                                             *:VimtexTocToggle*
                                              *<plug>(vimtex-toc-toggle)*
 :VimtexTocToggle          Toggle table of contents.
 
-                                             *VimtexLog*
+                                             *:VimtexLog*
                                              *<plug>(vimtex-log)*
 :VimtexLog                Open a scratch buffer to show message log with
                           timestamps and traces from where the messages were
                           raised. To close the log buffer, one may press `q`
                           or `<esc>`.
 
-                                             *VimtexCompile*
+                                             *:VimtexCompile*
                                              *<plug>(vimtex-compile)*
 :VimtexCompile            If the compiler supports and is set to run in
                           continuous mode, then this command works as
                           a compiler toggle. If not, this command will run
                           a single shot compilation.
 
-                                             *VimtexCompileSS*
+                                             *:VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*
 :VimtexCompileSS          Start single shot compilation.
 
-                                             *VimtexCompileSelected*
+                                             *:VimtexCompileSelected*
                                              *<plug>(vimtex-compile-selected)*
 :VimtexCompileSelected    Compile the selected part of the current LaTeX file.
                           When used as a command, it takes a range, e.g.: >
@@ -2782,7 +2784,7 @@ COMMANDS                                                      *vimtex-commands*
                           The command compiles the selected text by copying it
                           to a temporary file with the same preamble as the
                           current file. It will be compiled similarly to
-                          a single shot compile (see |VimtexCompileSS|. If
+                          a single shot compile (see |:VimtexCompileSS|. If
                           there are errors, they will be shown in the quickfix
                           list.
 
@@ -2799,29 +2801,29 @@ COMMANDS                                                      *vimtex-commands*
                           `foo-vimtex-template.tex`. This will have a higher
                           priority than `vimtex-template.tex`.
 
-                                             *VimtexCompileOutput*
+                                             *:VimtexCompileOutput*
                                              *<plug>(vimtex-compile-output)*
 :VimtexCompileOutput      Open file where compiler output is redirected.
 
-                                             *VimtexStop*
+                                             *:VimtexStop*
                                              *<plug>(vimtex-stop)*
 :VimtexStop               Stop compilation for the current project.
 
-                                             *VimtexStopAll*
+                                             *:VimtexStopAll*
                                              *<plug>(vimtex-stop-all)*
 :VimtexStopAll            Stop compilation for all open projects in the
                           current vim instance.
 
-                                             *VimtexStatus*
+                                             *:VimtexStatus*
                                              *<plug>(vimtex-status)*
 :VimtexStatus             Show compilation status for current project.
 
-                                             *VimtexStatus!*
+                                             *:VimtexStatus!*
                                              *<plug>(vimtex-status-all)*
 :VimtexStatus!            Show compilation status for all open projects in the
                           current vim instance.
 
-                                             *VimtexClean*
+                                             *:VimtexClean*
                                              *<plug>(vimtex-clean)*
 :VimtexClean              Clean auxiliary files.
 
@@ -2831,36 +2833,36 @@ COMMANDS                                                      *vimtex-commands*
                                 compilation, then execute the clean command,
                                 and finally restart the compilation.
 
-                                             *VimtexClean!*
+                                             *:VimtexClean!*
                                              *<plug>(vimtex-clean-full)*
-:VimtexClean!             As |VimtexClean|, but also remove output files.
+:VimtexClean!             As |:VimtexClean|, but also remove output files.
 
-                                             *VimtexErrors*
+                                             *:VimtexErrors*
                                              *<plug>(vimtex-errors)*
 :VimtexErrors             Open |quickfix| window if there are errors or
                           warnings.
 
-                                             *VimtexView*
+                                             *:VimtexView*
                                              *<plug>(vimtex-view)*
 :VimtexView               View `pdf` for current project, perform forward
                           search if available.
 
-                                             *VimtexViewRSearch*
+                                             *:VimtexViewRSearch*
                                              *<plug>(vimtex-reverse-search)*
 :VimtexViewRSearch        Do reverse search (only available for MuPDF viewer),
                           see also |vimtex_viewer_mupdf|.
 
-                                             *VimtexReload*
+                                             *:VimtexReload*
                                              *<plug>(vimtex-reload)*
 :VimtexReload             Reload Vimtex scripts. This is primarely useful
                           when developing and debugging Vimtex itself.
 
-                                             *VimtexReloadState*
+                                             *:VimtexReloadState*
                                              *<plug>(vimtex-reload-state)*
 :VimtexReloadState        Reload the state for the current buffer.
 
-                                             *VimtexCountLetters*
-                                             *VimtexCountWords*
+                                             *:VimtexCountLetters*
+                                             *:VimtexCountWords*
                                              *vimtex#misc#wordcount(opts)*
 :VimtexCountLetters       Shows the number of letters/characters or words in
 :VimtexCountWords         the current project or in the selected region. The
@@ -2886,29 +2888,29 @@ COMMANDS                                                      *vimtex-commands*
                                 e.g. statusline functions. If the `opts` dict
                                 is not passed, then the defaults are assumed.
 
-                                             *VimtexCountLetters!*
-                                             *VimtexCountWords!*
-:VimtexCountLetters!      Similar to |VimtexCountLetters|/|VimtexCountWords|, but
+                                             *:VimtexCountLetters!*
+                                             *:VimtexCountWords!*
+:VimtexCountLetters!      Similar to |:VimtexCountLetters|/|:VimtexCountWords|, but
 :VimtexCountWords!        show separate reports for included files.  I.e.
                           presents the result of: >
 
                             texcount -nosub -sum [-letter] -inc FILE
 <
-                                             *VimtexImapsList*
+                                             *:VimtexImapsList*
                                              *<plug>(vimtex-imaps-list)*
 :VimtexImapsList          Show the list of insert mode mappings created by the
                           |vimtex-imaps| feature. The mappings are displayed
                           in a scratch buffer. Press `q` or `<esc>` to close
                           the buffer.
 
-                                             *VimtexToggleMain*
+                                             *:VimtexToggleMain*
                                              *<plug>(vimtex-toggle-main)*
 :VimtexToggleMain         In general, Vimtex detects the main file for the
                           current LaTeX project and uses it for compilation
                           and many other features. However, in some cases it
                           may be useful to instead focus on the current file,
                           for instance in large projects. In such cases, one
-                          can use |VimtexToggleMain| to change which file to
+                          can use |:VimtexToggleMain| to change which file to
                           use as the "current project". It is easy to toggle
                           back and forth, and both the "main project" and the
                           "local project" can be used simultaneously if
@@ -3117,7 +3119,7 @@ provides a list of such mappings that are enabled by default, see
 |g:vimtex_imaps_leader|. The default list of maps are all math mode mappings,
 but one may also add mappings that are available and useful outside of math
 mode. To see the list of mappings that are created, one can use the command
-|VimtexImapsList|, which is by default mapped to `<localleader>lm`.
+|:VimtexImapsList|, which is by default mapped to `<localleader>lm`.
 
 It is of course possible to customize the list of mappings. First, one may
 specifically disable the entire imaps feature with |g:vimtex_imaps_enabled| or
@@ -3236,7 +3238,7 @@ further customization.
     file or project.  For example, 'b:vimtex.tex' identifies the tex file being
     wiped, or the main tex file of a multi-file project.
 
-    Note: Commands such as |VimtexClean| cannot be used in this autocommand
+    Note: Commands such as |:VimtexClean| cannot be used in this autocommand
     because when quitting vim the current buffer does not necessarily have
     filetype 'tex'.
 
@@ -3266,7 +3268,7 @@ further customization.
 
   *VimtexEventView*
     This event is triggered after the viewer has opened/forward search has
-    been performed by the command |VimtexView| or the related mapping.
+    been performed by the command |:VimtexView| or the related mapping.
 
 Examples: >
 
@@ -4150,35 +4152,35 @@ backends:
 The interface is implemented in a general way, which makes it relatively easy
 to add new compilers.
 
-Compilation is started and stopped with |VimtexCompile| and |VimtexStop|.
-Although, |VimtexStop| stopping is only relevant for continuous compilations,
-and in this case, |VimtexCompile| itself works as a toggle.  Single shot
-compilation is always available through |VimtexCompileSS|.  The default
+Compilation is started and stopped with |:VimtexCompile| and |:VimtexStop|.
+Although, |:VimtexStop| stopping is only relevant for continuous compilations,
+and in this case, |:VimtexCompile| itself works as a toggle.  Single shot
+compilation is always available through |:VimtexCompileSS|.  The default
 mappings for these commands are listed here: |vimtex-default-mappings|.
 
 It is also possible to compile a selection of the file. To do this, one may
 either use the mapping, |<plug>(vimtex-compile-selected)|, or the command
-|VimtexCompileSelected|.
+|:VimtexCompileSelected|.
 
 The compilers should respect the TeX program directive as described here:
 |vimtex-tex-program|, except for |vimtex-arara|, which uses its own set of
 directives and rules.
 
 Associated commands:
-  |VimtexCompile|
-  |VimtexCompileSS|
-  |VimtexCompileSS!|
-  |VimtexCompileSelected|
-  |VimtexCompileOutput|
-  |VimtexStatus|
-  |VimtexStatus!|
-  |VimtexStop|
-  |VimtexStopAll|
-  |VimtexErrors|
-  |VimtexErrors|
-  |VimtexClean|
-  |VimtexClean!|
-  |VimtexErrors|
+  |:VimtexCompile|
+  |:VimtexCompileSS|
+  |:VimtexCompileSS!|
+  |:VimtexCompileSelected|
+  |:VimtexCompileOutput|
+  |:VimtexStatus|
+  |:VimtexStatus!|
+  |:VimtexStop|
+  |:VimtexStopAll|
+  |:VimtexErrors|
+  |:VimtexErrors|
+  |:VimtexClean|
+  |:VimtexClean!|
+  |:VimtexErrors|
 
 Associated settings:
   |g:vimtex_compiler_enabled|
@@ -4281,7 +4283,7 @@ TECTONIC                                                      *vimtex-tectonic*
 downloading along with reproduceable builds and full Unicode and OpenType
 fonts support thanks to the power of XeTeX. It does not support continuous
 compilation, like |vimtex-latexmk| and so the only relevant commands are
-|VimtexCompile| to start (single shot) compilation, and |VimtexCompileOutput|
+|:VimtexCompile| to start (single shot) compilation, and |:VimtexCompileOutput|
 to see the compilation output. As for |vimtex-latexrun| and |vimtex-arara|,
 the viewer can be started automatically with |g:vimtex_view_automatic|.
 
@@ -4289,7 +4291,7 @@ the viewer can be started automatically with |g:vimtex_view_automatic|.
 However, Vimtex's backend invoke it with the flags `--keep-logs` and
 `--keep-synctex` which enables us to see the errors on the quickfix and it
 gives us synctex support. Therefor, by default, |<plug>(vimtex-clean)|
-and |VimtexClean| clean these files.
+and |:VimtexClean| clean these files.
 
 The compiler may be configured through the |g:vimtex_compiler_tectonic| option.
 
@@ -4305,8 +4307,8 @@ defined in the preamble of a LaTeX project. The user manual can be found here:
 https://ctan.uib.no/support/arara/doc/arara-manual.pdf
 
 `arara` does not do continuous compilation, and so the only relevant commands
-are |VimtexCompile| to start (single shot) compilation, and
-|VimtexCompileOutput| to see the compilation output. As for |vimtex-latexrun|
+are |:VimtexCompile| to start (single shot) compilation, and
+|:VimtexCompileOutput| to see the compilation output. As for |vimtex-latexrun|
 and |vimtex-tectonic|, the viewer can be started automatically with
 |g:vimtex_view_automatic|.
 
@@ -4491,11 +4493,11 @@ Note: Spell checking with `LanguageTool` is only enabled if a country code is
 ==============================================================================
 VIEW                                                              *vimtex-view*
 
-Vimtex provides the command |VimtexView| to open the desired viewer.  The
+Vimtex provides the command |:VimtexView| to open the desired viewer.  The
 command is mapped to '<localleader>lv' by default.  The list of supported
 viewers are given in the description of |g:vimtex_view_method|.
 
-For supported viewers, |VimtexView| will also perform forward search when the
+For supported viewers, |:VimtexView| will also perform forward search when the
 viewer is opened.
 
 Associated settings:
@@ -4538,7 +4540,7 @@ Note: For |neovim| users, one must use `neovim-remote` for backward search. See
 ------------------------------------------------------------------------------
 FORWARD SEARCH                                  *vimtex-synctex-forward-search*
 
-For supported viewers, |VimtexView| (<localleader>lv) will issue a forward
+For supported viewers, |:VimtexView| (<localleader>lv) will issue a forward
 search if the viewer is already opened.  The forward search will take you to
 the page or position in the viewer that corresponds to the current line in
 your vim session.  See |g:vimtex_view_method| for a list of supported viewers.
@@ -4570,7 +4572,7 @@ Note: For backward search to work on windows, one must ensure that the folder
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
 
-Vimtex provides the command |VimtexDocPackage| to open documentation for
+Vimtex provides the command |:VimtexDocPackage| to open documentation for
 packages and documentclasses. The command is mapped to `K` by default, and by
 default package documentation is looked up through http://texdoc.net/. This
 can be customized through |g:vimtex_doc_handlers|.
@@ -4626,7 +4628,7 @@ since it may be easily downloaded in various formats from [8].
 ==============================================================================
 CONTEXT MENU                                              *vimtex-context-menu*
 
-Vimtex provides the command |VimtexContextMenu| to open a context menu for
+Vimtex provides the command |:VimtexContextMenu| to open a context menu for
 the item below the cursor. The menu allows various actions relevant to the
 current context. It is mapped by default to `<cr>`.
 
@@ -4680,7 +4682,7 @@ different files if the project is a multi-file project (see
 with `vimtex#mymodule#init_state`, which takes the state object as a single
 argument.
 
-The command |VimtexInfo| (mapped to <localleader>li by default) will show the
+The command |:VimtexInfo| (mapped to <localleader>li by default) will show the
 (relevant) contents of the local state, as well as some auxiliary information
 that may be useful for debugging purposes.
 
@@ -4699,6 +4701,23 @@ Note: This API is currently a work in progress!
 ==============================================================================
 FAQ                                                                *vimtex-faq*
 
+This is a section of some frequently asked questions whose answers may be of
+help to users.
+
+Contents:
+* |vimtex-faq-slow-matchparen|
+* |vimtex-faq-skimviewer|
+* |vimtex-faq-surround|
+* |vimtex-faq-isfname|
+* |vimtex-faq-neovim|
+* |vimtex-faq-tags|
+* |vimtex-faq-tags-bibtex|
+* |vimtex-faq-texmfhome|
+* |vimtex-faq-windows|
+* |vimtex-faq-wsl|
+* |vimtex-faq-zathura-osx|
+
+------------------------------------------------------------------------------
                                                    *vimtex-faq-slow-matchparen*
 Q: Why is matching parens so slow?
 A: Because it is complicated and requires some expensive searches for matching
@@ -4710,6 +4729,7 @@ A: Because it is complicated and requires some expensive searches for matching
 
    [0]: https://github.com/andymass/vim-matchup
 
+------------------------------------------------------------------------------
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up vimtex with Skim?
 A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
@@ -4728,6 +4748,7 @@ A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
    Some related information may be found here:
    https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 
+------------------------------------------------------------------------------
                                                           *vimtex-faq-surround*
 Q: Vimtex provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
    |surround.vim|.  Does Vimtex also provide the corresponding `yse` and `ysc`?
@@ -4750,7 +4771,8 @@ A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
          https://github.com/machakann/vim-sandwich), which has built-in
          support for LaTeX-specific surroundings.
 
-                                                         *vimtex-faq-isfname*
+------------------------------------------------------------------------------
+                                                           *vimtex-faq-isfname*
 Q: Vim throws error when jumping to file with |gf|.
 A: This might be due to the |isfname| setting, which by default contains `{,}`
  on windows.  |isfname| is a global option, and can therefore not be set by
@@ -4758,6 +4780,7 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 
   set isfname-={,}
 <
+------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
 Q: Does Vimtex work with neovim?
 A: Yes, but backward sync requires the `neovim-remote` utility. It may be
@@ -4773,6 +4796,7 @@ A: Yes, but backward sync requires the `neovim-remote` utility. It may be
 
    See https://github.com/mhinz/neovim-remote for more information on `nvr`.
 
+------------------------------------------------------------------------------
                                                               *vimtex-faq-tags*
 Q: How can I jump from a `\ref{label}` to the corresponding label?
 A: This is not a feature provided by Vimtex itself, but vim has very good
@@ -4792,6 +4816,7 @@ A: This is not a feature provided by Vimtex itself, but vim has very good
    [1]: https://github.com/lervag/vimtex/issues/348
    [2]: https://github.com/ludovicchabant/vim-gutentags
 
+------------------------------------------------------------------------------
                                                        *vimtex-faq-tags-bibtex*
 Q: How can I jump from a `\cite{key}` to the corresponding bibtex entry?
 A: This is not a feature provided by Vimtex itself. Similar to
@@ -4809,6 +4834,7 @@ A: This is not a feature provided by Vimtex itself. Similar to
 
    [0]: https://github.com/lervag/vimtex/issues/564
 
+------------------------------------------------------------------------------
                                                          *vimtex-faq-texmfhome*
 Q: How can I change `TEXMFHOME`?
 A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `gvim`
@@ -4837,6 +4863,7 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
    [1]: http://zsh.sourceforge.net/Intro/intro_3.html
    [2]: http://askubuntu.com/a/356973/16395
 
+------------------------------------------------------------------------------
                                                            *vimtex-faq-windows*
 Q: Does vimtex support Windows?
 A: Yes and no.  I personally don't use Windows, and as such, it is difficult
@@ -4862,42 +4889,43 @@ A: Yes and no.  I personally don't use Windows, and as such, it is difficult
    [3]: https://www.rapidee.com/en/path-variable
    [4]: https://github.com/lervag/vimtex/issues/1507
 
-                                                          *vimtex-faq-wsl*
+------------------------------------------------------------------------------
+                                                               *vimtex-faq-wsl*
 Q: Does vimtex support WSL (Windows Subsystem for Linux)?
-
 A: For the moment, rudimentarily, as follows: To set up the viewer, install
-  mupdf [0] or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
-  [2]. In your vimrc, the lines
+   mupdf [0] or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
+   [2]. In your vimrc, the lines
 >
-  if has('win32') || (has('unix') && exists('$WSLENV'))
-    if executable('mupdf.exe')
-      let g:vimtex_view_general_viewer = 'mupdf.exe'
-    elseif executable('SumatraPDF.exe')
-      let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
-    endif
-  endif
+   if has('win32') || (has('unix') && exists('$WSLENV'))
+     if executable('mupdf.exe')
+       let g:vimtex_view_general_viewer = 'mupdf.exe'
+     elseif executable('SumatraPDF.exe')
+       let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
+     endif
+   endif
 <
-  make :VimtexView work under Windows, and also under WSL, provided that
-  at least Windows 10 version 1903 [3] of WSL is installed, the current work
-  dir and the compiled file is contained in the Linux home directory $HOME (as
-  opposed to %USERPROFILE% in Windows).
+   make |:VimtexView| work under Windows, and also under WSL, provided that at
+   least Windows 10 version 1903 [3] of WSL is installed, the current work dir
+   and the compiled file is contained in the Linux home directory $HOME (as
+   opposed to %USERPROFILE% in Windows).
 
-  However, client-server capabilities seem to be disabled (perhaps because WSL
-  does not have built-in support for X11) and therefore backward search
-  does not work. Neither does forward search work: While SumatraPDF opens fine
-  the PDF file in \\wsl$\<DistroName>\..., the forward search in SumatraPDF
-  itself does not find the corresponding source file in \\wsl$\<DistroName>\....
+   However, client-server capabilities seem to be disabled (perhaps because
+   WSL does not have built-in support for X11) and therefore backward search
+   does not work. Neither does forward search work: While SumatraPDF opens
+   fine the PDF file in \\wsl$\<DistroName>\..., the forward search in
+   SumatraPDF itself does not find the corresponding source file in
+   \\wsl$\<DistroName>\....
 
-  To set up a LaTeX distribution, while reusing that of Windows as proposed at
-  [4] seems efficient, in practice accessing files on mounted NTFS drives
-  from WSL is slow, even more so under WSL2 [5]. Therefore a full TeXLive
-  installation is recommended.
+   To set up a LaTeX distribution, while reusing that of Windows as proposed
+   at [4] seems efficient, in practice accessing files on mounted NTFS drives
+   from WSL is slow, even more so under WSL2 [5]. Therefore a full TeXLive
+   installation is recommended.
 
-  If only basic functionality is required, then a minimal TeXLive
-  installation, such as TinyTeX [6] or a minimal set of packages to compile
-  LaTeX as provided by your distribution, is an option, as discussed at [7].
-  For example, under openSUSE, it suffices to install the packages
-  texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended.
+   If only basic functionality is required, then a minimal TeXLive
+   installation, such as TinyTeX [6] or a minimal set of packages to compile
+   LaTeX as provided by your distribution, is an option, as discussed at [7].
+   For example, under openSUSE, it suffices to install the packages
+   texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended.
 
    [0]: https://chocolatey.org/packages/mupdf
    [1]: https://chocolatey.org/packages/sumatrapdf
@@ -4907,6 +4935,46 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    [5]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
    [6]: https://yihui.org/tinytex/
    [7]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
+
+------------------------------------------------------------------------------
+                                                       *vimtex-faq-zathura-osx*
+Q: Does Zathura+Vimtex work on OSX?
+A: Yes, it should work.  The following recipe has been reported to work [0].
+   The steps assume the user has installed and knows how to use Homebrew [1].
+
+   1. Zathura needs `dbus` to work properly. Install it with the following:
+      `brew install dbus`, or, if it is already installed, reinstall (this
+      seems necessary for some unknown reason): `brew reinstall dbus`
+
+   2. Add this to your `.bashrc` or `.zshrc` file (or similar): >
+
+      export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
+<
+   3. Changed the value of `<auth><\auth>` in
+      `/usr/local/opt/dbus/share/dbus-1/session.conf` from `EXTERNAL` to
+      `DBUS_COOKIE_SHA1`.
+
+   4. Run `brew services start dbus`
+
+   5. Now install Zathura: >
+
+      # unlink installed zathura and girara
+      brew unlink girara
+      brew unlink zathura
+
+      # install HEAD
+      brew install girara --HEAD
+      $ brew uninstall zathura-pdf-poppler
+      $ brew uninstall zathura
+      $ brew install zathura --HEAD --with-synctex
+      $ brew install zathura-pdf-poppler
+      $ mkdir -p $(brew --prefix zathura)/lib/zathura
+      $ ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
+<
+   6. Reboot and enjoy.
+
+   [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
+   [1]: https://brew.sh
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
@@ -5121,7 +5189,7 @@ Deprecated options:
   *g:vimtex_latexmk_options*
 
 Deprecated commands:
-  *VimtexCompileToggle* (use |VimtexCompile|)
+  *VimtexCompileToggle* (use |:VimtexCompile|)
 
 2017-03-28: Major refactoring of initialization~
 The initialization has been refactored in order to provide a more consistent
