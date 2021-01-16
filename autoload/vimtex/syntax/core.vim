@@ -4,6 +4,9 @@
 " Email:      karl.yngve@gmail.com
 "
 
+" This script has a lot of unicode characters (for conceals)
+scriptencoding utf-8
+
 function! vimtex#syntax#core#init() abort " {{{1
   syntax spell toplevel
 
