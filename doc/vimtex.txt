@@ -4956,22 +4956,19 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    4. Run `brew services start dbus`
 
-   5. Now install Zathura: >
+   5. Now install Zathura (most recean version, aka HEAD): >
 
-      # unlink installed zathura and girara
-      brew unlink girara
-      brew unlink zathura
-
-      # install HEAD
       brew install girara --HEAD
-      $ brew uninstall zathura-pdf-poppler
-      $ brew uninstall zathura
-      $ brew install zathura --HEAD --with-synctex
-      $ brew install zathura-pdf-poppler
-      $ mkdir -p $(brew --prefix zathura)/lib/zathura
-      $ ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
+      brew install zathura --HEAD --with-synctex
+      brew install zathura-pdf-poppler
+      mkdir -p $(brew --prefix zathura)/lib/zathura
+      ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
 <
    6. Reboot and enjoy.
+
+   Note: If you already had Zathura and girara installed and things don't
+         work, then first uninstall and unlink them and try to follow the
+         above steps from step 1.
 
    [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
    [1]: https://brew.sh
