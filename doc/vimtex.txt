@@ -4958,6 +4958,7 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    5. Now install Zathura (most recean version, aka HEAD): >
 
+      brew tap zegervdv/zathura 
       brew install girara --HEAD
       brew install zathura --HEAD --with-synctex
       brew install zathura-pdf-poppler
