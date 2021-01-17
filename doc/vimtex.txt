@@ -258,10 +258,10 @@ Clientserver~
   |+clientserver| is necessary for backward search from PDF viewer to Vim.
 
   A server will be started automatically if Vim is running on Windows, or if
-  running in a GUI.  If you use Vim under a terminal in Linux or OSX, a server
-  will not be started by default.  Since Vim version 8.0.475,
-  one can use |remote_startserver()| to start a server from your `vimrc` file.
-  The following will ensure Vim starts with a server, if it is possible from
+  running in a GUI.  If you use Vim under a terminal in Linux or macOS,
+  a server will not be started by default.  Since Vim version 8.0.475, one can
+  use |remote_startserver()| to start a server from your `vimrc` file. The
+  following will ensure Vim starts with a server, if it is possible from
   vimscript: >
 
     if empty(v:servername) && exists('*remote_startserver')
@@ -2613,8 +2613,8 @@ OPTIONS                                                        *vimtex-options*
       Zathura is, like MuPDF, a very fast and minimalistic viewer, but it
       allows more user configuration.  Zathura supports forward search and
       backward search.  Zathura should be straightforward to install and use
-      on Linux with Xorg.  It should also work on OSX, but users may want to 
-      read |vimtex-faq-zathura-osx|.
+      on Linux with Xorg.  It should also work on macOS, but users may want to
+      read |vimtex-faq-zathura-macos|.
 
       Note: Forward search requires `xdotool` to work properly, in order to
             not open a new Zathura instance for invocation of |:VimtexView|.
@@ -2656,7 +2656,7 @@ OPTIONS                                                        *vimtex-options*
 
   Default value:
     Linux:   `xdg-open`
-    Mac:     `open`
+    macOS:   `open`
     Windows: `SumatraPDF` or `mupdf` if available, else `start`
 
 *g:vimtex_view_general_options_latexmk*
@@ -4596,8 +4596,8 @@ found online at [2].
 ------------------------------------------------------------------------------
 OFFLINE                                               *vimtex-latexdoc-offline*
 
-One may use a more dedicated offline documentation system. On OSX, Dash [0] is
-a non-free but high-quality system. On Linux, one may use Zeal [1] or dasht
+One may use a more dedicated offline documentation system. On macOS, Dash [0]
+is a non-free but high-quality system. On Linux, one may use Zeal [1] or dasht
 [2], both of which access the Dash documentation sets. Zeal should also work
 well on Windows.
 
@@ -4715,7 +4715,7 @@ Contents:
 * |vimtex-faq-texmfhome|
 * |vimtex-faq-windows|
 * |vimtex-faq-wsl|
-* |vimtex-faq-zathura-osx|
+* |vimtex-faq-zathura-macos|
 
 ------------------------------------------------------------------------------
                                                    *vimtex-faq-slow-matchparen*
@@ -4937,8 +4937,8 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    [7]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
 
 ------------------------------------------------------------------------------
-                                                       *vimtex-faq-zathura-osx*
-Q: Does Zathura+Vimtex work on OSX?
+                                                     *vimtex-faq-zathura-macos*
+Q: Does Zathura+Vimtex work on macOS?
 A: Yes, it should work.  The following recipe has been reported to work [0].
    The steps assume the user has installed and knows how to use Homebrew [1].
 
