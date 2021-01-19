@@ -486,7 +486,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdEnv             texCmd
   highlight def link texCmdE3              texCmd
   highlight def link texCmdFootnote        texCmd
-  highlight def link texCmdGreek           texCmd
+  highlight def link texCmdGreek           texMathCmd
   highlight def link texCmdInput           texCmd
   highlight def link texCmdItem            texCmdEnv
   highlight def link texCmdLet             texCmdNew
