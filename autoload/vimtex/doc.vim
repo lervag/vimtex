@@ -62,24 +62,11 @@ function! s:packages_get_from_cursor() abort " {{{1
     return s:packages_from_usepackage(l:cmd)
   elseif l:cmd.name ==# '\documentclass'
     return s:packages_from_documentclass(l:cmd)
-  elseif l:cmd.name ==# '\begin'
-    return s:packages_from_environment(l:cmd)
-  elseif l:cmd.name ==# '\end'
+  elseif l:cmd.name =~# '\v\\%(begin|end)$'
     return s:packages_from_environment(l:cmd)
   else
     return s:packages_from_command(strpart(l:cmd.name, 1))
   endif
-endfunction
-
-" }}}1
-function! s:packages_from_environment(env) abort " {{{1
-  try
-    let l:env = a:env.args[0].text
-  catch
-    call vimtex#log#warning('Could not parse the environment name!')
-    return {}
-  endtry
-  return s:packages_from_command('\begin{' . l:env . '}')
 endfunction
 
 " }}}1
@@ -121,6 +108,18 @@ function! s:packages_from_documentclass(cmd) abort " {{{1
 endfunction
 
 " }}}1
+function! s:packages_from_environment(cmd) abort " {{{1
+  try
+    let l:env = a:cmd.args[0].text
+  catch
+    call vimtex#log#warning('Could not parse the environment name!')
+    return {}
+  endtry
+
+  return s:packages_from_command('\begin{' . l:env . '}')
+endfunction
+
+" }}}1
 function! s:packages_from_command(cmd) abort " {{{1
   let l:packages = [
         \ 'default',
@@ -144,9 +143,10 @@ function! s:packages_from_command(cmd) abort " {{{1
   endwhile
 
   let l:candidates = []
-  let l:filter = 'v:val =~# ''^' . escape(a:cmd, '\') . '\(\W\|$\)'''
   for l:package in l:packages
-    let l:cmds = filter(readfile(s:complete_dir . l:package), l:filter)
+    let l:cmds = filter(
+          \ readfile(s:complete_dir . l:package),
+          \ {_, x -> x ==# a:cmd})
     if empty(l:cmds) | continue | endif
 
     if l:package ==# 'default'
