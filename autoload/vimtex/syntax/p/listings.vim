@@ -10,7 +10,9 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
         \ {_, x -> matchstr(x, 'language=\zs\w\+')})
 
   " Match inline listings
-  syntax match texCmdVerb "\\lstinline\>" nextgroup=texVerbZoneInline
+  syntax match texCmdVerb "\\lstinline\>"
+        \ nextgroup=texVerbZoneInline,texLstZoneInline
+  call vimtex#syntax#core#new_arg('texLstZoneInline', {'contains': ''})
 
   " Match input file commands
   syntax match texCmd "\\lstinputlisting\>"
@@ -60,6 +62,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   highlight def link texLstsetGroup texOpt
   highlight def link texLstZone     texZone
   highlight def link texLstOpt      texOpt
+  highlight def link texLstZoneInline texVerbZoneInline
 endfunction
 
 " }}}1
