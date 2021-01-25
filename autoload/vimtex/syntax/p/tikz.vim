@@ -27,6 +27,7 @@ function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax match texTikzSemicolon ";"  contained
   syntax match texTikzDraw      "--" contained
   syntax match texTikzDraw      "|-" contained
+  syntax match texTikzDraw      "-|" contained
 
   syntax match texCmdTikz "\\node\>" contained nextgroup=texTikzNodeOpt skipwhite skipnl
   call vimtex#syntax#core#new_opt('texTikzNodeOpt', {'contains': '@texClusterTikzset'})
