@@ -3493,12 +3493,29 @@ description as it is specified on the project web page: >
   coc.source.vimtex.priority           priority of source, default 99
   coc.source.vimtex.shortcut           shortcut used in menu of completion item
 
-The README of `coc.nvim` suggests using `noremap K` to show documentation.
-This is also used by vimtex for the same purpose. To enable vimtex's mapping
-(since `coc.nvim` does not have a doc source) for .tex files, put the
-following in $HOME/.vim/after/ftplugin/tex.vim: >
+Note: The README of `coc.nvim` suggests using `noremap K` to show
+documentation. `K` is also used by Vimtex as one of the default maps (see
+|vimtex-default-mappings|) for the same purpose. To enable Vimtex's mapping
+for `.tex` files (since `coc.nvim` does not have a doc source), do one of the
+following:
 
-  map <buffer> K <Plug>(vimtex-doc-package)
+* Manually remap for `.tex` files: Put the following in your
+  `$HOME/.vim/after/ftplugin/tex.vim:` >
+
+    map <buffer> K <Plug>(vimtex-doc-package)
+
+* Use a custom function in your |vimrc| file, something like this: >
+
+    nnoremap <silent> K :call <sid>show_documentation()<cr>
+    function! s:show_documentation()
+      if index(['vim', 'help'], &filetype) >= 0
+        execute 'help ' . expand('<cword>')
+      elseif &filetype ==# 'tex'
+        VimtexDocPackage
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
 
 deoplete~
                                                      *vimtex-complete-deoplete*
