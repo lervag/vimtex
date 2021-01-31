@@ -3493,6 +3493,13 @@ description as it is specified on the project web page: >
   coc.source.vimtex.priority           priority of source, default 99
   coc.source.vimtex.shortcut           shortcut used in menu of completion item
 
+The README of `coc.nvim` suggests using `noremap K` to show documentation.
+This is also used by vimtex for the same purpose. To enable vimtex's mapping
+(since `coc.nvim` does not have a doc source) for .tex files, put the
+following in $HOME/.vim/after/ftplugin/tex.vim: >
+
+  map <buffer> K <Plug>(vimtex-doc-package)
+
 deoplete~
                                                      *vimtex-complete-deoplete*
 |deoplete| is a modern remake of |neocomplete|, and was originally written
