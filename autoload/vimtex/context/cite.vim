@@ -138,6 +138,7 @@ endfunction
 
 " }}}1
 function! s:actions.open_pdf() abort dict " {{{1
+  call map(self.pdfs, "expand(v:val)") " :h filereadable
   let l:readable = filter(self.pdfs, {_, x -> filereadable(x)})
   if empty(l:readable)
     call vimtex#log#warning('Could not open PDF file!')
