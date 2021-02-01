@@ -76,7 +76,7 @@ function! s:actions.create(entry) abort dict " {{{1
     let l:pdfs = filter(split(a:entry.file, ';'),
           \ {_, x -> fnamemodify(x, ':e') ==? 'pdf'})
     if !empty(l:pdfs)
-      let l:new.pdfs = l:pdfs
+      let l:new.pdfs = map(l:pdfs, {_, x -> expand(x)})
       call add(l:new.menu, {'name': 'Open PDF', 'func': 'open_pdf'})
     endif
   endif
@@ -138,7 +138,6 @@ endfunction
 
 " }}}1
 function! s:actions.open_pdf() abort dict " {{{1
-  call map(self.pdfs, "expand(v:val)") " :h filereadable
   let l:readable = filter(self.pdfs, {_, x -> filereadable(x)})
   if empty(l:readable)
     call vimtex#log#warning('Could not open PDF file!')
