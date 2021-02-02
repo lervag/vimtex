@@ -4718,6 +4718,11 @@ users for customization.
 
 Note: This API is currently a work in progress!
 
+*vimtex#syntax#in_mathzone(...)*
+  Returns 1 if the position is inside a math zone. If called without
+  arguments, the position refers to the cursor position. Else must be called
+  with two arguments: the line number and colun number.
+
 *vimtex#compiler#is_running()*
   Function returns 0 if a compiler is not running, 1 if it is running, or -1
   if the compiler backend is not available (e.g. for non Vimtex buffers).
