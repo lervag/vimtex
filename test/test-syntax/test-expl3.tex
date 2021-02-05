@@ -36,3 +36,12 @@
 \ExplSyntaxOff
 \str_new:N \g_myfile_name_str
 
+% Example from #1945
+\ExplSyntaxOn
+\use:x
+  {
+    \exp_not:N \includegraphics
+      [ \clist_use:Nn \g__pdfoverlay_graphics_options_clist { , } ]
+      { \g__pdfoverlay_pdf_file_name_str }
+  }
+\ExplSyntaxOff

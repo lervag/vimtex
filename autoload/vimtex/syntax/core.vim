@@ -332,20 +332,26 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ transparent
         \ contains=TOP,@NoSpell
 
-  call vimtex#syntax#core#new_arg('texE3Group', {'opts': 'contained containedin=@texClusterE3'})
+  call vimtex#syntax#core#new_arg('texE3Group', {
+        \ 'opts': 'contained containedin=@texClusterE3',
+        \})
 
-  syntax match texE3Cmd  contained containedin=@texClusterE3 "\\\w\+" nextgroup=texE3Opt,texE3Arg skipwhite skipnl
+  syntax match texE3Cmd contained containedin=@texClusterE3 "\\\w\+"
+        \ nextgroup=texE3Opt,texE3Arg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
-  call vimtex#syntax#core#new_arg('texE3Arg', {'next': 'texE3Arg', 'opts': 'contained transparent'})
+  call vimtex#syntax#core#new_arg('texE3Arg', {
+        \ 'next': 'texE3Arg',
+        \ 'opts': 'contained transparent'
+        \})
 
   syntax match texE3CmdNestedZoneEnd '\\\ExplSyntaxOff'
         \ contained containedin=texE3Arg,texE3Group
 
   syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
-  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+:[a-zA-Z]*"
+  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)*:[a-zA-Z]*"
   syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
 
-  syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group
+  syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
 
   " }}}2
   " {{{2 Zone: Math
