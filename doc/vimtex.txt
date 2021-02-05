@@ -79,6 +79,7 @@ CONTENTS                                                      *vimtex-contents*
     Latexrun                                    |vimtex-latexrun|
     Tectonic                                    |vimtex-tectonic|
     Arara                                       |vimtex-arara|
+    Generic                                     |vimtex-compiler-generic|
   Syntax Checking (Linting)                     |vimtex-lint|
   Grammar Checking                              |vimtex-grammar|
     textidote                                   |vimtex-grammar-textidote|
@@ -847,6 +848,10 @@ OPTIONS                                                        *vimtex-options*
       See |vimtex-arara| for more details, and |g:vimtex_compiler_arara| for
       customization.
 
+    generic~
+      See |vimtex-compiler-generic| for more details, and
+      |g:vimtex_compiler_generic| for customization.
+
   Default value: 'latexmk'
 
 *g:vimtex_compiler_latexmk*
@@ -1060,6 +1065,33 @@ OPTIONS                                                        *vimtex-options*
   options~
     This is a list of options that are passed to `arara`. The default options
     should work well for most people.
+
+*g:vimtex_compiler_generic*
+  This is a dictionary that allows customization of the
+  |vimtex-compiler-generic| compiler. This compiler is, as the name hints,
+  generic. It allows to specify a custom command to run for compilation. As
+  for the other compilers, the configuration values set by the user will take
+  precedense over the default values.
+
+  Default value: >
+
+    let g:vimtex_compiler_generic = {
+        \ 'cmd' : '',
+        \ 'build_dir' : '',
+        \}
+<
+  The default value shows which entries may be changed. Here the different
+  keys are explained in more detail:
+
+  cmd~
+    This is the command to run to start compilation. This can be any command,
+    and the command is run from the project root.
+
+    Note: This value must be specified; an empty value will return an error.
+
+  build_dir~
+    Same as |g:vimtex_compiler_latexmk| / `build_dir`. This will be created if
+    needed, since tectonic won't build anything unless it exists.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable Vimtex completion.
@@ -4172,6 +4204,7 @@ backends:
   |vimtex-latexrun|  https://github.com/aclements/latexrun
   |vimtex-tectonic|  https://tectonic-typesetting.github.io/
   |vimtex-arara|     https://github.com/cereda/arara
+  |vimtex-generic-compiler|
 
 The interface is implemented in a general way, which makes it relatively easy
 to add new compilers.
@@ -4215,6 +4248,7 @@ Associated settings:
   |g:vimtex_compiler_latexrun_engines|
   |g:vimtex_compiler_tectonic|
   |g:vimtex_compiler_arara|
+  |g:vimtex_compiler_generic|
   |g:vimtex_compiler_progname|
   |$VIMTEX_OUTPUT_DIRECTORY|
 
@@ -4343,6 +4377,11 @@ Note: It is not possible to directly specify an output directory from vimtex.
       may still want to specify custom output directories, vimtex allows to
       customize the output directory through the environment variable
       |$VIMTEX_OUTPUT_DIRECTORY|.
+
+------------------------------------------------------------------------------
+GENERIC COMPILER                                      *vimtex-generic-compiler*
+
+TODO.
 
 ==============================================================================
 SYNTAX CHECKING (LINTING)                                       *vimtex-lint*
