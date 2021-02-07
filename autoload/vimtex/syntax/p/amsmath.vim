@@ -39,6 +39,10 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody')
 
+  " \tag{label} or \tag*{label}
+  syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
+  call vimtex#syntax#core#new_arg('texMathTagArg')
+
   " Conceal the command and delims of "\operatorname{ ... }"
   if g:vimtex_syntax_conceal.math_delimiters
     syntax region texMathConcealedArg contained matchgroup=texMathCmd
