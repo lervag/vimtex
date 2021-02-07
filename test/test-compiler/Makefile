@@ -8,6 +8,7 @@ export INMAKE
 test: latexrun
 	@PATH=$$PATH:. chronic $(MYVIM) -u test.vim
 	@rm -f minimal.*
+	@rm -f pdflatex*.fls
 	@rm -f .latexrun.db.lock
 	@rm -rf out
 
