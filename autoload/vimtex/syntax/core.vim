@@ -307,8 +307,17 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ {'contains': 'texComment,@NoSpell'})
 
   " Tabular arguments
-  syntax match texCmdEnv "\\begin{tabular}" contains=texCmdEnv nextgroup=texTabularArg skipwhite skipnl
-  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': ''})
+  syntax match texCmdTabular "\\begin{tabular}"
+        \ nextgroup=texTabularOpt,texTabularArg skipwhite skipnl contains=texCmdEnv
+  call vimtex#syntax#core#new_opt('texTabularOpt', {'next': 'texTabularArg', 'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': '@texClusterTabular'})
+
+  syntax match texTabularCol       "[lcr]" contained
+  syntax match texTabularCol       "p"     contained nextgroup=texTabularLength
+  syntax match texTabularAtSep     "@"     contained nextgroup=texTabularLength
+  syntax cluster texClusterTabular contains=texTabular.*
+
+  call vimtex#syntax#core#new_arg('texTabularLength', {'contains': 'texLength,texCmd'})
 
   " }}}2
   " {{{2 Zone: Verbatim
@@ -564,7 +573,10 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texOptEqual           texSymbol
   highlight def link texRefOpt             texOpt
   highlight def link texTabularArg         texOpt
+  highlight def link texTabularAtSep       texMathDelim
   highlight def link texTabularChar        texSymbol
+  highlight def link texTabularCol         texOpt
+  highlight def link texTabularOpt         texEnvOpt
   highlight def link texVerbZone           texZone
   highlight def link texVerbZoneInline     texVerbZone
 endfunction
