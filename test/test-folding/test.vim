@@ -56,6 +56,15 @@ call vimtex#test#assert_equal(3, foldlevel(186))
 call vimtex#test#assert_equal(1, foldlevel(190))
 call vimtex#test#assert_equal(2, foldlevel(202))
 
+call vimtex#test#assert_equal(2, foldlevel(206))
+call vimtex#test#assert_equal(
+      \ '\begin{frame}       Title: Subtitle',
+      \ foldtextresult(206))
+call vimtex#test#assert_equal(2, foldlevel(213))
+call vimtex#test#assert_equal(
+      \ '\begin{frame}       Title page',
+      \ foldtextresult(213))
+
 call vimtex#test#assert_equal(1, foldlevel(line('$')-1))
 
 quit!
