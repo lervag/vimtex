@@ -15,4 +15,8 @@ call vimtex#test#keys('fdd2ad',
       \ ['a + \left(b + \left[c + d \right] + e\right) + f'],
       \ ['a +  + f'])
 
+call vimtex#test#keys('f\dac',
+      \ ['a + \test[opt1][opt2]{arg} + f'],
+      \ ['a +  + f'])
+
 quit!
