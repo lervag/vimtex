@@ -1,6 +1,6 @@
-# vimtex
+# VimTeX
 
-vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype and syntax plugin for LaTeX files.
+VimTeX is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype and syntax plugin for LaTeX files.
 
 [![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ![CI tests](https://github.com/lervag/vimtex/workflows/CI%20tests/badge.svg)
@@ -17,10 +17,10 @@ vimtex is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) f
 
 ## Requirements
 
-vimtex requires Vim version 8.0.1453 or neovim version 0.4.3. The requirements
-were updated in July 2020 after the release of vimtex 1.0. If you are stuck
+VimTeX requires Vim version 8.0.1453 or neovim version 0.4.3. The requirements
+were updated in July 2020 after the release of VimTeX 1.0. If you are stuck
 on older versions of Vim or neovim, then you should not use the most recent
-version of vimtex, but instead remain at the v1.0 tag.
+version of VimTeX, but instead remain at the v1.0 tag.
 
 Some features require external tools. For example, the default compiler backend relies on [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
 Users are encouraged to read the requirements section in the [documentation](doc/vimtex.txt) (`:h vimtex-requirements`).
@@ -46,7 +46,7 @@ If you use the new package feature in Vim, please note the following:
 * Helptags are not generated automatically. Run `:helptags` to generate them.
 * Please note that by default Vim puts custom `/start/` plugin directories at
   the end of the `&runtimepath`. This means the built in filetype plugin is
-  loaded, which prevents Vimtex from loading. See
+  loaded, which prevents VimTeX from loading. See
   [#1413](https://github.com/lervag/vimtex/issues/1413) for two suggested
   solutions to this. To see which scripts are loaded and in which order, use
   `:scriptnames`.
@@ -55,16 +55,16 @@ If you use the new package feature in Vim, please note the following:
 
 ## Quick Start
 
-The following is a simple guide for how to use vimtex. It only displays the
+The following is a simple guide for how to use VimTeX. It only displays the
 most basic features. Users are _strongly_ encouraged to read or at least skim
 through the documentation to learn about the different features and
-possibilities provided by vimtex (see [`:h vimtex`](doc/vimtex.txt)).
+possibilities provided by VimTeX (see [`:h vimtex`](doc/vimtex.txt)).
 
 ![Quick start gif](media/quick_start.gif?raw=true)
 
 ## Features
 
-Below is a list of features offered by vimtex.  The features are accessible as
+Below is a list of features offered by VimTeX.  The features are accessible as
 both commands and mappings.  The mappings generally start with
 `<localleader>l`, but if desired one can disable default mappings to define
 custom mappings.  All features are enabled by default, but each feature may be
@@ -140,11 +140,11 @@ disabled if desired.
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
 
-See the documentation for a thorough introduction to vimtex (e.g. `:h vimtex`).
+See the documentation for a thorough introduction to VimTeX (e.g. `:h vimtex`).
 
 ## Other relevant plugins
 
-Even though vimtex provides a lot of nice features for working with LaTeX
+Even though VimTeX provides a lot of nice features for working with LaTeX
 documents, there are several features that are better served by other,
 dedicated plugins. For a more detailed listing of these, please see [`:help
 vimtex-non-features`](doc/vimtex.txt#L156).
@@ -170,28 +170,28 @@ The following are some alternative LaTeX plugins for Vim:
 
 * [LaTeX-Suite](http://vim-latex.sourceforge.net)
 
-    The main difference between vimtex and LaTeX-Suite (aka vim-latex) is
-    probably that vimtex does not try to implement a full fledged IDE for LaTeX
+    The main difference between VimTeX and LaTeX-Suite (aka vim-latex) is
+    probably that VimTeX does not try to implement a full fledged IDE for LaTeX
     inside Vim. E.g.:
 
-    * vimtex does not provide a full snippet feature, because this is better
+    * VimTeX does not provide a full snippet feature, because this is better
       handled by [UltiSnips](https://github.com/SirVer/ultisnips) or
       [neosnippet](https://github.com/Shougo/neosnippet.vim) or similar snippet
       engines.
-    * vimtex builds upon Vim principles: It provides text objects for
+    * VimTeX builds upon Vim principles: It provides text objects for
       environments, inline math, it provides motions for sections and
       paragraphs
-    * vimtex uses `latexmk`, `latexrun`, `tectonic` or `arara` for compilation
+    * VimTeX uses `latexmk`, `latexrun`, `tectonic` or `arara` for compilation
       with a callback feature to get instant feedback on compilation errors
-    * vimtex is very modular: if you don't like a feature, you can turn it off.
+    * VimTeX is very modular: if you don't like a feature, you can turn it off.
 
 * [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box)
 
-    vimtex currently has most of the features of LaTeX-Box, as well as
+    VimTeX currently has most of the features of LaTeX-Box, as well as
     some additional ones. See [here](#features) for a relatively complete list
     of features.
 
-    One particular feature that LaTeX-Box has but vimtex misses, is the ability
+    One particular feature that LaTeX-Box has but VimTeX misses, is the ability
     to do single-shot compilation _with callback_. This functionality was
     removed because it adds a lot of complexity for relatively little gain
     (IMHO).

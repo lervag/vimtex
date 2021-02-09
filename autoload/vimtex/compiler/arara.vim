@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -29,7 +29,7 @@ function! s:compiler.init(options) abort dict " {{{1
 
   if !executable('arara')
     call vimtex#log#warning('arara is not executable!')
-    throw 'vimtex: Requirements not met'
+    throw 'VimTeX: Requirements not met'
   endif
 
   let l:backend = has('nvim') ? 'nvim' : 'jobs'

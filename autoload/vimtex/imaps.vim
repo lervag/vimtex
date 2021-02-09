@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -44,7 +44,7 @@ endfunction
 function! vimtex#imaps#list() abort " {{{1
   let l:maps = b:vimtex_imaps
 
-  silent new vimtex\ imaps
+  silent new VimTeX\ imaps
 
   for l:map in l:maps
     call append('$', printf('%5S  ->  %-30S %S',
@@ -94,7 +94,7 @@ function! s:create_map(map) abort " {{{1
 
   let l:wrapper = get(l:map, 'wrapper', 'vimtex#imaps#wrap_math')
   if ! exists('*' . l:wrapper)
-    echoerr 'vimtex error: imaps wrapper does not exist!'
+    echoerr 'VimTeX error: imaps wrapper does not exist!'
     echoerr '              ' . l:wrapper
     return
   endif

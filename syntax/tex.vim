@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -14,12 +14,12 @@ if exists('b:current_syntax') | finish | endif
 if exists('s:is_loading') | finish | endif
 let s:is_loading = 1
 
-" Syntax may be loaded without the main vimtex functionality, thus we need to
+" Syntax may be loaded without the main VimTeX functionality, thus we need to
 " ensure that the options are loaded!
 call vimtex#options#init()
 
 
-" Load core syntax (does not depend on vimtex state)
+" Load core syntax (does not depend on VimTeX state)
 call vimtex#syntax#core#init()
 
 " Load core highlighting rules
@@ -30,7 +30,7 @@ let b:vimtex_syntax = {}
 call vimtex#syntax#nested#reset()
 
 
-" Load package specific syntax (may depend on vimtex state)
+" Load package specific syntax (may depend on VimTeX state)
 if exists('b:vimtex')
   call vimtex#syntax#packages#init()
 else

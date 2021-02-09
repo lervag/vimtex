@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -739,7 +739,7 @@ function! s:vimtex.pprint_items() abort dict " {{{1
     call add(l:items, ['packages', sort(keys(self.packages))])
   endif
 
-  return [['vimtex project', l:items]]
+  return [['VimTeX project', l:items]]
 endfunction
 
 " }}}1
@@ -766,7 +766,7 @@ endfunction
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
   " Check for various output directories
   " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
-  "   any vimtex settings like g:vimtex_compiler_latexmk.build_dir!
+  "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
   " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
   "   available as b:vimtex.compiler.build_dir.
   " * Fallback to the main root directory

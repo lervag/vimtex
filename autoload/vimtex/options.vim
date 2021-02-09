@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -324,7 +324,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'FIXME': 'FIXME: '
         \})
   call s:init_option('vimtex_toc_config', {
-        \ 'name' : 'Table of contents (vimtex)',
+        \ 'name' : 'Table of contents (VimTeX)',
         \ 'mode' : 1,
         \ 'fold_enable' : 0,
         \ 'fold_level_start' : -1,

@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -31,8 +31,8 @@ endfunction
 
 function! vimtex#paths#shorten_relative(path) abort " {{{1
   " Input: An absolute path
-  " Output: Relative path with respect to the vimtex root, path relative to
-  "         vimtex root (unless absolute path is shorter)
+  " Output: Relative path with respect to the VimTeX root, path relative to
+  "         VimTeX root (unless absolute path is shorter)
 
   let l:relative = vimtex#paths#relative(a:path, b:vimtex.root)
   return strlen(l:relative) < strlen(a:path)

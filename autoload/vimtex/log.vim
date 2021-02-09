@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -98,7 +98,7 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
   endfor
 
   call vimtex#echo#formatted([
-        \ [self.type_to_highlight[a:type], 'vimtex:'],
+        \ [self.type_to_highlight[a:type], 'VimTeX:'],
         \ ' ' . l:msg_list[0]
         \])
   if len(l:msg_list) > 1

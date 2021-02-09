@@ -2,7 +2,7 @@
 
 ## Branch model
 
-vimtex is developed mainly through the master branch, and pull requests should
+VimTeX is developed mainly through the master branch, and pull requests should
 be [fork based](https://help.github.com/articles/using-pull-requests/).
 
 ## Documentation style
@@ -10,7 +10,7 @@ be [fork based](https://help.github.com/articles/using-pull-requests/).
 Vim help files have their own specific syntax. There is a Vim help section on
 how to write them, see [`:h help-writing`](http://vimdoc.sourceforge.net/htmldoc/helphelp.html#help-writing).
 
-The vimtex documentation style should be relatively clear, and it should be
+The VimTeX documentation style should be relatively clear, and it should be
 easy to see from the existing documentation how to write it. Still, here are
 some pointers:
 
@@ -23,7 +23,7 @@ some pointers:
 
 ## Code style
 
-When submitting code for vimtex, please adhere to the following standards:
+When submitting code for VimTeX, please adhere to the following standards:
 
 - Use `shiftwidth=2` - no tabs!
 - Write readable code

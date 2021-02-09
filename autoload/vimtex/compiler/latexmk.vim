@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -49,7 +49,7 @@ function! vimtex#compiler#latexmk#get_rc_opt(root, opt, type, default) abort " {
   elseif a:type == 2
     let l:pattern = '^\s*@' . a:opt . '\s*=\s*(\(.*\))'
   else
-    throw 'vimtex: argument error'
+    throw 'VimTeX: Argument error'
   endif
 
   " Candidate files
@@ -216,7 +216,7 @@ function! s:compiler.init_check_requirements() abort dict " {{{1
     for l:cmd in l:missing
       call vimtex#log#warning(l:cmd . ' is not executable')
     endfor
-    throw 'vimtex: Requirements not met'
+    throw 'VimTeX: Requirements not met'
   endif
 endfunction
 

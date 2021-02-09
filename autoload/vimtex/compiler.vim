@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -44,7 +44,7 @@ function! vimtex#compiler#init_state(state) abort " {{{1
           \}
     let a:state.compiler
           \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
-  catch /vimtex: Requirements not met/
+  catch /VimTeX: Requirements not met/
     call vimtex#log#error('Compiler was not initialized!')
   catch /E117/
     call vimtex#log#error(

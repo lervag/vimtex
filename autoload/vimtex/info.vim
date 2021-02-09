@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -74,14 +74,14 @@ function! s:info.syntax() abort dict " {{{1
   syntax match VimtexInfoOther /.*/
   syntax match VimtexInfoKey /^.\{-}:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoValue /.*/ contained
-  syntax match VimtexInfoTitle /vimtex project:/ nextgroup=VimtexInfoValue
+  syntax match VimtexInfoTitle /VimTeX project:/ nextgroup=VimtexInfoValue
   syntax match VimtexInfoTitle /System info/
 endfunction
 
 " }}}1
 
 "
-" Functions to parse the vimtex state data
+" Functions to parse the VimTeX state data
 "
 function! s:get_info(item, ...) abort " {{{1
   if empty(a:item) | return [] | endif

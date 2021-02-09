@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -9,7 +9,7 @@ function! vimtex#view#mupdf#new() abort " {{{1
   if !executable('mupdf')
     call vimtex#log#error(
           \ 'MuPDF is not executable!',
-          \ '- vimtex viewer will not work!')
+          \ '- VimTeX viewer will not work!')
     return {}
   endif
 

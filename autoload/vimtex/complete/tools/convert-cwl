@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Convert texstudio cwl files to vimtex format"""
+"""Convert texstudio cwl files to VimTeX format"""
 import os
 import re
 

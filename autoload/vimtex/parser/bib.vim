@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -94,7 +94,7 @@ function! s:parse_with_bibtex_init() abort " {{{1
           \ 'bibtex is not executable and may not be used to parse bib files!')
   endif
 
-  " Check if bstfile contains whitespace (not handled by vimtex)
+  " Check if bstfile contains whitespace (not handled by VimTeX)
   if stridx(s:bibtex_bstfile, ' ') >= 0
     let l:oldbst = s:bibtex_bstfile . '.bst'
     let s:bibtex_bstfile = tempname()

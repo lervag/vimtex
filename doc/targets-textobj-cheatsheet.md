@@ -1,7 +1,7 @@
 # A cheatsheet for vimtex-targets
 
 If [targets.vim](https://github.com/wellle/targets.vim) is installed next to
-vimtex and `g:vimtex_text_obj_variant != 'vimtex'`, the following extended text
+VimTeX and `g:vimtex_text_obj_variant != 'vimtex'`, the following extended text
 objects are available.
 
 ### Legend

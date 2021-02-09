@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -589,7 +589,7 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
     call vimtex#pos#set_cursor(a:entry.line, 0)
   endif
 
-  " If relevant, enable vimtex stuff
+  " If relevant, enable VimTeX stuff
   if get(a:entry, 'link', 0) && !empty(l:vimtex_main)
     let b:vimtex_main = l:vimtex_main
     call vimtex#init()

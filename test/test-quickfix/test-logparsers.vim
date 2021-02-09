@@ -6,8 +6,8 @@ silent edit ../example-quickfix/main.tex
 
 try
   call vimtex#qf#setqflist()
-catch /Vimtex: No log file found/
-  echo 'Vimtex: No log file found'
+catch /VimTeX: No log file found/
+  echo 'VimTeX: No log file found'
   cquit
 endtry
 

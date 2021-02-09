@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -100,7 +100,7 @@ endfunction
 " }}}1
 function! s:qf.addqflist(tex, log) abort dict "{{{1
   if empty(a:log) || !filereadable(a:log)
-    throw 'Vimtex: No log file found'
+    throw 'VimTeX: No log file found'
   endif
 
   let self.errorformat_saved = &l:errorformat

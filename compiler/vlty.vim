@@ -85,7 +85,7 @@ let &l:errorformat .= s:vlty.show_suggestions
       \ : ',%ZMessage: %m'
 
 " For compatibility with vim-dispatch we need duplicated '%-G%.%#'.
-" See issues #199 of vim-dispatch and #1854 of vimtex.
+" See issues #199 of vim-dispatch and #1854 of VimTeX.
 let &l:errorformat .= ',%-G%.%#,%-G%.%#'
 
 silent CompilerSet errorformat

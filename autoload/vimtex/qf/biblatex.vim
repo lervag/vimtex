@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -47,7 +47,7 @@ function! s:biblatex.fix_paths() abort " {{{1
   try
     let l:title = getqflist({'title': 1})
   catch /E118/
-    let l:title = 'Vimtex errors'
+    let l:title = 'VimTeX errors'
   endtry
 
   for l:qf in l:qflist

@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -21,7 +21,7 @@ let s:latexbox = !empty(filter(copy(s:scriptnames), "v:val =~# 'latex-box'"))
 if s:latexbox
   call vimtex#log#warning([
         \ 'Conflicting plugin detected: LaTeX-Box',
-        \ 'vimtex does not work as expected when LaTeX-Box is installed!',
-        \ 'Please disable or remove it to use vimtex!',
+        \ 'VimTeX does not work as expected when LaTeX-Box is installed!',
+        \ 'Please disable or remove it to use VimTeX!',
         \])
 endif

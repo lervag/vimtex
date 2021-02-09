@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -18,7 +18,7 @@ let s:qf = {
 function! s:qf.init(state) abort dict "{{{1
   if !executable('pulp')
     call vimtex#log#error('pulp is not executable!')
-    throw 'vimtex: Requirements not met'
+    throw 'VimTeX: Requirements not met'
   endif
 
   " Automatically remove the -file-line-error option if we use the latexmk
@@ -46,7 +46,7 @@ endfunction
 function! s:qf.addqflist(tex, log) abort dict " {{{1
   if empty(a:log) || !filereadable(a:log)
     call setqflist([])
-    throw 'Vimtex: No log file found'
+    throw 'VimTeX: No log file found'
   endif
 
   let l:tmp = fnameescape(fnamemodify(a:log, ':r') . '.pulp')

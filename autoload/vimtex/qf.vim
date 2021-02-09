@@ -1,4 +1,4 @@
-" vimtex - LaTeX plugin for Vim
+" VimTeX - LaTeX plugin for Vim
 "
 " Maintainer: Karl Yngve Lervåg
 " Email:      karl.yngve@gmail.com
@@ -21,7 +21,7 @@ function! vimtex#qf#init_state(state) abort " {{{1
     call l:qf.init(a:state)
     unlet l:qf.init
     let a:state.qf = l:qf
-  catch /vimtex: Requirements not met/
+  catch /VimTeX: Requirements not met/
     call vimtex#log#warning(
           \ 'Quickfix state not initialized!',
           \ 'Please see :help g:vimtex_quickfix_method')
@@ -44,7 +44,7 @@ function! vimtex#qf#open(force) abort " {{{1
 
   try
     call vimtex#qf#setqflist()
-  catch /Vimtex: No log file found/
+  catch /VimTeX: No log file found/
     if a:force
       call vimtex#log#warning('No log file found')
     endif
@@ -113,8 +113,8 @@ function! vimtex#qf#setqflist(...) abort " {{{1
 
   try
     " Initialize the quickfix list
-    " Note: Only create new list if the current list is not a vimtex qf list
-    if get(getqflist({'title': 1}), 'title') =~# 'Vimtex'
+    " Note: Only create new list if the current list is not a VimTeX qf list
+    if get(getqflist({'title': 1}), 'title') =~# 'VimTeX'
       call setqflist([], 'r')
     else
       call setqflist([])
@@ -141,7 +141,7 @@ function! vimtex#qf#setqflist(...) abort " {{{1
 
     " Set title if supported
     try
-      call setqflist([], 'r', {'title': 'Vimtex errors (' . b:vimtex.qf.name . ')'})
+      call setqflist([], 'r', {'title': 'VimTeX errors (' . b:vimtex.qf.name . ')'})
     catch
     endtry
 
@@ -149,8 +149,8 @@ function! vimtex#qf#setqflist(...) abort " {{{1
     if l:jump
       cfirst
     endif
-  catch /Vimtex: No log file found/
-    throw 'Vimtex: No log file found'
+  catch /VimTeX: No log file found/
+    throw 'VimTeX: No log file found'
   endtry
 endfunction
 
