@@ -171,14 +171,20 @@ function! s:folder.parse_caption_frame(line) abort dict " {{{1
   let i = v:foldstart
   while i <= v:foldend
     if getline(i) =~# '^\s*\\frametitle'
-      return matchstr(getline(i),
+      let frametitle = matchstr(getline(i),
             \ '^\s*\\frametitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
+      if i+1 <= v:foldend && getline(i+1) =~# '^\s*\\framesubtitle'
+        let framesubtitle = matchstr(getline(i+1),
+              \ '^\s*\\framesubtitle\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
+        return printf('%S: %S', frametitle, framesubtitle)
+      end
+      return frametitle
     end
     let i += 1
   endwhile
 
   " If no caption found, check for a caption comment
-  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
+  return matchstr(a:line,'\\begin\*\?{.*}\(\[.*\]\)\?\s*%\s*\zs.*')
 endfunction
 
 " }}}1
