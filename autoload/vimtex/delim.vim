@@ -347,6 +347,7 @@ function! vimtex#delim#get_matching(delim) abort " {{{1
     else
       unlet l:matching.env_cmd
     endif
+    let l:matching.name = matchstr(l:match, '{\zs\k*\ze\*\?}')
   endif
 
   return l:matching
@@ -421,7 +422,6 @@ function! s:snr() abort " {{{1
 endfunction
 
 " }}}1
-"
 
 function! s:get_delim(opts) abort " {{{1
   "
@@ -559,8 +559,8 @@ function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\m\\begin\s*{' . result.name . '\*\?}',
-        \ 'close' : '\m\\end\s*{' . result.name . '\*\?}',
+        \ 'open' : '\m\\begin\s*{\w\+\*\?}',
+        \ 'close' : '\m\\end\s*{\w\+\*\?}',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
