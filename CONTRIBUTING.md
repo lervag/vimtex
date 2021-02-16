@@ -129,3 +129,35 @@ vimtex
 ├── test
 └── xclip
 ```
+So how does vimtex start? Well, it calls the `vimtex#init()` function at the
+beginning, if you open a `tex` or a `bib` file (see in `ftplugin`). So let's
+take a look, how vimtex initialises:
+```vim
+function! vimtex#init() abort " {{{1
+  if exists('#User#VimtexEventInitPre')
+    doautocmd <nomodeline> User VimtexEventInitPre
+  endif
+
+  call vimtex#options#init()
+
+  call s:init_state()
+  call s:init_buffer()
+  call s:init_default_mappings()
+
+  if exists('#User#VimtexEventInitPost')
+    doautocmd <nomodeline> User VimtexEventInitPost
+  endif
+
+  augroup vimtex_main
+    autocmd!
+    autocmd VimLeave * call s:quit()
+  augroup END
+endfunction
+```
+So here're its steps:
+1. `vimtex#options#init()`:
+    1. Create some new highlight-types, which are used in vimtex (for example,
+       use the color of a vim-error-msg for all vimtex errors).
+    2. Warn the user, if he/she is using deprecated settings
+    3. Save the settings of vimtex which are provided from the user or load its
+       default values (like `g:vimtex_compiler_enabled`)
