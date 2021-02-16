@@ -1,5 +1,17 @@
 # Guide for code contributions
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Branch model](#branch-model)
+- [Documentation style](#documentation-style)
+- [Code style](#code-style)
+- [Running tests](#running-tests)
+- [Documentation](#documentation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Branch model
 
 VimTeX is developed mainly through the master branch, and pull requests should
@@ -63,3 +75,57 @@ the executable by setting the environment variable `MYVIM` before running. To
 run with vanilla vim, use `MYVIM="vim -T dumb --not-a-term --noplugin -n"`.
 Either export this in your shell, or prepend to `make`, that is, run
 `MYVIM="vim -T dumb --not-a-term --noplugin -n" make`.
+
+## Documentation
+This section should help you to understand the structure of this plugin and how
+it works.
+
+So first of all, we're taking a look into the first layer of the plugin, after
+that, we're going to through each necessary directory, if it needs some more
+description. We won't go through *every* file, because it would take a little
+bit too long the most should be probably self explained.
+```
+vimtex
+├── after
+│   └── ftplugin
+│       └── tex.vim
+├── autoload
+│   ├── health
+│   ├── unite
+│   ├── vimtex
+│   └── vimtex.vim
+├── compiler
+│   ├── bibertool.vim
+│   ├── chktex.vim
+│   ├── lacheck.vim
+│   ├── style-check.vim
+│   ├── textidote.vim
+│   └── vlty.vim
+├── CONTRIBUTING.md
+├── doc
+│   ├── targets-textobj-cheatsheet.md
+│   └── vimtex.txt
+├── docker
+│   └── Dockerfile
+├── ftdetect
+│   └── tex.vim
+├── ftplugin
+│   ├── bib.vim
+│   └── tex.vim
+├── indent
+│   ├── bib.vim
+│   └── tex.vim
+├── LICENSE.md
+├── media
+│   └── quick_start.gif
+├── README.md
+├── rplugin
+│   └── python3
+│       └── denite
+│           └── source
+│               └── vimtex.py
+├── syntax
+│   └── tex.vim
+├── test
+└── xclip
+```
