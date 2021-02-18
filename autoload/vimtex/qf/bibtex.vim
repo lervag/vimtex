@@ -117,17 +117,21 @@ endfunction
 " }}}1
 
 let s:type_empty = {
-      \ 're' : '\vWarning--empty (.*) in (\S*)',
+      \ 're' : '\vWarning--empty (.*) in ([^ ;]*)(.*)',
       \}
 function! s:type_empty.fix(ctx, entry) abort " {{{1
+  unsilent echom 'xxx' a:entry.text
   let l:matches = matchlist(a:entry.text, self.re)
   if empty(l:matches) | return 0 | endif
 
   let l:type = l:matches[1]
   let l:key = l:matches[2]
+  let l:more = matchstr(l:matches[3], '; \zs.*')
 
   unlet a:entry.bufnr
-  let a:entry.text = printf('Missing "%s" in "%s"', l:type, l:key)
+  let a:entry.text = empty(l:more)
+        \ ? printf('Missing "%s" in "%s"', l:type, l:key)
+        \ : printf('Missing "%s" in "%s" (%s)', l:type, l:key, l:more)
 
   let l:loc = a:ctx.get_key_loc(l:key)
   if !empty(l:loc)
