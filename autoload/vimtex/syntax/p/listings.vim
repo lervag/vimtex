@@ -9,11 +9,6 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
         \ filter(getline(1, '$'), "v:val =~# 'language='"),
         \ {_, x -> matchstr(x, 'language=\zs\w\+')})
 
-  " Match inline listings
-  syntax match texCmdVerb "\\lstinline\>"
-        \ nextgroup=texVerbZoneInline,texLstZoneInline
-  call vimtex#syntax#core#new_arg('texLstZoneInline', {'contains': ''})
-
   " Match input file commands
   syntax match texCmd "\\lstinputlisting\>"
         \ nextgroup=texFileOpt,texFileArg skipwhite skipnl
@@ -33,12 +28,25 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
         \ 'contains': 'texLstEnvBgn',
         \})
 
+  " Match generic "arguments" for \lstinline
+  call vimtex#syntax#core#new_opt('texLstInlineOpt', {
+        \ 'next': 'texLstZoneInline'
+        \})
+  call vimtex#syntax#core#new_arg('texLstZoneInline', {'contains': ''})
+  call vimtex#syntax#core#new_arg('texLstZoneInline', {
+        \ 'contains': '',
+        \ 'matcher': 'start="\z([|+/]\)" end="\z1"',
+        \})
+  syntax match texLstDelim contained "\[\|\]"
+
   " Add nested syntax support for desired languages
   for l:nested in b:vimtex_syntax.listings.nested
     let l:cluster = vimtex#syntax#nested#include(l:nested)
     if empty(l:cluster) | continue | endif
-
-    let l:grp = 'texLstZone' . toupper(l:nested[0]) . l:nested[1:]
+    let l:name = toupper(l:nested[0]) . l:nested[1:]
+    let l:grp = 'texLstZone' . l:name
+    let l:grp_inline = 'texLstZoneInline' . l:name
+    let l:cluster = '@' . l:cluster
 
     execute 'syntax match texLstsetArg'
           \ '"\c{\_[^}]*language=' . l:nested . '\%(\s*,\|}\)"'
@@ -46,7 +54,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
           \ 'contains=texLstsetGroup'
 
     call vimtex#syntax#core#new_region_env(l:grp, 'lstlisting', {
-          \ 'contains': 'texLstEnvBgn,@' . l:cluster,
+          \ 'contains': 'texLstEnvBgn,' . l:cluster,
           \ 'opts': 'contained',
           \})
 
@@ -55,14 +63,35 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
           \ . '\[\_[^\]]\{-}language=' . l:nested . '\%(\s*,\_[^\]]\{-}\)\?\]"'
           \ 'end="\\end{lstlisting}"'
           \ 'keepend'
-          \ 'contains=texCmdEnv,texLstEnvBgn,@' . l:cluster
+          \ 'contains=texCmdEnv,texLstEnvBgn,' . l:cluster
+
+    " Allow inline \lstinline[language=...]{....} variants
+    execute 'syntax region texLstInlineOpt'
+          \ 'contained'
+          \ 'start="\[language=' . l:nested . '"'
+          \ 'skip="\\\\\|\\\]"'
+          \ 'end="\]"'
+          \ 'contains=@texClusterOpt,texLstDelim'
+          \ 'nextgroup=' . l:grp_inline
+          \ 'skipwhite skipnl keepend'
+    call vimtex#syntax#core#new_arg(l:grp_inline, {'contains': l:cluster})
+    call vimtex#syntax#core#new_arg(l:grp_inline, {
+          \ 'contains': l:cluster,
+          \ 'matcher': 'start="\z([|+/]\)" end="\z1"',
+          \})
   endfor
 
-  highlight def link texCmdLstset   texCmd
-  highlight def link texLstsetGroup texOpt
-  highlight def link texLstZone     texZone
-  highlight def link texLstOpt      texOpt
+  " Match inline listings
+  syntax match texCmdVerb "\\lstinline\>"
+        \ nextgroup=texLstInlineOpt,texLstZoneInline
+
+  highlight def link texCmdLstset     texCmd
+  highlight def link texLstDelim      texDelim
+  highlight def link texLstInlineOpt  texOpt
+  highlight def link texLstOpt        texOpt
+  highlight def link texLstZone       texZone
   highlight def link texLstZoneInline texVerbZoneInline
+  highlight def link texLstsetGroup   texOpt
 endfunction
 
 " }}}1
