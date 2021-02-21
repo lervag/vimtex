@@ -3165,10 +3165,19 @@ following are some examples of how to customize the mappings: >
 
   " Add custom mapping through vimtex#imap#add_map
   call vimtex#imaps#add_map({
-    \ 'lhs' : 'test',
-    \ 'rhs' : '\tested',
-    \ 'wrapper' : 'vimtex#imaps#wrap_trivial'
-    \})
+        \ 'lhs' : 'test',
+        \ 'rhs' : '\tested',
+        \ 'wrapper' : 'vimtex#imaps#wrap_trivial'
+        \})
+
+  " Add custom mapping: #rX -> \mathrm{X}
+  call vimtex#imaps#add_map({
+        \ 'lhs' : 'r',
+        \ 'rhs' : 'vimtex#imaps#style_math("mathrm")',
+        \ 'expr' : 1,
+        \ 'leader' : '#',
+        \ 'wrapper' : 'vimtex#imaps#wrap_math'
+        \})
 <
                                                          *vimtex#imaps#add_map*
 
@@ -3178,6 +3187,7 @@ dictionary argument: >
   map = {
     \ 'lhs' : lhs,
     \ 'rhs' : rhs,
+    \ 'expr' : bool,
     \ 'leader' : leader_key,
     \ 'wrapper' : function_name,
     \ 'context' : value,
@@ -3189,7 +3199,17 @@ Explanation of the keys:
     Mandatory argument. The left-hand side part of the map.
 
   lhs_rhs~
-    Mandatory argument. The right-hand side part of the map.
+    Mandatory argument. The right-hand side part of the map. There is one
+    utility function that can be useful:
+
+      *vimtex#imaps#style_math*
+        Wraps the RHS inside a specified command, e.g. `\myarg{RHS}`, if the
+        cursor is inside math mode.
+
+  expr~
+    Either 0/|v:false| or 1/|v:true| (default: 0). If true, then the
+    right-hand side is evaluated before it is passed to the wrapper.
+    This is necessary e.g. for use with |vimtex#imaps#style_math|.
 
   leader~
     Custom leader key. If the key is not present, then |g:vimtex_imaps_leader|
@@ -3199,14 +3219,14 @@ Explanation of the keys:
     The name of a wrapper function that is used to generate the `rhs`. Two
     functions are available from VimTeX:
 
-      `vimtex#imaps#wrap_trivial`
+      *vimtex#imaps#wrap_trivial*
         Trivial wrapper: Simply returns `rhs`.
 
-      `vimtex#imaps#wrap_math`
+      *vimtex#imaps#wrap_math*
         Only define `rhs` if inside a math environment. This is the default
         wrapper function and will be used if no other wrapper is supplied.
 
-      `vimtex#imaps#wrap_environment`
+      *vimtex#imaps#wrap_environment*
         Only define `rhs` if inside a specified environment. The wrapper works
         by utilizing the `context` key, which is a list that contains strings
         and/or dictionaries:
