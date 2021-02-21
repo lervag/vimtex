@@ -741,6 +741,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lx  |<plug>(vimtex-reload)|                         `n`
    <localleader>lX  |<plug>(vimtex-reload-state)|                   `n`
    <localleader>ls  |<plug>(vimtex-toggle-main)|                    `n`
+   <localleader>la  |<plug>(vimtex-context-menu)|                   `n`
    dse              |<plug>(vimtex-env-delete)|                     `n`
    dsc              |<plug>(vimtex-cmd-delete)|                     `n`
    ds$              |<plug>(vimtex-env-delete-math)|                `n`
@@ -790,7 +791,6 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    [/               |<plug>(vimtex-[/|                              `nxo`
    [*               |<plug>(vimtex-[star|                           `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
-   <CR>             |<plug>(vimtex-context-menu)|                   `n`
   ---------------------------------------------------------------------~
 
 ------------------------------------------------------------------------------
@@ -4713,7 +4713,7 @@ CONTEXT MENU                                              *vimtex-context-menu*
 
 VimTeX provides the command |:VimtexContextMenu| to open a context menu for
 the item below the cursor. The menu allows various actions relevant to the
-current context. It is mapped by default to `<cr>`.
+current context. It is mapped by default to `<localleader>la`.
 
 The available contexts are listed below.
 

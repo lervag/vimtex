@@ -121,6 +121,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(0, 'n', '<localleader>lX', '<plug>(vimtex-reload-state)')
   call s:map(1, 'n', '<localleader>ls', '<plug>(vimtex-toggle-main)')
   call s:map(0, 'n', '<localleader>lq', '<plug>(vimtex-log)')
+  call s:map(1, 'n', '<localleader>la', '<plug>(vimtex-context-menu)')
 
   call s:map(1, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
   call s:map(1, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
@@ -136,8 +137,6 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(1, 'i', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(1, 'n', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(1, 'x', '<F7>', '<plug>(vimtex-cmd-create)')
-
-  call s:map(1, 'n', '<cr>', '<plug>(vimtex-context-menu)')
 
   call s:map(1, 'n', 'dsd', '<plug>(vimtex-delim-delete)')
   call s:map(1, 'n', 'csd', '<plug>(vimtex-delim-change-math)')
