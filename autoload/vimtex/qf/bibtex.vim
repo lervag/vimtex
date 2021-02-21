@@ -120,7 +120,6 @@ let s:type_empty = {
       \ 're' : '\vWarning--empty (.*) in ([^ ;]*)(.*)',
       \}
 function! s:type_empty.fix(ctx, entry) abort " {{{1
-  unsilent echom 'xxx' a:entry.text
   let l:matches = matchlist(a:entry.text, self.re)
   if empty(l:matches) | return 0 | endif
 
