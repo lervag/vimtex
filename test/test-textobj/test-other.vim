@@ -19,4 +19,8 @@ call vimtex#test#keys('f\dac',
       \ ['a + \test[opt1][opt2]{arg} + f'],
       \ ['a +  + f'])
 
+call vimtex#test#keys('f\dac',
+      \ ['a + \; f'],
+      \ ['a +  f'])
+
 quit!
