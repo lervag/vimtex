@@ -78,5 +78,6 @@ Either export this in your shell, or prepend to `make`, that is, run
 
 ## Documentation
 VimTex provides a little high-level [documentation](./DOCUMENTATION.md). It's
-still under development, but it might help you to understand the code better. If
-you have any question about the code, feel free to open a new issue!
+still under development, but it might help you to understand the code better (or
+at least faster). If you have any question about the code, feel free to open a
+new issue!
