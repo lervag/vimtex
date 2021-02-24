@@ -13,7 +13,8 @@ This file works as follows:
 The table of contents has the same structure as the file structure of
 **VimTex**. If you want to know something about the 
 `vimtex/autoload/vimtex/compiler` directory, than you can lookup the path in the
-table of contents.
+table of contents and click on it. (Hopefully) It'll give you some nice
+information.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -51,9 +52,17 @@ table of contents.
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # after/ftplugin
+Currently there's only one file in it which makes sure that VimTex loaded
+successfully and that there're no conflicts with other plugins like LaTeX-Box.
 
 # autoload
 ## health
+This directory has the following health-checks functions:
+- If the user has a valid vim version
+- If the user selected a valid compiler
+- If their might be any plugin-clashe.
+- If the user has the needed dependencies for their PDF-Viewer
+
 ## unite/sources
 
 ## vimtex
