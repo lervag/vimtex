@@ -61,7 +61,9 @@ function! VimtexIndent(lnum) abort " {{{1
   let l:ind += s:indent_envs(l:line, l:prev_line)
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_conditionals(l:line, a:lnum, l:prev_line, l:prev_lnum)
-  let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
+  if g:vimtex_indent_tikz_enabled
+    let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
+  endif
 
   return l:ind
 endfunction

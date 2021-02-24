@@ -1784,6 +1784,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_indent_tikz_enabled*
+  Use this option to disable/enable VimTeX indentation of multi-line commands
+  in TikZ pictures.
+
+  Default value: 1
+
 *g:vimtex_indent_conditionals*
   This is a dictionary that defines regexes for indenting conditionals. Set it
   to an empty dictionary to disable this type of indentation.
@@ -3800,6 +3806,7 @@ for bibliography files (`.bib` files).
 Associated settings:
   |g:vimtex_indent_enabled|
   |g:vimtex_indent_bib_enabled|
+  |g:vimtex_indent_tikz_enabled|
   |g:vimtex_indent_delims|
   |g:vimtex_indent_ignored_envs|
   |g:vimtex_indent_lists|
