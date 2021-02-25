@@ -64,6 +64,11 @@ This directory has the following health-checks functions:
 - If the user has the needed dependencies for their PDF-Viewer
 
 ## unite/sources
+This directory is used to combine VimTex with
+[denite](https://github.com/Shougo/denite.nvim) or
+[unite](https://github.com/Shougo/unite.vim). These extra-plugins are mainly
+used to list the TOC of your current document. Take a look into `:h
+vimtex-unite`, to get more information.
 
 ## vimtex
 ### compiler
