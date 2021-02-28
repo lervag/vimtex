@@ -1,4 +1,5 @@
 # Documentation
+
 Welcome to the high-level documentation of **VimTex**.
 
 This file should help you to understand the structure of this plugin and how
@@ -6,19 +7,18 @@ it works.
 
 So first of all, we're taking a look into the first layer of the plugin, after
 that, we're going to through each necessary directory, if it needs some more
-description. We won't go through *every* file, because it would take a little
+description. We won't go through _every_ file, because it would take a little
 bit too long the most should be probably self explained.
 
 This file works as follows:
 The table of contents has the same structure as the file structure of
-**VimTex**. If you want to know something about the 
+**VimTex**. If you want to know something about the
 `vimtex/autoload/vimtex/compiler` directory, than you can lookup the path in the
 table of contents and click on it. (Hopefully) It'll give you some nice
 information.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 
 - [after/ftplugin](#afterftplugin)
 - [autoload](#autoload)
@@ -52,37 +52,66 @@ information.
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # after/ftplugin
+
 Currently there's only one file in it which makes sure that VimTex loaded
 successfully and that there're no conflicts with other plugins like LaTeX-Box.
 
 # autoload
+
 ## health
+
 This directory has the following health-checks functions:
+
 - If the user has a valid vim version
 - If the user selected a valid compiler
 - If their might be any plugin-clashe.
 - If the user has the needed dependencies for their PDF-Viewer
 
 ## unite/sources
+
 This directory is used to combine VimTex with
 [denite](https://github.com/Shougo/denite.nvim) or
 [unite](https://github.com/Shougo/unite.vim). These extra-plugins are mainly
-used to list the TOC of your current document. Take a look into `:h
-vimtex-unite`, to get more information.
+used to list the TOC of your current document. Take a look into `:h vimtex-unite`, to get more information.
 
 ## vimtex
+
+This directory has the main files. Each filename should explain themself
+for what they're used for. But here's a little table which explains
+some files which are nice to know:
+
+|  Filename   |                                        Description                                        |
+| :---------: | :---------------------------------------------------------------------------------------: |
+| `cache.vim` |             Can be used to create easily persistent and non-persistent caches             |
+| `debug.vim` |                  You can use the functions there to debug your changes.                   |
+| `delim.vim` |       This file takes care that it adds the needed pair-parenthese like for `\left`       |
+|  `doc.vim`  |         This file makes it able to open the documentation file of a tex-package.          |
+| `echo.vim`  | There're some neat functions which can be used to print out some information to the user. |
+
 ### compiler
+
 ### complete
+
 #### tools
+
 ##### unicode-math
+
 ### context
+
 ### fold
+
 ### parser
+
 #### toc
+
 ### qf
+
 ### syntax
+
 #### p
+
 ### text_obj
+
 ### view
 
 # compiler
