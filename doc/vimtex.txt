@@ -2590,23 +2590,8 @@ OPTIONS                                                        *vimtex-options*
                 \ = '-reuse-instance -forward-search @tex @line @pdf'
             let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 <
-          Backward search can be set up in SumatraPDF. One can also try to set
-          it from Vim by adding the following lines to ones vimrc: >
-
-            let g:vimtex_view_general_options
-                \ = '-reuse-instance -forward-search @tex @line @pdf'
-                \ . ' -inverse-search "' . exepath(v:progpath)
-                \ . ' --servername ' . v:servername
-                \ . ' --remote-send \"^<C-\^>^<C-n^>'
-                \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-                \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-                \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
-<
-          Note: The expected behavior for the multi-line setting above is to
-                refresh the `InverseSearchCmdLine` setting in SumatraPDF. It
-                may fail if the Vim/gVim process is not running as
-                Administrator on Windows 10. A workaround is to ensure to
-                launch Vim as Administrator when editing tex files.
+          Note: See |vimtex-faq-sumatrapdf| for more info on how to properly
+                set up SumatraPDF for backward search.
 
           Note: There is a known issue with VimTeX + SumatraPDF when you use
                 `xelatex`, where the pdf file in SumatraPDF is not refreshed
@@ -4842,6 +4827,66 @@ A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
 
    Some related information may be found here:
    https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+   https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
+
+------------------------------------------------------------------------------
+                                                        *vimtex-faq-sumatrapdf*
+Q: How do I properly set up VimTeX with SumatraPDF?
+A: First, see and follow the guidelines in |vimtex_viewer_sumatrapdf|. Forward
+   search should work after this. Backward search requires configuration in
+   SumatraPDF that depends on which version of Vim you are using. The
+   following advice is for `neovim`; things should be simpler for Vim.
+
+   1. First, ensure that `neovim-remote` is installed (e.g. `pip install
+      neovim-remote`).
+
+   2. Add some configuration to your vimrc file to detect the servername: >
+
+        function! SetServerName()
+          let nvim_server_file = has('win32')
+                \ ? $TEMP . "/curnvimserver.txt"
+                \ : "/tmp/curnvimserver.txt"
+          call system(printf("echo %s > %s", v:servername, nvim_server_file))
+        endfunction
+
+        augroup vimtex_common
+            autocmd!
+            autocmd FileType tex call SetServerName()
+        augroup END
+<
+   3. Open `Settings --> Options` in SumatraPDF. Find the section
+      `Set inverse search command-line` in the bottom part and insert the
+      following long command there: >
+
+        cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\curnvimserver.txt') do nvr --servername %i -c "normal! zzzv" +"%l" "%f"
+<
+      You may need to change the exact file path above for your Windows
+      system. You can use the command `:echo $TEMP` to check the temp folder
+      on your Windows.
+
+   See the following blog posts for more related information:
+
+     https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex/
+     https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/#inverse-search-for-sumatra-pdf-on-windows
+
+   It is also possible to specify the backward search options from Vim,
+   although it requires a relatively complex and nasty expression. Something
+   like this: >
+
+      let g:vimtex_view_general_options
+          \ = '-reuse-instance -forward-search @tex @line @pdf'
+          \ . ' -inverse-search "' . exepath(v:progpath)
+          \ . ' --servername ' . v:servername
+          \ . ' --remote-send \"^<C-\^>^<C-n^>'
+          \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+          \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+          \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+<
+   Note: The expected behavior for the multi-line setting above is to refresh
+         the `InverseSearchCmdLine` setting in SumatraPDF. It may fail if the
+         Vim/gVim process is not running as Administrator on Windows 10.
+         A workaround is to ensure to launch Vim as Administrator when editing
+         tex files.
 
 ------------------------------------------------------------------------------
                                                           *vimtex-faq-surround*
