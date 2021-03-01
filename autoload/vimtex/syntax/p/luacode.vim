@@ -8,12 +8,12 @@ function! vimtex#syntax#p#luacode#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('lua')
 
   call vimtex#syntax#core#new_region_env('texLuaZone', 'luacode\*\?',
-        \ {'contains': '@vimtex_nested_lua'})
+        \ {'contains': '@vimtex_nested_lua,texCmd'})
 
-  syntax match texCmdLua "\\\%(directlua\|luadirect\)\>" nextgroup=texLuaArg skipwhite skipnl
+  syntax match texCmdLua "\\\%(directlua\|luadirect\)\>"
+        \ nextgroup=texLuaArg skipwhite skipnl
   call vimtex#syntax#core#new_arg('texLuaArg', {
-        \ 'contains': '@vimtex_nested_lua',
-        \ 'opts': 'contained keepend',
+        \ 'contains': '@vimtex_nested_lua,texCmd',
         \})
 
   highlight def link texCmdLua texCmd

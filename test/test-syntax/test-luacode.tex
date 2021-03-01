@@ -1,0 +1,17 @@
+\documentclass[notitlepage,12pt]{article}
+\usepackage{luacode}
+\newcommand{\somecommand}{
+  \loop
+  \begingroup%
+  \directlua{loopcnt=loopcnt+1}%
+  \ifnum\somecount=1%
+    \directlua{prevcount=prevcount+\luastring{\pgfmathresult}}%
+  \else%
+    \directlua{prevcount=prevcount+\luastring{\someamt}}%
+  \fi%
+  \endgroup%
+  \if\someothercnt0%
+    \repeat%
+    \directlua{linecount=math.floor(prevcount)+1;}%
+  \fi
+}
