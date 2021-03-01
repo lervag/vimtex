@@ -57,11 +57,13 @@ function! VimtexIndent(lnum) abort " {{{1
   let l:prev_lnum = s:indent_amps.prev_lnum
   let l:prev_line = s:indent_amps.prev_line
 
-  " Indent environments, delimiters, and tikz
+  " Indent environments, delimiters, and conditionals
   let l:ind += s:indent_envs(l:line, l:prev_line)
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_conditionals(l:line, a:lnum, l:prev_line, l:prev_lnum)
-  if g:vimtex_indent_tikz_enabled
+
+  " Indent tikz commands
+  if g:vimtex_indent_tikz_commands
     let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   endif
 
