@@ -39,10 +39,13 @@ endfunction
 
 " }}}1
 function! s:handler.get_actions() abort dict " {{{1
+  " Work in root, as in completer_bib.gather_candidates
+  call vimtex#paths#pushd(b:vimtex.root)
   let l:entries = []
   for l:file in vimtex#bib#files()
     let l:entries += vimtex#parser#bib(l:file, {'backend': 'vim'})
   endfor
+  call vimtex#paths#popd()
 
   let l:entry = get(
         \ filter(copy(l:entries), {_, x -> x.key ==# self.selected}), 0, {})
