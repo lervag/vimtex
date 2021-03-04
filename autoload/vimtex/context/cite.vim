@@ -39,10 +39,13 @@ endfunction
 
 " }}}1
 function! s:handler.get_actions() abort dict " {{{1
+  " Ensure we're at the root directory when locating bib files
+  call vimtex#paths#pushd(b:vimtex.root)
   let l:entries = []
   for l:file in vimtex#bib#files()
     let l:entries += vimtex#parser#bib(l:file, {'backend': 'vim'})
   endfor
+  call vimtex#paths#popd()
 
   let l:entry = get(
         \ filter(copy(l:entries), {_, x -> x.key ==# self.selected}), 0, {})
