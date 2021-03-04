@@ -922,21 +922,13 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\lceil\>"             contained conceal cchar=⌈
   syntax match texMathSymbol "\\ldots\>"             contained conceal cchar=…
   syntax match texMathSymbol "\\le\>"                contained conceal cchar=≤
-  syntax match texMathSymbol "\\left|"               contained conceal cchar=|
-  syntax match texMathSymbol "\\left\\|"             contained conceal cchar=‖
-  syntax match texMathSymbol "\\left("               contained conceal cchar=(
-  syntax match texMathSymbol "\\left\["              contained conceal cchar=[
-  syntax match texMathSymbol "\\left\\{"             contained conceal cchar={
   syntax match texMathSymbol "\\leftarrow\>"         contained conceal cchar=←
   syntax match texMathSymbol "\\Leftarrow\>"         contained conceal cchar=⇐
-  syntax match texMathSymbol '\\langle\>'            contained conceal cchar=⟨
-  syntax match texMathSymbol '\\rangle\>'            contained conceal cchar=⟩
   syntax match texMathSymbol "\\leftharpoondown\>"   contained conceal cchar=↽
   syntax match texMathSymbol "\\leftharpoonup\>"     contained conceal cchar=↼
   syntax match texMathSymbol "\\leftrightarrow\>"    contained conceal cchar=↔
   syntax match texMathSymbol "\\Leftrightarrow\>"    contained conceal cchar=⇔
   syntax match texMathSymbol "\\leq\>"               contained conceal cchar=≤
-  syntax match texMathSymbol "\\lfloor\>"            contained conceal cchar=⌊
   syntax match texMathSymbol "\\ll\>"                contained conceal cchar=≪
   syntax match texMathSymbol "\\lmoustache\>"        contained conceal cchar=╭
   syntax match texMathSymbol "\\lor\>"               contained conceal cchar=∨
@@ -974,12 +966,6 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\Re\>"                contained conceal cchar=ℜ
   syntax match texMathSymbol "\\quad\>"              contained conceal cchar= 
   syntax match texMathSymbol "\\qquad\>"             contained conceal cchar= 
-  syntax match texMathSymbol "\\rfloor\>"            contained conceal cchar=⌋
-  syntax match texMathSymbol "\\right|"              contained conceal cchar=|
-  syntax match texMathSymbol "\\right\\|"            contained conceal cchar=‖
-  syntax match texMathSymbol "\\right)"              contained conceal cchar=)
-  syntax match texMathSymbol "\\right]"              contained conceal cchar=]
-  syntax match texMathSymbol "\\right\\}"            contained conceal cchar=}
   syntax match texMathSymbol "\\rightarrow\>"        contained conceal cchar=→
   syntax match texMathSymbol "\\Rightarrow\>"        contained conceal cchar=⇒
   syntax match texMathSymbol '\\leftarrow\>'         contained conceal cchar=←
@@ -1270,6 +1256,20 @@ function! s:match_math_delims() abort " {{{1
     return
   endif
 
+  syntax match texMathDelim contained conceal cchar=| "\\left|"
+  syntax match texMathDelim contained conceal cchar=| "\\right|"
+  syntax match texMathDelim contained conceal cchar=‖ "\\left\\|"
+  syntax match texMathDelim contained conceal cchar=‖ "\\right\\|"
+  syntax match texMathDelim contained conceal cchar=( "\\left("
+  syntax match texMathDelim contained conceal cchar=) "\\right)"
+  syntax match texMathDelim contained conceal cchar=[ "\\left\["
+  syntax match texMathDelim contained conceal cchar=] "\\right]"
+  syntax match texMathDelim contained conceal cchar={ "\\left\\{"
+  syntax match texMathDelim contained conceal cchar=} "\\right\\}"
+  syntax match texMathDelim contained conceal cchar=⟨ '\\langle\>'
+  syntax match texMathDelim contained conceal cchar=⟩ '\\rangle\>'
+  syntax match texMathDelim contained conceal cchar=⌊ "\\lfloor\>"
+  syntax match texMathDelim contained conceal cchar=⌋ "\\rfloor\>"
   syntax match texMathDelim contained conceal cchar=< "\\\%([bB]igg\?l\|left\)<"
   syntax match texMathDelim contained conceal cchar=> "\\\%([bB]igg\?r\|right\)>"
   syntax match texMathDelim contained conceal cchar=( "\\\%([bB]igg\?l\|left\)("
