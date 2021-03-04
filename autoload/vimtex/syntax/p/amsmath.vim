@@ -51,9 +51,9 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
     syntax cluster texClusterMath add=texMathConcealedArg
   endif
 
-  highlight link texCmdDeclmathoper     texCmdNew
-  highlight link texDeclmathoperArgName texArgNew
-  highlight link texMathConcealedArg    texMathTextArg
+  highlight def link texCmdDeclmathoper     texCmdNew
+  highlight def link texDeclmathoperArgName texArgNew
+  highlight def link texMathConcealedArg    texMathTextArg
 endfunction
 
 " }}}1
