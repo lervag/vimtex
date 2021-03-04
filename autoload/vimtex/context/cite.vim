@@ -39,7 +39,7 @@ endfunction
 
 " }}}1
 function! s:handler.get_actions() abort dict " {{{1
-  " Work in root, as in completer_bib.gather_candidates
+  " Ensure we're at the root directory when locating bib files
   call vimtex#paths#pushd(b:vimtex.root)
   let l:entries = []
   for l:file in vimtex#bib#files()
