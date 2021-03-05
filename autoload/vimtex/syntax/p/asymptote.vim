@@ -12,7 +12,9 @@ function! vimtex#syntax#p#asymptote#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_region_env('texAsymptoteZone', 'asy', l:opts)
   call vimtex#syntax#core#new_region_env('texAsymptoteZone', 'asydef', l:opts)
 
-  highlight def link texAsymptoteZone texZone
+  if empty(l:opts)
+    highlight def link texAsymptoteZone texZone
+  endif
 endfunction
 
 " }}}1
