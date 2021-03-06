@@ -82,6 +82,7 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
 
   execute 'normal!' a:line . 'G'
   normal! zMzvzz
+  redraw
 
   " Attempt to focus Vim
   if executable('pstree') && executable('xdotool')
