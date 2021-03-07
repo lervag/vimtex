@@ -67,7 +67,7 @@ This directory has the following health-checks functions:
 
 - If the user has a valid vim version
 - If the user selected a valid compiler
-- If their might be any plugin-clashe.
+- If their might be any plugin-clashes.
 - If the user has the needed dependencies for their PDF-Viewer
 
 ## unite/sources
@@ -82,6 +82,10 @@ used to list the TOC of your current document. Take a look into `:h vimtex-unite
 This directory has the main files. Each filename should explain themself
 for what they're used for. But here's a little table which explains
 some files which are nice to know:
+
+### compiler (dir)
+Here are all latex compiler with the given function to interact with the
+compilers. The files should work like an API for VimTeX.
 
 ### delim.vim
 
@@ -141,9 +145,8 @@ endfunction
 
 <!-- TODO: doc.vim, echo.vim -->
 
-### compiler
-
-### complete
+### complete (dir)
+This directory includes all keywords which can prompt up in the omnifunc popup.
 
 #### tools
 
