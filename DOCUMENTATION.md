@@ -20,11 +20,14 @@ information.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+
 - [after/ftplugin](#afterftplugin)
 - [autoload](#autoload)
   - [health](#health)
   - [unite/sources](#unitesources)
   - [vimtex](#vimtex)
+    - [delim.vim](#delimvim)
+    - [cache.vim](#cachevim)
     - [compiler](#compiler)
     - [complete](#complete)
       - [tools](#tools)
