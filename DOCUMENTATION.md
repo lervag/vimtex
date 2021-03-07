@@ -80,13 +80,63 @@ This directory has the main files. Each filename should explain themself
 for what they're used for. But here's a little table which explains
 some files which are nice to know:
 
-|  Filename   |                                        Description                                        |
-| :---------: | :---------------------------------------------------------------------------------------: |
-| `cache.vim` |             Can be used to create easily persistent and non-persistent caches             |
-| `debug.vim` |                  You can use the functions there to debug your changes.                   |
-| `delim.vim` |       This file takes care that it adds the needed pair-parenthese like for `\left`       |
-|  `doc.vim`  |         This file makes it able to open the documentation file of a tex-package.          |
-| `echo.vim`  | There're some neat functions which can be used to print out some information to the user. |
+### delim.vim
+
+This file includes some functions to detect the surrounding delimiters like
+this:
+```tex
+\begin{Environment}
+    Some awesome text |
+\end{Environment}
+```
+
+The vertical line (`|`) should represent your cursor. Now you could use the
+`vimtex#delim#get_surrounding('env_tex')` function in order to get the current
+environment where the user is. Here's an example code:
+```vim
+" Return values are dictionaries
+let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
+
+" Empty dicts mean we did not find a surrounding environment
+if empty(l:open) | return | endif
+
+" The dicts have several attributes, the most important are probably these:
+echo l:open.name
+echo l:open.lnum
+echo l:open.cnum
+```
+
+For more information, take a look into [this
+issue](https://github.com/lervag/vimtex/issues/1981#issuecomment-792263781).
+
+### cache.vim
+This file includes some functions to create and access your own caches.
+Here's an example:
+```vim
+function VimTexCacheExample()
+    " create a new cache (if the name doesn't exist yet)
+    " with an attribute 'number'. So the cache would be like that:
+    "
+    "   let l:test = {
+    "     'number' = 10,
+    "   }
+    let l:my_cache = vimtex#cache#open('cache_name', {'number' : 10})
+
+    " change the value in you cache
+    let l:my_cache['number'] = 9001
+
+    " will print '9001'
+    echo l:my_cache['number']
+
+    " save your changes
+    " In general it'll be saved in your `$XDG_CACHE_HOME/vimtex/` directory
+    " (normally '~/.cache/vimtex') in the appropriate tex-file where you accessed
+    " cache file.
+    call vimtex#cache#close('cache_name')
+endfunction
+```
+
+<!-- TODO: doc.vim, echo.vim -->
 
 ### compiler
 
