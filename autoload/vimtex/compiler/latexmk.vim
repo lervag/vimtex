@@ -510,7 +510,7 @@ endfunction
 function! s:callback_continuous_output(channel, msg) abort " {{{1
   if exists('b:vimtex.compiler.output')
         \ && filewritable(b:vimtex.compiler.output)
-    call writefile([a:msg], b:vimtex.compiler.output, 'a')
+    call writefile([a:msg], b:vimtex.compiler.output, 'aS')
   endif
 
   if a:msg ==# 'vimtex_compiler_callback_success'
