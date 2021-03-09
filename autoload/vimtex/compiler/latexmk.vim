@@ -465,7 +465,7 @@ function! s:compiler_jobs.exec() abort dict " {{{1
     let l:options.err_io = 'pipe'
     let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.err_cb = function('s:callback_continuous_output')
-    call writefile([], self.output, 'a')
+    call writefile([], self.output, 'aS')
   else
     let s:cb_target = self.target_path !=# b:vimtex.tex
           \ ? self.target_path : ''
@@ -550,7 +550,7 @@ function! s:compiler_nvim.exec() abort dict " {{{1
 
   " Initialize output file
   try
-    call writefile([], self.output)
+    call writefile([], self.output, 'S')
   endtry
 
   let self.job = jobstart(l:cmd, l:shell)
@@ -594,7 +594,7 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   let l:data = split(substitute(join(a:data, 'QQ'), '^QQ\|QQ$', '', ''), 'QQ')
 
   if !empty(l:data) && filewritable(self.output)
-    call writefile(l:data, self.output, 'a')
+    call writefile(l:data, self.output, 'aS')
   endif
 
   if match(a:data, 'vimtex_compiler_callback_success') != -1
