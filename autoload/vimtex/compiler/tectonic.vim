@@ -257,7 +257,7 @@ endfunction
 " }}}1
 function! s:callback_nvim_output(id, data, event) abort dict " {{{1
   if !empty(a:data)
-    call writefile(filter(a:data, '!empty(v:val)'), self.output, 'aS')
+    call writefile(filter(a:data, '!empty(v:val)'), self.output, 'a')
   endif
 endfunction
 
