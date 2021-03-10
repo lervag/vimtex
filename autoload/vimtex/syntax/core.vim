@@ -336,8 +336,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   " {{{2 Zone: Expl3
 
   syntax region texE3Zone matchgroup=texCmdE3
-        \ start='\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)'
-        \ end='\\ExplSyntaxOff\|\%$'
+        \ start="\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)"
+        \ end="\\ExplSyntaxOff\|\%$"
         \ transparent
         \ contains=TOP,@NoSpell
 
