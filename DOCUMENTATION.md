@@ -29,26 +29,19 @@ information.
     - [delim.vim](#delimvim)
     - [cache.vim](#cachevim)
     - [compiler](#compiler)
-    - [complete](#complete)
+    - [debug.vim](#debugvim)
+    - [complete (dir)](#complete-dir)
       - [tools](#tools)
-        - [unicode-math](#unicode-math)
     - [context](#context)
     - [fold](#fold)
     - [parser](#parser)
-      - [toc](#toc)
     - [qf](#qf)
     - [syntax](#syntax)
-      - [p](#p)
     - [text_obj](#text_obj)
     - [view](#view)
-- [compiler](#compiler-1)
-- [doc](#doc)
-- [docker](#docker)
-- [ftdetect](#ftdetect)
 - [ftplugin](#ftplugin)
 - [indent](#indent)
-- [media](#media)
-- [rplugin/python3/denite/source/](#rpluginpython3denitesource)
+- [rplugin/python3/denite/source/vimtex.py](#rpluginpython3denitesourcevimtexpy)
 - [syntax](#syntax-1)
 - [test](#test)
 
@@ -169,6 +162,8 @@ This directory includes all keywords which can prompt up in the omnifunc popup.
 This directory includes all glyphs like α and β.
 
 ### context
+The single file (`cite.vim`) is used for the `vimtex-context-citation` part.
+[Here's](https://github.com/lervag/vimtex/pull/1961#issuecomment-795476750) a more detailed description of what it does and what's it's used for.
 
 ### fold
 This directory takes care of folding your `tex` document like this:
@@ -180,6 +175,11 @@ The filenames in this directory represent what it folds.
 This directory includes some functions to get some information about your latex
 document in order to create the table of contents for instance:
 ![toc example](./documentation_images/toc.png)
+
+The `vimcomplete.bst` file is used by `parser/bib.vim` in the
+`s:parse_with_bibtex()` function, which will actually run the bibtex problem
+with the supplied `.bst` file in order to convert a `.bib` file to a `.bbl` file
+that is much easier to parse.
 
 ### qf
 This directory creates the output in your quickfix window if you compile
