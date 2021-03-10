@@ -3,32 +3,16 @@ MYVIM ?= nvim --headless
 INMAKE := 1
 export INMAKE
 
+TESTS := $(wildcard test*.vim)
+TESTS := $(filter-out test_backend,$(TESTS:.vim=))
 BACKENDS := bibtex bibparse vim
 
-.PHONY: all $(BACKENDS) jobname globbed starred multicite
+.PHONY: test $(TESTS) $(BACKENDS)
 
-all: $(BACKENDS) jobname globbed starred multicite
+test: $(TESTS) $(BACKENDS)
+
+$(TESTS):
+	@$(MYVIM) -u $@.vim
 
 $(BACKENDS):
 	@BACKEND=$@ $(MYVIM) -u test_backend.vim
-
-jobname:
-	@$(MYVIM) -u test_jobname.vim
-
-globbed:
-	@$(MYVIM) -u test_globbed.vim
-
-starred:
-	@$(MYVIM) -u test_starred.vim
-
-multicite:
-	@$(MYVIM) -u test_multicite.vim
-
-parser_bcf:
-	@$(MYVIM) -u test_parser_bcf.vim
-
-parser_blg:
-	@$(MYVIM) -u test_parser_blg.vim
-
-custom_bibs:
-	@$(MYVIM) -u test_custom_bibs.vim

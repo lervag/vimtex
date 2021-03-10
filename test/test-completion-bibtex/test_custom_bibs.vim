@@ -7,11 +7,9 @@ nnoremap q :qall!<cr>
 let g:vimtex_cache_root = '.'
 let g:vimtex_cache_persistent = 0
 
-let g:vimtex_complete_bib = {
-      \ 'bibliography_commands': [
-      \   'mybibliography',
-      \ ]
-      \}
+let g:vimtex_bibliography_commands = [
+      \ 'mybibliography',
+      \]
 
 silent edit test_custom_bibs.tex
 
