@@ -79,13 +79,8 @@ used to list the TOC of your current document. Take a look into `:h vimtex-unite
 
 ## vimtex
 
-This directory has the main files. Each filename should explain themself
-for what they're used for. But here's a little table which explains
-some files which are nice to know:
-
-### compiler (dir)
-Here are all latex compiler with the given function to interact with the
-compilers. The files should work like an API for VimTeX.
+This directory has the main files. Each file should be self-explaining but here
+are some files which might be good to know!
 
 ### delim.vim
 
@@ -143,49 +138,98 @@ function VimTexCacheExample()
 endfunction
 ```
 
-<!-- TODO: doc.vim, echo.vim -->
+### compiler
+As the directory names says: This directory includes the vim files to interact
+with the given LaTeX compiler. Each file have similar function names like
+`s:compiler.start`. You can take a look into these function to get a better
+understanding how they work.
+
+### debug.vim
+This file is used for interal debugging and is not related to LaTeX at all. It
+parses the stacktrace from the `v:throwpoint` variable (see `:h v:throwpoint`
+        for more information). If this does not exist, then we forcibly create
+it and remove the top element.
+You can try this code as an example:
+```vim
+function! Test() abort
+  try
+    throw "Error message is here :D"
+  catch
+    call vimtex#debug#stacktrace(1)
+  endtry
+endfunction
+```
+Now enter `:call Test()` and the quickfix window should pop up with the `"Error
+message is here :D"` message.
 
 ### complete (dir)
 This directory includes all keywords which can prompt up in the omnifunc popup.
 
 #### tools
-
-##### unicode-math
+This directory includes all glyphs like α and β.
 
 ### context
 
 ### fold
+This directory takes care of folding your `tex` document like this:
+![folding example](./documentation_images/folding.png)
+
+The filenames in this directory represent what it folds.
 
 ### parser
-
-#### toc
+This directory includes some functions to get some information about your latex
+document in order to create the table of contents for instance:
+![toc example](./documentation_images/toc.png)
 
 ### qf
+This directory creates the output in your quickfix window if you compile
+your LaTeX file. Here's an example which is generated through the `latexlog.vim`
+file:
+![quickfix example](./documentation_images/quickfix.png)
+
+Each filename represents which file formats the error message for which LaTeX
+filetype.
 
 ### syntax
+This directory includes the syntax highlighting rules for each keyword in a
+LaTeX file.
 
-#### p
+The `core.vim` file also includes the concealling characters starting from line
+745 if you want to take a look into it.
+
+The `p` directory just includes more syntax highlighting rules which are *only*
+loaded if they are needed.
 
 ### text_obj
+This file includes some functions which can be used to get some information
+about the current user position. `envtargets.vim` includes for instance some
+functions like `vimtex#text_obj#envtargets#current` to get the current
+environment where the user is.
 
 ### view
-
-# compiler
-
-# doc
-
-# docker
-
-# ftdetect
+As you might see due to the filenames: This directory includes functions to
+interact with the given PDF-Viewer which you've declared in the
+`g:vimtex_view_method`.
 
 # ftplugin
+Well nothing really big to say here: If you open a `bib` or `tex` tiletype
+it'll look, if you have VimTex has been loaded.
 
 # indent
+The main function is `VimtexIndent` which returns the indent of the next line
+you're writing. If you want to know how it's doing that, take a look into this
+function!
 
-# media
-
-# rplugin/python3/denite/source/
+# rplugin/python3/denite/source/vimtex.py
+This file is used to interact with the
+[denite.vim](https://github.com/Shougo/denite.nvim) plugin. For example to jump
+to a section/subsection or chapter.
 
 # syntax
+The main file which loads the syntax highlighting settings according to its
+needs because all syntax rules might wouldn't be worth it.
 
 # test
+This directory includes *all* test cases which have to pass in order to have a
+stable and functional awesome VimTex plugin :) Each directory and filename
+should be self explaining for which cases they are used for.
