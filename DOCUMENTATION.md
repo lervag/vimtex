@@ -18,8 +18,12 @@ table of contents and click on it. (Hopefully) It'll give you some nice
 information.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [ftplugin](#ftplugin)
+- [syntax](#syntax)
+- [indent](#indent)
 - [after/ftplugin](#afterftplugin)
 - [autoload](#autoload)
   - [health](#health)
@@ -35,16 +39,26 @@ information.
     - [fold](#fold)
     - [parser](#parser)
     - [qf](#qf)
-    - [syntax](#syntax)
+    - [syntax](#syntax-1)
     - [text_obj](#text_obj)
     - [view](#view)
-- [ftplugin](#ftplugin)
-- [indent](#indent)
 - [rplugin/python3/denite/source/vimtex.py](#rpluginpython3denitesourcevimtexpy)
-- [syntax](#syntax-1)
 - [test](#test)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# ftplugin
+Well nothing really big to say here: If you open a `bib` or `tex` tiletype
+it'll look, if you have VimTeX has been loaded.
+
+# syntax
+The main file which loads the syntax highlighting settings according to its
+needs because all syntax rules might wouldn't be worth it.
+
+# indent
+The main function is `VimtexIndent` which returns the indent of the next line
+you're writing. If you want to know how it's doing that, take a look into this
+function!
 
 # after/ftplugin
 
@@ -210,23 +224,10 @@ As you might see due to the filenames: This directory includes functions to
 interact with the given PDF-Viewer which you've declared in the
 `g:vimtex_view_method`.
 
-# ftplugin
-Well nothing really big to say here: If you open a `bib` or `tex` tiletype
-it'll look, if you have VimTeX has been loaded.
-
-# indent
-The main function is `VimtexIndent` which returns the indent of the next line
-you're writing. If you want to know how it's doing that, take a look into this
-function!
-
 # rplugin/python3/denite/source/vimtex.py
 This file is used to interact with the
 [denite.vim](https://github.com/Shougo/denite.nvim) plugin. For example to jump
 to a section/subsection or chapter.
-
-# syntax
-The main file which loads the syntax highlighting settings according to its
-needs because all syntax rules might wouldn't be worth it.
 
 # test
 This directory includes *all* test cases which have to pass in order to have a
