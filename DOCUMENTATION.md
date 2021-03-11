@@ -168,6 +168,13 @@ with the given LaTeX compiler. Each file have similar function names like
 `s:compiler.start`. You can take a look into these function to get a better
 understanding how they work.
 
+### compiler.vim
+This file includes the main functions to interact with the given compiler in the
+`vimtex/autoload/vimtex/compiler` directory, it also provides the commands like
+`:VimtexCompile`. For example, the `vimtex#compiler#start()` function just calls
+(if we selected the latexmk compiler) the `s:compiler_nvim.start_single()`
+function of the `vimtex/autolaod/vimtex/compiler/latexmk.vim` file.
+
 ### debug.vim
 This file is used for interal debugging and is not related to LaTeX at all. It
 parses the stacktrace from the `v:throwpoint` variable (see `:h v:throwpoint`
