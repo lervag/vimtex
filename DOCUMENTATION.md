@@ -227,8 +227,11 @@ document like this thanks to the functions of each file:
 The filenames in this directory represent what it folds.
 
 ### parser.vim
-This directory includes some functions to get some information about your latex
-document in order to create the table of contents for instance:
+As the name of the file says: It's parsing the file we're currently editing. For
+example it looks where the preamble stops or how the table of contents is
+structured. Thanks to these information we're able to see a little TOC to
+navigate in our file (`:h :VimtexTocToggle` for more information):
+
 ![toc example](./documentation_images/toc.png)
 
 The `vimcomplete.bst` file is used by `parser/bib.vim` in the
@@ -237,13 +240,15 @@ with the supplied `.bst` file in order to convert a `.bib` file to a `.bbl` file
 that is much easier to parse.
 
 ### qf.vim
-This directory creates the output in your quickfix window if you compile
-your LaTeX file. Here's an example which is generated through the `latexlog.vim`
+Here we're creating the entries for the quickfix window do display them. It
+depends on which filetype we're currently editing. For example if we're editing
+a `bib` file, than it's using the function in the
+`vimtex/autoload/vimtex/qf/bibtex.vim` in order to create the appropriate
+error/warning logs.
+
+Here's an example which is generated through the `latexlog.vim`
 file:
 ![quickfix example](./documentation_images/quickfix.png)
-
-Each filename represents which file formats the error message for which LaTeX
-filetype.
 
 ### syntax
 This directory includes the syntax highlighting rules for each keyword in a
