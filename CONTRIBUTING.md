@@ -1,8 +1,6 @@
 # Guide for code contributions
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 
 - [Branch model](#branch-model)
 - [Documentation style](#documentation-style)
@@ -32,6 +30,10 @@ some pointers:
 - Use line of `-`s to separate subsections
 - The section tags should be right aligned at the 79th column
 - Sections should be included and linked to from the table of contents
+
+VimTeX also provides a little high level [documentation](./DOCUMENTATION.md)
+which might help you to understand the functionality of this plugin a little bit
+faster.
 
 ## Code style
 
@@ -75,9 +77,3 @@ the executable by setting the environment variable `MYVIM` before running. To
 run with vanilla vim, use `MYVIM="vim -T dumb --not-a-term --noplugin -n"`.
 Either export this in your shell, or prepend to `make`, that is, run
 `MYVIM="vim -T dumb --not-a-term --noplugin -n" make`.
-
-## Documentation
-VimTex provides a little high-level [documentation](./DOCUMENTATION.md). It's
-still under development, but it might help you to understand the code better (or
-at least faster). If you have any question about the code, feel free to open a
-new issue!
