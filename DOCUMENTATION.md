@@ -83,6 +83,9 @@ This directory has the following health-checks functions:
 - If their might be any plugin-clashes.
 - If the user has the needed dependencies for their PDF-Viewer
 
+**HINT:**** This file uses some functions provided by the `health.vim` framework
+which is only available for `neovim`!
+
 ## unite/sources
 
 This directory is used to combine VimTeX with
