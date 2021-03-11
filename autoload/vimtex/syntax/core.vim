@@ -405,7 +405,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathSuperSub "[_^]" contained
 
   " Text Inside Math regions
-  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\)\>" nextgroup=texMathTextArg
+  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\|fbox\)\>" nextgroup=texMathTextArg
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Math style commands
