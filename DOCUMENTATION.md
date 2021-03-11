@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the high-level documentation of **VimTex**.
+Welcome to the high-level documentation of **VimTeX**.
 
 This file should help you to understand the structure of this plugin and how
 it works.
@@ -12,7 +12,7 @@ bit too long the most should be probably self explained.
 
 This file works as follows:
 The table of contents has the same structure as the file structure of
-**VimTex**. If you want to know something about the
+**VimTeX**. If you want to know something about the
 `vimtex/autoload/vimtex/compiler` directory, than you can lookup the path in the
 table of contents and click on it. (Hopefully) It'll give you some nice
 information.
@@ -48,7 +48,7 @@ information.
 
 # after/ftplugin
 
-Currently there's only one file in it which makes sure that VimTex loaded
+Currently there's only one file in it which makes sure that VimTeX loaded
 successfully and that there're no conflicts with other plugins like LaTeX-Box.
 
 # autoload
@@ -64,7 +64,7 @@ This directory has the following health-checks functions:
 
 ## unite/sources
 
-This directory is used to combine VimTex with
+This directory is used to combine VimTeX with
 [denite](https://github.com/Shougo/denite.nvim) or
 [unite](https://github.com/Shougo/unite.vim). These extra-plugins are mainly
 used to list the TOC of your current document. Take a look into `:h vimtex-unite`, to get more information.
@@ -107,7 +107,7 @@ issue](https://github.com/lervag/vimtex/issues/1981#issuecomment-792263781).
 This file includes some functions to create and access your own caches.
 Here's an example:
 ```vim
-function VimTexCacheExample()
+function VimTeXCacheExample()
     " create a new cache (if the name doesn't exist yet)
     " with an attribute 'number'. So the cache would be like that:
     "
@@ -212,7 +212,7 @@ interact with the given PDF-Viewer which you've declared in the
 
 # ftplugin
 Well nothing really big to say here: If you open a `bib` or `tex` tiletype
-it'll look, if you have VimTex has been loaded.
+it'll look, if you have VimTeX has been loaded.
 
 # indent
 The main function is `VimtexIndent` which returns the indent of the next line
@@ -230,5 +230,5 @@ needs because all syntax rules might wouldn't be worth it.
 
 # test
 This directory includes *all* test cases which have to pass in order to have a
-stable and functional awesome VimTex plugin :) Each directory and filename
+stable and functional awesome VimTeX plugin :) Each directory and filename
 should be self explaining for which cases they are used for.
