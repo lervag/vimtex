@@ -110,7 +110,7 @@ this:
 
 ```tex
 \begin{Environment}
-    Some awesome text |
+  Some awesome text |
 \end{Environment}
 ```
 
@@ -140,25 +140,25 @@ Here's an example:
 
 ```vim
 function VimTeXCacheExample()
-    " create a new cache (if the name doesn't exist yet)
-    " with an attribute 'number'. So the cache would be like that:
-    "
-    "   let l:test = {
-    "     'number' = 10,
-    "   }
-    let l:my_cache = vimtex#cache#open('cache_name', {'number' : 10})
+  " create a new cache (if the name doesn't exist yet)
+  " with an attribute 'number'. So the cache would be like that:
+  "
+  "   let l:test = {
+  "   'number' = 10,
+  "   }
+  let l:my_cache = vimtex#cache#open('cache_name', {'number' : 10})
 
-    " change the value in you cache
-    let l:my_cache['number'] = 9001
+  " change the value in you cache
+  let l:my_cache['number'] = 9001
 
-    " will print '9001'
-    echo l:my_cache['number']
+  " will print '9001'
+  echo l:my_cache['number']
 
-    " save your changes
-    " In general it'll be saved in your `$XDG_CACHE_HOME/vimtex/` directory
-    " (normally '~/.cache/vimtex') in the appropriate tex-file where you accessed
-    " cache file.
-    call vimtex#cache#close('cache_name')
+  " save your changes
+  " In general it'll be saved in your `$XDG_CACHE_HOME/vimtex/` directory
+  " (normally '~/.cache/vimtex') in the appropriate tex-file where you accessed
+  " cache file.
+  call vimtex#cache#close('cache_name')
 endfunction
 ```
 
@@ -171,7 +171,7 @@ understanding how they work.
 ### debug.vim
 This file is used for interal debugging and is not related to LaTeX at all. It
 parses the stacktrace from the `v:throwpoint` variable (see `:h v:throwpoint`
-        for more information). If this does not exist, then we forcibly create
+for more information). If this does not exist, then we forcibly create
 it and remove the top element.
 You can try this code as an example:
 
