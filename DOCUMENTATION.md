@@ -18,7 +18,6 @@ table of contents and click on it. (Hopefully) It'll give you some nice
 information.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
 - [after/ftplugin](#afterftplugin)
