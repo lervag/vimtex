@@ -21,9 +21,9 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
 
   syntax match texCmdHyperref "\\url\>" nextgroup=texUrlArg skipwhite
   syntax region texUrlArg matchgroup=texDelim
-        \ contained contains=@NoSpell,texComment
+        \ contained contains=@NoSpell
         \ start="\z([^\ta-zA-Z]\)" end="\z1"
-  call vimtex#syntax#core#new_arg('texUrlArg', {'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_arg('texUrlArg', {'contains': '@NoSpell'})
 
 
   highlight def link texCmdHyperref   texCmd
