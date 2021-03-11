@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the high-level documentation of **VimTeX**.
+Welcome to the high-level documentation of VimTeX.
 
 This file should help you to understand the structure of this plugin and how
 it works.
@@ -12,7 +12,7 @@ bit too long the most should be probably self explained.
 
 This file works as follows:
 The table of contents has the same structure as the file structure of
-**VimTeX**. If you want to know something about the
+VimTeX. If you want to know something about the
 `vimtex/autoload/vimtex/compiler` directory, than you can lookup the path in the
 table of contents and click on it. (Hopefully) It'll give you some nice
 information.
