@@ -98,6 +98,11 @@ used to list the TOC of your current document. Take a look into `:h vimtex-unite
 This directory has the main files. Each file should be self-explaining but here
 are some files which might be good to know!
 
+## vimtex.vim
+
+This file includes the main function: `vimtex#init()` which loads all the
+functionalities from all other files and modules.
+
 ### delim.vim
 
 This file includes some functions to detect the surrounding delimiters like
