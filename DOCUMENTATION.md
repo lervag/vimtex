@@ -67,6 +67,13 @@ successfully and that there're no conflicts with other plugins like LaTeX-Box.
 
 # autoload
 
+If you want to know more about the *special functionality* of the `autoload`
+directory, you can read the `:h autoload` section or take a little look into
+[this chapter](https://learnvimscriptthehardway.stevelosh.com/chapters/42.html)
+of [Learn Vimscript the Hard
+Way](https://learnvimscriptthehardway.stevelosh.com/chapters/42.html) by Steve
+Losh.
+
 ## health
 
 This directory has the following health-checks functions:
