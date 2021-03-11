@@ -107,6 +107,7 @@ functionalities from all other files and modules.
 
 This file includes some functions to detect the surrounding delimiters like
 this:
+
 ```tex
 \begin{Environment}
     Some awesome text |
@@ -116,6 +117,7 @@ this:
 The vertical line (`|`) should represent your cursor. Now you could use the
 `vimtex#delim#get_surrounding('env_tex')` function in order to get the current
 environment where the user is. Here's an example code:
+
 ```vim
 " Return values are dictionaries
 let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
@@ -135,6 +137,7 @@ issue](https://github.com/lervag/vimtex/issues/1981#issuecomment-792263781).
 ### cache.vim
 This file includes some functions to create and access your own caches.
 Here's an example:
+
 ```vim
 function VimTeXCacheExample()
     " create a new cache (if the name doesn't exist yet)
@@ -171,6 +174,7 @@ parses the stacktrace from the `v:throwpoint` variable (see `:h v:throwpoint`
         for more information). If this does not exist, then we forcibly create
 it and remove the top element.
 You can try this code as an example:
+
 ```vim
 function! Test() abort
   try
