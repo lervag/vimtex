@@ -194,23 +194,39 @@ endfunction
 Now enter `:call Test()` and the quickfix window should pop up with the `"Error
 message is here :D"` message.
 
-### complete (dir)
-This directory includes all keywords which can prompt up in the omnifunc popup.
+### complete.vim
+It includes a bunch of functions to filter out the information for the omnifunc
+function of vim like getting the names of the custom-environments and loading
+the given keywords of a package. Each section includes a function which takes
+care for a given part of the omnicompletion.
+
+The `complete` directory includes all keywords which are loaded for the given
+package you're using in your `tex` file.
 
 #### tools
 This directory includes all glyphs like α and β.
 
-### context
+### context.vim
 The single file (`cite.vim`) is used for the `vimtex-context-citation` part.
 [Here's](https://github.com/lervag/vimtex/pull/1961#issuecomment-795476750) a more detailed description of what it does and what's it's used for.
 
-### fold
-This directory takes care of folding your `tex` document like this:
+### fold.vim
+This file includes the functions to create the foldings. The main function is
+the `vimtex#fold#init_state(state)` function which is calling the needed fold
+functions for the current section:
+
+```vim
+  " this is in line 43
+  let a:state.fold_types_dict[l:key] = vimtex#fold#{l:key}#new(l:config)
+```
+
+The `vimtex/autoload/vimtex/fold` directory takes care of folding your `tex`
+document like this thanks to the functions of each file:
 ![folding example](./documentation_images/folding.png)
 
 The filenames in this directory represent what it folds.
 
-### parser
+### parser.vim
 This directory includes some functions to get some information about your latex
 document in order to create the table of contents for instance:
 ![toc example](./documentation_images/toc.png)
@@ -220,7 +236,7 @@ The `vimcomplete.bst` file is used by `parser/bib.vim` in the
 with the supplied `.bst` file in order to convert a `.bib` file to a `.bbl` file
 that is much easier to parse.
 
-### qf
+### qf.vim
 This directory creates the output in your quickfix window if you compile
 your LaTeX file. Here's an example which is generated through the `latexlog.vim`
 file:
@@ -231,24 +247,36 @@ filetype.
 
 ### syntax
 This directory includes the syntax highlighting rules for each keyword in a
-LaTeX file.
-
-The `core.vim` file also includes the concealling characters starting from line
-745 if you want to take a look into it.
+LaTeX file. But the *main* syntax-highlighting functionalities are in the
+`syntax/core.vim` file which also includes the concealling characters starting
+from line 745.
 
 The `p` directory just includes more syntax highlighting rules which are *only*
 loaded if they are needed.
 
-### text_obj
+### text\_obj.vim
 This file includes some functions which can be used to get some information
 about the current user position. `envtargets.vim` includes for instance some
 functions like `vimtex#text_obj#envtargets#current` to get the current
 environment where the user is.
 
-### view
-As you might see due to the filenames: This directory includes functions to
-interact with the given PDF-Viewer which you've declared in the
-`g:vimtex_view_method`.
+### view.vim
+In this file we're interacting with the given PDF-Viewer set by the
+`g:vimtex_view_method` variable (like zathura). VimTeX is calling the
+appropriate functions of the selected pdf-viewer.
+In order to achieve that, it just use the `g:vimtex\_view\_method` variable to
+get the (file)name in the `vimtex/autoload/vimtex/view` directory where all
+files have the same function names. Just a different name according to the
+compiler. So it looks like that (line is from the `vimtex#view#init_buffer()`
+function):
+
+```vim
+  let a:state.viewer = vimtex#view#{g:vimtex\_view\_method}#new()
+```
+
+If `g:vimtex\_view\_method` would be `zathura`, we'd call the
+`vimtex#view#zathura#new()` function which call zathura to open the PDF-file for
+us.
 
 # rplugin/python3/denite/source/vimtex.py
 This file is used to interact with the
