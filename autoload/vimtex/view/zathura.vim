@@ -130,17 +130,17 @@ endfunction
 " }}}1
 function! s:zathura.get_pid() dict abort " {{{1
   " First try to match full output file name
-  let cmd = 'pgrep -nf "zathura.*'
+  let l:cmd = 'pgrep -nf "zathura.*'
         \ . escape(get(self, 'outfile', self.out()), '~\%.') . '"'
-  let pid = str2nr(system(cmd)[:-2])
+  let l:pid = str2nr(system(l:cmd)[:-2])
 
   " Now try to match correct servername as fallback
-  if empty(pid)
-    let cmd = 'pgrep -nf "zathura.+--servername ' . v:servername . '"'
-    let pid = str2nr(system(cmd)[:-2])
+  if empty(l:pid)
+    let l:cmd = 'pgrep -nf "zathura.+--servername ' . v:servername . '"'
+    let l:pid = str2nr(system(l:cmd)[:-2])
   endif
 
-  return pid
+  return l:pid
 endfunction
 
 " }}}1
