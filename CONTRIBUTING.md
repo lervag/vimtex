@@ -1,12 +1,13 @@
 # Guide for code contributions
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 
 - [Branch model](#branch-model)
 - [Documentation style](#documentation-style)
 - [Code style](#code-style)
 - [Running tests](#running-tests)
-- [Documentation](#documentation)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -31,9 +32,10 @@ some pointers:
 - The section tags should be right aligned at the 79th column
 - Sections should be included and linked to from the table of contents
 
-VimTeX also provides a little high level [documentation](./DOCUMENTATION.md)
-which might help you to understand the functionality of this plugin a little bit
-faster.
+VimTeX also has a high level code [documentation](./DOCUMENTATION.md) mainly
+for developers. It should provide an overview of the VimTeX code and APIs and
+may help developers (and users) to to understand the functionalities of the
+plugin a little bit faster.
 
 ## Code style
 
