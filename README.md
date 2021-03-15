@@ -8,12 +8,21 @@ VimTeX is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) f
 
 ## Table of contents
 
-  * [Requirements](#requirements)
-  * [Installation](#installation)
-  * [Quick Start](#quick-start)
-  * [Features](#features)
-  * [Other relevant plugins](#other-relevant-plugins)
-  * [Alternatives](#alternatives)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Other relevant plugins](#other-relevant-plugins)
+  - [Linting and syntax checking](#linting-and-syntax-checking)
+  - [Snippets and templates](#snippets-and-templates)
+  - [Tag navigation](#tag-navigation)
+- [Alternatives](#alternatives)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Requirements
 

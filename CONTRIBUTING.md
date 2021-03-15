@@ -1,5 +1,16 @@
 # Guide for code contributions
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Branch model](#branch-model)
+- [Documentation style](#documentation-style)
+- [Code style](#code-style)
+- [Running tests](#running-tests)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Branch model
 
 VimTeX is developed mainly through the master branch, and pull requests should
@@ -20,6 +31,11 @@ some pointers:
 - Use line of `-`s to separate subsections
 - The section tags should be right aligned at the 79th column
 - Sections should be included and linked to from the table of contents
+
+VimTeX also has a high level code [documentation](./DOCUMENTATION.md) mainly
+for developers. It should provide an overview of the VimTeX code and APIs and
+may help developers (and users) to to understand the functionalities of the
+plugin a little bit faster.
 
 ## Code style
 
