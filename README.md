@@ -31,8 +31,10 @@ were updated in July 2020 after the release of VimTeX 1.0. If you are stuck
 on older versions of Vim or neovim, then you should not use the most recent
 version of VimTeX, but instead remain at the v1.0 tag.
 
-Some features require external tools. For example, the default compiler backend relies on [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
-Users are encouraged to read the requirements section in the [documentation](doc/vimtex.txt) (`:h vimtex-requirements`).
+Some features require external tools. For example, the default compiler backend
+relies on [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
+Users are encouraged to read the requirements section in the
+[documentation](doc/vimtex.txt) (`:h vimtex-requirements`).
 
 ## Installation
 
@@ -60,7 +62,8 @@ If you use the new package feature in Vim, please note the following:
   solutions to this. To see which scripts are loaded and in which order, use
   `:scriptnames`.
 * For more information on how to use the Vim native package solution, see
-  [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it) and [here](https://shapeshed.com/vim-packages/).
+  [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it)
+  and [here](https://shapeshed.com/vim-packages/).
 
 ## Quick Start
 
@@ -70,6 +73,12 @@ through the documentation to learn about the different features and
 possibilities provided by VimTeX (see [`:h vimtex`](doc/vimtex.txt)).
 
 ![Quick start gif](media/quick_start.gif?raw=true)
+
+Advanced users and potential developers may also be interested in reading the
+supplementary documents:
+
+* [CONTRIBUTING.md](CONTRIBUTING.md)
+* [DOCUMENTATION.md](DOCUMENTATION.md)
 
 ## Features
 
