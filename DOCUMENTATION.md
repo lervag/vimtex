@@ -224,7 +224,7 @@ functions for the current section:
 
 The `vimtex/autoload/vimtex/fold` directory takes care of folding your `tex`
 document like this thanks to the functions of each file:
-![folding example](./documentation_images/folding.png)
+![folding example](./media/folding.png)
 
 The filenames in this directory represent what it folds.
 
@@ -234,7 +234,7 @@ example it looks where the preamble stops or how the table of contents is
 structured. Thanks to these information we're able to see a little TOC to
 navigate in our file (`:h :VimtexTocToggle` for more information):
 
-![toc example](./documentation_images/toc.png)
+![toc example](./media/toc.png)
 
 The `vimcomplete.bst` file is used by `parser/bib.vim` in the
 `s:parse_with_bibtex()` function, which will actually run the bibtex problem
@@ -250,7 +250,7 @@ error/warning logs.
 
 Here's an example which is generated through the `latexlog.vim`
 file:
-![quickfix example](./documentation_images/quickfix.png)
+![quickfix example](./media/quickfix.png)
 
 ### syntax
 This directory includes the syntax highlighting rules for each keyword in a
