@@ -195,125 +195,160 @@ endfunction
 ```
 
 ### compiler.vim
-This file includes the main functions to interact with the given compiler in the
-`vimtex/autoload/vimtex/compiler` directory, it also provides the commands like
-`:VimtexCompile`. For example, the `vimtex#compiler#start()` function just calls
-(if we selected the latexmk compiler) the `s:compiler_nvim.start_single()`
-function of the `vimtex/autolaod/vimtex/compiler/latexmk.vim` file.
+This submodule defines an API for interacting with LaTeX compiler backends. It
+also defines the main compiler mappings and commands (e.g. `:VimtexCompile`).
 
-### compiler
-As the directory names says: This directory includes the vim files to interact
-with the given LaTeX compiler. Each file have similar function names like
-`s:compiler.start`. You can take a look into these function to get a better
-understanding how they work.
+Each supported backend is defined in separated scripts under
+`vimtex/autoload/vimtex/compiler/*.vim`. These scripts provide
+`vimtex#compiler#mycompiler#init()`, which is used to initialize a particular
+backend - it should return a dictionary object that will be part of the VimTeX
+state.
+
+The main compiler API essentially connects to the specified backend. E.g., if
+one uses the default `latexmk` backend, then the top level
+`vimtex#compiler#start()` function will essentially call the
+`s:compiler_nvim.start_single()` function from
+`vimtex/autolaod/vimtex/compiler/latexmk.vim`.
 
 ### debug.vim
-This file is used for interal debugging and is not related to LaTeX at all. It
-parses the stacktrace from the `v:throwpoint` variable (see `:h v:throwpoint`
-for more information). If this does not exist, then we forcibly create
-it and remove the top element.
-You can try this code as an example:
+This standalone script defines a convenience function for internal debugging:
+`vimtex#debug#stacktrace()` parses the stacktrace from the `v:throwpoint`
+variable (see `:h v:throwpoint` for more information). If this does not exist,
+then we forcibly create it and remove the top element. You can try this code as
+an example:
 
 ```vim
+" Save as test.py
 function! Test() abort
   try
-    throw "Error message is here :D"
+    throw "Nasty error message is here :D"
   catch
     call vimtex#debug#stacktrace(1)
   endtry
 endfunction
 ```
-Now enter `:call Test()` and the quickfix window should pop up with the `"Error
-message is here :D"` message.
+
+Now type `:call Test()`, and the quickfix window should pop up with the
+specified error message and the location of the error.
 
 ### complete.vim
-It includes a bunch of functions to filter out the information for the omnifunc
-function of vim like getting the names of the custom-environments and loading
-the given keywords of a package. Each section includes a function which takes
-care for a given part of the omnicompletion.
+This script defines the main completion API: `vimtex#complete#omnifunc(...)`.
+See `:help complete-functions` for details on how omnifunctions work.
 
-The `complete` directory includes all keywords which are loaded for the given
-package you're using in your `tex` file.
+The function is relatively advanced and allows different completion mechanisms
+for different contexts.
 
-#### tools
-This directory includes all glyphs like α and β.
+The `complete/` subdirectory contains simple files that lists keywords defined
+for specific packages or classes. These files are used by the command and
+environment completers.
+
+The `complete/tools` directory includes a large map between LaTeX commands and
+unicode glyphs, like `\alpha -> α` and `\beta -> β`. This is used to enrich the
+keywords lists under `complete/` to add more fancy completion menus.
 
 ### context.vim
-The single file (`cite.vim`) is used for the `vimtex-context-citation` part.
-[Here's](https://github.com/lervag/vimtex/pull/1961#issuecomment-795476750) a more detailed description of what it does and what's it's used for.
+This script provides a context menu feature (`:help :VimtexContextMenu`). Each
+script under `autoload/vimtex/context/*.vim` defines a specific context and
+its related actions. See
+[here](https://github.com/lervag/vimtex/pull/1961#issuecomment-795476750) for
+a more detailed description of how this is implemented.
+
+For instance, the context `context/cite.vim` defines a citation context (see
+`:help vimtex-context-citation`).
 
 ### fold.vim
-This file includes the functions to create the foldings. The main function is
-the `vimtex#fold#init_state(state)` function which is calling the needed fold
-functions for the current section:
-
-```vim
-  " this is in line 43
-  let a:state.fold_types_dict[l:key] = vimtex#fold#{l:key}#new(l:config)
-```
-
-The `vimtex/autoload/vimtex/fold` directory takes care of folding your `tex`
-document like this thanks to the functions of each file:
+This defines the fold functions for VimTeX. Folding is explained in `:help
+folds`. An example of how a folded document may look like:
 ![folding example](./media/folding.png)
 
-The filenames in this directory represent what it folds.
+VimTeX defines a custom fold expression, see `:help fold-expr`. The
+`vimtex#fold#init_state` function will apply folding as per the related
+configuration (see `:help vimtex-folding`).
+
+The fold expression is modularized to allow a relatively high degree of
+customizability. Each type is defined in its separate file, e.g.
+`autoload/vimtex/fold/envs.vim` for folding of environments.
 
 ### parser.vim
-As the name of the file says: It's parsing the file we're currently editing. For
-example it looks where the preamble stops or how the table of contents is
-structured. Thanks to these information we're able to see a little TOC to
-navigate in our file (`:h :VimtexTocToggle` for more information):
+A lot of VimTeX functionalities relies on some type of parsing. This module
+defines an API for various parsers, both for TeX files and other filetypes
+(e.g. `aux` and `bib`), as well as some specific types of parser (e.g. `toc`
+for parsing TeX files for a table of contents).
+
+The code for each parser is defined in sub modules, e.g. `parser/bib.vim`.
+
+The `vimcomplete.bst` file is used by `parser/bib.vim` in the
+`s:parse_with_bibtex()` function. It is used to convert a `.bib` file to
+a `.bbl` file with `bibtex` - this is useful because the `.bbl` file generated
+with this `.bst` file is very easy to parse.
+
+### toc.vim
+Specifies a simple API and buffer mappings/commands for creating a convenient
+table of contents (TOC) to navigate and inspect a file (`:h :VimtexTocToggle`
+for more information).
 
 ![toc example](./media/toc.png)
 
-The `vimcomplete.bst` file is used by `parser/bib.vim` in the
-`s:parse_with_bibtex()` function, which will actually run the bibtex problem
-with the supplied `.bst` file in order to convert a `.bib` file to a `.bbl` file
-that is much easier to parse.
-
 ### qf.vim
-Here we're creating the entries for the quickfix window do display them. It
-depends on which filetype we're currently editing. For example if we're editing
-a `bib` file, than it's using the function in the
-`vimtex/autoload/vimtex/qf/bibtex.vim` in order to create the appropriate
-error/warning logs.
+This submodule defines functions and buffer mappings to parse log files and
+similar and put errors and warnings into the quickfix window (see `:help
+quickfix`). The functions are used e.g. by callbacks from the compilers, if
+supported and enabled, to automatically parse log files and display potential
+errors after compilation.
 
-Here's an example which is generated through the `latexlog.vim`
-file:
+The files `vimtex/autoload/vimtex/qf/*.vim` define different types of log
+parsers. E.g., `qf/bibtex.vim` is used to parse `.blg` files for bibtex related
+warnings and errors, and `qf/latexlog.vim` parses `.log` files for LaTeX
+warnings and errors. `qf/pulp.vim` defines an alternative log parser that can
+be used instead of `latexlog.vim`. See also `:help g:vimtex_quickfix_method`.
+
+Here's an example of the quickfix list generated by the `qf/latexlog.vim`
+script:
+
 ![quickfix example](./media/quickfix.png)
 
-### syntax
-This directory includes the syntax highlighting rules for each keyword in a
-LaTeX file. But the *main* syntax-highlighting functionalities are in the
-`syntax/core.vim` file which also includes the concealling characters starting
-from line 745.
+### syntax.vim
+This script implements some convenience functions for the bulk VimTeX code.
+This may be counter intuitive, so be warned.
 
-The `p` directory just includes more syntax highlighting rules which are *only*
-loaded if they are needed.
+The idea is that other parts of VimTeX may rely on the syntax state, e.g. to
+determine if a position is within math mode (`vimtex#syntax#in_mathzone(...)`).
+
+The actual syntax rules are defined in the scripts under `syntax/*.vim`.
+
+### syntax
+This subdirectory contains the main syntax highlighting scripts. The entry
+point for the syntax scripts are, as mentioned previously, the top level
+[`syntax/tex.vim`](#syntax). However, as most of the code, the bulk source is
+defined in the autoloaded functions.
+
+In short: `syntax/core.vim` implements the core syntax rules, whereas the
+scripts under `syntax/p/` define package specific syntax rules.
 
 ### text\_obj.vim
-This file includes some functions which can be used to get some information
-about the current user position. `envtargets.vim` includes for instance some
-functions like `vimtex#text_obj#envtargets#current` to get the current
-environment where the user is.
+This submodule defines text objects, see `:help text-objects`. Buffer local
+mappings are created during initialization.
+
+The module allows to use different backends, including the popular
+[`targets.vim`](https://github.com/wellle/targets.vim).
 
 ### view.vim
-In this file we're interacting with the given PDF-Viewer set by the
-`g:vimtex_view_method` variable (like zathura). VimTeX is calling the
-appropriate functions of the selected pdf-viewer.
-In order to achieve that, it just use the `g:vimtex\_view\_method` variable to
-get the (file)name in the `vimtex/autoload/vimtex/view` directory where all
-files have the same function names. Just a different name according to the
-compiler. So it looks like that (line is from the `vimtex#view#init_buffer()`
-function):
+This submodule defines the main view API and buffer mappings/commands. That is,
+mappings and commands to open a PDF viewer for the compiled LaTeX document.
+
+The desired PDF viewer is specified  with `g:vimtex_view_method` variable, and
+the specified viewer is initialized from `view/VIEWER.vim` (e.g.
+`view/zathura.vim`). This does essentialy just the following for a given VimTeX
+state:
 
 ```vim
-  let a:state.viewer = vimtex#view#{g:vimtex\_view\_method}#new()
+let a:state.viewer = vimtex#view#{g:vimtex_view_method}#new()
 ```
 
-If `g:vimtex\_view\_method` would be `zathura`, we'd call the
-`vimtex#view#zathura#new()` function which call zathura to open the PDF-file for
-us.
+That is, if `g:vimtex_view_method` is `zathura`, then this calls
+`vimtex#view#zathura#new()`. The `new()` method should return a dictionary
+object with e.g. a `.view()` method that is used to open a file with the
+specified viewer.
 
 ## health/vimtex.vim
 VimTeX hooks into the `health.vim` framework provided by `neovim` (see `:help
