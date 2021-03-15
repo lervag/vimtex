@@ -1,21 +1,15 @@
 # Documentation
 
-Welcome to the high-level documentation of VimTeX.
+Welcome to the "high-level documentation" of VimTeX. The goal of this document
+is to help developers (and curious users) to understand the structure of the
+plugin and how it works. That is, it should essentially provide a useful and
+quick overview of the most important files and directories. See also `:help
+vimtex-code` for some related information.
 
-This file should help you to understand the structure of this plugin and how
-it works.
-
-So first of all, we're taking a look into the first layer of the plugin, after
-that, we're going to through each necessary directory, if it needs some more
-description. We won't go through _every_ file, because it would take a little
-bit too long the most should be probably self explained.
-
-This file works as follows:
-The table of contents has the same structure as the file structure of
-VimTeX. If you want to know something about the
-`vimtex/autoload/vimtex/compiler` directory, than you can lookup the path in the
-table of contents and click on it. (Hopefully) It'll give you some nice
-information.
+The table of contents has the same structure as the essential file structure of
+VimTeX. E.g., if you want to know something about
+`vimtex/autoload/vimtex/somefile.vim`, then you can lookup the path in the
+table of contents and click on it.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -26,14 +20,14 @@ information.
 - [indent](#indent)
 - [after/ftplugin](#afterftplugin)
 - [autoload](#autoload)
-  - [health](#health)
-  - [unite/sources](#unitesources)
-  - [vimtex](#vimtex)
   - [vimtex.vim](#vimtexvim)
+  - [vimtex](#vimtex)
+    - [state.vim](#statevim)
     - [delim.vim](#delimvim)
+    - [cmd.vim](#cmdvim)
     - [cache.vim](#cachevim)
-    - [compiler](#compiler)
     - [compiler.vim](#compilervim)
+    - [compiler](#compiler)
     - [debug.vim](#debugvim)
     - [complete.vim](#completevim)
       - [tools](#tools)
@@ -44,84 +38,103 @@ information.
     - [syntax](#syntax-1)
     - [text\_obj.vim](#text%5C_objvim)
     - [view.vim](#viewvim)
+  - [health/vimtex.vim](#healthvimtexvim)
+  - [unite/sources/vimtex.vim](#unitesourcesvimtexvim)
 - [rplugin/python3/denite/source/vimtex.py](#rpluginpython3denitesourcevimtexpy)
 - [test](#test)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # ftplugin
-Well nothing really big to say here: If you open a `bib` or `tex` tiletype
-it'll look, if you have VimTeX has been loaded.
+The main features of VimTeX are implemented as a filetype plugin for Vim and
+neovim. This is a specific concept that you can read about with `:help
+filetype-plugins`.
+
+VimTeX provides a filetype plugin for the `tex` and `bib` filetypes. These
+scripts are the main entry points for the bulk functionalities of VimTeX. They
+are both very simple: they ensure that the user wants to load VimTeX, then they
+execute the function `vimtex#init()` from [`autoload/vimtex.vim`](#vimtexvim).
 
 # syntax
-The main file which loads the syntax highlighting settings according to its
-needs because all syntax rules might wouldn't be worth it.
+VimTeX is also a syntax plugin and provides a `tex` syntax plugin script. The
+relevant Vim and neovim docs for this is `:help :syn-files`. Essentially, this
+is the entry point for loading the syntax highlighting.
 
 # indent
-The main function is `VimtexIndent` which returns the indent of the next line
-you're writing. If you want to know how it's doing that, take a look into this
-function!
+VimTeX also has an indentation script; this feature is also a special concept
+with an entry point under the `indent/` directory, see `:help
+indent-expression`. The main purpose of `indent/tex.vim` and `indent/bib.vim`
+is to provide functions like `VimtexIndent()` that are used with the
+`:help 'indentexpr'` option.
 
 # after/ftplugin
+The `after/` directory is a simple Vim and neovim concept that allows to ensure
+that some scripts are loaded _after_ the main scripts. For details of the
+concept, see `:help after-directory`.
 
-Currently there's only one file in it which makes sure that VimTeX loaded
-successfully and that there're no conflicts with other plugins like LaTeX-Box.
+Currently, there's only one script `after/ftplugin/tex.vim`. This is used to
+make sure that VimTeX loaded successfully and that there're no conflicts with
+other plugins such as LaTeX-Box.
 
 # autoload
-
-If you want to know more about the *special functionality* of the `autoload`
-directory, you can read the `:h autoload` section or take a little look into
-[this chapter](https://learnvimscriptthehardway.stevelosh.com/chapters/42.html)
-of [Learn Vimscript the Hard
+The `autoload` directory is an important concept in Vimscript. It allows to
+avoid loading code until it is strictly necessary. This allows to substantially
+speed up the initialization phase, since the bulk VimTeX code is not sourced
+unless necessary. See `:help autoload` for more details. It may also be
+instructive to read [this
+chapter](https://learnvimscriptthehardway.stevelosh.com/chapters/42.html) of
+the well known [Learn Vimscript the Hard
 Way](https://learnvimscriptthehardway.stevelosh.com/chapters/42.html) by Steve
 Losh.
 
-## health
+## vimtex.vim
+This file defines the main entry point `vimtex#init()`, which is responsible
+for loading all of the VimTeX functionalities, except:
 
-This directory has the following health-checks functions:
+* syntax highlighting is loaded from `syntax/tex.vim`
+* indentation is loaded from `indent/tex.vim`
 
-- If the user has a valid vim version
-- If the user selected a valid compiler
-- If their might be any plugin-clashes.
-- If the user has the needed dependencies for their PDF-Viewer
+The main init function calls `vimtex#mymodule#init_buffer()` for each
+submodule, if it exists. This function should take care of defining buffer
+local mappings, commands, and autocommands for the respective submodule.
 
-**HINT:**** This file uses some functions provided by the `health.vim` framework
-which is only available for `neovim`!
-
-## unite/sources
-
-This directory is used to combine VimTeX with
-[denite](https://github.com/Shougo/denite.nvim) or
-[unite](https://github.com/Shougo/unite.vim). These extra-plugins are mainly
-used to list the TOC of your current document. Take a look into `:h vimtex-unite`, to get more information.
+The init function also ensures that the current buffer is coupled with
+a corresponding state dictionary, see [autoload/vimtex/state.vim](#statevim).
 
 ## vimtex
+This directory holds the bulk of the VimTeX source code. Each `.vim` file
+represents a separate submodule that may provide one ore more of the following:
 
-This directory has the main files. Each file should be self-explaining but here
-are some files which might be good to know!
+* a functional API that is used in other parts of VimTeX
+* buffer functionalities (mappings, commands, and/or autocommands)
+* state data
 
-## vimtex.vim
-
-This file includes the main function: `vimtex#init()` which loads all the
-functionalities from all other files and modules.
+### state.vim
+The VimTeX state variable is a dictionary that contains data specific to
+a single LaTeX project. A project may consist of several buffers for different
+files, e.g. if the project is a multi-file project (see `:help
+vimtex-multi-file`). A submodule may add to the state during initialization
+with `vimtex#mymodule#init_state(state)`, which takes the state object as
+a single argument.
 
 ### delim.vim
+This file defines an API and some buffer mappings for detecting and
+manipulating the surrounding delimiters.
 
-This file includes some functions to detect the surrounding delimiters like
-this:
+The API is mostly based on the function `vimtex#delim#get_surrounding(type)`.
+The following is a simple example to detect the surrounding environment. Let
+`|` denote the cursor position:
 
 ```tex
 \begin{Environment}
-  Some awesome text |
+  Some awesome | text
 \end{Environment}
 ```
 
-The vertical line (`|`) should represent your cursor. Now you could use the
-`vimtex#delim#get_surrounding('env_tex')` function in order to get the current
-environment where the user is. Here's an example code:
+Example code for working with the environment delimiter:
 
 ```vim
-" Return values are dictionaries
+" The return values are dictionaries
 let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
 
 " Empty dicts mean we did not find a surrounding environment
@@ -133,12 +146,29 @@ echo l:open.lnum
 echo l:open.cnum
 ```
 
-For more information, take a look into [this
-issue](https://github.com/lervag/vimtex/issues/1981#issuecomment-792263781).
+### cmd.vim
+This file defines an API and some buffer mappings for detecting and
+manipulating LaTeX commands.
+
+The main API relies on the functions `vimtex#cmd#get_*(...)`, e.g.
+`vimtex#cmd#get_current()`. A simple example usage:
+
+```vim
+let l:cmd = vimtex#cmd#get_current()
+if empty(l:cmd) | return | endif
+
+echo l:cmd.name
+echo l:cmd.pos_start
+echo l:cmd.pos_end
+echo l:cmd.args
+echo l:cmd.opts
+```
 
 ### cache.vim
-This file includes some functions to create and access your own caches.
-Here's an example:
+This file implements an API for creating and accessing caches that can be both
+volatile and persistent, as well as project and buffer local.
+
+Here's an example of how to use a cache.
 
 ```vim
 function VimTeXCacheExample()
@@ -164,18 +194,18 @@ function VimTeXCacheExample()
 endfunction
 ```
 
-### compiler
-As the directory names says: This directory includes the vim files to interact
-with the given LaTeX compiler. Each file have similar function names like
-`s:compiler.start`. You can take a look into these function to get a better
-understanding how they work.
-
 ### compiler.vim
 This file includes the main functions to interact with the given compiler in the
 `vimtex/autoload/vimtex/compiler` directory, it also provides the commands like
 `:VimtexCompile`. For example, the `vimtex#compiler#start()` function just calls
 (if we selected the latexmk compiler) the `s:compiler_nvim.start_single()`
 function of the `vimtex/autolaod/vimtex/compiler/latexmk.vim` file.
+
+### compiler
+As the directory names says: This directory includes the vim files to interact
+with the given LaTeX compiler. Each file have similar function names like
+`s:compiler.start`. You can take a look into these function to get a better
+understanding how they work.
 
 ### debug.vim
 This file is used for interal debugging and is not related to LaTeX at all. It
@@ -285,12 +315,31 @@ If `g:vimtex\_view\_method` would be `zathura`, we'd call the
 `vimtex#view#zathura#new()` function which call zathura to open the PDF-file for
 us.
 
+## health/vimtex.vim
+VimTeX hooks into the `health.vim` framework provided by `neovim` (see `:help
+health`). This is a utility framework for performing health checks that may
+help users discover problems with e.g. configuration. VimTeX has a few checks
+for e.g. Vim versions and configuration validation.
+
+Note: This is not relevant for regular Vim.
+
+## unite/sources/vimtex.vim
+This script defines a VimTeX table-of-content source for the
+[unite](https://github.com/Shougo/unite.vim) plugin. See `:help vimtex-unite`
+for more info.
+
 # rplugin/python3/denite/source/vimtex.py
-This file is used to interact with the
-[denite.vim](https://github.com/Shougo/denite.nvim) plugin. For example to jump
-to a section/subsection or chapter.
+This script defines a VimTeX table-of-content source for the
+[denite.vim](https://github.com/Shougo/denite.nvim) plugin. See also `:help
+vimtex-denite`.
 
 # test
-This directory includes *all* test cases which have to pass in order to have a
-stable and functional awesome VimTeX plugin :) Each directory and filename
-should be self explaining for which cases they are used for.
+This directory is used to, you guessed it, define tests for the VimTeX code.
+The tests are built on top of a Makefile based workflow. The top level Makefile
+runs all tests defined in sub directories named `test-...`. It is a fundamental
+requirement that all tests run with `make` from the top level `test` directory
+should pass for VimTeX to be deemed stable and fully functional.
+
+The `test/` directory also contains some simple LaTeX and VimTeX configuration
+examples under `test/example-...`, as well as some issue specific test files
+under `issues/ISSUE-NUMBER`.

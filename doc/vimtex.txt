@@ -4761,6 +4761,11 @@ The command |:VimtexInfo| (mapped to <localleader>li by default) will show the
 (relevant) contents of the local state, as well as some auxiliary information
 that may be useful for debugging purposes.
 
+See also the supplementary high-level code documentation [0] for more detailed
+information about the VimTeX code.
+
+[0]: https://github.com/lervag/vimtex/blob/master/DOCUMENTATION.md
+
 ------------------------------------------------------------------------------
 API REFERENCE                                                 *vimtex-code-api*
 
