@@ -17,7 +17,7 @@ let s:folder = {
       \ 'state' : [],
       \}
 function! s:folder.init() dict abort " {{{1
-  let l:envs = '\{%(' . join(g:vimtex_indent_lists, '|') . ')}'
+  let l:envs = '\{%(' . join(g:vimtex_indent_lists, '|') . ')\*?}'
 
   let self.re.env_start = '\v^\s*\\begin' . l:envs
   let self.re.env_end = '\v^\s*\\end' . l:envs
