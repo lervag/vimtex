@@ -21,7 +21,8 @@ function! vimtex#fzf#run(...) abort " {{{1
   " Note: The '--with-nth 3..' option hides the first two words from the fzf
   "       window. These words are the file name and line number and are used by
   "       the sink.
-  "       Using \u2007 as delimiter allows spaces in the file path, while
+  "
+  " Note: Using \u2007 as delimiter allows spaces in the file path, while
   "       keeping the visuals in fzf window unaffected.
   let l:opts = extend({
       \ 'source': <sid>parse_toc(a:0 == 0 ? 'ctli' : a:1),
