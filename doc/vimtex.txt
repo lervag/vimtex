@@ -928,13 +928,9 @@ OPTIONS                                                        *vimtex-options*
     This is a list of options that are passed to `latexmk`. The default
     options should work well for most people.
 
-    Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
-          engine. This may be changed on a per project basis with TeX
-          directives, see |vimtex-tex-program| or the two compiler-specific
-          options
-            |g:vimtex_compiler_latexmk_engines|
-            and |g:vimtex_compiler_latexrun_engines|.
-          The latter two options may also be used to change the default engine.
+    Note: Options like `-pdf` or `-lualatex` should NOT be added to this list.
+          These are options used to specify the LaTeX processor/engine, see
+          instead |g:vimtex_compiler_latexmk_engines|.
 
     Note: Options may also be specified indirectly to `latexmk` through both
           a global and a project specific `.latexmkrc` file. One should know,
