@@ -39,6 +39,9 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texGroupError,
         \texMathCmd,
         \texMathCmdEnv,
+        \texMathCmdStyle,
+        \texMathCmdStyleBold,
+        \texMathCmdStyleItal,
         \texMathDelim,
         \texMathDelimMod,
         \texMathGroup,
@@ -406,19 +409,30 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texMathSuperSub "[_^]" contained
 
   " Text Inside Math regions
-  syntax match texCmdMathText "\\\(\(inter\)\?text\|mbox\|fbox\)\>" nextgroup=texMathTextArg
+  for l:re_cmd in [
+        \ 'text%(normal|rm|up|tt|sf|sc)?',
+        \ 'intertext',
+        \ '[mf]box',
+        \]
+    execute 'syntax match texCmdMathText'
+          \ '"\v\\' . l:re_cmd . '>"'
+          \ 'contained nextgroup=texMathTextArg'
+  endfor
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Math style commands
-  syntax match texMathCmdStyle "\\mathbb\>"
-  syntax match texMathCmdStyle "\\mathbf\>"
-  syntax match texMathCmdStyle "\\mathcal\>"
-  syntax match texMathCmdStyle "\\mathfrak\>"
-  syntax match texMathCmdStyle "\\mathit\>"
-  syntax match texMathCmdStyle "\\mathnormal\>"
-  syntax match texMathCmdStyle "\\mathrm\>"
-  syntax match texMathCmdStyle "\\mathsf\>"
-  syntax match texMathCmdStyle "\\mathtt\>"
+  syntax match texMathCmdStyle contained "\\mathbb\>"
+  syntax match texMathCmdStyle contained "\\mathbf\>"
+  syntax match texMathCmdStyle contained "\\mathcal\>"
+  syntax match texMathCmdStyle contained "\\mathfrak\>"
+  syntax match texMathCmdStyle contained "\\mathit\>"
+  syntax match texMathCmdStyle contained "\\mathnormal\>"
+  syntax match texMathCmdStyle contained "\\mathrm\>"
+  syntax match texMathCmdStyle contained "\\mathsf\>"
+  syntax match texMathCmdStyle contained "\\mathtt\>"
+
+  " Bold and italic commands
+  call s:match_bold_italic_math()
 
   " Support for array environment
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\begin{array}" nextgroup=texMathArrayArg skipwhite skipnl
@@ -551,6 +565,8 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathArrayArg       texOpt
   highlight def link texMathCmd            texCmd
   highlight def link texMathCmdStyle       texMathCmd
+  highlight def link texMathCmdStyleBold   texMathCmd
+  highlight def link texMathCmdStyleItal   texMathCmd
   highlight def link texMathDelimMod       texMathDelim
   highlight def link texMathDelimZone      texDelim
   highlight def link texMathError          texError
@@ -561,6 +577,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathZoneEnvStarred texMathZone
   highlight def link texMathZoneX          texMathZone
   highlight def link texMathZoneXX         texMathZone
+  highlight def link texMathStyleConcealed texMathZone
   highlight def link texMathSub            texMathZone
   highlight def link texMathSuper          texMathZone
   highlight def link texMathSuperSub       texMathOper
@@ -693,7 +710,7 @@ function! s:match_bold_italic() abort " {{{1
         \ ['texCmdStyleItal', 'textit'],
         \ ['texCmdStyleItal', 'textsl'],
         \]
-    execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*"'
+    execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
           \ 'skipwhite skipnl nextgroup=' . l:map[l:group]
           \ l:conceal
   endfor
@@ -703,10 +720,37 @@ function! s:match_bold_italic() abort " {{{1
   execute 'syntax region texStyleBoth matchgroup=texDelim start="{" end="}" contained contains=@texClusterItalBold' l:concealends
 
   if g:vimtex_syntax_conceal.styles
-    syntax match texCmdStyle "\v\\text%(rm|tt|up|normal|sf|sc)>\s*"
+    syntax match texCmdStyle "\v\\text%(rm|tt|up|normal|sf|sc)>"
           \ conceal skipwhite skipnl nextgroup=texStyleConcealed
     syntax region texStyleConcealed matchgroup=texDelim start="{" end="}"
           \ contained contains=TOP,@NoSpell concealends
+  endif
+endfunction
+
+" }}}1
+function! s:match_bold_italic_math() abort " {{{1
+  let [l:conceal, l:concealends] =
+        \ (g:vimtex_syntax_conceal.styles ? ['conceal', 'concealends'] : ['', ''])
+
+  let l:map = {
+        \ 'texMathCmdStyleBold': 'texStyleBold',
+        \ 'texMathCmdStyleItal': 'texStyleItal',
+        \}
+
+  for [l:group, l:pattern] in [
+        \ ['texMathCmdStyleBold', 'mathbf'],
+        \ ['texMathCmdStyleItal', 'mathit'],
+        \]
+    execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
+          \ 'skipwhite skipnl nextgroup=' . l:map[l:group]
+          \ l:conceal
+  endfor
+
+  if g:vimtex_syntax_conceal.styles
+    syntax match texMathCmdStyle "\v\\math%(rm|tt|normal|sf)>"
+          \ conceal skipwhite skipnl nextgroup=texMathStyleConcealed
+    syntax region texMathStyleConcealed matchgroup=texDelim start="{" end="}"
+          \ contained contains=@texClusterMath concealends
   endif
 endfunction
 
