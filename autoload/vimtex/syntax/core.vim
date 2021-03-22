@@ -198,6 +198,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdStyle "\\texts[cfl]\>"
   syntax match texCmdStyle "\\texttt\>"
   syntax match texCmdStyle "\\textup\>"
+  syntax match texCmdStyle "\\textnormal\>"
   syntax match texCmdStyle "\\emph\>"
 
   syntax match texCmdStyle "\\rmfamily\>"
@@ -685,17 +686,28 @@ function! s:match_bold_italic() abort " {{{1
   for [l:group, l:pattern] in [
         \ ['texCmdStyleBoldItal', 'emph'],
         \ ['texCmdStyleBoldItal', 'textit'],
+        \ ['texCmdStyleBoldItal', 'textsl'],
         \ ['texCmdStyleItalBold', 'textbf'],
         \ ['texCmdStyleBold', 'textbf'],
         \ ['texCmdStyleItal', 'emph'],
         \ ['texCmdStyleItal', 'textit'],
+        \ ['texCmdStyleItal', 'textsl'],
         \]
-    execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*" skipwhite skipnl nextgroup=' . l:map[l:group] l:conceal
+    execute 'syntax match' l:group '"\\' . l:pattern . '\>\s*"'
+          \ 'skipwhite skipnl nextgroup=' . l:map[l:group]
+          \ l:conceal
   endfor
 
-  execute 'syntax region texStyleBold matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterBold' l:concealends
-  execute 'syntax region texStyleItal matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterItal' l:concealends
-  execute 'syntax region texStyleBoth matchgroup=texDelim start=/{/ end=/}/ contained contains=@texClusterItalBold' l:concealends
+  execute 'syntax region texStyleBold matchgroup=texDelim start="{" end="}" contained contains=@texClusterBold' l:concealends
+  execute 'syntax region texStyleItal matchgroup=texDelim start="{" end="}" contained contains=@texClusterItal' l:concealends
+  execute 'syntax region texStyleBoth matchgroup=texDelim start="{" end="}" contained contains=@texClusterItalBold' l:concealends
+
+  if g:vimtex_syntax_conceal.styles
+    syntax match texCmdStyle "\v\\text%(rm|tt|up|normal|sf|sc)>\s*"
+          \ conceal skipwhite skipnl nextgroup=texStyleConcealed
+    syntax region texStyleConcealed matchgroup=texDelim start="{" end="}"
+          \ contained contains=TOP,@NoSpell concealends
+  endif
 endfunction
 
 " }}}1
