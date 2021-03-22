@@ -464,6 +464,11 @@ function! vimtex#syntax#core#init() abort " {{{1
     if g:vimtex_syntax_conceal.accents
       call s:match_conceal_accents()
     endif
+
+    " Conceal cite commands
+    if g:vimtex_syntax_conceal.citations
+      call s:match_conceal_citations()
+    endif
   endif
 
   " }}}2
@@ -531,6 +536,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdPackage         texCmd
   highlight def link texCmdPart            texCmd
   highlight def link texCmdRef             texCmd
+  highlight def link texCmdRefConcealed    texRefArg
   highlight def link texCmdSize            texCmdType
   highlight def link texCmdSpaceCode       texCmd
   highlight def link texCmdStyle           texCmd
@@ -1502,6 +1508,15 @@ function! s:match_conceal_greek() abort " {{{1
   syntax match texCmdGreek "\\Chi\>"        contained conceal cchar=Χ
   syntax match texCmdGreek "\\Psi\>"        contained conceal cchar=Ψ
   syntax match texCmdGreek "\\Omega\>"      contained conceal cchar=Ω
+endfunction
+
+" }}}1
+function! s:match_conceal_citations() abort " {{{1
+  if empty(g:vimtex_syntax_conceal_citesign) | return | endif
+
+  execute 'syntax match texCmdRefConcealed'
+        \ '"\\cite[tp]\?\*\?\%(\[[^]]*\]\)\{,2}{[^}]*}"'
+        \ 'conceal cchar=' . g:vimtex_syntax_conceal_citesign
 endfunction
 
 " }}}1
