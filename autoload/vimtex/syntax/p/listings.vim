@@ -17,7 +17,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   syntax match texCmdLstset "\\lstset\>"
         \ nextgroup=texLstsetArg,texLstsetGroup skipwhite skipnl
   call vimtex#syntax#core#new_arg('texLstsetGroup', {
-        \ 'contains': 'texComment,texLength,texOptSep,texOptEqual'
+        \ 'contains': 'texCmdSize,texCmdStyle,@texClusterOpt'
         \})
 
   " Match unspecified lstlisting environment
