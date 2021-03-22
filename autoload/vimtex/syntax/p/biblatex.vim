@@ -33,6 +33,14 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\cite\%(field\|list\|name\)>"
   call vimtex#syntax#core#new_arg('texRefArgs', {'next': 'texRefOpts,texRefArgs', 'contains': 'texComment,@NoSpell'})
   call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpt,texRefArg'})
+
+  if g:vimtex_syntax_conceal.citations
+        \ && !empty(g:vimtex_syntax_conceal_citesign)
+    execute 'syntax match texCmdRefConcealed'
+          \ '"\v\\%(cite[tp]?\*?|%([Tt]ext|[Ss]mart|[Aa]uto)cite)'
+          \   . '%(\[[^]]*\]){,2}\{[^}]*\}"'
+          \ 'conceal cchar=' . g:vimtex_syntax_conceal_citesign
+  endif
 endfunction
 
 " }}}1
