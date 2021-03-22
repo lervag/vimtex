@@ -2070,6 +2070,10 @@ OPTIONS                                                        *vimtex-options*
 
         `\emph{text here}` --> `text here`
 
+  Note: Not all fonts have all the characters used for concealing! So, for
+        this feature to work properly, you need to install and use a font that
+        includes the unicode characters.
+
   Default value: All keys set to |g:vimtex_syntax_conceal_default|.
 
 *g:vimtex_syntax_conceal_default*
