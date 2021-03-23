@@ -15,7 +15,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
 
   " Match \lstset
   syntax match texCmdLstset "\\lstset\>"
-        \ nextgroup=texLstsetArg,texLstsetArg skipwhite skipnl
+        \ nextgroup=texLstsetArg skipwhite skipnl
   call vimtex#syntax#core#new_arg('texLstsetArg', {
         \ 'contains': 'texCmdSize,texCmdStyle,@texClusterOpt'
         \})
