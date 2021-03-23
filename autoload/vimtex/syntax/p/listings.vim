@@ -15,8 +15,8 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
 
   " Match \lstset
   syntax match texCmdLstset "\\lstset\>"
-        \ nextgroup=texLstsetArg,texLstsetGroup skipwhite skipnl
-  call vimtex#syntax#core#new_arg('texLstsetGroup', {
+        \ nextgroup=texLstsetArg,texLstsetArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texLstsetArg', {
         \ 'contains': 'texCmdSize,texCmdStyle,@texClusterOpt'
         \})
 
@@ -51,7 +51,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
     execute 'syntax match texLstsetArg'
           \ '"\c{\_[^}]*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'nextgroup=' . l:grp 'skipwhite skipnl'
-          \ 'contains=texLstsetGroup'
+          \ 'contains=texLstsetArg'
 
     call vimtex#syntax#core#new_region_env(l:grp, 'lstlisting', {
           \ 'contains': 'texLstEnvBgn,' . l:cluster,
@@ -91,6 +91,7 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   highlight def link texLstOpt        texOpt
   highlight def link texLstZone       texZone
   highlight def link texLstZoneInline texVerbZoneInline
+  highlight def link texLstsetArg     texOpt
 endfunction
 
 " }}}1
