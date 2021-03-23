@@ -297,7 +297,7 @@ supported and enabled, to automatically parse log files and display potential
 errors after compilation.
 
 The files `vimtex/autoload/vimtex/qf/*.vim` define different types of log
-parsers. E.g., `qf/bibtex.vim` is used to parse `.blg` files for bibtex related
+parsers. E.g., `qf/bibtex.vim` is used to parse `.blg` files for BibTeX related
 warnings and errors, and `qf/latexlog.vim` parses `.log` files for LaTeX
 warnings and errors. `qf/pulp.vim` defines an alternative log parser that can
 be used instead of `latexlog.vim`. See also `:help g:vimtex_quickfix_method`.
