@@ -94,11 +94,11 @@ for loading all of the VimTeX functionalities, except:
 * syntax highlighting is loaded from `syntax/tex.vim`
 * indentation is loaded from `indent/tex.vim`
 
-The main init function calls `vimtex#mymodule#init_buffer()` for each
+The main `init` function calls `vimtex#mymodule#init_buffer()` for each
 submodule, if it exists. This function should take care of defining buffer
 local mappings, commands, and autocommands for the respective submodule.
 
-The init function also ensures that the current buffer is coupled with
+The `init` function also ensures that the current buffer is coupled with
 a corresponding state dictionary, see [autoload/vimtex/state.vim](#statevim).
 
 ## vimtex
@@ -370,7 +370,7 @@ vimtex-denite`.
 
 # test
 This directory is used to, you guessed it, define tests for the VimTeX code.
-The tests are built on top of a Makefile based workflow. The top level Makefile
+The tests are built on top of a Makefile based workflow. The top level 'Makefile'
 runs all tests defined in sub directories named `test-...`. It is a fundamental
 requirement that all tests run with `make` from the top level `test` directory
 should pass for VimTeX to be deemed stable and fully functional.
