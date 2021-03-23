@@ -91,7 +91,6 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   highlight def link texLstOpt        texOpt
   highlight def link texLstZone       texZone
   highlight def link texLstZoneInline texVerbZoneInline
-  highlight def link texLstsetGroup   texGroup
 endfunction
 
 " }}}1
