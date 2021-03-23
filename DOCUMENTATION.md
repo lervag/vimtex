@@ -103,7 +103,7 @@ a corresponding state dictionary, see [autoload/vimtex/state.vim](#statevim).
 
 ## vimtex
 This directory holds the bulk of the VimTeX source code. Each `.vim` file
-represents a separate submodule that may provide one ore more of the following:
+represents a separate submodule that may provide one or more of the following:
 
 * a functional API that is used in other parts of VimTeX
 * buffer functionalities (mappings, commands, and/or autocommands)
@@ -338,7 +338,7 @@ mappings and commands to open a PDF viewer for the compiled LaTeX document.
 
 The desired PDF viewer is specified  with `g:vimtex_view_method` variable, and
 the specified viewer is initialized from `view/VIEWER.vim` (e.g.
-`view/zathura.vim`). This does essentialy just the following for a given VimTeX
+`view/zathura.vim`). This does essentially just the following for a given VimTeX
 state:
 
 ```vim
