@@ -14,7 +14,7 @@ call vimtex#test#assert(vimtex#syntax#in('texLstZoneRust', 37, 1))
 
 call vimtex#test#assert(vimtex#syntax#in('texLstsetArg', 42, 10))
 
-call vimtex#test#assert(vimtex#syntax#in('texCmd', 46, 20))
-call vimtex#test#assert(vimtex#syntax#in('texCmdSize', 47, 20))
+call vimtex#test#assert(vimtex#syntax#in('texCmd', 46, 18))
+call vimtex#test#assert(vimtex#syntax#in('texCmdSize', 47, 18))
 
 quit!
