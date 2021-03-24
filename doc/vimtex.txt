@@ -67,6 +67,7 @@ CONTENTS                                                      *vimtex-contents*
   Syntax highlighting                           |vimtex-syntax|
     Syntax core specification                   |vimtex-syntax-core|
     Syntax package specification                |vimtex-syntax-packages|
+    Syntax conceal                              |vimtex-syntax-conceal|
     Syntax group reference                      |vimtex-syntax-reference|
   Navigation                                    |vimtex-navigation|
     Include expression (|gf| command)           |vimtex-includeexpr|
@@ -2028,8 +2029,9 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_syntax_conceal*
   A dictionary for specifying which core conceal features to activate. This
   mostly implies concealing particular elements with a replacement unicode
-  character. See |conceallevel| for more info on this Vim feature. The
-  following keys are available:
+  character. For more info, see |vimtex-syntax-conceal|.
+
+  The following keys are available:
 
     accents~
       Replace TeX accents into the accented character, e.g. `\aa` --> å. This
@@ -2070,16 +2072,12 @@ OPTIONS                                                        *vimtex-options*
 
         `\emph{text here}` --> `text here`
 
-  Note: Not all fonts have all the characters used for concealing! So, for
-        this feature to work properly, you need to install and use a font that
-        includes the unicode characters.
-
   Default value: All keys set to |g:vimtex_syntax_conceal_default|.
 
 *g:vimtex_syntax_conceal_default*
   Specify the default flag for the conceal feature. This is used e.g. in
   |vimtex_syntax_conceal| and for package specific options in
-  |vimtex_syntax_packages|.
+  |vimtex_syntax_packages|. For more info, see |vimtex-syntax-conceal|.
 
   Default value: 1
 
@@ -3826,6 +3824,40 @@ Associated settings:
   |g:vimtex_syntax_nested|
   |g:vimtex_syntax_nospell_commands|
   |g:vimtex_syntax_packages|
+
+------------------------------------------------------------------------------
+SYNTAX CONCEAL                                          *vimtex-syntax-conceal*
+
+VimTeX utilizes the |syn-conceal| feature of Vim to allow displaying commands
+like `\alpha` as `α`. That is, various elements/commands can be concealed or
+substituted with a unicode symbol.
+
+This feature is enabled by default. It can be fully disabled with
+|g:vimtex_syntax_conceal_default| or specific types of concealments can be
+disabled with |g:vimtex_syntax_conceal|.
+
+For conceals to work properly, one must set the option 'conceallevel' to 2. It
+is also good to be aware of the 'concealcursor' option.
+
+It is very important to note that not all fonts are suitable for this feature.
+That is, for this feature to work well, you should install and use a font that
+includes unicode characters. For Vim or Neovim in a terminal, this means you
+must configure your terminal to use such a font. This is, of course, an
+exercise for the reader, but here is a list of some possibly useful links:
+
+* https://www.programmingfonts.org/
+  * A convenient site to test different "programming" fonts. Not always easy
+    to see if the unicode support is good, but at least you can see examples
+    of how they look.
+* https://wiki.archlinux.org/index.php/Fonts
+  * The Arch Wiki is famous for being useful, and it does not fail. But it is
+    rather technical and of course refers to Arch Linux packages. It may still
+    be a good source of knowledge and inspiration.
+* https://www.binarytides.com/gorgeous-looking-fonts-ubuntu-linux/
+  * This is a blog post on how to install some modern/good looking/better
+    fonts on a Ubuntu system.
+* https://github.com/cormullion/juliamono
+  * This is the font that I personally use (2021-03-24, @lervag).
 
 ------------------------------------------------------------------------------
 SYNTAX CORE SPECIFICATION                                  *vimtex-syntax-core*
