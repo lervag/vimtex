@@ -3364,12 +3364,12 @@ filenames. If desired, one may set |g:vimtex_complete_close_braces|, which
 makes the completion include closing braces.
 
 Associated settings:
-- |g:vimtex_complete_bib|
-- |g:vimtex_complete_close_braces|
-- |g:vimtex_complete_enabled|
-- |g:vimtex_complete_ignore_case|
-- |g:vimtex_complete_ref|
-- |g:vimtex_complete_smart_case|
+* |g:vimtex_complete_bib|
+* |g:vimtex_complete_close_braces|
+* |g:vimtex_complete_enabled|
+* |g:vimtex_complete_ignore_case|
+* |g:vimtex_complete_ref|
+* |g:vimtex_complete_smart_case|
 
 ------------------------------------------------------------------------------
 COMPLETE CITATIONS                                      *vimtex-complete-cites*
@@ -3773,11 +3773,11 @@ In order to get slightly cleaner fold text, I recommend setting the global
 Note: Remember to include the whitespace after backslash!
 
 Associated settings:
-  |g:vimtex_fold_enabled|
-  |g:vimtex_fold_manual|
-  |g:vimtex_fold_levelmarker|
-  |g:vimtex_fold_types|
-  |g:vimtex_fold_types_defaults|
+* |g:vimtex_fold_enabled|
+* |g:vimtex_fold_manual|
+* |g:vimtex_fold_levelmarker|
+* |g:vimtex_fold_types|
+* |g:vimtex_fold_types_defaults|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
@@ -3787,13 +3787,13 @@ VimTeX provides custom indentation functions both for LaTeX documents and
 for bibliography files (`.bib` files).
 
 Associated settings:
-  |g:vimtex_indent_enabled|
-  |g:vimtex_indent_bib_enabled|
-  |g:vimtex_indent_delims|
-  |g:vimtex_indent_ignored_envs|
-  |g:vimtex_indent_lists|
-  |g:vimtex_indent_on_ampersands|
-  |g:vimtex_indent_tikz_commands|
+* |g:vimtex_indent_enabled|
+* |g:vimtex_indent_bib_enabled|
+* |g:vimtex_indent_delims|
+* |g:vimtex_indent_ignored_envs|
+* |g:vimtex_indent_lists|
+* |g:vimtex_indent_on_ampersands|
+* |g:vimtex_indent_tikz_commands|
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
@@ -3818,12 +3818,12 @@ are several major differences that users may want to be aware of:
 [0]: http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
 
 Associated settings:
-  |g:vimtex_syntax_enabled|
-  |g:vimtex_syntax_conceal|
-  |g:vimtex_syntax_conceal_default|
-  |g:vimtex_syntax_nested|
-  |g:vimtex_syntax_nospell_commands|
-  |g:vimtex_syntax_packages|
+* |g:vimtex_syntax_enabled|
+* |g:vimtex_syntax_conceal|
+* |g:vimtex_syntax_conceal_default|
+* |g:vimtex_syntax_nested|
+* |g:vimtex_syntax_nospell_commands|
+* |g:vimtex_syntax_packages|
 
 ------------------------------------------------------------------------------
 SYNTAX CONCEAL                                          *vimtex-syntax-conceal*
@@ -4115,10 +4115,10 @@ TABLE OF CONTENTS                                                  *vimtex-toc*
 The ToC entries may be activated/jumped to with <cr> or <space>. There are
 currently four different "layers" of entries:
 
-- content  This is the main part and the "real" ToC
-- todo     This shows TODOs from comments and `\todo{...}` commands
-- label    This shows `\label{...}` commands
-- include  This shows included files
+* content  This is the main part and the "real" ToC
+* todo     This shows TODOs from comments and `\todo{...}` commands
+* label    This shows `\label{...}` commands
+* include  This shows included files
 
 The ToC is configured with |g:vimtex_toc_config|. One may change things from
 where the ToC window is positioned to which layers to show and more. Please
@@ -4177,11 +4177,11 @@ override the one main configuration (i.e. the combination of the default
 values and |g:vimtex_toc_config|).
 
 Associated settings:
-  |g:vimtex_toc_enabled|
-  |g:vimtex_toc_custom_matchers|
-  |g:vimtex_toc_todo_labels|
-  |g:vimtex_toc_show_preamble|
-  |g:vimtex_toc_config|
+* |g:vimtex_toc_enabled|
+* |g:vimtex_toc_custom_matchers|
+* |g:vimtex_toc_todo_labels|
+* |g:vimtex_toc_show_preamble|
+* |g:vimtex_toc_config|
 
 ------------------------------------------------------------------------------
 DENITE AND UNITE SOURCES                                        *vimtex-denite*
@@ -4244,11 +4244,11 @@ COMPILER                                                      *vimtex-compiler*
 VimTeX provides an interface to the following LaTeX compilers/compiler
 backends:
 
-  |vimtex-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
-  |vimtex-latexrun|  https://github.com/aclements/latexrun
-  |vimtex-tectonic|  https://tectonic-typesetting.github.io/
-  |vimtex-arara|     https://github.com/cereda/arara
-  |vimtex-generic-compiler|
+* |vimtex-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
+* |vimtex-latexrun|  https://github.com/aclements/latexrun
+* |vimtex-tectonic|  https://tectonic-typesetting.github.io/
+* |vimtex-arara|     https://github.com/cereda/arara
+* |vimtex-generic-compiler|
 
 The interface is implemented in a general way, which makes it relatively easy
 to add new compilers.
@@ -4268,39 +4268,39 @@ The compilers should respect the TeX program directive as described here:
 directives and rules.
 
 Associated commands:
-  |:VimtexCompile|
-  |:VimtexCompileSS|
-  |:VimtexCompileSS!|
-  |:VimtexCompileSelected|
-  |:VimtexCompileOutput|
-  |:VimtexStatus|
-  |:VimtexStatus!|
-  |:VimtexStop|
-  |:VimtexStopAll|
-  |:VimtexErrors|
-  |:VimtexErrors|
-  |:VimtexClean|
-  |:VimtexClean!|
-  |:VimtexErrors|
+* |:VimtexCompile|
+* |:VimtexCompileSS|
+* |:VimtexCompileSS!|
+* |:VimtexCompileSelected|
+* |:VimtexCompileOutput|
+* |:VimtexStatus|
+* |:VimtexStatus!|
+* |:VimtexStop|
+* |:VimtexStopAll|
+* |:VimtexErrors|
+* |:VimtexErrors|
+* |:VimtexClean|
+* |:VimtexClean!|
+* |:VimtexErrors|
 
 Associated settings:
-  |g:vimtex_compiler_enabled|
-  |g:vimtex_compiler_method|
-  |g:vimtex_compiler_latexmk|
-  |g:vimtex_compiler_latexmk_engines|
-  |g:vimtex_compiler_latexrun|
-  |g:vimtex_compiler_latexrun_engines|
-  |g:vimtex_compiler_tectonic|
-  |g:vimtex_compiler_arara|
-  |g:vimtex_compiler_generic|
-  |g:vimtex_compiler_progname|
-  |$VIMTEX_OUTPUT_DIRECTORY|
+* |g:vimtex_compiler_enabled|
+* |g:vimtex_compiler_method|
+* |g:vimtex_compiler_latexmk|
+* |g:vimtex_compiler_latexmk_engines|
+* |g:vimtex_compiler_latexrun|
+* |g:vimtex_compiler_latexrun_engines|
+* |g:vimtex_compiler_tectonic|
+* |g:vimtex_compiler_arara|
+* |g:vimtex_compiler_generic|
+* |g:vimtex_compiler_progname|
+* |$VIMTEX_OUTPUT_DIRECTORY|
 
 Associated events:
-  |VimtexEventCompileStarted|
-  |VimtexEventCompileStopped|
-  |VimtexEventCompileSuccess|
-  |VimtexEventCompileFailed|
+* |VimtexEventCompileStarted|
+* |VimtexEventCompileStopped|
+* |VimtexEventCompileSuccess|
+* |VimtexEventCompileFailed|
 
 ------------------------------------------------------------------------------
 LATEXMK                                                        *vimtex-latexmk*
@@ -4608,20 +4608,20 @@ For supported viewers, |:VimtexView| will also perform forward search when the
 viewer is opened.
 
 Associated settings:
-  |g:vimtex_view_enabled|
-  |g:vimtex_view_automatic|
-  |g:vimtex_view_method|
-  |g:vimtex_view_use_temp_files|
-  |g:vimtex_view_general_options|
-  |g:vimtex_view_general_viewer|
-  |g:vimtex_view_mupdf_options|
-  |g:vimtex_view_mupdf_send_keys|
-  |g:vimtex_view_skim_activate|
-  |g:vimtex_view_skim_reading_bar|
-  |g:vimtex_view_zathura_options|
+* |g:vimtex_view_enabled|
+* |g:vimtex_view_automatic|
+* |g:vimtex_view_method|
+* |g:vimtex_view_use_temp_files|
+* |g:vimtex_view_general_options|
+* |g:vimtex_view_general_viewer|
+* |g:vimtex_view_mupdf_options|
+* |g:vimtex_view_mupdf_send_keys|
+* |g:vimtex_view_skim_activate|
+* |g:vimtex_view_skim_reading_bar|
+* |g:vimtex_view_zathura_options|
 
 Associated events:
-  |VimtexEventView|
+* |VimtexEventView|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
@@ -4742,7 +4742,7 @@ current context. It is mapped by default to `<localleader>la`.
 The available contexts are listed below.
 
 Associated settings:
-  |g:vimtex_context_pdf_viewer|
+* |g:vimtex_context_pdf_viewer|
 
 ------------------------------------------------------------------------------
 CITATION CONTEXT                                      *vimtex-context-citation*
@@ -5273,16 +5273,16 @@ general mechanism provided by |g:vimtex_quickfix_ignore_filters|.
 The events |VimtexEventCompileSuccess|, |VimtexEventCompileFailed|, and
 |VimtexEventView| have been added to make it easier to hook personal
 customizations. This deprecates the following options:
-  *g:vimtex_compiler_callback_hooks*
-  *g:vimtex_view_general_callback*
-  *g:vimtex_view_general_hook_callback*
-  *g:vimtex_view_general_hook_view*
-  *g:vimtex_view_mupdf_hook_callback*
-  *g:vimtex_view_mupdf_hook_view*
-  *g:vimtex_view_skim_hook_callback*
-  *g:vimtex_view_skim_hook_view*
-  *g:vimtex_view_zathura_hook_callback*
-  *g:vimtex_view_zathura_hook_view*
+* *g:vimtex_compiler_callback_hooks*
+* *g:vimtex_view_general_callback*
+* *g:vimtex_view_general_hook_callback*
+* *g:vimtex_view_general_hook_view*
+* *g:vimtex_view_mupdf_hook_callback*
+* *g:vimtex_view_mupdf_hook_view*
+* *g:vimtex_view_skim_hook_callback*
+* *g:vimtex_view_skim_hook_view*
+* *g:vimtex_view_zathura_hook_callback*
+* *g:vimtex_view_zathura_hook_view*
 
 2020-07-19: Released version 1.0~
 Version 1.0 (and earlier) works on Vim 7.4 and with neovim 0.1.7. Later
@@ -5292,21 +5292,19 @@ versions require Vim 8.0 or neovim 0.4.3.
 I've made a large update to the code for the ToC window in order to simplify
 and unify the interface. In the new version, |g:vimtex_toc_config| replaces
 all of the following options:
-
-  *g:vimtex_index_split_width*
-  *g:vimtex_index_split_pos*
-  *g:vimtex_index_show_help*
-  *g:vimtex_index_resize*
-  *g:vimtex_index_hide_line_numbers*
-  *g:vimtex_index_mode*
-  *g:vimtex_toc_layers*
-  *g:vimtex_toc_fold*
-  *g:vimtex_toc_fold_level_start*
-  *g:vimtex_toc_hotkeys*
-  *g:vimtex_toc_refresh_always*
-  *g:vimtex_toc_show_numbers*
-  *g:vimtex_toc_tocdepth*
-
+* *g:vimtex_index_split_width*
+* *g:vimtex_index_split_pos*
+* *g:vimtex_index_show_help*
+* *g:vimtex_index_resize*
+* *g:vimtex_index_hide_line_numbers*
+* *g:vimtex_index_mode*
+* *g:vimtex_toc_layers*
+* *g:vimtex_toc_fold*
+* *g:vimtex_toc_fold_level_start*
+* *g:vimtex_toc_hotkeys*
+* *g:vimtex_toc_refresh_always*
+* *g:vimtex_toc_show_numbers*
+* *g:vimtex_toc_tocdepth*
 
 2017-07-27: Major refactoring of the folding feature~
 I've made a large update to the code for folding. The configuration of the
@@ -5314,17 +5312,16 @@ various folded elements is now done through a single option:
 |g:vimtex_fold_types|.
 
 Deprecated options:
-  *g:vimtex_fold_comments*
-  *g:vimtex_fold_preamble*
-  *g:vimtex_fold_envs*
-  *g:vimtex_fold_env_blacklist*
-  *g:vimtex_fold_env_whitelist*
-  *g:vimtex_fold_markers*
-  *g:vimtex_fold_parts*
-  *g:vimtex_fold_sections*
-  *g:vimtex_fold_commands*
-  *g:vimtex_fold_commands_default*
-
+* *g:vimtex_fold_comments*
+* *g:vimtex_fold_preamble*
+* *g:vimtex_fold_envs*
+* *g:vimtex_fold_env_blacklist*
+* *g:vimtex_fold_env_whitelist*
+* *g:vimtex_fold_markers*
+* *g:vimtex_fold_parts*
+* *g:vimtex_fold_sections*
+* *g:vimtex_fold_commands*
+* *g:vimtex_fold_commands_default*
                                                                *vimtex-lacheck*
 2017-06-05: Removed Lacheck support~
 Removed support for using `lacheck` for checking LaTeX syntax. The reason is
@@ -5337,8 +5334,8 @@ There's been a few updates to the TOC. During this work, I removed some
 unecessary options.
 
 Deprecated options:
-  *g:vimtex_toc_fold_levels*  (was not necessary)
-  *g:vimtex_toc_number_width*  (see |g:vimtex_toc_tocdepth|)
+* *g:vimtex_toc_fold_levels*  (was not necessary)
+* *g:vimtex_toc_number_width*  (see |g:vimtex_toc_tocdepth|)
 
 2017-03-31: Refactored quickfix related features~
 I've added a more general layer for handling different error parsers.
@@ -5347,24 +5344,24 @@ should make it possible to add other methods for showing errors in a LaTeX
 project than the current one that parses the `.log` file directly.
 
 Deprecated options:
-  *g:vimtex_quickfix_warnings*  (see |g:vimtex_quickfix_latexlog|)
+* *g:vimtex_quickfix_warnings*  (see |g:vimtex_quickfix_latexlog|)
 
 2017-03-28: Major refactoring of initialization~
 Added a general compiler interface, see |vimtex-compiler|.  To configure the
 `latexmk` compiler, see |g:vimtex_compiler_latexmk|.
 
 Deprecated options:
-  *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_enabled|)
-  *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_progname|)
-  *g:vimtex_latexmk_callback_hooks* (use |g:vimtex_compiler_callback_hooks|)
-  *g:vimtex_latexmk_callback*
-  *g:vimtex_latexmk_autojump*
-  *g:vimtex_latexmk_continuous*
-  *g:vimtex_latexmk_background*
-  *g:vimtex_latexmk_options*
+* *g:vimtex_latexmk_enabled* (use |g:vimtex_compiler_enabled|)
+* *g:vimtex_latexmk_progname* (use |g:vimtex_compiler_progname|)
+* *g:vimtex_latexmk_callback_hooks* (use |g:vimtex_compiler_callback_hooks|)
+* *g:vimtex_latexmk_callback*
+* *g:vimtex_latexmk_autojump*
+* *g:vimtex_latexmk_continuous*
+* *g:vimtex_latexmk_background*
+* *g:vimtex_latexmk_options*
 
 Deprecated commands:
-  *VimtexCompileToggle* (use |:VimtexCompile|)
+* *VimtexCompileToggle* (use |:VimtexCompile|)
 
 2017-03-28: Major refactoring of initialization~
 The initialization has been refactored in order to provide a more consistent
@@ -5376,8 +5373,8 @@ easier.
 I'm updating the changelog to notify of a change to the quickfix settings.
 
 Deprecated options:
-  *g:vimtex_quickfix_ignore_all_warnings*
-  *g:vimtex_quickfix_ignored_warnings*
+* *g:vimtex_quickfix_ignore_all_warnings*
+* *g:vimtex_quickfix_ignored_warnings*
 
 See instead:
   |g:vimtex_quickfix_warnings|
@@ -5388,7 +5385,7 @@ I am bad at keeping this changelog updated. All details are available in the
 git log, though. The reason I added this entry is to note that I have removed
 an option:
 
-  *g:vimtex_env_complete_list* --- It is no longer necessary. Completion
+* *g:vimtex_env_complete_list* --- It is no longer necessary. Completion
                                  candidates are instead parsed from the
                                  project.
 
@@ -5403,22 +5400,22 @@ modifier, not the delimiter itself, and it toggles between a range of
 modifiers by default. For customization, see |g:vimtex_delim_toggle_mod_list|.
 
 The following options have changed names:
-  *g:vimtex_change_set_formatexpr* ---> |g:vimtex_format_enabled|
-  *g:vimtex_change_complete_envs*  ---> |g:vimtex_env_complete_list|
-  *g:vimtex_change_toggled_delims* ---> |g:vimtex_delim_toggle_mod_list|
+* *g:vimtex_change_set_formatexpr* ---> |g:vimtex_format_enabled|
+* *g:vimtex_change_complete_envs*  ---> |g:vimtex_env_complete_list|
+* *g:vimtex_change_toggled_delims* ---> |g:vimtex_delim_toggle_mod_list|
 
 The following options have been removed:
-  *g:vimtex_change_ignored_delims_pattern* --- It was no longer necessary
+* *g:vimtex_change_ignored_delims_pattern* --- It was no longer necessary
 
 The following mappings have been renamed:
-  *<plug>(vimtex-delete-env)*   ---> |<plug>(vimtex-env-delete)|
-  *<plug>(vimtex-delete-cmd)*   ---> |<plug>(vimtex-cmd-delete)|
-  *<plug>(vimtex-change-env)*   ---> |<plug>(vimtex-env-change)|
-  *<plug>(vimtex-change-cmd)*   ---> |<plug>(vimtex-cmd-change)|
-  *<plug>(vimtex-toggle-star)*  ---> |<plug>(vimtex-env-toggle-star)|
-  *<plug>(vimtex-toggle-delim)* ---> |<plug>(vimtex-delim-toggle-modifier)|
-  *<plug>(vimtex-create-cmd)*   ---> |<plug>(vimtex-cmd-create)|
-  *<plug>(vimtex-close-env)*    ---> |<plug>(vimtex-delim-close)|
+* *<plug>(vimtex-delete-env)*   ---> |<plug>(vimtex-env-delete)|
+* *<plug>(vimtex-delete-cmd)*   ---> |<plug>(vimtex-cmd-delete)|
+* *<plug>(vimtex-change-env)*   ---> |<plug>(vimtex-env-change)|
+* *<plug>(vimtex-change-cmd)*   ---> |<plug>(vimtex-cmd-change)|
+* *<plug>(vimtex-toggle-star)*  ---> |<plug>(vimtex-env-toggle-star)|
+* *<plug>(vimtex-toggle-delim)* ---> |<plug>(vimtex-delim-toggle-modifier)|
+* *<plug>(vimtex-create-cmd)*   ---> |<plug>(vimtex-cmd-create)|
+* *<plug>(vimtex-close-env)*    ---> |<plug>(vimtex-delim-close)|
 
 2015-10-19: Added convenient insert mode mappings~
 I've merged the `math_mappings` branch (see #172 and #251). It adds the
@@ -5449,15 +5446,15 @@ simple actions.  The |vimtex-toc| uses and expands the `index` in such a way
 that the changes should barely be noticeable from the user perspective.  Note
 however the following variable name changes:
 
-  *g:vimtex_toc_numbers_width*     ---> |g:vimtex_toc_number_width|
-  *g:vimtex_toc_hide_preamble*     ---> |g:vimtex_toc_show_preamble|
-  *g:vimtex_toc_numbers*           ---> |g:vimtex_toc_show_numbers|
+* *g:vimtex_toc_numbers_width*     ---> |g:vimtex_toc_number_width|
+* *g:vimtex_toc_hide_preamble*     ---> |g:vimtex_toc_show_preamble|
+* *g:vimtex_toc_numbers*           ---> |g:vimtex_toc_show_numbers|
 
-  *g:vimtex_toc_hide_line_numbers* ---> |g:vimtex_index_hide_line_numbers|
-  *g:vimtex_toc_resize*            ---> |g:vimtex_index_resize|
-  *g:vimtex_toc_hide_help*         ---> |g:vimtex_index_show_help|
-  *g:vimtex_toc_split_pos*         ---> |g:vimtex_index_split|
-  *g:vimtex_toc_width*             -/
+* *g:vimtex_toc_hide_line_numbers* ---> |g:vimtex_index_hide_line_numbers|
+* *g:vimtex_toc_resize*            ---> |g:vimtex_index_resize|
+* *g:vimtex_toc_hide_help*         ---> |g:vimtex_index_show_help|
+* *g:vimtex_toc_split_pos*         ---> |g:vimtex_index_split|
+* *g:vimtex_toc_width*             -/
 
                                                          *vim-latex-namechange*
 2015-03-08: Changed the name to VimTeX~
@@ -5486,20 +5483,21 @@ The `g:latex_viewer` option has now been deprecated.  Instead one should use
 |g:vimtex_view_method| and |g:vimtex_view_general_viewer|.
 
 Deprecated option:
-  *g:latex_viewer*
+* *g:latex_viewer*
 
 2014-06-13: Changed some option names~
 Some VimTeX option names were changed in an attempt to make the names
 more consistent.  These options are listed here for reference:
-  *g:latex_errorformat_ignore_warnings*
-  *g:latex_errorformat_show_warnings*
-  *g:latex_latexmk_autojump*
-  *g:latex_latexmk_quickfix*
+* *g:latex_errorformat_ignore_warnings*
+* *g:latex_errorformat_show_warnings*
+* *g:latex_latexmk_autojump*
+* *g:latex_latexmk_quickfix*
+
 The new names are, respectively:
-  |g:vimtex_quickfix_ignored_warnings|
-  |g:vimtex_quickfix_ignore_all_warnings|
-  |g:vimtex_quickfix_autojump|
-  |g:vimtex_quickfix_mode|
+* |g:vimtex_quickfix_ignored_warnings|
+* |g:vimtex_quickfix_ignore_all_warnings|
+* |g:vimtex_quickfix_autojump|
+* |g:vimtex_quickfix_mode|
 
 2013-10-05: First public release~
 VimTeX was first released on github on this date. The initial version was
