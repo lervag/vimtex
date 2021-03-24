@@ -33,7 +33,7 @@ on older versions of Vim or Neovim, then you should not use the most recent
 version of VimTeX, but instead remain at the v1.0 tag.
 
 Some features require external tools. For example, the default compiler backend
-relies on [Latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
+relies on [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
 Users are encouraged to read the requirements section in the
 [documentation](doc/vimtex.txt) (`:h vimtex-requirements`).
 
