@@ -94,16 +94,16 @@ for loading all of the VimTeX functionalities, except:
 * syntax highlighting is loaded from `syntax/tex.vim`
 * indentation is loaded from `indent/tex.vim`
 
-The main init function calls `vimtex#mymodule#init_buffer()` for each
+The main initialization function calls `vimtex#mymodule#init_buffer()` for each
 submodule, if it exists. This function should take care of defining buffer
 local mappings, commands, and autocommands for the respective submodule.
 
-The init function also ensures that the current buffer is coupled with
+The initialization function also ensures that the current buffer is coupled with
 a corresponding state dictionary, see [autoload/vimtex/state.vim](#statevim).
 
 ## vimtex
 This directory holds the bulk of the VimTeX source code. Each `.vim` file
-represents a separate submodule that may provide one ore more of the following:
+represents a separate submodule that may provide one or more of the following:
 
 * a functional API that is used in other parts of VimTeX
 * buffer functionalities (mappings, commands, and/or autocommands)
@@ -297,7 +297,7 @@ supported and enabled, to automatically parse log files and display potential
 errors after compilation.
 
 The files `vimtex/autoload/vimtex/qf/*.vim` define different types of log
-parsers. E.g., `qf/bibtex.vim` is used to parse `.blg` files for bibtex related
+parsers. E.g., `qf/bibtex.vim` is used to parse `.blg` files for BibTeX related
 warnings and errors, and `qf/latexlog.vim` parses `.log` files for LaTeX
 warnings and errors. `qf/pulp.vim` defines an alternative log parser that can
 be used instead of `latexlog.vim`. See also `:help g:vimtex_quickfix_method`.
@@ -338,7 +338,7 @@ mappings and commands to open a PDF viewer for the compiled LaTeX document.
 
 The desired PDF viewer is specified  with `g:vimtex_view_method` variable, and
 the specified viewer is initialized from `view/VIEWER.vim` (e.g.
-`view/zathura.vim`). This does essentialy just the following for a given VimTeX
+`view/zathura.vim`). This does essentially just the following for a given VimTeX
 state:
 
 ```vim
@@ -370,7 +370,7 @@ vimtex-denite`.
 
 # test
 This directory is used to, you guessed it, define tests for the VimTeX code.
-The tests are built on top of a Makefile based workflow. The top level Makefile
+The tests are built on top of a Makefile based workflow. The `test/Makefile`
 runs all tests defined in sub directories named `test-...`. It is a fundamental
 requirement that all tests run with `make` from the top level `test` directory
 should pass for VimTeX to be deemed stable and fully functional.
