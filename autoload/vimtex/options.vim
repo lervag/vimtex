@@ -278,9 +278,12 @@ function! vimtex#options#init() abort " {{{1
         \ 'math_super_sub': g:vimtex_syntax_conceal_default,
         \ 'math_symbols': g:vimtex_syntax_conceal_default,
         \ 'styles': g:vimtex_syntax_conceal_default,
-        \ 'citations': g:vimtex_syntax_conceal_default,
+        \ 'cites': g:vimtex_syntax_conceal_default,
         \})
-  call s:init_option('vimtex_syntax_conceal_citesign', '📖')
+  call s:init_option('vimtex_syntax_conceal_cites', {
+        \ 'type': 'icon',
+        \ 'icon': '📖',
+        \})
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
         \   'C' : 'c',

@@ -34,13 +34,27 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texRefArgs', {'next': 'texRefOpts,texRefArgs', 'contains': 'texComment,@NoSpell'})
   call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpt,texRefArg'})
 
-  if g:vimtex_syntax_conceal.citations
-        \ && !empty(g:vimtex_syntax_conceal_citesign)
-    execute 'syntax match texCmdRefConcealed'
-          \ '"\v\\%(cite[tp]?\*?|%([Tt]ext|[Ss]mart|[Aa]uto)cite)'
-          \   . '%(\[[^]]*\]){,2}\{[^}]*\}"'
-          \ 'conceal cchar=' . g:vimtex_syntax_conceal_citesign
+  if g:vimtex_syntax_conceal.cites
+    call s:match_conceal_cites_{g:vimtex_syntax_conceal_cites.type}()
   endif
+endfunction
+
+" }}}1
+
+function! s:match_conceal_cites_brackets() abort " {{{1
+  syntax match texCmdRefConcealed
+        \ "\v\\%(cite[tp]?>\*?|%([Tt]ext|[Ss]mart|[Aa]uto)cite>)"
+        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedPre
+endfunction
+
+" }}}1
+function! s:match_conceal_cites_icon() abort " {{{1
+  if empty(g:vimtex_syntax_conceal_cites.icon) | return | endif
+
+  execute 'syntax match texCmdRefConcealed'
+        \ '"\v\\%(cite[tp]?\*?|%([Tt]ext|[Ss]mart|[Aa]uto)cite)'
+        \   . '%(\[[^]]*\]){,2}\{[^}]*\}"'
+        \ 'conceal cchar=' . g:vimtex_syntax_conceal_cites.icon
 endfunction
 
 " }}}1
