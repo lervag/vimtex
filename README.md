@@ -1,6 +1,7 @@
 # VimTeX
 
-VimTeX is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) filetype and syntax plugin for LaTeX files.
+VimTeX is a modern [Vim](http://www.vim.org/) and [Neovim](https://neovim.io/)
+filetype and syntax plugin for LaTeX files.
 
 [![Gitter](https://badges.gitter.im/vimtex-chat/community.svg)](https://gitter.im/vimtex-chat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ![CI tests](https://github.com/lervag/vimtex/workflows/CI%20tests/badge.svg)
@@ -26,9 +27,9 @@ VimTeX is a modern [Vim](http://www.vim.org/) and [neovim](https://neovim.io/) f
 
 ## Requirements
 
-VimTeX requires Vim version 8.0.1453 or neovim version 0.4.3. The requirements
+VimTeX requires Vim version 8.0.1453 or Neovim version 0.4.3. The requirements
 were updated in July 2020 after the release of VimTeX 1.0. If you are stuck
-on older versions of Vim or neovim, then you should not use the most recent
+on older versions of Vim or Neovim, then you should not use the most recent
 version of VimTeX, but instead remain at the v1.0 tag.
 
 Some features require external tools. For example, the default compiler backend
@@ -82,11 +83,10 @@ supplementary documents:
 
 ## Features
 
-Below is a list of features offered by VimTeX.  The features are accessible as
-both commands and mappings.  The mappings generally start with
-`<localleader>l`, but if desired one can disable default mappings to define
-custom mappings.  All features are enabled by default, but each feature may be
-disabled if desired.
+Below is a list of features offered by VimTeX. The features are accessible as
+both commands and mappings. The mappings generally start with `<localleader>l`,
+but if desired one can disable default mappings to define custom mappings. All
+features are enabled by default, but each feature may be disabled if desired.
 
 - Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/),
