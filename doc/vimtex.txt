@@ -2026,6 +2026,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
+*g:vimtex_syntax_conceal_default*
+  Specify the default flag for the conceal feature. This is used e.g. in
+  |vimtex_syntax_conceal| and for package specific options in
+  |vimtex_syntax_packages|. For more info, see |vimtex-syntax-conceal|.
+
+  Default value: 1
+
 *g:vimtex_syntax_conceal*
   A dictionary for specifying which core conceal features to activate. This
   mostly implies concealing particular elements with a replacement unicode
@@ -2072,14 +2079,35 @@ OPTIONS                                                        *vimtex-options*
 
         `\emph{text here}` --> `text here`
 
+    cites~
+      Conceal LaTeX cite commands such as `\citet[...]{ref00}`. The conceal
+      style is specified by |g:vimtex_syntax_conceal_cites|.
+
   Default value: All keys set to |g:vimtex_syntax_conceal_default|.
 
-*g:vimtex_syntax_conceal_default*
-  Specify the default flag for the conceal feature. This is used e.g. in
-  |vimtex_syntax_conceal| and for package specific options in
-  |vimtex_syntax_packages|. For more info, see |vimtex-syntax-conceal|.
+*g:vimtex_syntax_conceal_cites*
+  A simple dictionary to control how citation conceal should work. It has two
+  keys:
 
-  Default value: 1
+    type~
+      Specify the type of concealment. There are two options, and the
+      difference is best explained by example:
+
+        Value       LaTeX     Concealed
+        -----       -----     ---------
+        'icon'      `\cite{x}`  `📖`
+        'brackets'  `\cite{x}`  `[x]`
+
+    icon~
+      Specify an icon for `icon` conceal. This must be a single (possibly
+      multibyte) character.
+
+  Default value: >
+
+    let g:vimtex_syntax_conceal_cites = {
+          \ 'type': 'icon',
+          \ 'icon': '📖',
+          \}
 
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
