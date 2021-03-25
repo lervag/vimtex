@@ -2093,10 +2093,10 @@ OPTIONS                                                        *vimtex-options*
       Specify the type of concealment. There are two options, and the
       difference is best explained by example:
 
-        Value       LaTeX     Concealed
-        -----       -----     ---------
-        'icon'      `\cite{x}`  `📖`
-        'brackets'  `\cite{x}`  `[x]`
+        Value       LaTeX             Concealed
+        -----       -----             ---------
+        'icon'      `\cite{Knuth1981}`  `📖`
+        'brackets'  `\cite{Knuth1981}`  `[Knuth1981]`
 
     icon~
       Specify an icon for `icon` conceal. This must be a single (possibly
@@ -2105,7 +2105,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_syntax_conceal_cites = {
-          \ 'type': 'icon',
+          \ 'type': 'brackets',
           \ 'icon': '📖',
           \}
 

@@ -281,7 +281,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'cites': g:vimtex_syntax_conceal_default,
         \})
   call s:init_option('vimtex_syntax_conceal_cites', {
-        \ 'type': 'icon',
+        \ 'type': 'brackets',
         \ 'icon': '📖',
         \})
   call s:init_option('vimtex_syntax_nested', {
