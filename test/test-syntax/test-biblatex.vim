@@ -13,4 +13,4 @@ silent wincmd w
 set conceallevel=2
 
 if empty($INMAKE) | finish | endif
-quit!
+quitall!
