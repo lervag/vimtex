@@ -464,6 +464,11 @@ function! vimtex#syntax#core#init() abort " {{{1
     if g:vimtex_syntax_conceal.accents
       call s:match_conceal_accents()
     endif
+
+    " Conceal cite commands
+    if g:vimtex_syntax_conceal.cites
+      call s:match_conceal_cites_{g:vimtex_syntax_conceal_cites.type}()
+    endif
   endif
 
   " }}}2
@@ -531,6 +536,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdPackage         texCmd
   highlight def link texCmdPart            texCmd
   highlight def link texCmdRef             texCmd
+  highlight def link texCmdRefConcealed    texCmdRef
   highlight def link texCmdSize            texCmdType
   highlight def link texCmdSpaceCode       texCmd
   highlight def link texCmdStyle           texCmd
@@ -590,6 +596,10 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewenvParm         texParm
   highlight def link texOptEqual           texSymbol
   highlight def link texRefOpt             texOpt
+  highlight def link texRefConcealedOpt    texRefOpt
+  highlight def link texRefConcealedArg    texRefArg
+  highlight def link texRefConcealedPre    texDelim
+  highlight def link texRefConcealedPost   texDelim
   highlight def link texTabularArg         texOpt
   highlight def link texTabularAtSep       texMathDelim
   highlight def link texTabularChar        texSymbol
@@ -1502,6 +1512,33 @@ function! s:match_conceal_greek() abort " {{{1
   syntax match texCmdGreek "\\Chi\>"        contained conceal cchar=Χ
   syntax match texCmdGreek "\\Psi\>"        contained conceal cchar=Ψ
   syntax match texCmdGreek "\\Omega\>"      contained conceal cchar=Ω
+endfunction
+
+" }}}1
+function! s:match_conceal_cites_brackets() abort " {{{1
+  syntax match texCmdRefConcealed
+        \ "\\cite[tp]\?\>\*\?"
+        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedPre
+  call vimtex#syntax#core#new_opt('texRefConcealedOpt', {
+        \ 'opts': 'conceal',
+        \ 'next': 'texRefConcealedOpt,texRefConcealedPre',
+        \})
+  syntax match texRefConcealedPre contained "{"
+        \ conceal cchar=[
+        \ skipwhite nextgroup=texRefConcealedArg
+  syntax match texRefConcealedArg contained "[^}]*"
+        \ skipwhite nextgroup=texRefConcealedPost
+  syntax match texRefConcealedPost contained "}"
+        \ conceal cchar=]
+endfunction
+
+" }}}1
+function! s:match_conceal_cites_icon() abort " {{{1
+  if empty(g:vimtex_syntax_conceal_cites.icon) | return | endif
+
+  execute 'syntax match texCmdRefConcealed'
+        \ '"\\cite[tp]\?\*\?\%(\[[^]]*\]\)\{,2}{[^}]*}"'
+        \ 'conceal cchar=' . g:vimtex_syntax_conceal_cites.icon
 endfunction
 
 " }}}1
