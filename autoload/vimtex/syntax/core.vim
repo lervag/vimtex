@@ -1525,7 +1525,7 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texRefConcealedArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedDelim',
-        \ 'opts': 'keepend',
+        \ 'opts': 'keepend contained',
         \ 'matchgroup': '',
         \})
   syntax match texRefConcealedDelim contained "{" cchar=[ conceal
