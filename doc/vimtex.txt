@@ -2177,13 +2177,17 @@ OPTIONS                                                        *vimtex-options*
     babel~
       `conceal`  whether to enable conceal
         Default: |g:vimtex_syntax_conceal_default|
+    beamer~
     biblatex~
     booktabs~
     breqn~
     cases~
+    circuitikz~
     cleveref~
+    comment~
     csquotes~
     dot2texi~
+    geometry~
     glossaries_extra~
     glossaries~
     gnuplottex~
@@ -2199,9 +2203,12 @@ OPTIONS                                                        *vimtex-options*
     pdfpages~
     pgfplots~
     pythontex~
+    siunitx~
     subfile~
     tabularx~
+    tcolorbox~
     tikz~
+    todonotes~
     url~
     varioref~
     wiki~
