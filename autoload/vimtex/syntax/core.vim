@@ -598,8 +598,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texRefOpt             texOpt
   highlight def link texRefConcealedOpt    texRefOpt
   highlight def link texRefConcealedArg    texRefArg
-  highlight def link texRefConcealedPre    texDelim
-  highlight def link texRefConcealedPost   texDelim
+  highlight def link texRefConcealedDelim  texDelim
   highlight def link texTabularArg         texOpt
   highlight def link texTabularAtSep       texMathDelim
   highlight def link texTabularChar        texSymbol
@@ -616,11 +615,12 @@ function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
         \ 'contains': 'TOP,@NoSpell',
         \ 'matcher': 'start="{" skip="\\\\\|\\}" end="}"',
         \ 'next': '',
+        \ 'matchgroup': 'matchgroup=texDelim',
         \ 'opts': 'contained',
         \}, a:0 > 0 ? a:1 : {})
 
   execute 'syntax region' a:grp
-        \ 'matchgroup=texDelim'
+        \ l:cfg.matchgroup
         \ l:cfg.matcher
         \ l:cfg.opts
         \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
@@ -1518,18 +1518,18 @@ endfunction
 function! s:match_conceal_cites_brackets() abort " {{{1
   syntax match texCmdRefConcealed
         \ "\\cite[tp]\?\>\*\?"
-        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedPre
+        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedArg
   call vimtex#syntax#core#new_opt('texRefConcealedOpt', {
         \ 'opts': 'conceal',
-        \ 'next': 'texRefConcealedOpt,texRefConcealedPre',
+        \ 'next': 'texRefConcealedOpt,texRefConcealedArg',
         \})
-  syntax match texRefConcealedPre contained "{"
-        \ conceal cchar=[
-        \ skipwhite nextgroup=texRefConcealedArg
-  syntax match texRefConcealedArg contained "[^}]*"
-        \ skipwhite nextgroup=texRefConcealedPost
-  syntax match texRefConcealedPost contained "}"
-        \ conceal cchar=]
+  call vimtex#syntax#core#new_arg('texRefConcealedArg', {
+        \ 'contains': 'texComment,@NoSpell,texRefConcealedDelim',
+        \ 'opts': 'keepend',
+        \ 'matchgroup': '',
+        \})
+  syntax match texRefConcealedDelim contained "{" cchar=[ conceal
+  syntax match texRefConcealedDelim contained "}" cchar=] conceal
 endfunction
 
 " }}}1
