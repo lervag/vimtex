@@ -2086,8 +2086,8 @@ OPTIONS                                                        *vimtex-options*
   Default value: All keys set to |g:vimtex_syntax_conceal_default|.
 
 *g:vimtex_syntax_conceal_cites*
-  A simple dictionary to control how citation conceal should work. It has two
-  keys:
+  A simple dictionary to control how citation conceal should work. It has
+  three keys:
 
     type~
       Specify the type of concealment. There are two options, and the
@@ -2095,18 +2095,29 @@ OPTIONS                                                        *vimtex-options*
 
         Value       LaTeX             Concealed
         -----       -----             ---------
-        'icon'      `\cite{Knuth1981}`  `📖`
-        'brackets'  `\cite{Knuth1981}`  `[Knuth1981]`
+        `'icon'`      `\cite{Knuth1981}`  `📖`
+        `'brackets'`  `\cite{Knuth1981}`  `[Knuth1981]`
 
     icon~
       Specify an icon for `icon` conceal. This must be a single (possibly
       multibyte) character.
+
+    verbose~
+      Specify how much to conceal in bracket mode (`type` set to `'bracket'`).
+      The following table shows how the concealed result depending on the
+      `'verbose'` value for `\cite[Figure 1]{Knuth1981}`:
+
+        Value    Concealed
+        -----    ---------
+        |v:true|   `[Figure 1][Knuth1981]`
+        |v:false|  `[Knuth1981]`
 
   Default value: >
 
     let g:vimtex_syntax_conceal_cites = {
           \ 'type': 'brackets',
           \ 'icon': '📖',
+          \ 'verbose': v:true,
           \}
 
 *g:vimtex_syntax_nested*

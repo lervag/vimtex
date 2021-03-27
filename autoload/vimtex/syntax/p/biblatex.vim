@@ -44,7 +44,7 @@ endfunction
 function! s:match_conceal_cites_brackets() abort " {{{1
   syntax match texCmdRefConcealed
         \ "\v\\%(cite[tp]?>\*?|%([Tt]ext|[Ss]mart|[Aa]uto)cite>)"
-        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedArg
+        \ conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg
 endfunction
 
 " }}}1

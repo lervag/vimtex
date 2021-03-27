@@ -596,7 +596,8 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewenvParm         texParm
   highlight def link texOptEqual           texSymbol
   highlight def link texRefOpt             texOpt
-  highlight def link texRefConcealedOpt    texRefOpt
+  highlight def link texRefConcealedOpt1   texRefOpt
+  highlight def link texRefConcealedOpt2   texRefOpt
   highlight def link texRefConcealedArg    texRefArg
   highlight def link texRefConcealedDelim  texDelim
   highlight def link texTabularArg         texOpt
@@ -1518,10 +1519,14 @@ endfunction
 function! s:match_conceal_cites_brackets() abort " {{{1
   syntax match texCmdRefConcealed
         \ "\\cite[tp]\?\>\*\?"
-        \ conceal skipwhite nextgroup=texRefConcealedOpt,texRefConcealedArg
-  call vimtex#syntax#core#new_opt('texRefConcealedOpt', {
+        \ conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg
+  call vimtex#syntax#core#new_opt('texRefConcealedOpt1', {
+        \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
+        \ 'next': 'texRefConcealedOpt2,texRefConcealedArg',
+        \})
+  call vimtex#syntax#core#new_opt('texRefConcealedOpt2', {
         \ 'opts': 'conceal',
-        \ 'next': 'texRefConcealedOpt,texRefConcealedArg',
+        \ 'next': 'texRefConcealedArg',
         \})
   call vimtex#syntax#core#new_arg('texRefConcealedArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedDelim',
