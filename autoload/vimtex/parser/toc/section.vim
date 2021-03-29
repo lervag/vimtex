@@ -15,15 +15,16 @@ let s:matcher = {
       \   'part',
       \   'chapter',
       \   '%(sub)*section',
-      \   '%(sub)?paragraph'
+      \   '%(sub)?paragraph',
+      \   'add%(part|chap|sec)',
       \ ],
       \ 'priority' : 0,
-      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section|%(sub)?paragraph)\*?\s*(\[|\{)',
-      \ 're_starred' : '\v^\s*\\%(part|chapter|%(sub)*section)\*',
-      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section|%(sub)?paragraph)',
+      \ 're' : '\v^\s*\\%(part|chapter|%(sub)*section|%(sub)?paragraph|add%(part|chap|sec))\*?\s*(\[|\{)',
+      \ 're_starred' : '\v^\s*\\%(%(part|chapter|%(sub)*section)\*|add%(part|chap|sec))',
+      \ 're_level' : '\v^\s*\\\zs%(part|chapter|%(sub)*section|%(sub)?paragraph|add%(part|chap|sec))',
       \}
 function! s:matcher.get_entry(context) abort dict " {{{1
-  let level = matchstr(a:context.line, self.re_level)
+  let level = self.level(a:context.line)
   let type = matchlist(a:context.line, self.re)[1]
   let title = matchstr(a:context.line, self.re . '\zs.{-}\ze\%?\s*$')
   let number = ''
@@ -41,6 +42,12 @@ function! s:matcher.get_entry(context) abort dict " {{{1
     call a:context.level.increment(level)
     if a:context.line !~# '\v^\s*\\%(sub)?paragraph'
       let number = deepcopy(a:context.level)
+    endif
+  elseif a:context.line =~# '\v^\s*\\add%(part|chap|sec)'
+    let newlevel = vimtex#parser#toc#level(level)
+    if newlevel > a:context.level.current
+      call a:context.level.increment(level)
+      let number = ''
     endif
   endif
 
@@ -67,6 +74,21 @@ function! s:matcher.continue(context) abort dict " {{{1
     let a:context.entry.title .= a:context.line
     let self.count = l:count
   endif
+endfunction
+
+" }}}1
+function! s:matcher.level(line) abort dict " {{{1
+  let level = matchstr(a:line, self.re_level)
+
+  if level =~# '^add'
+    let level = {
+          \ 'addpart': 'part',
+          \ 'addchap': 'chapter',
+          \ 'addsec': 'section',
+          \}[level]
+  endif
+
+  return level
 endfunction
 
 " }}}1

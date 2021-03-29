@@ -29,8 +29,7 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     if l:line =~# l:matchers.d['section'].re
       let l:max_level = max([
             \ l:max_level,
-            \ s:sec_to_value[matchstr(l:line,
-            \                         l:matchers.d['section'].re_level)]
+            \ vimtex#parser#toc#level(l:matchers.d['section'].level(l:line)),
             \])
     endif
   endfor
@@ -206,6 +205,23 @@ let s:matchers = map(
       \ "fnamemodify(v:val, ':t:r')")
 
 " }}}1
+function! vimtex#parser#toc#level(level) abort " {{{1
+  return s:sec_to_value[a:level]
+endfunction
+
+let s:sec_to_value = {
+      \ '_' : 0,
+      \ 'subparagraph' : 1,
+      \ 'paragraph' : 2,
+      \ 'subsubsubsection' : 3,
+      \ 'subsubsection' : 4,
+      \ 'subsection' : 5,
+      \ 'section' : 6,
+      \ 'chapter' : 7,
+      \ 'part' : 8,
+      \}
+
+" }}}1
 
 "
 " Section level counter
@@ -237,7 +253,7 @@ endfunction
 
 " }}}1
 function! s:level.increment(level) abort dict " {{{1
-  let self.current = s:sec_to_value[a:level]
+  let self.current = vimtex#parser#toc#level(a:level)
 
   let self.part_toggle = 0
 
@@ -283,15 +299,3 @@ function! s:level.increment(level) abort dict " {{{1
 endfunction
 
 " }}}1
-
-let s:sec_to_value = {
-      \ '_' : 0,
-      \ 'subparagraph' : 1,
-      \ 'paragraph' : 2,
-      \ 'subsubsubsection' : 3,
-      \ 'subsubsection' : 4,
-      \ 'subsection' : 5,
-      \ 'section' : 6,
-      \ 'chapter' : 7,
-      \ 'part' : 8,
-      \ }
