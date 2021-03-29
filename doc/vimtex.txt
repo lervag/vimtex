@@ -4377,10 +4377,11 @@ priority, so one may want to use custom options if one wants to specify
 particular things in a configuration file.
 
 A particular set of options are very convenient for a good coupling between
-`latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`.  These options
-can be used to specify commands that are run by `latexmk` before and after
-compilation.  This is used by VimTeX to achieve callbacks after compilation
-has finished with something like this: >
+`latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`. These
+options can be used to specify commands that are run by `latexmk` before and
+after compilation. This is used by VimTeX to achieve callbacks after
+compilation has finished through |vimtex#compiler#callback| with something
+like this: >
 
   $success_cmd = "gvim --remote-expr 'vimtex#compiler#callback(1)'";
   $failure_cmd = "gvim --remote-expr 'vimtex#compiler#callback(0)'";
@@ -4860,6 +4861,13 @@ Note: This API is currently a work in progress!
 *vimtex#compiler#is_running()*
   Function returns 0 if a compiler is not running, 1 if it is running, or -1
   if the compiler backend is not available (e.g. for non VimTeX buffers).
+
+*vimtex#compiler#callback(status)*
+  Utility function to be used as a compiler callback function. The argument is
+  the compiler status: 0 or |v:false| means compilation failed and 1 or
+  |v:true| means compilation was successful. The function does several useful
+  things based on the status, such as running the |VimtexEventCompileFailed|
+  and |VimtexEventCompileSuccess| events.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
