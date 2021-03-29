@@ -133,7 +133,7 @@ endfunction
 function! s:compiler.start(...) abort dict " {{{1
   call self.exec()
 
-  call vimtex#log#info('Compiler started in background')
+  call vimtex#log#info('Compiler started')
 endfunction
 
 " }}}1
@@ -145,6 +145,7 @@ endfunction
 function! s:compiler.stop() abort dict " {{{1
   if self.is_running()
     call self.kill()
+    call vimtex#log#info('Compiler stopped')
   endif
 endfunction
 
