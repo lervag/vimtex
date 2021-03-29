@@ -2267,119 +2267,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
-*g:vimtex_toc_custom_matchers*
-  This option is a list of custom ToC matchers. A matcher is used to define
-  the entries that are included in the ToC window. It is implemented as
-  a |Dictionary| with a specified set of keys, see |toc_matcher_specification|.
-
-  As an example, one can use this option to add ToC entries for a custom
-  environment. Say you have defined an environment `mycustomenv`, then
-  instances of this environment could be added to the ToC with the following
-  configuration: >
-
-    let g:vimtex_toc_custom_matchers = [
-            \ { 'title' : 'My Custom Environment',
-            \   're' : '\v^\s*\\begin\{mycustomenv\}' }
-            \]
-<
-  Default value: []
-
-                                                    *toc_matcher_specification*
-  A ToC matcher is defined as a |Dictionary| where the possible keys are
-  specified below. In order to write a matcher, one should also be aware of
-  the `context` argument that is passed to the matcher functions, as well as
-  the specification of the `toc entry` return value. However, since this kind
-  of customization is advanced I refer users to the source file for further
-  specification of these objects. In particular, see the function
-  `s:toc.parse(...)` in `autoload/vimtex/toc.vim`.
-
-    re~
-      Type: |String|
-      Required: `yes`
-      This specifies a regular expression that should match the current line
-      for the desired ToC entry.
-
-    prefilter_re~
-      Type: |String|
-      Required: `maybe` (this or `prefilter_cmds` should be specified)
-      This specifies a regular expression that must match the current line for
-      the desired ToC entry. This is used as a prefilter to make things
-      faster, and it does not need to be a perfect match. The `re` key may
-      often be a complex and therefore slow regular expression. This key
-      should represent a simple and fast regular expression that may match
-      more than the desired entry.
-
-    prefilter_cmds~
-      Type: List of |String|
-      Required: `maybe` (this or `prefilter_re` should be specified)
-      This is similar to `prefilter_re`, except it specifies a list of command
-      names (regular expressions). For instance, it should contain `todo` for
-      a ToC matcher for `\todo` commands.
-
-    priority~
-      Type: |expr-number| (default: 0)
-      Required: `no`
-      Priority is used for sorting the ToC matchers. High priority matchers
-      will be tried first, and only one matcher will match a given line. Note
-      that the built-in matchers have priority values between 0 and 2.
-
-    in_preamble~
-      Type: 0 or 1 (default: 0)
-      Required: `no`
-      If the entry may appear in the preamble.
-
-    in_content~
-      Type: 0 or 1 (default: 1)
-      Required: `no`
-      If the entry may appear in the main content.
-
-    title~
-      Type: |String|
-      Required: `no`
-      If the matcher does not have a `get_entry` key, then it will use
-      a simple, general matcher function to generate the entry. In this case,
-      the `title` key should be specified to give the title of the ToC entry.
-
-    get_entry~
-      Type: |Dictionary-function|
-      Arguments: `context`
-      Returns: `toc entry`
-      Required: `no`
-      This is the general way to define ToC entries. It allows to define the
-      ToC entry based on the context. See `autoload/vimtex/parser/toc.vim` for
-      examples on how to use this.
-
-    continue~
-      Type: |Dictionary-function|
-      Arguments: `context`
-      Returns: `toc entry`
-      Required: `no`
-      Some entries may be specified over several lines, in which case this key
-      becomes necessary in combination with the `get_entry` key. See the built
-      in `s:matcher_section` matcher for an example on how to use this.
-
-    name~
-      Type: |String|
-      Required: `no`
-      Mostly for making it easier to debug a specific matcher. Without a name,
-      the matcher will be registered with a semi random numbered name like
-      `custom1`.
-
-*g:vimtex_toc_todo_labels*
-  Dictionary of keywords that should be recognized in comments for the todo
-  layer. The values represent the labels used in the ToC.
-
-  Default value: `{'TODO': 'TODO: ', 'FIXME': 'FIXME: '}`
-
-*g:vimtex_toc_show_preamble*
-  Whether to include the preamble in the ToC.
-
-  Default value: 1
-
 *g:vimtex_toc_config*
   This is a dictionary that can be used to configure the ToC. Each key
-  specifies a configuration option that can be changed. In the following, the
-  various keys are explained briefly and the default value is indicated.
+  specifies a configuration option that can be changed. For configuration of
+  specific matchers, see |g:vimtex_toc_config_matchers|.
+
+  In the following, the possible configuration keys are explained briefly and
+  the default values are indicated.
 
     `name` : `Table of contents (VimTeX)`
       The name of the ToC buffer.
@@ -2479,6 +2373,147 @@ OPTIONS                                                        *vimtex-options*
 
     `todo_sorted` : 1
       Whether or not to sort the TODOs at the top of the ToC window.
+
+*g:vimtex_toc_config_matchers*
+  This is a dictionary that can be used to configure the built-in ToC
+  matchers. See below for a specification of the ToC matcher "objects" and the
+  various keys that can be defined/changed (|toc_matcher_specification|).
+
+  To configure/alter a built-in matcher, one can do this: >
+
+    let g:vimtex_toc_config_matchers = {
+          \ 'MATCHER1': {OPTIONS},
+          \ 'MATCHER2': {OPTIONS},
+          \}
+<
+  The available options are described in |toc_matcher_specification|. Please
+  note that the built-in matchers should generally just work well for most
+  people. However, this option allows at least two useful things: to disable
+  a built-in matcher and to change the priority of a built-in matcher. The
+  following is a full example that shows how this could be used: >
+
+    let g:vimtex_toc_config_matchers = {
+          \ 'beamer_frame': {'disable': 1},
+          \ 'todo_fixme': {'priority': -1},
+          \ 'index': {'title': 'MyFancy Index Title'},
+          \}
+<
+  Note: The available built-in matchers are defined in separate files under
+        `autoload/vimtex/parser/toc/*.vim`.
+
+  Default value: {}
+
+                                                    *toc_matcher_specification*
+  A ToC matcher is defined as a |Dictionary| where the possible keys are
+  specified below. In order to write a matcher, one should also be aware of
+  the `context` argument that is passed to the matcher functions, as well as
+  the specification of the `toc entry` return value. However, since this kind
+  of customization is advanced I refer users to the source file for further
+  specification of these objects. In particular, see the function
+  `s:toc.parse(...)` in `autoload/vimtex/toc.vim`.
+
+    re~
+      Type: |String|
+      Required: `yes`
+      This specifies a regular expression that should match the current line
+      for the desired ToC entry.
+
+    prefilter_re~
+      Type: |String|
+      Required: `maybe` (this or `prefilter_cmds` should be specified)
+      This specifies a regular expression that must match the current line for
+      the desired ToC entry. This is used as a prefilter to make things
+      faster, and it does not need to be a perfect match. The `re` key may
+      often be a complex and therefore slow regular expression. This key
+      should represent a simple and fast regular expression that may match
+      more than the desired entry.
+
+    prefilter_cmds~
+      Type: List of |String|
+      Required: `maybe` (this or `prefilter_re` should be specified)
+      This is similar to `prefilter_re`, except it specifies a list of command
+      names (regular expressions). For instance, it should contain `todo` for
+      a ToC matcher for `\todo` commands.
+
+    priority~
+      Type: |expr-number| (default: 0)
+      Required: `no`
+      Priority is used for sorting the ToC matchers. High priority matchers
+      will be tried first, and only one matcher will match a given line. Note
+      that the built-in matchers have priority values between 0 and 2.
+
+    in_preamble~
+      Type: 0 or 1 (default: 0)
+      Required: `no`
+      If the entry may appear in the preamble.
+
+    in_content~
+      Type: 0 or 1 (default: 1)
+      Required: `no`
+      If the entry may appear in the main content.
+
+    title~
+      Type: |String|
+      Required: `no`
+      If the matcher does not have a `get_entry` key, then it will use
+      a simple, general matcher function to generate the entry. In this case,
+      the `title` key should be specified to give the title of the ToC entry.
+
+    get_entry~
+      Type: |Dictionary-function|
+      Arguments: `context`
+      Returns: `toc entry`
+      Required: `no`
+      This is the general way to define ToC entries. It allows to define the
+      ToC entry based on the context. See `autoload/vimtex/parser/toc.vim` for
+      examples on how to use this.
+
+    continue~
+      Type: |Dictionary-function|
+      Arguments: `context`
+      Returns: `toc entry`
+      Required: `no`
+      Some entries may be specified over several lines, in which case this key
+      becomes necessary in combination with the `get_entry` key. See the built
+      in `s:matcher_section` matcher for an example on how to use this.
+
+    name~
+      Type: |String|
+      Required: `no`
+      Mostly for making it easier to debug a specific matcher. Without a name,
+      the matcher will be registered with a semi random numbered name like
+      `custom1`.
+
+    disable~
+      Type: |Boolean| (default: |v:false|)
+      Required: `no`
+      If true, then the matcher will be disabled.
+
+*g:vimtex_toc_custom_matchers*
+  This option is a list of custom ToC matchers, see |toc_matcher_specification|.
+
+  As an example, one can use this option to add ToC entries for a custom
+  environment. Say you have defined an environment `mycustomenv`, then
+  instances of this environment could be added to the ToC with the following
+  configuration: >
+
+    let g:vimtex_toc_custom_matchers = [
+            \ { 'title' : 'My Custom Environment',
+            \   're' : '\v^\s*\\begin\{mycustomenv\}' }
+            \]
+<
+  Default value: []
+
+*g:vimtex_toc_todo_labels*
+  Dictionary of keywords that should be recognized in comments for the todo
+  layer. The values represent the labels used in the ToC.
+
+  Default value: `{'TODO': 'TODO: ', 'FIXME': 'FIXME: '}`
+
+*g:vimtex_toc_show_preamble*
+  Whether to include the preamble in the ToC.
+
+  Default value: 1
 
 *g:vimtex_view_enabled*
   Use this option to disable/enable the VimTeX viewer interface.

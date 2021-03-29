@@ -324,12 +324,6 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_text_obj_linewise_operators', ['d', 'y'])
 
   call s:init_option('vimtex_toc_enabled', 1)
-  call s:init_option('vimtex_toc_custom_matchers', [])
-  call s:init_option('vimtex_toc_show_preamble', 1)
-  call s:init_option('vimtex_toc_todo_labels', {
-        \ 'TODO': 'TODO: ',
-        \ 'FIXME': 'FIXME: '
-        \})
   call s:init_option('vimtex_toc_config', {
         \ 'name' : 'Table of contents (VimTeX)',
         \ 'mode' : 1,
@@ -360,6 +354,13 @@ function! vimtex#options#init() abort " {{{1
         \ 'split_width' : 50,
         \ 'tocdepth' : 3,
         \ 'todo_sorted' : 1,
+        \})
+  call s:init_option('vimtex_toc_config_matchers', {})
+  call s:init_option('vimtex_toc_custom_matchers', [])
+  call s:init_option('vimtex_toc_show_preamble', 1)
+  call s:init_option('vimtex_toc_todo_labels', {
+        \ 'TODO': 'TODO: ',
+        \ 'FIXME': 'FIXME: '
         \})
 
   call s:init_option('vimtex_view_enabled', 1)

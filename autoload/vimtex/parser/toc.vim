@@ -125,14 +125,16 @@ function! vimtex#parser#toc#get_matchers() abort " {{{1
 
   " Collect all matchers
   for l:name in s:matchers
-    let l:matcher = vimtex#parser#toc#{l:name}#new()
+    let l:matcher = extend(
+          \ vimtex#parser#toc#{l:name}#new(),
+          \ get(g:vimtex_toc_config_matchers, l:name, {}))
     let l:matcher.name = l:name
     call add(l:matchers.all, l:matcher)
   endfor
   let l:matchers.all += g:vimtex_toc_custom_matchers
 
   " Remove disabled matchers
-  call filter(l:matchers.all, {_, x -> !get(x, 'disabled')})
+  call filter(l:matchers.all, {_, x -> !get(x, 'disable')})
 
   " Add dictionary that gives access to specific matchers
   let l:counter = 1
