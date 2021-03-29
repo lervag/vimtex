@@ -19,6 +19,9 @@ function! s:matcher.get_entry(context) abort dict " {{{1
   let l:title = vimtex#util#trim(
         \ matchstr(a:context.line, self.re . '\%(\[[^]]\+\]\)\?{\zs.*\ze}\s*$'))
 
+  " Handle subtitles, e.g. \begin{frame}{title}{subtitle}
+  let l:title = substitute(l:title, '}\s*{.*', ' - ', '')
+
   return {
         \ 'title'  : 'Frame' . (empty(l:title) ? '' : ': ' . l:title),
         \ 'number' : '',
