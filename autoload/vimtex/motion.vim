@@ -197,6 +197,7 @@ let s:re_sec = '\v^\s*\\%(' . join([
       \   'part',
       \   'appendi%(x|ces)',
       \   '%(front|back|main)matter',
+      \   'add%(sec|chap|part)',
       \ ], '|') . ')>'
 let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
 let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
