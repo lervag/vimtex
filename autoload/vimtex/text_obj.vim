@@ -471,6 +471,7 @@ let s:section_search = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
       \   'part>',
       \   'appendix>',
       \   '%(front|back|main)matter>',
+      \   'add%(sec|chap|part)>',
       \   '%(begin|end)\{\zsdocument\ze\}'
       \  ], '|')
       \ .')'
@@ -483,8 +484,11 @@ let s:section_to_val = {
       \ 'appendix':        1,
       \ 'backmatter':      1,
       \ 'part':            1,
+      \ 'addpart':         1,
       \ 'chapter':         2,
+      \ 'addchap':         2,
       \ 'section':         3,
+      \ 'addsec':          3,
       \ 'subsection':      4,
       \ 'subsubsection':   5,
       \ 'paragraph':       6,
