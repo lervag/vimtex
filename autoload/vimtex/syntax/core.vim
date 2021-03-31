@@ -286,10 +286,11 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Sections and parts
   syntax match texCmdPart "\\\(front\|main\|back\)matter\>"
-  syntax match texCmdPart nextgroup=texPartArgTitle "\\part\>"
-  syntax match texCmdPart nextgroup=texPartArgTitle "\\chapter\>\*\?"
-  syntax match texCmdPart nextgroup=texPartArgTitle "\\\(sub\)*section\>\*\?"
-  syntax match texCmdPart nextgroup=texPartArgTitle "\\\(sub\)\?paragraph\>"
+  syntax match texCmdPart "\\part\>"                    nextgroup=texPartArgTitle
+  syntax match texCmdPart "\\chapter\>\*\?"             nextgroup=texPartArgTitle
+  syntax match texCmdPart "\v\\%(sub)*section>\*?"      nextgroup=texPartArgTitle
+  syntax match texCmdPart "\v\\%(sub)?paragraph>"       nextgroup=texPartArgTitle
+  syntax match texCmdPart "\v\\add%(part|chap|sec)>\*?" nextgroup=texPartArgTitle
   call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
