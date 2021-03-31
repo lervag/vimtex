@@ -1588,10 +1588,10 @@ OPTIONS                                                        *vimtex-options*
           \ 'markers' : {},
           \ 'sections' : {
           \   'parse_levels' : 0,
-          \   'sections' : [      !!! This is a list of regexes
-          \     'part',
-          \     'chapter',
-          \     'section',
+          \   'sections' : [      !!! This is a list of (very magic) regexes
+          \     '%(add)?part',
+          \     '%(chapter|addchap)',
+          \     '%(section|addsec)',
           \     'subsection',
           \     'subsubsection',
           \   ],

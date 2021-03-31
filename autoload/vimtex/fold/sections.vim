@@ -162,7 +162,7 @@ function! s:folder.refresh() abort dict " {{{1
   " Parse section commands (part, chapter, [sub...]section)
   let lines = filter(copy(buffer), {_, x -> x =~# self.re.any_sections})
   for part in self.sections
-    let partpattern = '^\s*\%(\\\|% Fake\)' . part . ':\?\>'
+    let partpattern = '\v^\s*%(\\|\% Fake)' . part . ':?>'
     for line in lines
       if line =~# partpattern
         let level += 1

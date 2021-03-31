@@ -78,9 +78,9 @@ function! vimtex#options#init() abort " {{{1
         \ 'sections' : {
         \   'parse_levels' : 0,
         \   'sections' : [
-        \     'part',
-        \     'chapter',
-        \     'section',
+        \     '%(add)?part',
+        \     '%(chapter|addchap)',
+        \     '%(section|addsec)',
         \     'subsection',
         \     'subsubsection',
         \   ],
