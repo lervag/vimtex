@@ -32,7 +32,10 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\[pPfFsStTaA]\?[Vv]olcites\?\>"
   syntax match texCmdRef nextgroup=texRefOpts,texRefArgs skipwhite skipnl "\\cite\%(field\|list\|name\)>"
   call vimtex#syntax#core#new_arg('texRefArgs', {'next': 'texRefOpts,texRefArgs', 'contains': 'texComment,@NoSpell'})
-  call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpt,texRefArg'})
+  call vimtex#syntax#core#new_opt('texRefOpts', {'next': 'texRefOpts,texRefArgs'})
+
+  highlight def link texRefArgs texRefArg
+  highlight def link texRefOpts texRefOpt
 
   if g:vimtex_syntax_conceal.cites
     call s:match_conceal_cites_{g:vimtex_syntax_conceal_cites.type}()
