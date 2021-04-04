@@ -19,11 +19,16 @@ function! s:handler.match(cmd, word) abort dict " {{{1
     return v:false
   endif
 
-  if len(a:cmd.args) != 1
+  if len(a:cmd.args) < 1 || len(a:cmd.args) > 2
     return v:false
   endif
 
-  let self.cites = split(a:cmd.args[0].text, ',\s*')
+  let l:text = a:cmd.args[0].text
+  if len(a:cmd.args) == 2
+    let l:text .= ',' . a:cmd.args[1].text
+  endif
+
+  let self.cites = split(l:text, ',\s*')
   if index(self.cites, a:word) >= 0
     let self.selected = a:word
   else

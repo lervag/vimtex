@@ -39,3 +39,30 @@ function! vimtex#context#menu() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#context#get(...) abort " {{{1
+  if a:0 > 0
+    let l:pos_saved = vimtex#pos#get_cursor()
+    call vimtex#pos#set_cursor(a:000)
+  endif
+
+  let l:cmd = vimtex#cmd#get_current()
+  let l:word = expand('<cword>')
+
+  if a:0 > 0
+    call vimtex#pos#set_cursor(l:pos_saved)
+  endif
+
+  if empty(l:cmd) | return | endif
+
+  for l:handler in b:vimtex.context_menu
+    if l:handler.match(l:cmd, l:word)
+      return {
+            \ 'cmd': l:cmd,
+            \ 'word': l:word,
+            \ 'handler': l:handler,
+            \}
+    endif
+  endfor
+endfunction
+
+" }}}1

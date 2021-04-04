@@ -1,0 +1,13 @@
+\documentclass{article}
+\usepackage{biblatex}
+\addbibresource{test-cites.bib}
+
+\begin{document}
+\begin{enumerate}
+  \item \autocite[10]{Hemingway1940}
+  \item \autocites{Hemingway1940}{JiM2020}
+  \item \autocites[10]{JiM2020}[20]{Hemingway1940}
+  \item \autocites[10]{Hemingway1940}{JiM2020}
+  \item \autocites{Hemingway1940}[20]{JiM2020}
+\end{enumerate}
+\end{document}

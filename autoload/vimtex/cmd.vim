@@ -623,22 +623,25 @@ function! s:get_cmd(direction) abort " {{{1
     let res.pos_end.cnum = res.overlay.close.cnum
   endif
 
-  " Get options
-  let opt = s:get_cmd_part('[', res.pos_end)
-  while !empty(opt)
-    call add(res.opts, opt)
-    let res.pos_end.lnum = opt.close.lnum
-    let res.pos_end.cnum = opt.close.cnum
+  " Get options and arguments
+  while v:true
     let opt = s:get_cmd_part('[', res.pos_end)
-  endwhile
+    if !empty(opt)
+      call add(res.opts, opt)
+      let res.pos_end.lnum = opt.close.lnum
+      let res.pos_end.cnum = opt.close.cnum
+      continue
+    endif
 
-  " Get arguments
-  let arg = s:get_cmd_part('{', res.pos_end)
-  while !empty(arg)
-    call add(res.args, arg)
-    let res.pos_end.lnum = arg.close.lnum
-    let res.pos_end.cnum = arg.close.cnum
     let arg = s:get_cmd_part('{', res.pos_end)
+    if !empty(arg)
+      call add(res.args, arg)
+      let res.pos_end.lnum = arg.close.lnum
+      let res.pos_end.cnum = arg.close.cnum
+      continue
+    endif
+
+    break
   endwhile
 
   " Include entire cmd text
