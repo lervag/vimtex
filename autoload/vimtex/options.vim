@@ -285,6 +285,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'icon': '📖',
         \ 'verbose': v:true,
         \})
+  call s:init_option('vimtex_syntax_custom_cmds', [])
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
         \   'C' : 'c',

@@ -2120,6 +2120,45 @@ OPTIONS                                                        *vimtex-options*
           \ 'verbose': v:true,
           \}
 
+*g:vimtex_syntax_custom_cmds*
+  A list of "simple" commands to highlight specifically with custom styling.
+  That is, this allows to apply bold text or italics on the command argument
+  or conceal on the macro part. Each command is expected to be of the
+  following type: >
+
+    \cmdname[optional]{argument}
+<
+  Each element in the list must be a dictionary with the following keys:
+
+    name~
+      The command to highlight (`cmdname`).
+
+    mathmode~
+      Default: |v:false|
+      If true, then the command is a math mode command.
+
+    conceal~
+      Default: |v:false|
+      If true, the `\cmdname` part and delimiters `{` and `}` are concealed.
+
+    concealopts~
+      Default: Same as `conceal` key
+      If true, the option group `[optional]` is concealed.
+
+    argstyle~
+      Default: Undefined.
+      Can be set to `bold`, `ital`, or `boldital` to apply styling to the
+      command argument.
+
+  An example may be helpful: To use bolded style on a custom vector macro such
+  as `\vct{v}`, one can do this: >
+
+    let g:vimtex_syntax_custom_cmds = [
+          \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
+          \]
+<
+  Default value: []
+
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
   available for configuration:
