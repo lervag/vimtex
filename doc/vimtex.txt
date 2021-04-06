@@ -2183,6 +2183,9 @@ OPTIONS                                                        *vimtex-options*
       Replace various math symbol commands to an equivalent unicode character.
       This includes quite a lot of replacements, so be warned!
 
+    sections~
+      Conceal `\(sub)*section` commands.
+
     styles~
       Conceal the LaTeX command "boundaries" for italicized and bolded style
       commands, i.e. `\emph`, `\textit`, and `\textbf`. This means that one
