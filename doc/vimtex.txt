@@ -4507,7 +4507,33 @@ Note: It is not possible to directly specify an output directory from VimTeX.
 ------------------------------------------------------------------------------
 GENERIC COMPILER                                      *vimtex-generic-compiler*
 
-TODO.
+There are a lot of various compiler backends for LaTeX, and it is also
+possible to simply use things like a Makefile. The generic backend allows to
+use mostly whatever you want. However, since it is a generic implementation,
+it will not be as well integrated as e.g. |vimtex-latexmk|.
+
+Some examples of build tools that can be used with the generic backend:
+
+* Light LaTeX Make (llmk)
+  https://ctan.org/pkg/light-latex-make
+
+  > This program is yet another build tool specific for LaTeX documents. Its
+  > aim is to provide a simple way to specify a workflow of processing LaTeX
+  > documents and encourage people to always explicitly show the right
+  > workflow for each document.
+
+* spix (Yet another TeX compilation tool: simple, human readable, no option,
+  no magic)
+  https://ctan.org/pkg/spix
+
+  > SpiX offers a way to store information about the compilation process for
+  > a tex file inside the tex file itself. Just write the commands as comments
+  > in the tex files, and SpiX will extract and run those commands.
+  >   Everything is stored in the tex file (so that you are not missing some
+  > piece of information that is located somewhere else), in a human-readable
+  > format (no need to know SpiX to understand it).
+
+TODO: More documentation here. Examples of configuration.
 
 ==============================================================================
 SYNTAX CHECKING (LINTING)                                       *vimtex-lint*
