@@ -2044,6 +2044,10 @@ OPTIONS                                                        *vimtex-options*
       Replace TeX accents into the accented character, e.g. `\aa` --> å. This
       will also replace a few ligatures.
 
+    cites~
+      Conceal LaTeX cite commands such as `\citet[...]{ref00}`. The conceal
+      style is specified by |g:vimtex_syntax_conceal_cites|.
+
     fancy~
       Some extra fancy replacements, e.g. `\item` --> ○.
 
@@ -2063,7 +2067,7 @@ OPTIONS                                                        *vimtex-options*
         `\Biggl\langle ... \Biggr\rangle` --> `〈 ... 〉`
 
     math_fracs~
-    Replace some simple fractions like `\frac 1 2` --> ½.
+      Replace some simple fractions like `\frac 1 2` --> ½.
 
     math_super_sub~
       Replace simple math super and sub operators, e.g. `x^2` --> `x²`.
@@ -2078,10 +2082,6 @@ OPTIONS                                                        *vimtex-options*
       will see something like:
 
         `\emph{text here}` --> `text here`
-
-    cites~
-      Conceal LaTeX cite commands such as `\citet[...]{ref00}`. The conceal
-      style is specified by |g:vimtex_syntax_conceal_cites|.
 
   Default value: All keys set to |g:vimtex_syntax_conceal_default|.
 
