@@ -1787,7 +1787,7 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: >
     let g:vimtex_indent_conditionals = {
-          \ 'open': '\v%(\\newif)@<!\\if%(field|name|numequal|thenelse)@!',
+          \ 'open': '\v%(\\newif)@<!\\if%(f>|field|name|numequal|thenelse)@!',
           \ 'else': '\\else\>',
           \ 'close': '\\fi\>',
           \}
