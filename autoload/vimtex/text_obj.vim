@@ -232,14 +232,50 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#symbols(is_inner, mode) abort " {{{1
+  " Disable for now
+  return
+
   if a:is_inner
     call vimtex#log#warning('Not implemented!')
     return
   endif
 
-  let l:pos_save = vimtex#pos#get_cursor()
+  " We are looking for constructs like this:
+  "
+  "      a^{...}_{...}
+  "   \cmd^{...}_{...}
 
-  return
+  " Repeat the following until finished
+
+  if !vimtex#syntax#in_mathzone()
+          \ || getline('.')[cursor] ==# '$'
+    return
+  endif
+
+  " 1. Find beginning: \ or word boundary
+  "   1.1 move cursor backwards as long as it is over [ ^_{}]
+  "   1.2 note position of character (this is start if type=char)
+  "   1.3 move backwards to check if symbol is a command
+  "   1.4 register type: l:type  = cmd|char
+
+  " 2. Look for ^ or _ groups (finished if not found)
+  "   2.1 start from start position
+  "   2.2 go forward until [ ^_]
+  "   2.3 if white-space: set end position, go to 3
+  "   2.4 match either single character or {...} group, then continue with
+  "       search for next ^ or _ (sort of repeat from 2.2)
+
+  " 3. Region from 1 to 2 is now a candidate region
+  "   3.1 reject if the region is trivial length (0 or 1)
+  "   3.2 reject if the region does not contain the cursor position
+  "   3.3 if rejected: move active cursor position to the position before the
+  "       boundary detected in step 1 and repeat from step 0.
+
+  " let l:pos_save = vimtex#pos#get_cursor()
+
+  " call vimtex#pos#set_cursor(l:pos_start)
+  " normal! v
+  " call vimtex#pos#set_cursor(l:pos_end)
 endfunction
 
 " }}}1
