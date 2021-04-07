@@ -8,7 +8,7 @@ TESTS := $(TESTS:.vim=)
 
 .PHONY: test $(TESTS)
 
-test: $(TESTS)
+test: $(filter-out test-symbols,$(TESTS))
 
 $(TESTS):
 	@$(MYVIM) -u $@.vim
