@@ -426,7 +426,7 @@ endfunction
 
 " {{{1 Initialize module
 
-if !g:vimtex_compiler_enabled | finish | endif
+if !get(g:, 'vimtex_compiler_enabled') | finish | endif
 
 augroup vimtex_compiler
   autocmd!
