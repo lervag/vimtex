@@ -3478,8 +3478,9 @@ the corresponding "inner" object. This is the case for VimTeX text objects,
 e.g. by default, `vie` will visually select the inner part of an environment,
 whereas `vae` will select the entire environment including the boundaries.
 
-VimTeX supports the well known |targets.vim| as a "backend" for text objects.
-This should work automatically, see |g:vimtex_text_obj_variant| for more info.
+VimTeX supports the well known |targets.vim| as a "backend" for the command
+and environment text objects (`ie`/`ae` and `ic`/`ac`). This should work
+automatically, see |g:vimtex_text_obj_variant| for more info.
 
 Some examples of how to use the text objects can be useful. The following is
 a simple table that shows the original text on the left, the keys that are
