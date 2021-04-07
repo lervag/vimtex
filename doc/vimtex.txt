@@ -2184,7 +2184,11 @@ OPTIONS                                                        *vimtex-options*
       This includes quite a lot of replacements, so be warned!
 
     sections~
-      Conceal `\(sub)*section` commands.
+      Conceal `\(sub)*section` commands. The titles are replaced with Markdown
+      style ATX headers, e.g.:
+
+        `\section{Test}`    --> `# Test`
+        `\subsection{Test}` --> `## Test`
 
     styles~
       Conceal the LaTeX command "boundaries" for italicized and bolded style
@@ -4079,6 +4083,7 @@ are several major differences that users may want to be aware of:
 Associated settings:
 * |g:vimtex_syntax_enabled|
 * |g:vimtex_syntax_conceal|
+* |g:vimtex_syntax_conceal_cites|
 * |g:vimtex_syntax_conceal_default|
 * |g:vimtex_syntax_nested|
 * |g:vimtex_syntax_nospell_commands|
