@@ -44,6 +44,7 @@ CONTENTS                                                      *vimtex-contents*
     Map definitions                             |vimtex-mappings|
     Insert mode mappings                        |vimtex-imaps|
     Events                                      |vimtex-events|
+    Text objects                                |vimtex-text-objects|
   Completion                                    |vimtex-completion|
     Complete citations                          |vimtex-complete-cites|
     Complete labels                             |vimtex-complete-labels|
@@ -70,7 +71,7 @@ CONTENTS                                                      *vimtex-contents*
     Syntax conceal                              |vimtex-syntax-conceal|
     Syntax group reference                      |vimtex-syntax-reference|
   Navigation                                    |vimtex-navigation|
-    Include expression (|gf| command)           |vimtex-includeexpr|
+    Include expression (gf command)             |vimtex-includeexpr|
     Table of contents                           |vimtex-toc|
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
@@ -3137,35 +3138,20 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
 
-
-Note: The following describe text objects and motions. For the text objects,
-the usual convention is used where the "a" select "a"n object, including the
-whitespace/delimiters/etc, whereas the "i" selects the corresponding "inner"
-object, see |text-objects|.
-
-*<plug>(vimtex-ac)*
+*<plug>(vimtex-ac)*   Commands
 *<plug>(vimtex-ic)*
-  Text object for commands.
-
-*<plug>(vimtex-ad)*
+*<plug>(vimtex-ad)*   Delimiters
 *<plug>(vimtex-id)*
-  Text object for delimiters.
-
-*<plug>(vimtex-ae)*
+*<plug>(vimtex-ae)*   Environments
 *<plug>(vimtex-ie)*
-  Text object for environments.
-
-*<plug>(vimtex-a$)*
+*<plug>(vimtex-a$)*   Inline math
 *<plug>(vimtex-i$)*
-  Text object for inline math.
-
-*<plug>(vimtex-aP)*
+*<plug>(vimtex-aP)*   Sections
 *<plug>(vimtex-iP)*
-  Text object for sections.
-
-*<plug>(vimtex-am)*
+*<plug>(vimtex-am)*   Items
 *<plug>(vimtex-im)*
-  Text object for items.
+  These are all text object mappings for the indicated types of objects , see
+  |vimtex-text-objects| for more info.
 
 *<plug>(vimtex-%)*
   Find matching pair.
@@ -3471,6 +3457,59 @@ Examples: >
     au User VimtexEventTocActivated normal! zt
   augroup END
 
+------------------------------------------------------------------------------
+TEXT OBJECTS                                              *vimtex-text-objects*
+
+Text objects (and motions) are a fundamental feature in Vim. Operations can be
+combined with motions or text objects in endless ways and can be repeated with
+the dot operator (|repeat.txt|). If you are reading this and do not know about
+these things, then it is strongly adviced to read the help section about
+|text-objects| and the famous Stack Overflow post "Your problem with Vim is
+that you don't grok vi":
+http://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim/1220118#1220118
+
+VimTeX defines LaTeX specific text objects (and motions). These are all
+mappings, and as such, they are also described in the sections
+|vimtex-mappings| and |vimtex-default-mappings|.
+
+The usual convention for text object mappings is to prepend "a" to select "a"n
+object, including the whitespace/delimiters/etc, and to prepend "i" to select
+the corresponding "inner" object. This is the case for VimTeX text objects,
+e.g. by default, `vie` will visually select the inner part of an environment,
+whereas `vae` will select the entire environment including the boundaries.
+
+VimTeX supports the well known |targets.vim| as a "backend" for text objects.
+This should work automatically, see |g:vimtex_text_obj_variant| for more info.
+
+Some examples of how to use the text objects can be useful. The following is
+a simple table that shows the original text on the left, the keys that are
+typed in the middle, and the result on the right. The bar "|" indicates the
+cursor position before the operation. >
+
+  BEFORE                       KEYS    AFTER
+  \comm|and{arg}               dic     \command{}
+  \command{a|rg}               gUac    \COMMAND{ARG}
+
+  \lef|t( asd \right)          cid     \left(| \right)
+
+  \begin{x}                    die     \begin{x}
+    hello world|                       \end{x}
+  \end{x}
+
+  $math | here$                da$
+
+  \begin{itemize}                      \begin{itemize}
+    \item hello moon|          cim       \item |
+  \end{itemize}                        \end{itemize}
+
+  \begin{itemize}                      \begin{itemize}
+    \item hello moon|          dam     \end{itemize}
+  \end{itemize}
+
+Associated settings:
+* |g:vimtex_text_obj_enabled|
+* |g:vimtex_text_obj_linewise_operators|
+* |g:vimtex_text_obj_variant|
 
 ==============================================================================
 COMPLETION                                                  *vimtex-completion*
