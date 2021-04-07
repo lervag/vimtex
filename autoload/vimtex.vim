@@ -253,6 +253,10 @@ function! s:init_default_mappings() abort " {{{1
     call s:map(1, 'x', 'am', '<plug>(vimtex-am)')
     call s:map(1, 'o', 'im', '<plug>(vimtex-im)')
     call s:map(1, 'o', 'am', '<plug>(vimtex-am)')
+    call s:map(1, 'x', 'ix', '<plug>(vimtex-ix)')
+    call s:map(1, 'x', 'ax', '<plug>(vimtex-ax)')
+    call s:map(1, 'o', 'ix', '<plug>(vimtex-ix)')
+    call s:map(1, 'o', 'ax', '<plug>(vimtex-ax)')
 
     if vimtex#text_obj#targets#enabled()
       call vimtex#text_obj#targets#init()

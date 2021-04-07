@@ -175,6 +175,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `i$` `a$` Inline math structures
   - `iP` `aP` Sections
   - `im` `am` Items
+  - `ix` `ax` Symbols with sub- and superscripts
 - Other mappings
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
@@ -812,6 +813,8 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    iP               |<plug>(vimtex-iP)|                             `xo`
    am               |<plug>(vimtex-am)|                             `xo`
    im               |<plug>(vimtex-im)|                             `xo`
+   ax               |<plug>(vimtex-ax)|                             `xo`
+   ix               |<plug>(vimtex-ix)|                             `xo`
    %                |<plug>(vimtex-%)|                              `nxo`
    ]]               |<plug>(vimtex-]])|                             `nxo`
    ][               |<plug>(vimtex-][)|                             `nxo`
@@ -3316,6 +3319,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-iP)*
 *<plug>(vimtex-am)*   Items
 *<plug>(vimtex-im)*
+*<plug>(vimtex-ax)*   Symbol with sub- and superscripts (in math mode only)
+*<plug>(vimtex-ix)*
   These are all text object mappings for the indicated types of objects , see
   |vimtex-text-objects| for more info.
 
@@ -3664,25 +3669,31 @@ a simple table that shows the original text on the left, the keys that are
 typed in the middle, and the result on the right. The bar "|" indicates the
 cursor position before the operation. >
 
-  BEFORE                       KEYS    AFTER
-  \comm|and{arg}               dic     \command{}
-  \command{a|rg}               gUac    \COMMAND{ARG}
+  BEFORE                         KEYS    AFTER
+  \comm|and{arg}                 dic     \command{}
+  \command{a|rg}                 gUac    \COMMAND{ARG}
 
-  \lef|t( asd \right)          cid     \left(| \right)
+  \lef|t( asd \right)            cid     \left(| \right)
 
-  \begin{x}                    die     \begin{x}
-    hello world|                       \end{x}
+  \begin{x}                      die     \begin{x}
+    hello world|                         \end{x}
   \end{x}
 
-  $math | here$                da$
+  $math | here$                  da$
 
-  \begin{itemize}                      \begin{itemize}
-    \item hello moon|          cim       \item |
-  \end{itemize}                        \end{itemize}
+  \begin{itemize}                        \begin{itemize}
+    \item hello moon|            cim       \item |
+  \end{itemize}                          \end{itemize}
 
-  \begin{itemize}                      \begin{itemize}
-    \item hello moon|          dam     \end{itemize}
+  \begin{itemize}                        \begin{itemize}
+    \item hello moon|            dam     \end{itemize}
   \end{itemize}
+
+  $C|x_0^{1/2} y$                dax     $x_0^{1/2} y$
+  $Cx|_0^{1/2} y$                dax     $C y$
+  $\left( as|d \right)^{...}$    dax     $\left( ad \right)^{...}$
+  $\left( asd \rig|ht)^{...}$    dax     $$
+  $e^{a x|^3}$                   dax     $e^{a }$
 
 Associated settings:
 * |g:vimtex_text_obj_enabled|

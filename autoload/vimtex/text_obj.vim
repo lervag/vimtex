@@ -15,6 +15,7 @@ function! vimtex#text_obj#init_buffer() abort " {{{1
         \ ['$', 'delimited', 'env_math'],
         \ ['P', 'sections', ''],
         \ ['m', 'items', ''],
+        \ ['x', 'symbols', ''],
         \]
     let l:optional = empty(l:opt) ? '' : ',''' . l:opt . ''''
     execute printf('xnoremap <silent><buffer> <plug>(vimtex-i%s) :<c-u>call vimtex#text_obj#%s(1, 1%s)<cr>', l:map, l:name, l:optional)
@@ -227,6 +228,18 @@ function! vimtex#text_obj#items(is_inner, mode) abort " {{{1
   call vimtex#pos#set_cursor(l:pos_start)
   normal! o
   call vimtex#pos#set_cursor(l:pos_end)
+endfunction
+
+" }}}1
+function! vimtex#text_obj#symbols(is_inner, mode) abort " {{{1
+  if a:is_inner
+    call vimtex#log#warning('Not implemented!')
+    return
+  endif
+
+  let l:pos_save = vimtex#pos#get_cursor()
+
+  return
 endfunction
 
 " }}}1
