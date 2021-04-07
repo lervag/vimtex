@@ -2133,13 +2133,6 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1.
 
-*g:vimtex_syntax_conceal_default*
-  Specify the default flag for the conceal feature. This is used e.g. in
-  |vimtex_syntax_conceal| and for package specific options in
-  |vimtex_syntax_packages|. For more info, see |vimtex-syntax-conceal|.
-
-  Default value: 1
-
 *g:vimtex_syntax_conceal*
   A dictionary for specifying which core conceal features to activate. This
   mostly implies concealing particular elements with a replacement unicode
@@ -2197,7 +2190,28 @@ OPTIONS                                                        *vimtex-options*
 
         `\emph{text here}` --> `text here`
 
-  Default value: All keys set to |g:vimtex_syntax_conceal_default|.
+  Default value: >
+
+    let g:vimtex_syntax_conceal = {
+          \ 'accents': 1,
+          \ 'cites': 1,
+          \ 'fancy': 1,
+          \ 'greek': 1,
+          \ 'math_bounds': 1,
+          \ 'math_delimiters': 1,
+          \ 'math_fracs': 1,
+          \ 'math_super_sub': 1,
+          \ 'math_symbols': 1,
+          \ 'sections': 0,
+          \ 'styles': 1,
+          \}
+
+*g:vimtex_syntax_conceal_disable*
+  The option |g:vimtex_syntax_conceal| allows to selectively disable conceal
+  features. For convenience, this option allows to disable all conceal
+  features in one go. For more info, see |vimtex-syntax-conceal|.
+
+  Default value: 0
 
 *g:vimtex_syntax_conceal_cites*
   A simple dictionary to control how citation conceal should work. It has
@@ -2358,8 +2372,7 @@ OPTIONS                                                        *vimtex-options*
     array~
     asymptote~
     babel~
-      `conceal`  whether to enable conceal
-        Default: |g:vimtex_syntax_conceal_default|
+      `conceal`  whether to enable conceal; enabled by default
     beamer~
     biblatex~
     booktabs~
@@ -4084,7 +4097,7 @@ Associated settings:
 * |g:vimtex_syntax_enabled|
 * |g:vimtex_syntax_conceal|
 * |g:vimtex_syntax_conceal_cites|
-* |g:vimtex_syntax_conceal_default|
+* |g:vimtex_syntax_conceal_disable|
 * |g:vimtex_syntax_nested|
 * |g:vimtex_syntax_nospell_commands|
 * |g:vimtex_syntax_packages|
@@ -4096,9 +4109,9 @@ VimTeX utilizes the |syn-conceal| feature of Vim to allow displaying commands
 like `\alpha` as `α`. That is, various elements/commands can be concealed or
 substituted with a unicode symbol.
 
-This feature is enabled by default. It can be fully disabled with
-|g:vimtex_syntax_conceal_default| or specific types of concealments can be
-disabled with |g:vimtex_syntax_conceal|.
+This feature is mostly enabled by default. Various types of concealments can
+be enabled/disabled with |g:vimtex_syntax_conceal|. The entire feature can be
+fully disabled with |g:vimtex_syntax_conceal_disable|.
 
 For conceals to work properly, one must set the option 'conceallevel' to 2. It
 is also good to be aware of the 'concealcursor' option.
@@ -5788,6 +5801,10 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2021-04-07: Better options for syntax conceal~
+Deprecated *g:vimtex_syntax_conceal_default* in favour of the more simple
+|g:vimtex_syntax_conceal_disable|.
 
 2020-11-16: More flexible package syntax options~
 Deprecate *g:vimtex_syntax_autoload_packages* in favor of

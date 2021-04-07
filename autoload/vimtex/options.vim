@@ -273,25 +273,25 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_subfile_start_local', 0)
 
   call s:init_option('vimtex_syntax_enabled', 1)
-  call s:init_option('vimtex_syntax_conceal_default', 1)
   call s:init_option('vimtex_syntax_conceal', {
-        \ 'accents': g:vimtex_syntax_conceal_default,
-        \ 'cites': g:vimtex_syntax_conceal_default,
-        \ 'fancy': g:vimtex_syntax_conceal_default,
-        \ 'greek': g:vimtex_syntax_conceal_default,
-        \ 'math_bounds': g:vimtex_syntax_conceal_default,
-        \ 'math_delimiters': g:vimtex_syntax_conceal_default,
-        \ 'math_fracs': g:vimtex_syntax_conceal_default,
-        \ 'math_super_sub': g:vimtex_syntax_conceal_default,
-        \ 'math_symbols': g:vimtex_syntax_conceal_default,
-        \ 'sections': g:vimtex_syntax_conceal_default,
-        \ 'styles': g:vimtex_syntax_conceal_default,
+        \ 'accents': 1,
+        \ 'cites': 1,
+        \ 'fancy': 1,
+        \ 'greek': 1,
+        \ 'math_bounds': 1,
+        \ 'math_delimiters': 1,
+        \ 'math_fracs': 1,
+        \ 'math_super_sub': 1,
+        \ 'math_symbols': 1,
+        \ 'sections': 0,
+        \ 'styles': 1,
         \})
   call s:init_option('vimtex_syntax_conceal_cites', {
         \ 'type': 'brackets',
         \ 'icon': '📖',
         \ 'verbose': v:true,
         \})
+  call s:init_option('vimtex_syntax_conceal_disable', 0)
   call s:init_option('vimtex_syntax_custom_cmds', [])
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
@@ -324,9 +324,16 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_syntax_nospell_comments', 0)
   call s:init_option('vimtex_syntax_packages', {
         \ 'amsmath': {'load': 2},
-        \ 'babel': {'conceal': g:vimtex_syntax_conceal_default},
-        \ 'hyperref': {'conceal': g:vimtex_syntax_conceal_default},
+        \ 'babel': {'conceal': 1},
+        \ 'hyperref': {'conceal': 1},
         \})
+
+  " Disable conceals if chosen
+  if g:vimtex_syntax_conceal_disable
+    call map(g:vimtex_syntax_conceal, {k, v -> 0})
+    let g:vimtex_syntax_packages.babel.conceal = 0
+    let g:vimtex_syntax_packages.hyperref.conceal = 0
+  endif
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 
@@ -465,6 +472,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_quickfix_latexlog',
         \ 'g:vimtex_quickfix_warnings',
         \ 'g:vimtex_syntax_autoload_packages',
+        \ 'g:vimtex_syntax_conceal_default',
         \ 'g:vimtex_textidote_jar',
         \ 'g:vimtex_toc_fold',
         \ 'g:vimtex_toc_fold_level_start',
