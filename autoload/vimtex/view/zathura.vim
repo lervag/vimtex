@@ -20,11 +20,6 @@ function! vimtex#view#zathura#new() abort " {{{1
     endif
   endif
 
-  " Check if the xdotool is available
-  if !executable('xdotool')
-    call vimtex#log#warning('Zathura requires xdotool for forward search!')
-  endif
-
   augroup vimtex_view_zathura
     autocmd!
     autocmd User VimtexEventCompileSuccess

@@ -2593,10 +2593,9 @@ OPTIONS                                                        *vimtex-options*
   If disabled, the first invocation of the viewer will not perform a forward
   search to the current cursor position.
 
-  Note: This option is only relevant for the following view methods (see
-        |g:vimtex_view_method|):
-        * |vimtex_viewer_mupdf|
-        * |vimtex_viewer_zathura|
+  Note: This option is only relevant when |g:vimtex_view_method| is set to
+        either `mupdf` or `zathura`. See also the specific viewer sections for
+        more info: |vimtex_viewer_mupdf|, |vimtex_viewer_zathura|.
 
   Default value: 1
 
@@ -2748,8 +2747,10 @@ OPTIONS                                                        *vimtex-options*
       on Linux with Xorg.  It should also work on macOS, but users may want to
       read |vimtex-faq-zathura-macos|.
 
-      Note: Forward search requires `xdotool` to work properly, in order to
-            not open a new Zathura instance for invocation of |:VimtexView|.
+      Note: Forward search requires `xdotool` to work properly. That is,
+            `xdotool` is used to avoid duplicate Zathura instances when the
+            |:VimtexView| command is issued. This is a more severe restriction
+            if the |g:vimtex_view_forward_search_on_start| option is disabled.
 
       Note: VimTeX attempts to pass the server name to zathura for use in
             reverse searches. neovim users should read |vimtex-faq-neovim|
@@ -4779,8 +4780,8 @@ Note: Spell checking with `LanguageTool` is only enabled if a country code is
 ==============================================================================
 VIEW                                                              *vimtex-view*
 
-VimTeX provides the command |:VimtexView| to open the desired viewer.  The
-command is mapped to '<localleader>lv' by default.  The list of supported
+VimTeX provides the command |:VimtexView| to open the desired viewer. The
+command is mapped to `<localleader>lv` by default. The list of supported
 viewers are given in the description of |g:vimtex_view_method|.
 
 For supported viewers, |:VimtexView| will also perform forward search when the
