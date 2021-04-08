@@ -2129,20 +2129,36 @@ OPTIONS                                                        *vimtex-options*
       Default: |v:false|
       If true, the `\cmdname` part and delimiters `{` and `}` are concealed.
 
-    concealopts~
+    concealchar~
+      Default: Undefined
+      Specify a conceal character for the `\cmdname` part. With this, one can
+      easily create simple rules to display e.g. `\R` as `ℝ` (see config
+      example below).
+
+    opt~
+      Default: |v:true|
+      If true, assumes `\cmdname` can be followed by an `[optional]` group.
+
+    optconceal~
       Default: Same as `conceal` key
       If true, the option group `[optional]` is concealed.
+
+    arg~
+      Default: |v:true|
+      If true, assumes `\cmdname` can be followed by an `{argument}` group.
 
     argstyle~
       Default: Undefined.
       Can be set to `bold`, `ital`, or `boldital` to apply styling to the
       command argument.
 
-  An example may be helpful: To use bolded style on a custom vector macro such
-  as `\vct{v}`, one can do this: >
+  A couple of examples may be helpful: The first in the following list shows
+  how to use bolded style on a custom vector macro such as `\vct{v}`. The
+  second shows how to conceal `\R` with `ℝ`. >
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
+          \ {'name': 'R', 'mathmode': 1, 'concealchar': 'ℝ'},
           \]
 <
   Default value: []
