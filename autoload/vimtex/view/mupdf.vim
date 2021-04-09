@@ -50,9 +50,7 @@ function! vimtex#view#mupdf#compiler_callback() abort " {{{1
     endif
   endif
 
-  if g:vimtex_view_use_temp_files || get(b:vimtex.compiler, 'callback')
-    call self.xwin_send_keys('r')
-  endif
+  call self.xwin_send_keys('r')
 endfunction
 
 " }}}1
