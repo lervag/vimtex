@@ -20,13 +20,11 @@ function! vimtex#view#general#new() abort " {{{1
     return {}
   endif
 
-  " Start from standard template
-  let l:viewer = vimtex#view#common#apply_common_template(deepcopy(s:general))
-
-  return l:viewer
+  return vimtex#view#_template#apply(deepcopy(s:general))
 endfunction
 
 " }}}1
+
 
 let s:general = {
       \ 'name' : 'General'

@@ -23,7 +23,7 @@ function! vimtex#view#skim#new() abort " {{{1
             \ call vimtex#view#skim#compiler_callback()
   augroup END
 
-  return vimtex#view#common#apply_common_template(deepcopy(s:skim))
+  return vimtex#view#_template#apply(deepcopy(s:skim))
 endfunction
 
 " }}}1
@@ -49,6 +49,7 @@ function! vimtex#view#skim#compiler_callback() abort " {{{1
 endfunction
 
 " }}}1
+
 
 let s:skim = {
       \ 'name' : 'Skim',

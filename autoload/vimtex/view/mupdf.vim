@@ -13,47 +13,11 @@ function! vimtex#view#mupdf#new() abort " {{{1
     return {}
   endif
 
-  augroup vimtex_view_mupdf
-    autocmd!
-    autocmd User VimtexEventCompileSuccess
-            \ call vimtex#view#mupdf#compiler_callback()
-  augroup END
-
-  " Use the xwin template
-  return vimtex#view#common#apply_xwin_template('MuPDF',
-        \ vimtex#view#common#apply_common_template(deepcopy(s:mupdf)))
+  return vimtex#view#_template_xwin#apply(deepcopy(s:mupdf))
 endfunction
 
 " }}}1
-function! vimtex#view#mupdf#compiler_callback() abort " {{{1
-  if !exists('b:vimtex.viewer') | return | endif
-  let self = b:vimtex.viewer
-  if !filereadable(self.out()) | return | endif
 
-  if g:vimtex_view_automatic
-    "
-    " Search for existing window created by latexmk
-    "   It may be necessary to wait some time before it is opened and
-    "   recognized. Sometimes it is very quick, other times it may take
-    "   a second. This way, we don't block longer than necessary.
-    "
-    if !has_key(self, 'started_through_callback')
-      for l:dummy in range(30)
-        sleep 50m
-        if self.xwin_exists() | break | endif
-      endfor
-    endif
-
-    if !self.xwin_exists() && !has_key(self, 'started_through_callback')
-      call self.start(self.out())
-      let self.started_through_callback = 1
-    endif
-  endif
-
-  call self.xwin_send_keys('r')
-endfunction
-
-" }}}1
 
 let s:mupdf = {
       \ 'name': 'MuPDF',
@@ -94,6 +58,21 @@ function! s:mupdf.forward_search(outfile) dict abort " {{{1
   endif
 
   call self.focus_viewer()
+endfunction
+
+" }}}1
+function! s:mupdf.latexmk_append_argument() dict abort " {{{1
+  if g:vimtex_view_use_temp_files
+    let cmd = ' -view=none'
+  else
+    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
+    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
+          \ 'mupdf ' .  g:vimtex_view_mupdf_options)
+  endif
+
+  return cmd
 endfunction
 
 " }}}1
@@ -141,36 +120,8 @@ function! s:mupdf.reverse_search() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.latexmk_append_argument() dict abort " {{{1
-  if g:vimtex_view_use_temp_files
-    let cmd = ' -view=none'
-  else
-    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
-          \ 'mupdf ' .  g:vimtex_view_mupdf_options)
-  endif
-
-  return cmd
-endfunction
-
-" }}}1
-function! s:mupdf.focus_viewer() dict abort " {{{1
-  if !executable('xdotool') | return | endif
-
-  if self.xwin_id > 0
-    silent call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
-    silent call system('xdotool windowraise ' . self.xwin_id)
-  endif
-endfunction
-
-" }}}1
-function! s:mupdf.focus_vim() dict abort " {{{1
-  if !executable('xdotool') | return | endif
-
-  silent call system('xdotool windowactivate ' . v:windowid . ' --sync')
-  silent call system('xdotool windowraise ' . v:windowid)
+function! s:mupdf.compiler_callback() dict abort " {{{1
+  call self.xwin_send_keys('r')
 endfunction
 
 " }}}1

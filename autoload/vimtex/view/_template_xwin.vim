@@ -4,79 +4,54 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#common#apply_common_template(viewer) abort " {{{1
-  return extend(a:viewer, deepcopy(s:common_template))
+function! vimtex#view#_template_xwin#apply(viewer) abort " {{{1
+  augroup vimtex_view_xwin
+    autocmd!
+    autocmd User VimtexEventCompileSuccess
+            \ call vimtex#view#_template_xwin#compiler_callback()
+  augroup END
+
+  return extend(vimtex#view#_template#apply(a:viewer), deepcopy(s:template))
 endfunction
 
 " }}}1
-function! vimtex#view#common#apply_xwin_template(class, viewer) abort " {{{1
-  let a:viewer.class = a:class
-  let a:viewer.xwin_id = 0
-  call extend(a:viewer, deepcopy(s:xwin_template))
-  return a:viewer
-endfunction
+function! vimtex#view#_template_xwin#compiler_callback() abort " {{{1
+  if !exists('b:vimtex.viewer') | return | endif
+  let self = b:vimtex.viewer
+  if !filereadable(self.out()) | return | endif
 
-" }}}1
+  if g:vimtex_view_automatic && !has_key(self, 'started_through_callback')
+    "
+    " Search for existing window created by latexmk
+    " Note: It may be necessary to wait some time before it is opened and
+    "       recognized. Sometimes it is very quick, other times it may take
+    "       a second. This way, we don't block longer than necessary.
+    "
+    for l:dummy in range(30)
+      let l:xwin_exists = self.xwin_exists()
+      if l:xwin_exists | break | endif
+      sleep 50m
+    endfor
 
-let s:common_template = {}
-
-function! s:common_template.out() dict abort " {{{1
-  return g:vimtex_view_use_temp_files
-        \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-        \ : b:vimtex.out(1)
-endfunction
-
-" }}}1
-function! s:common_template.synctex() dict abort " {{{1
-  return fnamemodify(self.out(), ':r') . '.synctex.gz'
-endfunction
-
-" }}}1
-function! s:common_template.copy_files() dict abort " {{{1
-  if !g:vimtex_view_use_temp_files | return | endif
-
-  "
-  " Copy pdf file
-  "
-  let l:out = self.out()
-  if getftime(b:vimtex.out()) > getftime(l:out)
-    call writefile(readfile(b:vimtex.out(), 'b'), l:out, 'b')
+    if !l:xwin_exists
+      call self.start(self.out())
+      let self.started_through_callback = 1
+    endif
   endif
 
-  "
-  " Copy synctex file
-  "
-  let l:old = b:vimtex.ext('synctex.gz')
-  let l:new = self.synctex()
-  if getftime(l:old) > getftime(l:new)
-    call rename(l:old, l:new)
+  if has_key(self, 'compiler_callback')
+    call self.compiler_callback()
   endif
 endfunction
 
 " }}}1
-function! s:common_template.pprint_items() abort dict " {{{1
-  let l:list = []
 
-  if has_key(self, 'xwin_id')
-    call add(l:list, ['xwin id', self.xwin_id])
-  endif
 
-  if has_key(self, 'process')
-    call add(l:list, ['process', self.process])
-  endif
+let s:template = {
+      \ 'xwin_id': 0,
+      \}
 
-  for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
-    call add(l:list, [l:key, self[l:key]])
-  endfor
-
-  return l:list
-endfunction
-
-" }}}1
-
-let s:xwin_template = {}
-
-function! s:xwin_template.view(file) dict abort " {{{1
+function! s:template.view(file) dict abort " {{{1
   if empty(a:file)
     let outfile = self.out()
   else
@@ -99,7 +74,7 @@ function! s:xwin_template.view(file) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_get_id() dict abort " {{{1
+function! s:template.xwin_get_id() dict abort " {{{1
   if !executable('xdotool') | return 0 | endif
   if self.xwin_id > 0 | return self.xwin_id | endif
 
@@ -109,10 +84,10 @@ function! s:xwin_template.xwin_get_id() dict abort " {{{1
   "
   " Get the window ID
   "
-  let cmd = 'xdotool search --class ' . self.class
+  let cmd = 'xdotool search --class ' . self.name
   let xwin_ids = split(system(cmd), '\n')
   if len(xwin_ids) == 0
-    call vimtex#log#warning('Viewer cannot find ' . self.class . ' window ID!')
+    call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
     let self.xwin_id = 0
   else
     let self.xwin_id = xwin_ids[-1]
@@ -122,14 +97,14 @@ function! s:xwin_template.xwin_get_id() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_exists() dict abort " {{{1
+function! s:template.xwin_exists() dict abort " {{{1
   if !executable('xdotool') | return 0 | endif
 
   "
   " If xwin_id is already set, check if it still exists
   "
   if self.xwin_id > 0
-    let cmd = 'xdotool search --class ' . self.class
+    let cmd = 'xdotool search --class ' . self.name
     if index(split(system(cmd), '\n'), self.xwin_id) < 0
       let self.xwin_id = 0
     endif
@@ -165,7 +140,7 @@ function! s:xwin_template.xwin_exists() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
+function! s:template.xwin_send_keys(keys) dict abort " {{{1
   if a:keys ==# '' || !executable('xdotool') || self.xwin_id <= 0
     return
   endif
@@ -176,7 +151,7 @@ function! s:xwin_template.xwin_send_keys(keys) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.move(arg) abort " {{{1
+function! s:template.move(arg) abort " {{{1
   if !executable('xdotool') || self.xwin_id <= 0
     return
   endif
@@ -186,13 +161,31 @@ function! s:xwin_template.move(arg) abort " {{{1
 endfunction
 
 " }}}1
-function! s:xwin_template.resize(arg) abort " {{{1
+function! s:template.resize(arg) abort " {{{1
   if !executable('xdotool') || self.xwin_id <= 0
     return
   endif
 
   let l:cmd = 'xdotool windowsize ' . self.xwin_get_id()  . ' ' . a:arg
   silent call system(l:cmd)
+endfunction
+
+" }}}1
+function! s:template.focus_viewer() dict abort " {{{1
+  if !executable('xdotool') | return | endif
+
+  if self.xwin_id > 0
+    silent call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
+    silent call system('xdotool windowraise ' . self.xwin_id)
+  endif
+endfunction
+
+" }}}1
+function! s:template.focus_vim() dict abort " {{{1
+  if !executable('xdotool') | return | endif
+
+  silent call system('xdotool windowactivate ' . v:windowid . ' --sync')
+  silent call system('xdotool windowraise ' . v:windowid)
 endfunction
 
 " }}}1

@@ -20,44 +20,12 @@ function! vimtex#view#zathura#new() abort " {{{1
     endif
   endif
 
-  augroup vimtex_view_zathura
-    autocmd!
-    autocmd User VimtexEventCompileSuccess
-            \ call vimtex#view#zathura#compiler_callback()
-  augroup END
-
   " Use the xwin template
-  return vimtex#view#common#apply_xwin_template('Zathura',
-        \ vimtex#view#common#apply_common_template(deepcopy(s:zathura)))
+  return vimtex#view#_template_xwin#apply(deepcopy(s:zathura))
 endfunction
 
 " }}}1
-function! vimtex#view#zathura#compiler_callback() abort " {{{1
-  if !exists('b:vimtex.viewer') | return | endif
-  let self = b:vimtex.viewer
-  if !filereadable(self.out()) | return | endif
 
-  if g:vimtex_view_automatic && !has_key(self, 'started_through_callback')
-    "
-    " Search for existing window created by latexmk
-    " Note: It may be necessary to wait some time before it is opened and
-    "       recognized. Sometimes it is very quick, other times it may take
-    "       a second. This way, we don't block longer than necessary.
-    "
-    for l:dummy in range(30)
-      let l:xwin_exists = self.xwin_exists()
-      if l:xwin_exists | break | endif
-      sleep 50m
-    endfor
-
-    if !l:xwin_exists
-      call self.start(self.out())
-      let self.started_through_callback = 1
-    endif
-  endif
-endfunction
-
-" }}}1
 
 let s:zathura = {
       \ 'name' : 'Zathura',
