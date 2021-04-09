@@ -17,16 +17,6 @@ function! vimtex#view#common#apply_xwin_template(class, viewer) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#common#not_readable(output) abort " {{{1
-  if !filereadable(a:output)
-    call vimtex#log#warning('Viewer cannot read PDF file!', a:output)
-    return 1
-  else
-    return 0
-  endif
-endfunction
-
-" }}}1
 
 let s:common_template = {}
 
@@ -92,9 +82,7 @@ function! s:xwin_template.view(file) dict abort " {{{1
   else
     let outfile = a:file
   endif
-  if vimtex#view#common#not_readable(outfile)
-    return
-  endif
+  if vimtex#view#not_readable(outfile) | return | endif
 
   if self.xwin_exists()
     call self.forward_search(outfile)

@@ -104,7 +104,7 @@ function! s:mupdf.reverse_search() dict abort " {{{1
   if !executable('synctex') | return | endif
 
   let outfile = self.out()
-  if vimtex#view#common#not_readable(outfile) | return | endif
+  if vimtex#view#not_readable(outfile) | return | endif
 
   if !self.xwin_exists()
     call vimtex#log#warning('Reverse search failed (is MuPDF open?)')

@@ -4806,14 +4806,17 @@ viewer is opened.
 Associated settings:
 * |g:vimtex_view_enabled|
 * |g:vimtex_view_automatic|
-* |g:vimtex_view_method|
+* |g:vimtex_view_forward_search_on_start|
 * |g:vimtex_view_use_temp_files|
+* |g:vimtex_view_method|
 * |g:vimtex_view_general_options|
+* |g:vimtex_view_general_options_latexmk|
 * |g:vimtex_view_general_viewer|
 * |g:vimtex_view_mupdf_options|
 * |g:vimtex_view_mupdf_send_keys|
 * |g:vimtex_view_skim_activate|
 * |g:vimtex_view_skim_reading_bar|
+* |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
 
 Associated events:

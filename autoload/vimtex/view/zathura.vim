@@ -50,7 +50,7 @@ function! vimtex#view#zathura#compiler_callback() abort " {{{1
       sleep 50m
     endfor
 
-    if ! l:xwin_exists
+    if !l:xwin_exists
       call self.start(self.out())
       let self.started_through_callback = 1
     endif

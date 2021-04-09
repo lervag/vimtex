@@ -57,6 +57,14 @@ function! vimtex#view#reverse_search() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#view#not_readable(output) abort " {{{1
+  if filereadable(a:output) | return 0 | endif
+
+  call vimtex#log#warning('Viewer cannot read PDF file!', a:output)
+  return 1
+endfunction
+
+" }}}1
 
 function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   if mode() ==# 'i' | stopinsert | endif
