@@ -247,7 +247,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
     let l:cmd .= ' -pvc'
 
     " Set viewer options
-    if !get(g:, 'vimtex_view_automatic', 1)
+    if !g:vimtex_view_automatic
           \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id') > 0
           \ || get(s:, 'silence_next_callback', 0)
       let l:cmd .= ' -view=none'
