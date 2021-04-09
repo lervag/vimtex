@@ -20,7 +20,9 @@ function! vimtex#view#_template_xwin#compiler_callback() abort " {{{1
   let self = b:vimtex.viewer
   if !filereadable(self.out()) | return | endif
 
-  if g:vimtex_view_automatic && !has_key(self, 'started_through_callback')
+  if (g:vimtex_view_automatic
+        \ && g:vimtex_view_automatic_xwin)
+        \ && !has_key(self, 'started_through_callback')
     "
     " Search for existing window created by latexmk
     " Note: It may be necessary to wait some time before it is opened and

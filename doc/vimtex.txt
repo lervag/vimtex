@@ -2564,16 +2564,38 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_view_automatic*
-  If enabled, the viewer will open automatically when compilation has started
-  in `continuous` mode and if `callback` is enabled, or if `continuous` mode
-  is disabled.
+  If enabled, the viewer should open automatically when compilation has
+  started in `continuous` mode and if `callback` is enabled, or if
+  `continuous` mode is disabled.
 
   `latexmk` will typically start the viewer directly. However, with this
-  option enabled, VimTeX will start the viewer through callbacks for these
-  compilers:
+  option enabled, VimTeX will start the viewer through callbacks also for
+  these compilers:
   * |vimtex-compiler-latexrun|
   * |vimtex-compiler-arara|
   * |vimtex-compiler-tectonic|
+
+  Note: If you are using |vimtex_viewer_mupdf| or |vimtex_viewer_zathura|,
+        then you should also be aware of the related option
+        |g:vimtex_view_automatic_xwin| below.
+
+  Default value: 1
+
+*g:vimtex_view_automatic_xwin*
+  This option is closely related to |g:vimtex_view_automatic|. With the
+  previous option enabled, the xwin based viewers |vimtex_viewer_mupdf| and
+  |vimtex_viewer_zathura| will use `xdotool` to check if a viewer was opened
+  by the compiler. If a viewer window is not found, VimTeX will automatically
+  start one.
+
+  However, the search for a viewer window is implemented with a loop that
+  calls `xdotool` 30 times with 50 ms interval. If a window is not found, the
+  search will therefore interrupt the editing session for 1.5 seconds; this
+  happens on every successful compile callback.
+
+  Some users can't use `xdotool`, e.g. on Wayland, but the viewers may still
+  work quite reliably. In these cases, one may want to disable this automatic
+  view feature by setting this option to 0.
 
   Default value: 1
 
@@ -2748,7 +2770,7 @@ OPTIONS                                                        *vimtex-options*
       for viewing any PDF file. The VimTeX implementation supports forward
       search and uses a callback to update Skim after successful compilations.
 
-      Note: One may set |g:vimtex_view_automatic| to 1 if one wants to prevent
+      Note: One may set |g:vimtex_view_automatic| to 0 if one wants to prevent
             `latexmk` (or other build tools) from starting Skim and instead
             let VimTeX start Skim through the callback feature.
 
@@ -4536,9 +4558,9 @@ LATEXRUN                                             *vimtex-compiler-latexrun*
 > format, and generally enables other tools to do what they do best.
 
 `latexrun` is a compiler backend that handles recompilation of LaTeX documents
-when source files have been changed.  However, it is a much simpler backend,
+when source files have been changed. However, it is a much simpler backend,
 and does not support e.g. continuous mode and automatic starting of viewers.
-The latter is supported by VimTeX, though, through the callback.  See
+The latter is supported by VimTeX, though, through the callback. See
 |g:vimtex_view_automatic|.
 
 The compiler may be configured through the |g:vimtex_compiler_latexrun| option.
@@ -4806,6 +4828,7 @@ viewer is opened.
 Associated settings:
 * |g:vimtex_view_enabled|
 * |g:vimtex_view_automatic|
+* |g:vimtex_view_automatic_xwin|
 * |g:vimtex_view_forward_search_on_start|
 * |g:vimtex_view_use_temp_files|
 * |g:vimtex_view_method|
