@@ -495,9 +495,9 @@ Filetype plugin for bib files~
 
 Language server / texlab~
                                                                 *vimtex-nf-lsp*
-  In recent years, language servers (lsps) [0] has become very popular. There is
-  a language server for LaTeX and bibtex called texlab [1]. It may be
-  interesting both as an alternative to VimTeX and/or in addition. One may use
+  In recent years, language servers (lsps) [0] have become very popular. There
+  is a language server for LaTeX and bibtex called texlab [1]. It may be
+  interesting both as an alternative to VimTeX and/or an addition. One may use
   it with e.g. |vim-lsp| [2] or |coc-nvim| [3, 4] or other lsps.
 
   See also this VimTeX issue [5] for more information.
