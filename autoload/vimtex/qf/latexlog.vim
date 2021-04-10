@@ -103,10 +103,7 @@ function! s:qf.addqflist(tex, log) abort dict "{{{1
     throw 'VimTeX: No log file found'
   endif
 
-  let self.errorformat_saved = &l:errorformat
-  call self.set_errorformat()
-  execute 'caddfile' fnameescape(a:log)
-  let &l:errorformat = self.errorformat_saved
+  call vimtex#qf#u#caddfile(self, fnameescape(a:log))
 
   " Apply some post processing of the quickfix list
   let self.main = a:tex

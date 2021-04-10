@@ -84,10 +84,7 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
   let l:log = fnameescape(a:log)
 
   silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
-  let self.errorformat_saved = &l:errorformat
-  call self.set_errorformat()
-  execute 'caddfile' l:tmp
-  let &l:errorformat = self.errorformat_saved
+  call vimtex#qf#u#caddfile(self, l:tmp)
   silent call system('rm ' . l:tmp)
 endfunction
 

@@ -186,6 +186,7 @@ endfunction
 
 " }}}1
 
+
 function! s:qf_has_errors() abort " {{{1
   return len(filter(getqflist(), 'v:val.type ==# ''E''')) > 0
 endfunction

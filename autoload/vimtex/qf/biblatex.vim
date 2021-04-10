@@ -8,19 +8,29 @@ function! vimtex#qf#biblatex#addqflist(blg) abort " {{{1
   if get(g:vimtex_quickfix_blgparser, 'disable') | return | endif
 
   try
-    call s:biblatex.addqflist(a:blg)
+    call s:qf.addqflist(a:blg)
   catch /biblatex Aborted/
   endtry
 endfunction
 
 " }}}1
 
-let s:biblatex = {
+
+let s:qf = {
       \ 'file' : '',
       \ 'types' : [],
       \ 'db_files' : [],
       \}
-function! s:biblatex.addqflist(blg) abort " {{{1
+
+function! s:qf.set_errorformat() abort dict "{{{1
+  setlocal errorformat=%+E%.%#\>\ ERROR%m
+  setlocal errorformat+=%+W%.%#\>\ WARN\ -\ Duplicate\ entry%m
+  setlocal errorformat+=%+W%.%#\>\ WARN\ -\ The\ entry%.%#cannot\ be\ encoded%m
+  setlocal errorformat+=%-G%.%#
+endfunction
+
+" }}}1
+function! s:qf.addqflist(blg) abort " {{{1
   let self.file = a:blg
   let self.root = fnamemodify(a:blg, ':h')
   if empty(self.file) | throw 'biblatex Aborted' | endif
@@ -30,19 +40,13 @@ function! s:biblatex.addqflist(blg) abort " {{{1
         \ 'v:val[1]')
   let self.db_files = []
 
-  let self.errorformat_saved = &l:errorformat
-  setlocal errorformat=%+E%.%#\>\ ERROR%m
-  setlocal errorformat+=%+W%.%#\>\ WARN\ -\ Duplicate\ entry%m
-  setlocal errorformat+=%+W%.%#\>\ WARN\ -\ The\ entry%.%#cannot\ be\ encoded%m
-  setlocal errorformat+=%-G%.%#
-  execute 'caddfile' fnameescape(self.file)
-  let &l:errorformat = self.errorformat_saved
+  call vimtex#qf#u#caddfile(self, fnameescape(self.file))
 
   call self.fix_paths()
 endfunction
 
 " }}}1
-function! s:biblatex.fix_paths() abort " {{{1
+function! s:qf.fix_paths() abort " {{{1
   let l:qflist = getqflist()
   try
     let l:title = getqflist({'title': 1})
@@ -66,7 +70,7 @@ function! s:biblatex.fix_paths() abort " {{{1
 endfunction
 
 " }}}1
-function! s:biblatex.get_db_files() abort " {{{1
+function! s:qf.get_db_files() abort " {{{1
   if empty(self.db_files)
     let l:preamble = vimtex#parser#preamble(b:vimtex.tex, {
           \ 'root' : b:vimtex.root,
@@ -93,7 +97,7 @@ function! s:biblatex.get_db_files() abort " {{{1
 endfunction
 
 " }}}1
-function! s:biblatex.get_filename(name) abort " {{{1
+function! s:qf.get_filename(name) abort " {{{1
   if !filereadable(a:name)
     for l:root in [self.root, b:vimtex.root]
       let l:candidate = fnamemodify(simplify(l:root . '/' . a:name), ':.')
@@ -107,7 +111,7 @@ function! s:biblatex.get_filename(name) abort " {{{1
 endfunction
 
 " }}}1
-function! s:biblatex.get_key_pos(key) abort " {{{1
+function! s:qf.get_key_pos(key) abort " {{{1
   for l:file in self.get_db_files()
     let l:lnum = self.get_key_lnum(a:key, l:file)
     if l:lnum > 0
@@ -119,7 +123,7 @@ function! s:biblatex.get_key_pos(key) abort " {{{1
 endfunction
 
 " }}}1
-function! s:biblatex.get_key_lnum(key, filename) abort " {{{1
+function! s:qf.get_key_lnum(key, filename) abort " {{{1
   if !filereadable(a:filename) | return 0 | endif
 
   let l:lines = readfile(a:filename)
@@ -132,7 +136,7 @@ function! s:biblatex.get_key_lnum(key, filename) abort " {{{1
 endfunction
 
 " }}}1
-function! s:biblatex.get_entry_key(filename, lnum) abort " {{{1
+function! s:qf.get_entry_key(filename, lnum) abort " {{{1
   for l:file in self.get_db_files()
     if fnamemodify(l:file, ':t') !=# a:filename | continue | endif
 

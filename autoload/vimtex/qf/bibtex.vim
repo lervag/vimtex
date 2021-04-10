@@ -8,19 +8,31 @@ function! vimtex#qf#bibtex#addqflist(blg) abort " {{{1
   if get(g:vimtex_quickfix_blgparser, 'disable') | return | endif
 
   try
-    call s:bibtex.addqflist(a:blg)
+    call s:qf.addqflist(a:blg)
   catch /BibTeX Aborted/
   endtry
 endfunction
 
 " }}}1
 
-let s:bibtex = {
+
+let s:qf = {
       \ 'file' : '',
       \ 'types' : [],
       \ 'db_files' : [],
       \}
-function! s:bibtex.addqflist(blg) abort " {{{1
+
+function! s:qf.set_errorformat() abort dict "{{{1
+  setlocal errorformat=%+E%.%#---line\ %l\ of\ file\ %f
+  setlocal errorformat+=%+EI\ found\ %.%#---while\ reading\ file\ %f
+  setlocal errorformat+=%+WWarning--empty\ %.%#\ in\ %.%m
+  setlocal errorformat+=%+WWarning--entry\ type\ for%m
+  setlocal errorformat+=%-C--line\ %l\ of\ file\ %f
+  setlocal errorformat+=%-G%.%#
+endfunction
+
+" }}}1
+function! s:qf.addqflist(blg) abort " {{{1
   let self.file = a:blg
   if empty(self.file) || !filereadable(self.file) | throw 'BibTeX Aborted' | endif
 
@@ -29,21 +41,13 @@ function! s:bibtex.addqflist(blg) abort " {{{1
         \ 'v:val[1]')
   let self.db_files = []
 
-  let self.errorformat_saved = &l:errorformat
-  setlocal errorformat=%+E%.%#---line\ %l\ of\ file\ %f
-  setlocal errorformat+=%+EI\ found\ %.%#---while\ reading\ file\ %f
-  setlocal errorformat+=%+WWarning--empty\ %.%#\ in\ %.%m
-  setlocal errorformat+=%+WWarning--entry\ type\ for%m
-  setlocal errorformat+=%-C--line\ %l\ of\ file\ %f
-  setlocal errorformat+=%-G%.%#
-  execute 'caddfile' fnameescape(self.file)
-  let &l:errorformat = self.errorformat_saved
+  call vimtex#qf#u#caddfile(self, fnameescape(self.file))
 
   call self.fix_paths()
 endfunction
 
 " }}}1
-function! s:bibtex.fix_paths() abort " {{{1
+function! s:qf.fix_paths() abort " {{{1
   let l:qflist = getqflist()
   try
     let l:title = getqflist({'title': 1})
@@ -67,7 +71,7 @@ function! s:bibtex.fix_paths() abort " {{{1
 endfunction
 
 " }}}1
-function! s:bibtex.get_db_files() abort " {{{1
+function! s:qf.get_db_files() abort " {{{1
   if empty(self.db_files)
     let l:build_dir = fnamemodify(b:vimtex.ext('log'), ':.:h') . '/'
     for l:file in map(
@@ -85,7 +89,7 @@ function! s:bibtex.get_db_files() abort " {{{1
 endfunction
 
 " }}}1
-function! s:bibtex.get_key_loc(key) abort " {{{1
+function! s:qf.get_key_loc(key) abort " {{{1
   for l:file in self.get_db_files()
     let l:lines = readfile(l:file)
     let l:lnum = 0
