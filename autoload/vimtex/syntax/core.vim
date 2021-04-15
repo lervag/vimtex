@@ -1131,6 +1131,7 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\rceil\>"             contained conceal cchar=⌉
   syntax match texMathSymbol "\\Re\>"                contained conceal cchar=ℜ
   syntax match texMathSymbol "\\quad\>"              contained conceal cchar= 
+  syntax match texMathSymbol "\\[,:;!]"              contained conceal
   syntax match texMathSymbol "\\qquad\>"             contained conceal cchar= 
   syntax match texMathSymbol "\\rightarrow\>"        contained conceal cchar=→
   syntax match texMathSymbol "\\Rightarrow\>"        contained conceal cchar=⇒
