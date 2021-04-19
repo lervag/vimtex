@@ -11,6 +11,10 @@ function! vimtex#bib#files() abort " {{{1
       let l:bibs = map(
             \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
             \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
+      let l:bibs_glob = filter(copy(l:bibs), {_, x -> x =~ '[*?{[]' })
+      for l:f in l:bibs_glob
+        let l:bibs += glob(l:f, 0, 1)
+      endfor
       if !empty(l:bibs) | return s:validate(l:bibs) | endif
     endif
   endif
@@ -80,11 +84,10 @@ function! s:files_manual() abort " {{{1
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
 
         for l:f in split(l:entry, ',')
-          if stridx(l:f, '*') >= 0
+          if l:f =~ '[*?{[]'
             let l:files += glob(l:f, 0, 1)
-          else
-            let l:files += [fnamemodify(l:f, ':r')]
           endif
+          let l:files += [fnamemodify(l:f, ':r')]
         endfor
 
         let l:current.files += l:files
