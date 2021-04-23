@@ -860,6 +860,7 @@ function! s:match_bold_italic_math() abort " {{{1
   for [l:group, l:pattern] in [
         \ ['texMathCmdStyleBold', 'mathbf'],
         \ ['texMathCmdStyleItal', 'mathit'],
+        \ ['texMathCmdStyleBold', 'bm'],
         \]
     execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
           \ 'skipwhite skipnl nextgroup=' . l:map[l:group]
