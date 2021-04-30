@@ -3997,6 +3997,22 @@ syntax parser without running the `tex` compiler itself. VimTeX aims to be
 pragmatic and provide a best-effort syntax highlighting - a decent trade of
 between simplicity and completeness.
 
+There will probably always be situations where the parser will fail, and in
+some cases it may be hard to "recover". It is therefore possible to manually
+activate a severely reduced syntax zone to handle such situations. The zone is
+activated with the directive `% VimTeX: SynIgnore on` and disabled with the
+similar directive `% VimTeX: SynIgnore off`, e.g.: >
+
+  % VimTeX: SynIgnore on
+  \catcode`\$=11
+  $
+  \catcode`\$=3
+  % VimTeX: SynIgnore off
+
+The above LaTeX code will look plain, but OK with VimTeX. Note: The directive
+is matched case insensitive, and the synonyms `enable` and `disable` may be
+used instead of `on` and `off`.
+
 The VimTeX syntax plugin is loosely based on Dr Chip's syntax plugin for LaTeX
 which is shipped by default with Vim and neovim (|ft-tex-syntax|) [0]. There
 are several major differences that users may want to be aware of:

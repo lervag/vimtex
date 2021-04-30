@@ -24,6 +24,13 @@
 % https://www.example.com
 %
 
+% VimTeX: SynIgnore
+\catcode`\$=11
+$
+\catcode`\$=3
+\newcommand{\testsimplified}[2]{#1 something #1 here #2}
+% vimtex: SynIgnore off asdasd
+
 \newcommand{\testnc}[2]{#1 something #1 here #2}
 \def \foo #1#2 {#1 foo #1 bar #2 baz}
 \newenvironment{test}[3]{#1 before #2}{#3 after #1}

@@ -446,6 +446,14 @@ function! vimtex#syntax#core#init() abort " {{{1
   call s:match_math_fracs()
 
   " }}}2
+  " {{{2 Zone: SynIgnore
+
+  syntax region texSynIgnoreZone matchgroup=texComment
+        \ start="^\c\s*% VimTeX: SynIgnore\%( on\| enable\)\?\s*$"
+        \ end="^\c\s*% VimTeX: SynIgnore\%( off\| disable\).*"
+        \ contains=texComment,texCmd
+
+  " }}}2
   " {{{2 Conceal mode support
 
   " Add support for conceal with custom replacement (conceallevel = 2)
