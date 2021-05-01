@@ -880,6 +880,19 @@ function! s:match_bold_italic_math() abort " {{{1
           \ contained conceal skipwhite nextgroup=texMathStyleConcArg
     syntax region texMathStyleConcArg matchgroup=texDelim start="{" end="}"
           \ contained contains=@texClusterMath concealends
+
+    for l:re_cmd in [
+          \ 'text%(normal|rm|up|tt|sf|sc)?',
+          \ 'intertext',
+          \ '[mf]box',
+          \]
+      execute 'syntax match texMathCmdText'
+            \ '"\v\\' . l:re_cmd . '>"'
+            \ 'contained skipwhite nextgroup=texMathTextConcArg'
+            \ 'conceal'
+    endfor
+    syntax region texMathTextConcArg matchgroup=texDelim start="{" end="}"
+          \ contained contains=TOP,@NoSpell concealends
   endif
 endfunction
 
