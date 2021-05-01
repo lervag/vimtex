@@ -29,7 +29,6 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texCmdEnv,
         \texCmdFootnote,
         \texCmdGreek,
-        \texCmdMathText,
         \texCmdRef,
         \texCmdSize,
         \texCmdStyle,
@@ -42,6 +41,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texMathCmdStyle,
         \texMathCmdStyleBold,
         \texMathCmdStyleItal,
+        \texMathCmdText,
         \texMathDelim,
         \texMathDelimMod,
         \texMathGroup,
@@ -415,9 +415,9 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'intertext',
         \ '[mf]box',
         \]
-    execute 'syntax match texCmdMathText'
+    execute 'syntax match texMathCmdText'
           \ '"\v\\' . l:re_cmd . '>"'
-          \ 'contained nextgroup=texMathTextArg'
+          \ 'contained skipwhite nextgroup=texMathTextArg'
   endfor
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
@@ -542,7 +542,6 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdLigature        texSpecialChar
   highlight def link texCmdMath            texCmd
   highlight def link texCmdMathEnv         texCmdEnv
-  highlight def link texCmdMathText        texCmd
   highlight def link texCmdNew             texCmd
   highlight def link texCmdNewcmd          texCmdNew
   highlight def link texCmdNewenv          texCmd
@@ -587,6 +586,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathCmdStyle       texMathCmd
   highlight def link texMathCmdStyleBold   texMathCmd
   highlight def link texMathCmdStyleItal   texMathCmd
+  highlight def link texMathCmdText        texCmd
   highlight def link texMathDelimMod       texMathDelim
   highlight def link texMathDelimZone      texDelim
   highlight def link texMathError          texError
@@ -597,7 +597,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathZoneEnvStarred texMathZone
   highlight def link texMathZoneX          texMathZone
   highlight def link texMathZoneXX         texMathZone
-  highlight def link texMathStyleConcealed texMathZone
+  highlight def link texMathStyleConcArg   texMathZone
   highlight def link texMathSub            texMathZone
   highlight def link texMathSuper          texMathZone
   highlight def link texMathSuperSub       texMathOper
@@ -849,8 +849,8 @@ function! s:match_bold_italic() abort " {{{1
 
   if g:vimtex_syntax_conceal.styles
     syntax match texCmdStyle "\v\\text%(rm|tt|up|normal|sf|sc)>"
-          \ conceal skipwhite skipnl nextgroup=texStyleConcealed
-    syntax region texStyleConcealed matchgroup=texDelim start="{" end="}"
+          \ conceal skipwhite skipnl nextgroup=texStyleArgConc
+    syntax region texStyleArgConc matchgroup=texDelim start="{" end="}"
           \ contained contains=TOP,@NoSpell concealends
   endif
 endfunction
@@ -871,14 +871,14 @@ function! s:match_bold_italic_math() abort " {{{1
         \ ['texMathCmdStyleBold', 'bm'],
         \]
     execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
-          \ 'skipwhite skipnl nextgroup=' . l:map[l:group]
+          \ 'contained skipwhite nextgroup=' . l:map[l:group]
           \ l:conceal
   endfor
 
   if g:vimtex_syntax_conceal.styles
     syntax match texMathCmdStyle "\v\\math%(rm|tt|normal|sf)>"
-          \ conceal skipwhite skipnl nextgroup=texMathStyleConcealed
-    syntax region texMathStyleConcealed matchgroup=texDelim start="{" end="}"
+          \ contained conceal skipwhite nextgroup=texMathStyleConcArg
+    syntax region texMathStyleConcArg matchgroup=texDelim start="{" end="}"
           \ contained contains=@texClusterMath concealends
   endif
 endfunction
