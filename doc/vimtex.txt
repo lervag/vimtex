@@ -2246,6 +2246,8 @@ OPTIONS                                                        *vimtex-options*
     glossaries~
     gnuplottex~
     hyperref~
+      `conceal`  whether to enable conceal
+        Default: |g:vimtex_syntax_conceal_default|
     ieeetrantools~
     listings~
     luacode~
