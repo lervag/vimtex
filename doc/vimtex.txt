@@ -2253,6 +2253,7 @@ OPTIONS                                                        *vimtex-options*
     luacode~
     markdown~
     mathtools~
+    mhequ~
     minted~
     moreverb~
     natbib~
