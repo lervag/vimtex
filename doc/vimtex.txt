@@ -1126,12 +1126,15 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_complete_bib*
   This option is a dictionary for controlling the citation completion. The
-  keys each control a different thing:
+  keys each control a different thing as explained below.
 
   simple~
     Default value: 0
-    If nonzero, then cite completion only searches on the bib keys. This may
-    work better e.g. if one uses an autocomplete plugin.
+    If zero, then the cite completion is "smart", i.e. not simple. This
+    behaviour is described in more detail in |vimtex-complete-cites|.
+
+    Note: It is usually better to use the "simple" mode, that is, set this to
+          1, if you use an autocomplete plugin (|vimtex-complete-auto|).
 
                                                *g:vimtex_complete_bib.menu_fmt*
   menu_fmt~
