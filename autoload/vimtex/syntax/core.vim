@@ -29,6 +29,8 @@ function! vimtex#syntax#core#init() abort " {{{1
         \texCmdEnv,
         \texCmdFootnote,
         \texCmdGreek,
+        \texCmdMinipage,
+        \texCmdParbox,
         \texCmdRef,
         \texCmdSize,
         \texCmdStyle,
@@ -311,18 +313,83 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texEnvOpt',
         \ {'contains': 'texComment,@NoSpell'})
 
-  " Tabular arguments
-  syntax match texCmdTabular "\\begin{tabular}"
-        \ nextgroup=texTabularOpt,texTabularArg skipwhite skipnl contains=texCmdEnv
-  call vimtex#syntax#core#new_opt('texTabularOpt', {'next': 'texTabularArg', 'contains': 'texComment,@NoSpell'})
-  call vimtex#syntax#core#new_arg('texTabularArg', {'contains': '@texClusterTabular'})
+  " {{{2 Commands: \begin{tabular}
 
-  syntax match texTabularCol       "[lcr]" contained
-  syntax match texTabularCol       "p"     contained nextgroup=texTabularLength
-  syntax match texTabularAtSep     "@"     contained nextgroup=texTabularLength
+  syntax match texCmdTabular "\\begin{tabular}"
+        \ skipwhite skipnl
+        \ nextgroup=texTabularOpt,texTabularArg
+        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_opt('texTabularOpt', {
+        \ 'next': 'texTabularArg',
+        \ 'contains': 'texComment,@NoSpell',
+        \})
+  call vimtex#syntax#core#new_arg('texTabularArg', {
+        \ 'contains': '@texClusterTabular'
+        \})
+
+  syntax match texTabularCol   "[lcr]" contained
+  syntax match texTabularCol   "p"     contained nextgroup=texTabularLength
+  syntax match texTabularAtSep "@"     contained nextgroup=texTabularLength
   syntax cluster texClusterTabular contains=texTabular.*
 
-  call vimtex#syntax#core#new_arg('texTabularLength', {'contains': 'texLength,texCmd'})
+  call vimtex#syntax#core#new_arg('texTabularLength', {
+        \ 'contains': 'texLength,texCmd'
+        \})
+
+  " {{{2 Commands: \begin{minipage}[position][height][inner-pos]{width}
+
+  " Reference: http://latexref.xyz/minipage.html
+
+  syntax match texCmdMinipage "\\begin{minipage}"
+        \ skipwhite skipnl
+        \ nextgroup=texMinipageOptPos,texMinipageArgWidth
+        \ contains=texCmdEnv
+
+  call vimtex#syntax#core#new_opt('texMinipageOptPos', {
+        \ 'next': 'texMinipageOptHeight,texMinipageArgWidth',
+        \ 'contains': 'texBoxOptPosVal,texComment',
+        \})
+  call vimtex#syntax#core#new_opt('texMinipageOptHeight', {
+        \ 'next': 'texMinipageOptIPos,texMinipageArgWidth',
+        \ 'contains': 'texLength,texCmd,texComment',
+        \})
+  call vimtex#syntax#core#new_opt('texMinipageOptIPos', {
+        \ 'next': 'texMinipageArgWidth',
+        \ 'contains': 'texBoxOptIPosVal,texComment',
+        \})
+  call vimtex#syntax#core#new_arg('texMinipageArgWidth', {
+        \ 'contains': 'texLength,texCmd,texComment',
+        \})
+
+  " These are also used inside \parbox options
+  syntax match texBoxOptPosVal "[bcmt]" contained
+  syntax match texBoxOptIPosVal "[bcst]" contained
+
+  " {{{2 Commands: \parbox[position][height][inner-pos]{width}{contents}
+
+  " Reference: http://latexref.xyz/_005cparbox.html
+
+  syntax match texCmdParbox "\\parbox\>"
+        \ skipwhite skipnl
+        \ nextgroup=texParboxOptPos,texParboxArgWidth
+
+  call vimtex#syntax#core#new_opt('texParboxOptPos', {
+        \ 'next': 'texParboxOptHeight,texParboxArgWidth',
+        \ 'contains': 'texBoxOptPosVal,texComment',
+        \})
+  call vimtex#syntax#core#new_opt('texParboxOptHeight', {
+        \ 'next': 'texParboxOptIPos,texParboxArgWidth',
+        \ 'contains': 'texLength,texCmd,texComment',
+        \})
+  call vimtex#syntax#core#new_opt('texParboxOptIPos', {
+        \ 'next': 'texParboxArgWidth',
+        \ 'contains': 'texBoxOptIPosVal,texComment',
+        \})
+  call vimtex#syntax#core#new_arg('texParboxArgWidth', {
+        \ 'next': 'texParboxArgContent',
+        \ 'contains': 'texLength,texCmd,texComment',
+        \})
+  call vimtex#syntax#core#new_arg('texParboxArgContent')
 
   " }}}2
   " {{{2 Zone: Verbatim
@@ -526,6 +593,8 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   " Inherited groups
   highlight def link texArgNew             texCmd
   highlight def link texAuthorOpt          texOpt
+  highlight def link texBoxOptPosVal       texSymbol
+  highlight def link texBoxOptIPosVal      texBoxOptPosVal
   highlight def link texCmdAccent          texCmd
   highlight def link texCmdAuthor          texCmd
   highlight def link texCmdBib             texCmd
@@ -547,6 +616,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdNewenv          texCmd
   highlight def link texCmdNoSpell         texCmd
   highlight def link texCmdPackage         texCmd
+  highlight def link texCmdParbox          texCmd
   highlight def link texCmdPart            texCmd
   highlight def link texCmdRef             texCmd
   highlight def link texCmdRefConcealed    texCmdRef
@@ -580,6 +650,9 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texLetArgEqual        texSymbol
   highlight def link texLetArgName         texArgNew
   highlight def link texLigature           texSymbol
+  highlight def link texMinipageOptHeight  texError
+  highlight def link texMinipageOptIPos    texError
+  highlight def link texMinipageOptPos     texError
   highlight def link texMathArg            texMathZone
   highlight def link texMathArrayArg       texOpt
   highlight def link texMathCmd            texCmd
@@ -609,6 +682,9 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewenvOpt          texOpt
   highlight def link texNewenvParm         texParm
   highlight def link texOptEqual           texSymbol
+  highlight def link texParboxOptHeight    texError
+  highlight def link texParboxOptIPos      texError
+  highlight def link texParboxOptPos       texError
   highlight def link texRefOpt             texOpt
   highlight def link texRefConcealedOpt1   texRefOpt
   highlight def link texRefConcealedOpt2   texRefOpt

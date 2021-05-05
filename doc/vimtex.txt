@@ -4177,9 +4177,9 @@ primitive groups are linked to conventional syntax groups as listed in
 |group-name|. In the examples, capital letters are used to indicate which
 parts are matched by the current group. For even more details, please refer to
 the code itself:
-* Core elements: The `s:init_highlights()` function in the file
-  `autoload/vimtex/syntax/core.vim` specifies the highlighting of the core
-  groups.
+* Core elements: The `vimtex#syntax#core#init_highlights()` function in the
+  file `autoload/vimtex/syntax/core.vim` specifies the default highlighting of
+  the core groups.
 * Package specific groups and elements are defined in the package specific
   scripts: `autoload/vimtex/syntax/p/*.vim`.
 
@@ -4247,6 +4247,12 @@ Table 2: A list of the most common normal LaTeX groups.~
   texRefArg            Special      \cite{REFERENCE}; \label{REF}
   texE3Func            texCmdType   \STR_NEW:N
   texE3Var             texCmd       \G_MYFILE_NAME_STR
+  texCmdParbox         texCmd       \PARBOX[p][h][i]{w}{c}
+  texBoxOptPosVal      texSymbol    \parbox[P][h][i]{w}{c}
+                                    \begin{minipage}[P][h][i]{w}
+  texBoxOptIPosVal     texBoxOptPosVal
+                                    \parbox[p][h][I]{w}{c}
+                                    \begin{minipage}[p][h][I]{w}
 
 Table 3: A list of math mode groups.~
 >
