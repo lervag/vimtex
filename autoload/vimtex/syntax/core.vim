@@ -19,6 +19,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax cluster texClusterOpt contains=
         \texCmd,
         \texComment,
+        \texGroup,
         \texLength,
         \texOpt,
         \texOptEqual,
@@ -310,8 +311,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'contains': 'texComment,@NoSpell',
         \ 'next': 'texEnvOpt'
         \})
-  call vimtex#syntax#core#new_opt('texEnvOpt',
-        \ {'contains': 'texComment,@NoSpell'})
+  call vimtex#syntax#core#new_opt('texEnvOpt')
 
   " {{{2 Commands: \begin{tabular}
 
