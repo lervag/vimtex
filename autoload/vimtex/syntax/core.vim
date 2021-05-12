@@ -788,7 +788,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
   if l:cfg.arg
     let l:nextgroups += [l:group_arg]
 
-    let l:arg_cfg = {'opts': 'contained keepend'}
+    let l:arg_cfg = {'opts': 'contained'}
     if l:cfg.conceal && empty(l:cfg.concealchar)
       let l:arg_cfg.opts .= ' concealends'
     endif
