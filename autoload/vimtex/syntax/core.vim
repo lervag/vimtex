@@ -309,7 +309,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
   call vimtex#syntax#core#new_arg('texEnvArgName', {
         \ 'contains': 'texComment,@NoSpell',
-        \ 'next': 'texEnvOpt'
+        \ 'next': 'texEnvOpt',
+        \ 'skipwhite': v:false
         \})
   call vimtex#syntax#core#new_opt('texEnvOpt')
 
@@ -708,6 +709,7 @@ function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
         \ 'next': '',
         \ 'matchgroup': 'matchgroup=texDelim',
         \ 'opts': 'contained',
+        \ 'skipwhite': v:true,
         \}, a:0 > 0 ? a:1 : {})
 
   execute 'syntax region' a:grp
@@ -715,7 +717,9 @@ function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
         \ l:cfg.matcher
         \ l:cfg.opts
         \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
-        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
+        \ (empty(l:cfg.next) ? ''
+        \   : 'nextgroup=' . l:cfg.next
+        \     . (l:cfg.skipwhite ? ' skipwhite skipnl' : ''))
 endfunction
 
 " }}}1
