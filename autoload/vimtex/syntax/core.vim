@@ -27,7 +27,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \@NoSpell
 
   syntax cluster texClusterMath contains=
-        \texCmdEnv,
+        \texCmdEnvM,
         \texCmdFootnote,
         \texCmdGreek,
         \texCmdMinipage,
@@ -310,7 +310,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texEnvArgName', {
         \ 'contains': 'texComment,@NoSpell',
         \ 'next': 'texEnvOpt',
-        \ 'skipwhite': v:false
         \})
   call vimtex#syntax#core#new_opt('texEnvOpt')
 
@@ -503,6 +502,16 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Bold and italic commands
   call s:match_bold_italic_math()
 
+  " Environments inside math zones
+  " * This is used to restrict the whitespace between environment name and
+  "   the option group (see https://github.com/lervag/vimtex/issues/2043).
+  syntax match texCmdEnvM "\v\\%(begin|end)>" contained nextgroup=texEnvMArgName
+  call vimtex#syntax#core#new_arg('texEnvMArgName', {
+        \ 'contains': 'texComment,@NoSpell',
+        \ 'next': 'texEnvOpt',
+        \ 'skipwhite': v:false
+        \})
+
   " Support for array environment
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\begin{array}" nextgroup=texMathArrayArg skipwhite skipnl
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\end{array}"
@@ -603,6 +612,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdConditional     texCmd
   highlight def link texCmdDef             texCmdNew
   highlight def link texCmdEnv             texCmd
+  highlight def link texCmdEnvM            texCmdEnv
   highlight def link texCmdE3              texCmd
   highlight def link texCmdFootnote        texCmd
   highlight def link texCmdGreek           texMathCmd
@@ -643,6 +653,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texE3Parm             texParm
   highlight def link texE3Var              texCmd
   highlight def link texEnvOpt             texOpt
+  highlight def link texEnvMArgName        texEnvArgName
   highlight def link texFileArg            texArg
   highlight def link texFileOpt            texOpt
   highlight def link texFilesArg           texFileArg
