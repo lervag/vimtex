@@ -8,6 +8,26 @@ function! vimtex#syntax#p#array#load(cfg) abort " {{{1
   " For reference, refer to the docs:
   " https://texdoc.org/serve/array/0
 
+  syntax match texCmdNewcolumn "\\newcolumntype\>"
+        \ nextgroup=texCmdNewcolumnName,texNewcolumnArgName skipwhite skipnl
+
+  syntax match texCmdNewcolumnName contained "\\\w\+"
+        \ nextgroup=texNewcolumnOpt,texNewcolumnArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texNewcolumnArgName', {
+        \ 'next': 'texNewcolumnOpt,texNewcolumnArg',
+        \})
+
+  call vimtex#syntax#core#new_opt('texNewcolumnOpt', {
+        \ 'next': 'texNewcolumnArg',
+        \ 'opts': 'oneline',
+        \})
+  call vimtex#syntax#core#new_arg('texNewcolumnArg', {
+        \ 'contains': '@texClusterTabular'
+        \})
+  syntax match texNewcolumnParm contained "#\d\+"
+        \ containedin=texNewcolumnArg,texTabularPostPreArg,texTabularCmdArg
+
+
   syntax match texTabularCol       "[mb]"   contained nextgroup=texTabularLength
   syntax match texTabularCol       "\*"     contained nextgroup=texTabularMulti
   syntax match texTabularVertline  "||\?"   contained
@@ -38,6 +58,12 @@ function! vimtex#syntax#p#array#load(cfg) abort " {{{1
   highlight def link texTabularVertline   texMathDelim
   highlight def link texTabularPostPre    texMathDelim
   highlight def link texTabularMathdelim  texMathDelimZone
+
+  highlight def link texCmdNewcolumn      texCmd
+  highlight def link texCmdNewcolumnName  texCmd
+  highlight def link texNewcolumnArgName  texArg
+  highlight def link texNewcolumnOpt      texOpt
+  highlight def link texNewcolumnParm     texParm
 endfunction
 
 " }}}1

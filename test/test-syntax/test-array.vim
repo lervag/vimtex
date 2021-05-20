@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-tabularx.tex
+silent edit test-array.tex
 
 if empty($INMAKE) | finish | endif
 
