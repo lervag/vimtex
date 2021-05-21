@@ -596,9 +596,11 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texTitleArg         Underlined
-  highlight def texStyleBold gui=bold        cterm=bold
-  highlight def texStyleBoth gui=bold,italic cterm=bold,italic
-  highlight def texStyleItal gui=italic      cterm=italic
+  highlight def texStyleBold     gui=bold        cterm=bold
+  highlight def texStyleBoth     gui=bold,italic cterm=bold,italic
+  highlight def texStyleItal     gui=italic      cterm=italic
+  highlight def texMathStyleBold gui=bold        cterm=bold
+  highlight def texMathStyleItal gui=italic      cterm=italic
 
   " Inherited groups
   highlight def link texArgNew             texCmd
@@ -952,19 +954,22 @@ function! s:match_bold_italic_math() abort " {{{1
         \ (g:vimtex_syntax_conceal.styles ? ['conceal', 'concealends'] : ['', ''])
 
   let l:map = {
-        \ 'texMathCmdStyleBold': 'texStyleBold',
-        \ 'texMathCmdStyleItal': 'texStyleItal',
+        \ 'texMathCmdStyleBold': 'texMathStyleBold',
+        \ 'texMathCmdStyleItal': 'texMathStyleItal',
         \}
 
   for [l:group, l:pattern] in [
+        \ ['texMathCmdStyleBold', 'bm'],
         \ ['texMathCmdStyleBold', 'mathbf'],
         \ ['texMathCmdStyleItal', 'mathit'],
-        \ ['texMathCmdStyleBold', 'bm'],
         \]
     execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
           \ 'contained skipwhite nextgroup=' . l:map[l:group]
           \ l:conceal
   endfor
+
+  execute 'syntax region texMathStyleBold matchgroup=texDelim start="{" end="}" contained contains=@texClusterMath' l:concealends
+  execute 'syntax region texMathStyleItal matchgroup=texDelim start="{" end="}" contained contains=@texClusterMath' l:concealends
 
   if g:vimtex_syntax_conceal.styles
     syntax match texMathCmdStyle "\v\\math%(rm|tt|normal|sf)>"
