@@ -73,13 +73,20 @@ most basic features. Users are _strongly_ encouraged to read or at least skim
 through the documentation to learn about the different features and
 possibilities provided by VimTeX (see [`:h vimtex`](doc/vimtex.txt)).
 
-![Quick start gif](media/quick_start.gif?raw=true)
+![Quick start gif](https://github.com/lervag/vimtex-media/blob/main/video/quick_start.gif?raw=true)
 
 Advanced users and potential developers may also be interested in reading the
 supplementary documents:
 
 * [CONTRIBUTING.md](CONTRIBUTING.md)
 * [DOCUMENTATION.md](DOCUMENTATION.md)
+
+Here is an example of the syntax highlighting provided by VimTeX. The example
+is made with the [vim-colors-xcode](https://github.com/arzg/vim-colors-xcode)
+colorscheme with some minor adjustments [described
+here](https://github.com/lervag/vimtex/issues/1946#issuecomment-843674951).
+
+![Syntax example](https://github.com/lervag/vimtex-media/blob/main/img/syntax.png)
 
 ## Features
 
