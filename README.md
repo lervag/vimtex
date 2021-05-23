@@ -73,7 +73,7 @@ most basic features. Users are _strongly_ encouraged to read or at least skim
 through the documentation to learn about the different features and
 possibilities provided by VimTeX (see [`:h vimtex`](doc/vimtex.txt)).
 
-https://raw.githubusercontent.com/lervag/vimtex-media/main/video/quick-start.mp4
+https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-8a31-7ff7b9a4a020.mp4
 
 Advanced users and potential developers may also be interested in reading the
 supplementary documents:
