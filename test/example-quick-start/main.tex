@@ -1,12 +1,153 @@
-\documentclass{minimal}
+\documentclass{article}
+
+% These are only here for the sake of this tutorial.
+\usepackage{amsmath}
+\newcommand{\lt}{\textbackslash{}lt }
+\newcommand{\lk}{\textbackslash{}lk }
+\newcommand{\lv}{\textbackslash{}lv }
+\newcommand{\lc}{\textbackslash{}lc }
+\renewcommand{\ll}{\textbackslash{}ll }
+\renewcommand{\le}{\textbackslash{}le }
+
 \begin{document}
 
-% \ll  Start/Stop compiling the document
-% \lk  Stop the running compilation
-% \lv  Open pdf viewer and/or do forward searching with
-% \le  Parse the log file for errors and warnings
-% \lc  Clean auxiliary files (\lC to also clean pdf files)
+\section{Compiling}
 
-Hello world!
+Press \ll to start (or stop) compiling the document.
+This turns on automatic compiling if supported by your compiler, meaning your
+document will be compiled each time you save.
+
+Press \lk to stop the compilation process
+
+Press \lc to clear auxiliary files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Forward and Backward Search}
+
+Press \lv to forward search. This will open the compiled PDF.
+
+Some PDF viewers support the ability to jump to the current location in the PDF.
+
+Some also support backward search (jumping from PDF to source).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Errors, Warnings and the QuickFix window}
+
+VimTeX will populate the QuickFix menu with any errors and warnings it finds in
+the log file.
+
+This is done after (attempting to) compile or pressing \le.
+
+\le also closes the QuickFix menu when it is open.
+
+\emph{Example.} Let's put some undefined commands here and compile:
+
+Moving to the QuickFix window and pressing enter on the error entry moves the
+cursor to the line containing the error. We can fix the error and continue.
+
+
+
+
+
+
+
+
+
+
+\section{Document Overview}
+
+Press \lt to show a window with a table of contents for your document.
+
+Also shows labels, references and TODOs. 
+
+Can be used to jump to sections, labels, references and TODOs.
+
+% TODO: Show table of contents.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Motions and Text Objects}
+
+VimTeX adds various LaTeX specific motions and text objects.
+
+\emph{Example motion.} move between section boundaries with [[, [], ][ and ]].
+
+\emph{Example text object.} ic refers to a LaTeX command excluding the
+backslash. ac includes the backslash.
+
+cic: \( \alpha \)
+
+dac: \(  \)
+
+
+
+
+
+
+
+
+
+
+
+\section{Other Cool Stuff}
+
+cse changes the surrounding environment:
+
+\begin{equation}
+  v \cdot \nabla_x f_1 = -\sigma_a f_1, \quad f_1 \rvert_{\Gamma_-} = \phi(x,v).
+\end{equation}
+
+tsd toggles between () and \( \left( \right) \):
+
+\begin{equation*}
+  \frac{d}{ds} \left[ e^{\int_k^s \sigma_a(x + tv)\,dt} F_1(s) \right] = 0
+\end{equation*}
+
+tse toggles the * in environments:
+
+\begin{equation}
+  f_1(x, v) = e^{-\int_0^{\tau_-(x, v)} \sigma_a(x - sv)\,dt} \phi(x_-, v),
+\end{equation}
+
+This is only a tiny sliver of what VimTeX offers.
+Read the README for an overview, and read :h vimtex for a full description of
+all things VimTeX.
 
 \end{document}

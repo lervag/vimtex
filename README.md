@@ -71,13 +71,18 @@ If you use the new package feature in Vim, please note the following:
 
 The following is a video guide for how to use VimTeX (credits:
 [@DustyTopology](https://github.com/lervag/vimtex/issues/1946#issuecomment-846345095)).
-It displays some of the main features. Users are of course _strongly_
-encouraged to read the documentation, at least the introduction, to learn about
-the different features and possibilities provided by VimTeX (see [`:h
-vimtex`](doc/vimtex.txt)).
+It displays some of the main features. The example LaTeX file used in the video
+is available under
+[`test/example-quick-start/main.tex`](test/example-quick-start/main.tex) and it
+may be instructive to copy the file and play with it to learn some of these
+basic functions.
 
 https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-8a31-7ff7b9a4a020.mp4
 
+Users are of course _strongly_
+encouraged to read the documentation, at least the introduction, to learn about
+the different features and possibilities provided by VimTeX (see [`:h
+vimtex`](doc/vimtex.txt)).
 Advanced users and potential developers may also be interested in reading the
 supplementary documents:
 
