@@ -70,7 +70,8 @@ If you use the new package feature in Vim, please note the following:
 ## Quick Start
 
 The following is a video guide for how to use VimTeX (credits:
-[@DustyTopology](https://github.com/lervag/vimtex/issues/1946#issuecomment-846345095)).
+[@DustyTopology](https://github.com/DustyTopology) from
+[#1946](https://github.com/lervag/vimtex/issues/1946#issuecomment-846345095)).
 It displays some of the main features. The example LaTeX file used in the video
 is available under
 [`test/example-quick-start/main.tex`](test/example-quick-start/main.tex) and it
