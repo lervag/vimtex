@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\let\if@tempswa\iffalse
+\def\loop#1\repeat{\def\iterate{#1\relax\expandafter\iterate\fi}%
+  \iterate \let\iterate\relax}
+
+\begin{document}
+
+\iffalse
+Commented stuff
+Another \ifstuff here \fi
+\ifasd \fi \f \fii
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+\fi
+
+\end{document}

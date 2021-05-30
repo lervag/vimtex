@@ -391,6 +391,14 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ containedin=texComment contained
   syntax case match
 
+  " Highlight \iffalse ... \fi blocks as comments
+  syntax region texComment matchgroup=texCmd
+        \ start="^\s*\\iffalse\>" end="\\fi\>"
+        \ contains=texCommentConditionals
+  syntax region texCommentConditionals matchgroup=texComment
+        \ start="\\if\w\+" end="\\fi\>"
+        \ contained transparent
+
   " }}}2
   " {{{2 Zone: Verbatim
 
