@@ -1,0 +1,19 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[acronyms]{glossaries}
+
+\makenoidxglossaries
+\newacronym{rl}{RL}{reinforcement learning}
+\newacronym[longplural={diagonal matrices}]{ml}{ML}{machine learning}
+% \newacronym
+%   [description={\gls{ssi} enabled \gls{html}}]
+%   {shtml}{SHTML}
+%   {SSI enabled HTML}
+
+\begin{document}
+
+\Acrfull{rl} is a fun subfield of \acrlong{ml}. \acrshort{ml} is fun.
+\printnoidxglossary[type=acronym]
+
+\end{document}
