@@ -72,37 +72,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texSpecialChar "\\[,;:!]"
 
   " }}}2
-  " {{{2 Comments
-
-  " * In documented TeX Format, actual comments are defined by leading "^^A".
-  "   Almost all other lines start with one or more "%", which may be matched
-  "   as comment characters. The remaining part of the line can be interpreted
-  "   as TeX syntax.
-  " * For more info on dtx files, see e.g.
-  "   https://ctan.uib.no/info/dtxtut/dtxtut.pdf
-  if expand('%:e') ==# 'dtx'
-    syntax match texComment "\^\^A.*$"
-    syntax match texComment "^%\+"
-  elseif g:vimtex_syntax_nospell_comments
-    syntax match texComment "%.*$" contains=@NoSpell
-  else
-    syntax match texComment "%.*$" contains=@Spell
-  endif
-
-  " Do not check URLs and acronyms in comments
-  " Source: https://github.com/lervag/vimtex/issues/562
-  syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
-        \ containedin=texComment contained contains=@NoSpell
-  syntax match texCommentAcronym '\v<(\u|\d){3,}s?>'
-        \ containedin=texComment contained contains=@NoSpell
-
-  " Todo and similar within comments
-  syntax case ignore
-  syntax keyword texCommentTodo combak fixme todo xxx
-        \ containedin=texComment contained
-  syntax case match
-
-  " }}}2
   " {{{2 Commands: general
 
   " Unspecified TeX groups
@@ -390,6 +359,37 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'contains': 'texLength,texCmd,texComment',
         \})
   call vimtex#syntax#core#new_arg('texParboxArgContent')
+
+  " }}}2
+  " {{{2 Comments
+
+  " * In documented TeX Format, actual comments are defined by leading "^^A".
+  "   Almost all other lines start with one or more "%", which may be matched
+  "   as comment characters. The remaining part of the line can be interpreted
+  "   as TeX syntax.
+  " * For more info on dtx files, see e.g.
+  "   https://ctan.uib.no/info/dtxtut/dtxtut.pdf
+  if expand('%:e') ==# 'dtx'
+    syntax match texComment "\^\^A.*$"
+    syntax match texComment "^%\+"
+  elseif g:vimtex_syntax_nospell_comments
+    syntax match texComment "%.*$" contains=@NoSpell
+  else
+    syntax match texComment "%.*$" contains=@Spell
+  endif
+
+  " Do not check URLs and acronyms in comments
+  " Source: https://github.com/lervag/vimtex/issues/562
+  syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
+        \ containedin=texComment contained contains=@NoSpell
+  syntax match texCommentAcronym '\v<(\u|\d){3,}s?>'
+        \ containedin=texComment contained contains=@NoSpell
+
+  " Todo and similar within comments
+  syntax case ignore
+  syntax keyword texCommentTodo combak fixme todo xxx
+        \ containedin=texComment contained
+  syntax case match
 
   " }}}2
   " {{{2 Zone: Verbatim
