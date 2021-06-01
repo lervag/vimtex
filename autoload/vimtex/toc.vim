@@ -237,6 +237,8 @@ function! s:toc.create() abort dict " {{{1
   setlocal noswapfile
   setlocal nowrap
   setlocal tabstop=8
+  setlocal winfixwidth
+  setlocal winfixheight
 
   if self.hide_line_numbers
     setlocal nonumber
