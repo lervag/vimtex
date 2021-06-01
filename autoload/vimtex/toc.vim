@@ -603,9 +603,6 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
   " Keep or close toc window (based on options)
   if a:close_after && self.split_pos !=# 'full'
     call self.close()
-  else
-    " Return to toc window
-    execute toc_winnr . 'wincmd w'
   endif
 
   " Allow user entry points through autocmd events
