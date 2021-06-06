@@ -23,11 +23,11 @@ let s:toc = vimtex#toc#get_entries()
 "   let s:i += 1
 " endfor
 
-call vimtex#test#assert_equal(19, len(s:toc))
-call vimtex#test#assert_equal('chapters/sections/first.tex', s:toc[5].file)
-call vimtex#test#assert_equal('chapters/sections/second.tex', s:toc[8].file)
-call vimtex#test#assert_equal(
+call assert_equal(19, len(s:toc))
+call assert_equal('chapters/sections/first.tex', s:toc[5].file)
+call assert_equal('chapters/sections/second.tex', s:toc[8].file)
+call assert_equal(
       \ 'eq:1                        (4.1 [p. 9])',
       \ s:toc[17].title)
 
-quit!
+call vimtex#test#finished()

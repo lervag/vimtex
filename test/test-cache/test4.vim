@@ -9,7 +9,7 @@ let g:vimtex_cache_root = '.'
 
 " Test existing cache
 let s:cache = vimtex#cache#open('test4', {'default': {'key': 1}})
-call vimtex#test#assert_equal(s:cache.get('a').key, 2)
+call assert_equal(s:cache.get('a').key, 2)
 
 " Disable persistence
 let s:cache.persistent = 0
@@ -17,9 +17,9 @@ let s:cache.persistent = 0
 " Test dictionary property
 let s:current = s:cache.get('missing')
 let s:current.other = 1
-call vimtex#test#assert_equal(s:current.key, 1)
+call assert_equal(s:current.key, 1)
 
 let s:again = s:cache.get('missing')
-call vimtex#test#assert_equal(get(s:again, 'other'), 1)
+call assert_equal(get(s:again, 'other'), 1)
 
-quit!
+call vimtex#test#finished()

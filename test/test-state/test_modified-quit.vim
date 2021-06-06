@@ -22,6 +22,6 @@ try
   quit
 catch /E37/
 endtry
-call vimtex#test#assert_equal(g:test, 0)
+call assert_equal(g:test, 0)
 
-quit!
+call vimtex#test#finished()

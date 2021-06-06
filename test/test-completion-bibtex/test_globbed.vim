@@ -12,7 +12,7 @@ silent edit test_globbed.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\cite{', '')
-call vimtex#test#assert_equal(1, len(s:candidates))
+call assert_equal(1, len(s:candidates))
 
 
-quit!
+call vimtex#test#finished()

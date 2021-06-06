@@ -50,4 +50,4 @@ call vimtex#test#keys('diP',
       \   'tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
       \])
 
-quit!
+call vimtex#test#finished()

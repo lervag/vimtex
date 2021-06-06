@@ -12,7 +12,7 @@ silent edit test_jobname.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\bibentry{', '')
-call vimtex#test#assert_equal(len(s:candidates), 1)
+call assert_equal(len(s:candidates), 1)
 
 
-quit!
+call vimtex#test#finished()

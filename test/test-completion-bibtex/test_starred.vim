@@ -12,7 +12,7 @@ silent edit test_starred.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\cite*{', '')
-call vimtex#test#assert(len(s:candidates) > 0)
+call assert_true(len(s:candidates) > 0)
 
 
-quit!
+call vimtex#test#finished()

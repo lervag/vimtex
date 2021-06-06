@@ -4,6 +4,6 @@ silent edit test-tcolorbox.tex
 
 if empty($INMAKE) | finish | endif
 
-call vimtex#test#assert(vimtex#syntax#in('texTCBZone', 19, 1))
+call assert_true(vimtex#syntax#in('texTCBZone', 19, 1))
 
-quit!
+call vimtex#test#finished()

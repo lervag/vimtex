@@ -9,12 +9,12 @@ silent edit main.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\usepackage{', 'cleve')
-call vimtex#test#assert_equal(s:candidates[0].word, 'cleveref')
+call assert_equal(s:candidates[0].word, 'cleveref')
 
 let s:candidates = vimtex#test#completion('\RequirePackage{', 'am')
-call vimtex#test#assert_equal(len(s:candidates) >= 1, v:true)
+call assert_true(len(s:candidates) >= 1)
 
 let s:candidates = vimtex#test#completion('\PassOptionsToPackage{option}{', 'am')
-call vimtex#test#assert_equal(len(s:candidates) >= 1, v:true)
+call assert_true(len(s:candidates) >= 1)
 
-quit!
+call vimtex#test#finished()

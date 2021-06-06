@@ -149,4 +149,4 @@ call vimtex#test#keys('j$damp', [
       \])
 
 
-quit!
+call vimtex#test#finished()

@@ -11,9 +11,9 @@ silent edit test-cites.tex
 
 if empty($INMAKE) | finish | endif
 
-call vimtex#test#assert_equal('Hemingway1940',
+call assert_equal('Hemingway1940',
       \ vimtex#context#get(9, 49).handler.selected)
-call vimtex#test#assert_equal('JiM2020',
+call assert_equal('JiM2020',
       \ vimtex#context#get(11, 39).handler.selected)
 
-quit!
+call vimtex#test#finished()

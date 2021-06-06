@@ -67,4 +67,4 @@ call vimtex#test#keys('5jd2aP',
       \   '',
       \ ])
 
-quit!
+call vimtex#test#finished()

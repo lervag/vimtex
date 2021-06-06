@@ -14,7 +14,7 @@ else
 endif
 
 let s:warnings = vimtex#log#get()
-call vimtex#test#assert_equal(len(s:warnings), 1)
-call vimtex#test#assert_match(join(s:warnings[0].msg), 'pdf_mode.*inconsistent')
+call assert_equal(len(s:warnings), 1)
+call assert_match('pdf_mode.*inconsistent', join(s:warnings[0].msg))
 
-quit!
+call vimtex#test#finished()

@@ -17,7 +17,7 @@ if empty($INMAKE) | finish | endif
 
 " " Test commands from custom classes for speed
 let s:candidates = vimtex#test#completion('\', '')
-call vimtex#test#assert(len(s:candidates) > 0)
+call assert_true(len(s:candidates) > 0)
 
 " call vimtex#profile#stop()
 " call vimtex#profile#filter([
@@ -28,4 +28,4 @@ call vimtex#test#assert(len(s:candidates) > 0)
 " call vimtex#profile#print()
 " call vimtex#profile#open()
 
-quit!
+call vimtex#test#finished()

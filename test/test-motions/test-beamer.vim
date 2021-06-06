@@ -12,15 +12,15 @@ if empty($INMAKE) | finish | endif
 " vint: -ProhibitCommandRelyOnUser
 
 normal 28G2]r
-call vimtex#test#assert_equal(line('.'), 37)
+call assert_equal(line('.'), 37)
 
 normal 28G]R
-call vimtex#test#assert_equal(line('.'), 35)
+call assert_equal(line('.'), 35)
 
 normal 28G2[r
-call vimtex#test#assert_equal(line('.'), 7)
+call assert_equal(line('.'), 7)
 
 normal 28G[R
-call vimtex#test#assert_equal(line('.'), 20)
+call assert_equal(line('.'), 20)
 
-quit!
+call vimtex#test#finished()

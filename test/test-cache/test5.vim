@@ -17,8 +17,8 @@ let s:cache2 = vimtex#cache#open('test5', {'local': 1})
 call s:cache2.set('a', 1)
 call vimtex#cache#write_all()
 
-call vimtex#test#assert(s:cache1.path !=# s:cache2.path)
+call assert_true(s:cache1.path !=# s:cache2.path)
 call delete(s:cache1.path)
 call delete(s:cache2.path)
 
-quit!
+call vimtex#test#finished()

@@ -17,6 +17,6 @@ vsplit
 close
 
 if empty($INMAKE) | finish | endif
-call vimtex#test#assert_equal(30, winwidth(bufwinid('ToC')))
+call assert_equal(30, winwidth(bufwinid('ToC')))
 
-quitall!
+call vimtex#test#finished()

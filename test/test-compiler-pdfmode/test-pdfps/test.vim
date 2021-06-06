@@ -15,6 +15,6 @@ else
   silent edit main.tex
 endif
 
-call vimtex#test#assert_equal('-pdfps', b:vimtex.compiler.get_engine())
+call assert_equal('-pdfps', b:vimtex.compiler.get_engine())
 
-quit!
+call vimtex#test#finished()

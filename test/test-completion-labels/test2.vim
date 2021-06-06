@@ -12,9 +12,9 @@ silent edit test2.tex
 if empty($INMAKE) | finish | endif
 
 let s:candidates = vimtex#test#completion('\ref{', '')
-call vimtex#test#assert_equal(len(s:candidates), 2)
+call assert_equal(len(s:candidates), 2)
 
 let s:candidates = vimtex#test#completion('\ref{', '1-')
-call vimtex#test#assert_equal(len(s:candidates), 1)
+call assert_equal(len(s:candidates), 1)
 
-quit!
+call vimtex#test#finished()

@@ -4,30 +4,20 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#test#assert(condition) abort " {{{1
-  if a:condition | return 1 | endif
+function! vimtex#test#finished() abort " {{{1
+  for l:error in v:errors
+    let l:match = matchlist(l:error, '\(.*\) line \(\d\+\): \(.*\)')
+    let l:file = fnamemodify(l:match[1], ':.')
+    let l:lnum = l:match[2]
+    let l:msg = l:match[3]
+    echo printf("%s:%d: %s\n", l:file, l:lnum, l:msg)
+  endfor
 
-  call s:fail()
-endfunction
-
-" }}}1
-function! vimtex#test#assert_equal(expect, observe) abort " {{{1
-  if a:expect ==# a:observe | return 1 | endif
-
-  call s:fail([
-        \ 'expect:  ' . string(a:expect),
-        \ 'observe: ' . string(a:observe),
-        \])
-endfunction
-
-" }}}1
-function! vimtex#test#assert_match(x, regex) abort " {{{1
-  if a:x =~# a:regex | return 1 | endif
-
-  call s:fail([
-        \ 'x = ' . string(a:x),
-        \ 'regex = ' . a:regex,
-        \])
+  if len(v:errors) > 0
+    cquit
+  else
+    quitall!
+  endif
 endfunction
 
 " }}}1
@@ -77,8 +67,8 @@ function! vimtex#test#main(file, expected) abort " {{{1
   execute 'silent edit' fnameescape(a:file)
 
   let l:expected = empty(a:expected) ? '' : fnamemodify(a:expected, ':p')
-  call vimtex#test#assert(exists('b:vimtex'))
-  call vimtex#test#assert_equal(l:expected, b:vimtex.tex)
+  call assert_true(exists('b:vimtex'))
+  call assert_equal(l:expected, b:vimtex.tex)
 
   bwipeout!
 endfunction

@@ -14,7 +14,7 @@ if empty($INMAKE) | finish | endif
 
 let s:toc = vimtex#toc#get_entries()
 
-call vimtex#test#assert_equal(5, len(s:toc))
-call vimtex#test#assert_equal('Conclusion', s:toc[-1].title)
+call assert_equal(5, len(s:toc))
+call assert_equal('Conclusion', s:toc[-1].title)
 
-quit!
+call vimtex#test#finished()

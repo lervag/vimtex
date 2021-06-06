@@ -83,4 +83,4 @@ call vimtex#test#keys('o;b',
       \ ['\begin{align}', '\end{align}'],
       \ ['\begin{align}', '  \beta', '\end{align}'])
 
-quit!
+call vimtex#test#finished()

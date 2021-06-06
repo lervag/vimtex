@@ -79,4 +79,4 @@ call vimtex#test#keys('f\v$hhtsf',
       \ ['$\frac{\delta_{02}}{\delta_{02} + \delta_{01}}$'],
       \ ['$(\delta_{02})/(\delta_{02} + \delta_{01})$'])
 
-quit!
+call vimtex#test#finished()

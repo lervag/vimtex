@@ -20,7 +20,7 @@ let s:cmds = filter(deepcopy(s:toc), {_, x -> x.title =~# '^fx'})
 "   let s:i += 1
 " endfor
 
-call vimtex#test#assert_equal(8, len(s:envs))
-call vimtex#test#assert_equal(8, len(s:cmds))
+call assert_equal(8, len(s:envs))
+call assert_equal(8, len(s:cmds))
 
-quit!
+call vimtex#test#finished()

@@ -23,4 +23,4 @@ call vimtex#test#keys('f\dac',
       \ ['a + \; f'],
       \ ['a +  f'])
 
-quit!
+call vimtex#test#finished()

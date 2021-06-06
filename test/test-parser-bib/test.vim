@@ -7,24 +7,24 @@ function! TestBackend(bibfile, backend) abort
 endfunction
 
 let s:parsed = TestBackend('test.bib', 'bibtex')
-call vimtex#test#assert_equal(6, len(s:parsed))
+call assert_equal(6, len(s:parsed))
 
 let s:parsed = TestBackend('test.bib', 'bibparse')
-call vimtex#test#assert_equal(7, len(s:parsed))
+call assert_equal(7, len(s:parsed))
 
 let s:parsed = TestBackend('test.bib', 'vim')
-call vimtex#test#assert_equal(7, len(s:parsed))
+call assert_equal(7, len(s:parsed))
 
 let s:bib = vimtex#kpsewhich#find('biblatex-examples.bib')
 if !empty(s:bib) && filereadable(s:bib)
   let s:parsed = TestBackend(s:bib, 'bibtex')
-  call vimtex#test#assert_equal(92, len(s:parsed))
+  call assert_equal(92, len(s:parsed))
 
   let s:parsed = TestBackend(s:bib, 'bibparse')
-  call vimtex#test#assert_equal(92, len(s:parsed))
+  call assert_equal(92, len(s:parsed))
 
   let s:parsed = TestBackend(s:bib, 'vim')
-  call vimtex#test#assert_equal(92, len(s:parsed))
+  call assert_equal(92, len(s:parsed))
 endif
 
-quit!
+call vimtex#test#finished()

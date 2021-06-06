@@ -24,19 +24,19 @@ endtry
 
 let s:qf = getqflist()
 let s:qf_len = len(s:qf)
-call vimtex#test#assert(s:qf_len >= 15)
+call assert_true(s:qf_len >= 15)
 
 " Apply ignore filters
 let g:vimtex_quickfix_ignore_filters = ['\\test']
 call vimtex#qf#setqflist()
 let s:qf = getqflist()
-call vimtex#test#assert(len(s:qf) == s:qf_len - 1)
+call assert_true(len(s:qf) == s:qf_len - 1)
 
 " Repeated invocations should not create extra quickfix lists
 try
   let s:qf_nr = getqflist({'nr':'$'}).nr
-  call vimtex#test#assert(s:qf_nr == 1)
+  call assert_true(s:qf_nr == 1)
 catch
 endtry
 
-quitall!
+call vimtex#test#finished()

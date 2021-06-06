@@ -10,11 +10,11 @@ if empty($INMAKE) | finish | endif
 
 try
   let s:cmd = vimtex#cmd#get_next()
-  call vimtex#test#assert(s:cmd.name ==# '\begin')
+  call assert_equal('\begin', s:cmd.name)
 catch
   echo 'Failed to parse command!'
   echo getline('.') "\n"
   cquit
 endtry
 
-quit!
+call vimtex#test#finished()

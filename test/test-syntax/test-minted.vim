@@ -5,15 +5,15 @@ silent edit test-minted.tex
 if empty($INMAKE) | finish | endif
 
 " Minted inside \paragraphs (#1537)
-call vimtex#test#assert(vimtex#syntax#in('javaScopeDecl', 72, 3))
+call assert_true(vimtex#syntax#in('javaScopeDecl', 72, 3))
 
 " Newminted on unrecognized languages (#1616)
-call vimtex#test#assert(vimtex#syntax#in('texMintedZoneLog', 112, 1))
-call vimtex#test#assert(vimtex#syntax#in('texMintedZoneShellsession', 116, 1))
+call assert_true(vimtex#syntax#in('texMintedZoneLog', 112, 1))
+call assert_true(vimtex#syntax#in('texMintedZoneShellsession', 116, 1))
 
 " " Doing :e should not destroy nested syntax and similar
-" call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
+" call assert_true(vimtex#syntax#in('pythonFunction', 38, 5))
 " edit
-" call vimtex#test#assert(vimtex#syntax#in('pythonFunction', 38, 5))
+" call assert_true(vimtex#syntax#in('pythonFunction', 38, 5))
 
-quit!
+call vimtex#test#finished()

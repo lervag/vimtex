@@ -124,4 +124,4 @@ call vimtex#test#keys('ds$',
       \ '2+2 = 4',
       \])
 
-quit!
+call vimtex#test#finished()

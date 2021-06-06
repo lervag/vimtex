@@ -5,6 +5,6 @@ let &rtp = '../..,' . &rtp
 filetype plugin on
 
 silent edit plaintex.tex
-call vimtex#test#assert_equal('plaintex', &filetype)
+call assert_equal('plaintex', &filetype)
 
-quit!
+call vimtex#test#finished()

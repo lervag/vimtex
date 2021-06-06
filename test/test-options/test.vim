@@ -13,6 +13,6 @@ if has('nvim') && executable('nvr')
   let s:progname = 'nvr'
 endif
 
-call vimtex#test#assert_equal(g:vimtex_compiler_progname, s:progname)
+call assert_equal(g:vimtex_compiler_progname, s:progname)
 
-quit!
+call vimtex#test#finished()
