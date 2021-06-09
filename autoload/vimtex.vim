@@ -64,6 +64,15 @@ function! s:init_buffer() abort " {{{1
   setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
   setlocal commentstring=\%\ %s
 
+  " Define autocommands
+  augroup vimtex_buffers
+    autocmd! * <buffer>
+    autocmd BufFilePre  <buffer> call s:filename_changed_pre()
+    autocmd BufFilePost <buffer> call s:filename_changed_post()
+    autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
+    autocmd BufWipeout  <buffer> call s:buffer_deleted('wipe')
+  augroup END
+
   " Get list of disabled modules from state object
   let l:disabled_modules = copy(get(b:vimtex, 'disabled_modules', []))
 
@@ -90,15 +99,6 @@ function! s:init_buffer() abort " {{{1
           \ 'env', 'motion', 'complete',
           \]
   endif
-
-  " Define autocommands
-  augroup vimtex_buffers
-    autocmd! * <buffer>
-    autocmd BufFilePre  <buffer> call s:filename_changed_pre()
-    autocmd BufFilePost <buffer> call s:filename_changed_post()
-    autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
-    autocmd BufWipeout  <buffer> call s:buffer_deleted('wipe')
-  augroup END
 
   " Initialize buffer settings for sub modules
   for l:mod in filter(copy(s:modules),
