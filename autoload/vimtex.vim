@@ -98,6 +98,11 @@ function! s:init_buffer() abort " {{{1
           \ 'fold', 'matchparen', 'format', 'doc', 'imaps', 'cmd', 'delim',
           \ 'env', 'motion', 'complete',
           \]
+
+    if g:vimtex_fold_bib_enabled
+      setlocal foldmethod=syntax
+      setlocal foldtext=vimtex#fold#bib#text()
+    endif
   endif
 
   " Initialize buffer settings for sub modules
