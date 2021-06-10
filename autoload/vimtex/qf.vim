@@ -83,6 +83,7 @@ function! vimtex#qf#open(force) abort " {{{1
     let s:previous_window = win_getid()
     botright cwindow
     if g:vimtex_quickfix_mode == 2
+      redraw
       call win_gotoid(s:previous_window)
     endif
     if g:vimtex_quickfix_autoclose_after_keystrokes > 0
