@@ -4,6 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
+" This script has a lot of unicode characters (for conceals)
 scriptencoding utf-8
 
 function! vimtex#syntax#p#amssymb#load(cfg) abort " {{{1
@@ -208,7 +209,6 @@ function! vimtex#syntax#p#amssymb#load(cfg) abort " {{{1
   syntax match texMathSymbol '\\vartriangleleft\>'     contained conceal cchar=⊲
   syntax match texMathSymbol '\\vartriangleright\>'    contained conceal cchar=⊳
   syntax match texMathSymbol '\\veebar\>'              contained conceal cchar=⊻
-
 endfunction
 
 " }}}1
