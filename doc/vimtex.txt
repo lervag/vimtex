@@ -2229,6 +2229,7 @@ OPTIONS                                                        *vimtex-options*
 
     amsmath~
       `load`  is 2 by default
+    amssymb~
     array~
     asymptote~
     babel~

@@ -1316,8 +1316,6 @@ function! s:match_math_symbols() abort " {{{1
   syntax match texMathSymbol "\\wp\>"                contained conceal cchar=℘
   syntax match texMathSymbol "\\wr\>"                contained conceal cchar=≀
   syntax match texMathSymbol '\\implies\>'           contained conceal cchar=⇒
-  syntax match texMathSymbol '\\geqslant\>'          contained conceal cchar=⩾
-  syntax match texMathSymbol '\\leqslant\>'          contained conceal cchar=⩽
   syntax match texMathSymbol '\\choose\>'            contained conceal cchar=C
   syntax match texMathSymbol '\\sqrt\>'              contained conceal cchar=√
   syntax match texMathSymbol '\\sqrt\[3]'            contained conceal cchar=∛
