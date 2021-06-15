@@ -222,6 +222,17 @@ The following are some alternative LaTeX plugins for Vim:
       with a callback feature to get instant feedback on compilation errors
     * VimTeX is very modular: if you don't like a feature, you can turn it off.
 
+* [TexMagic.nvim](https://github.com/jakewvincent/texmagic.nvim)
+
+    "A simple, lightweight Neovim plugin that facilitates LaTeX build engine
+    selection via magic comments. It is designed with the TexLab LSP server's
+    build functionality in mind, which at the time of this plugin's inception
+    had to be specified in init.lua/init.vim and could not be set on
+    a by-project basis."
+
+    This plugin should be combined with the TexLab LSP server, and it only
+    works on neovim.
+
 * [LaTeX-Box](https://github.com/LaTeX-Box-Team/LaTeX-Box)
 
     VimTeX currently has most of the features of LaTeX-Box, as well as
