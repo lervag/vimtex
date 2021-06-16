@@ -1633,7 +1633,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_grammar_textidote*
   This option is used to configure the `textidote` grammar and document checker,
-  see |vimtex-grammar-textidote|. It is a dictionary with the following keys 
+  see |vimtex-grammar-textidote|. It is a dictionary with the following keys
 
     jar~
       The path to `textidote.jar`. This key must be defined if you want to use
@@ -3929,7 +3929,7 @@ To enable automatic completion with |youcompleteme|, use the following options: 
 VimCompletesMe~
                                                           *vimtex-complete-vcm*
 A plugin that maps <tab> to trigger the built-in completion that is most
-suitable to the current contex.  The plugin is available here:
+suitable to the current context.  The plugin is available here:
 https://github.com/ajh17/VimCompletesMe.
 
 The following options may be used to enable completion with the <tab> trigger
