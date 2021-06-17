@@ -3695,11 +3695,11 @@ Note: If you want to change the default value of `TEXMFHOME` in your shell
 AUTOCOMPLETE                                             *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
-several good plugins that provide this: |coc-nvim|, |deoplete|, |neocomplete|, |ncm2|,
-|nvim-completion-manager| and |youcompleteme|.  Moreover, there is |VimCompletesMe|
-that overrides <tab> to trigger different built-in completions, such as the
-omni-completion by VimTeX, depending on the context. See below for
-descriptions on how to setup these with VimTeX.
+several good plugins that provide this: |coc-nvim|, |deoplete|, |neocomplete|,
+|ncm2|, |nvim-completion-manager|, |youcompleteme| and |nvim-compe|.
+Moreover, there is |VimCompletesMe| that overrides <tab> to trigger different
+built-in completions, such as the omni-completion by VimTeX, depending on the
+context. See below for descriptions on how to setup these with VimTeX.
 
 coc.nvim~
                                                      *vimtex-complete-coc.nvim*
@@ -3940,6 +3940,27 @@ for LaTeX documents with |VimCompletesMe| and VimTeX's omni completion function:
     autocmd FileType tex
         \ let b:vcm_omni_pattern = g:vimtex#re#neocomplete
   augroup END
+
+nvim-compe~
+                                                   *vimtex-complete-nvim-compe*
+|nvim-compe| is an auto-completion plugin for Neovim. It provides
+autocompletion for many completion sources, including omni-completion,
+making it easy to use with VimTeX.  The plugin is available here:
+https://github.com/hrsh7th/nvim-compe.
+
+Omni-completion can be enabled for TeX/LaTeX files by adding `omni` to the
+completion sources, and specifying the `tex` filetype. In Lua this looks like:
+>
+  require("compe").setup({
+      source = {
+          omni = {
+              filetypes = {'tex'},
+          },
+      },
+      -- the rest of your compe config...
+  })
+<
+
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
