@@ -63,6 +63,7 @@ CONTENTS                                                      *vimtex-contents*
       nvim-completion-manager                   |vimtex-complete-ncm|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
       VimCompletesMe                            |vimtex-complete-vcm|
+      nvim-compe                                |vimtex-complete-nvim-compe|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -3696,7 +3697,7 @@ AUTOCOMPLETE                                             *vimtex-complete-auto*
 
 Vim does not provide automatic completion by itself, but there exist at least
 several good plugins that provide this: |coc-nvim|, |deoplete|, |neocomplete|,
-|ncm2|, |nvim-completion-manager|, |youcompleteme| and |nvim-compe|.
+|ncm2|, |nvim-completion-manager|, |youcompleteme|, and |nvim-compe|.
 Moreover, there is |VimCompletesMe| that overrides <tab> to trigger different
 built-in completions, such as the omni-completion by VimTeX, depending on the
 context. See below for descriptions on how to setup these with VimTeX.
@@ -3943,14 +3944,15 @@ for LaTeX documents with |VimCompletesMe| and VimTeX's omni completion function:
 
 nvim-compe~
                                                    *vimtex-complete-nvim-compe*
-|nvim-compe| is an auto-completion plugin for Neovim. It provides
-autocompletion for many completion sources, including omni-completion,
-making it easy to use with VimTeX.  The plugin is available here:
+|nvim-compe| is an automatic completion plugin for Neovim. It has support for
+many different completion sources, including omni-completion, making it is
+easy to use with VimTeX. The plugin is available here:
 https://github.com/hrsh7th/nvim-compe.
 
-Omni-completion can be enabled for TeX/LaTeX files by adding `omni` to the
-completion sources, and specifying the `tex` filetype. In Lua this looks like:
->
+The omni-completion source can be enabled for TeX/LaTeX files by adding `omni`
+to the completion sources and specifying the `tex` filetype. For example, in
+Lua, it should look something like this: >
+
   require("compe").setup({
       source = {
           omni = {
@@ -3959,8 +3961,14 @@ completion sources, and specifying the `tex` filetype. In Lua this looks like:
       },
       -- the rest of your compe config...
   })
-<
 
+And in Vimscript, it should look something like this: >
+
+  let g:compe.source = {
+        \ 'omni': {
+        \  'filetypes': ['tex'],
+        \ }
+        \}
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
