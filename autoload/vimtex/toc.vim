@@ -97,8 +97,8 @@ function! s:toc.toggle() abort dict " {{{1
     call self.close()
   else
     call self.open()
-    if has_key(self, 'prev_winid')
-      call win_gotoid(self.prev_winid)
+    if has_key(self, 'winid_prev')
+      call win_gotoid(self.winid_prev)
     endif
   endif
 endfunction
@@ -112,18 +112,22 @@ function! s:toc.close() abort dict " {{{1
   endif
 
   if self.split_pos ==# 'full'
-    silent execute 'buffer' self.prev_bufnr
+    silent execute 'buffer' self.bufnr_prev
   else
     silent execute 'bwipeout' bufnr(self.name)
+  endif
+
+  if self.bufnr_alternate >= 0
+    let @# = self.bufnr_alternate
   endif
 endfunction
 
 " }}}1
 function! s:toc.goto() abort dict " {{{1
   if self.is_open()
-    let l:prev_winid = win_getid()
+    let l:winid_prev = win_getid()
     silent execute bufwinnr(bufnr(self.name)) . 'wincmd w'
-    let b:toc.prev_winid = l:prev_winid
+    let b:toc.winid_prev = l:winid_prev
   endif
 endfunction
 
@@ -205,6 +209,7 @@ endfunction
 "
 function! s:toc.create() abort dict " {{{1
   let l:bufnr = bufnr('')
+  let l:bufnr_alternate = bufnr('#')
   let l:winid = win_getid()
   let l:vimtex = get(b:, 'vimtex', {})
   let l:vimtex_syntax = get(b:, 'vimtex_syntax', {})
@@ -220,8 +225,9 @@ function! s:toc.create() abort dict " {{{1
           \ 'new' escape(self.name, ' ')
   endif
 
-  let self.prev_bufnr = l:bufnr
-  let self.prev_winid = l:winid
+  let self.bufnr_prev = l:bufnr
+  let self.bufnr_alternate = l:bufnr_alternate
+  let self.winid_prev = l:winid
   let b:toc = self
   let b:vimtex = l:vimtex
   let b:vimtex_syntax = l:vimtex_syntax
@@ -557,7 +563,7 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
   let toc_winnr = winnr()
 
   " Return to calling window
-  call win_gotoid(self.prev_winid)
+  call win_gotoid(self.winid_prev)
 
   " Get buffer number, add buffer if necessary
   let bnr = bufnr(a:entry.file)
@@ -601,8 +607,11 @@ function! s:toc.activate_entry(entry, close_after) abort dict "{{{1
   normal! zv
 
   " Keep or close toc window (based on options)
+  " Note: Ensure alternate buffer is restored
   if a:close_after && self.split_pos !=# 'full'
     call self.close()
+  elseif self.bufnr_alternate >= 0
+    let @# = self.bufnr_alternate
   endif
 
   " Allow user entry points through autocmd events
