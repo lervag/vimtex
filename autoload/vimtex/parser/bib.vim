@@ -288,7 +288,7 @@ function! s:get_key(body, head) abort " {{{1
   " Assumption: a:body is left trimmed and either empty or starts with a key.
   " Returns: The key and the remaining part of the entry body.
 
-  let l:matches = matchlist(a:body, '^\v([-_0-9a-zA-Z]+)\s*\=\s*', a:head)
+  let l:matches = matchlist(a:body, '^\v([-_:0-9a-zA-Z]+)\s*\=\s*', a:head)
   return empty(l:matches)
         \ ? ['', -1]
         \ : [tolower(l:matches[1]), a:head + strlen(l:matches[0])]
