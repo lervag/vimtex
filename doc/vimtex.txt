@@ -1629,6 +1629,19 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_fold_bib_max_key_width*
+  This option is used to specify a length to truncate identifiers (e.g.
+  `@article{Key}`) to, in the foldtext for bib files. The default of 0
+  indicates no truncation, i.e. VimTeX will parse the bib file to determine
+  the longest such identifier and align all foldtext titles such that they
+  come after the identifiers.
+
+  If you have a handful of cite keys that are exceptionally long, setting this
+  manually may be useful as it makes sure that there is some space for the
+  titles in the foldtext.
+
+  Default value: 0
+
 *g:vimtex_format_enabled*
   If enabled, VimTeX uses a custom |formatexpr| that should handle inline
   comments and environments. That is, if it is enabled, comments at end of
