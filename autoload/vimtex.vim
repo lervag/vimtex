@@ -100,8 +100,11 @@ function! s:init_buffer() abort " {{{1
           \]
 
     if g:vimtex_fold_bib_enabled
-      let b:vimtex_fold_bib_maxwidth=vimtex#fold#bib#get_max_key_width()
-      autocmd BufWrite * let b:vimtex_fold_bib_maxwidth=vimtex#fold#bib#get_max_key_width()
+      let b:vimtex_fold_bib_maxwidth = vimtex#fold#bib#get_max_key_width()
+      augroup vimtex_buffers
+        autocmd BufWrite <buffer>
+              \ let b:vimtex_fold_bib_maxwidth = vimtex#fold#bib#get_max_key_width()
+      augroup END
       setlocal foldmethod=syntax
       setlocal foldtext=vimtex#fold#bib#text()
     endif
