@@ -14,8 +14,11 @@ function! vimtex#fold#bib#text() abort " {{{1
     if !empty(l:entry.type) && !empty(l:entry.key)
       let l:foldtext = '@' . l:entry.type . '{' . l:entry.key . '}'
       let l:width = strdisplaywidth(l:foldtext)
-      " TODO: implement g:vimtex_fold_bib_max_key_width
-      let l:desired_width = max([b:vimtex_fold_bib_maxwidth, l:width]) + 2
+      if l:width > b:vimtex_fold_bib_maxwidth
+        let l:foldtext = printf('%.' . b:vimtex_fold_bib_maxwidth . 'S', l:foldtext)
+        let l:width = strdisplaywidth(l:foldtext)
+      endif
+      let l:desired_width = b:vimtex_fold_bib_maxwidth + 2
       let l:foldtext .= repeat(' ', l:desired_width - l:width)
 
       if has_key(l:entry, 'description') && !empty(l:entry.description)
