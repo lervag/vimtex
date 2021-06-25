@@ -92,8 +92,8 @@ function! vimtex#fold#bib#get_max_key_width() " {{{1
         \ {'get_description': v:false})
   " Extra 3 is for the @ symbol plus curly braces.
   call map(l:entries, {_, e -> 3
-        \ + strdisplaywidth(e.type)
-        \ + strdisplaywidth(e.key)})
+        \ + strdisplaywidth(get(e, 'type', ''))
+        \ + strdisplaywidth(get(e, 'key', ''))})
   return max(l:entries)
 endfunction
 
