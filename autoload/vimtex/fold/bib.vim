@@ -4,6 +4,56 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#fold#bib#level(lnum) abort " {{{1
+  " Handle blank lines
+  if getline(a:lnum) =~ '\v^\s*$'
+    if a:lnum == 1
+      return 0
+    else
+      let l:prev_foldlevel = vimtex#fold#bib#level(a:lnum - 1)
+      if l:prev_foldlevel == '0'
+        return 0
+      elseif l:prev_foldlevel == '>1'
+        let l:prev_line = getline(a:lnum - 1)
+        if s:count(l:prev_line, '{') == s:count(l:prev_line, '}')
+          return 0
+        else
+          return '='
+        endif
+      else
+        return '='
+      endif
+    endif
+  endif
+
+  " Search for the beginning of the entry
+  let l:firstline = a:lnum
+  while l:firstline >= 1
+    if getline(l:firstline) =~ '\v^\s*\@'
+      break
+    endif
+    let l:firstline -= 1
+  endwhile
+
+  if l:firstline == a:lnum
+    return '>1'
+  elseif l:firstline == 0   " beginning of entry wasn't found
+    return 0
+  endif
+
+  " Check if braces are closed by the current line
+  let l:text = join(map(range(l:firstline, a:lnum), 'getline(v:val)'))
+  if s:count(l:text, '{') == s:count(l:text, '}')
+    return '<1'
+  else
+    return '1'
+  endif
+
+  return 0
+endfunction
+
+" }}}1
+
 function! vimtex#fold#bib#text() abort " {{{1
   let l:bib_entries = vimtex#parser#bib#parse_cheap(v:foldstart, v:foldend, {})
   if len(l:bib_entries) != 1
@@ -45,6 +95,19 @@ function! vimtex#fold#bib#get_max_key_width() " {{{1
         \ + strdisplaywidth(e.type)
         \ + strdisplaywidth(e.key)})
   return max(l:entries)
+endfunction
+
+" }}}1
+
+function! s:count(container, item) abort " {{{1
+  " Necessary because in old Vim versions, count() does not work for strings
+  try
+    let l:count = count(a:container, a:item)
+  catch /E712/
+    let l:count = count(split(a:container, '\zs'), a:item)
+  endtry
+
+  return l:count
 endfunction
 
 " }}}1
