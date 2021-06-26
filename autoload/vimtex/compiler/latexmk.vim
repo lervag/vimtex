@@ -626,9 +626,11 @@ endfunction
 " Utility functions
 "
 function! s:wrap_option_appendcmd(name, value) abort " {{{1
+  " Do not use with $ in value. On linux, we use double quoted perl strings
+  " that interpolate.
   return has('win32')
-        \ ? ' -e "$' . a:name . ' .= '';' . a:value . '''"'
-        \ : ' -e ''$' . a:name . ' .= ";' . a:value . '"'''
+        \ ? ' -e "$' . a:name . ' = ($' . a:name . ' ? $' . a:name . ' . '' & '' : '''') . ''' . a:value . '''"'
+        \ : ' -e ''$' . a:name . ' = ($' . a:name . ' ? $' . a:name . ' . " ; " : "") . "' . a:value . '"'''
 endfunction
 
 "}}}1
