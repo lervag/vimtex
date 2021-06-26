@@ -263,7 +263,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
               \ 'failure_cmd' : 'vimtex_compiler_callback_failure',
               \})
           let l:func = 'echo ' . l:val
-          let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+          let l:cmd .= s:wrap_option_appendcmd(l:opt, l:func)
         endfor
       elseif empty(v:servername)
         call vimtex#log#warning('Can''t use callbacks with empty v:servername')
@@ -280,7 +280,7 @@ function! s:compiler.build_cmd() abort dict " {{{1
                 \ . vimtex#util#shellescape('""')
                 \ . ' --servername ' . vimtex#util#shellescape(v:servername)
                 \ . ' --remote-expr ' . l:callback
-          let l:cmd .= vimtex#compiler#latexmk#wrap_option(l:opt, l:func)
+          let l:cmd .= s:wrap_option_appendcmd(l:opt, l:func)
         endfor
       endif
     endif
