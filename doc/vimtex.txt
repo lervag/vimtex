@@ -476,8 +476,8 @@ Filetype plugin for bib files~
                                                        *vimtex-nf-ftplugin-bib*
   VimTeX is not a filetype plugin for bibliography (`.bib`) files. However,
   it does include a couple of minor things, such as setting the 'comments' and
-  'commentstring' options and simple indentation and fold text expressions,
-  see |g:vimtex_indent_bib_enabled| and |g:vimtex_fold_bib_enabled|.
+  'commentstring' options and simple indentation and folding; see
+  |g:vimtex_indent_bib_enabled| and |g:vimtex_fold_bib_enabled| respectively.
 
   Here are a couple of other related Vim plugins and external tools that might
   be of interest:
@@ -3990,6 +3990,7 @@ And in Vimscript, it should look something like this: >
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
+                                                           *vimtex-bib-folding*
 
 VimTeX can fold documents according to the LaTeX structure (part, chapter,
 section and subsection).  Folding in tex files is turned off by default, but
@@ -4016,9 +4017,8 @@ In order to get slightly cleaner fold text, I recommend setting the global
 
 Note: Remember to include the whitespace after backslash!
 
-VimTeX also provides basic folding in .bib files, utilising the built-in
-`foldmethod=syntax` and a custom |foldtext| function. This is enabled by
-default.
+In addition, VimTeX also provides basic folding in .bib files, which is
+enabled by default. This can be turned on/off via |g:vimtex_fold_bib_enabled|.
 
 Associated settings:
 * |g:vimtex_fold_enabled|
@@ -4027,6 +4027,7 @@ Associated settings:
 * |g:vimtex_fold_types|
 * |g:vimtex_fold_types_defaults|
 * |g:vimtex_fold_bib_enabled|
+* |g:vimtex_fold_bib_max_key_width|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*
