@@ -93,9 +93,8 @@ function! s:actions.create(entry) abort dict " {{{1
     call add(l:new.menu, {'name': 'Open doi', 'func': 'open_doi'})
   endif
   
-  let s:is_arxiv = (has_key(a:entry, 'archiveprefix') && a:entry.archiveprefix == 'arXiv' || a:entry.eprint[0:6] == 'arXiv')
-  if (has_key(a:entry, 'eprint') && s:is_arxiv)
-    call add(l:new.menu, {'name': 'Open arXiv', 'func': 'open_arxiv'})
+  if (has_key(a:entry, 'eprint') && (has_key(a:entry, 'archiveprefix') && a:entry.archiveprefix == 'arXiv' || a:entry.eprint[0:4] == 'arXiv'))
+      call add(l:new.menu, {'name': 'Open arXiv', 'func': 'open_arxiv'})
   endif
 
   if has_key(a:entry, 'url')
