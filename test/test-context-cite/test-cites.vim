@@ -22,8 +22,8 @@ call assert_equal('JiM2020', vimtex#context#get(11, 39).handler.selected)
 
 " Check that arxiv handler is available
 call assert_equal('Open arXiv',
-      \ vimtex#context#get(14, 14).handler.get_actions().menu[3])
+      \ vimtex#context#get(14, 14).handler.get_actions().menu[3].name)
 call assert_equal('Open arXiv',
-      \ vimtex#context#get(14, 39).handler.get_actions().menu[2])
+      \ vimtex#context#get(14, 39).handler.get_actions().menu[2].name)
 
 call vimtex#test#finished()
