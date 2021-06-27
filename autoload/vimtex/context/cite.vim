@@ -92,6 +92,11 @@ function! s:actions.create(entry) abort dict " {{{1
   if has_key(a:entry, 'doi')
     call add(l:new.menu, {'name': 'Open doi', 'func': 'open_doi'})
   endif
+  
+  let s:is_arxiv = (has_key(a:entry, 'archiveprefix') && a:entry.archiveprefix == 'arXiv' || a:entry.eprint[0:6] == 'arXiv')
+  if (has_key(a:entry, 'eprint') && s:is_arxiv)
+    call add(l:new.menu, {'name': 'Open arXiv', 'func': 'open_arxiv'})
+  endif
 
   if has_key(a:entry, 'url')
     call add(l:new.menu, {'name': 'Open url', 'func': 'open_url'})
@@ -164,6 +169,11 @@ function! s:actions.open_pdf() abort dict " {{{1
   call vimtex#process#start(
         \ g:vimtex_context_pdf_viewer
         \ . ' ' . vimtex#util#shellescape(l:file))
+endfunction
+
+" }}}1
+function! s:actions.open_arxiv() abort dict " {{{1
+  call vimtex#util#www('http://arxiv.org/abs/' . self.entry.eprint)
 endfunction
 
 " }}}1
