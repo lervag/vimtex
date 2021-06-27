@@ -92,9 +92,12 @@ function! s:actions.create(entry) abort dict " {{{1
   if has_key(a:entry, 'doi')
     call add(l:new.menu, {'name': 'Open doi', 'func': 'open_doi'})
   endif
-  
-  if (has_key(a:entry, 'eprint') && (has_key(a:entry, 'archiveprefix') && a:entry.archiveprefix == 'arXiv' || a:entry.eprint[0:4] == 'arXiv'))
-      call add(l:new.menu, {'name': 'Open arXiv', 'func': 'open_arxiv'})
+
+  if has_key(a:entry, 'eprint')
+        \ && (a:entry.eprint[0:4] ==# 'arXiv'
+        \     || (has_key(a:entry, 'archiveprefix')
+        \         && a:entry.archiveprefix ==# 'arXiv'))
+    call add(l:new.menu, {'name': 'Open arXiv', 'func': 'open_arxiv'})
   endif
 
   if has_key(a:entry, 'url')
@@ -172,7 +175,8 @@ endfunction
 
 " }}}1
 function! s:actions.open_arxiv() abort dict " {{{1
-  call vimtex#util#www('http://arxiv.org/abs/' . self.entry.eprint)
+  let l:id = matchstr(self.entry.eprint, '\v^(arXiv:)?\zs.*')
+  call vimtex#util#www('https://arxiv.org/abs/' . l:id)
 endfunction
 
 " }}}1
