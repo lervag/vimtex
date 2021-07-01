@@ -19,47 +19,42 @@ endfunction
 
 function! vimtex#fold#bib#level(lnum) abort " {{{1
   " Handle blank lines
-  if getline(a:lnum) =~ '\v^\s*$'
-    if a:lnum == 1
+  if empty(trim(getline(a:lnum)))
+    let l:prev_level = vimtex#fold#bib#level(a:lnum - 1)
+
+    if l:prev_level == '<1' || l:prev_level == 0
       return 0
-    else
-      let l:prev_foldlevel = vimtex#fold#bib#level(a:lnum - 1)
-      if l:prev_foldlevel == '0'
+    elseif l:prev_level == '>1'
+      " Check if previous line is a standalone entry
+      let l:prev_line = getline(a:lnum - 1)
+      if trim(l:prev_line)[0] == '@' 
+            \ && s:count(l:prev_line, '{') == s:count(l:prev_line, '}')
         return 0
-      elseif l:prev_foldlevel == '>1'
-        let l:prev_line = getline(a:lnum - 1)
-        if s:count(l:prev_line, '{') == s:count(l:prev_line, '}')
-          return 0
-        else
-          return '='
-        endif
-      else
-        return '='
       endif
     endif
+
+    return 1
   endif
 
   " Search for the beginning of the entry
-  let l:firstline = a:lnum
-  while l:firstline >= 1
-    if getline(l:firstline) =~ '\v^\s*\@'
-      break
-    endif
-    let l:firstline -= 1
-  endwhile
+  let l:curpos = getcurpos()
+  call cursor(a:lnum, 0)
+  let l:firstline = search('\v^\s*\@', 'bcnW')
+  call setpos('.', l:curpos)
 
   if l:firstline == a:lnum
     return '>1'
-  elseif l:firstline == 0   " beginning of entry wasn't found
+  elseif l:firstline == 0
+    " Beginning of entry wasn't found
     return 0
   endif
 
   " Check if braces are closed by the current line
-  let l:text = join(map(range(l:firstline, a:lnum), 'getline(v:val)'))
+  let l:text = join(getline(l:firstline, a:lnum))
   if s:count(l:text, '{') == s:count(l:text, '}')
     return '<1'
   else
-    return '1'
+    return 1
   endif
 
   return 0
