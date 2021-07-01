@@ -4,6 +4,19 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#fold#bib#init() abort " {{{1
+  let b:vimtex_fold_bib_maxwidth = s:get_max_key_width()
+  augroup vimtex_buffers
+    autocmd BufWrite <buffer>
+          \ let b:vimtex_fold_bib_maxwidth = s:get_max_key_width()
+  augroup END
+  setlocal foldmethod=expr
+  setlocal foldexpr=vimtex#fold#bib#level(v:lnum)
+  setlocal foldtext=vimtex#fold#bib#text()
+endfunction
+
+" }}}1
+
 function! vimtex#fold#bib#level(lnum) abort " {{{1
   " Handle blank lines
   if getline(a:lnum) =~ '\v^\s*$'
@@ -83,7 +96,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#fold#bib#get_max_key_width() " {{{1
+function! s:get_max_key_width() " {{{1
   if g:vimtex_fold_bib_max_key_width > 0
     return g:vimtex_fold_bib_max_key_width
   endif
