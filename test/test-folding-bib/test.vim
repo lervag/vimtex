@@ -43,7 +43,7 @@ call assert_equal(-1, foldclosed(104))
 call assert_equal(-1, foldclosed(105))
 
 " Test foldtext
-call assert_equal(28, vimtex#fold#bib#get_max_key_width())
+call assert_equal(28, b:vimtex_fold_bib_maxwidth)
 call assert_equal('@book{Ernst1987}              Principles of Nuclear Magnetic Resonance in One and Two Dimensions', foldtextresult(2))
 call assert_equal('@article{Kupce2021NRMP}       Parallel nuclear magnetic resonance spectroscopy', foldtextresult(13))
 call assert_equal('@set{ultrafast}               Frydman2002PNASUSA, Frydman2003JACS', foldtextresult(44))
