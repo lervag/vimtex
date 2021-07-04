@@ -476,8 +476,8 @@ Filetype plugin for bib files~
                                                        *vimtex-nf-ftplugin-bib*
   VimTeX is not a filetype plugin for bibliography (`.bib`) files. However,
   it does include a couple of minor things, such as setting the 'comments' and
-  'commentstring' options and a simple indentation expression, see
-  |g:vimtex_indent_bib_enabled|.
+  'commentstring' options and simple indentation and folding; see
+  |g:vimtex_indent_bib_enabled| and |g:vimtex_fold_bib_enabled| respectively.
 
   Here are a couple of other related Vim plugins and external tools that might
   be of interest:
@@ -1623,6 +1623,24 @@ OPTIONS                                                        *vimtex-options*
           \   ],
           \ },
           \}
+
+*g:vimtex_fold_bib_enabled*
+  Use this option to enable/disable folding in .bib files.
+
+  Default value: 1
+
+*g:vimtex_fold_bib_max_key_width*
+  This option is used to specify a length to truncate identifiers (e.g.
+  `@article{Key}`) to, in the foldtext for bib files. The default of 0
+  indicates no truncation, i.e. VimTeX will parse the bib file to determine
+  the longest such identifier and align all foldtext titles such that they
+  come after the identifiers.
+
+  If you have a handful of cite keys that are exceptionally long, setting this
+  manually may be useful as it makes sure that there is some space for the
+  titles in the foldtext.
+
+  Default value: 0
 
 *g:vimtex_format_enabled*
   If enabled, VimTeX uses a custom |formatexpr| that should handle inline
@@ -3972,11 +3990,12 @@ And in Vimscript, it should look something like this: >
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
+                                                           *vimtex-bib-folding*
 
 VimTeX can fold documents according to the LaTeX structure (part, chapter,
-section and subsection).  Folding is turned off by default, but it can be
-enabled if desired, either through the option |g:vimtex_fold_enabled|, or
-manually with >
+section and subsection).  Folding in tex files is turned off by default, but
+can be enabled if desired, either through the option |g:vimtex_fold_enabled|,
+or manually with >
 
   set foldmethod=expr
   set foldexpr=vimtex#fold#level(v:lnum)
@@ -3998,12 +4017,17 @@ In order to get slightly cleaner fold text, I recommend setting the global
 
 Note: Remember to include the whitespace after backslash!
 
+In addition, VimTeX also provides basic folding in .bib files, which is
+enabled by default. This can be turned on/off via |g:vimtex_fold_bib_enabled|.
+
 Associated settings:
 * |g:vimtex_fold_enabled|
 * |g:vimtex_fold_manual|
 * |g:vimtex_fold_levelmarker|
 * |g:vimtex_fold_types|
 * |g:vimtex_fold_types_defaults|
+* |g:vimtex_fold_bib_enabled|
+* |g:vimtex_fold_bib_max_key_width|
 
 ==============================================================================
 INDENTATION                                                     *vimtex-indent*

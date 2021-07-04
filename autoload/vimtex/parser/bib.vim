@@ -22,6 +22,74 @@ endfunction
 
 " }}}1
 
+function! vimtex#parser#bib#parse_cheap(start_line, end_line, opts) abort " {{{1
+  " Quick and dirty parsing with vim, used for bib foldtext generation.
+  let l:get_description = get(a:opts, 'get_description', v:true)
+  let l:entries = []
+  let l:firstlines = filter(range(a:start_line, a:end_line),
+        \ 'trim(getline(v:val))[0] == "@"')
+  let l:total_entries = len(l:firstlines)
+  let l:entry_lines = map(l:firstlines, {idx, val -> [val,
+        \ idx == l:total_entries - 1
+        \  ? a:end_line
+        \  : l:firstlines[idx + 1] - 1
+        \ ]})
+
+  let l:n = 0
+  while l:n < l:total_entries
+    let l:current = {}
+    let l:firstline = l:entry_lines[l:n][0]
+    let l:lastline = l:entry_lines[l:n][1]
+
+    let l:lnum = l:firstline
+    let l:entry_info = getline(l:lnum)
+    while l:lnum <= l:lastline
+      let l:type_key_match = matchlist(l:entry_info,
+            \ '\v\@\s*(\a+)\s*\{\s*(\S+)\s*,')
+      if empty(l:type_key_match)
+        " Add the next line into the text to be matched and try again
+        let l:entry_info .= getline(l:lnum + 1)
+        let l:lnum += 1
+        continue
+      else
+        let l:current.type = l:type_key_match[1]
+        let l:current.key = l:type_key_match[2]
+        break
+      endif
+    endwhile
+
+    if empty(l:type_key_match)
+      " This will happen e.g. with  @string{ foo = Mrs. Foo }
+      let l:n += 1
+      continue
+    endif
+
+    if l:get_description
+      " The description for a @set is the 'entryset'; for all other entry
+      " types it's the 'title'.
+      let l:description_pattern = l:current.type == 'set' ? 
+            \ '\v^\s*entryset\s*\=\s*(\{.+\}|\".+\")\s*,?' :
+            \ '\v^\s*title\s*\=\s*(\{.+\}|\".+\")\s*,?'
+      while l:lnum <= l:lastline
+        let l:description_match = matchlist(getline(l:lnum), l:description_pattern)
+        if l:description_match != []
+          " Remove surrounding braces or quotes
+          let l:current.description = l:description_match[1][1:-2]
+          break
+        else
+          let l:lnum += 1
+        endif
+      endwhile
+    endif
+
+    call add(l:entries, l:current)
+    let l:n += 1
+  endwhile
+
+  return l:entries
+endfunction
+
+" }}}1
 
 function! s:parse_with_bibtex(file) abort " {{{1
   call s:parse_with_bibtex_init()
