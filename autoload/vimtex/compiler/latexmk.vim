@@ -626,13 +626,15 @@ endfunction
 " Utility functions
 "
 function! s:wrap_option_appendcmd(name, value) abort " {{{1
-  " Do not use with $ in value. On linux, we use double quoted perl strings
-  " that interpolate.
+  " Note: On Linux, we use double quoted perl strings; these interpolate
+  "       variables. One should therefore NOT pass values that contain `$`.
   let l:win_cmd_sep = has('nvim') ? '^&' : '&'
-  let l:common = a:name . ' = ($' . a:name . ' ? $' . a:name
+  let l:common = printf('$%s = ($%s ? $%s', a:name, a:name, a:name)
   return has('win32')
-        \ ? ' -e "$' . l:common . ' . '' ' . l:win_cmd_sep . ' '' : '''') . ''' . a:value . '''"'
-        \ : ' -e ''$' . l:common . ' . " ; " : "") . "' . a:value . '"'''
+        \ ? printf(' -e "%s . '' %s '' : '''') . ''%s''"',
+        \          l:common, l:win_cmd_sep, a:value)
+        \ : printf(' -e ''%s . " ; " : "") . "%s"''',
+        \          l:common, a:value)
 endfunction
 
 "}}}1
