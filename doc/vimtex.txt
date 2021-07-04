@@ -474,10 +474,10 @@ Formatting~
 
 Filetype plugin for bib files~
                                                        *vimtex-nf-ftplugin-bib*
-  VimTeX is not a filetype plugin for bibliography (`.bib`) files. However,
-  it does include a couple of minor things, such as setting the 'comments' and
-  'commentstring' options and simple indentation and folding; see
-  |g:vimtex_indent_bib_enabled| and |g:vimtex_fold_bib_enabled| respectively.
+  VimTeX is not a full filetype plugin for bibliography (`.bib`) files. However,
+  it does alter the 'comments' and 'commentstring' options and provide basic
+  indentation and folding; see |g:vimtex_indent_bib_enabled| and
+  |g:vimtex_fold_bib_enabled|, respectively.
 
   Here are a couple of other related Vim plugins and external tools that might
   be of interest:
@@ -4017,8 +4017,8 @@ In order to get slightly cleaner fold text, I recommend setting the global
 
 Note: Remember to include the whitespace after backslash!
 
-In addition, VimTeX also provides basic folding in .bib files, which is
-enabled by default. This can be turned on/off via |g:vimtex_fold_bib_enabled|.
+In addition, VimTeX also provides basic folding in .bib files. It is
+enabled by default, but can be turned off with |g:vimtex_fold_bib_enabled|.
 
 Associated settings:
 * |g:vimtex_fold_enabled|

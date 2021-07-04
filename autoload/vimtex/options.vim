@@ -59,11 +59,12 @@ function! vimtex#options#init() abort " {{{1
 
   if &diff
     let g:vimtex_fold_enabled = 0
+    let g:vimtex_fold_bib_enabled = 0
   else
     call s:init_option('vimtex_fold_enabled', 0)
     call s:init_option('vimtex_fold_bib_enabled', 1)
-    call s:init_option('vimtex_fold_bib_max_key_width', 0)
   endif
+  call s:init_option('vimtex_fold_bib_max_key_width', 0)
   call s:init_option('vimtex_fold_manual', 0)
   call s:init_option('vimtex_fold_levelmarker', '*')
   call s:init_option('vimtex_fold_types', {})

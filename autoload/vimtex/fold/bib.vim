@@ -6,10 +6,12 @@
 
 function! vimtex#fold#bib#init() abort " {{{1
   let b:vimtex_fold_bib_maxwidth = s:get_max_key_width()
+
   augroup vimtex_buffers
     autocmd BufWrite <buffer>
           \ let b:vimtex_fold_bib_maxwidth = s:get_max_key_width()
   augroup END
+
   setlocal foldmethod=expr
   setlocal foldexpr=vimtex#fold#bib#level(v:lnum)
   setlocal foldtext=vimtex#fold#bib#text()
@@ -24,10 +26,12 @@ function! vimtex#fold#bib#level(lnum) abort " {{{1
 
     if l:prev_level == '<1' || l:prev_level == 0
       return 0
-    elseif l:prev_level == '>1'
-      " Check if previous line is a standalone entry
-      let l:prev_line = getline(a:lnum - 1)
-      if trim(l:prev_line)[0] == '@' 
+    endif
+
+    " Check if previous line is a standalone entry
+    if l:prev_level == '>1'
+      let l:prev_line = trim(getline(a:lnum - 1))
+      if l:prev_line[0] == '@'
             \ && s:count(l:prev_line, '{') == s:count(l:prev_line, '}')
         return 0
       endif
@@ -42,51 +46,42 @@ function! vimtex#fold#bib#level(lnum) abort " {{{1
   let l:firstline = search('\v^\s*\@', 'bcnW')
   call setpos('.', l:curpos)
 
-  if l:firstline == a:lnum
-    return '>1'
-  elseif l:firstline == 0
-    " Beginning of entry wasn't found
-    return 0
-  endif
+  " Check if we're at fold start
+  if l:firstline == a:lnum | return '>1' | endif
+
+  " Beginning of entry wasn't found
+  if l:firstline == 0 | return 0 | endif
 
   " Check if braces are closed by the current line
   let l:text = join(getline(l:firstline, a:lnum))
-  if s:count(l:text, '{') == s:count(l:text, '}')
-    return '<1'
-  else
-    return 1
-  endif
-
-  return 0
+  return s:count(l:text, '{') == s:count(l:text, '}') ? '<1' : 1
 endfunction
 
 " }}}1
-
 function! vimtex#fold#bib#text() abort " {{{1
   let l:bib_entries = vimtex#parser#bib#parse_cheap(v:foldstart, v:foldend, {})
-  if len(l:bib_entries) != 1
+  if len(l:bib_entries) != 1 | return foldtext() | endif
+
+  let l:entry = l:bib_entries[0]
+  if empty(l:entry.type) || empty(l:entry.key)
     return foldtext()
-  else
-    let l:entry = l:bib_entries[0]
-
-    if !empty(l:entry.type) && !empty(l:entry.key)
-      let l:foldtext = '@' . l:entry.type . '{' . l:entry.key . '}'
-      let l:width = strdisplaywidth(l:foldtext)
-      if l:width > b:vimtex_fold_bib_maxwidth
-        let l:foldtext = printf('%.' . b:vimtex_fold_bib_maxwidth . 'S', l:foldtext)
-        let l:width = strdisplaywidth(l:foldtext)
-      endif
-      let l:desired_width = b:vimtex_fold_bib_maxwidth + 2
-      let l:foldtext .= repeat(' ', l:desired_width - l:width)
-
-      if has_key(l:entry, 'description') && !empty(l:entry.description)
-        let l:foldtext .= l:entry.description
-      endif
-      return l:foldtext
-    else
-      return foldtext()
-    endif
   endif
+
+  let l:foldtext = '@' . l:entry.type . '{' . l:entry.key . '}'
+
+  let l:width = strdisplaywidth(l:foldtext)
+  if l:width > b:vimtex_fold_bib_maxwidth
+    let l:foldtext = printf('%.' . b:vimtex_fold_bib_maxwidth . 'S', l:foldtext)
+    let l:width = strdisplaywidth(l:foldtext)
+  endif
+  let l:desired_width = b:vimtex_fold_bib_maxwidth + 2
+  let l:foldtext .= repeat(' ', l:desired_width - l:width)
+
+  if has_key(l:entry, 'description') && !empty(l:entry.description)
+    let l:foldtext .= l:entry.description
+  endif
+
+  return l:foldtext
 endfunction
 
 " }}}1
@@ -98,18 +93,17 @@ function! s:get_max_key_width() " {{{1
 
   let l:entries = vimtex#parser#bib#parse_cheap(1, line('$'),
         \ {'get_description': v:false})
-  if empty(l:entries)
-    return 32
-  endif
+  if empty(l:entries) | return 32 | endif
+
   " Extra 3 is for the @ symbol plus curly braces.
   call map(l:entries, {_, e -> 3
         \ + strdisplaywidth(get(e, 'type', ''))
         \ + strdisplaywidth(get(e, 'key', ''))})
+
   return max(l:entries)
 endfunction
 
 " }}}1
-
 function! s:count(container, item) abort " {{{1
   " Necessary because in old Vim versions, count() does not work for strings
   try

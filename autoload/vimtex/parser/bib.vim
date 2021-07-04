@@ -23,11 +23,15 @@ endfunction
 " }}}1
 
 function! vimtex#parser#bib#parse_cheap(start_line, end_line, opts) abort " {{{1
-  " Quick and dirty parsing with vim, used for bib foldtext generation.
+  " This function implements a quick and dirty bib parser in Vimscript. It does
+  " not parse all keys, just the type, the key, and the title/entryset. It is
+  " used e.g. by wiki#fold#bib#foldtext().
+
   let l:get_description = get(a:opts, 'get_description', v:true)
   let l:entries = []
-  let l:firstlines = filter(range(a:start_line, a:end_line),
-        \ 'trim(getline(v:val))[0] == "@"')
+  let l:firstlines = filter(
+        \ range(a:start_line, a:end_line),
+        \ {_, i -> trim(getline(i))[0] == "@"})
   let l:total_entries = len(l:firstlines)
   let l:entry_lines = map(l:firstlines, {idx, val -> [val,
         \ idx == l:total_entries - 1
@@ -67,11 +71,12 @@ function! vimtex#parser#bib#parse_cheap(start_line, end_line, opts) abort " {{{1
     if l:get_description
       " The description for a @set is the 'entryset'; for all other entry
       " types it's the 'title'.
-      let l:description_pattern = l:current.type == 'set' ? 
+      let l:description_pattern = l:current.type == 'set' ?
             \ '\v^\s*entryset\s*\=\s*(\{.+\}|\".+\")\s*,?' :
             \ '\v^\s*title\s*\=\s*(\{.+\}|\".+\")\s*,?'
       while l:lnum <= l:lastline
-        let l:description_match = matchlist(getline(l:lnum), l:description_pattern)
+        let l:description_match = matchlist(
+              \ getline(l:lnum), l:description_pattern)
         if l:description_match != []
           " Remove surrounding braces or quotes
           let l:current.description = l:description_match[1][1:-2]
