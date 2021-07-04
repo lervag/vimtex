@@ -5162,8 +5162,8 @@ A: First, see and follow the guidelines in |vimtex_viewer_sumatrapdf|. Forward
    SumatraPDF that depends on which version of Vim you are using. The
    following advice is for `neovim`; things should be simpler for Vim.
 
-   1. First, ensure that `neovim-remote` is installed (e.g. `pip install
-      neovim-remote`).
+   1. First, ensure that `neovim-remote` is installed (e.g.
+      `pip install neovim-remote`).
 
    2. Add some configuration to your vimrc file to detect the servername: >
 
@@ -5793,4 +5793,4 @@ named vim-latex, which conflicted with Vim LaTeX-Suite which is also known as
 vim-latex.
 
 ==============================================================================
- vim:tw=78:ts=8:ft=help:norl:
+ vim:tw=78:ts=8:ft=help:norl:fdm=marker:
