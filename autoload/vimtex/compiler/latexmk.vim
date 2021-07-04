@@ -628,8 +628,9 @@ endfunction
 function! s:wrap_option_appendcmd(name, value) abort " {{{1
   " Do not use with $ in value. On linux, we use double quoted perl strings
   " that interpolate.
+  let l:win_cmd_sep = has('nvim') ? '^&' : '&'
   return has('win32')
-        \ ? ' -e "$' . a:name . ' = ($' . a:name . ' ? $' . a:name . ' . '' & '' : '''') . ''' . a:value . '''"'
+        \ ? ' -e "$' . a:name . ' = ($' . a:name . ' ? $' . a:name . ' . '' ' . l:win_cmd_sep . ' '' : '''') . ''' . a:value . '''"'
         \ : ' -e ''$' . a:name . ' = ($' . a:name . ' ? $' . a:name . ' . " ; " : "") . "' . a:value . '"'''
 endfunction
 
