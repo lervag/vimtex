@@ -22,22 +22,10 @@ endfunction
 function! vimtex#fold#bib#level(lnum) abort " {{{1
   " Handle blank lines
   if empty(trim(getline(a:lnum)))
+    if a:lnum == 1 | return 0 | endif
+
     let l:prev_level = vimtex#fold#bib#level(a:lnum - 1)
-
-    if l:prev_level == '<1' || l:prev_level == 0
-      return 0
-    endif
-
-    " Check if previous line is a standalone entry
-    if l:prev_level == '>1'
-      let l:prev_line = trim(getline(a:lnum - 1))
-      if l:prev_line[0] == '@'
-            \ && s:count(l:prev_line, '{') == s:count(l:prev_line, '}')
-        return 0
-      endif
-    endif
-
-    return 1
+    return l:prev_level == '<1' ? 0 : l:prev_level
   endif
 
   " Search for the beginning of the entry
@@ -47,14 +35,18 @@ function! vimtex#fold#bib#level(lnum) abort " {{{1
   call setpos('.', l:curpos)
 
   " Check if we're at fold start
-  if l:firstline == a:lnum | return '>1' | endif
+  let l:text = join(getline(l:firstline, a:lnum))
+  let l:count_open = s:count(l:text, '{')
+  let l:braces_balanced = l:count_open == s:count(l:text, '}')
+  if l:firstline == a:lnum
+    return l:count_open > 0 && l:braces_balanced ? 0 : '>1'
+  endif
 
   " Beginning of entry wasn't found
   if l:firstline == 0 | return 0 | endif
 
   " Check if braces are closed by the current line
-  let l:text = join(getline(l:firstline, a:lnum))
-  return s:count(l:text, '{') == s:count(l:text, '}') ? '<1' : 1
+  return l:braces_balanced ? '<1' : 1
 endfunction
 
 " }}}1
