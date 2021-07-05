@@ -1,12 +1,19 @@
 set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
-let g:vimtex_fold_bib_enabled = 1
 
-if empty($INMAKE) | finish | endif
+set fillchars=fold:\ 
+set number
+set foldcolumn=4
+
+nnoremap q :qall!<cr>
+
+let g:vimtex_fold_bib_enabled = 1
 
 silent edit test.bib
 silent normal zM
+
+if empty($INMAKE) | finish | endif
 
 " Test foldexpr -- 'normal' cases
 call assert_equal(-1, foldclosed(1))
