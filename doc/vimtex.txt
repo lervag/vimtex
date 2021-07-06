@@ -1627,7 +1627,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_fold_bib_enabled*
   Use this option to enable/disable folding in .bib files.
 
-  Default value: 1
+  Default value: 0
 
 *g:vimtex_fold_bib_max_key_width*
   This option is used to specify a length to truncate identifiers (e.g.
@@ -4018,7 +4018,7 @@ In order to get slightly cleaner fold text, I recommend setting the global
 Note: Remember to include the whitespace after backslash!
 
 In addition, VimTeX also provides basic folding in .bib files. It is
-enabled by default, but can be turned off with |g:vimtex_fold_bib_enabled|.
+disabled by default, but can be turned on with |g:vimtex_fold_bib_enabled|.
 
 Associated settings:
 * |g:vimtex_fold_enabled|
