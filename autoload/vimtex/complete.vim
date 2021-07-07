@@ -183,13 +183,18 @@ endfunction
 function! s:completer_bib.convert(entry) dict abort " {{{2
   let cand = {'word': a:entry['key']}
 
-  let auth = get(a:entry, 'author', 'Unknown')[:20]
+  let auth = get(a:entry, 'author', 'Unknown')
   let auth = substitute(auth, '\~', ' ', 'g')
+  let auth_all = g:vimtex_complete_bib.auth_len > 0
+        \ ? strcharpart(auth, 0, g:vimtex_complete_bib.auth_len)
+        \ : auth
+  let auth_short = substitute(auth, ',.*\ze', ' et al.', '')
+
   let substitutes = {
         \ '@key' : a:entry['key'],
         \ '@type' : empty(a:entry['type']) ? '-' : a:entry['type'],
-        \ '@author_all' : auth,
-        \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
+        \ '@author_all' : auth_all,
+        \ '@author_short' : auth_short,
         \ '@year' : get(a:entry, 'year', get(a:entry, 'date', '?')),
         \ '@title' : get(a:entry, 'title', 'No title'),
         \}

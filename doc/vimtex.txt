@@ -1151,10 +1151,17 @@ OPTIONS                                                        *vimtex-options*
       @type          Type of entry
 
     If the key is set to an empty string, then the `menu` entry is not added
-    to the completion canidates.
+    to the completion canidates. Since the author list can be large, the
+    @author_all is truncated to 20 characters. This can be modified with the
+    `auth_len` key (see below).
 
     Note: If you change this option, you should also clear the related cache
     files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
+
+  auth_len~
+    Default value: 20
+    Truncation length for author list with the @author_all format key in the
+    `menu_fmt` string.
 
   abbr_fmt~
     Default value: `''`

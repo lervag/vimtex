@@ -29,6 +29,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_complete_ignore_case', &ignorecase)
   call s:init_option('vimtex_complete_smart_case', &smartcase)
   call s:init_option('vimtex_complete_bib', {
+        \ 'auth_len': 20,
         \ 'simple': 0,
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
         \ 'abbr_fmt': '',
