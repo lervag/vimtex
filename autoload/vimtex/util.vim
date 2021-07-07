@@ -88,14 +88,14 @@ function! vimtex#util#tex2unicode(line) abort " {{{1
   endfor
 
   " Remove the \IeC macro
-  let l:line = substitute(l:line, '\\IeC\s*{\s*\([^}]\{-}\)\s*}', '\1', 'g')
+  let l:line = substitute(l:line, '\C\\IeC\s*{\s*\([^}]\{-}\)\s*}', '\1', 'g')
 
   return l:line
 endfunction
 
 "
 " Define list for converting compositions like \"u to unicode ű
-let s:tex2unicode_list = [
+let s:tex2unicode_list = map([
       \ ['\\''A', 'Á'],
       \ ['\\`A',  'À'],
       \ ['\\^A',  'À'],
@@ -154,7 +154,7 @@ let s:tex2unicode_list = [
       \ ['\\''n', 'ń'],
       \ ['\\`n',  'ǹ'],
       \ ['\\\~n', 'ñ'],
-      \]
+      \], {_, x -> ['\C' . x[0], x[1]]})
 
 " }}}1
 function! vimtex#util#tex2tree(str) abort " {{{1
