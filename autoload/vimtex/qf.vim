@@ -100,7 +100,7 @@ endfunction
 function! vimtex#qf#setqflist(...) abort " {{{1
   if !exists('b:vimtex.qf.addqflist') | return | endif
 
-  if a:0 > 0
+  if a:0 > 0 && !empty(a:1)
     let l:tex = a:1
     let l:log = fnamemodify(l:tex, ':r') . '.log'
     let l:blg = fnamemodify(l:tex, ':r') . '.blg'
