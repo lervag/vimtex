@@ -3,10 +3,18 @@ MYVIM ?= nvim --headless
 INMAKE := 1
 export INMAKE
 
-.PHONY: test
+TESTS := $(wildcard test*.vim)
+TESTS := $(filter-out test-backend,$(TESTS:.vim=))
 
-test: latexrun
-	@PATH=$$PATH:. chronic $(MYVIM) -u test.vim
+.PHONY: test $(TESTS)
+
+test: test-backend $(TESTS)
+
+$(TESTS):
+	@$(MYVIM) -u $@.vim
+
+test-backend: latexrun
+	@PATH=$$PATH:. chronic $(MYVIM) -u $@.vim
 	@rm -f minimal.*
 	@rm -f pdflatex*.fls
 	@rm -f .latexrun.db.lock
