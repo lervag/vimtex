@@ -638,7 +638,7 @@ endfunction
 function! s:vimtex.parse_documentclass() abort dict " {{{1
   let self.documentclass = ''
   for l:line in self.preamble
-    let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\w*\ze}')
+    let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\S\+\ze}')
     if !empty(l:class)
       let self.documentclass = l:class
       break
