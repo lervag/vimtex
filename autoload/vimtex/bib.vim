@@ -81,8 +81,18 @@ function! s:files_manual() abort " {{{1
             \ {_, x -> matchstr(x, s:bib_re)})
         let l:files = []
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
+        let l:entries = split(l:entry, ',')
 
-        for l:f in split(l:entry, ',')
+        if l:entry =~# '{'
+          " Biber itself breaks with multiple brace patterns so we
+          " won't try to separate on out-of-brace commas either.
+          " Nonetheless, we might be in noglob-mode or have escaped
+          " braces, so we'll add the unmodified entry for consideration
+          " instead of looking exclusively at it.
+          let l:entries += [ l:entry ]
+        endif
+
+        for l:f in l:entries
           if l:f =~# '[*?{[]'
             let l:files += glob(l:f, 0, 1)
           endif
@@ -106,4 +116,4 @@ endfunction
 
 let s:bib_re = g:vimtex#re#not_comment . '\\('
       \ . join(g:vimtex_bibliography_commands, '|')
-      \ . ')\s*\{\zs[^}]+\ze}'
+      \ . ')\s*\{\zs.+\ze}'
