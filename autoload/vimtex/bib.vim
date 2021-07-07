@@ -16,7 +16,7 @@ function! vimtex#bib#files() abort " {{{1
   endif
 
   let l:file = b:vimtex.ext('blg')
-  if filereadable(l:file)
+  if filereadable(l:file) && !has_key(b:vimtex.packages, 'bibunits')
     let l:bibs = map(
           \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
           \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
