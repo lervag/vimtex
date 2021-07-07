@@ -26,6 +26,11 @@ function! vimtex#bib#files() abort " {{{1
       call filter(l:bibs, 'v:val !~# ''-blx$''')
     endif
 
+    " Ignore '{name}Notes.bib' file (created by revtex4)
+    if b:vimtex.documentclass =~# '^revtex4'
+      call filter(l:bibs, 'v:val !~# ''.Notes$''')
+    endif
+
     if !empty(l:bibs) | return s:validate(l:bibs) | endif
   endif
 
