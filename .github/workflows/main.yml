@@ -28,8 +28,8 @@ jobs:
         sudo apt install neovim \
           texlive texlive-latex-extra texlive-extra-utils \
           texlive-bibtex-extra libtext-bibtex-perl \
+          texlive-publishers \
           latexmk \
-          revtex4 \
           gcc moreutils \
           libmodule-build-perl \
           libconfig-autoconf-perl \
