@@ -1134,8 +1134,8 @@ OPTIONS                                                        *vimtex-options*
     If zero, then the cite completion is "smart", i.e. not simple. This
     behaviour is described in more detail in |vimtex-complete-cites|.
 
-    Note: It is usually better to use the "simple" mode, that is, set this to
-          1, if you use an autocomplete plugin (|vimtex-complete-auto|).
+    Note: It is usually better to use the "simple" mode if you use an
+          autocomplete plugin (|vimtex-complete-auto|).
 
                                                *g:vimtex_complete_bib.menu_fmt*
   menu_fmt~
@@ -1151,17 +1151,20 @@ OPTIONS                                                        *vimtex-options*
       @type          Type of entry
 
     If the key is set to an empty string, then the `menu` entry is not added
-    to the completion canidates. Since the author list can be large, the
+    to the completion candidates. Since the author list can be large, the
     @author_all is truncated to 20 characters. This can be modified with the
     `auth_len` key (see below).
 
     Note: If you change this option, you should also clear the related cache
-    files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
+          files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
 
   auth_len~
     Default value: 20
     Truncation length for author list with the @author_all format key in the
     `menu_fmt` string.
+
+    Note: If you change this option, you should also clear the related cache
+          files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
 
   abbr_fmt~
     Default value: `''`
@@ -3602,13 +3605,14 @@ Associated settings:
 ------------------------------------------------------------------------------
 COMPLETE CITATIONS                                      *vimtex-complete-cites*
 
-Citation completion is triggered by '\cite{' commands.  The completion parses
+Citation completion is triggered by `'\cite{'` commands. The completion parses
 included bibliography files (`*.bib`) and `thebibliography` environments to
 gather the completion candidates.
 
-By default, cite completion is "smart" in that it allows to complete on
-author name, title and similar. As an example, assume that a bibliography file
-is included with the following entry: >
+By default, cite completion is "smart" in that it allows to complete on author
+names, title, and similar by matching against the completion menu. The menu
+format is defined by |g:vimtex_complete_bib.menu_fmt|. As an example, assume
+that a bibliography file is included with the following entry: >
 
         @book { knuth1981,
                 author = "Donald E. Knuth",
@@ -3622,9 +3626,11 @@ Then the bibliography key `knuth1981` will be completed with e.g.: >
         \cite{algo<CTRL-X><CTRL-O>
         \cite{Don.*Knuth<CTRL-X><CTRL-O>
 
-In particular, note that regular expressions (or vim patterns) can be used
-after '\cite{' to search for candidates. By default, the regex is applied to
-the completion menu, which is defined by |g:vimtex_complete_bib.menu_fmt|.
+As is shown in the last example, the search string (e.g. `Don.*Knuth`) is
+applied as a regular expression. One should note that the default menu format
+does not include the cite key, in which case the key can not be used for
+filtering completion candidates. Again, see |g:vimtex_complete_bib.menu_fmt|
+for more details.
 
 However, if one prefers, one may set the `simple` key of |g:vimtex_complete_bib|
 to only allow completion on the bibkeys directly. This should typically work
