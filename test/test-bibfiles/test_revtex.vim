@@ -5,6 +5,8 @@ filetype plugin on
 let g:ready = 0
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 augroup test_revtex
   autocmd!
   autocmd User VimtexEventCompileSuccess let g:ready = 1

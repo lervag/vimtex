@@ -636,14 +636,9 @@ endfunction
 
 " }}}1
 function! s:vimtex.parse_documentclass() abort dict " {{{1
-  let self.documentclass = ''
-  for l:line in self.preamble
-    let l:class = matchstr(l:line, '^\s*\\documentclass.*{\zs\S\+\ze}')
-    if !empty(l:class)
-      let self.documentclass = l:class
-      break
-    endif
-  endfor
+  let l:preamble_lines = filter(copy(self.preamble), {_, x -> x !~# '^\s*%'})
+  let self.documentclass = matchstr(join(l:preamble_lines, ''),
+        \ '\\documentclass[^{]*{\zs[^}]\+\ze}')
 endfunction
 
 " }}}1
