@@ -140,7 +140,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texConditionalArg')
 
   " \@ifnextchar
-  syntax match texCmdConditionalINC "\\@ifnextchar\>"
+  syntax match texCmdConditionalINC "\\\w*@ifnextchar\>"
         \ nextgroup=texConditionalINCChar skipwhite skipnl
   syntax match texConditionalINCChar "\S" contained
 
