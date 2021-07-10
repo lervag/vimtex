@@ -1155,16 +1155,16 @@ OPTIONS                                                        *vimtex-options*
     @author_all is truncated to 20 characters. This can be modified with the
     `auth_len` key (see below).
 
-    Note: If you change this option, you should also clear the related cache
-          files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
+    Note: If you change this option, you should clear the related cache
+          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   auth_len~
     Default value: 20
     Truncation length for author list with the @author_all format key in the
     `menu_fmt` string.
 
-    Note: If you change this option, you should also clear the related cache
-          files (i.e. `~/.cache/vimtex/bibcomplete*.json` on Linux systems).
+    Note: If you change this option, you should clear the related cache
+          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   abbr_fmt~
     Default value: `''`
@@ -3136,6 +3136,17 @@ COMMANDS                                                      *vimtex-commands*
                                 file in a multi-file project with `subfiles`,
                                 see |vimtex-subfiles|. See also
                                 |g:vimtex_subfile_start_local|.
+
+                                             *:VimtexClearCache*
+:VimtexClearCache {name}  Clear all cache files that matches `name`. This is
+                          useful for instance to clear the `bibcomplete` cache
+                          when you change the completion options, see
+                          |g:vimtex_complete_bib.menu_fmt|.
+
+                          To clear all cache files: `:VimtexClearCache ALL`
+
+                          The cache files can be cleared manually. They are
+                          located at |g:vimtex_cache_root|.
 
 ------------------------------------------------------------------------------
 MAP DEFINITIONS                                               *vimtex-mappings*

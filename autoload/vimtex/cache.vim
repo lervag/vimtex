@@ -4,6 +4,12 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#cache#init_buffer() abort " {{{1
+  command! -buffer -nargs=1 VimtexClearCache call vimtex#cache#clear(<q-args>)
+endfunction
+
+" }}}1
+
 function! vimtex#cache#open(name, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
   let l:name = get(l:opts, 'local') ? s:local_name(a:name) : a:name
@@ -54,13 +60,37 @@ function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#cache#clear(name, local) abort " {{{1
-  let l:cache = vimtex#cache#open(a:name, {'local': a:local})
+function! vimtex#cache#clear(name) abort " {{{1
+  if empty(a:name) | return | endif
 
-  call l:cache.read()
-  if !empty(l:cache.data)
-    let l:cache.data = {}
-    call l:cache.write()
+  if a:name ==# 'ALL'
+    let l:caches = globpath(s:root(),
+          \ (a:name ==# 'ALL' ? '' : a:name) . '*.json', 0, 1)
+    for l:file in map(l:caches, {_, x -> fnamemodify(x, ':t:r')})
+      let l:cache = vimtex#cache#open(l:file)
+      call l:cache.clear()
+    endfor
+  else
+    let l:persistent = get(g:, 'vimtex_cache_persistent', 1)
+    let s:caches = get(s:, 'caches', {})
+
+    " Clear global caches first (check if opened, then look for files)
+    let l:cache = get(s:caches, a:name, {})
+    if !empty(l:cache)
+      call l:cache.clear()
+    elseif l:persistent
+      let l:cache = vimtex#cache#open(a:name)
+      call l:cache.clear()
+    endif
+
+    " Clear local caches
+    let l:cache = get(s:caches, s:local_name(a:name), {})
+    if !empty(l:cache)
+      call l:cache.clear()
+    elseif l:persistent
+      let l:cache = vimtex#cache#open(a:name, {'local': 1})
+      call l:cache.clear()
+    endif
   endif
 endfunction
 
@@ -79,9 +109,7 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new = deepcopy(self)
   unlet new.init
 
-  let l:root = get(g:, 'vimtex_cache_root',
-        \ (empty($XDG_CACHE_HOME) ? $HOME . '/.cache' : $XDG_CACHE_HOME)
-        \ . '/vimtex')
+  let l:root = s:root()
   if !isdirectory(l:root)
     call mkdir(l:root, 'p')
   endif
@@ -159,10 +187,26 @@ function! s:cache.read() dict abort " {{{1
 endfunction
 
 " }}}1
+function! s:cache.clear() dict abort " {{{1
+  call self.read()
+  if !empty(self.data)
+    let self.data = {}
+    call self.write()
+  endif
+endfunction
+
+" }}}1
 
 "
 " Utility functions
 "
+function! s:root() abort " {{{1
+  return get(g:, 'vimtex_cache_root',
+        \ (empty($XDG_CACHE_HOME) ? $HOME . '/.cache' : $XDG_CACHE_HOME)
+        \ . '/vimtex')
+endfunction
+
+" }}}1
 function! s:local_name(name) abort " {{{1
   let l:filename = exists('b:vimtex.tex')
         \ ? fnamemodify(b:vimtex.tex, ':r')
