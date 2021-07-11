@@ -101,11 +101,11 @@ function! s:completer_bib.complete(regex) dict abort " {{{2
   let self.candidates = self.gather_candidates()
 
   if g:vimtex_complete_bib.simple
-    call s:filter_with_options(self.candidates, a:regex)
+    call s:filter(self.candidates, a:regex)
   else
     call s:filter_with_options(self.candidates, a:regex, {
           \ 'anchor': 0,
-          \ 'filter_by_menu': 1,
+          \ 'filter_key': 'mstr',
           \})
   endif
 
@@ -191,13 +191,19 @@ function! s:completer_bib.convert(entry) dict abort " {{{2
   let auth_short = substitute(auth, ',.*\ze', ' et al.', '')
 
   let substitutes = {
-        \ '@key' : a:entry['key'],
-        \ '@type' : empty(a:entry['type']) ? '-' : a:entry['type'],
         \ '@author_all' : auth_all,
         \ '@author_short' : auth_short,
-        \ '@year' : get(a:entry, 'year', get(a:entry, 'date', '?')),
+        \ '@key' : a:entry['key'],
         \ '@title' : get(a:entry, 'title', 'No title'),
+        \ '@type' : empty(a:entry['type']) ? '-' : a:entry['type'],
+        \ '@year' : get(a:entry, 'year', get(a:entry, 'date', '?')),
         \}
+
+  " Create match string
+  let cand.mstr = copy(g:vimtex_complete_bib.match_str_fmt)
+  for [key, val] in items(substitutes)
+    let cand.mstr = substitute(cand.mstr, key, escape(val, '&'), '')
+  endfor
 
   " Create menu string
   if !empty(g:vimtex_complete_bib.menu_fmt)
@@ -285,7 +291,7 @@ function! s:completer_cmd.complete(regex) dict abort " {{{2
   let l:candidates = self.gather_candidates()
   let l:mode = vimtex#syntax#in_mathzone() ? 'm' : 'n'
 
-  call s:filter_with_options(l:candidates, a:regex)
+  call s:filter(l:candidates, a:regex)
   call filter(l:candidates, 'l:mode =~# v:val.mode')
 
   return l:candidates
@@ -385,7 +391,7 @@ function! s:completer_env.complete(regex) dict abort " {{{2
     endif
   endif
 
-  return s:filter_with_options(copy(self.gather_candidates()), a:regex)
+  return s:filter(copy(self.gather_candidates()), a:regex)
 endfunction
 
 " }}}2
@@ -410,7 +416,7 @@ let s:completer_img = {
       \}
 
 function! s:completer_img.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.gather_candidates(), a:regex)
+  return s:filter(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_img.gather_candidates() dict abort " {{{2
@@ -451,7 +457,7 @@ function! s:completer_inc.complete(regex) dict abort " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.tex'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter_with_options(self.candidates, a:regex)
+  call s:filter(self.candidates, a:regex)
 
   if self.context =~# '\\include'
     let self.candidates = map(self.candidates, {_, x -> {
@@ -479,7 +485,7 @@ function! s:completer_pdf.complete(regex) dict abort " {{{2
   let self.candidates = split(globpath(b:vimtex.root, '**/*.pdf'), '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter_with_options(self.candidates, a:regex)
+  call s:filter(self.candidates, a:regex)
   let self.candidates = map(self.candidates, {_, x -> {
         \ 'word': x,
         \ 'kind': '[includepdf]',
@@ -499,7 +505,7 @@ function! s:completer_sta.complete(regex) dict abort " {{{2
   let self.candidates = split(self.candidates, '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter_with_options(self.candidates, a:regex)
+  call s:filter(self.candidates, a:regex)
   let self.candidates = map(self.candidates, {_, x -> {
         \ 'word': x,
         \ 'kind': '[includestandalone]',
@@ -561,7 +567,7 @@ function! s:completer_gls.init() dict abort " {{{2
 endfunction
 
 function! s:completer_gls.complete(regex) dict abort " {{{2
-  return s:filter_with_options(
+  return s:filter(
         \ self.parse_glsentries() + self.parse_glsbib(), a:regex)
 endfunction
 
@@ -611,7 +617,7 @@ let s:completer_pck = {
       \}
 
 function! s:completer_pck.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.gather_candidates(), a:regex)
+  return s:filter(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_pck.gather_candidates() dict abort " {{{2
@@ -634,7 +640,7 @@ let s:completer_doc = {
       \}
 
 function! s:completer_doc.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.gather_candidates(), a:regex)
+  return s:filter(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_doc.gather_candidates() dict abort " {{{2
@@ -657,7 +663,7 @@ let s:completer_bst = {
       \}
 
 function! s:completer_bst.complete(regex) dict abort " {{{2
-  return s:filter_with_options(self.gather_candidates(), a:regex)
+  return s:filter(self.gather_candidates(), a:regex)
 endfunction
 
 function! s:completer_bst.gather_candidates() dict abort " {{{2
@@ -851,25 +857,47 @@ endfunction
 "
 " Utility functions
 "
-function! s:filter_with_options(input, regex, ...) abort " {{{1
+function! s:filter(input, regex) abort " {{{1
   if empty(a:input) | return a:input | endif
 
-  let l:opts = a:0 > 0 ? a:1 : {}
   let l:expression = type(a:input[0]) == v:t_dict
-        \ ? get(l:opts, 'filter_by_menu') ? 'v:val.menu' : 'v:val.word'
+        \ ? 'v:val.word'
         \ : 'v:val'
 
-  if g:vimtex_complete_ignore_case && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
+  if g:vimtex_complete_ignore_case
+        \ && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
     let l:expression .= ' =~? '
   else
     let l:expression .= ' =~# '
   endif
 
-  if get(l:opts, 'anchor', 1)
+  let l:expression .= '''^'' . a:regex'
+
+  return filter(a:input, l:expression)
+endfunction
+
+" }}}1
+function! s:filter_with_options(input, regex, opts) abort " {{{1
+  if empty(a:input) | return a:input | endif
+
+  let l:expression = 'v:val' . (type(a:input[0]) == v:t_dict
+        \ ? '.' . get(a:opts, 'filter_key', 'word')
+        \ : '')
+
+  if g:vimtex_complete_ignore_case
+        \ && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
+    let l:expression .= ' =~? '
+  else
+    let l:expression .= ' =~# '
+  endif
+
+  if get(a:opts, 'anchor', 1)
     let l:expression .= '''^'' . '
   endif
 
   let l:expression .= 'a:regex'
+
+  unsilent echo l:expression '||' a:regex "\n"
 
   return filter(a:input, l:expression)
 endfunction

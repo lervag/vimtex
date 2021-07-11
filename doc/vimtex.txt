@@ -1137,39 +1137,50 @@ OPTIONS                                                        *vimtex-options*
     Note: It is usually better to use the "simple" mode if you use an
           autocomplete plugin (|vimtex-complete-auto|).
 
-                                               *g:vimtex_complete_bib.menu_fmt*
-  menu_fmt~
-    Default value: `'[@type] @author_short (@year), "@title"'`
-    The format used for the `menu` entry for bib completion candidates (see
-    |complete-items|). The following keys may be used to define the string:
+                                          *g:vimtex_complete_bib.match_str_fmt*
+  match_str_fmt~
+    Default value: `'@key [@type] @author_all (@year), "@title"'`
+    The format used for the match string for bib completion candidates. That
+    is, the string that the smart mode candidate matching is matched against.
+    See |vimtex-complete-cites| for more info. The following keys may be used
+    to define the string: >
 
-      @key           The bibtex key
-      @title         Title
-      @year          Publication year
       @author_all    Full author list
       @author_short  Shortened author list
+      @key           The bibtex key
+      @title         Title
       @type          Type of entry
-
-    If the key is set to an empty string, then the `menu` entry is not added
-    to the completion candidates. Since the author list can be large, the
-    @author_all is truncated to 20 characters. This can be modified with the
-    `auth_len` key (see below).
+      @year          Publication year
+<
+    Since the author list can be large, the `@author_all` is truncated to 20
+    characters. This can be modified with the `auth_len` key (see below).
 
     Note: If you change this option, you should clear the related cache
           files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
-  auth_len~
-    Default value: 20
-    Truncation length for author list with the @author_all format key in the
-    `menu_fmt` string.
+  menu_fmt~
+    Default value: `'[@type] @author_short (@year), "@title"'`
+    The format used for the `menu` entry for bib completion candidates (see
+    |complete-items|). If the key is set to an empty string, then the `menu`
+    entry is not added to the completion candidates. See the description of
+    `match_str_fmt` for the allowed keys.
 
     Note: If you change this option, you should clear the related cache
           files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   abbr_fmt~
     Default value: `''`
-    The format used for the `abbr` entry for bib completion candidates. See
-    `menu_fmt` for further description.
+    The format used for the `abbr` entry for bib completion candidates (see
+    |complete-items|). See the description of `match_str_fmt` for the allowed
+    keys.
+
+  auth_len~
+    Default value: 20
+    Truncation length for author list with the `@author_all` format key in the
+    format strings for `match_str_fmt`, `menu_fmt`, and `abbr_fmt`.
+
+    Note: If you change this option, you should clear the related cache
+          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   custom_patterns~
     Default value: []
@@ -3141,7 +3152,7 @@ COMMANDS                                                      *vimtex-commands*
 :VimtexClearCache {name}  Clear all cache files that matches `name`. This is
                           useful for instance to clear the `bibcomplete` cache
                           when you change the completion options, see
-                          |g:vimtex_complete_bib.menu_fmt|.
+                          |g:vimtex_complete_bib.match_str_fmt|.
 
                           To clear all cache files: `:VimtexClearCache ALL`
 
@@ -3621,9 +3632,13 @@ included bibliography files (`*.bib`) and `thebibliography` environments to
 gather the completion candidates.
 
 By default, cite completion is "smart" in that it allows to complete on author
-names, title, and similar by matching against the completion menu. The menu
-format is defined by |g:vimtex_complete_bib.menu_fmt|. As an example, assume
-that a bibliography file is included with the following entry: >
+names, title, and similar by matching against a match string defined by
+|g:vimtex_complete_bib.match_str_fmt|. If one prefers, one may set the
+`simple` key of |g:vimtex_complete_bib| to only allow completion on the
+bibkeys directly. This should typically work better with autocomplete plugins.
+
+As an example of the smart completion, assume that a bibliography file is
+included with the following entry: >
 
         @book { knuth1981,
                 author = "Donald E. Knuth",
@@ -3631,21 +3646,15 @@ that a bibliography file is included with the following entry: >
                 publisher = "Addison-Wesley",
                 year = "1981" }
 
-Then the bibliography key `knuth1981` will be completed with e.g.: >
+Then, with the default configuration, the bibliography key `knuth1981` will be
+completed with e.g.: >
 
         \cite{Knuth 1981<CTRL-X><CTRL-O>
         \cite{algo<CTRL-X><CTRL-O>
         \cite{Don.*Knuth<CTRL-X><CTRL-O>
 
 As is shown in the last example, the search string (e.g. `Don.*Knuth`) is
-applied as a regular expression. One should note that the default menu format
-does not include the cite key, in which case the key can not be used for
-filtering completion candidates. Again, see |g:vimtex_complete_bib.menu_fmt|
-for more details.
-
-However, if one prefers, one may set the `simple` key of |g:vimtex_complete_bib|
-to only allow completion on the bibkeys directly. This should typically work
-better with autocomplete plugins.
+applied as a regular expression.
 
 ------------------------------------------------------------------------------
 COMPLETE LABELS                                        *vimtex-complete-labels*
