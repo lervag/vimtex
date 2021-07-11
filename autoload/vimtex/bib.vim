@@ -11,6 +11,9 @@ function! vimtex#bib#files() abort " {{{1
       let l:bibs = map(
             \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
             \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
+      for l:f in filter(copy(l:bibs), {_, x -> x =~# '[*?{[]' })
+        let l:bibs += glob(l:f, 0, 1)
+      endfor
       if !empty(l:bibs) | return s:validate(l:bibs) | endif
     endif
   endif
@@ -73,18 +76,29 @@ function! s:files_manual() abort " {{{1
       let l:cache.modified = 1
       let l:current.ftime = l:ftime
       let l:current.files = []
+
       for l:entry in map(
             \ filter(readfile(l:file), {_, x -> x =~# s:bib_re}),
             \ {_, x -> matchstr(x, s:bib_re)})
-        let l:files = []
+        " Interpolate the \jobname command
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
 
-        for l:f in split(l:entry, ',')
-          if stridx(l:f, '*') >= 0
-            let l:files += glob(l:f, 0, 1)
-          else
-            let l:files += [fnamemodify(l:f, ':r')]
-          endif
+        " Assume comma separated list of files
+        let l:files = split(l:entry, ',')
+
+        " But also add the unmodified entry for consideration, as the comma may
+        " be part of the filename or part of a globbing expression.
+        if len(l:files) > 1
+          let l:files += [l:entry]
+        endif
+
+        " Now attempt to apply globbing where applicable
+        for l:exp in filter(copy(l:files), {_, x -> x =~# '[*?{[]'})
+          try
+            let l:globbed = glob(l:exp, 0, 1)
+            let l:files += l:globbed
+          catch /E220/
+          endtry
         endfor
 
         let l:current.files += l:files
@@ -104,4 +118,4 @@ endfunction
 
 let s:bib_re = g:vimtex#re#not_comment . '\\('
       \ . join(g:vimtex_bibliography_commands, '|')
-      \ . ')\s*\{\zs[^}]+\ze}'
+      \ . ')\s*\{\zs.+\ze}'
