@@ -860,44 +860,43 @@ endfunction
 function! s:filter(input, regex) abort " {{{1
   if empty(a:input) | return a:input | endif
 
-  let l:expression = type(a:input[0]) == v:t_dict
-        \ ? 'v:val.word'
-        \ : 'v:val'
-
-  if g:vimtex_complete_ignore_case
+  let l:ignore_case = g:vimtex_complete_ignore_case
         \ && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
-    let l:expression .= ' =~? '
+
+  if type(a:input[0]) == v:t_dict
+    let l:Filter = l:ignore_case
+          \ ? {_, x -> x.word =~? '^' . a:regex}
+          \ : {_, x -> x.word =~# '^' . a:regex}
   else
-    let l:expression .= ' =~# '
+    let l:Filter = l:ignore_case
+          \ ? {_, x -> x =~? '^' . a:regex}
+          \ : {_, x -> x =~# '^' . a:regex}
   endif
 
-  let l:expression .= '''^'' . a:regex'
-
-  return filter(a:input, l:expression)
+  return filter(a:input, l:Filter)
 endfunction
 
 " }}}1
 function! s:filter_with_options(input, regex, opts) abort " {{{1
   if empty(a:input) | return a:input | endif
 
-  let l:expression = 'v:val' . (type(a:input[0]) == v:t_dict
-        \ ? '.' . get(a:opts, 'filter_key', 'word')
-        \ : '')
+  let l:regex = (get(a:opts, 'anchor', 1) ? '^' : '') . a:regex
 
-  if g:vimtex_complete_ignore_case
+  let l:ignore_case = g:vimtex_complete_ignore_case
         \ && (!g:vimtex_complete_smart_case || a:regex !~# '\u')
-    let l:expression .= ' =~? '
+
+  if type(a:input[0]) == v:t_dict
+    let l:key = get(a:opts, 'filter_key', 'word')
+    let l:Filter = l:ignore_case
+          \ ? {_, x -> x[l:key] =~? l:regex}
+          \ : {_, x -> x[l:key] =~# l:regex}
   else
-    let l:expression .= ' =~# '
+    let l:Filter = l:ignore_case
+          \ ? {_, x -> x =~? l:regex}
+          \ : {_, x -> x =~# l:regex}
   endif
 
-  if get(a:opts, 'anchor', 1)
-    let l:expression .= '''^'' . '
-  endif
-
-  let l:expression .= 'a:regex'
-
-  return filter(a:input, l:expression)
+  return filter(a:input, l:Filter)
 endfunction
 
 " }}}1
