@@ -188,10 +188,12 @@ endfunction
 
 " }}}1
 function! s:cache.clear() dict abort " {{{1
-  call self.read()
-  if !empty(self.data)
-    let self.data = {}
-    call self.write()
+  let self.data = {}
+  let self.ftime = -1
+  let self.modified = 0
+
+  if self.persistent
+    call delete(self.path)
   endif
 endfunction
 
