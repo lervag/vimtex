@@ -133,7 +133,7 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
       let l:current.ftime = l:ftime
       let l:current.result = map(
             \ vimtex#parser#bib(l:file),
-            \ 'self.convert(v:val)')
+            \ {_, x -> s:bib_to_candidate(x)})
       let l:cache.modified = 1
     endif
     let l:entries += l:current.result
@@ -159,7 +159,7 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
         for l:line in l:lines
           let l:matches = matchlist(l:line, '\\bibitem\(\[[^]]\]\)\?{\([^}]*\)')
           if len(l:matches) > 1
-            call add(l:current.result, self.convert({
+            call add(l:current.result, s:bib_to_candidate({
                   \ 'key': l:matches[2],
                   \ 'type': 'thebibliography',
                   \ 'author': '',
@@ -180,40 +180,34 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
   return l:entries
 endfunction
 
-function! s:completer_bib.convert(entry) dict abort " {{{2
-  let cand = {'word': a:entry['key']}
+" }}}2
 
-  let auth = get(a:entry, 'author', 'Unknown')
-  let auth = substitute(auth, '\~', ' ', 'g')
-  let auth_all = g:vimtex_complete_bib.auth_len > 0
-        \ ? strcharpart(auth, 0, g:vimtex_complete_bib.auth_len)
-        \ : auth
-  let auth_short = substitute(auth, ',.*\ze', ' et al.', '')
+function! s:bib_to_candidate(entry) abort " {{{2
+  let auth = substitute(get(a:entry, 'author', 'Unknown'), '\~', ' ', 'g')
 
   let substitutes = {
-        \ '@author_all' : auth_all,
-        \ '@author_short' : auth_short,
+        \ '@author_all' : g:vimtex_complete_bib.auth_len > 0
+        \     ? strcharpart(auth, 0, g:vimtex_complete_bib.auth_len)
+        \     : auth,
+        \ '@author_short' : substitute(auth, ',.*\ze', ' et al.', ''),
         \ '@key' : a:entry['key'],
         \ '@title' : get(a:entry, 'title', 'No title'),
         \ '@type' : empty(a:entry['type']) ? '-' : a:entry['type'],
         \ '@year' : get(a:entry, 'year', get(a:entry, 'date', '?')),
         \}
 
-  " Create match string
+  let cand = {'word': a:entry['key']}
+
+  " Create match and menu strings
   let cand.mstr = copy(g:vimtex_complete_bib.match_str_fmt)
+  let cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
   for [key, val] in items(substitutes)
-    let cand.mstr = substitute(cand.mstr, key, escape(val, '&'), '')
+    let val = escape(val, '&')
+    let cand.mstr = substitute(cand.mstr, key, val, '')
+    let cand.menu = substitute(cand.menu, key, val, '')
   endfor
 
-  " Create menu string
-  if !empty(g:vimtex_complete_bib.menu_fmt)
-    let cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
-    for [key, val] in items(substitutes)
-      let cand.menu = substitute(cand.menu, key, escape(val, '&'), '')
-    endfor
-  endif
-
-  " Create abbreviation string
+  " Create abbreviation string (if necessary)
   if !empty(g:vimtex_complete_bib.abbr_fmt)
     let cand.abbr = copy(g:vimtex_complete_bib.abbr_fmt)
     for [key, val] in items(substitutes)
@@ -223,6 +217,8 @@ function! s:completer_bib.convert(entry) dict abort " {{{2
 
   return cand
 endfunction
+
+" }}}2
 
 " }}}1
 " {{{1 Labels
