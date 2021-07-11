@@ -76,27 +76,29 @@ function! s:files_manual() abort " {{{1
       let l:cache.modified = 1
       let l:current.ftime = l:ftime
       let l:current.files = []
+
       for l:entry in map(
             \ filter(readfile(l:file), {_, x -> x =~# s:bib_re}),
             \ {_, x -> matchstr(x, s:bib_re)})
-        let l:files = []
+        " Interpolate the \jobname command
         let l:entry = substitute(l:entry, '\\jobname', b:vimtex.name, 'g')
-        let l:entries = split(l:entry, ',')
 
-        if l:entry =~# '{'
-          " Biber itself breaks with multiple brace patterns so we
-          " won't try to separate on out-of-brace commas either.
-          " Nonetheless, we might be in noglob-mode or have escaped
-          " braces, so we'll add the unmodified entry for consideration
-          " instead of looking exclusively at it.
-          let l:entries += [ l:entry ]
+        " Assume comma separated list of files
+        let l:files = split(l:entry, ',')
+
+        " But also add the unmodified entry for consideration, as the comma may
+        " be part of the filename or part of a globbing expression.
+        if len(l:files) > 1
+          let l:files += [l:entry]
         endif
 
-        for l:f in l:entries
-          if l:f =~# '[*?{[]'
-            let l:files += glob(l:f, 0, 1)
-          endif
-          let l:files += [fnamemodify(l:f, ':r')]
+        " Now attempt to apply globbing where applicable
+        for l:exp in filter(copy(l:files), {_, x -> x =~# '[*?{[]'})
+          try
+            let l:globbed = glob(l:exp, 0, 1)
+            let l:files += l:globbed
+          catch /E220/
+          endtry
         endfor
 
         let l:current.files += l:files
