@@ -897,8 +897,6 @@ function! s:filter_with_options(input, regex, opts) abort " {{{1
 
   let l:expression .= 'a:regex'
 
-  unsilent echo l:expression '||' a:regex "\n"
-
   return filter(a:input, l:expression)
 endfunction
 
