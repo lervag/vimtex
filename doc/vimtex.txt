@@ -507,15 +507,18 @@ Language server / texlab~
   performance advantage. However, VimTeX does use caches to speed up
   completion which should in most cases work well.
 
-  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2] or
-  |coc-nvim| [3, 4]. See also this VimTeX issue [5] for more information.
+  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovims
+  built-in LSP client [3], or |coc-nvim| [4, 5].
+
+  See also this VimTeX issue [6] for more information.
 
   [0]: https://langserver.org/
   [1]: https://texlab.netlify.app/
   [2]: https://github.com/prabirshrestha/vim-lsp
-  [3]: https://github.com/neoclide/coc.nvim
-  [4]: https://github.com/fannheyward/coc-texlab
-  [5]: https://github.com/lervag/vimtex/issues/1371
+  [3]: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#texlab
+  [4]: https://github.com/neoclide/coc.nvim
+  [5]: https://github.com/fannheyward/coc-texlab
+  [6]: https://github.com/lervag/vimtex/issues/1371
 
 ------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
