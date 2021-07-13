@@ -486,6 +486,9 @@ Filetype plugin for bib files~
     An external tool for formatting, sorting, filtering, merging, and more of
     `.bib` files.
     http://www.gerd-neugebauer.de/software/TeX/BibTool/
+  - `GooseBib`
+    Some simple command-line tools to clean-up / modify BibTeX files.
+    https://github.com/tdegeus/GooseBib
   - `tbibtools`
     A set of ruby-based bibtex-related utilities for sorting, reformatting,
     listing contents, and so on. Has optional Vim integration.
