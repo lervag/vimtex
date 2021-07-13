@@ -1983,7 +1983,7 @@ OPTIONS                                                        *vimtex-options*
 
   pplatex~
     Uses `pplatex` (https://github.com/stefanhepp/pplatex) to parse the LaTeX
-    output file. `pplatex` is a command line utility used to pretify the
+    output file. `pplatex` is a command line utility used to prettify the
     output of the LaTeX compiler.
 
   pulp~
