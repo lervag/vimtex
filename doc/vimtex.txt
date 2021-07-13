@@ -2251,6 +2251,8 @@ OPTIONS                                                        *vimtex-options*
           \   'csharp' : 'cs',
           \ },
           \ 'ignored' : {
+          \   'sh' : ['shSpecial'],
+          \   'bash' : ['shSpecial'],
           \   'cs' : [
           \     'csBraces',
           \   ],
