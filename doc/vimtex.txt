@@ -560,6 +560,14 @@ Buffer variable~
         separators. Also, one should use `/` on every OS. See |file-pattern|
         for more info on the |autocmd| file pattern syntax.
 
+  Note: Users may be interested in the concept of project specific vim
+        configuration. This is supported in Vim and neovim already, see 'exrc'
+        and 'secure'. There are also several plugins to help work with project
+        specific settings, such as:
+
+        * https://github.com/embear/vim-localvimrc
+        * https://github.com/tpope/vim-projectionist
+
                                                               *vimtex-tex-root*
 TeX root directive~
   It is also possible to specify the main TeX file with a comment in one of
