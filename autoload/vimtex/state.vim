@@ -628,7 +628,7 @@ endfunction
 function! s:vimtex.parse_tex_program() abort dict " {{{1
   let l:lines = copy(self.preamble[:20])
   let l:tex_program_re =
-        \ '\v^\c\s*\%\s*\!?\s*tex\s+%(TS-)?program\s*\=\s*\zs.*\ze\s*$'
+        \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
   call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
   call filter(l:lines, '!empty(v:val)')
   let self.tex_program = tolower(get(l:lines, -1, '_'))
