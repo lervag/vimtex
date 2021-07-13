@@ -563,15 +563,20 @@ Buffer variable~
                                                               *vimtex-tex-root*
 TeX root directive~
   It is also possible to specify the main TeX file with a comment in one of
-  the first five lines of the current file. Some examples: >
+  the first five lines of the current file. This is often reffered to as a TeX
+  directive, see |vimtex-tex-directives| for more info. The syntax is best
+  described by some examples: >
 
     %! TEX root = /path/to/my-main.tex
-    %! TEX root = ../*.tex
-    %! TEX root = **/main.tex
+    % ! TeX root = ../*.tex
+    %!Tex Root=**/main.tex
 <
+  As can be seen, the words "tex root" are recognized regardless of casing and
+  the spaces are ignored.
+
   Note: It is allowed to use a globbing pattern (see |wildcards|). If there
-  are multiple matches, then VimTeX will ask for input when the buffer is
-  opened.
+        are multiple matches, then VimTeX will ask for input when the buffer
+        is opened.
 
                                                                *vimtex-subfiles*
                                                                  *vimtex-import*
@@ -661,10 +666,14 @@ to reset the program during an editing session. See |:VimtexReload| and
 
 The syntax is best explained with an example: >
 
-    %! TEX program = program
+    %! TeX program = lualatex
+    %! TEX TS-program = xelatex
 
-Here `program` corresponds to a key in the |g:vimtex_compiler_latexmk_engines|
-or |g:vimtex_compiler_latexrun_engines| dictionaries. See also [0,1].
+The left-hand side must contain the text "tex program" or "tex ts-program" and
+as for |vimtex-tex-root|, the words are recognized regardless of casing and
+the spaces are ignored. The right-hand side must correspond to a key in the
+|g:vimtex_compiler_latexmk_engines| or |g:vimtex_compiler_latexrun_engines|
+dictionaries. See also [0,1].
 
 [0]: https://tex.stackexchange.com/q/78101/34697
 [1]: https://github.com/lervag/vimtex/issues/713
