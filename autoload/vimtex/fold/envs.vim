@@ -68,12 +68,15 @@ function! s:folder.text(line, level) abort dict " {{{1
 
   " Set caption/label based on type of environment
   if env ==# 'frame'
+    let option = ''
     let label = ''
     let caption = self.parse_caption_frame(a:line)
   elseif env ==# 'table'
+    let option = ''
     let label = self.parse_label()
     let caption = self.parse_caption_table(a:line)
   else
+    let option = matchstr(a:line, '\[\zs.*\ze\]')
     let label = self.parse_label()
     let caption = self.parse_caption(a:line)
   endif
@@ -103,7 +106,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   if strlen(env) > width_env - 8
     let env = strpart(env, 0, width_env - 11) . '...'
   endif
-  let env = '\begin{' . env . '}' . ' ' . matchstr(a:line, '\[\zs.*\ze\]')
+  let env = '\begin{' . env . '}' . ' ' . option
 
   let title = printf('%*S%-*S %-*S  %*S',
         \ width_ind, '',
