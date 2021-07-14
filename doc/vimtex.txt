@@ -702,9 +702,10 @@ The package list is determined in two ways: >
 
 1. If a `.fls` file exists having the name of the main file, it is scanned.
    This file is created by `latex` (or `pdflatex`, `xelatex`, ...) if it is
-   run with the `-recorder` option. This is enabled by default with `latexmk`.
-   Parsing the `.fls` file is done both at VimTeX initialization and after
-   each successful compilation, if possible.
+   run with the `-recorder` option (which is set by default when using
+   latexmk, unless overridden in an initialization file). Parsing the `.fls`
+   file is done both at VimTeX initialization and after each successful
+   compilation, if possible.
 
    Note: Parsing after successful compilations requires that one uses
          a) continuous compilation with callbacks (see the `callback` option
@@ -4910,7 +4911,7 @@ VimTeX provides several compilers for grammar checking TeX files through the
 |compiler-select| feature in Vim:
 
   style-check~
-    http://www.cs.umd.edu/~nspring/software/style-check-readme.html
+    https://github.com/nspring/style-check.git
 
   textidote~
     See more details here: |vimtex-grammar-textidote|
