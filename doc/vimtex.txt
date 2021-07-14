@@ -4899,7 +4899,7 @@ VimTeX provides several compilers for grammar checking TeX files through the
 |compiler-select| feature in Vim:
 
   style-check~
-    http://www.cs.umd.edu/~nspring/software/style-check-readme.html
+    https://github.com/nspring/style-check.git
 
   textidote~
     See more details here: |vimtex-grammar-textidote|
