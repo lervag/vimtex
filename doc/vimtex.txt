@@ -2874,9 +2874,10 @@ OPTIONS                                                        *vimtex-options*
       https://pwmt.org/projects/zathura/
       Zathura is, like MuPDF, a very fast and minimalistic viewer, but it
       allows more user configuration.  Zathura supports forward search and
-      backward search.  Zathura should be straightforward to install and use
-      on Linux with Xorg.  It should also work on macOS, but users may want to
-      read |vimtex-faq-zathura-macos|.
+      backward search, the latter uses |vimtex#view#reverse_goto|.  Zathura
+      should be straightforward to install and use on Linux with Xorg.  It
+      should also work on macOS, but users may want to read
+      |vimtex-faq-zathura-macos|.
 
       Note: Forward search requires `xdotool` to work properly. That is,
             `xdotool` is used to avoid duplicate Zathura instances when the
@@ -3551,6 +3552,11 @@ further customization.
     This event is triggered after the viewer has opened/forward search has
     been performed by the command |:VimtexView| or the related mapping.
 
+  *VimtexEventViewReverse*
+    This event is triggered at the end of the |vimtex#view#reverse_goto|
+    function, which can be used as the callback function for reverse goto from
+    a PDF viewer.
+
 Examples: >
 
   " Compile on initialization, cleanup on quit
@@ -3589,6 +3595,12 @@ Examples: >
   augroup vimtex_event_4
     au!
     au User VimtexEventTocActivated normal! zt
+  augroup END
+
+  " Specify extra behaviour after reverse goto
+  augroup vimtex_event_4
+    au!
+    au User VimtexEventViewReverse normal! zMzvzz
   augroup END
 
 ------------------------------------------------------------------------------
@@ -5007,6 +5019,7 @@ Associated settings:
 
 Associated events:
 * |VimtexEventView|
+* |VimtexEventViewReverse|
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
@@ -5052,6 +5065,9 @@ option named something like "inverse search command-line".  A standard value
 for the option is: >
 
   gvim --remote-silent +%l "%f"
+
+VimTeX also provides a utility function |vimtex#view#reverse_goto| that can be
+used from a viewer. It is automatically used with Zathura.
 
 Note: Inverse search relies on the |clientserver| functionality of vim.  Each
       instance of vim runs its own server.  The above mentioned standard value
@@ -5192,21 +5208,27 @@ users for customization.
 
 Note: This API is currently a work in progress!
 
-*vimtex#syntax#in_mathzone(...)*
+*vimtex#compiler#is_running*
+  Function returns 0 if a compiler is not running, 1 if it is running, or -1
+  if the compiler backend is not available (e.g. for non VimTeX buffers).
+
+*vimtex#compiler#callback*
+  Utility function to be used as a compiler callback function. Takes a single
+  argument which is the compiler status: 0 or |v:false| means compilation
+  failed and 1 or |v:true| means compilation was successful. The function does
+  several useful things based on the status, such as running the
+  |VimtexEventCompileFailed| and |VimtexEventCompileSuccess| events.
+
+*vimtex#syntax#in_mathzone*
   Returns 1 if the position is inside a math zone. If called without
   arguments, the position refers to the cursor position. Else must be called
   with two arguments: the line number and column number.
 
-*vimtex#compiler#is_running()*
-  Function returns 0 if a compiler is not running, 1 if it is running, or -1
-  if the compiler backend is not available (e.g. for non VimTeX buffers).
-
-*vimtex#compiler#callback(status)*
-  Utility function to be used as a compiler callback function. The argument is
-  the compiler status: 0 or |v:false| means compilation failed and 1 or
-  |v:true| means compilation was successful. The function does several useful
-  things based on the status, such as running the |VimtexEventCompileFailed|
-  and |VimtexEventCompileSuccess| events.
+*vimtex#view#reverse_goto*
+  Utility function for reverse search from pdf viewer. Takes two arguments:
+  the line number and a filename. The function runs the event
+  |VimtexEventViewReverse| at the end, which allows some user flexibility in
+  behaviour after the reverse goto was issued.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*

@@ -89,7 +89,6 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
         \ : 'buffer ' . l:bufnr
 
   execute 'normal!' a:line . 'G'
-  normal! zMzvzz
   redraw
 
   " Attempt to focus Vim
@@ -106,6 +105,10 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
       call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
       call feedkeys("\<c-l>", 'tn')
     endif
+  endif
+
+  if exists('#User#VimtexEventViewReverse')
+    doautocmd <nomodeline> User VimtexEventViewReverse
   endif
 endfunction
 
