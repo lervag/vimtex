@@ -249,7 +249,7 @@ Compiler backend~
     `tectonic` is a complete, self-contained TeX/LaTeX engine, powered by XeTeX
   and TeXLive. It doesn't support continuous build like `latexmk` but it
   presents other worth mentioning features such as automatic support file
-  downloading along with reproduceable builds and full Unicode and OpenType
+  downloading along with reproducible builds and full Unicode and OpenType
   fonts support thanks to the power of XeTeX. (|vimtex-compiler-tectonic|)
 
     `arara`: https://github.com/cereda/arara
@@ -292,14 +292,14 @@ FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
 The following is a list of features that one might think should be provided by
 VimTeX, but that are instead better provided by other plugins.
 
-* Linting and syntax checking                      |vimtex-nf-linting|
-* Snippets/Templates                               |vimtex-nf-snippets|
-* Tag navigation                                   |vimtex-nf-tag-nav|
-* Manipulate surrounding cmds/delims/envs          |vimtex-nf-surround|
-* Enhanced matching and higlighting of delimiters  |vimtex-nf-enhanced-matchparen|
-* Formatting                                       |vimtex-nf-formatting|
-* Filetype plugin for bib files                    |vimtex-nf-ftplugin-bib|
-* Language server / texlab                         |vimtex-nf-lsp|
+* Linting and syntax checking                       |vimtex-nf-linting|
+* Snippets/Templates                                |vimtex-nf-snippets|
+* Tag navigation                                    |vimtex-nf-tag-nav|
+* Manipulate surrounding cmds/delims/envs           |vimtex-nf-surround|
+* Enhanced matching and highlighting of delimiters  |vimtex-nf-enhanced-matchparen|
+* Formatting                                        |vimtex-nf-formatting|
+* Filetype plugin for bib files                     |vimtex-nf-ftplugin-bib|
+* Language server / texlab                          |vimtex-nf-lsp|
 
 Linting and syntax checking~
                                                             *vimtex-nf-linting*
@@ -507,7 +507,7 @@ Language server / texlab~
   performance advantage. However, VimTeX does use caches to speed up
   completion which should in most cases work well.
 
-  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovims
+  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovim's
   built-in LSP client [3], or |coc-nvim| [4, 5].
 
   See also this VimTeX issue [6] for more information.
@@ -547,7 +547,7 @@ Buffer variable~
   the buffer is already loaded, |:VimtexReloadState| (by default bound to
   |<localleader>lX|) can be used to make VimTeX aware of its new value.
   A convenient way to use this feature is to add an |BufReadPre| |autocmd| in
-  ones |vimrc|. An example is warrented: >
+  ones |vimrc|. An example is warranted: >
 
     augroup VimTeX
       autocmd!
@@ -831,7 +831,7 @@ OPTIONS                                                        *vimtex-options*
     `'~/.cache/vimtex'`          otherwise
 
 *g:vimtex_cache_persistent*
-  Specify whether to use persistant caching.
+  Specify whether to use persistent caching.
 
   Default value: 1
 
@@ -973,7 +973,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_compiler_latexrun*
   This dictionary allows customization of the |vimtex-compiler-latexrun|
-  compiler. The values set by the user will take precedense over the default
+  compiler. The values set by the user will take precedence over the default
   values.
 
   Default value: >
@@ -1021,7 +1021,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_compiler_tectonic*
   This dictionary allows customization of the |vimtex-compiler-tectonic|
-  compiler. The values set by the user will take precedense over the default
+  compiler. The values set by the user will take precedence over the default
   values.
 
   Default value: >
@@ -1055,7 +1055,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_compiler_arara*
   This dictionary allows customization of the |vimtex-compiler-arara|
-  compiler. The values set by the user will take precedense over the default
+  compiler. The values set by the user will take precedence over the default
   values.
 
   Default value: >
@@ -1075,7 +1075,7 @@ OPTIONS                                                        *vimtex-options*
   This dictionary allows customization of the |vimtex-compiler-generic|
   compiler. This compiler is, as the name hints, generic. It allows to specify
   a custom command to run for compilation. As for the other compilers, the
-  configuration values set by the user will take precedense over the default
+  configuration values set by the user will take precedence over the default
   values.
 
   Default value: >
@@ -1431,7 +1431,7 @@ OPTIONS                                                        *vimtex-options*
   For the set of operator mappings that change a surrounding type [0],
   VimTeX by default prints some information about what you are doing while
   waiting for user input. For advanced/experienced users, one will not need
-  this info and can get a slightly clearner UI by disabling this feature (set
+  this info and can get a slightly cleaner UI by disabling this feature (set
   the option 0).
 
   Default value: 1
@@ -1490,7 +1490,7 @@ OPTIONS                                                        *vimtex-options*
 
   Each entry in |g:vimtex_fold_types| is combined with the corresponding entry
   of |g:vimtex_fold_types_defaults|. If there are conflicting entries, then
-  |g:vimtex_fold_types| take presedence. This way, it is easy to customize
+  |g:vimtex_fold_types| take precedence. This way, it is easy to customize
   various fold types without touching those that can stay with default
   configuration.
 
@@ -1726,7 +1726,7 @@ OPTIONS                                                        *vimtex-options*
 
     lt_command~
       Name of `LanguageTool` executable, if installed via package manager. Note
-      that this has presedence over `lt_directory`!
+      that this has precedence over `lt_directory`!
 
     lt_disable~
     lt_enable~
@@ -1865,7 +1865,7 @@ OPTIONS                                                        *vimtex-options*
       Set this to 0 if you do not want modified math delimiters such as
       `\left(` and `\right)` to add/reduce indents.
 
-  Note: VimTeX does not allow indents for parantheses only in math mode or any
+  Note: VimTeX does not allow indents for parentheses only in math mode or any
         similar kind of context aware delimiter indents.
 
   Note: If one of the keys of the dictionary is not specified, the default
@@ -1983,7 +1983,7 @@ OPTIONS                                                        *vimtex-options*
 
   pplatex~
     Uses `pplatex` (https://github.com/stefanhepp/pplatex) to parse the LaTeX
-    output file. `pplatex` is a command line utility used to pretify the
+    output file. `pplatex` is a command line utility used to prettify the
     output of the LaTeX compiler.
 
   pulp~
@@ -2132,7 +2132,7 @@ OPTIONS                                                        *vimtex-options*
       This includes quite a lot of replacements, so be warned!
 
     styles~
-      Conceal the LaTeX command "boundaries" for italized and bolded style
+      Conceal the LaTeX command "boundaries" for italicized and bolded style
       commands, i.e. `\emph`, `\textit`, and `\textbf`. This means that one
       will see something like:
 
@@ -2400,7 +2400,7 @@ OPTIONS                                                        *vimtex-options*
         4: Location list (and open it).
 
     `fold_enable` : 0
-      Wheter to enable folding in the ToC window.
+      Whether to enable folding in the ToC window.
 
     `fold_level_start` : -1
       The starting fold level. The value -1 indicates that the start level is
@@ -2675,7 +2675,7 @@ OPTIONS                                                        *vimtex-options*
   with `_vimtex` prepended to the name. If one combines this with the callback
   feature, this may provide a very convenient way to avoid that the pdf
   becomes unavailable during compilation, as it will only update the viewer
-  outut file after a successful compilation.
+  output file after a successful compilation.
 
   The behaviour depends on the value:
 
@@ -3097,7 +3097,7 @@ COMMANDS                                                      *vimtex-commands*
 
                                              *:VimtexReload*
                                              *<plug>(vimtex-reload)*
-:VimtexReload             Reload VimTeX scripts. This is primarely useful
+:VimtexReload             Reload VimTeX scripts. This is primarily useful
                           when developing and debugging VimTeX itself.
 
                                              *:VimtexReloadState*
@@ -3461,7 +3461,7 @@ snippets, but these have been removed after careful considerations and input
 from VimTeX users, please see VimTeX issue #295:
 https://github.com/lervag/vimtex/issues/295#issuecomment-164262446
 It has been decided that the best approach is to only provide basic mappings,
-and to let users manully create automatic snippets through the anonymous
+and to let users manually create automatic snippets through the anonymous
 snippet functions in |UltiSnips| and |neosnippet|, please see |UltiSnips#Anon|
 and |neosnippet#anonymous|, respectively. Here are a couple of examples that
 show how to create such mappings: >
@@ -3575,7 +3575,7 @@ TEXT OBJECTS                                              *vimtex-text-objects*
 Text objects (and motions) are a fundamental feature in Vim. Operations can be
 combined with motions or text objects in endless ways and can be repeated with
 the dot operator (|repeat.txt|). If you are reading this and do not know about
-these things, then it is strongly adviced to read the help section about
+these things, then it is strongly advised to read the help section about
 |text-objects| and the famous Stack Overflow post "Your problem with Vim is
 that you don't grok vi":
 http://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim/1220118#1220118
@@ -4111,10 +4111,10 @@ VimTeX provides a core syntax plugin combined with package specific addons.
 The syntax plugin aims to be both consistent, structured, and efficient. The
 package specific addons are generally only loaded when applicable.
 
-LaTeX is a macro expansion language and it impossible to write a fully correct
-syntax parser without running the `tex` compiler itself. VimTeX aims to be
-pragmatic and provide a best-effort syntax highlighting - a decent trade of
-between simplicity and completeness.
+LaTeX is a macro expansion language and it is impossible to write a fully
+correct syntax parser without running the `tex` compiler itself. VimTeX aims
+to be pragmatic and provide a best-effort syntax highlighting - a decent trade
+of between simplicity and completeness.
 
 There will probably always be situations where the parser will fail, and in
 some cases it may be hard to "recover". It is therefore possible to manually
@@ -4206,7 +4206,7 @@ syntax highlighting. The best resources to learn about this are:
 
 The main philosophy of the VimTeX syntax plugin is to keep things simple,
 structured, and consistent. There is a small set of primitive syntax elements
-whose higlighting rules are linked to conventional highlight groups (see
+whose highlighting rules are linked to conventional highlight groups (see
 |group-name|). More specialized syntax elements are then linked to
 a corresponding primitive syntax element. This allows a user to change the
 highlighting of primitives with the effect that corresponding elements are
@@ -4714,7 +4714,7 @@ TECTONIC                                             *vimtex-compiler-tectonic*
 > by XeTeX and TeXLive.
 
 `tectonic` is a compiler backend that features automatic support file
-downloading along with reproduceable builds and full Unicode and OpenType
+downloading along with reproducible builds and full Unicode and OpenType
 fonts support thanks to the power of XeTeX. It does not support continuous
 compilation like |vimtex-compiler-latexmk|, so the only relevant commands are
 |:VimtexCompile| to start (single shot) compilation, and
@@ -5173,7 +5173,7 @@ Note: This API is currently a work in progress!
 *vimtex#syntax#in_mathzone(...)*
   Returns 1 if the position is inside a math zone. If called without
   arguments, the position refers to the cursor position. Else must be called
-  with two arguments: the line number and colun number.
+  with two arguments: the line number and column number.
 
 *vimtex#compiler#is_running()*
   Function returns 0 if a compiler is not running, 1 if it is running, or -1
@@ -5209,7 +5209,7 @@ Contents:
                                                    *vimtex-faq-slow-matchparen*
 Q: Why is matching parens so slow?
 A: Because it is complicated and requires some expensive searches for matching
-   parantheses. It uses the syntax information to skip commented delimiters,
+   parentheses. It uses the syntax information to skip commented delimiters,
    which is expensive. You can tune the timeout and stopline parameters for
    the searches with |g:vimtex_delim_timeout| and |g:vimtex_delim_stopline|,
    which may help. If it is still too slow, you can also try to use
@@ -5504,7 +5504,7 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    4. Run `brew services start dbus`
 
-   5. Now install Zathura (most recean version, aka HEAD): >
+   5. Now install Zathura (most recent version, aka HEAD): >
 
       brew tap zegervdv/zathura
       brew install girara --HEAD
@@ -5633,7 +5633,7 @@ Deprecate *g:vimtex_syntax_autoload_packages* in favor of
 |g:vimtex_syntax_packages|, which allows more fine grained control over each
 package.
 
-2020-09-24: More consise grammar options~
+2020-09-24: More concise grammar options~
 Deprecate *g:vimtex_textidote_jar* in favor of |g:vimtex_grammar_textidote|.
 
 2020-08-11: Remove g:vimtex_quickfix_latexlog~
@@ -5702,7 +5702,7 @@ info, see |vimtex-non-features|.
 
 2017-05-20: Updated TOC options~
 There's been a few updates to the TOC. During this work, I removed some
-unecessary options.
+unnecessary options.
 
 Deprecated options:
 * *g:vimtex_toc_fold_levels*  (was not necessary)
@@ -5848,7 +5848,7 @@ to >
 Added new module for view functionality.  This allows more complex view
 functions (and commands), for instance to do forward (and possibly backwards)
 searching through `synctex`.  In the first version, I added forward search for
-mupdf by use of the `synctex` command and `xdotools`.
+mupdf by use of the `synctex` command and `xdotool`.
 
 The `g:latex_viewer` option has now been deprecated.  Instead one should use
 |g:vimtex_view_method| and |g:vimtex_view_general_viewer|.
