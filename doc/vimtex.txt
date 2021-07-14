@@ -161,7 +161,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
     - give enhanced |gf| command
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
-- Motions
+- Motions                                                      *vimtex-motions*
   - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
   - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
   - Move between math environment boundaries with `[n`, `[N`, `]n`, and `]N`
@@ -1970,8 +1970,8 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_motion_enabled*
-  This option enables the motion mappings `%`, `[[`, `[]`, `][`, and `]]`. It
-  also enables the highlighting of matching delimiters.
+  This option enables the motion mappings, see |vimtex-motions|. It also
+  enables the highlighting of matching delimiters.
 
   Default value: 1
 
