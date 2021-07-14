@@ -4137,7 +4137,7 @@ package specific addons are generally only loaded when applicable.
 LaTeX is a macro expansion language and it is impossible to write a fully
 correct syntax parser without running the `tex` compiler itself. VimTeX aims
 to be pragmatic and provide a best-effort syntax highlighting - a decent trade
-of between simplicity and completeness.
+off between simplicity and completeness.
 
 There will probably always be situations where the parser will fail, and in
 some cases it may be hard to "recover". It is therefore possible to manually
