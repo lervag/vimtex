@@ -297,6 +297,8 @@ function! vimtex#options#init() abort " {{{1
         \   'csharp' : 'cs',
         \ },
         \ 'ignored' : {
+        \   'sh' : ['shSpecial'],
+        \   'bash' : ['shSpecial'],
         \   'cs' : [
         \     'csBraces',
         \   ],
