@@ -12,18 +12,24 @@
 #   docker build -t vimtex-test .
 #   docker run -v /path/to/vimtex:/vimtex -ti vimtex-test
 
-FROM ubuntu
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt -qq update && apt -qq -y install \
-  vim neovim moreutils \
-  gcc git make wget tree \
-  texlive texlive-latex-extra texlive-extra-utils latexmk \
+RUN apt update
+RUN apt install -y software-properties-common
+RUN add-apt-repository -y ppa:neovim-ppa/stable && apt update
+RUN apt -y install \
+  vim neovim moreutils gcc make wget tree \
+  texlive texlive-latex-extra texlive-extra-utils \
   texlive-bibtex-extra libtext-bibtex-perl \
+  texlive-publishers \
+  latexmk \
   libmodule-build-perl \
   libconfig-autoconf-perl \
   libextutils-libbuilder-perl
+
+ENV SHELL=bash
 
 WORKDIR /vimtex
 

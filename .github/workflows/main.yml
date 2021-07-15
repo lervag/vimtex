@@ -14,6 +14,9 @@ on:
       - 'media/*'
       - '*.md'
 
+env:
+  SHELL: bash
+
 jobs:
   run-tests:
     name: Test on ubuntu-latest
@@ -25,12 +28,12 @@ jobs:
       run: |
         sudo add-apt-repository ppa:neovim-ppa/stable
         sudo apt update
-        sudo apt install neovim \
+        sudo apt install \
+          vim neovim moreutils gcc \
           texlive texlive-latex-extra texlive-extra-utils \
           texlive-bibtex-extra libtext-bibtex-perl \
           texlive-publishers \
           latexmk \
-          gcc moreutils \
           libmodule-build-perl \
           libconfig-autoconf-perl \
           libextutils-libbuilder-perl
