@@ -7,4 +7,4 @@ export INMAKE
 
 test:
 	@chronic $(MYVIM) -u test.vim
-	@diff test.{out,ref}; rm test.out
+	@diff test.out test.ref; rm test.out
