@@ -5419,13 +5419,22 @@ A: This is not a feature provided by VimTeX itself. Similar to
 
     --langdef=bib
     --langmap=bib:.bib
-    --regex-bib=/^@[A-Za-z]+\{([^,]+),/\1/e,BibTeX-Entries/i
-    --regex-bib=/^@string\{([^ "#%')(,=}{]+)/\1/s,BibTeX-Strings/i
-    --regex-bib=/author[[:space:]]*=[[:space:]]*("([^"]+)"|\{([^\}]+)\})[[:space:]]*,?[[:space:]]*$/\2\3/a,BibTeX-Authors/i
-
-<   See [0] for references.
-
-   [0]: https://github.com/lervag/vimtex/issues/564
+    --regex-bib=/^@[A-Za-z]+\{([^,]+),/\1/e,entry/i
+    --regex-bib=/^@article\{([^,]*)/\1/a,article/i
+    --regex-bib=/^@book\{([^,]*)/\1/b,book/i
+    --regex-bib=/^@booklet\{([^,]*)/\1/L,booklet/i
+    --regex-bib=/^@conference\{([^,]*)/\1/c,conference/i
+    --regex-bib=/^@inbook\{([^,]*)/\1/B,inbook/i
+    --regex-bib=/^@incollection\{([^,]*)/\1/C,incollection/i
+    --regex-bib=/^@inproceedings\{([^,]*)/\1/P,inproceedings/i
+    --regex-bib=/^@manual\{([^,]*)/\1/m,manual/i
+    --regex-bib=/^@mastersthesis\{([^,]*)/\1/T,mastersthesis/i
+    --regex-bib=/^@misc\{([^,]*)/\1/M,misc/i
+    --regex-bib=/^@phdthesis\{([^,]*)/\1/t,phdthesis/i
+    --regex-bib=/^@proceedings\{([^,]*)/\1/p,proceedings/i
+    --regex-bib=/^@string\{([^ "#%')(,=}{]+)/\1/s,string/i
+    --regex-bib=/^@techreport\{([^,]*)/\1/r,techreport/i
+    --regex-bib=/^@unpublished\{([^,]*)/\1/u,unpublished/i
 
 ------------------------------------------------------------------------------
                                                          *vimtex-faq-texmfhome*
