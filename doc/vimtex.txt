@@ -1195,18 +1195,12 @@ OPTIONS                                                        *vimtex-options*
     Since the author list can be large, the `@author_all` is truncated to 20
     characters. This can be modified with the `auth_len` key (see below).
 
-    Note: If you change this option, you should clear the related cache
-          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
-
   menu_fmt~
     Default value: `'[@type] @author_short (@year), "@title"'`
     The format used for the `menu` entry for bib completion candidates (see
     |complete-items|). If the key is set to an empty string, then the `menu`
     entry is not added to the completion candidates. See the description of
     `match_str_fmt` for the allowed keys.
-
-    Note: If you change this option, you should clear the related cache
-          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   abbr_fmt~
     Default value: `''`
@@ -1218,9 +1212,6 @@ OPTIONS                                                        *vimtex-options*
     Default value: 20
     Truncation length for author list with the `@author_all` format key in the
     format strings for `match_str_fmt`, `menu_fmt`, and `abbr_fmt`.
-
-    Note: If you change this option, you should clear the related cache
-          files: `:VimtexClearCache bibcomplete` (|VimtexClearCache|)
 
   custom_patterns~
     Default value: []
@@ -3192,15 +3183,11 @@ COMMANDS                                                      *vimtex-commands*
                                 |g:vimtex_subfile_start_local|.
 
                                              *:VimtexClearCache*
-:VimtexClearCache {name}  Clear all cache files that matches `name`. This is
-                          useful for instance to clear the `bibcomplete` cache
-                          when you change the completion options, see
-                          |g:vimtex_complete_bib.match_str_fmt|.
+:VimtexClearCache {name}  Clear cache files that matches `name`. The cache
+                          files are located at |g:vimtex_cache_root| and can
+                          also be deleted manually.
 
-                          To clear all cache files: `:VimtexClearCache ALL`
-
-                          The cache files can be cleared manually. They are
-                          located at |g:vimtex_cache_root|.
+                          `:VimtexClearCache ALL` clears all cache files.
 
 ------------------------------------------------------------------------------
 MAP DEFINITIONS                                               *vimtex-mappings*

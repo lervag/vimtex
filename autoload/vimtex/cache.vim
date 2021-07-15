@@ -128,6 +128,15 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new.ftime = -1
   let new.modified = 0
 
+  if has_key(a:opts, 'validate')
+    call new.read()
+    if get(new.data, '__validate', {}) != a:opts.validate
+      call new.clear()
+      let new.data.__validate = deepcopy(a:opts.validate)
+      call new.write()
+    endif
+  endif
+
   return new
 endfunction
 

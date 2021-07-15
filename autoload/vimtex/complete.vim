@@ -117,6 +117,7 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
 
   let l:cache = vimtex#cache#open('bibcomplete', {
         \ 'local': 1,
+        \ 'validate': g:vimtex_complete_bib,
         \ 'default': {'result': [], 'ftime': -1}
         \})
 
