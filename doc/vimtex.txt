@@ -1729,9 +1729,10 @@ OPTIONS                                                        *vimtex-options*
             \}
 
 *g:vimtex_grammar_vlty*
-  This option is used to configure the `vlty` grammar checker. It is a
-  dictionary with the following keys (see |vimtex-grammar-vlty| for more
-  details):
+  This option is used to configure the `vlty` grammar checker. This checker
+  relies on the Python package `YaLafi` in ombination with the proofreading
+  software `LanguageTool` (see |vimtex-grammar-vlty| for more details). The
+  option is a dictionary with the following keys :
 
     lt_directory~
       Path to the `LanguageTool` software, if installed manually.
@@ -4942,7 +4943,8 @@ a simple Bash script wrapper.
 VLTY                                                      *vimtex-grammar-vlty*
 
 The `vlty` compiler uses the Python package `YaLafi` [1] for extracting the
-plain text and combines this with the proofreading software `LanguageTool` [2].
+plain text and combines this with the proofreading software
+`LanguageTool` [2]. The name `vlty` comes from VimTeX + LanguageTool + YaLafi.
 
 In order to use `vlty`, you need local installations of both components. An
 archive of `LanguageTool` can be downloaded from [3]. After uncompressing at
