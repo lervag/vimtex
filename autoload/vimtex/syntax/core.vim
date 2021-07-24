@@ -366,6 +366,26 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texParboxArgContent')
 
   " }}}2
+  " {{{2 Commands: Theorems
+
+  " Reference: LaTeX 2e Unofficial reference guide, section 12.9
+  "            https://texdoc.org/serve/latex2e/0
+
+  syntax match texCmdNewthm "\\newtheorem\>"
+        \ nextgroup=texNewthmArgName skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texNewthmArgName', {
+        \ 'next': 'texNewthmOptCounter,texNewthmArgPrinted',
+        \ 'contains': 'TOP,@Spell'
+        \})
+  call vimtex#syntax#core#new_opt('texNewthmOptCounter',
+        \ {'next': 'texNewthmArgPrinted'}
+        \)
+  call vimtex#syntax#core#new_arg('texNewthmArgPrinted',
+        \ {'next': 'texNewthmOptNumberby'}
+        \)
+  call vimtex#syntax#core#new_opt('texNewthmOptNumberby')
+
+  " }}}2
   " {{{2 Comments
 
   " * In documented TeX Format, actual comments are defined by leading "^^A".
@@ -641,6 +661,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdNew             texCmd
   highlight def link texCmdNewcmd          texCmdNew
   highlight def link texCmdNewenv          texCmd
+  highlight def link texCmdNewthm          texCmd
   highlight def link texCmdNoSpell         texCmd
   highlight def link texCmdPackage         texCmd
   highlight def link texCmdParbox          texCmd
@@ -710,6 +731,9 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewenvArgName      texEnvArgName
   highlight def link texNewenvOpt          texOpt
   highlight def link texNewenvParm         texParm
+  highlight def link texNewthmArgName      texArg
+  highlight def link texNewthmOptCounter   texOpt
+  highlight def link texNewthmOptNumberby  texOpt
   highlight def link texOptEqual           texSymbol
   highlight def link texParboxOptHeight    texError
   highlight def link texParboxOptIPos      texError

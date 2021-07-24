@@ -35,6 +35,8 @@ $
 \def \foo #1#2 {#1 foo #1 bar #2 baz}
 \newenvironment{test}[3]{#1 before #2}{#3 after #1}
 
+\newtheorem{theorem}{Theorem}
+
 \begin{document}
 
 Test accents \v! and \v@ here.
@@ -109,7 +111,6 @@ Line with $inline math$ here.\footnote{here {asd} with \cmd also}.
   foominipage $bar$
 \end{minipage}
 
-\newtheorem{theorem}{Theorem}
 \begin{theorem}[Foo {\cite[Theorem 1.1]{Bar}}]
   Lorem ipsum \dots
 \end{theorem}
