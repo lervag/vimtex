@@ -38,16 +38,12 @@ function! s:matcher.get_entry(context) abort dict " {{{1
     let a:context.continue = 'section'
   endif
 
-  if a:context.line !~# self.re_starred
+  if a:context.line =~# self.re_starred
+    call a:context.level.set_current(level)
+  else
     call a:context.level.increment(level)
     if a:context.line !~# '\v^\s*\\%(sub)?paragraph'
       let number = deepcopy(a:context.level)
-    endif
-  elseif a:context.line =~# '\v^\s*\\add%(part|chap|sec)'
-    let newlevel = vimtex#parser#toc#level(level)
-    if newlevel > a:context.level.current
-      call a:context.level.increment(level)
-      let number = ''
     endif
   endif
 

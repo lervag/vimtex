@@ -299,3 +299,8 @@ function! s:level.increment(level) abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:level.set_current(level) abort dict " {{{1
+  let self.current = vimtex#parser#toc#level(a:level)
+endfunction
+
+" }}}1
