@@ -14,4 +14,8 @@ call assert_true(vimtex#syntax#in('texDelim', 64, 39))
 call assert_true(vimtex#syntax#in('texNewthmArgPrinted', 38, 23))
 call assert_true(vimtex#syntax#in('texEnvOpt', 114, 18))
 
+call assert_true(vimtex#syntax#in('texCmdBibitem', 119, 3))
+call assert_true(vimtex#syntax#in('texBibitemArg', 119, 13))
+call assert_true(vimtex#syntax#in('texBibitemOpt', 120, 13))
+
 call vimtex#test#finished()

@@ -261,6 +261,15 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texRefOpt', {'next': 'texRefOpt,texRefArg'})
   call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
+  " \bibitem[label]{marker}
+  syntax match texCmdBibitem "\\bibitem\>"
+        \ nextgroup=texBibitemOpt,texBibitemArg skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texBibitemOpt', {
+        \ 'next': 'texBibitemArg'
+        \})
+  call vimtex#syntax#core#new_arg('texBibitemArg',
+        \ {'contains': 'texComment,@NoSpell'})
+
   " Sections and parts
   syntax match texCmdPart "\\\(front\|main\|back\)matter\>"
   syntax match texCmdPart "\\part\>"                    nextgroup=texPartArgTitle
@@ -638,11 +647,14 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   " Inherited groups
   highlight def link texArgNew             texCmd
   highlight def link texAuthorOpt          texOpt
+  highlight def link texBibitemArg         texArg
+  highlight def link texBibitemOpt         texOpt
   highlight def link texBoxOptPosVal       texSymbol
   highlight def link texBoxOptIPosVal      texBoxOptPosVal
   highlight def link texCmdAccent          texCmd
   highlight def link texCmdAuthor          texCmd
   highlight def link texCmdBib             texCmd
+  highlight def link texCmdBibitem         texCmd
   highlight def link texCmdClass           texCmd
   highlight def link texCmdConditional     texCmd
   highlight def link texCmdConditionalINC  texCmdConditional
