@@ -21,7 +21,7 @@ function! vimtex#syntax#p#amsthm#load(cfg) abort " {{{1
           \ 'contains=texCmdEnv'
   endfor
 
-  highlight def link texNewthmEnvOpt texOpt
+  highlight def link texNewthmEnvOpt texEnvOpt
 endfunction
 
 " }}}1
