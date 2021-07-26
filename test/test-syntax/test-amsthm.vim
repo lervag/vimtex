@@ -6,8 +6,6 @@ set spell
 
 if empty($INMAKE) | finish | endif
 
-call assert_equal(3, len(b:vimtex.syntax.amsthm))
-
 call assert_true(vimtex#syntax#in('texNewthmOptNumberby', 4, 32))
 call assert_true(vimtex#syntax#in('texNewthmOptCounter', 5, 19))
 

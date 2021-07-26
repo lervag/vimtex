@@ -395,6 +395,17 @@ function! vimtex#syntax#core#init() abort " {{{1
         \)
   call vimtex#syntax#core#new_opt('texNewthmOptNumberby')
 
+  " \begin{mytheorem}[custom title]
+  call vimtex#syntax#core#new_opt('texTheoremEnvOpt', {
+        \ 'contains': 'TOP,@NoSpell'
+        \})
+  for l:envname in s:gather_newtheorems()
+    execute 'syntax match texTheoremEnvBgn'
+          \ printf('"\\begin{%s}"', l:envname)
+          \ 'nextgroup=texTheoremEnvOpt skipwhite'
+          \ 'contains=texCmdEnv'
+  endfor
+
   " }}}2
   " {{{2 Comments
 
@@ -761,6 +772,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texTabularChar        texSymbol
   highlight def link texTabularCol         texOpt
   highlight def link texTabularOpt         texEnvOpt
+  highlight def link texTheoremEnvOpt      texEnvOpt
   highlight def link texVerbZone           texZone
   highlight def link texVerbZoneInline     texVerbZone
 endfunction
@@ -1879,6 +1891,17 @@ function! s:match_conceal_cites_icon() abort " {{{1
   execute 'syntax match texCmdRefConcealed'
         \ '"\\cite[tp]\?\*\?\%(\[[^]]*\]\)\{,2}{[^}]*}"'
         \ 'conceal cchar=' . g:vimtex_syntax_conceal_cites.icon
+endfunction
+
+" }}}1
+
+function! s:gather_newtheorems() abort " {{{1
+  let l:lines = vimtex#parser#preamble(b:vimtex.tex)
+
+  call filter(l:lines, {_, x -> x =~# '^\s*\\newtheorem\>'})
+  call map(l:lines, {_, x -> matchstr(x, '^\s*\\newtheorem\>\*\?{\zs[^}]*')})
+
+  return l:lines
 endfunction
 
 " }}}1
