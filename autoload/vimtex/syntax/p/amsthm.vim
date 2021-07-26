@@ -10,18 +10,27 @@ function! vimtex#syntax#p#amsthm#load(cfg) abort " {{{1
   syntax match texCmdNewthm "\\newtheorem\*"
         \ nextgroup=texNewthmArgName skipwhite skipnl
 
-  call vimtex#syntax#core#new_opt('texNewthmEnvOpt', {
+  syntax match texProofEnvBegin "\\begin{proof}"
+        \ nextgroup=texProofEnvOpt
+        \ skipwhite
+        \ contains=texCmdEnv
+  call vimtex#syntax#core#new_opt('texProofEnvOpt', {
+        \ 'contains': 'TOP,@NoSpell'
+        \})
+
+  call vimtex#syntax#core#new_opt('texTheoremEnvOpt', {
         \ 'contains': 'TOP,@NoSpell'
         \})
 
   for l:envname in b:vimtex.syntax.amsthm
-    execute 'syntax match texNewthmEnvBgn'
+    execute 'syntax match texTheoremEnvBgn'
           \ printf('"\\begin{%s}"', l:envname)
-          \ 'nextgroup=texNewthmEnvOpt skipwhite'
+          \ 'nextgroup=texTheoremEnvOpt skipwhite'
           \ 'contains=texCmdEnv'
   endfor
 
-  highlight def link texNewthmEnvOpt texEnvOpt
+  highlight def link texProofEnvOpt texEnvOpt
+  highlight def link texTheoremEnvOpt texEnvOpt
 endfunction
 
 " }}}1

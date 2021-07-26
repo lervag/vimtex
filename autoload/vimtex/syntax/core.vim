@@ -380,6 +380,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Reference: LaTeX 2e Unofficial reference guide, section 12.9
   "            https://texdoc.org/serve/latex2e/0
 
+  " \newtheorem
   syntax match texCmdNewthm "\\newtheorem\>"
         \ nextgroup=texNewthmArgName skipwhite skipnl
   call vimtex#syntax#core#new_arg('texNewthmArgName', {
