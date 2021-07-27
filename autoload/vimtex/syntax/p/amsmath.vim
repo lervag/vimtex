@@ -42,6 +42,17 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'contains': 'TOP,@Spell'
         \})
 
+  " subjclass
+  syntax match texCmdSubjClass "\\subjclass\>"
+        \ nextgroup=texSubjClassOpt,texSubjClassArg skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texSubjClassOpt', {
+        \ 'next': 'texSubjClassArg',
+        \ 'contains': 'TOP,@Spell'
+        \})
+  call vimtex#syntax#core#new_arg('texSubjClassArg', {
+        \ 'contains': 'TOP,@Spell'
+        \})
+
   " DeclareMathOperator
   syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
   call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
@@ -64,11 +75,14 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
 
   highlight def link texCmdDeclmathoper     texCmdNew
   highlight def link texCmdNumberWithin     texCmd
+  highlight def link texCmdSubjClass        texCmd
   highlight def link texDeclmathoperArgName texArgNew
   highlight def link texDeclmathoperArgBody texMathZone
   highlight def link texMathConcealedArg    texMathTextArg
   highlight def link texNumberWithinArg1    texArg
   highlight def link texNumberWithinArg2    texArg
+  highlight def link texSubjClassArg        texArg
+  highlight def link texSubjClassOpt        texOpt
 endfunction
 
 " }}}1
