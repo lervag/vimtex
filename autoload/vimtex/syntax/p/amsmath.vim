@@ -31,6 +31,17 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
 
+  " numberwithin
+  syntax match texCmdNumberWithin "\\numberwithin\>"
+        \ nextgroup=texNumberWithinArg1 skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texNumberWithinArg1', {
+        \ 'next': 'texNumberWithinArg2',
+        \ 'contains': 'TOP,@Spell'
+        \})
+  call vimtex#syntax#core#new_arg('texNumberWithinArg2', {
+        \ 'contains': 'TOP,@Spell'
+        \})
+
   " DeclareMathOperator
   syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
   call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
@@ -52,9 +63,12 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   endif
 
   highlight def link texCmdDeclmathoper     texCmdNew
+  highlight def link texCmdNumberWithin     texCmd
   highlight def link texDeclmathoperArgName texArgNew
   highlight def link texDeclmathoperArgBody texMathZone
   highlight def link texMathConcealedArg    texMathTextArg
+  highlight def link texNumberWithinArg1    texArg
+  highlight def link texNumberWithinArg2    texArg
 endfunction
 
 " }}}1
