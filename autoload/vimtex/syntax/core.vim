@@ -402,7 +402,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   for l:envname in s:gather_newtheorems()
     execute 'syntax match texTheoremEnvBgn'
           \ printf('"\\begin{%s}"', l:envname)
-          \ 'nextgroup=texTheoremEnvOpt skipwhite'
+          \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
           \ 'contains=texCmdEnv'
   endfor
 

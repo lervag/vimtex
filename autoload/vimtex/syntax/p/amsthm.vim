@@ -8,9 +8,8 @@ function! vimtex#syntax#p#amsthm#load(cfg) abort " {{{1
   syntax match texCmdNewthm "\\newtheorem\*"
         \ nextgroup=texNewthmArgName skipwhite skipnl
 
-  syntax match texProofEnvBegin "\\begin{proof}"
-        \ nextgroup=texProofEnvOpt
-        \ skipwhite
+  syntax match texProofEnvBgn "\\begin{proof}"
+        \ nextgroup=texProofEnvOpt skipwhite skipnl
         \ contains=texCmdEnv
   call vimtex#syntax#core#new_opt('texProofEnvOpt', {
         \ 'contains': 'TOP,@NoSpell'

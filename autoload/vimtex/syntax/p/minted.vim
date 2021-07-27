@@ -18,14 +18,14 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
 
   " Match minted environment boundaries
   syntax match texMintedEnvBgn contained '\\begin{minted}'
-        \ nextgroup=texMintedEnvOpt,texMintedEnvArg skipwhite
+        \ nextgroup=texMintedEnvOpt,texMintedEnvArg skipwhite skipnl
         \ contains=texCmdEnv
   call vimtex#syntax#core#new_opt('texMintedEnvOpt', {'next': 'texMintedEnvArg'})
   call vimtex#syntax#core#new_arg('texMintedEnvArg', {'contains': ''})
 
   " Match starred custom minted environments and the option group
   syntax match texMintedEnvBgn contained "\\begin{\w\+\*}"
-        \ nextgroup=texMintedEnvArgOpt skipwhite
+        \ nextgroup=texMintedEnvArgOpt skipwhite skipnl
         \ contains=texCmdEnv
   call vimtex#syntax#core#new_arg('texMintedEnvArgOpt', {'contains': ''})
 
