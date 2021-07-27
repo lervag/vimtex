@@ -15,7 +15,15 @@ function! vimtex#syntax#p#amsthm#load(cfg) abort " {{{1
         \ 'contains': 'TOP,@NoSpell'
         \})
 
+  syntax match texCmdThmStyle "\\theoremstyle\>"
+        \ nextgroup=texThmStyleArg skipwhite skipnl
+  call vimtex#syntax#core#new_arg('texThmStyleArg', {
+        \ 'contains': 'TOP,@Spell'
+        \})
+
+  highlight def link texCmdThmStyle texCmd
   highlight def link texProofEnvOpt texEnvOpt
+  highlight def link texThmStyleArg texArg
 endfunction
 
 " }}}1
