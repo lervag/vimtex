@@ -37,7 +37,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'next': 'texDeclmathoperArgBody',
         \ 'contains': ''
         \})
-  call vimtex#syntax#core#new_arg('texDeclmathoperArgBody')
+  call vimtex#syntax#core#new_arg('texDeclmathoperArgBody', {'contains': 'TOP,@Spell'})
 
   " \tag{label} or \tag*{label}
   syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
@@ -53,6 +53,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
 
   highlight def link texCmdDeclmathoper     texCmdNew
   highlight def link texDeclmathoperArgName texArgNew
+  highlight def link texDeclmathoperArgBody texMathZone
   highlight def link texMathConcealedArg    texMathTextArg
 endfunction
 
