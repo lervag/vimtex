@@ -287,7 +287,7 @@ function! vimtex#syntax#core#init() abort " {{{1
     execute 'syntax match texCmdNoSpell nextgroup=texNoSpellOpt,texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
   endfor
   call vimtex#syntax#core#new_opt('texNoSpellOpt', {'next': 'texNoSpellArg'})
-  call vimtex#syntax#core#new_arg('texNoSpellArg', {'contains': 'TOP,@Spell'})
+  call vimtex#syntax#core#new_arg('texNoSpellArg', {'next': 'texNoSpellArg', 'contains': 'TOP,@Spell'})
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
