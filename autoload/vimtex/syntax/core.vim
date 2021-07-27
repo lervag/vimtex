@@ -399,12 +399,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texTheoremEnvOpt', {
         \ 'contains': 'TOP,@NoSpell'
         \})
-  for l:envname in s:gather_newtheorems()
-    execute 'syntax match texTheoremEnvBgn'
-          \ printf('"\\begin{%s}"', l:envname)
-          \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
-          \ 'contains=texCmdEnv'
-  endfor
+  " for l:envname in s:gather_newtheorems()
+  "   execute 'syntax match texTheoremEnvBgn'
+  "         \ printf('"\\begin{%s}"', l:envname)
+  "         \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
+  "         \ 'contains=texCmdEnv'
+  " endfor
 
   " }}}2
   " {{{2 Comments
