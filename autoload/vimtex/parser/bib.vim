@@ -31,7 +31,7 @@ function! vimtex#parser#bib#parse_cheap(start_line, end_line, opts) abort " {{{1
   let l:entries = []
   let l:firstlines = filter(
         \ range(a:start_line, a:end_line),
-        \ {_, i -> trim(getline(i))[0] == "@"})
+        \ {_, i -> vimtex#util#trim(getline(i))[0] == "@"})
   let l:total_entries = len(l:firstlines)
   let l:entry_lines = map(l:firstlines, {idx, val -> [val,
         \ idx == l:total_entries - 1
