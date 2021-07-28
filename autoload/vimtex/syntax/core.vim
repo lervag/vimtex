@@ -284,9 +284,10 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Add @NoSpell for commands per configuration (TOP,@Spell implies NoSpell!)
   for l:macro in g:vimtex_syntax_nospell_commands
-    execute 'syntax match texCmdNoSpell nextgroup=texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
+    execute 'syntax match texCmdNoSpell nextgroup=texNoSpellOpt,texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
   endfor
-  call vimtex#syntax#core#new_arg('texNoSpellArg', {'contains': 'TOP,@Spell'})
+  call vimtex#syntax#core#new_opt('texNoSpellOpt', {'next': 'texNoSpellArg'})
+  call vimtex#syntax#core#new_arg('texNoSpellArg', {'next': 'texNoSpellArg', 'contains': 'TOP,@Spell'})
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
@@ -758,6 +759,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewthmArgName      texArg
   highlight def link texNewthmOptCounter   texOpt
   highlight def link texNewthmOptNumberby  texOpt
+  highlight def link texNoSpellOpt         texOpt
   highlight def link texOptEqual           texSymbol
   highlight def link texParboxOptHeight    texError
   highlight def link texParboxOptIPos      texError
