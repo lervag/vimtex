@@ -21,7 +21,7 @@ endfunction
 
 function! vimtex#fold#bib#level(lnum) abort " {{{1
   " Handle blank lines
-  if empty(trim(getline(a:lnum)))
+  if empty(vimtex#util#trim(getline(a:lnum)))
     if a:lnum == 1 | return 0 | endif
 
     let l:prev_level = vimtex#fold#bib#level(a:lnum - 1)
