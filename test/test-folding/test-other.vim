@@ -11,7 +11,7 @@ nnoremap q :qall!<cr>
 let g:vimtex_fold_enabled = 1
 let g:vimtex_fold_types = {'comments' : {'enabled': 1}}
 
-silent edit main.tex
+silent edit test-other.tex
 
 if empty($INMAKE) | finish | endif
 
