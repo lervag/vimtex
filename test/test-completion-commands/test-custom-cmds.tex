@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{glossaries}
+\usepackage{mathtools}
 \usepackage{xparse}
 
 % Custom glossary commands 1
@@ -27,6 +28,8 @@ first #1 second #2
 \let\testlet=\leftrightarrow
 
 \newcommand{\testnewcommand}{Hello world}
+
+\DeclarePairedDelimiter\testpaireddelim{\lvert}{\rvert}
 
 \begin{document}
 

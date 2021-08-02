@@ -820,8 +820,9 @@ function! s:gather_candidates_from_newcommands(lines, label) abort " {{{1
   "   a:label   Label to use in the menu
 
   let l:re = '\v\\%(%(provide|renew|new)command'
-        \ . '|%(New|Declare|Provide|Renew)%(Expandable)?DocumentCommand)'
-  let l:re_match = l:re . '\*?\{\\?\zs[^}]*'
+        \ . '|%(New|Declare|Provide|Renew)%(Expandable)?DocumentCommand'
+        \ . '|DeclarePairedDelimiter)'
+  let l:re_match = l:re . '\*?%(\{\\?\zs[^}]*|\\\zs\w+)'
 
   return map(filter(a:lines, 'v:val =~# l:re'), {_, x -> {
         \ 'word': matchstr(x, l:re_match),
