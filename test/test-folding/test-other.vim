@@ -11,7 +11,7 @@ nnoremap q :qall!<cr>
 let g:vimtex_fold_enabled = 1
 let g:vimtex_fold_types = {'comments' : {'enabled': 1}}
 
-silent edit main.tex
+silent edit test-other.tex
 
 if empty($INMAKE) | finish | endif
 
@@ -58,11 +58,11 @@ call assert_equal(2, foldlevel(202))
 
 call assert_equal(2, foldlevel(206))
 call assert_equal(
-      \ '\begin{frame}       Title: Subtitle',
+      \ '\begin{frame}      Title: Subtitle',
       \ foldtextresult(206))
 call assert_equal(2, foldlevel(213))
 call assert_equal(
-      \ '\begin{frame}       Title page',
+      \ '\begin{frame}      Title page',
       \ foldtextresult(213))
 
 call assert_equal(1, foldlevel(line('$')-1))

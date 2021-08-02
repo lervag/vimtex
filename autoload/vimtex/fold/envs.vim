@@ -68,48 +68,67 @@ function! s:folder.text(line, level) abort dict " {{{1
 
   " Set caption/label based on type of environment
   if env ==# 'frame'
+    let option = ''
     let label = ''
     let caption = self.parse_caption_frame(a:line)
-  elseif env ==# 'table'
+  elseif env ==# 'table' || env ==# 'figure'
+    let option = ''
     let label = self.parse_label()
     let caption = self.parse_caption_table(a:line)
   else
+    let option = matchstr(a:line, '\[.*\]')
     let label = self.parse_label()
     let caption = self.parse_caption(a:line)
   endif
 
-  let width_ind = len(matchstr(a:line, '^\s*'))
-  let width = winwidth(0) - (&number ? &numberwidth : 0) - 4 - width_ind
+  let width = winwidth(0)
+        \ - (&number ? &numberwidth : 0)
+        \ - str2nr(matchstr(&foldcolumn, '\d\+$'))
 
-  let width_env = 19
-  let width_lab = len(label) + 2 > width - width_env
-        \ ? width - width_env
-        \ : len(label) + 2
-  let width_cap = width - width_env - width_lab
-
+  " Always make room for the label
+  let width_rhs = 0
   if !empty(label)
-    let label = printf('(%.*S)', width_lab, label)
+    let label = '(' . label . ')'
+    let width_rhs += len(label)
   endif
 
-  if !empty(caption)
-    if strchars(caption) > width_cap
-      let caption = strpart(caption, 0, width_cap - 4) . '...'
+  " Use the remaining width for the left-hand side content
+  let width_lhs = width - width_rhs - 2
+
+  " Add the possibly indented \begin{...} part
+  let width_ind = len(matchstr(a:line, '^\s*'))
+  if len(env) > width_lhs - width_ind - 8
+    let env = strpart(env, 0, width_lhs - width_ind - 8)
+  endif
+  let title = repeat(' ', width_ind) . '\begin{' . env . '}'
+
+  " Add option group text
+  if !empty(option)
+    let width_available = width_lhs - len(title)
+    if width_available >= 3
+      let title .= (len(option) > width_available - strchars(caption)
+            \ ? '[…]'
+            \ : option)
     endif
-  else
-    let width_env += width_cap
-    let width_cap = 0
   endif
 
-  if strlen(env) > width_env - 8
-    let env = strpart(env, 0, width_env - 11) . '...'
-  endif
-  let env = '\begin{' . env . '}'
+  " Add caption text
+  if !empty(caption)
+    let title = printf('%-*S ', 18, title)
+    let width_title = strchars(title)
+    let width_available = width_lhs - width_title
 
-  let title = printf('%*S%-*S %-*S  %*S',
-        \ width_ind, '',
-        \ width_env, env,
-        \ width_cap, caption,
-        \ width_lab, label)
+    if width_available >= 5
+      if strchars(caption) > width_available
+        let caption = strpart(caption, 0, width_available - 1) . '…'
+      endif
+      let title .= caption
+    endif
+  endif
+
+  " Finalle combine the left-hand side and right-hand side and remove trailing
+  " spaces
+  let title = printf('%-*S %*S', width_lhs, title, width_rhs, label)
 
   return substitute(title, '\s\+$', '', '')
 endfunction

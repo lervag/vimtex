@@ -1,0 +1,42 @@
+\documentclass{minimal}
+\begin{document}
+
+\begin{defn}[Definition 1]
+  \label{defn:definition_1}
+  A simple environment with simple contents.
+\end{defn}
+
+\begin{figure}[ht] % A standalone figure with label and caption
+  \centering
+  %\input{proof}
+  \caption{Simple figure}
+  \label{fig:simple_figure}
+\end{figure}
+
+\begin{thm}[Example Title of Theorem]
+  \label{thm:example_title_of_theorem}
+  Suppose A and B.
+
+  \begin{itemize}
+    \item If C, then D
+    \item \(A \wedge B \implies D \iff A \wedge B \implies C\)
+  \end{itemize}
+
+  We demonstrate this by the figure.
+
+  \begin{figure}[ht] % Comment
+    \centering
+    %\input{proof}
+    \caption{A visual proof of Example Theorem}
+    \label{fig:visual_theorem}
+  \end{figure}
+\end{thm}
+
+\begin{defn}[Definition 2]
+  \label{defn:definition_2}
+  A sample definition.
+
+  \caption{A caption for an environment typically without caption}
+\end{defn}
+
+\end{document}
