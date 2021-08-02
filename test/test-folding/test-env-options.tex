@@ -1,72 +1,42 @@
-\documentclass{memoir}
-
+\documentclass{minimal}
 \begin{document}
 
-\section{test1}
-\label{sec:test1}
-
-% The fold for the definition below should contain the environment, the options, and the label:
-%\begin{defn}[Definition1]								(defn:definition_1)
 \begin{defn}[Definition 1]
-\label{defn:definition_1}
-A simple environment with simple contents.
+  \label{defn:definition_1}
+  A simple environment with simple contents.
 \end{defn}
 
-Filler text
-
-% The fold for the figure below should contain the environment, NOT the options, the caption, and the label:
-%\begin{figure}		Simple figure							(fig:simple_theorem)
 \begin{figure}[ht] % A standalone figure with label and caption
-    \centering
-%     \input{proof}
-    \caption{Simple figure}
-    \label{fig:simple_figure}
+  \centering
+  %\input{proof}
+  \caption{Simple figure}
+  \label{fig:simple_figure}
 \end{figure}
 
-Filler text
-
-\subsection{subtests 1}
-\label{sub:subtests_1}
-
-These tests feature nesting.
-
-% The fold for the theorem below should contain the environment, the options, and the label:
-%\begin{thm}[Example Title of Theorem]								(thm:example_title_of_theorem)
 \begin{thm}[Example Title of Theorem]
-\label{thm:example_title_of_theorem}
-Suppose A and B.
+  \label{thm:example_title_of_theorem}
+  Suppose A and B.
 
-	 \begin{itemize}
-		\item If C, then D
-		\item \(A \wedge B \implies D \iff A \wedge B \implies C\)
-	\end{itemize}
+  \begin{itemize}
+    \item If C, then D
+    \item \(A \wedge B \implies D \iff A \wedge B \implies C\)
+  \end{itemize}
 
-	We demonstrate this by the figure.
-% The fold for the figure below should contain the environment, NOT the options, the caption, and the label:
-%\begin{figure}		A visual proof of the Example Theorem					(fig:visual_theorem)
-\begin{figure}[ht] % Comment
+  We demonstrate this by the figure.
+
+  \begin{figure}[ht] % Comment
     \centering
-%     \input{proof}
+    %\input{proof}
     \caption{A visual proof of Example Theorem}
     \label{fig:visual_theorem}
-\end{figure}
-
+  \end{figure}
 \end{thm}
 
-Filler text
-
-% If one has an unusual case of captioning in a nonstandard environment (i.e. not figure or table), the following conflict may occur:
-% \begin{defn}[Definition 2] A caption for an environment typically without caption								% (defn:defini
 \begin{defn}[Definition 2]
-\label{defn:definition_2}
-A sample definition.
+  \label{defn:definition_2}
+  A sample definition.
 
-\caption{A caption for an environment typically without caption}
+  \caption{A caption for an environment typically without caption}
 \end{defn}
-% The proper folding should be:
-% \begin{defn}[Definition 2] A caption for an environment typically without caption								% (defn:definition)
-
-% However, the spacing in the envs.vim folding mechanisms does not account for the spacing of both the options and the caption, and so the label is incorrectly fit within the fold.
-
 
 \end{document}

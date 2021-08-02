@@ -58,11 +58,11 @@ call assert_equal(2, foldlevel(202))
 
 call assert_equal(2, foldlevel(206))
 call assert_equal(
-      \ '\begin{frame}       Title: Subtitle',
+      \ '\begin{frame}      Title: Subtitle',
       \ foldtextresult(206))
 call assert_equal(2, foldlevel(213))
 call assert_equal(
-      \ '\begin{frame}       Title page',
+      \ '\begin{frame}      Title page',
       \ foldtextresult(213))
 
 call assert_equal(1, foldlevel(line('$')-1))
