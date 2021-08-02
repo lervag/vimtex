@@ -1,6 +1,6 @@
 % Package info
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{custom}[2020/01/01 v1.0 Custom class]
+\ProvidesClass{test-custom-cls-speed}[2020/01/01 v1.0 Custom class]
 
 % Class dependencies
 \LoadClass[12pt, a4paper]{report}

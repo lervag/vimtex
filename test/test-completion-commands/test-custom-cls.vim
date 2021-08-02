@@ -6,7 +6,7 @@ set nomore
 
 nnoremap q :qall!<cr>
 
-silent edit test2.tex
+silent edit test-custom-cls.tex
 
 if empty($INMAKE) | finish | endif
 
