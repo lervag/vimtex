@@ -20,12 +20,12 @@ set cpoptions&vim
 
 setlocal autoindent
 setlocal indentexpr=VimtexIndentExpr()
-setlocal indentkeys=!^F,o,O,(,),],},\&,=item,=else,=fi
+setlocal indentkeys=!^F,o,O,(,),],},\&,=\\item,=\\else,=\\fi
 
 " Add standard closing math delimiters to indentkeys
 for s:delim in [
       \ 'rangle', 'rbrace', 'rvert', 'rVert', 'rfloor', 'rceil', 'urcorner']
-  let &l:indentkeys .= ',=' . s:delim
+  let &l:indentkeys .= ',=\' . s:delim
 endfor
 
 
