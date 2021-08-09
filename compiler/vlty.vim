@@ -3,7 +3,7 @@ let current_compiler = 'vlty'
 
 let s:cpo_save = &cpo
 set cpo&vim
-
+let s:pref = 'vlty compiler  - '
 let s:python = executable('python3') ? 'python3' : 'python'
 let s:vlty = g:vimtex_grammar_vlty
 
@@ -13,48 +13,82 @@ function! s:installation_error(msg)
 endfunction
 
 if !executable(s:python)
-  call s:installation_error('vlty compiler requires Python')
+  call s:installation_error(s:pref . 'requires Python')
   finish
 endif
 
 call system(s:python . ' -c "import sys; assert sys.version_info >= (3, 6)"')
 if v:shell_error != 0
-  call s:installation_error('vlty compiler requires at least Python version 3.6')
+  call s:installation_error(s:pref . 'requires at least Python version 3.6')
   finish
 endif
 
 call system(s:python . ' -c "import yalafi"')
 if v:shell_error != 0
-  call s:installation_error('vlty compiler requires the Python module YaLafi')
+  call s:installation_error(s:pref . 'requires the Python module YaLafi')
   finish
 endif
 
+if !exists('s:vlty.lt_command')
+    let s:vlty.lt_command = ''
+endif
+let s:vlty_lt_command = ''
 if s:vlty.server !=# 'lt'
-  if !executable('java')
-    call s:installation_error('vlty compiler requires java')
-    finish
-  endif
-
-  if !empty(s:vlty.lt_command)
-    if !executable(s:vlty.lt_command)
-      call s:installation_error('vlty compiler - lt_command not valid')
-      finish
+    if !executable('java')
+        echoerr s:pref . 'install Java.'
+        finish
     endif
-  elseif !filereadable(fnamemodify(s:vlty.lt_directory
-        \ . '/languagetool-commandline.jar', ':p'))
-    call s:installation_error('vlty compiler - lt_directory path not valid')
-    finish
-  endif
+    if s:vlty.lt_command != ''
+        if !executable(s:vlty.lt_command)
+            echoerr s:pref . 'set s:vlty.lt_command correctly.'
+            finish
+        else
+          let s:vlty_lt_command = s:vlty.lt_command
+        endif
+    else
+        if !filereadable(fnamemodify(s:vlty.lt_directory . '/languagetool-commandline.jar', ':p'))
+            echoerr s:pref . 'set s:vlty.lt_directory to the'
+                        \ . ' path of LanguageTool.'
+            finish
+        else
+            let s:vlty_lt_command = 'java -jar ' . fnamemodify(s:vlty.lt_directory . '/languagetool-commandline.jar', ':p:S')
+        endif
+    endif
 endif
 
 let s:vimtex = get(b:, 'vimtex', {'documentclass': '', 'packages': {}})
 let s:documentclass = s:vimtex.documentclass
 let s:packages = join(keys(s:vimtex.packages), ',')
-let s:language = vimtex#ui#choose(split(&spelllang, ','), {
-      \ 'prompt': 'Multiple spelllang languages detected, please select one:',
-      \ 'abort': v:false,
-      \})
-let s:language = substitute(s:language, '_', '-', '')
+
+" guess language
+"
+if !exists('s:vlty.language')
+  let s:vlty.language = vimtex#ui#choose(split(&spelllang, ','), {
+        \ 'prompt': 'Multiple spelllang languages detected, please select one:',
+        \ 'abort': v:false,
+        \})
+  let s:vlty.language = substitute(s:vlty.language, '_', '-', '')
+endif
+
+if !exists('s:list')
+    silent let s:list = split(system(s:vlty_lt_command . ' --list'), '[[:space:]]')
+endif
+if !empty(s:list)
+    if match(s:list, '\c^' . s:vlty.language . '$') == -1
+        echohl WarningMsg | echomsg "Language '" . s:vlty.language . "' not listed in output of " . s:vlty_lt_command . " --list!" | echohl None
+        let s:vlty.language = matchstr(s:vlty.language, '\v^[^-]+')
+        echohl WarningMsg | echomsg "Trying '" . s:vlty.language . "' instead." | echohl None
+        if match(s:list, '\c^' . s:vlty.language . '$') == -1
+            echoerr "Language '" . s:vlty.language . "' not listed in output of " . s:vlty_lt_command . " --list; trying anyway!"
+        endif
+    endif
+endif
+if empty(s:vlty.language)
+    echohl WarningMsg | echomsg 'Please set g:vimtex_grammar_vlty.language for more accurate check by LanguageTool; using autodetection instead.' | echohl None
+    let s:vlty_language = ' --autoDetect'
+else
+    let s:vlty_language = ' --language ' . s:vlty.language
+endif
 
 let &l:makeprg =
       \ s:python . ' -m yalafi.shell'
@@ -67,7 +101,7 @@ let &l:makeprg =
       \ . ' --encoding ' . (s:vlty.encoding ==# 'auto'
       \    ? (empty(&l:fileencoding) ? &l:encoding : &l:fileencoding)
       \    : s:vlty.encoding)
-      \ . ' --language ' . s:language
+      \ . s:vlty_language
       \ . ' --disable "' . s:vlty.lt_disable . '"'
       \ . ' --enable "' . s:vlty.lt_enable . '"'
       \ . ' --disablecategories "' . s:vlty.lt_disablecategories . '"'
