@@ -1,0 +1,66 @@
+name: General issue
+description: Report a bug, a problem, or any kind of issue
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before reporting, please [search existing issues](https://github.com/lervag/vimtex/issues?q=is%3Aissue+is%3Aopen).
+
+  - type: input
+    attributes:
+      label: "Description"
+      description: "Provide a clear and short description of the issue. Use simple english."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Steps to reproduce"
+      description: |
+        Steps to reproduce. Please include minimal test files (`minimal.vim` and
+        `minimal.tex`) and include an initial step like:
+
+          * Vim: `vim -u minimal.vim minimal.tex`.
+          * neovim: `nvim -u minimal.vim minimal.tex`
+
+        See below for examples of minimal test files.
+
+  - type: textarea
+    attributes:
+      label: "Expected behavior"
+      description: "A description of the behavior you expected."
+
+  - type: textarea
+    attributes:
+      label: "Actual behavior"
+
+  - type: textarea
+    attributes:
+      label: "Output of `:VimtexInfo`"
+      description: |
+        Run `:VimtexInfo` in a relevant LaTeX file and copy the content here.
+      render: yaml
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **minimal.vim**
+        ```vim
+        set nocompatible
+        let &runtimepath  = '~/.vim/bundle/vimtex,' . &runtimepath
+        let &runtimepath .= ',~/.vim/bundle/vimtex/after'
+        filetype plugin indent on
+        syntax enable
+        " Add relevant options and VimTeX configuration below.
+        ```
+
+        **minimal.tex**
+        ```tex
+        \documentclass{minimal}
+        \begin{document}
+        Hello world!
+        \end{document}
+        ```
