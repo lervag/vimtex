@@ -37,14 +37,14 @@ body:
 
   - type: checkboxes
     attributes:
-      label: "Do you use global or local `latexmkrc`?"
-      description: "If you check _yes_: consider if it is relevant to describe it in the above descriptions!"
+      label: "Do you use a latexmkrc file?"
+      description: "This can either be a global `~/.latexmkrc` file or a project specific `/my/project/latexmkrc` file. If you check _yes_: consider if it is relevant to describe it in the above descriptions!"
       options:
         - label: "Yes"
 
   - type: textarea
     attributes:
-      label: "Output of `:VimtexInfo`"
+      label: "VimtexInfo"
       description: |
         Run `:VimtexInfo` in a relevant LaTeX file and copy the content here.
       render: yaml
