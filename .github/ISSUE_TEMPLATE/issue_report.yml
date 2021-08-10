@@ -7,10 +7,11 @@ body:
       value: |
         Before reporting, please [search existing issues](https://github.com/lervag/vimtex/issues?q=is%3Aissue+is%3Aopen).
 
-  - type: input
+  - type: textarea
     attributes:
       label: "Description"
-      description: "Provide a clear and short description of the issue. Use simple english."
+      description: |
+        Provide a clear and short description of the issue. Use simple english.
     validations:
       required: true
 
@@ -18,8 +19,7 @@ body:
     attributes:
       label: "Steps to reproduce"
       description: |
-        Steps to reproduce. Please include minimal test files (`minimal.vim` and
-        `minimal.tex`) and include an initial step like:
+        Steps to reproduce. Please include minimal test files (`minimal.vim` and `minimal.tex`) and include an initial step like:
 
           * Vim: `vim -u minimal.vim minimal.tex`.
           * neovim: `nvim -u minimal.vim minimal.tex`
@@ -35,6 +35,13 @@ body:
     attributes:
       label: "Actual behavior"
 
+  - type: checkboxes
+    attributes:
+      label: "Do you use global or local `latexmkrc`?"
+      description: "If you check _yes_: consider if it is relevant to describe it in the above descriptions!"
+      options:
+        - label: "Yes"
+
   - type: textarea
     attributes:
       label: "Output of `:VimtexInfo`"
@@ -47,6 +54,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        ## Example of minimal test files
+
         **minimal.vim**
         ```vim
         set nocompatible
