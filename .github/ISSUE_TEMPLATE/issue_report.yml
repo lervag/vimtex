@@ -38,7 +38,11 @@ body:
   - type: input
     attributes:
       label: "Do you use a latexmkrc file?"
-      description: "This can either be a global `~/.latexmkrc` file or a project specific `/my/project/latexmkrc` file. If you check _yes_: consider if it is relevant to describe it in the above descriptions!"
+      description: |
+        This can either be a global `~/.latexmkrc` file or a project specific `/my/project/latexmkrc` file. Or something similar.
+
+        If _yes_, then consider if it is relevant to describe it in the above descriptions!
+      placeholder: "Yes / No"
     validations:
       required: true
 
