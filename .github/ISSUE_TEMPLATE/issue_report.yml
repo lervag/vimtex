@@ -25,15 +25,21 @@ body:
           * neovim: `nvim -u minimal.vim minimal.tex`
 
         See below for examples of minimal test files.
+      placeholder: |
+          1. `vim -u minimal.vim minimal.tex`
+          2. Do something
+          3. Do something more
 
   - type: textarea
     attributes:
       label: "Expected behavior"
       description: "A description of the behavior you expected."
+      placeholder: "When following the above steps, I expect ..."
 
   - type: textarea
     attributes:
       label: "Actual behavior"
+      placeholder: "When following the above steps, I observe ..."
 
   - type: input
     attributes:
