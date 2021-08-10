@@ -35,12 +35,12 @@ body:
     attributes:
       label: "Actual behavior"
 
-  - type: checkboxes
+  - type: input
     attributes:
       label: "Do you use a latexmkrc file?"
       description: "This can either be a global `~/.latexmkrc` file or a project specific `/my/project/latexmkrc` file. If you check _yes_: consider if it is relevant to describe it in the above descriptions!"
-      options:
-        - label: "Yes"
+    validations:
+      required: true
 
   - type: textarea
     attributes:
