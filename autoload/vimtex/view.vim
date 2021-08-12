@@ -74,7 +74,12 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   " Open file if necessary
   if !bufexists(l:file)
     if filereadable(l:file)
-      execute 'silent edit' l:file
+      try
+        execute 'edit' l:file
+      catch
+        call vimtex#log#warning("Reverse goto failed")
+        return
+      endtry
     else
       call vimtex#log#warning("Reverse goto failed for file:\n" . l:file)
       return
