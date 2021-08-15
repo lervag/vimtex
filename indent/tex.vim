@@ -218,13 +218,13 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
   if s:re_opt.close_indented
-    return s:sw*(s:count(a:prev_line, s:re_open)
-          \ - s:count(a:prev_line, s:re_close))
+    return s:sw*(vimtex#util#count(a:prev_line, s:re_open)
+          \ - vimtex#util#count(a:prev_line, s:re_close))
   else
-    return s:sw*(  max([  s:count(a:prev_line, s:re_open)
-          \             - s:count(a:prev_line, s:re_close), 0])
-          \      - max([  s:count(a:line, s:re_close)
-          \             - s:count(a:line, s:re_open), 0]))
+    return s:sw*(  max([  vimtex#util#count(a:prev_line, s:re_open)
+          \             - vimtex#util#count(a:prev_line, s:re_close), 0])
+          \      - max([  vimtex#util#count(a:line, s:re_close)
+          \             - vimtex#util#count(a:line, s:re_open), 0]))
   endif
 endfunction
 
@@ -303,22 +303,6 @@ let s:tikz_commands = '\v\\%(' . join([
         \ 'clip',
         \ 'add%(legendentry|plot)',
       \ ], '|') . ')'
-
-" }}}1
-
-function! s:count(line, pattern) abort " {{{1
-  if empty(a:pattern) | return 0 | endif
-
-  let l:sum = 0
-  let l:indx = match(a:line, a:pattern)
-  while l:indx >= 0
-    let l:sum += 1
-    let l:match = matchstr(a:line, a:pattern, l:indx)
-    let l:indx += len(l:match)
-    let l:indx = match(a:line, a:pattern, l:indx)
-  endwhile
-  return l:sum
-endfunction
 
 " }}}1
 

@@ -9,6 +9,22 @@ function! vimtex#util#command(cmd) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#count(line, pattern) abort " {{{1
+  if empty(a:pattern) | return 0 | endif
+
+  let l:sum = 0
+  let l:indx = match(a:line, a:pattern)
+  while l:indx >= 0
+    let l:sum += 1
+    let l:match = matchstr(a:line, a:pattern, l:indx)
+    let l:indx += len(l:match)
+    let l:indx = match(a:line, a:pattern, l:indx)
+  endwhile
+
+  return l:sum
+endfunction
+
+" }}}1
 function! vimtex#util#flatten(list) abort " {{{1
   let l:result = []
 
