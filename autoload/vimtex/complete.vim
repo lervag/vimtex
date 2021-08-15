@@ -592,7 +592,7 @@ function! s:completer_gls.parse_glsbib() dict abort " {{{2
   if empty(l:filename) | return [] | endif
 
   let l:candidates = []
-  for l:entry in vimtex#parser#bib(l:filename, {'backend': 'bibparse'})
+  for l:entry in vimtex#parser#bib(l:filename, {'backend': 'vim'})
     call add(l:candidates, {
           \ 'word': l:entry.key,
           \ 'menu': get(l:entry, 'name', '--'),

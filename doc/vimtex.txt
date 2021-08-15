@@ -1151,6 +1151,14 @@ OPTIONS                                                        *vimtex-options*
 
     `bibparse`: Also fast, but might be more robust.
 
+              Note: bibparse [0] is deprecated in favor of GooseBib [1], but
+                    GooseBib does not provide a similar functionality. Thus,
+                    in the future, this parser may be removed from VimTeX.
+                    However, it is kept as an alternative for now.
+
+                    [0]: https://github.com/tdegeus/bibparse
+                    [1]: https://github.com/tdegeus/GooseBib
+
     `vim`:      The slowest but perhaps most robust solution, as it does not
               require any external utilities.
 
