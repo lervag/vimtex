@@ -74,7 +74,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   elseif env ==# 'table' || env ==# 'figure'
     let option = ''
     let label = self.parse_label()
-    let caption = self.parse_caption_table(a:line)
+    let caption = self.parse_caption(a:line)
   else
     let option = matchstr(a:line, '\[.*\]')
     let label = self.parse_label()
@@ -135,39 +135,41 @@ endfunction
 
 " }}}1
 function! s:folder.parse_label() abort dict " {{{1
-  let i = v:foldend
-  while i >= v:foldstart
-    if getline(i) =~# '^\s*\\label'
-      return matchstr(getline(i), '^\s*\\label\%(\[.*\]\)\?{\zs.*\ze}')
+  let depth = -1
+  let i = v:foldstart
+
+  while i <= v:foldend
+    let line = getline(i)
+
+    let depth += vimtex#util#count(line, '\\begin{\w\+}')
+    let depth -= vimtex#util#count(line, '\\end{\w\+}')
+
+    if depth == 0 && line =~# '^\s*\\label'
+      return matchstr(line, '^\s*\\label\%(\[.*\]\)\?{\zs.*\ze}')
     end
-    let i -= 1
+
+    let i += 1
   endwhile
+
   return ''
 endfunction
 
 " }}}1
 function! s:folder.parse_caption(line) abort dict " {{{1
-  let i = v:foldend
-  while i >= v:foldstart
-    if getline(i) =~# '^\s*\\caption'
-      return matchstr(getline(i),
+  let depth = -1
+  let i = v:foldstart
+
+  while i <= v:foldend
+    let line = getline(i)
+
+    let depth += vimtex#util#count(line, '\\begin{\w\+}')
+    let depth -= vimtex#util#count(line, '\\end{\w\+}')
+
+    if depth == 0 && line =~# '^\s*\\caption'
+      return matchstr(line,
             \ '^\s*\\caption\(\[.*\]\)\?{\zs.\{-1,}\ze\(}\s*\)\?$')
     end
-    let i -= 1
-  endwhile
 
-  " If no caption found, check for a caption comment
-  return matchstr(a:line,'\\begin\*\?{.*}\s*%\s*\zs.*')
-endfunction
-
-" }}}1
-function! s:folder.parse_caption_table(line) abort dict " {{{1
-  let i = v:foldstart
-  while i <= v:foldend
-    if getline(i) =~# '^\s*\\caption'
-      return matchstr(getline(i),
-            \ '^\s*\\caption\s*\(\[.*\]\)\?\s*{\zs.\{-1,}\ze\(}\s*\)\?$')
-    end
     let i += 1
   endwhile
 

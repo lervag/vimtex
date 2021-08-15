@@ -23,10 +23,9 @@ call assert_equal(
   \ '\begin{figure}     Simple figure                      (fig:simple_figure)',
   \ foldtextresult(9))
 
-" TODO: This fails now -- see #2117
-" call assert_equal(
-"   \ '\begin{thm}[Example Title of Theorem]      (thm:example_title_of_theorem)',
-"   \ foldtextresult(16))
+call assert_equal(
+  \ '\begin{thm}[Example Title of Theorem]      (thm:example_title_of_theorem)',
+  \ foldtextresult(16))
 
 call assert_equal(
   \ '  \begin{figure}   A visual proof of Example Theorem (fig:visual_theorem)',
