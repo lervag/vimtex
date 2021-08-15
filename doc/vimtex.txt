@@ -3417,7 +3417,7 @@ Explanation of the keys:
   lhs~
     Mandatory argument. The left-hand side part of the map.
 
-  lhs_rhs~
+  rhs~
     Mandatory argument. The right-hand side part of the map. There is one
     utility function that can be useful:
 
@@ -4308,7 +4308,7 @@ syntax addons exist and how to configure them.
 SYNTAX GROUP REFERENCE                                *vimtex-syntax-reference*
 
 The following is a reference of the main syntax groups and its default
-highlighting, as well as one ore more examples of what it matches. Most of the
+highlighting, as well as one or more examples of what it matches. Most of the
 primitive groups are linked to conventional syntax groups as listed in
 |group-name|. In the examples, capital letters are used to indicate which
 parts are matched by the current group. For even more details, please refer to
