@@ -13,6 +13,9 @@ call assert_equal(6, len(s:parsed))
 let s:parsed = TestBackend('test.bib', 'bibparse')
 call assert_equal(7, len(s:parsed))
 
+let s:parsed = TestBackend('test.bib', 'bibtexparser')
+call assert_equal(5, len(s:parsed))
+
 let s:parsed = TestBackend('test.bib', 'vim')
 call assert_equal(7, len(s:parsed))
 
@@ -26,6 +29,9 @@ if !empty(s:bib) && filereadable(s:bib)
   call assert_equal(92, len(s:parsed))
 
   let s:parsed = TestBackend(s:bib, 'bibparse')
+  call assert_equal(92, len(s:parsed))
+
+  let s:parsed = TestBackend(s:bib, 'bibtexparser')
   call assert_equal(92, len(s:parsed))
 
   let s:parsed = TestBackend(s:bib, 'vim')

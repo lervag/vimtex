@@ -1159,6 +1159,15 @@ OPTIONS                                                        *vimtex-options*
                     [0]: https://github.com/tdegeus/bibparse
                     [1]: https://github.com/tdegeus/GooseBib
 
+    `bibtexparser`:
+              Also fast and possibly more robust. See the project Github
+              page for more details:
+              https://github.com/sciunto-org/python-bibtexparser
+
+              Note: This requires that Python 3 is available to Vim/neovim
+                    (see |if_pyth| and |py3|) and that the `bibtexparser`
+                    Python module is installed and available.
+
     `vim`:      The slowest but perhaps most robust solution, as it does not
               require any external utilities.
 

@@ -236,6 +236,26 @@ endfunction
 
 " }}}1
 
+function! s:parse_with_bibtexparser(file) abort " {{{1
+py3 << END
+import vim
+from bibtexparser import load
+from bibtexparser.bparser import BibTexParser
+
+parser = BibTexParser(common_strings=True)
+parser.ignore_nonstandard_types = False
+
+entries = load(open(vim.eval("a:file")), parser).entries
+for e in entries:
+    e['key'] = e['ID']
+    e['type'] = e['ENTRYTYPE']
+END
+
+  return py3eval('entries')
+endfunction
+
+" }}}1
+
 function! s:parse_with_vim(file) abort " {{{1
   " Adheres to the format description found here:
   " http://www.bibtex.org/Format/
