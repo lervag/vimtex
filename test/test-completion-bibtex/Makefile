@@ -5,7 +5,8 @@ export INMAKE
 
 TESTS := $(wildcard test*.vim)
 TESTS := $(filter-out test_backend,$(TESTS:.vim=))
-BACKENDS := bibtex bibparse bibtexparser vim
+BACKENDS := bibtex vim
+# BACKENDS := $(BACKENDS) bibparse bibtexparser
 
 .PHONY: test $(TESTS) $(BACKENDS)
 
