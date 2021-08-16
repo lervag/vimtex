@@ -1151,13 +1151,16 @@ OPTIONS                                                        *vimtex-options*
 
     `bibparse`: Also fast, but might be more robust.
 
-              Note: bibparse [0] is deprecated in favor of GooseBib [1], but
-                    GooseBib does not provide a similar functionality. Thus,
-                    in the future, this parser may be removed from VimTeX.
-                    However, it is kept as an alternative for now.
+              Note: bibparse is an executable provided by the Perl package
+                    Text-BibTeX [0]. It should not be confused with the
+                    similarly named Python project [1]. The latter is
+                    deprecated in favor of GooseBib [2]. The Python projects
+                    bibparse and GooseBib are both based on the Python library
+                    `bibtexparser`.
 
-                    [0]: https://github.com/tdegeus/bibparse
-                    [1]: https://github.com/tdegeus/GooseBib
+                    [0]: https://metacpan.org/dist/Text-BibTeX
+                    [1]: https://github.com/tdegeus/bibparse
+                    [2]: https://github.com/tdegeus/GooseBib
 
     `bibtexparser`:
               Also fast and possibly more robust. See the project Github
