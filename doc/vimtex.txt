@@ -2758,9 +2758,10 @@ OPTIONS                                                        *vimtex-options*
   currently open in a window. This option controls the command that is used to
   open files as a result of a backward search.
 
-  Examples: `edit` (open buffer in current window); `tabedit` (open buffer in
-  new tab page, similar to the Vim command-line option `--remote-tab`);
-  `split` (split current window to open buffer, similar to `--remote`)
+  Examples:
+    * `edit`     open buffer in current window
+    * `tabedit`  open buffer in new tab page
+    * `split`    split current window to open buffer
 
   Default value: `edit`
 

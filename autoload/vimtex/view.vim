@@ -77,20 +77,23 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
       try
         execute g:vimtex_view_reverse_search_edit_cmd l:file
       catch
-        call vimtex#log#warning("Reverse goto failed")
+        call vimtex#log#warning([
+              \ 'Reverse goto failed!',
+              \ printf('Command error: %s %s',
+              \        g:vimtex_view_reverse_search_edit_cmd, l:file)])
         return
       endtry
     else
-      call vimtex#log#warning("Reverse goto failed for file:\n" . l:file)
+      call vimtex#log#warning([
+            \ 'Reverse goto failed!',
+            \ printf('File not readable: "%s"', l:file)])
       return
     endif
   endif
 
-  " Go to correct buffer and line
-
-  " Get buffer number
+  " Get buffer, window, and tab numbers
+  " * If tab/window exists, switch to it/them
   let l:bufnr = bufnr(l:file)
-  " Get window and tab numbers
   try
     let [l:winid] = win_findbuf(l:bufnr)
     let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
