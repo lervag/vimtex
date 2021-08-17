@@ -87,11 +87,18 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   endif
 
   " Go to correct buffer and line
+
+  " Get buffer number
   let l:bufnr = bufnr(l:file)
-  let l:winnr = bufwinnr(l:file)
-  execute l:winnr >= 0
-        \ ? l:winnr . 'wincmd w'
-        \ : 'buffer ' . l:bufnr
+  " Get window and tab numbers
+  try
+    let [l:winid] = win_findbuf(l:bufnr)
+    let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
+    execute l:tabnr . 'tabnext'
+    execute l:winnr . 'wincmd w'
+  catch
+    execute 'edit' l:file
+  endtry
 
   execute 'normal!' a:line . 'G'
   redraw
