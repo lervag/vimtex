@@ -19,6 +19,7 @@ let s:qf = getqflist()
 
 let s:n = 0
 for s:expect in [
+      \ {'lnum': 0,  'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16, 'type': 'E', 'text': "Paragraph ended before \\date  was complete."},
       \ {'lnum': 17, 'type': 'W', 'text': "LaTeX Warning: Reference `blabla' on page 1 undefined on input line 17."},
       \ {'lnum': 19, 'type': 'E', 'text': "Undefined control sequence.\n\\test"},

@@ -34,15 +34,10 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   " Match errors
   setlocal errorformat+=%E!\ LaTeX\ %trror:\ %m
-  " setlocal errorformat+=%+E%>Runaway\ argument?
   setlocal errorformat+=%E%f:%l:\ %m
-  setlocal errorformat+=%E!\ %m
-  " setlocal errorformat+=%-E!\ File\ ended\ %m
-  " setlocal errorformat+=%+Z!\ Emergency\ stop.
-  " setlocal errorformat+=%C!\ %m
-
-  " Match runaway argument errors
-  " setlocal errorformat+=%+C%m
+  setlocal errorformat+=%+ERunaway\ argument?
+  setlocal errorformat+=%+C{%m
+  setlocal errorformat+=%C!\ %m
 
   " More info for undefined control sequences
   setlocal errorformat+=%Z<argument>\ %m

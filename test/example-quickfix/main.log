@@ -24,3 +24,29 @@ Package typearea Warning: \typearea used at group level 2.
 (typearea)                outside all groups on input line 21.
 Package caption Warning: Unsupported document class (or package) detected,
 (caption) usage of the caption package is not recommended.
+
+Runaway argument?
+{\sqrt {{1}} \end {equation} \par \end {document} 
+! File ended while scanning use of \frac .
+<inserted text> 
+                \par 
+<*> "file with errors.tex"
+                          
+I suspect you have forgotten a `}', causing me
+to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
+! Emergency stop.
+
+!  ==> Fatal error occurred, no output PDF file produced!
+
+Runaway argument?
+./file with errors.tex:16: Paragraph ended before \date  was complete.
+<to be read again> 
+                   \par 
+l.16 
+     
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
