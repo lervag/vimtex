@@ -80,7 +80,7 @@ function! s:zathura.latexmk_append_argument() dict abort " {{{1
     if self.has_synctex
       let zathura .= ' -x \"' . g:vimtex_compiler_progname
           \ . ' --servername ' . v:servername
-          \ . ' --remote +\%{line} \%{input}\" \%S'
+          \ . ' --remote-expr \"\\\"\"vimtex#view#reverse_goto(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
     endif
 
     let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
