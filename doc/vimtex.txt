@@ -2752,6 +2752,18 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_reverse_search_edit_cmd*
+  When working in a multi-file project, initiating backward search
+  |vimtex-synctex-backward-search| may require opening a file that is not
+  currently open in a window. This option controls the command that is used to
+  open files as a result of a backward search.
+
+  Examples: `edit` (open buffer in current window); `tabedit` (open buffer in
+  new tab page, similar to the Vim command-line option `--remote-tab`);
+  `split` (split current window to open buffer, similar to `--remote`)
+
+  Default value: `edit`
+
 *g:vimtex_view_method*
   Set the viewer method.
 
