@@ -12,8 +12,8 @@ catch /VimTeX: No log file found/
 endtry
 
 let s:qf = getqflist()
-call assert_equal(len(s:qf), 12)
 
+let s:n = 0
 for s:expect in [
       \ {'lnum': 99,  'type': 'W', 'text': 'Package natbib Warning: Citation `Einstein:1905'' on page 1 undefined on input line 99.'},
       \ {'lnum': 12,  'type': 'W', 'text': 'Package refcheck Warning: Unused label `eq:my_equation_label'' on input line 12.'},
@@ -28,11 +28,12 @@ for s:expect in [
       \ {'lnum': 21,  'type': 'W', 'text': "Package typearea Warning: \\typearea used at group level 2.\n               Using \\typearea inside any group, e.g.\n               environments, math mode, boxes, etc. may result in\n               many type setting problems.\n               You should move the command \\typearea\n               outside all groups"},
       \ {'lnum': 0,   'type': 'W', 'text': "Package caption Warning: Unsupported document class (or package) detected,\nusage of the caption package is not recommended."},
       \]
-  let s:observe = remove(s:qf, 0)
-  call assert_equal(s:expect.text, s:observe.text,
-        \ 'Failed at ' . substitute(string(s:expect), "\n", '', 'g'))
-  call assert_equal(s:expect.lnum, s:observe.lnum)
-  call assert_equal(s:expect.type, s:observe.type)
+  call assert_equal(s:expect.lnum, s:qf[s:n].lnum, 'Failed at index ' . s:n)
+  call assert_equal(s:expect.type, s:qf[s:n].type, 'Failed at index ' . s:n)
+  call assert_equal(s:expect.text, s:qf[s:n].text, 'Failed at index ' . s:n)
+  let s:n += 1
 endfor
+
+call assert_equal(s:n, len(s:qf))
 
 call vimtex#test#finished()
