@@ -72,10 +72,10 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   let l:file = resolve(a:filename)
 
   " Open file if necessary
-  if !bufexists(l:file)
+  if !bufloaded(l:file)
     if filereadable(l:file)
       try
-        execute 'edit' l:file
+        execute g:vimtex_view_reverse_search_edit_cmd l:file
       catch
         call vimtex#log#warning("Reverse goto failed")
         return
@@ -97,7 +97,7 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
     execute l:tabnr . 'tabnext'
     execute l:winnr . 'wincmd w'
   catch
-    execute 'edit' l:file
+    execute g:vimtex_view_reverse_search_edit_cmd l:file
   endtry
 
   execute 'normal!' a:line . 'G'
