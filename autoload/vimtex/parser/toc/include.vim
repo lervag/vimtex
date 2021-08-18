@@ -20,12 +20,14 @@ function! s:matcher.get_entry(context) abort dict " {{{1
   let l:file = vimtex#parser#tex#input_parser(
         \ a:context.line, a:context.file, b:vimtex.root)
 
+  let l:file = simplify(fnamemodify(l:file, ':~:.'))
+
   return {
         \ 'title': 'tex incl: ' . (strlen(l:file) < 70
         \          ? l:file
         \          : l:file[0:30] . '...' . l:file[-36:]),
         \ 'number': '',
-        \ 'file': fnamemodify(l:file, ':~:.'),
+        \ 'file': l:file,
         \ 'line': 1,
         \ 'level': a:context.max_level - a:context.level.current,
         \ 'rank': a:context.lnum_total,
