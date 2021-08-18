@@ -17,28 +17,19 @@ let s:matcher = {
       \ 're' : vimtex#re#tex_input . '\zs\f{-}\s*\ze\}',
       \}
 function! s:matcher.get_entry(context) abort dict " {{{1
-  let l:file = matchstr(a:context.line, self.re)
-  if !vimtex#paths#is_abs(l:file[0])
-    " Handle import and subfile package commands
-    let l:root = a:context.line =~# '\\sub'
-          \ ? fnamemodify(a:context.file, ':p:h')
-          \ : b:vimtex.root
-    let l:file = l:root . '/' . l:file
-  endif
-  let l:file = fnamemodify(l:file, ':~:.')
-  if !filereadable(l:file) && filereadable(l:file . '.tex')
-    let l:file .= '.tex'
-  endif
+  let l:file = vimtex#parser#tex#input_parser(
+        \ a:context.line, a:context.file, b:vimtex.root)
+
   return {
-        \ 'title'  : 'tex incl: ' . (strlen(l:file) < 70
-        \               ? l:file
-        \               : l:file[0:30] . '...' . l:file[-36:]),
-        \ 'number' : '',
-        \ 'file'   : l:file,
-        \ 'line'   : 1,
-        \ 'level'  : a:context.max_level - a:context.level.current,
-        \ 'rank'   : a:context.lnum_total,
-        \ 'type'   : 'include',
+        \ 'title': 'tex incl: ' . (strlen(l:file) < 70
+        \          ? l:file
+        \          : l:file[0:30] . '...' . l:file[-36:]),
+        \ 'number': '',
+        \ 'file': fnamemodify(l:file, ':~:.'),
+        \ 'line': 1,
+        \ 'level': a:context.max_level - a:context.level.current,
+        \ 'rank': a:context.lnum_total,
+        \ 'type': 'include',
         \ }
 endfunction
 

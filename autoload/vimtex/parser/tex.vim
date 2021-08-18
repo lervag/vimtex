@@ -104,6 +104,58 @@ endfunction
 
 " }}}1
 
+function! vimtex#parser#tex#input_parser(line, current_file, root) abort " {{{1
+  " Handle \space commands
+  let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
+
+  " Handle import and subfile package commands
+  if l:file =~# g:vimtex#re#tex_input_import
+    let l:root = l:file =~# '\\sub'
+          \ ? fnamemodify(a:current_file, ':p:h')
+          \ : a:root
+
+    let l:candidate = s:input_to_filename(
+          \ substitute(copy(l:file), '\/\?}\s*{', '\/', 'g'), l:root)
+
+    return !empty(l:candidate)
+          \ ? l:candidate
+          \ : s:input_to_filename(
+          \     substitute(copy(l:file), '{.{-}}', '', ''), l:root)
+  endif
+
+  return s:input_to_filename(l:file, a:root)
+endfunction
+
+function! s:input_to_filename(input, root) abort " {{{2
+  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
+
+  " Trim whitespaces and quotes from beginning/end of string
+  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
+  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
+
+  " Ensure that the file name has extension
+  if empty(fnamemodify(l:file, ':e'))
+    let l:file .= '.tex'
+  endif
+
+  if vimtex#paths#is_abs(l:file)
+    return l:file
+  endif
+
+  let l:candidate = a:root . '/' . l:file
+  if filereadable(l:candidate)
+    return l:candidate
+  endif
+
+  let l:candidate = vimtex#kpsewhich#find(l:file)
+  return filereadable(l:candidate) ? l:candidate : l:file
+endfunction
+
+" }}}2
+
+" }}}1
+
+
 function! s:parse(file, opts, cache) abort " {{{1
   let l:current = a:cache.get(a:file)
   let l:ftime = getftime(a:file)
@@ -166,7 +218,7 @@ function! s:parse_current(file, opts, current) abort " {{{1
         continue
       endif
 
-      let l:file = s:input_parser(l:line, a:file, a:opts.root)
+      let l:file = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
       call add(a:current.lines, l:file)
 
       if a:file ==# l:file
@@ -200,7 +252,7 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
     endif
 
     if l:line =~# g:vimtex#re#tex_input
-      let l:file = s:input_parser(l:line, a:file, a:opts.root)
+      let l:file = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
       call extend(l:lines, s:parse_preamble(l:file, a:opts, a:parsed_files))
     else
       call add(l:lines, l:line)
@@ -208,56 +260,6 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
   endfor
 
   return l:lines
-endfunction
-
-" }}}1
-
-function! s:input_parser(line, current_file, root) abort " {{{1
-  " Handle \space commands
-  let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
-
-  " Handle import and subfile package commands
-  if l:file =~# g:vimtex#re#tex_input_import
-    let l:root = l:file =~# '\\sub'
-          \ ? fnamemodify(a:current_file, ':p:h')
-          \ : a:root
-
-    let l:candidate = s:input_to_filename(
-          \ substitute(copy(l:file), '\/\?}\s*{', '\/', 'g'), l:root)
-
-    return !empty(l:candidate)
-          \ ? l:candidate
-          \ : s:input_to_filename(
-          \     substitute(copy(l:file), '{.{-}}', '', ''), l:root)
-  endif
-
-  return s:input_to_filename(l:file, a:root)
-endfunction
-
-" }}}1
-function! s:input_to_filename(input, root) abort " {{{1
-  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
-
-  " Trim whitespaces and quotes from beginning/end of string
-  let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
-  let l:file = substitute(l:file, '\(\s\|"\)*$', '', '')
-
-  " Ensure that the file name has extension
-  if empty(fnamemodify(l:file, ':e'))
-    let l:file .= '.tex'
-  endif
-
-  if vimtex#paths#is_abs(l:file)
-    return l:file
-  endif
-
-  let l:candidate = a:root . '/' . l:file
-  if filereadable(l:candidate)
-    return l:candidate
-  endif
-
-  let l:candidate = vimtex#kpsewhich#find(l:file)
-  return filereadable(l:candidate) ? l:candidate : l:file
 endfunction
 
 " }}}1
