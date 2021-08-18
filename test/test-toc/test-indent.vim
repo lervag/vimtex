@@ -16,8 +16,8 @@ let s:toc = vimtex#toc#get_entries()
 
 let b:vimtex.toc.number_width = 4
 let b:vimtex.toc.number_format = '%-4s'
-call b:vimtex.toc.print_entry(s:toc[6])
+call b:vimtex.toc.print_entry(s:toc[8])
 
-call assert_equal('L1 [al]   2.1 The first section', getline('$'))
+call assert_equal('L1 [an]   2.1 The first section', getline('$'))
 
 call vimtex#test#finished()

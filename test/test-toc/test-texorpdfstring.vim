@@ -14,7 +14,7 @@ let s:toc = vimtex#toc#get_entries()
 
 let b:vimtex.toc.number_width = 4
 let b:vimtex.toc.number_format = '%-4s'
-call b:vimtex.toc.print_entry(s:toc[12])
+call b:vimtex.toc.print_entry(s:toc[14])
 
 call assert_equal('L1 3.1 $L^p$ spaces', getline('$'))
 
