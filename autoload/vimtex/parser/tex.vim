@@ -223,16 +223,15 @@ function! s:input_parser(line, current_file, root) abort " {{{1
           \ : a:root
 
     let l:candidate = s:input_to_filename(
-          \ substitute(copy(l:file), '}\s*{', '', 'g'), l:root)
-    if !empty(l:candidate)
-      return l:candidate
-    else
-      return s:input_to_filename(
-          \ substitute(copy(l:file), '{.{-}}', '', ''), l:root)
-    endif
-  else
-    return s:input_to_filename(l:file, a:root)
+          \ substitute(copy(l:file), '\/\?}\s*{', '\/', 'g'), l:root)
+
+    return !empty(l:candidate)
+          \ ? l:candidate
+          \ : s:input_to_filename(
+          \     substitute(copy(l:file), '{.{-}}', '', ''), l:root)
   endif
+
+  return s:input_to_filename(l:file, a:root)
 endfunction
 
 " }}}1
