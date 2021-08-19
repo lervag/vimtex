@@ -909,9 +909,19 @@ OPTIONS                                                        *vimtex-options*
   keys are explained in more detail:
 
   build_dir~
-    This option sets the compilation build directory.  It corresponds to the
-    `-output-directory` option in `latexmk`.  If the path is a relative path,
+    This option sets the compilation build directory. It corresponds to the
+    `-output-directory` option in `latexmk`. If the path is a relative path,
     then it will be considered relative to the main project file.
+
+    Although the value of this option should be a string that represents
+    a path, it is also possible to make it a function. This makes it possible
+    to specify a dynamic `build_dir`. It may be easier to understand from an
+    example: >
+
+      let g:vimtex_compiler_latexmk = {'build_dir': {-> expand("%:t:r")}}
+<
+    With the above setting, the `build_dir` is set to the base name of the
+    current file. E.g., If you do `vim test.tex`, the value becomes `test`.
 
     Note 1: This option only works with `latexmk` version 4.27 and later.
     Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
@@ -1116,8 +1126,7 @@ OPTIONS                                                        *vimtex-options*
     Note: This value must be specified; an empty value will return an error.
 
   build_dir~
-    Same as |g:vimtex_compiler_latexmk| / `build_dir`. This will be created if
-    needed, since tectonic won't build anything unless it exists.
+    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable VimTeX completion.
