@@ -28,44 +28,32 @@ call vimtex#imaps#add_map({
 setfiletype tex
 
 " Test ;b -> \beta
-call vimtex#test#keys('$i;b;;',
-      \['$2+2 = $'],
-      \['$2+2 = \beta;;$'])
+call vimtex#test#keys('$i;b;;', '$2+2 = $', '$2+2 = \beta;;$')
 
 " Test #bv -> \mathbf{v}
-call vimtex#test#keys('$i#bv',
-      \['$2+2 = $'],
-      \['$2+2 = \mathbf{v}$'])
+call vimtex#test#keys('$i#bv', '$2+2 = $', '$2+2 = \mathbf{v}$')
 
 " Should not gobble a character outside of math mode
-call vimtex#test#keys('$a#bv',
-      \['$2+2 = $'],
-      \['$2+2 = $#bv'])
+call vimtex#test#keys('$a#bv', '$2+2 = $', '$2+2 = $#bv')
 
 " Test ;; -> ; (leader escape)
-call vimtex#test#keys('$i;;',
-      \['$;; = $'],
-      \['$;; = ;;$'])
+call vimtex#test#keys('$i;;', '$;; = $', '$;; = ;;$')
 
 " Test ;a -> ;a (disabled imap)
-call vimtex#test#keys('$i;a',
-      \['$a = $'],
-      \['$a = ;a$'])
+call vimtex#test#keys('$i;a', '$a = $', '$a = ;a$')
 
 " Test test -> tested
-call vimtex#test#keys('itest',
-      \[''],
-      \['tested'])
+call vimtex#test#keys('itest', '', 'tested')
 
 " Test inside math: ;vv -> \vec{
 call vimtex#test#keys('A;vvf}\cdot;vvf}$',
-      \['$|f| = '],
-      \['$|f| = \vec{f}\cdot\vec{f}$'])
+      \ '$|f| = ',
+      \ '$|f| = \vec{f}\cdot\vec{f}$')
 
 " Test outside math: ;vv -> ;vv
 call vimtex#test#keys('A --- ;vv',
-      \['$|f| = \vec{f}\cdot\vec{f}$'],
-      \['$|f| = \vec{f}\cdot\vec{f}$ --- ;vv'])
+      \ '$|f| = \vec{f}\cdot\vec{f}$',
+      \ '$|f| = \vec{f}\cdot\vec{f}$ --- ;vv')
 
 " Test inside itemize: cool -> cool
 call vimtex#test#keys('ocool',
