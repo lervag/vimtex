@@ -97,12 +97,14 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
     if join(l:msg_list) =~# l:re | return | endif
   endfor
 
-  call vimtex#echo#formatted([
+  unsilent call vimtex#echo#formatted([
         \ [self.type_to_highlight[a:type], 'VimTeX:'],
         \ ' ' . l:msg_list[0]
         \])
+
   if len(l:msg_list) > 1
-    call vimtex#echo#echo(join(map(l:msg_list[1:], "'        ' . v:val"), "\n"))
+    unsilent call vimtex#echo#echo(
+          \ join(map(l:msg_list[1:], "'        ' . v:val"), "\n"))
   endif
 endfunction
 
