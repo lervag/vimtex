@@ -8,6 +8,8 @@ set foldcolumn=4
 
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 let g:vimtex_fold_enabled = 1
 let g:vimtex_fold_types = {'comments' : {'enabled': 1}}
 
@@ -44,7 +46,7 @@ call assert_equal(
 
 " Test with different markers
 let g:vimtex_fold_types = {'markers': {'open': '<<:', 'close': ':>>'}}
-silent VimtexReload
+VimtexReload
 
 call assert_equal('Testing markers ', foldtextresult(158))
 call assert_equal('% <<: this fold worked before issue #1515', foldtextresult(163))

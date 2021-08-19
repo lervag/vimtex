@@ -4,6 +4,8 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 function! TestBuildDir(expected) abort
   silent edit test.tex
   let l:build_dir = vimtex#paths#shorten_relative(

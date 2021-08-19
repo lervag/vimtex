@@ -1,5 +1,7 @@
 source common.vim
 
+call vimtex#log#set_silent()
+
 let s:fls = 'test-fls-reload.fls'
 
 " Delete fls file (in case it is left over)

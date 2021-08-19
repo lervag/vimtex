@@ -8,6 +8,8 @@ set foldcolumn=4
 
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 let g:vimtex_fold_bib_enabled = 1
 
 silent edit test.bib

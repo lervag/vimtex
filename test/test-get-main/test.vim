@@ -2,7 +2,7 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
-set nomore
+call vimtex#log#set_silent()
 
 " Ugly paths
 call vimtex#test#main('test-ugly-paths/[code college-1] title/test.tex',

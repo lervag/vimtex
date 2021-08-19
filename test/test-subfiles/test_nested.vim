@@ -2,7 +2,7 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
-set nomore
+call vimtex#log#set_silent()
 
 nnoremap q :qall!<cr>
 

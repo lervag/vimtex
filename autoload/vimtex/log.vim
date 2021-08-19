@@ -71,7 +71,8 @@ let s:logger = {
       \   'warning' : 'VimtexWarning',
       \   'error' : 'VimtexError',
       \ },
-      \ 'verbose' : get(g:, 'vimtex_log_verbose', 1),
+      \ 'verbose' : get(get(s:, 'logger', {}), 'verbose',
+      \                 get(g:, 'vimtex_log_verbose', 1)),
       \}
 function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:msg_list = []

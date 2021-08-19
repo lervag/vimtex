@@ -4,7 +4,7 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-set nomore
+call vimtex#log#set_silent()
 
 if empty($INMAKE)
   edit main.tex

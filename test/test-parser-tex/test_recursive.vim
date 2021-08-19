@@ -7,6 +7,8 @@ set hidden
 
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 if empty($INMAKE) | finish | endif
 
 silent! edit test_recursive.tex
