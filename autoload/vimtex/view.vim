@@ -72,26 +72,36 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   let l:file = resolve(a:filename)
 
   " Open file if necessary
-  if !bufexists(l:file)
+  if !bufloaded(l:file)
     if filereadable(l:file)
       try
-        execute 'edit' l:file
+        execute g:vimtex_view_reverse_search_edit_cmd l:file
       catch
-        call vimtex#log#warning("Reverse goto failed")
+        call vimtex#log#warning([
+              \ 'Reverse goto failed!',
+              \ printf('Command error: %s %s',
+              \        g:vimtex_view_reverse_search_edit_cmd, l:file)])
         return
       endtry
     else
-      call vimtex#log#warning("Reverse goto failed for file:\n" . l:file)
+      call vimtex#log#warning([
+            \ 'Reverse goto failed!',
+            \ printf('File not readable: "%s"', l:file)])
       return
     endif
   endif
 
-  " Go to correct buffer and line
+  " Get buffer, window, and tab numbers
+  " * If tab/window exists, switch to it/them
   let l:bufnr = bufnr(l:file)
-  let l:winnr = bufwinnr(l:file)
-  execute l:winnr >= 0
-        \ ? l:winnr . 'wincmd w'
-        \ : 'buffer ' . l:bufnr
+  try
+    let [l:winid] = win_findbuf(l:bufnr)
+    let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
+    execute l:tabnr . 'tabnext'
+    execute l:winnr . 'wincmd w'
+  catch
+    execute g:vimtex_view_reverse_search_edit_cmd l:file
+  endtry
 
   execute 'normal!' a:line . 'G'
   redraw
