@@ -153,7 +153,7 @@ function! s:parse_minted_constructs() abort " {{{1
     endif
 
     " Single line minted environments
-    let l:lang = matchstr(l:line, '\\begin{minted}\%(\s*\[\[^\]]*\]\)\?\s*{\zs\w\+\ze}')
+    let l:lang = matchstr(l:line, '\\begin{minted}\%(\s*\[[^\]]*\]\)\?\s*{\zs\w\+\ze}')
     if !empty(l:lang)
       call l:db.register(l:lang)
       continue

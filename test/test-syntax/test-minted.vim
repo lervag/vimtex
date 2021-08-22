@@ -16,4 +16,6 @@ call assert_true(vimtex#syntax#in('texMintedZoneShellsession', 116, 1))
 " edit
 " call assert_true(vimtex#syntax#in('pythonFunction', 38, 5))
 
+call assert_true(vimtex#syntax#in('texMintedZoneJson', 121, 1))
+
 call vimtex#test#finished()
