@@ -35,22 +35,12 @@ endfunction
 function! vimtex#compiler#init_state(state) abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
-  try
-    let l:options = {
-          \ 'root': a:state.root,
-          \ 'target' : a:state.base,
-          \ 'target_path' : a:state.tex,
-          \ 'tex_program' : a:state.tex_program,
-          \}
-    let a:state.compiler
-          \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
-  catch /VimTeX: Requirements not met/
-    call vimtex#log#error('Compiler was not initialized!')
-  catch /E117/
-    call vimtex#log#error(
-          \ 'Invalid compiler: ' . g:vimtex_compiler_method,
-          \ 'Please see :h g:vimtex_compiler_method')
-  endtry
+  let a:state.compiler = s:init_compiler({
+        \ 'root': a:state.root,
+        \ 'target' : a:state.base,
+        \ 'target_path' : a:state.tex,
+        \ 'tex_program' : a:state.tex_program,
+        \})
 endfunction
 
 " }}}1
@@ -121,15 +111,15 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
   if empty(l:file) | return | endif
 
   " Create and initialize temporary compiler
-  let l:options = {
+  let l:compiler = s:init_compiler({
         \ 'root' : l:file.root,
         \ 'target' : l:file.base,
         \ 'target_path' : l:file.tex,
         \ 'tex_program' : b:vimtex.tex_program,
         \ 'continuous' : 0,
         \ 'callback' : 0,
-        \}
-  let l:compiler = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
+        \})
+  if empty(l:compiler) | return | endif
 
   call vimtex#log#info('Compiling selected lines ...')
   call vimtex#log#set_silent()
@@ -308,6 +298,28 @@ function! vimtex#compiler#is_running() abort " {{{1
   return exists('b:vimtex.compiler')
         \ ? b:vimtex.compiler.is_running()
         \ : -1
+endfunction
+
+" }}}1
+
+
+function! s:init_compiler(options) abort " {{{1
+  try
+    let l:options =
+          \ get(g:, 'vimtex_compiler_' . g:vimtex_compiler_method, {})
+    let l:options = extend(deepcopy(l:options), a:options)
+    let l:compiler
+          \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
+    return l:compiler
+  catch /VimTeX: Requirements not met/
+    call vimtex#log#error('Compiler was not initialized!')
+  catch /E117/
+    call vimtex#log#error(
+          \ 'Invalid compiler: ' . g:vimtex_compiler_method,
+          \ 'Please see :h g:vimtex_compiler_method')
+  endtry
+
+  return {}
 endfunction
 
 " }}}1

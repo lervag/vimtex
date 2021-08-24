@@ -7,13 +7,13 @@
 function! vimtex#compiler#latexmk#init(options) abort " {{{1
   let l:compiler = deepcopy(s:compiler)
 
-  call l:compiler.init(extend(a:options,
-        \ get(g:, 'vimtex_compiler_latexmk', {}), 'keep'))
+  call l:compiler.init(a:options)
 
   return l:compiler
 endfunction
 
 " }}}1
+
 function! vimtex#compiler#latexmk#wrap_option(name, value) abort " {{{1
   return has('win32')
         \ ? ' -e "$' . a:name . ' = ''' . a:value . '''"'

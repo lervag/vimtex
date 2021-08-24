@@ -7,8 +7,7 @@
 function! vimtex#compiler#arara#init(options) abort " {{{1
   let l:compiler = deepcopy(s:compiler)
 
-  call l:compiler.init(extend(a:options,
-        \ get(g:, 'vimtex_compiler_arara', {}), 'keep'))
+  call l:compiler.init(a:options)
 
   return l:compiler
 endfunction

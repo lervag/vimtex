@@ -7,8 +7,7 @@
 function! vimtex#compiler#tectonic#init(options) abort " {{{1
   let l:compiler = deepcopy(s:compiler)
 
-  call l:compiler.init(extend(a:options,
-        \ get(g:, 'vimtex_compiler_tectonic', {}), 'keep'))
+  call l:compiler.init(a:options)
 
   return l:compiler
 endfunction
