@@ -4,6 +4,8 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
+call vimtex#log#set_silent()
+
 silent edit test_parse_documentclass.tex
 
 if empty($INMAKE) | finish | endif

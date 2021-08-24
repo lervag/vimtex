@@ -2,7 +2,6 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
-set nomore
 set hidden
 
 nnoremap q :qall!<cr>

@@ -2,6 +2,7 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
+set noswapfile
 set nomore
 
 nnoremap q :qall!<cr>
@@ -19,7 +20,7 @@ silent edit included.tex
 " 'hidden' is not set, so quitting should not wipe any states
 normal! GOtest
 try
-  quit
+  silent quit
 catch /E37/
 endtry
 call assert_equal(g:test, 0)
