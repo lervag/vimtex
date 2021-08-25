@@ -11,7 +11,7 @@ endfunction
 " }}}1
 
 
-let s:compiler = vimtex#compiler#_t#new({
+let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'generic',
       \ 'cmd' : '',
       \})

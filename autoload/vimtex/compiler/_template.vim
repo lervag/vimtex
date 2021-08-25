@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#compiler#_t#new(opts) abort " {{{1
+function! vimtex#compiler#_template#new(opts) abort " {{{1
   return extend(deepcopy(s:compiler), a:opts)
 endfunction
 
