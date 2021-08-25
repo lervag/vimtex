@@ -145,11 +145,12 @@ function! s:compiler.start(...) abort dict " {{{1
   if self.continuous
     call vimtex#log#info('Compiler started in continuous mode'
           \ . (a:0 > 0 ? ' (single shot)' : ''))
-    if exists('#User#VimtexEventCompileStarted')
-      doautocmd <nomodeline> User VimtexEventCompileStarted
-    endif
   else
     call vimtex#log#info('Compiler started in background!')
+  endif
+
+  if exists('#User#VimtexEventCompileStarted')
+    doautocmd <nomodeline> User VimtexEventCompileStarted
   endif
 endfunction
 
