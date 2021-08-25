@@ -22,7 +22,7 @@ function! vimtex#state#init() abort " {{{1
     let b:vimtex = s:vimtex_states[l:id]
   else
     let b:vimtex_id = s:vimtex_next_id
-    let b:vimtex = s:vimtex.new(l:main, l:main_type, 0)
+    let b:vimtex = vimtex#state#class#new(l:main, l:main_type, 0)
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
   endif
@@ -42,7 +42,8 @@ function! vimtex#state#init_local() abort " {{{1
 
   if l:vimtex_id < 0
     let l:vimtex_id = s:vimtex_next_id
-    let l:vimtex = s:vimtex.new(l:filename, 'local file', l:preserve_root)
+    let l:vimtex = vimtex#state#class#new(
+          \ l:filename, 'local file', l:preserve_root)
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
 
@@ -169,6 +170,7 @@ function! vimtex#state#cleanup(id) abort " {{{1
 endfunction
 
 " }}}1
+
 
 function! s:get_main_id(main) abort " {{{1
   for [l:id, l:state] in items(s:vimtex_states)
@@ -486,10 +488,10 @@ function! s:get_main_choose(list) abort " {{{1
 endfunction
 
 " }}}1
+
 function! s:file_is_main(file) abort " {{{1
   if !filereadable(a:file) | return 0 | endif
 
-  "
   " Check if a:file is a main file by looking for the \documentclass command,
   " but ignore the following:
   "
@@ -546,248 +548,6 @@ function! s:findfiles_recursive(expr, path) abort " {{{1
     let l:dirs .= ',' . l:path
   endwhile
   return split(globpath(fnameescape(l:dirs), a:expr), '\n')
-endfunction
-
-" }}}1
-
-let s:vimtex = {}
-
-function! s:vimtex.new(main, main_parser, preserve_root) abort dict " {{{1
-  let l:new = deepcopy(self)
-  let l:new.root = fnamemodify(a:main, ':h')
-  let l:new.base = fnamemodify(a:main, ':t')
-  let l:new.name = fnamemodify(a:main, ':t:r')
-  let l:new.main_parser = a:main_parser
-
-  if a:preserve_root && exists('b:vimtex')
-    let l:new.root = b:vimtex.root
-    let l:new.base = vimtex#paths#relative(a:main, l:new.root)
-  endif
-
-  let l:ext = fnamemodify(a:main, ':e')
-  let l:new.tex = l:ext ==# 'tex' ? a:main : ''
-
-  "
-  " The preamble content is used to parse for the engine directive, the
-  " documentclass and the package list; we store it as a temporary shared
-  " object variable
-  "
-  if !empty(l:new.tex)
-    let l:new.preamble = vimtex#parser#preamble(l:new.tex, {
-          \ 'root' : l:new.root,
-          \})
-  else
-    let l:new.preamble = []
-  endif
-
-  call l:new.parse_tex_program()
-  call l:new.parse_documentclass()
-  call l:new.parse_graphicspath()
-  call l:new.gather_sources()
-
-  " Initialize state in submodules
-  let l:new.disabled_modules = get(s:, 'disabled_modules', [])
-  for l:mod in filter(
-        \ ['view', 'compiler', 'qf', 'toc', 'fold', 'context'],
-        \ 'index(l:new.disabled_modules, v:val) < 0')
-    call vimtex#{l:mod}#init_state(l:new)
-  endfor
-
-  call l:new.parse_packages()
-
-  unlet l:new.preamble
-  unlet l:new.new
-  return l:new
-endfunction
-
-" }}}1
-function! s:vimtex.cleanup() abort dict " {{{1
-  if exists('self.compiler.cleanup')
-    call self.compiler.cleanup()
-  endif
-
-  if exists('#User#VimtexEventQuit')
-    if exists('b:vimtex')
-      let b:vimtex_tmp = b:vimtex
-    endif
-    let b:vimtex = self
-    doautocmd <nomodeline> User VimtexEventQuit
-    if exists('b:vimtex_tmp')
-      let b:vimtex = b:vimtex_tmp
-      unlet b:vimtex_tmp
-    else
-      unlet b:vimtex
-    endif
-  endif
-
-  " Close quickfix window
-  silent! cclose
-endfunction
-
-" }}}1
-function! s:vimtex.parse_tex_program() abort dict " {{{1
-  let l:lines = copy(self.preamble[:20])
-  let l:tex_program_re =
-        \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
-  call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
-  call filter(l:lines, '!empty(v:val)')
-  let self.tex_program = tolower(get(l:lines, -1, '_'))
-endfunction
-
-" }}}1
-function! s:vimtex.parse_documentclass() abort dict " {{{1
-  let l:preamble_lines = filter(copy(self.preamble), {_, x -> x !~# '^\s*%'})
-  let self.documentclass = matchstr(join(l:preamble_lines, ''),
-        \ '\\documentclass[^{]*{\zs[^}]\+\ze}')
-endfunction
-
-" }}}1
-function! s:vimtex.parse_graphicspath() abort dict " {{{1
-  " Combine the preamble as one long string of commands
-  let l:preamble = join(map(copy(self.preamble),
-        \ {_, x -> substitute(x, '\\\@<!%.*', '', '')}))
-
-  " Extract the graphicspath command from this string
-  let l:graphicspath = matchstr(l:preamble,
-          \ g:vimtex#re#not_bslash
-          \ . '\\graphicspath\s*\{\s*\{\s*\zs.{-}\ze\s*\}\s*\}'
-          \)
-
-  " Add all parsed graphicspaths
-  let self.graphicspath = []
-  for l:path in split(l:graphicspath, '\s*}\s*{\s*')
-    let l:path = substitute(l:path, '\/\s*$', '', '')
-    call add(self.graphicspath, vimtex#paths#is_abs(l:path)
-          \ ? l:path
-          \ : simplify(self.root . '/' . l:path))
-  endfor
-endfunction
-
-" }}}1
-function! s:vimtex.parse_packages() abort dict " {{{1
-  let self.packages = get(self, 'packages', {})
-
-  " Try to parse .fls file if present, as it is usually more complete. That is,
-  " it contains a generated list of all the packages that are used.
-  for l:line in vimtex#parser#fls(self.fls())
-    let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
-    let l:package = fnamemodify(l:package, ':t')
-    if !empty(l:package)
-      let self.packages[l:package] = {}
-    endif
-  endfor
-
-  " Now parse preamble as well for usepackage and RequirePackage
-  if !has_key(self, 'preamble') | return | endif
-  let l:usepackages = filter(copy(self.preamble),
-        \ 'v:val =~# ''\v%(usep|RequireP)ackage''')
-  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
-  call map(l:usepackages, {_, x -> split(matchstr(x, l:pat), '\s*,\s*')})
-
-  for l:packages in l:usepackages
-    for l:package in l:packages
-      let self.packages[l:package] = {}
-    endfor
-  endfor
-endfunction
-
-" }}}1
-function! s:vimtex.gather_sources() abort dict " {{{1
-  let self.sources = vimtex#parser#tex#parse_files(
-        \ self.tex, {'root' : self.root})
-
-  call map(self.sources, 'vimtex#paths#relative(v:val, self.root)')
-endfunction
-
-" }}}1
-function! s:vimtex.pprint_items() abort dict " {{{1
-  let l:items = [
-        \ ['name', self.name],
-        \ ['base', self.base],
-        \ ['root', self.root],
-        \ ['tex', self.tex],
-        \ ['out', self.out()],
-        \ ['log', self.log()],
-        \ ['aux', self.aux()],
-        \ ['fls', self.fls()],
-        \ ['main parser', self.main_parser],
-        \]
-
-  if self.tex_program !=# '_'
-    call add(l:items, ['tex program', self.tex_program])
-  endif
-
-  if len(self.sources) >= 2
-    call add(l:items, ['source files', self.sources])
-  endif
-
-  call add(l:items, ['compiler', get(self, 'compiler', {})])
-  call add(l:items, ['viewer', get(self, 'viewer', {})])
-  call add(l:items, ['qf', get(self, 'qf', {})])
-
-  if exists('self.documentclass')
-    call add(l:items, ['document class', self.documentclass])
-  endif
-
-  if !empty(self.packages)
-    call add(l:items, ['packages', sort(keys(self.packages))])
-  endif
-
-  return [['VimTeX project', l:items]]
-endfunction
-
-" }}}1
-function! s:vimtex.log() abort dict " {{{1
-  return self.ext('log')
-endfunction
-
-" }}}1
-function! s:vimtex.aux() abort dict " {{{1
-  return self.ext('aux')
-endfunction
-
-" }}}1
-function! s:vimtex.fls() abort dict " {{{1
-  return self.ext('fls')
-endfunction
-
-" }}}1
-function! s:vimtex.out(...) abort dict " {{{1
-  return call(self.ext, ['pdf'] + a:000, self)
-endfunction
-
-" }}}1
-function! s:vimtex.ext(ext, ...) abort dict " {{{1
-  " Check for various output directories
-  " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
-  "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
-  " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
-  "   available as b:vimtex.compiler.build_dir.
-  " * Fallback to the main root directory
-  for l:root in [
-        \ $VIMTEX_OUTPUT_DIRECTORY,
-        \ get(get(self, 'compiler', {}), 'build_dir', ''),
-        \ self.root
-        \]
-    if empty(l:root) | continue | endif
-
-    let l:cand = printf('%s/%s.%s', l:root, self.name, a:ext)
-    if !vimtex#paths#is_abs(l:root)
-      let l:cand = self.root . '/' . l:cand
-    endif
-
-    if a:0 > 0 || filereadable(l:cand)
-      return fnamemodify(l:cand, ':p')
-    endif
-  endfor
-
-  return ''
-endfunction
-
-" }}}1
-function! s:vimtex.getftime() abort dict " {{{1
-  return max(map(copy(self.sources), 'getftime(self.root . ''/'' . v:val)'))
 endfunction
 
 " }}}1

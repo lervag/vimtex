@@ -57,6 +57,45 @@ function! s:compiler.__build_cmd() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:compiler.__pprint() abort dict " {{{1
+  let l:list = []
+
+  if self.target_path !=# b:vimtex.tex
+    call add(l:list, ['root', self.root])
+    call add(l:list, ['target', self.target_path])
+  endif
+
+  if has_key(self, 'get_engine')
+    call add(l:list, ['engine', self.get_engine()])
+  endif
+
+  if has_key(self, 'options')
+    call add(l:list, ['options', self.options])
+  endif
+
+  if !empty(self.build_dir)
+    call add(l:list, ['build_dir', self.build_dir])
+  endif
+
+  if has_key(self, '__pprint_append')
+    call extend(l:list, self.__pprint_append())
+  endif
+
+  if has_key(self, 'job')
+    let l:job = []
+    call add(l:job, ['jobid', self.job])
+    call add(l:job, ['output', self.output])
+    call add(l:job, ['cmd', self.cmd])
+    if self.continuous
+      call add(l:job, ['pid', self.get_pid()])
+    endif
+    call add(l:list, ['process', l:job])
+  endif
+
+  return l:list
+endfunction
+
+" }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
   let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log']
@@ -70,13 +109,6 @@ function! s:compiler.clean(full) abort dict " {{{1
         \ self.build_dir, fnamemodify(self.target_path, ':t:r:S'), x)})
   call vimtex#process#run('rm -f ' . join(l:files))
   call vimtex#log#info('Compiler clean finished')
-endfunction
-
-" }}}1
-function! s:compiler.cleanup() abort dict " {{{1
-  if self.is_running()
-    call self.kill()
-  endif
 endfunction
 
 " }}}1
@@ -144,45 +176,6 @@ function! s:compiler.wait() abort dict " {{{1
   endfor
 
   call self.stop()
-endfunction
-
-" }}}1
-function! s:compiler.pprint_items() abort dict " {{{1
-  let l:list = []
-
-  if self.target_path !=# b:vimtex.tex
-    call add(l:list, ['root', self.root])
-    call add(l:list, ['target', self.target_path])
-  endif
-
-  if has_key(self, 'get_engine')
-    call add(l:list, ['engine', self.get_engine()])
-  endif
-
-  if has_key(self, 'options')
-    call add(l:list, ['options', self.options])
-  endif
-
-  if !empty(self.build_dir)
-    call add(l:list, ['build_dir', self.build_dir])
-  endif
-
-  if has_key(self, '__pprint_append')
-    call extend(l:list, self.__pprint_append())
-  endif
-
-  if has_key(self, 'job')
-    let l:job = []
-    call add(l:job, ['jobid', self.job])
-    call add(l:job, ['output', self.output])
-    call add(l:job, ['cmd', self.cmd])
-    if self.continuous
-      call add(l:job, ['pid', self.get_pid()])
-    endif
-    call add(l:list, ['process', l:job])
-  endif
-
-  return l:list
 endfunction
 
 " }}}1

@@ -127,8 +127,8 @@ function! s:parse_dict(dict, indent, ...) abort " {{{1
     let l:indent += 1
   endif
 
-  let l:items = has_key(l:dict, 'pprint_items')
-        \ ? l:dict.pprint_items() : items(l:dict)
+  let l:items = has_key(l:dict, '__pprint')
+        \ ? l:dict.__pprint() : items(l:dict)
 
   return extend(l:entries, s:get_info(l:items, l:indent))
 endfunction

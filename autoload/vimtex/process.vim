@@ -44,6 +44,15 @@ let s:process = {
       \ 'result' : '',
       \}
 
+function! s:process.__pprint() abort dict " {{{1
+  return [
+        \ ['pid', self.pid ? self.pid : '-'],
+        \ ['cmd', get(self, 'prepared_cmd', self.cmd)],
+        \]
+endfunction
+
+" }}}1
+
 function! s:process.run() abort dict " {{{1
   if self._do_not_run() | return | endif
 
@@ -66,16 +75,6 @@ function! s:process.stop() abort dict " {{{1
   call vimtex#process#run(l:cmd, {'background': 0})
 
   let self.pid = 0
-endfunction
-
-" }}}1
-function! s:process.pprint_items() abort dict " {{{1
-  let l:list = [
-        \ ['pid', self.pid ? self.pid : '-'],
-        \ ['cmd', get(self, 'prepared_cmd', self.cmd)],
-        \]
-
-  return l:list
 endfunction
 
 " }}}1

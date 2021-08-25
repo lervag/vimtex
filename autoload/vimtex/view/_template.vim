@@ -13,6 +13,26 @@ endfunction
 
 let s:template = {}
 
+function! s:template.__pprint() abort dict " {{{1
+  let l:list = []
+
+  if has_key(self, 'xwin_id')
+    call add(l:list, ['xwin id', self.xwin_id])
+  endif
+
+  if has_key(self, 'process')
+    call add(l:list, ['process', self.process])
+  endif
+
+  for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
+    call add(l:list, [l:key, self[l:key]])
+  endfor
+
+  return l:list
+endfunction
+
+" }}}1
+
 function! s:template.out() dict abort " {{{1
   return g:vimtex_view_use_temp_files
         \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
@@ -44,25 +64,6 @@ function! s:template.copy_files() dict abort " {{{1
   if getftime(l:old) > getftime(l:new)
     call rename(l:old, l:new)
   endif
-endfunction
-
-" }}}1
-function! s:template.pprint_items() abort dict " {{{1
-  let l:list = []
-
-  if has_key(self, 'xwin_id')
-    call add(l:list, ['xwin id', self.xwin_id])
-  endif
-
-  if has_key(self, 'process')
-    call add(l:list, ['process', self.process])
-  endif
-
-  for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
-    call add(l:list, [l:key, self[l:key]])
-  endfor
-
-  return l:list
 endfunction
 
 " }}}1
