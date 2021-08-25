@@ -20,6 +20,7 @@ let s:compiler = {
       \ 'continuous': 0,
       \ 'hooks': [],
       \ 'output': tempname(),
+      \ 'status': -1,
       \}
 
 function! s:compiler.new(options) abort dict " {{{1
@@ -139,6 +140,7 @@ function! s:compiler.start(...) abort dict " {{{1
   endif
 
   call self.exec()
+  let self.status = 1
 
   if self.continuous
     call vimtex#log#info('Compiler started in continuous mode'
@@ -163,6 +165,8 @@ function! s:compiler.stop() abort dict " {{{1
     call vimtex#log#warning(
           \ 'There is no process to stop (' . self.target . ')')
   endif
+
+  let self.status = 0
 endfunction
 
 " }}}1
@@ -236,7 +240,7 @@ endfunction
 
 " }}}1
 function! s:callback(ch, msg) abort " {{{1
-  call vimtex#compiler#callback(!vimtex#qf#inquire(s:cb_target))
+  call vimtex#compiler#callback(2 + vimtex#qf#inquire(s:cb_target))
 endfunction
 
 " }}}1
@@ -246,11 +250,7 @@ function! s:callback_continuous_output(channel, msg) abort " {{{1
     call writefile([a:msg], b:vimtex.compiler.output, 'aS')
   endif
 
-  if a:msg ==# 'vimtex_compiler_callback_success'
-    call vimtex#compiler#callback(1)
-  elseif a:msg ==# 'vimtex_compiler_callback_failure'
-    call vimtex#compiler#callback(0)
-  endif
+  call s:check_callback(a:msg)
 
   try
     for l:Hook in get(get(get(b:, 'vimtex', {}), 'compiler', {}), 'hooks', [])
@@ -331,11 +331,9 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
     call writefile(l:data, self.output, 'a')
   endif
 
-  if match(a:data, 'vimtex_compiler_callback_success') != -1
-    call vimtex#compiler#callback(!vimtex#qf#inquire(self.target))
-  elseif match(a:data, 'vimtex_compiler_callback_failure') != -1
-    call vimtex#compiler#callback(0)
-  endif
+  call s:check_callback(
+        \ get(filter(copy(a:data),
+        \   {_, x -> x =~# '^vimtex_compiler_callback'}), -1, ''))
 
   try
     for l:Hook in get(get(get(b:, 'vimtex', {}), 'compiler', {}), 'hooks', [])
@@ -350,7 +348,7 @@ function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
   if !exists('b:vimtex.tex') | return | endif
 
   let l:target = self.target !=# b:vimtex.tex ? self.target : ''
-  call vimtex#compiler#callback(!vimtex#qf#inquire(l:target))
+  call vimtex#compiler#callback(2 + vimtex#qf#inquire(l:target))
 endfunction
 
 " }}}1
@@ -384,6 +382,18 @@ function! s:build_dir_respect_envvar(compiler) abort " {{{1
   endif
 
   let a:compiler.build_dir = $VIMTEX_OUTPUT_DIRECTORY
+endfunction
+
+" }}}1
+
+function! s:check_callback(line) abort " {{{1
+  if a:line ==# 'vimtex_compiler_callback_compiling'
+    call vimtex#compiler#callback(1)
+  elseif a:line ==# 'vimtex_compiler_callback_success'
+    call vimtex#compiler#callback(2)
+  elseif a:line ==# 'vimtex_compiler_callback_failure'
+    call vimtex#compiler#callback(3)
+  endif
 endfunction
 
 " }}}1

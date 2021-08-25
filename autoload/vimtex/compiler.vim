@@ -46,6 +46,11 @@ endfunction
 " }}}1
 
 function! vimtex#compiler#callback(status) abort " {{{1
+  " Status:
+  " 1: Compilation cycle has started
+  " 2: Compilation complete - Success
+  " 3: Compilation complete - Failed
+
   if !exists('b:vimtex.compiler') | return | endif
 
   if get(b:vimtex.compiler, 'silence_next_callback')
@@ -53,35 +58,40 @@ function! vimtex#compiler#callback(status) abort " {{{1
     return
   endif
 
-  call vimtex#qf#open(0)
-  redraw
+  let b:vimtex.compiler.status = a:status
 
   if exists('s:output')
     call s:output.update()
   endif
 
-  if a:status
+  if a:status == 1
+    if exists('#User#VimtexEventCompiling')
+      doautocmd <nomodeline> User VimtexEventCompiling
+    endif
+    return
+  endif
+
+  call vimtex#qf#open(0)
+  redraw
+
+  if a:status == 2
     call vimtex#log#info('Compilation completed')
-  else
-    call vimtex#log#warning('Compilation failed!')
-  endif
 
-  if a:status && exists('b:vimtex')
-    call b:vimtex.update_packages()
-    call vimtex#syntax#packages#init()
-  endif
+    if exists('b:vimtex')
+      call b:vimtex.update_packages()
+      call vimtex#syntax#packages#init()
+    endif
 
-  if a:status
     if exists('#User#VimtexEventCompileSuccess')
       doautocmd <nomodeline> User VimtexEventCompileSuccess
     endif
-  else
+  elseif a:status == 3
+    call vimtex#log#warning('Compilation failed!')
+
     if exists('#User#VimtexEventCompileFailed')
       doautocmd <nomodeline> User VimtexEventCompileFailed
     endif
   endif
-
-  return ''
 endfunction
 
 " }}}1

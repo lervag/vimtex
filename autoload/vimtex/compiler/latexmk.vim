@@ -214,6 +214,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
 
     if self.callback
       for [l:opt, l:val] in [
+            \ ['compiling_cmd', 'vimtex_compiler_callback_compiling'],
             \ ['success_cmd', 'vimtex_compiler_callback_success'],
             \ ['failure_cmd', 'vimtex_compiler_callback_failure'],
             \]

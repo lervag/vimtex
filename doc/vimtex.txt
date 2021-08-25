@@ -4733,8 +4733,9 @@ after compilation. This is used by VimTeX to achieve callbacks after
 compilation has finished through |vimtex#compiler#callback| with something
 like this: >
 
-  $success_cmd = "gvim --remote-expr 'vimtex#compiler#callback(1)'";
-  $failure_cmd = "gvim --remote-expr 'vimtex#compiler#callback(0)'";
+  $compiling_cmd = "vim --remote-expr 'vimtex#compiler#callback(2)'";
+  $success_cmd = "vim --remote-expr 'vimtex#compiler#callback(1)'";
+  $failure_cmd = "vim --remote-expr 'vimtex#compiler#callback(0)'";
 
 Another neat way to use this is to use `xdotool` to change the window title of
 the viewer to indicate the compilation status: >
@@ -5246,10 +5247,14 @@ Note: This API is currently a work in progress!
 
 *vimtex#compiler#callback*
   Utility function to be used as a compiler callback function. Takes a single
-  argument which is the compiler status: 0 or |v:false| means compilation
-  failed and 1 or |v:true| means compilation was successful. The function does
-  several useful things based on the status, such as running the
-  |VimtexEventCompileFailed| and |VimtexEventCompileSuccess| events.
+  argument, which is the compiler status:
+
+    1: Compilation cycle has started
+    2: Compilation complete - Success
+    3: Compilation complete - Failed
+
+  The function does several useful things based on the status, such as running
+  the |VimtexEventCompileFailed| and |VimtexEventCompileSuccess| events.
 
 *vimtex#syntax#in_mathzone*
   Returns 1 if the position is inside a math zone. If called without
