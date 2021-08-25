@@ -20,7 +20,6 @@ let s:compiler = {
       \ 'continuous': 0,
       \ 'hooks': [],
       \ 'output': tempname(),
-      \ '__configuration': [],
       \}
 
 function! s:compiler.new(options) abort dict " {{{1

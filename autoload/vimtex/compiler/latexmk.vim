@@ -131,12 +131,6 @@ function! s:compiler.__init() abort dict " {{{1
   call self.__init_pdf_mode()
   unlet self.__init_build_dir
   unlet self.__init_pdf_mode
-
-  let self.__configuration = [
-        \ ['executable', self.executable],
-        \ ['continuous', self.continuous],
-        \ ['callback', self.callback],
-        \]
 endfunction
 
 " }}}1
