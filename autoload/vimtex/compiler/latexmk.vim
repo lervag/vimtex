@@ -115,10 +115,9 @@ function! s:compiler.__check_requirements() abort dict " {{{1
   endfor
 
   " Check option validity
-  if self.callback
-        \ && !(has('clientserver') || has('nvim') || has('job'))
+  if self.callback && !(has('nvim') || has('job'))
     call vimtex#log#warning(
-          \ 'Can''t use callbacks without +job, +nvim, or +clientserver',
+          \ 'Can''t use callbacks without +job or +nvim',
           \ 'Callback option has been disabled.')
     let self.callback = 0
   endif
@@ -214,32 +213,12 @@ function! s:compiler.__build_cmd() abort dict " {{{1
     endif
 
     if self.callback
-      if has('job') || has('nvim')
-        for [l:opt, l:val] in items({
-              \ 'success_cmd' : 'vimtex_compiler_callback_success',
-              \ 'failure_cmd' : 'vimtex_compiler_callback_failure',
-              \})
-          let l:func = 'echo ' . l:val
-          let l:cmd .= s:wrap_option_appendcmd(l:opt, l:func)
-        endfor
-      elseif empty(v:servername)
-        call vimtex#log#warning('Can''t use callbacks with empty v:servername')
-      else
-        " Some notes:
-        " - We excape the v:servername because this seems necessary on Windows
-        "   for neovim, see e.g. Github Issue #877
-        for [l:opt, l:val] in items({'success_cmd' : 1, 'failure_cmd' : 0})
-          let l:callback = has('win32')
-                \   ? '"vimtex#compiler#callback(' . l:val . ')"'
-                \   : '\"vimtex\#compiler\#callback(' . l:val . ')\"'
-          let l:func = vimtex#util#shellescape('""')
-                \ . g:vimtex_compiler_progname
-                \ . vimtex#util#shellescape('""')
-                \ . ' --servername ' . vimtex#util#shellescape(v:servername)
-                \ . ' --remote-expr ' . l:callback
-          let l:cmd .= s:wrap_option_appendcmd(l:opt, l:func)
-        endfor
-      endif
+      for [l:opt, l:val] in [
+            \ ['success_cmd', 'vimtex_compiler_callback_success'],
+            \ ['failure_cmd', 'vimtex_compiler_callback_failure'],
+            \]
+        let l:cmd .= s:wrap_option_appendcmd(l:opt, 'echo ' . l:val)
+      endfor
     endif
   endif
 
