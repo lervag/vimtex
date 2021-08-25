@@ -16,7 +16,7 @@ function! vimtex#profile#stop() abort " {{{1
 endfunction
 
 " }}}1
-"
+
 function! vimtex#profile#open() abort " {{{1
   source ~/.vim/vimrc
   silent edit prof.log

@@ -66,7 +66,9 @@ endfunction
 " }}}1
 function! s:matcher.parse_options(context, entry) abort dict " {{{1
   " Parse the options
-  let l:opt_pairs = map(split(self.options, ','), 'split(v:val, ''='')')
+  let l:opt_pairs = map(
+        \ vimtex#util#texsplit(self.options),
+        \ 'split(v:val, ''='')')
   let l:opts = {}
   for [l:key, l:val] in l:opt_pairs
     let l:key = substitute(l:key, '^\s*\|\s*$', '', 'g')
