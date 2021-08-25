@@ -100,20 +100,50 @@ let s:compiler = vimtex#compiler#_t#new({
       \ 'continuous': 1,
       \})
 
-function! s:compiler.init() abort dict " {{{1
-  call self.init_check_requirements()
-  call self.init_build_dir_option()
-  call self.init_pdf_mode_option()
+function! s:compiler.__check_requirements() abort dict " {{{1
+  let l:required = [self.executable]
+  if self.continuous && !(has('win32') || has('win32unix'))
+    let l:required += ['pgrep']
+  endif
+
+  " Check for required executables
+  for l:exe in l:required
+    if !executable(l:exe)
+      call vimtex#log#warning(l:cmd . ' is not executable')
+      throw 'VimTeX: Requirements not met'
+    endif
+  endfor
+
+  " Check option validity
+  if self.callback
+        \ && !(has('clientserver') || has('nvim') || has('job'))
+    call vimtex#log#warning(
+          \ 'Can''t use callbacks without +job, +nvim, or +clientserver',
+          \ 'Callback option has been disabled.')
+    let self.callback = 0
+  endif
 endfunction
 
 " }}}1
-function! s:compiler.init_build_dir_option() abort dict " {{{1
-  call vimtex#compiler#_t#build_dir_materialize(self)
 
+function! s:compiler.__init() abort dict " {{{1
+  call self.__init_build_dir()
+  call self.__init_pdf_mode()
+  unlet self.__init_build_dir
+  unlet self.__init_pdf_mode
+
+  let self.__configuration = [
+        \ ['executable', self.executable],
+        \ ['continuous', self.continuous],
+        \ ['callback', self.callback],
+        \]
+endfunction
+
+" }}}1
+function! s:compiler.__init_build_dir() abort dict " {{{1
   " Check if .latexmkrc sets the build_dir - if so this should be respected
   let l:out_dir =
         \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'out_dir', 0, '')[0]
-
   if !empty(l:out_dir)
     if !empty(self.build_dir) && (self.build_dir !=# l:out_dir)
       call vimtex#log#warning(
@@ -123,40 +153,36 @@ function! s:compiler.init_build_dir_option() abort dict " {{{1
     endif
     let self.build_dir = l:out_dir
   endif
-
-  call vimtex#compiler#_t#build_dir_respect_envvar(self)
 endfunction
 
 " }}}1
-function! s:compiler.init_pdf_mode_option() abort dict " {{{1
+function! s:compiler.__init_pdf_mode() abort dict " {{{1
   " If the TeX program directive was not set, and if the pdf_mode is set in
   " a .latexmkrc file, then deduce the compiler engine from the value of
   " pdf_mode.
 
-  " Parse the pdf_mode option. If not found, it is set to -1.
+  " Parse the pdf_mode option. Returns -1 if not found.
   let [l:pdf_mode, l:is_local] =
         \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'pdf_mode', 1, -1)
+  if l:pdf_mode < 1 || l:pdf_mode > 5 | return | endif
 
-  " If pdf_mode has a supported value (1: pdflatex, 4: lualatex, 5: xelatex),
-  " override the value of self.tex_program.
-  if l:pdf_mode == 1
-    let l:tex_program = 'pdflatex'
-  elseif l:pdf_mode == 2
-    let l:tex_program = 'pdfps'
-  elseif l:pdf_mode == 3
-    let l:tex_program = 'pdfdvi'
-  elseif l:pdf_mode == 4
-    let l:tex_program = 'lualatex'
-  elseif l:pdf_mode == 5
-    let l:tex_program = 'xelatex'
-  else
+  let l:tex_program = [
+        \ 'pdflatex',
+        \ 'pdfps',
+        \ 'pdfdvi',
+        \ 'lualatex',
+        \ 'xelatex',
+        \][l:pdf_mode-1]
+
+  " Override self.tex_program if pdf_mode has a supported value and the current
+  " TeX program directive in self.tex_program is not specified
+  if self.tex_program ==# '_'
+    let self.tex_program = l:tex_program
     return
   endif
 
-  if self.tex_program ==# '_'
-    " The TeX program directive was not specified
-    let self.tex_program = l:tex_program
-  elseif l:is_local && self.tex_program !=# l:tex_program
+  " Give warning when there may be a confusing conflict
+  if l:is_local && self.tex_program !=# l:tex_program
     call vimtex#log#warning(
           \ 'Value of pdf_mode from latexmkrc is inconsistent with ' .
           \ 'TeX program directive!',
@@ -167,46 +193,13 @@ function! s:compiler.init_pdf_mode_option() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.init_check_requirements() abort dict " {{{1
-  " Check option validity
-  if self.callback
-    if !(has('clientserver') || has('nvim') || has('job'))
-      let self.callback = 0
-      call vimtex#log#warning(
-            \ 'Can''t use callbacks without +job, +nvim, or +clientserver',
-            \ 'Callback option has been disabled.')
-    endif
-  endif
 
-  " Check for required executables
-  let l:required = [self.executable]
-  if self.continuous && !(has('win32') || has('win32unix'))
-    let l:required += ['pgrep']
-  endif
-  let l:missing = filter(l:required, '!executable(v:val)')
+function! s:compiler.__build_cmd() abort dict " {{{1
+  let l:cmd = (has('win32')
+        \ ? 'set max_print_line=2000 & '
+        \ : 'max_print_line=2000 ') . self.executable
 
-  " Disable latexmk if required programs are missing
-  if len(l:missing) > 0
-    for l:cmd in l:missing
-      call vimtex#log#warning(l:cmd . ' is not executable')
-    endfor
-    throw 'VimTeX: Requirements not met'
-  endif
-endfunction
-
-" }}}1
-
-function! s:compiler.build_cmd() abort dict " {{{1
-  if has('win32')
-    let l:cmd = 'set max_print_line=2000 & ' . self.executable
-  else
-    let l:cmd = 'max_print_line=2000 ' . self.executable
-  endif
-
-  for l:opt in self.options
-    let l:cmd .= ' ' . l:opt
-  endfor
-
+  let l:cmd .= ' ' . join(self.options)
   let l:cmd .= ' ' . self.get_engine()
 
   if !empty(self.build_dir)
@@ -260,62 +253,17 @@ function! s:compiler.build_cmd() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.get_engine() abort dict " {{{1
-  return get(extend(g:vimtex_compiler_latexmk_engines,
-        \ {
-        \  'pdfdvi'           : '-pdfdvi',
-        \  'pdfps'            : '-pdfps',
-        \  'pdflatex'         : '-pdf',
-        \  'luatex'           : '-lualatex',
-        \  'lualatex'         : '-lualatex',
-        \  'xelatex'          : '-xelatex',
-        \  'context (pdftex)' : '-pdf -pdflatex=texexec',
-        \  'context (luatex)' : '-pdf -pdflatex=context',
-        \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
-        \ }, 'keep'), self.tex_program, '-pdf')
-endfunction
 
-" }}}1
-function! s:compiler.pprint_items() abort dict " {{{1
-  let l:configuration = [
-        \ ['continuous', self.continuous],
+function! s:compiler.__pprint_append() abort dict " {{{1
+  return [
         \ ['callback', self.callback],
+        \ ['continuous', self.continuous],
+        \ ['executable', self.executable],
         \]
-
-  if !empty(self.build_dir)
-    call add(l:configuration, ['build_dir', self.build_dir])
-  endif
-  call add(l:configuration, ['latexmk options', self.options])
-  call add(l:configuration, ['latexmk engine', self.get_engine()])
-
-  let l:list = []
-  if self.executable !=# s:compiler.executable
-    call add(l:list, ['latexmk executable', self.executable])
-  endif
-
-  if self.target_path !=# b:vimtex.tex
-    call add(l:list, ['root', self.root])
-    call add(l:list, ['target', self.target_path])
-  endif
-
-  call add(l:list, ['configuration', l:configuration])
-
-  if has_key(self, 'process')
-    call add(l:list, ['process', self.process])
-  endif
-
-  if has_key(self, 'job')
-    if self.continuous
-      call add(l:list, ['job', self.job])
-      call add(l:list, ['pid', self.get_pid()])
-    endif
-    call add(l:list, ['cmd', self.cmd])
-  endif
-
-  return l:list
 endfunction
 
 " }}}1
+
 
 function! s:compiler.clean(full) abort dict " {{{1
   let l:restart = self.is_running()
@@ -340,6 +288,22 @@ function! s:compiler.clean(full) abort dict " {{{1
     let self.silent_next_callback = 1
     silent call self.start()
   endif
+endfunction
+
+" }}}1
+function! s:compiler.get_engine() abort dict " {{{1
+  return get(extend(g:vimtex_compiler_latexmk_engines,
+        \ {
+        \  'pdfdvi'           : '-pdfdvi',
+        \  'pdfps'            : '-pdfps',
+        \  'pdflatex'         : '-pdf',
+        \  'luatex'           : '-lualatex',
+        \  'lualatex'         : '-lualatex',
+        \  'xelatex'          : '-xelatex',
+        \  'context (pdftex)' : '-pdf -pdflatex=texexec',
+        \  'context (luatex)' : '-pdf -pdflatex=context',
+        \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
+        \ }, 'keep'), self.tex_program, '-pdf')
 endfunction
 
 " }}}1

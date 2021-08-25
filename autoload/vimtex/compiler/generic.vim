@@ -16,9 +16,10 @@ let s:compiler = vimtex#compiler#_t#new({
       \ 'cmd' : '',
       \})
 
-function! s:compiler.build_cmd() abort dict " {{{1
+function! s:compiler.__build_cmd() abort dict " {{{1
   let l:cmd = self.cmd
 
+  " TODO: self.cmd is not good name (set by exec!)!
   " TODO: %O -> vimtex#util#shellescape(self.target)
 
   return l:cmd

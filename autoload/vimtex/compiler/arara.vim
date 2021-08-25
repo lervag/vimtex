@@ -15,7 +15,7 @@ let s:compiler = vimtex#compiler#_t#new({
       \ 'options': ['--log'],
       \})
 
-function! s:compiler.init() abort dict " {{{1
+function! s:compiler.__check_requirements() abort dict " {{{1
   if !executable('arara')
     call vimtex#log#warning('arara is not executable!')
     throw 'VimTeX: Requirements not met'
@@ -23,14 +23,9 @@ function! s:compiler.init() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.build_cmd() abort dict " {{{1
-  let l:cmd = 'arara'
-
-  for l:opt in self.options
-    let l:cmd .= ' ' . l:opt
-  endfor
-
-  return l:cmd . ' ' . vimtex#util#shellescape(self.target)
+function! s:compiler.__build_cmd() abort dict " {{{1
+  return 'arara ' . join(self.options)
+        \ . ' ' . vimtex#util#shellescape(self.target)
 endfunction
 
 " }}}1
