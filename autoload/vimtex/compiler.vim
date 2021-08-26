@@ -197,6 +197,12 @@ function! vimtex#compiler#start() abort " {{{1
   endif
 
   if g:vimtex_compiler_silent | return | endif
+
+  " We add a redraw here to clear messages (e.g. file written). This is useful
+  " to avoid the "Press ENTER" prompt in some cases, see e.g.
+  " https://github.com/lervag/vimtex/issues/2149
+  redraw
+
   if b:vimtex.compiler.continuous
     call vimtex#log#info('Compiler started in continuous mode')
   else
