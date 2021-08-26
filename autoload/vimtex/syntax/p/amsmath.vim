@@ -61,9 +61,15 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody', {'contains': 'TOP,@Spell'})
 
+  " operatorname
+  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
+  call vimtex#syntax#core#new_arg('texOpnameArg', {
+        \ 'contains': 'TOP,@Spell'
+        \})
+
   " \tag{label} or \tag*{label}
   syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
-  call vimtex#syntax#core#new_arg('texMathTagArg')
+  call vimtex#syntax#core#new_arg('texMathTagArg', {'contains': 'TOP,@Spell'})
 
   " Conceal the command and delims of "\operatorname{ ... }"
   if g:vimtex_syntax_conceal.math_delimiters
@@ -75,12 +81,14 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
 
   highlight def link texCmdDeclmathoper     texCmdNew
   highlight def link texCmdNumberWithin     texCmd
+  highlight def link texCmdOpName           texCmd
   highlight def link texCmdSubjClass        texCmd
   highlight def link texDeclmathoperArgName texArgNew
   highlight def link texDeclmathoperArgBody texMathZone
   highlight def link texMathConcealedArg    texMathTextArg
   highlight def link texNumberWithinArg1    texArg
   highlight def link texNumberWithinArg2    texArg
+  highlight def link texOpnameArg           texMathZone
   highlight def link texSubjClassArg        texArg
   highlight def link texSubjClassOpt        texOpt
 endfunction
