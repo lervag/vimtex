@@ -156,8 +156,8 @@ function! vimtex#compiler#output() abort " {{{1
 
   " If relevant output is open, then reuse it
   if exists('s:output')
-    if s:output.name ==# a:file
-      if bufwinnr(a:file) == s:output.winnr
+    if s:output.name ==# b:vimtex.compiler.output
+      if bufwinnr(b:vimtex.compiler.output) == s:output.winnr
         execute s:output.winnr . 'wincmd w'
       endif
       return
