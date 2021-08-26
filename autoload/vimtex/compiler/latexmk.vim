@@ -109,7 +109,7 @@ function! s:compiler.__check_requirements() abort dict " {{{1
   " Check for required executables
   for l:exe in l:required
     if !executable(l:exe)
-      call vimtex#log#warning(l:cmd . ' is not executable')
+      call vimtex#log#warning(l:exe . ' is not executable')
       throw 'VimTeX: Requirements not met'
     endif
   endfor
