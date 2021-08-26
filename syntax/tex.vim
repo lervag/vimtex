@@ -18,25 +18,22 @@ let s:is_loading = 1
 " ensure that the options are loaded!
 call vimtex#options#init()
 
-
-" Load core syntax (does not depend on VimTeX state)
+" Load core syntax and highlighting rules (does not depend on VimTeX state)
 call vimtex#syntax#core#init()
-
-" Load core highlighting rules
 call vimtex#syntax#core#init_highlights()
 
 " Initialize buffer local syntax state
 let b:vimtex_syntax = {}
 call vimtex#syntax#nested#reset()
 
-
-" Load package specific syntax (may depend on VimTeX state)
+" Load syntax rules that depend on VimTeX state
+" * This includes e.g. package specific syntax
 if exists('b:vimtex')
-  call vimtex#syntax#packages#init()
+  call vimtex#syntax#core#init_post()
 else
   augroup vimtex_syntax
     autocmd!
-    autocmd User VimtexEventInitPost call vimtex#syntax#packages#init()
+    autocmd User VimtexEventInitPost call vimtex#syntax#core#init_post()
   augroup END
 endif
 

@@ -400,12 +400,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_opt('texTheoremEnvOpt', {
         \ 'contains': 'TOP,@NoSpell'
         \})
-  " for l:envname in s:gather_newtheorems()
-  "   execute 'syntax match texTheoremEnvBgn'
-  "         \ printf('"\\begin{%s}"', l:envname)
-  "         \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
-  "         \ 'contains=texCmdEnv'
-  " endfor
 
   " }}}2
   " {{{2 Comments
@@ -626,6 +620,20 @@ function! vimtex#syntax#core#init() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#syntax#core#init_post() abort " {{{1
+  " Add texTheoremEnvBgn for custom theorems
+  for l:envname in s:gather_newtheorems()
+    execute 'syntax match texTheoremEnvBgn'
+          \ printf('"\\begin{%s}"', l:envname)
+          \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
+          \ 'contains=texCmdEnv'
+  endfor
+
+  call vimtex#syntax#packages#init()
+endfunction
+
+" }}}1
+
 function! vimtex#syntax#core#init_highlights() abort " {{{1
   " See :help group-name for list of conventional group names
 
