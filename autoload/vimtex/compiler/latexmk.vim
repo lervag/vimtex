@@ -205,7 +205,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
     " Set viewer options
     if !g:vimtex_view_automatic
           \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id') > 0
-          \ || get(s:, 'silence_next_callback', 0)
+          \ || self.silence_next_callback
       let l:cmd .= ' -view=none'
     elseif g:vimtex_view_enabled
           \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
@@ -240,12 +240,6 @@ endfunction
 
 
 function! s:compiler.clean(full) abort dict " {{{1
-  let l:restart = self.is_running()
-  if l:restart
-    call self.stop()
-  endif
-
-  " Define and run the latexmk clean cmd
   let l:cmd = (has('win32')
         \   ? 'cd /D "' . self.root . '" & '
         \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
@@ -254,14 +248,8 @@ function! s:compiler.clean(full) abort dict " {{{1
     let l:cmd .= printf(' -outdir=%s ', fnameescape(self.build_dir))
   endif
   let l:cmd .= vimtex#util#shellescape(self.target)
+
   call vimtex#process#run(l:cmd)
-
-  call vimtex#log#info('Compiler clean finished' . (a:full ? ' (full)' : ''))
-
-  if l:restart
-    let self.silent_next_callback = 1
-    silent call self.start()
-  endif
 endfunction
 
 " }}}1

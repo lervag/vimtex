@@ -44,8 +44,6 @@ function! s:compiler.clean(...) abort dict " {{{1
         \ . ' -O '
         \   . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
   call vimtex#process#run(l:cmd)
-
-  call vimtex#log#info('Compiler clean finished')
 endfunction
 
 " }}}1

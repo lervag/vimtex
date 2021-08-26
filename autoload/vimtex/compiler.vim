@@ -50,12 +50,10 @@ function! vimtex#compiler#callback(status) abort " {{{1
   " 1: Compilation cycle has started
   " 2: Compilation complete - Success
   " 3: Compilation complete - Failed
-
   if !exists('b:vimtex.compiler') | return | endif
 
-  if get(b:vimtex.compiler, 'silence_next_callback')
-    let b:vimtex.compiler.silence_next_callback = 0
-    return
+  if b:vimtex.compiler.silence_next_callback
+    call vimtex#log#set_silent()
   endif
 
   let b:vimtex.compiler.status = a:status
@@ -87,6 +85,11 @@ function! vimtex#compiler#callback(status) abort " {{{1
     if exists('#User#VimtexEventCompileFailed')
       doautocmd <nomodeline> User VimtexEventCompileFailed
     endif
+  endif
+
+  if b:vimtex.compiler.silence_next_callback
+    call vimtex#log#set_silent_restore()
+    let b:vimtex.compiler.silence_next_callback = 0
   endif
 endfunction
 
@@ -171,21 +174,37 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#start() abort " {{{1
-  if b:vimtex.compiler.is_running() | return | endif
-
-  if !get(b:vimtex.compiler, 'continuous')
-    call b:vimtex.compiler.start_single()
+  if b:vimtex.compiler.is_running()
+    call vimtex#log#warning(
+          \ 'Compiler is already running for `' . self.target . "'")
     return
   endif
 
   call b:vimtex.compiler.start()
-  let b:vimtex.compiler.check_timer = s:check_if_running_start()
+
+  if b:vimtex.compiler.continuous
+    let b:vimtex.compiler.check_timer = s:check_if_running_start()
+  endif
+
+  if b:vimtex.compiler.continuous
+    call vimtex#log#info('Compiler started in continuous mode')
+  else
+    call vimtex#log#info('Compiler started in background!')
+  endif
 endfunction
 
 " }}}1
 function! vimtex#compiler#stop() abort " {{{1
+  if !b:vimtex.compiler.is_running()
+    call vimtex#log#warning(
+          \ 'There is no process to stop (' . b:vimtex.compiler.target . ')')
+    return
+  endif
+
   call b:vimtex.compiler.stop()
   silent! call timer_stop(b:vimtex.compiler.check_timer)
+
+  call vimtex#log#info('Compiler stopped (' . b:vimtex.compiler.target . ')')
 endfunction
 
 " }}}1
@@ -194,28 +213,29 @@ function! vimtex#compiler#stop_all() abort " {{{1
     if exists('l:state.compiler.is_running')
           \ && l:state.compiler.is_running()
       call l:state.compiler.stop()
+      call vimtex#log#info('Compiler stopped (' . l:state.compiler.target . ')')
     endif
   endfor
 endfunction
 
 " }}}1
 function! vimtex#compiler#clean(full) abort " {{{1
+  let l:restart = b:vimtex.compiler.is_running()
+  if l:restart
+    call b:vimtex.compiler.stop()
+  endif
+
+
   call b:vimtex.compiler.clean(a:full)
-
-  if empty(b:vimtex.compiler.build_dir) | return | endif
   sleep 100m
+  call b:vimtex.compiler.remove_build_dir()
+  call vimtex#log#info('Compiler clean finished' . (a:full ? ' (full)' : ''))
 
-  " Remove auxilliary output directories if they are empty
-  let l:build_dir = (vimtex#paths#is_abs(b:vimtex.compiler.build_dir)
-        \ ? '' : b:vimtex.root . '/')
-        \ . b:vimtex.compiler.build_dir
-  let l:tree = glob(l:build_dir . '/**/*', 0, 1)
-  let l:files = filter(copy(l:tree), 'filereadable(v:val)')
-  if !empty(l:files) | return | endif
 
-  for l:dir in sort(l:tree) + [l:build_dir]
-    call delete(l:dir, 'd')
-  endfor
+  if l:restart
+    let b:vimtex.compiler.silence_next_callback = 1
+    silent call b:vimtex.compiler.start()
+  endif
 endfunction
 
 " }}}1
@@ -234,24 +254,18 @@ function! vimtex#compiler#status(detailed) abort " {{{1
     endfor
 
     if empty(l:running)
-      call vimtex#log#warning('Compiler is not running!')
+      call vimtex#log#info('Compiler is not running!')
     else
       call vimtex#log#info('Compiler is running', l:running)
     endif
   else
-    if vimtex#compiler#is_running() > 0
+    if exists('b:vimtex.compiler')
+          \ && b:vimtex.compiler.is_running()
       call vimtex#log#info('Compiler is running')
     else
-      call vimtex#log#warning('Compiler is not running!')
+      call vimtex#log#info('Compiler is not running!')
     endif
   endif
-endfunction
-
-" }}}1
-function! vimtex#compiler#is_running() abort " {{{1
-  return exists('b:vimtex.compiler')
-        \ ? b:vimtex.compiler.is_running()
-        \ : -1
 endfunction
 
 " }}}1

@@ -20,6 +20,7 @@ let s:compiler = {
       \ 'continuous': 0,
       \ 'hooks': [],
       \ 'output': tempname(),
+      \ 'silence_next_callback': 0,
       \ 'status': -1,
       \}
 
@@ -99,55 +100,34 @@ endfunction
 
 function! s:compiler.clean(full) abort dict " {{{1
   let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log']
-
-  " If a full clean is required
   if a:full
     call extend(l:files, ['pdf'])
   endif
 
   call map(l:files, {_, x -> printf('%s/%s.%s',
         \ self.build_dir, fnamemodify(self.target_path, ':t:r:S'), x)})
+
   call vimtex#process#run('rm -f ' . join(l:files))
-  call vimtex#log#info('Compiler clean finished')
 endfunction
 
 " }}}1
 function! s:compiler.start(...) abort dict " {{{1
-  if self.is_running()
-    call vimtex#log#warning(
-          \ 'Compiler is already running for `' . self.target . "'")
-    return
-  endif
+  if self.is_running() | return | endif
 
-  " Create build dir if it does not exist
-  " Note: This may need to create a hierarchical structure!
-  if !empty(self.build_dir)
-    let l:dirs = split(glob(self.root . '/**/*.tex'), '\n')
-    call map(l:dirs, "fnamemodify(v:val, ':h')")
-    call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
-    call uniq(sort(filter(l:dirs, '!empty(v:val)')))
-    call map(l:dirs, {_, x ->
-          \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.root . '/')
-          \ . self.build_dir . '/' . x})
-    call filter(l:dirs, '!isdirectory(v:val)')
+  call self.create_build_dir()
 
-    " Create the non-existing directories
-    for l:dir in l:dirs
-      call vimtex#log#warning(
-            \ "build dir doesn't exist, it will be created: " . l:dir)
-      call mkdir(l:dir, 'p')
-    endfor
-  endif
+  " Initialize output file
+  call writefile([], self.output, 'a')
 
-  call self.exec()
+  " Prepare compile command
+  let self.cmd = self.__build_cmd()
+  let l:cmd = has('win32')
+        \ ? 'cmd /s /c "' . self.cmd . '"'
+        \ : ['sh', '-c', self.cmd]
+
+  " Execute command and toggle status
+  call self.exec(l:cmd)
   let self.status = 1
-
-  if self.continuous
-    call vimtex#log#info('Compiler started in continuous mode'
-          \ . (a:0 > 0 ? ' (single shot)' : ''))
-  else
-    call vimtex#log#info('Compiler started in background!')
-  endif
 
   if exists('#User#VimtexEventCompileStarted')
     doautocmd <nomodeline> User VimtexEventCompileStarted
@@ -155,19 +135,23 @@ function! s:compiler.start(...) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.stop() abort dict " {{{1
-  if self.is_running()
-    call self.kill()
-    call vimtex#log#info('Compiler stopped (' . self.target . ')')
-    if exists('#User#VimtexEventCompileStopped')
-      doautocmd <nomodeline> User VimtexEventCompileStopped
-    endif
-  else
-    call vimtex#log#warning(
-          \ 'There is no process to stop (' . self.target . ')')
-  endif
+function! s:compiler.start_single() abort dict " {{{1
+  let l:continuous = self.continuous
+  let self.continuous = 0
+  call self.start()
+  let self.continuous = l:continuous
+endfunction
 
+" }}}1
+function! s:compiler.stop() abort dict " {{{1
+  if !self.is_running() | return | endif
+
+  call self.kill()
   let self.status = 0
+
+  if exists('#User#VimtexEventCompileStopped')
+    doautocmd <nomodeline> User VimtexEventCompileStopped
+  endif
 endfunction
 
 " }}}1
@@ -184,14 +168,56 @@ endfunction
 
 " }}}1
 
+function! s:compiler.create_build_dir() abort dict " {{{1
+  " Create build dir if it does not exist
+  " Note: This may need to create a hierarchical structure!
+  if empty(self.build_dir) | return | endif
+
+  let l:dirs = split(glob(self.root . '/**/*.tex'), '\n')
+  call map(l:dirs, "fnamemodify(v:val, ':h')")
+  call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
+  call uniq(sort(filter(l:dirs, '!empty(v:val)')))
+  call map(l:dirs, {_, x ->
+        \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.root . '/')
+        \ . self.build_dir . '/' . x})
+  call filter(l:dirs, '!isdirectory(v:val)')
+  if empty(l:dirs) | return | endif
+
+  " Create the non-existing directories
+  call vimtex#log#warning(["Creating build_dir directorie(s):"]
+        \ + map(copy(l:dirs), {_, x -> '* ' . x}))
+
+  for l:dir in l:dirs
+    call mkdir(l:dir, 'p')
+  endfor
+endfunction
+
+" }}}1
+function! s:compiler.remove_build_dir() abort dict " {{{1
+  " Remove auxilliary output directories (only if they are empty)
+  if empty(self.build_dir) | return | endif
+
+  if vimtex#paths#is_abs(self.build_dir)
+    let l:build_dir = self.build_dir
+  else
+    let l:build_dir = b:vimtex.root . '/' . self.build_dir
+  endif
+
+  let l:tree = glob(l:build_dir . '/**/*', 0, 1)
+  let l:files = filter(copy(l:tree), 'filereadable(v:val)')
+
+  if empty(l:files)
+    for l:dir in sort(l:tree) + [l:build_dir]
+      call delete(l:dir, 'd')
+    endfor
+  endif
+endfunction
+
+" }}}1
+
 
 let s:compiler_jobs = {}
-function! s:compiler_jobs.exec() abort dict " {{{1
-  let self.cmd = self.__build_cmd()
-  let l:cmd = has('win32')
-        \ ? 'cmd /s /c "' . self.cmd . '"'
-        \ : ['sh', '-c', self.cmd]
-
+function! s:compiler_jobs.exec(cmd) abort dict " {{{1
   let l:options = {
         \ 'out_io' : 'file',
         \ 'err_io' : 'file',
@@ -203,7 +229,6 @@ function! s:compiler_jobs.exec() abort dict " {{{1
     let l:options.err_io = 'pipe'
     let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.err_cb = function('s:callback_continuous_output')
-    call writefile([], self.output, 'a')
   else
     let s:cb_target = self.target_path !=# b:vimtex.tex
           \ ? self.target_path : ''
@@ -211,16 +236,8 @@ function! s:compiler_jobs.exec() abort dict " {{{1
   endif
 
   call vimtex#paths#pushd(self.root)
-  let self.job = job_start(l:cmd, l:options)
+  let self.job = job_start(a:cmd, l:options)
   call vimtex#paths#popd()
-endfunction
-
-" }}}1
-function! s:compiler_jobs.start_single() abort dict " {{{1
-  let l:continuous = self.continuous
-  let self.continuous = 0
-  call self.start()
-  let self.continuous = l:continuous
 endfunction
 
 " }}}1
@@ -265,12 +282,7 @@ endfunction
 
 
 let s:compiler_nvim = {}
-function! s:compiler_nvim.exec() abort dict " {{{1
-  let self.cmd = self.__build_cmd()
-  let l:cmd = has('win32')
-        \ ? 'cmd /s /c "' . self.cmd . '"'
-        \ : ['sh', '-c', self.cmd]
-
+function! s:compiler_nvim.exec(cmd) abort dict " {{{1
   let l:shell = {
         \ 'on_stdout' : function('s:callback_nvim_output'),
         \ 'on_stderr' : function('s:callback_nvim_output'),
@@ -283,20 +295,7 @@ function! s:compiler_nvim.exec() abort dict " {{{1
     let l:shell.on_exit = function('s:callback_nvim_exit')
   endif
 
-  " Initialize output file
-  try
-    call writefile([], self.output)
-  endtry
-
-  let self.job = jobstart(l:cmd, l:shell)
-endfunction
-
-" }}}1
-function! s:compiler_nvim.start_single() abort dict " {{{1
-  let l:continuous = self.continuous
-  let self.continuous = 0
-  call self.start()
-  let self.continuous = l:continuous
+  let self.job = jobstart(a:cmd, l:shell)
 endfunction
 
 " }}}1

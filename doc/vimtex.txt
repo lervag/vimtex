@@ -5238,10 +5238,6 @@ users for customization.
 
 Note: This API is currently a work in progress!
 
-*vimtex#compiler#is_running*
-  Function returns 0 if a compiler is not running, 1 if it is running, or -1
-  if the compiler backend is not available (e.g. for non VimTeX buffers).
-
 *vimtex#compiler#callback*
   Utility function to be used as a compiler callback function. Takes a single
   argument, which is the compiler status:
