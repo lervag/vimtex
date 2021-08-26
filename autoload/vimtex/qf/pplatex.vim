@@ -58,20 +58,24 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%E**\ Error\ in\ %f:%m
   setlocal errorformat+=%W**\ Warning\ in\ %f:%m
 
+  " Undefined reference warnings
+  setlocal errorformat+=%W**\ Warning:\ %m\ on\ input\ line\ %#%l.
+  setlocal errorformat+=%W**\ Warning:\ 
+
   " Some errors are difficult even for pplatex
   setlocal errorformat+=%E**\ Error\ \ :%m
 
   " Anything that starts with three spaces is part of the message from a
   " previously started multiline error item.
-  setlocal errorformat+=%C\ \ \ %m\ on\ input\ line\ %l.
-  setlocal errorformat+=%C\ \ \ %m
+  setlocal errorformat+=%C\ %#%m\ on\ input\ line\ %#%l.
+  setlocal errorformat+=%C\ %#%m
 
   " Items are terminated with two newlines.
   setlocal errorformat+=%-Z
 
   " Skip statistical results at the bottom of the output.
   setlocal errorformat+=%-GResult%.%#
-  setlocal errorformat+=%-G
+  setlocal errorformat+=%-G%.%#
 endfunction
 
 " }}}1
@@ -85,7 +89,9 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
 
   silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
   call vimtex#qf#u#caddfile(self, l:tmp)
-  silent call system('rm ' . l:tmp)
+  " unsilent echom string(getqflist())
+  " silent call delete(l:tmp)
+  " silent call system('rm ' . l:tmp)
 endfunction
 
 " }}}1
