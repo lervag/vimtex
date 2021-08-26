@@ -1109,24 +1109,20 @@ OPTIONS                                                        *vimtex-options*
   configuration values set by the user will take precedence over the default
   values.
 
+  This could be used e.g. to run `make` or something like that.
+
   Default value: >
 
     let g:vimtex_compiler_generic = {
-        \ 'cmd' : '',
-        \ 'build_dir' : '',
+        \ 'command' : '',
         \}
 <
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
-  cmd~
+  command~
     This is the command to run to start compilation. This can be any command,
     and the command is run from the project root.
-
-    Note: This value must be specified; an empty value will return an error.
-
-  build_dir~
-    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable VimTeX completion.

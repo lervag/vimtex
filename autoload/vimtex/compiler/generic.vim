@@ -13,16 +13,19 @@ endfunction
 
 let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'generic',
-      \ 'cmd' : '',
+      \ 'command' : '',
       \})
 
+function! s:compiler.__check_requirements() abort dict " {{{1
+  if empty(self.command)
+    call vimtex#log#warning('Please specify the command to run!')
+    throw 'VimTeX: Requirements not met'
+  endif
+endfunction
+
+" }}}1
 function! s:compiler.__build_cmd() abort dict " {{{1
-  let l:cmd = self.cmd
-
-  " TODO: self.cmd is not good name (set by exec!)!
-  " TODO: %O -> vimtex#util#shellescape(self.target)
-
-  return l:cmd
+  return self.command
 endfunction
 
 " }}}1
