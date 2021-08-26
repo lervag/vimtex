@@ -16,6 +16,7 @@ function! vimtex#options#init() abort " {{{1
         \])
 
   call s:init_option('vimtex_compiler_enabled', 1)
+  call s:init_option('vimtex_compiler_silent', 0)
   call s:init_option('vimtex_compiler_method', 'latexmk')
   call s:init_option('vimtex_compiler_progname',
         \ has('nvim') && executable('nvr')

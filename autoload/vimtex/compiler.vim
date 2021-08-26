@@ -53,7 +53,11 @@ function! vimtex#compiler#callback(status) abort " {{{1
   if !exists('b:vimtex.compiler') | return | endif
 
   if b:vimtex.compiler.silence_next_callback
-    call vimtex#log#set_silent()
+    if g:vimtex_compiler_silent
+      let b:vimtex.compiler.silence_next_callback = 0
+    else
+      call vimtex#log#set_silent()
+    endif
   endif
 
   let b:vimtex.compiler.status = a:status
@@ -69,7 +73,9 @@ function! vimtex#compiler#callback(status) abort " {{{1
   redraw
 
   if a:status == 2
-    call vimtex#log#info('Compilation completed')
+    if !g:vimtex_compiler_silent
+      call vimtex#log#info('Compilation completed')
+    endif
 
     if exists('b:vimtex')
       call b:vimtex.update_packages()
@@ -80,7 +86,9 @@ function! vimtex#compiler#callback(status) abort " {{{1
       doautocmd <nomodeline> User VimtexEventCompileSuccess
     endif
   elseif a:status == 3
-    call vimtex#log#warning('Compilation failed!')
+    if !g:vimtex_compiler_silent
+      call vimtex#log#warning('Compilation failed!')
+    endif
 
     if exists('#User#VimtexEventCompileFailed')
       doautocmd <nomodeline> User VimtexEventCompileFailed
@@ -186,6 +194,7 @@ function! vimtex#compiler#start() abort " {{{1
     let b:vimtex.compiler.check_timer = s:check_if_running_start()
   endif
 
+  if g:vimtex_compiler_silent | return | endif
   if b:vimtex.compiler.continuous
     call vimtex#log#info('Compiler started in continuous mode')
   else
@@ -204,6 +213,7 @@ function! vimtex#compiler#stop() abort " {{{1
   call b:vimtex.compiler.stop()
   silent! call timer_stop(b:vimtex.compiler.check_timer)
 
+  if g:vimtex_compiler_silent | return | endif
   call vimtex#log#info('Compiler stopped (' . b:vimtex.compiler.target . ')')
 endfunction
 
