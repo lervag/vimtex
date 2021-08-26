@@ -55,7 +55,7 @@ function! RunTests(comp, list_opts)
     endif
 
     silent call vimtex#compiler#compile()
-    sleep 600m
+    sleep 650m
 
     " Check if continuous mode is active
     if get(b:vimtex.compiler, 'continuous')
@@ -66,7 +66,7 @@ function! RunTests(comp, list_opts)
 
       silent call vimtex#compiler#stop()
     else
-      sleep 400m
+      sleep 450m
     endif
 
     " Check that the PDF has been built
@@ -76,7 +76,7 @@ function! RunTests(comp, list_opts)
     endif
 
     silent call vimtex#compiler#clean(1)
-    sleep 600m
+    sleep 650m
 
     if !empty(b:vimtex.out()) || !empty(b:vimtex.aux())
       echo "VimtexClean failed!\n"
