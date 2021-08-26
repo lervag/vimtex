@@ -51,6 +51,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
   " 2: Compilation complete - Success
   " 3: Compilation complete - Failed
   if !exists('b:vimtex.compiler') | return | endif
+  silent! call s:output.pause()
 
   if b:vimtex.compiler.silence_next_callback
     if g:vimtex_compiler_silent
@@ -66,6 +67,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
     if exists('#User#VimtexEventCompiling')
       doautocmd <nomodeline> User VimtexEventCompiling
     endif
+    silent! call s:output.resume()
     return
   endif
 
@@ -98,6 +100,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
   endif
 
   call vimtex#qf#open(0)
+  silent! call s:output.resume()
 endfunction
 
 " }}}1
@@ -349,6 +352,7 @@ function! s:output_factory.create(file) dict abort " {{{1
 
   let s:output.name = a:file
   let s:output.ftime = -1
+  let s:output.paused = v:false
   let s:output.bufnr = bufnr('%')
   let s:output.winnr = bufwinnr('%')
   let s:output.timer = timer_start(100,
@@ -368,7 +372,19 @@ function! s:output_factory.create(file) dict abort " {{{1
 endfunction
 
 " }}}1
+function! s:output_factory.pause() dict abort " {{{1
+  let self.paused = v:true
+endfunction
+
+" }}}1
+function! s:output_factory.resume() dict abort " {{{1
+  let self.paused = v:false
+endfunction
+
+" }}}1
 function! s:output_factory.update() dict abort " {{{1
+  if self.paused | return | endif
+
   let l:ftime = getftime(self.name)
   if self.ftime >= l:ftime
         \ || mode() ==? 'v' || mode() ==# "\<c-v>"
