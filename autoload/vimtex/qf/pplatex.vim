@@ -89,9 +89,7 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
 
   silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
   call vimtex#qf#u#caddfile(self, l:tmp)
-  " unsilent echom string(getqflist())
-  " silent call delete(l:tmp)
-  " silent call system('rm ' . l:tmp)
+  silent call delete(l:tmp)
 endfunction
 
 " }}}1
