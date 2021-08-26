@@ -923,6 +923,9 @@ OPTIONS                                                        *vimtex-options*
     With the above setting, the `build_dir` is set to the base name of the
     current file. E.g., If you do `vim test.tex`, the value becomes `test`.
 
+    If `build_dir` is specified, then the specified build directory is created
+    if it does not exist.
+
     Note 1: This option only works with `latexmk` version 4.27 and later.
     Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
             will have priority.
@@ -1030,10 +1033,9 @@ OPTIONS                                                        *vimtex-options*
     Note: By default, the option `-pdf` is also supplied to indicate the LaTeX
           engine. This may be changed on a per project basis with TeX
           directives, see |vimtex-tex-program| or the two compiler-specific
-          options
-            |g:vimtex_compiler_latexmk_engines|
-            and |g:vimtex_compiler_latexrun_engines|.
-          The latter two options may also be used to change the default engine.
+          options |g:vimtex_compiler_latexmk_engines| and
+          |g:vimtex_compiler_latexrun_engines|. The latter two options may
+          also be used to change the default engine.
 
 *g:vimtex_compiler_latexrun_engines*
   Defines a map between TeX program directive (|vimtex-tex-program|) and
@@ -1069,8 +1071,7 @@ OPTIONS                                                        *vimtex-options*
   keys are explained in more detail:
 
   build_dir~
-    Same as |g:vimtex_compiler_latexmk| / `build_dir`. This will be created if
-    needed, since tectonic won't build anything unless it exists.
+    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
 
   options~
     This is a list of options that are passed to `tectonic`. The default
@@ -1092,7 +1093,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: >
 
     let g:vimtex_compiler_arara = {
-        \ 'options' : ['-v'],
+        \ 'options' : ['--log'],
         \}
 <
   The default value shows which entries may be changed. Here the different

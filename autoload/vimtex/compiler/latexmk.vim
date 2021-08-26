@@ -89,6 +89,8 @@ endfunction
 
 let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'latexmk',
+      \ 'callback' : 1,
+      \ 'continuous': 1,
       \ 'executable' : 'latexmk',
       \ 'options' : [
       \   '-verbose',
@@ -96,8 +98,6 @@ let s:compiler = vimtex#compiler#_template#new({
       \   '-synctex=1',
       \   '-interaction=nonstopmode',
       \ ],
-      \ 'callback' : 1,
-      \ 'continuous': 1,
       \})
 
 function! s:compiler.__check_requirements() abort dict " {{{1
