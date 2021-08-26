@@ -64,15 +64,20 @@ endfunction
 
 
 let s:logger = {
-      \ 'name' : 'VimtexMessageLog',
-      \ 'entries' : [],
-      \ 'type_to_highlight' : {
-      \   'info' : 'VimtexInfo',
-      \   'warning' : 'VimtexWarning',
-      \   'error' : 'VimtexError',
+      \ 'name': 'VimtexMessageLog',
+      \ 'entries': [],
+      \ 'type_to_highlight': {
+      \   'info': 'VimtexInfo',
+      \   'warning': 'VimtexWarning',
+      \   'error': 'VimtexError',
       \ },
-      \ 'verbose' : get(get(s:, 'logger', {}), 'verbose',
-      \                 get(g:, 'vimtex_log_verbose', 1)),
+      \ 'type_to_level': {
+      \   'info': 1,
+      \   'warning': 2,
+      \   'error': 3,
+      \ },
+      \ 'verbose': get(get(s:, 'logger', {}), 'verbose',
+      \                get(g:, 'vimtex_log_verbose', 1)),
       \}
 function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:msg_list = []
@@ -91,21 +96,29 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:entry.msg = l:msg_list
   call add(self.entries, l:entry)
 
-  if !self.verbose | return | endif
+  if self.verbose
+    if self.type_to_level[a:type] > 1
+      unsilent call self.notify(l:msg_list, a:type)
+    else
+      call self.notify(l:msg_list, a:type)
+    endif
+  endif
+endfunction
 
-  " Ignore message
+" }}}1
+function! s:logger.notify(msg_list, type) abort dict " {{{1
   for l:re in get(g:, 'vimtex_log_ignore', [])
-    if join(l:msg_list) =~# l:re | return | endif
+    if join(a:msg_list) =~# l:re | return | endif
   endfor
 
-  unsilent call vimtex#echo#formatted([
+  call vimtex#echo#formatted([
         \ [self.type_to_highlight[a:type], 'VimTeX:'],
-        \ ' ' . l:msg_list[0]
+        \ ' ' . a:msg_list[0]
         \])
 
-  if len(l:msg_list) > 1
-    unsilent call vimtex#echo#echo(
-          \ join(map(l:msg_list[1:], "'        ' . v:val"), "\n"))
+  if len(a:msg_list) > 1
+    call vimtex#echo#echo(
+          \ join(map(a:msg_list[1:], "'        ' . v:val"), "\n"))
   endif
 endfunction
 
