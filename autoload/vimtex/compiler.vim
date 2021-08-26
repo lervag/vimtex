@@ -69,9 +69,6 @@ function! vimtex#compiler#callback(status) abort " {{{1
     return
   endif
 
-  call vimtex#qf#open(0)
-  redraw
-
   if a:status == 2
     if !g:vimtex_compiler_silent
       call vimtex#log#info('Compilation completed')
@@ -99,6 +96,8 @@ function! vimtex#compiler#callback(status) abort " {{{1
     call vimtex#log#set_silent_restore()
     let b:vimtex.compiler.silence_next_callback = 0
   endif
+
+  call vimtex#qf#open(0)
 endfunction
 
 " }}}1
