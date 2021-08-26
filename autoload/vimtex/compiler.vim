@@ -349,9 +349,10 @@ function! s:output_factory.create(file) dict abort " {{{1
   unlet s:output.create
 
   let s:output.name = a:file
+  let s:output.ftime = -1
   let s:output.bufnr = bufnr('%')
   let s:output.winnr = bufwinnr('%')
-  let s:output.timer = timer_start(150,
+  let s:output.timer = timer_start(100,
         \ {_ -> s:output.update()},
         \ {'repeat': -1})
 
@@ -369,12 +370,15 @@ endfunction
 
 " }}}1
 function! s:output_factory.update() dict abort " {{{1
+  let l:ftime = getftime(self.name)
+  if self.ftime >= l:ftime
+        \ || mode() ==? 'v' || mode() ==# "\<c-v>"
+    return
+  endif
+  let self.ftime = getftime(self.name)
+
   if bufwinnr(self.name) != self.winnr
     let self.winnr = bufwinnr(self.name)
-  endif
-
-  if mode() ==? 'v' || mode() ==# "\<c-v>"
-    return
   endif
 
   let l:swap = bufwinnr('%') != self.winnr
@@ -383,8 +387,8 @@ function! s:output_factory.update() dict abort " {{{1
     execute 'keepalt' self.winnr . 'wincmd w'
   endif
 
-  " Reload content with :edit
-  edit
+  " Force reload file content
+  silent edit
 
   if l:swap
     " Go to last line of file if it is not the current window
