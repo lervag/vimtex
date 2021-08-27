@@ -5307,9 +5307,32 @@ A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
    options according to your desired version of Vim:
 
      * For `MacVim`, select the `MacVim` preset.
-     * For `neovim`, select the `Custom` preset from the drop-down list and set:
+     * For `neovim`.
+       You would need to install neovim-remote.
+       `$ pip install neovim-remote`
+       
+       Then add the following setting to nvim config. 
+       `function! SetServerName()
+         if has('win32')
+           let nvim_server_file = $TEMP . "/curnvimserver.txt"
+         else
+           let nvim_server_file = "/tmp/curnvimserver.txt"
+         endif
+         let cmd = printf("echo %s > %s", v:servername, nvim_server_file)
+         call system(cmd)
+       endfunction
+
+       augroup vimtex_common
+           autocmd!
+           autocmd FileType tex call SetServerName()
+       augroup END`
+         
+       (You can choose any other name for curnvimserver.txt)
+
+       Select the `Custom` preset from the drop-down list and set:
          Command: nvr~
-         Args: --remote +"%line" "%file"~
+         Args: --servername `cat /tmp/curnvimserver.txt` +"%line" "%file"
+          
        Please ensure that you have the `nvr` (neovim-remote) utility and the
        `pynvim` Python module available, see |vimtex-faq-neovim|.
 
