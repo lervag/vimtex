@@ -105,26 +105,45 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
 
   execute 'normal!' a:line . 'G'
   redraw
-
-  " Attempt to focus Vim
-  if executable('pstree') && executable('xdotool')
-    let l:pids = reverse(split(system('pstree -s -p ' . getpid()), '\D\+'))
-
-    let l:xwinids = []
-    call map(copy(l:pids),
-          \ {_, x -> extend(l:xwinids, reverse(split(system(
-          \   'xdotool search --onlyvisible --pid ' . x))))})
-    call filter(l:xwinids, '!empty(v:val)')
-
-    if !empty(l:xwinids)
-      call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
-      call feedkeys("\<c-l>", 'tn')
-    endif
-  endif
+  call s:focus_vim()
 
   if exists('#User#VimtexEventViewReverse')
     doautocmd <nomodeline> User VimtexEventViewReverse
   endif
+endfunction
+
+" }}}1
+
+function! s:focus_vim() abort " {{{1
+  if !executable('pstree') || !executable('xdotool') | return | endif
+
+  " The idea is to use xdotool to focus the window ID of the relevant windowed
+  " process. To do this, we need to check the process tree. Inside TMUX we need
+  " to check from the PID of the tmux client. We find this PID by listing the
+  " PIDS of the corresponding pty.
+  if empty($TMUX)
+    let l:current_pid = getpid()
+  else
+    let l:pts = split(
+          \ trim(system('tmux display-message -p "#{client_tty}"')), '/')[-1]
+    let l:current_pid = str2nr(systemlist('ps o pid t ' . l:pts)[1])
+  endif
+
+  let l:pids = split(system('pstree -s -p ' . l:current_pid), '\D\+')
+  let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
+
+  for l:pid in reverse(l:pids)
+    let l:xwinids = filter(reverse(split(system(
+        \ 'xdotool search --onlyvisible --pid ' . l:pid))),
+        \ '!empty(v:val)')
+
+    if !empty(l:xwinids)
+      silent call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call feedkeys("\<c-l>", 'tn')
+      return l:xwinids[0]
+      break
+    endif
+  endfor
 endfunction
 
 " }}}1
