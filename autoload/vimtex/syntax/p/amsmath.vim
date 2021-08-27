@@ -31,7 +31,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
 
-  " numberwithin
+  " \numberwithin
   syntax match texCmdNumberWithin "\\numberwithin\>"
         \ nextgroup=texNumberWithinArg1 skipwhite skipnl
   call vimtex#syntax#core#new_arg('texNumberWithinArg1', {
@@ -42,7 +42,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'contains': 'TOP,@Spell'
         \})
 
-  " subjclass
+  " \subjclass
   syntax match texCmdSubjClass "\\subjclass\>"
         \ nextgroup=texSubjClassOpt,texSubjClassArg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texSubjClassOpt', {
@@ -61,7 +61,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody', {'contains': 'TOP,@Spell'})
 
-  " operatorname
+  " \operatorname
   syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
   call vimtex#syntax#core#new_arg('texOpnameArg', {
         \ 'contains': 'TOP,@Spell'
