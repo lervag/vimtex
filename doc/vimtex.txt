@@ -5331,7 +5331,7 @@ A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
 
        Select the `Custom` preset from the drop-down list and set:
          Command: nvr~
-         Args: --servername `cat /tmp/curnvimserver.txt` +"%line" "%file"
+         Args: --servername `cat /tmp/curnvimserver.txt` +"%line" "%file"~
           
        Please ensure that you have the `nvr` (neovim-remote) utility and the
        `pynvim` Python module available, see |vimtex-faq-neovim|.
