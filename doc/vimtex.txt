@@ -93,6 +93,7 @@ CONTENTS                                                      *vimtex-contents*
       MuPDF                                     |vimtex-view-mupdf|
       Okular                                    |vimtex-view-okular|
       qpdfview                                  |vimtex-view-qpdfview|
+      Sioyek                                    |vimtex-view-sioyek|
       Skim                                      |vimtex-view-skim|
       SumatraPDF                                |vimtex-view-sumatrapdf|
       Zathura                                   |vimtex-view-zathura|
@@ -5023,6 +5024,25 @@ Configuration: >
     \ = '--unique @pdf\#src:@tex:@line:@col'
   let g:vimtex_view_general_options_latexmk = '--unique'
 <
+                                                           *vimtex-view-sioyek*
+Sioyek~
+https://sioyek.info/
+Sioyek is a PDF viewer designed for reading research papers and technical
+books.
+
+Configuration: >
+  let g:vimtex_view_general_viewer = 'sioyek'
+  let g:vimtex_view_general_options = '--reuse-instance '
+    \ . '--inverse-search '
+    \ .   '"nvr --remote-expr \"vimtex#view#reverse_goto(%2, ''%1'')\"" '
+    \ . '--forward-search-file @tex --forward-search-line @line @pdf'
+  let g:vimtex_view_general_options_latexmk = '--reuse-instance'
+
+Note: The above configuration assumes that Sioyek is installed and available
+      in ones PATH as `'sioyek'`. If one downloads a release version, it may
+      be named something like `'Sioyek-x86_64.AppImage'. Make sure to point
+      the |g:vimtex_view_general_viewer| option to the correct path/name!
+
                                                              *vimtex-view-skim*
 Skim~
 https://skim-app.sourceforge.net/
