@@ -30,11 +30,17 @@ call vimtex#syntax#nested#reset()
 " * This includes e.g. package specific syntax
 if exists('b:vimtex')
   call vimtex#syntax#core#init_post()
-else
-  augroup vimtex_syntax
-    autocmd!
-    autocmd User VimtexEventInitPost call vimtex#syntax#core#init_post()
-  augroup END
 endif
+
+" Use autocommands to ensure
+" 1. that highlight groups are defined when colorschemes are changed or the
+"    background is toggled, and
+" 2. that the init_post function is executed when VimTeX state is loaded (if it
+"    was not already done).
+augroup vimtex_syntax
+  autocmd!
+  autocmd User VimtexEventInitPost call vimtex#syntax#core#init_post()
+  autocmd ColorScheme * call vimtex#syntax#core#init_highlights()
+augroup END
 
 unlet s:is_loading
