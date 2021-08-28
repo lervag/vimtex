@@ -15,9 +15,7 @@ function! vimtex#syntax#packages#init() abort " {{{1
   call s:register_packages()
 
   for [l:pkg, l:cfg] in items(b:vimtex_syntax)
-    if type(l:cfg) != v:t_dict
-          \ || !l:cfg.__load
-          \ || l:cfg.__loaded | continue | endif
+    if !l:cfg.__load || l:cfg.__loaded | continue | endif
 
     call vimtex#syntax#p#{l:pkg}#load(l:cfg)
     let l:cfg.__loaded = 1

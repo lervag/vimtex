@@ -621,9 +621,8 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#core#init_post() abort " {{{1
-  if !exists('b:vimtex_syntax') | return | endif
-  if get(b:vimtex_syntax, 'did_postinit') | return | endif
-  let b:vimtex_syntax.did_postinit = 1
+  if exists('b:vimtex_syntax_did_postinit') | return | endif
+  let b:vimtex_syntax_did_postinit = 1
 
   " Add texTheoremEnvBgn for custom theorems
   for l:envname in s:gather_newtheorems()
