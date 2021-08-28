@@ -88,9 +88,17 @@ CONTENTS                                                      *vimtex-contents*
     textidote                                   |vimtex-grammar-textidote|
     vlty                                        |vimtex-grammar-vlty|
   View                                          |vimtex-view|
+    Viewer configuration                        |vimtex-view-configuration|
+      Evince                                    |vimtex-view-evince|
+      MuPDF                                     |vimtex-view-mupdf|
+      Okular                                    |vimtex-view-okular|
+      qpdfview                                  |vimtex-view-qpdfview|
+      Skim                                      |vimtex-view-skim|
+      SumatraPDF                                |vimtex-view-sumatrapdf|
+      Zathura                                   |vimtex-view-zathura|
     Synctex                                     |vimtex-synctex|
-    Forward search                              |vimtex-synctex-forward-search|
-    Backward search                             |vimtex-synctex-backward-search|
+      Forward search                            |vimtex-synctex-forward-search|
+      Backward search                           |vimtex-synctex-backward-search|
   LaTeX Documentation                           |vimtex-latexdoc|
   Context menu                                  |vimtex-context-menu|
     Citation context                            |vimtex-context-citation|
@@ -2693,16 +2701,16 @@ OPTIONS                                                        *vimtex-options*
   * |vimtex-compiler-arara|
   * |vimtex-compiler-tectonic|
 
-  Note: If you are using |vimtex_viewer_mupdf| or |vimtex_viewer_zathura|,
-        then you should also be aware of the related option
+  Note: If you are using |vimtex-view-mupdf| or |vimtex-view-zathura|, then
+        you should also be aware of the related option
         |g:vimtex_view_automatic_xwin| below.
 
   Default value: 1
 
 *g:vimtex_view_automatic_xwin*
   This option is closely related to |g:vimtex_view_automatic|. With the
-  previous option enabled, the xwin based viewers |vimtex_viewer_mupdf| and
-  |vimtex_viewer_zathura| will use `xdotool` to check if a viewer was opened
+  previous option enabled, the xwin based viewers |vimtex-view-mupdf| and
+  |vimtex-view-zathura| will use `xdotool` to check if a viewer was opened
   by the compiler. If a viewer window is not found, VimTeX will automatically
   start one.
 
@@ -2751,7 +2759,7 @@ OPTIONS                                                        *vimtex-options*
 
   Note: This option is only relevant when |g:vimtex_view_method| is set to
         either `mupdf` or `zathura`. See also the specific viewer sections for
-        more info: |vimtex_viewer_mupdf|, |vimtex_viewer_zathura|.
+        more info: |vimtex-view-mupdf|, |vimtex-view-zathura|.
 
   Default value: 1
 
@@ -2769,176 +2777,22 @@ OPTIONS                                                        *vimtex-options*
   Default value: `edit`
 
 *g:vimtex_view_method*
-  Set the viewer method.
-
-  Note: The general viewer |vimtex_viewer_general| is a generic interface
-        that allows sufficient customization for most viewer applications.
-
-  Note: For reverse search with neovim, please see |vimtex-faq-neovim|.
+  Set the viewer method. By default, a generic viewer is used through the
+  general view method (e.g. `xdg-open` on Linux).
 
   Possible values:
-    'general' (default)
-    'mupdf'
-    'skim'
-    'zathura'
+    * `'general'`
+    * `'mupdf'`      |vimtex-view-mupdf|
+    * `'skim'`       |vimtex-view-skim|
+    * `'zathura'`    |vimtex-view-zathura|
 
-    *vimtex_viewer_general*
-      This is a generic interface where the viewer application is specified
-      through |g:vimtex_view_general_viewer| and the viewer options are given
-      with |g:vimtex_view_general_options|.  With the `latexmk` compiler, the
-      viewer is started after successful compilation with the options provided
-      by |g:vimtex_view_general_options_latexmk|.  The interface allows the
-      general viewer to support forward search with a lot of different
-      applications, such as the ones listed below.
+  See |vimtex-view-configuration| for more information on various popular
+  viewers and on how to configure them.
 
-      Note: For backward search to work, one needs to have a proper
-            |clientserver|, see |vimtex-clientserver| for more info.
-
-        *vimtex_viewer_okular*
-          https://okular.kde.org/
-          Okular is a very feature rich PDF viewer that supports forward
-          and backward search. Recommended settings are: >
-
-            let g:vimtex_view_general_viewer = 'okular'
-            let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
-            let g:vimtex_view_general_options_latexmk = '--unique'
-<
-          Backward search must be set up from the viewer through
-          "Settings > Editor > Custom Text Editor". The following settings
-          should work for Vim and neovim (Note: see |vimtex-faq-neovim|),
-          respectively: >
-
-            vim --remote-silent +%l %f
-            nvr --remote-silent +%l %f
-
-            " Or with arguably more convenient reverse goto function:
-            vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
-
-            " nvr uses the server name /tmp/nvimsocket by default. If you
-            " use a different server name, remember to specify it:
-            nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
-<
-          Note: To perform a backward (or inverse) search in Okular, you do
-                `shift + click` while browse mode is enabled, not `ctrl + click`
-                as in most other viewers.
-
-          Note: With |neovim|, it is useful to start the LaTeX editing session
-                with `nvim --listen /tmp/mynvimserver` (e.g. by using an alias)
-                so as to use a predictable servername. Then one may specify
-                the servername in the "Custom Text Editor" as indicated above.
-
-        *vimtex_viewer_evince*
-          https://wiki.gnome.org/Apps/Evince
-          > Evince is a document viewer for multiple document formats. The
-          > goal of evince is to replace the multiple document viewers that
-          > exist on the GNOME Desktop with a single simple application.
-
-          Recommended settings are: >
-
-            let g:vimtex_view_general_viewer = 'evince'
-<
-          Note: It is not so easy to setup forward and backward search with
-                Evince [0]. If anyone has a good setup that could be
-                documented here, please open an issue or email me. In the
-                meantime, I can recommend to look into the other alternative
-                viewers.
-
-          [0]: https://github.com/lervag/vimtex/issues/179
-
-        *vimtex_viewer_qpdfview*
-          https://launchpad.net/qpdfview
-          qpdfview is a tabbed document viewer. It supports forward search.
-          Backward search must be set up from the viewer. >
-
-            let g:vimtex_view_general_viewer = 'qpdfview'
-            let g:vimtex_view_general_options
-              \ = '--unique @pdf\#src:@tex:@line:@col'
-            let g:vimtex_view_general_options_latexmk = '--unique'
-<
-        *vimtex_viewer_sumatrapdf*
-          https://www.sumatrapdfreader.org/free-pdf-reader.html
-          SumatraPDF is a PDF viewer for windows that is powerful, small,
-          portable and starts up very fast. It supports forward search. The
-          following settings are applied as defaults on Windows if
-          `SumatraPDF` is detected as executable: >
-
-            let g:vimtex_view_general_viewer = 'SumatraPDF'
-            let g:vimtex_view_general_options
-                \ = '-reuse-instance -forward-search @tex @line @pdf'
-            let g:vimtex_view_general_options_latexmk = '-reuse-instance'
-<
-          Note: See |vimtex-faq-sumatrapdf| for more info on how to properly
-                set up SumatraPDF for backward search.
-
-          Note: There is a known issue with VimTeX + SumatraPDF when you use
-                `xelatex`, where the pdf file in SumatraPDF is not refreshed
-                after compilation. A workaround was found and posted by
-                @Whitebeard0 here:
-                https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
-
-    *vimtex_viewer_mupdf*
-      https://www.mupdf.com/
-      A very minimalistic and quick PDF viewer.  Supports forward and backward
-      search.  Backward search is available via xdotool (under Unix) with
-      |:VimtexViewRSearch|, which is mapped to '<localleader>lr'.  One may also
-      define a set of keys that is sent to MuPDF on startup with
-      |g:vimtex_view_mupdf_send_keys|.
-
-      Note: Both forward and backward search requires `xdotool` to work.
-            Forward search will only take you to the correct page.  Backward
-            search will take you to the line in Vim that corresponds to the
-            first line of the current page in MuPDF.
-
-      Note: Viewer handling uses window title matching. If there exists
-            another pdf viewer with the same name as the current project pdf
-            file, then there might be conflicts, and so MuPDF might not work
-            as expected.
-
-    *vimtex_viewer_skim*
-      https://skim-app.sourceforge.net/
-      Skim is a PDF reader and note-taker for OS X.  It is designed to help
-      you read and annotate scientific papers in PDF, but is also great
-      for viewing any PDF file. The VimTeX implementation supports forward
-      search and uses a callback to update Skim after successful compilations.
-
-      Note: One may set |g:vimtex_view_automatic| to 0 if one wants to prevent
-            `latexmk` (or other build tools) from starting Skim and instead
-            let VimTeX start Skim through the callback feature.
-
-      Note: See |vimtex-faq-skimviewer| for more info on how to properly set
-            up the Skim viewer for backward search.
-
-    *vimtex_viewer_zathura*
-      https://pwmt.org/projects/zathura/
-      Zathura is, like MuPDF, a very fast and minimalistic viewer, but it
-      allows more user configuration.  Zathura supports forward search and
-      backward search, the latter uses |vimtex#view#reverse_goto|.  Zathura
-      should be straightforward to install and use on Linux with Xorg.  It
-      should also work on macOS, but users may want to read
-      |vimtex-faq-zathura-macos|.
-
-      Note: Forward search requires `xdotool` to work properly. That is,
-            `xdotool` is used to avoid duplicate Zathura instances when the
-            |:VimtexView| command is issued. This is a more severe restriction
-            if the |g:vimtex_view_forward_search_on_start| option is disabled.
-
-      Note: VimTeX attempts to pass the server name to zathura for use in
-            reverse searches. neovim users should read |vimtex-faq-neovim|
-            for more detail on configuration of neovim's client server
-            functionality.
-
-      Note: Recent versions of Zathura no longer ensures synctex support. This
-            has resulted in synctex support being dropped on some platforms,
-            e.g. on OpenSUSE, cf. https://github.com/lervag/vimtex/issues/384.
-            A workaround is to build Zathura from source manually.
-
-      Note: Viewer handling uses window title matching. If there exists
-            another pdf viewer with the same name as the current project pdf
-            file, then there might be conflicts. In particular, this might
-            affect forward/backward searching for Zathura.
+  Default: `general`
 
 *g:vimtex_view_general_options*
-  Set options for the specified general viewer, see |vimtex_viewer_general|.
+  Set options for the specified general viewer, see |vimtex-view-general|.
   The options are parsed to substitute the following keywords:
 
     `@pdf`    Path to pdf file
@@ -2950,12 +2804,12 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_view_mupdf_options*
 *g:vimtex_view_zathura_options*
-  Set options for mupdf/zathura (|vimtex_viewer_mupdf|, |vimtex_viewer_zathura|).
+  Set options for mupdf/zathura (|vimtex-view-mupdf|, |vimtex-view-zathura|).
 
   Default value: ''
 
 *g:vimtex_view_general_viewer*
-  Use generic viewer application, see |vimtex_viewer_general|.
+  Use generic viewer application, see |vimtex-view-general|.
 
   Default value:
     Linux:   `xdg-open`
@@ -2964,9 +2818,9 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_view_general_options_latexmk*
   Set options that are passed on to `latexmk` for the specified general
-  viewer, see |vimtex_viewer_general|.  This allows to send options that
-  ensures a unique viewer, e.g. with |vimtex_viewer_qpdfview|. Only the
-  `@line` escape is expanded.
+  viewer, see |vimtex-view-general|.  This allows to send options that ensures
+  a unique viewer, e.g. with |vimtex-view-qpdfview|. Only the `@line` escape
+  is expanded.
 
   Note: This option is only relevant with |vimtex-compiler-latexmk| as the
         compiler.
@@ -3154,7 +3008,7 @@ COMMANDS                                                      *vimtex-commands*
                                              *:VimtexViewRSearch*
                                              *<plug>(vimtex-reverse-search)*
 :VimtexViewRSearch        Do reverse search (only available for MuPDF viewer),
-                          see also |vimtex_viewer_mupdf|.
+                          see also |vimtex-view-mupdf|.
 
                                              *:VimtexReload*
                                              *<plug>(vimtex-reload)*
@@ -5029,12 +4883,14 @@ Note: Spell checking with `LanguageTool` is only enabled if a country code is
 ==============================================================================
 VIEW                                                              *vimtex-view*
 
-VimTeX provides the command |:VimtexView| to open the desired viewer. The
-command is mapped to `<localleader>lv` by default. The list of supported
-viewers are given in the description of |g:vimtex_view_method|.
+VimTeX provides the command |:VimtexView| to open the output PDF in a desired
+viewer specified by |g:vimtex_view_method|. The command is mapped to
+`<localleader>lv` by default. The supported viewers are described in
+|vimtex-view-configuration|, which also explains how to configure them.
 
-For supported viewers, |:VimtexView| will also perform forward search when the
-viewer is opened.
+Many viewers support synctex for navigating between the PDF and the source tex
+file. If possible, |:VimtexView| will perform forward search when the viewer
+is opened. See |vimtex-synctex| for more details.
 
 Associated settings:
 * |g:vimtex_view_enabled|
@@ -5046,16 +4902,203 @@ Associated settings:
 * |g:vimtex_view_general_options|
 * |g:vimtex_view_general_options_latexmk|
 * |g:vimtex_view_general_viewer|
-* |g:vimtex_view_mupdf_options|
-* |g:vimtex_view_mupdf_send_keys|
-* |g:vimtex_view_skim_activate|
-* |g:vimtex_view_skim_reading_bar|
-* |g:vimtex_view_zathura_check_libsynctex|
-* |g:vimtex_view_zathura_options|
 
 Associated events:
 * |VimtexEventView|
 * |VimtexEventViewReverse|
+
+------------------------------------------------------------------------------
+VIEWER CONFIGURATION                                *vimtex-view-configuration*
+
+|g:vimtex_view_method| is the main configuration variable. It allows to choose
+between a set of predefined viewers, including a general customizable
+interface. For the specific, predefined viewers, both forward and backward
+search with synctex should usually work without any further configuration.
+With the general viewer, one may often specify options to enable forward
+search. But options for backward search must be configured within the specific
+viewer.
+
+The generic interface is flexible. It relies on three options:
+* |g:vimtex_view_general_viewer|
+    Specify the viewer executable.
+* |g:vimtex_view_general_options|
+    Specify the viewer options (e.g. to specify forward search configuration).
+* |g:vimtex_view_general_options_latexmk|
+    Specify the viewer options that are forwarded by the `latexmk` compiler
+    backend (|vimtex-compiler-latexmk|).
+
+The following is a list of popular PDF viewers, in alphabetic order, and how
+they can be configured to work with VimTeX.
+
+Note: Neovim users should read |vimtex-faq-neovim|!
+
+                                                           *vimtex-view-evince*
+Evince~
+https://wiki.gnome.org/Apps/Evince
+Evince is a document viewer for viewing multiple document formats, including
+PDFs. It comes by default with Gnome.
+
+Configuration: >
+  let g:vimtex_view_general_viewer = 'evince'
+
+Note: It is not so easy to setup forward and backward search with Evince [0].
+      If anyone has a good setup that could be documented here, please open an
+      issue or email me. In the meantime, I can recommend to look into the
+      other alternative viewers.
+
+      [0]: https://github.com/lervag/vimtex/issues/179
+
+                                                            *vimtex-view-mupdf*
+MuPDF~
+https://www.mupdf.com/
+MuPDF is a very minimalistic and quick PDF viewer. It does not support synctex
+itself, but VimTeX provides both forward and backward search by abusing
+`xdotool`. Backward search must be used from within VimTeX with the command
+|:VimtexViewRSearch| (mapped to `'<localleader>lr'`).
+
+One can also use |g:vimtex_view_mupdf_send_keys| to specify a set of keys that
+is sent to MuPDF on startup.
+
+Configuration: >
+  let g:vimtex_view_method = 'mupdf'
+
+Associated settings:
+* |g:vimtex_view_mupdf_options|
+* |g:vimtex_view_mupdf_send_keys|
+
+Note: Both forward and backward search requires `xdotool` to work. Forward
+      search will only take you to the correct page. Backward search will take
+      you to the line in Vim that corresponds to the first line of the current
+      page in MuPDF.
+
+Note: Viewer handling uses window title matching. If there exists another pdf
+      viewer with the same name as the current project pdf file, then there
+      might be conflicts, and so MuPDF might not work as expected.
+
+                                                           *vimtex-view-okular*
+Okular~
+https://okular.kde.org/
+Okular is a very feature rich PDF viewer that supports forward and backward
+search.
+
+Configuration: >
+  let g:vimtex_view_general_viewer = 'okular'
+  let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+  let g:vimtex_view_general_options_latexmk = '--unique'
+
+Backward search can be set up within Okular in the settings pane:
+
+  "Settings > Editor > Custom Text Editor"
+
+The following settings should work for Vim and neovim, respectively: >
+
+  vim --remote-silent +%l %f
+  nvr --remote-silent +%l %f
+
+  " Or with arguably more convenient reverse goto function:
+  vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
+
+  " nvr uses the server name /tmp/nvimsocket by default. If you
+  " use a different server name, remember to specify it:
+  nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
+
+Note: To perform a backward (or inverse) search in Okular, you do
+      `shift + click` while browse mode is enabled, not `ctrl + click` as in
+      most other viewers.
+
+Note: With |neovim|, it is useful to start the LaTeX editing session with
+      `nvim --listen /tmp/mynvimserver` (e.g. by using an alias) so as to use
+      a predictable servername. Then one may specify the servername in the
+      "Custom Text Editor" as indicated above.
+
+                                                         *vimtex-view-qpdfview*
+qpdfview~
+https://launchpad.net/qpdfview
+qpdfview is a tabbed document viewer. It supports both forward and backward
+search. The latter must be set up from within the viewer.
+
+Configuration: >
+  let g:vimtex_view_general_viewer = 'qpdfview'
+  let g:vimtex_view_general_options
+    \ = '--unique @pdf\#src:@tex:@line:@col'
+  let g:vimtex_view_general_options_latexmk = '--unique'
+<
+                                                             *vimtex-view-skim*
+Skim~
+https://skim-app.sourceforge.net/
+Skim is a PDF reader and note-taker for OS X. It is designed to help you read
+and annotate scientific papers in PDF, but is also great for viewing any PDF
+file. The VimTeX implementation supports forward search and uses a callback to
+update Skim after successful compilations.
+
+Configuration: >
+  let g:vimtex_view_method = 'skim'
+
+Associated settings:
+* |g:vimtex_view_skim_activate|
+* |g:vimtex_view_skim_reading_bar|
+
+
+Note: One may set |g:vimtex_view_automatic| to 0 if one wants to prevent
+      `latexmk` (or other build tools) from starting Skim and instead let
+      VimTeX start Skim through the callback feature.
+
+Note: See |vimtex-faq-skimviewer| for more info on how to properly set up the
+      Skim viewer for backward search.
+
+                                                       *vimtex-view-sumatrapdf*
+SumatraPDF~
+https://www.sumatrapdfreader.org/free-pdf-reader.html
+SumatraPDF is a PDF viewer for windows that is powerful, small, portable and
+starts up very fast. It supports both forward and backward search. The latter
+must be configured from within SumatraPDF, see |vimtex-faq-sumatrapdf|.
+
+Configuration: >
+  let g:vimtex_view_general_viewer = 'SumatraPDF'
+  let g:vimtex_view_general_options
+      \ = '-reuse-instance -forward-search @tex @line @pdf'
+  let g:vimtex_view_general_options_latexmk = '-reuse-instance'
+
+For convenience, the above configuration is used by default on Windows if
+`SumatraPDF` is detected as executable:
+
+Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
+      where the pdf file in SumatraPDF is not refreshed after compilation.
+      A workaround was found and posted by @Whitebeard0 here:
+      https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
+
+                                                          *vimtex-view-zathura*
+Zathura~
+https://pwmt.org/projects/zathura/
+Zathura is, like MuPDF, a very fast and minimalistic viewer, but it allows
+more user configuration. Zathura supports forward and backward search. Zathura
+should be straightforward to install and use on Linux with Xorg. It should
+also work on macOS, but users may want to read |vimtex-faq-zathura-macos|.
+
+Configuration: >
+  let g:vimtex_view_method = 'zathura'
+
+Associated settings:
+* |g:vimtex_view_zathura_check_libsynctex|
+* |g:vimtex_view_zathura_options|
+
+Note: Forward search requires `xdotool` to work properly. That is, `xdotool`
+      is used to avoid duplicate Zathura instances when the
+      |:VimtexView| command is issued. This is a more severe restriction
+      if the |g:vimtex_view_forward_search_on_start| option is disabled.
+
+Note: VimTeX attempts to pass the server name to zathura for use in reverse
+      searches.
+
+Note: Recent versions of Zathura no longer ensures synctex support. This has
+      resulted in synctex support being dropped on some platforms, e.g. on
+      OpenSUSE, cf. https://github.com/lervag/vimtex/issues/384. A workaround
+      is to build Zathura from source manually.
+
+Note: Viewer handling uses window title matching. If there exists another pdf
+      viewer with the same name as the current project pdf file, then there
+      might be conflicts. In particular, this might affect forward/backward
+      searching for Zathura.
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
@@ -5079,16 +5122,15 @@ Alternatively, for |vimtex-compiler-latexmk|, one can put this in ones
 Note: For |neovim| users, one must use `neovim-remote` for backward search. See
       |vimtex-faq-neovim| for more info.
 
-------------------------------------------------------------------------------
-FORWARD SEARCH                                  *vimtex-synctex-forward-search*
-
+Forward search~
+                                                *vimtex-synctex-forward-search*
 For supported viewers, |:VimtexView| (<localleader>lv) will issue a forward
 search if the viewer is already opened.  The forward search will take you to
 the page or position in the viewer that corresponds to the current line in
 your vim session.  See |g:vimtex_view_method| for a list of supported viewers.
 
-------------------------------------------------------------------------------
-BACKWARD SEARCH                                *vimtex-synctex-backward-search*
+Backward search~
+                                               *vimtex-synctex-backward-search*
                                                 *vimtex-synctex-inverse-search*
 
 In supported viewers one may set up backward or inverse search.  When
@@ -5300,7 +5342,7 @@ A: Because it is complicated and requires some expensive searches for matching
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-skimviewer*
 Q: How do I properly set up VimTeX with Skim?
-A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
+A: Set |g:vimtex_view_method| to `skim` (and read |vimtex-view-skim| if you
    did not already do so). Forward search should just work. Backward search
    requires configuration in Skim that depends on which version of Vim you are
    using. Open the settings panel in Skim, go to the `Sync` tab and set the
@@ -5320,7 +5362,7 @@ A: Set |g:vimtex_view_method| to `skim` (and read |vimtex_viewer_skim| if you
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-sumatrapdf*
 Q: How do I properly set up VimTeX with SumatraPDF?
-A: First, see and follow the guidelines in |vimtex_viewer_sumatrapdf|. Forward
+A: First, see and follow the guidelines in |vimtex-view-sumatrapdf|. Forward
    search should work after this. Backward search requires configuration in
    SumatraPDF that depends on which version of Vim you are using. The
    following advice is for `neovim`; things should be simpler for Vim.
