@@ -24,9 +24,10 @@ function! vimtex#doc#package(word) abort " {{{1
   call s:packages_remove_invalid(l:context)
 
   for l:handler in g:vimtex_doc_handlers
-    if exists('*' . l:handler)
+    try
       if call(l:handler, [l:context]) | return | endif
-    endif
+    catch /E117/
+    endtry
   endfor
 
   call s:packages_open(l:context)
