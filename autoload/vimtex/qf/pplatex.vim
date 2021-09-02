@@ -84,10 +84,8 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
     throw 'VimTeX: No log file found'
   endif
 
-  let l:tmp = fnameescape(fnamemodify(a:log, ':r') . '.pplatex')
-  let l:log = fnameescape(a:log)
-
-  silent call system(printf('pplatex -i %s >%s', l:log, l:tmp))
+  let l:tmp = fnamemodify(a:log, ':r') . '.pplatex'
+  silent call system(printf('pplatex -i "%s" >"%s"', a:log, l:tmp))
   call vimtex#qf#u#caddfile(self, l:tmp)
   silent call delete(l:tmp)
 endfunction
