@@ -50,4 +50,24 @@ call vimtex#test#keys('diP',
       \   'tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
       \])
 
+call vimtex#test#keys('5jd2aP',
+      \ [
+      \   'Hello world.',
+      \   '',
+      \   '\section{Outer}',
+      \   'Some text here',
+      \   '',
+      \   '\subsection{Inner 1}',
+      \   'Some text here',
+      \   '',
+      \   '\subsection{Inner 2}',
+      \   'Some text here',
+      \   '',
+      \   '\subsection{Inner 3}',
+      \   'Some text here',
+      \ ], [
+      \   'Hello world.',
+      \   '',
+      \ ])
+
 call vimtex#test#finished()

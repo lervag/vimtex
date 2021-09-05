@@ -47,24 +47,28 @@ call vimtex#test#keys('4j$d2ae',
       \   '\end{document}',
       \ ])
 
-call vimtex#test#keys('5jd2aP',
-      \ [
-      \   'Hello world.',
-      \   '',
-      \   '\section{Outer}',
-      \   'Some text here',
-      \   '',
-      \   '\subsection{Inner 1}',
-      \   'Some text here',
-      \   '',
-      \   '\subsection{Inner 2}',
-      \   'Some text here',
-      \   '',
-      \   '\subsection{Inner 3}',
-      \   'Some text here',
-      \ ], [
-      \   'Hello world.',
-      \   '',
-      \ ])
+" call vimtex#test#keys('3jdie',
+"       \ [
+"       \   '\begin{minted}',
+"       \   '  {',
+"       \   '    "contacts": [',
+"       \   '      {',
+"       \   '        "source_id": "mandatory"',
+"       \   '      }',
+"       \   '    ]',
+"       \   '  }',
+"       \   '\end{minted}',
+"       \ ],
+"       \ [
+"       \   '\begin{minted}',
+"       \   '  {',
+"       \   '    "contacts": [',
+"       \   '      {',
+"       \   '        "source_id": "mandatory"',
+"       \   '      }',
+"       \   '    ]',
+"       \   '  }',
+"       \   '\end{minted}',
+"       \ ])
 
 call vimtex#test#finished()
