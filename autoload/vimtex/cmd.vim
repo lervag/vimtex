@@ -665,17 +665,18 @@ function! s:get_cmd_part(part, start_pos) abort " {{{1
   call vimtex#pos#set_cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
   call vimtex#pos#set_cursor(l:save_pos)
+  if empty(l:open) | return | endif
 
   "
   " Ensure that the delimiter
-  " 1) exists,
-  " 2) is of the right type,
-  " 3) and is the next non-whitespace character.
+  " 1) is of the right type,
+  " 2) and is the next non-whitespace character.
   "
-  if empty(l:open)
-        \ || l:open.match !=# a:part
-        \ || strlen(substitute(
-        \        s:text_between(a:start_pos, l:open), '\_s', '', 'g')) != 0
+  let l:separate = s:text_between(a:start_pos, l:open)
+  let l:newlines = count(l:separate, "\n")
+  if l:open.match !=# a:part
+        \ || strlen(substitute(l:separate, '\_s\+', '', 'g')) != 0
+        \ || l:newlines > 1
     return {}
   endif
 

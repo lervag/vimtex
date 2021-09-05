@@ -21,6 +21,21 @@ call vimtex#test#keys('die',
       \  '\end{complexenvironment}',
       \ ])
 
+call vimtex#test#keys('die',
+      \ [
+      \  '\begin{complexenvironment}[option1,',
+      \  '  option2]{first extra argument}',
+      \  '',
+      \  '  {second extra',
+      \  '  argument}',
+      \  '  Hello world!',
+      \  '\end{complexenvironment}',
+      \ ], [
+      \  '\begin{complexenvironment}[option1,',
+      \  '  option2]{first extra argument}',
+      \  '\end{complexenvironment}',
+      \ ])
+
 call vimtex#test#keys('dae',
       \ [
       \  '\begin{complexenvironment}[option1,',
