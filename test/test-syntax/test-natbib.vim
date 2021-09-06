@@ -7,7 +7,7 @@ highlight Conceal ctermfg=4 ctermbg=7 guibg=NONE guifg=blue
 "       \ 'type': 'icon',
 "       \}
 
-silent edit test-biblatex.tex
+silent edit test-natbib.tex
 
 split
 silent wincmd w

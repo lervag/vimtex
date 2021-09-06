@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{natbib}
+
+\begin{document}
+
+\textit{Text goes here~\cite{Local1}.}
+
+% Conceal example
+Bla bla bla, see Ref.~\cite{Local1,Local1}. For more info, see also \cite{Local1}.
+
+% These are only for biblatex - don't detect them
+\autocite{}
+\Textcite[e.g.][]{}
+\smartcite{}
+
+% Cite commands
+\cite{}
+\citealp*{}
+\citealp{}
+\citealp*{Local1}
+\citealp{Local1}
+\citealt*{}
+\citealt{}
+\citealt*{Local1}
+\citealt{Local1}
+\citeauthor*{}
+\citeauthor*{Local1}
+\citeauthor{Local1}
+\citeauthor{Local1}
+\citenum{}
+\citenum{Local1}
+\citep[e.g.][]{Local1}
+\citep{Local1}
+\citet*{}
+\citetext{}
+\citetext{priv.\ comm.}nfo, see also \cite{Local1}.
+\citeyear{}
+\citeyear{Local1}
+\citeyearpar{}
+\citeyearpar{Local1}
+
+% Capitalized cite commands
+\Citealp{Local1}
+\Citealt{Local1}
+\Citeauthor{Local1}
+\Citep{Local1}
+\Citet{Local1}
+
+\bibliographystyle{plainnat}
+\bibliography{../common/local1.bib}
+
+\end{document}
