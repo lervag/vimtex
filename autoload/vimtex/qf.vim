@@ -198,14 +198,17 @@ function! s:qf_autoclose_check() abort " {{{1
     let s:keystroke_counter = g:vimtex_quickfix_autoclose_after_keystrokes
   endif
 
-  redir => l:bufstring
-  silent! ls!
-  redir END
+  let l:qf_winnr = map(
+        \ filter(getwininfo(),
+        \   {_, x -> x.tabnr == tabpagenr() && x.quickfix && !x.loclist}),
+        \ {_, x -> x.winnr})
 
-  if empty(filter(split(l:bufstring, '\n'), 'v:val =~# ''%a- .*Quickfix'''))
-    let s:keystroke_counter -= 1
-  else
+  if empty(l:qf_winnr)
+    let s:keystroke_counter = 0
+  elseif l:qf_winnr[0] == winnr()
     let s:keystroke_counter = g:vimtex_quickfix_autoclose_after_keystrokes + 1
+  else
+    let s:keystroke_counter -= 1
   endif
 
   if s:keystroke_counter == 0
