@@ -451,7 +451,14 @@ let s:completer_inc = {
       \}
 
 function! s:completer_inc.complete(regex) dict abort " {{{2
-  let self.candidates = split(globpath(b:vimtex.root, '**/*.tex'), '\n')
+  let self.candidates = globpath(b:vimtex.root, '**/*.tex', 0, 1)
+
+  " Add .tikz files if appropriate
+  if has_key(b:vimtex.packages, 'tikz') && self.context !~# '\\subfile'
+    call extend(self.candidates,
+          \ globpath(b:vimtex.root, '**/*.tikz', 0, 1))
+  endif
+
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
   call s:filter(self.candidates, a:regex)
@@ -479,7 +486,7 @@ let s:completer_pdf = {
       \}
 
 function! s:completer_pdf.complete(regex) dict abort " {{{2
-  let self.candidates = split(globpath(b:vimtex.root, '**/*.pdf'), '\n')
+  let self.candidates = globpath(b:vimtex.root, '**/*.pdf', 0, 1)
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
   call s:filter(self.candidates, a:regex)
@@ -498,7 +505,8 @@ let s:completer_sta = {
       \}
 
 function! s:completer_sta.complete(regex) dict abort " {{{2
-  let self.candidates = substitute(globpath(b:vimtex.root, '**/*.tex'), '\.tex', '', 'g')
+  let self.candidates = substitute(
+        \ globpath(b:vimtex.root, '**/*.tex'), '\.tex', '', 'g')
   let self.candidates = split(self.candidates, '\n')
   let self.candidates = map(self.candidates,
         \ 'strpart(v:val, len(b:vimtex.root)+1)')
