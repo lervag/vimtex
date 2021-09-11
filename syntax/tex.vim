@@ -23,6 +23,7 @@ call vimtex#syntax#core#init()
 call vimtex#syntax#core#init_highlights()
 
 " Initialize buffer local syntax state
+unlet! b:vimtex_syntax_did_postinit
 let b:vimtex_syntax = {}
 call vimtex#syntax#nested#reset()
 
@@ -38,9 +39,9 @@ endif
 " 2. that the init_post function is executed when VimTeX state is loaded (if it
 "    was not already done).
 augroup vimtex_syntax
-  autocmd!
-  autocmd User VimtexEventInitPost call vimtex#syntax#core#init_post()
-  autocmd ColorScheme * call vimtex#syntax#core#init_highlights()
+  autocmd! * <buffer>
+  autocmd User <buffer> VimtexEventInitPost call vimtex#syntax#core#init_post()
+  autocmd ColorScheme <buffer> * call vimtex#syntax#core#init_highlights()
 augroup END
 
 unlet s:is_loading
