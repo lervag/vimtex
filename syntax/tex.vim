@@ -40,8 +40,8 @@ endif
 "    was not already done).
 augroup vimtex_syntax
   autocmd! * <buffer>
-  autocmd User <buffer> VimtexEventInitPost call vimtex#syntax#core#init_post()
   autocmd ColorScheme <buffer> * call vimtex#syntax#core#init_highlights()
+  autocmd! User VimtexEventInitPost call vimtex#syntax#core#init_post()
 augroup END
 
 unlet s:is_loading
