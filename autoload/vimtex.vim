@@ -82,14 +82,16 @@ function! s:init_buffer() abort " {{{1
     setlocal iskeyword+=:
     setlocal includeexpr=vimtex#include#expr()
     let &l:include = g:vimtex#re#tex_include
-    let &l:define  = '\\\([egx]\|char\|mathchar\|count\|dimen\|muskip\|skip'
-    let &l:define .= '\|toks\)\=def\|\\font\|\\\(future\)\=let'
-    let &l:define .= '\|\\new\(count\|dimen\|skip'
-    let &l:define .= '\|muskip\|box\|toks\|read\|write\|fam\|insert\)'
-    let &l:define .= '\|\\\(re\)\=new\(boolean\|command\|counter\|environment'
-    let &l:define .= '\|font\|if\|length\|savebox'
-    let &l:define .= '\|theorem\(style\)\=\)\s*\*\=\s*{\='
-    let &l:define .= '\|DeclareMathOperator\s*{\=\s*'
+    let &l:define  = '\v\\%('
+          \ . '([egx]|mathchar|count|dimen|muskip|skip|toks)?def'
+          \ . '|font'
+          \ . '|(future)?let'
+          \ . '|new(count|dimen|skip|muskip|box|toks|read|write|fam|insert)'
+          \ . '|(re)?new(boolean|command|counter|environment'
+          \ .   '|font|if|length|savebox|theorem(style)?)'
+          \ . '|DeclareMathOperator'
+          \ . '|bibitem%(\[[^]]*\])?'
+          \ . ')'
   elseif &filetype ==# 'bib'
     setlocal suffixesadd=.tex,.bib
 
