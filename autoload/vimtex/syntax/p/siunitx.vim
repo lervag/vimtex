@@ -9,8 +9,9 @@ function! vimtex#syntax#p#siunitx#load(cfg) abort " {{{1
   syntax match texSICmd contained "\\\w\+\>"
 
   syntax match texCmdSI nextgroup=texSIOptU,texSIArgUnit skipwhite "\\si\>"
+  syntax match texCmdSI nextgroup=texSIOptU,texSIArgUnit skipwhite "\\unit\>"
   call vimtex#syntax#core#new_opt('texSIOptU', {'contains': '', 'next': 'texSIArgUnit'})
-  call vimtex#syntax#core#new_arg('texSIArgUnit', {'contains': 'texSICmd'})
+  call vimtex#syntax#core#new_arg('texSIArgUnit', {'contains': 'texSICmd,texSIArgUnit'})
 
   syntax match texCmdSI nextgroup=texSIOptN,texSIArgNum skipwhite "\\num\(list\)\?\>"
   syntax match texCmdSI nextgroup=texSIOptN,texSIArgNum skipwhite "\\ang\>"
@@ -22,10 +23,12 @@ function! vimtex#syntax#p#siunitx#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texSIArgNumN', {'contains': 'texSIDelim'})
 
   syntax match texCmdSI nextgroup=texSIOptNU,texSIArgNumU skipwhite "\\SI\(list\)\?\>"
+  syntax match texCmdSI nextgroup=texSIOptNU,texSIArgNumU skipwhite "\\qty\(list\)\?\>"
   call vimtex#syntax#core#new_opt('texSIOptNU', {'contains': '', 'next': 'texSIArgNumU'})
   call vimtex#syntax#core#new_arg('texSIArgNumU', {'contains': 'texSIDelim', 'next': 'texSIArgUnit'})
 
   syntax match texCmdSI nextgroup=texSIOptNNU,texSIArgNumNU skipwhite "\\SIrange\>"
+  syntax match texCmdSI nextgroup=texSIOptNNU,texSIArgNumNU skipwhite "\\qtyrange\>"
   call vimtex#syntax#core#new_opt('texSIOptNNU', {'contains': '', 'next': 'texSIArgNumNU'})
   call vimtex#syntax#core#new_arg('texSIArgNumNU', {'contains': 'texSIDelim', 'next': 'texSIArgNumU'})
 
