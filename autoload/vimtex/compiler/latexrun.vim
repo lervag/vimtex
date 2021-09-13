@@ -31,15 +31,15 @@ function! s:compiler.__build_cmd() abort dict " {{{1
         \ . ' --latex-cmd ' . self.get_engine()
         \ . ' -O '
         \ . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
-        \ . ' ' . vimtex#util#shellescape(self.target)
+        \ . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
   let l:cmd = (has('win32')
-        \   ? 'cd /D "' . self.root . '" & '
-        \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
+        \   ? 'cd /D "' . self.state.root . '" & '
+        \   : 'cd ' . vimtex#util#shellescape(self.state.root) . '; ')
         \ . 'latexrun --clean-all'
         \ . ' -O '
         \   . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))

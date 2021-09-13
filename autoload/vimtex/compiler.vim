@@ -36,9 +36,7 @@ function! vimtex#compiler#init_state(state) abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
   let a:state.compiler = s:init_compiler({
-        \ 'root': a:state.root,
-        \ 'target' : a:state.base,
-        \ 'target_path' : a:state.tex,
+        \ 'state': a:state,
         \ 'tex_program' : a:state.tex_program,
         \})
 endfunction
@@ -131,9 +129,7 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
 
   " Create and initialize temporary compiler
   let l:compiler = s:init_compiler({
-        \ 'root' : l:file.root,
-        \ 'target' : l:file.base,
-        \ 'target_path' : l:file.tex,
+        \ 'state' : l:file,
         \ 'tex_program' : b:vimtex.tex_program,
         \ 'continuous' : 0,
         \ 'callback' : 0,
@@ -186,7 +182,7 @@ endfunction
 function! vimtex#compiler#start() abort " {{{1
   if b:vimtex.compiler.is_running()
     call vimtex#log#warning(
-          \ 'Compiler is already running for `' . self.target . "'")
+          \ 'Compiler is already running for `' . b:vimtex.base . "'")
     return
   endif
 
@@ -214,7 +210,7 @@ endfunction
 function! vimtex#compiler#stop() abort " {{{1
   if !b:vimtex.compiler.is_running()
     call vimtex#log#warning(
-          \ 'There is no process to stop (' . b:vimtex.compiler.target . ')')
+          \ 'There is no process to stop (' . b:vimtex.base . ')')
     return
   endif
 
@@ -222,7 +218,7 @@ function! vimtex#compiler#stop() abort " {{{1
   silent! call timer_stop(b:vimtex.compiler.check_timer)
 
   if g:vimtex_compiler_silent | return | endif
-  call vimtex#log#info('Compiler stopped (' . b:vimtex.compiler.target . ')')
+  call vimtex#log#info('Compiler stopped (' . b:vimtex.base . ')')
 endfunction
 
 " }}}1
@@ -231,7 +227,7 @@ function! vimtex#compiler#stop_all() abort " {{{1
     if exists('l:state.compiler.is_running')
           \ && l:state.compiler.is_running()
       call l:state.compiler.stop()
-      call vimtex#log#info('Compiler stopped (' . l:state.compiler.target . ')')
+      call vimtex#log#info('Compiler stopped (' . l:state.compiler.state.base . ')')
     endif
   endfor
 endfunction

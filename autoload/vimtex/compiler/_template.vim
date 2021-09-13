@@ -13,14 +13,12 @@ endfunction
 
 let s:compiler = {
       \ 'name': '__template__',
-      \ 'root': '',
-      \ 'target': '',
-      \ 'target_path': '',
       \ 'build_dir': '',
       \ 'continuous': 0,
       \ 'hooks': [],
       \ 'output': tempname(),
       \ 'silence_next_callback': 0,
+      \ 'state': {},
       \ 'status': -1,
       \}
 
@@ -61,9 +59,9 @@ endfunction
 function! s:compiler.__pprint() abort dict " {{{1
   let l:list = []
 
-  if self.target_path !=# b:vimtex.tex
-    call add(l:list, ['root', self.root])
-    call add(l:list, ['target', self.target_path])
+  if self.state.tex !=# b:vimtex.tex
+    call add(l:list, ['root', self.state.root])
+    call add(l:list, ['target', self.state.tex])
   endif
 
   if has_key(self, 'get_engine')
@@ -105,7 +103,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   endif
 
   call map(l:files, {_, x -> printf('%s/%s.%s',
-        \ self.build_dir, fnamemodify(self.target_path, ':t:r:S'), x)})
+        \ self.build_dir, fnamemodify(self.state.tex, ':t:r:S'), x)})
 
   call vimtex#process#run('rm -f ' . join(l:files))
 endfunction
@@ -173,12 +171,12 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   " Note: This may need to create a hierarchical structure!
   if empty(self.build_dir) | return | endif
 
-  let l:dirs = split(glob(self.root . '/**/*.tex'), '\n')
+  let l:dirs = split(glob(self.state.root . '/**/*.tex'), '\n')
   call map(l:dirs, "fnamemodify(v:val, ':h')")
-  call map(l:dirs, 'strpart(v:val, strlen(self.root) + 1)')
+  call map(l:dirs, 'strpart(v:val, strlen(self.state.root) + 1)')
   call uniq(sort(filter(l:dirs, '!empty(v:val)')))
   call map(l:dirs, {_, x ->
-        \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.root . '/')
+        \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.state.root . '/')
         \ . self.build_dir . '/' . x})
   call filter(l:dirs, '!isdirectory(v:val)')
   if empty(l:dirs) | return | endif
@@ -200,7 +198,7 @@ function! s:compiler.remove_build_dir() abort dict " {{{1
   if vimtex#paths#is_abs(self.build_dir)
     let l:build_dir = self.build_dir
   else
-    let l:build_dir = b:vimtex.root . '/' . self.build_dir
+    let l:build_dir = self.state.root . '/' . self.build_dir
   endif
 
   let l:tree = glob(l:build_dir . '/**/*', 0, 1)
@@ -230,12 +228,11 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
     let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.err_cb = function('s:callback_continuous_output')
   else
-    let s:cb_target = self.target_path !=# b:vimtex.tex
-          \ ? self.target_path : ''
+    let s:cb_target = self.state.tex !=# b:vimtex.tex ? self.state.tex : ''
     let l:options.exit_cb = function('s:callback')
   endif
 
-  call vimtex#paths#pushd(self.root)
+  call vimtex#paths#pushd(self.state.root)
   let self.job = job_start(a:cmd, l:options)
   call vimtex#paths#popd()
 endfunction
@@ -286,8 +283,8 @@ function! s:compiler_nvim.exec(cmd) abort dict " {{{1
   let l:shell = {
         \ 'on_stdout' : function('s:callback_nvim_output'),
         \ 'on_stderr' : function('s:callback_nvim_output'),
-        \ 'cwd' : self.root,
-        \ 'target' : self.target_path,
+        \ 'cwd' : self.state.root,
+        \ 'tex' : self.state.tex,
         \ 'output' : self.output,
         \}
 
@@ -347,7 +344,7 @@ endfunction
 function! s:callback_nvim_exit(id, data, event) abort dict " {{{1
   if !exists('b:vimtex.tex') | return | endif
 
-  let l:target = self.target !=# b:vimtex.tex ? self.target : ''
+  let l:target = self.tex !=# b:vimtex.tex ? self.tex : ''
   call vimtex#compiler#callback(2 + vimtex#qf#inquire(l:target))
 endfunction
 

@@ -124,7 +124,6 @@ function! s:compiler.__check_requirements() abort dict " {{{1
 endfunction
 
 " }}}1
-
 function! s:compiler.__init() abort dict " {{{1
   call self.__init_build_dir()
   call self.__init_pdf_mode()
@@ -136,7 +135,7 @@ endfunction
 function! s:compiler.__init_build_dir() abort dict " {{{1
   " Check if .latexmkrc sets the build_dir - if so this should be respected
   let l:out_dir =
-        \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'out_dir', 0, '')[0]
+        \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'out_dir', 0, '')[0]
   if !empty(l:out_dir)
     if !empty(self.build_dir) && (self.build_dir !=# l:out_dir)
       call vimtex#log#warning(
@@ -156,7 +155,7 @@ function! s:compiler.__init_pdf_mode() abort dict " {{{1
 
   " Parse the pdf_mode option. Returns -1 if not found.
   let [l:pdf_mode, l:is_local] =
-        \ vimtex#compiler#latexmk#get_rc_opt(self.root, 'pdf_mode', 1, -1)
+        \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'pdf_mode', 1, -1)
   if l:pdf_mode < 1 || l:pdf_mode > 5 | return | endif
 
   let l:tex_program = [
@@ -186,7 +185,6 @@ function! s:compiler.__init_pdf_mode() abort dict " {{{1
 endfunction
 
 " }}}1
-
 function! s:compiler.__build_cmd() abort dict " {{{1
   let l:cmd = (has('win32')
         \ ? 'set max_print_line=2000 & '
@@ -223,11 +221,10 @@ function! s:compiler.__build_cmd() abort dict " {{{1
     endif
   endif
 
-  return l:cmd . ' ' . vimtex#util#shellescape(self.target)
+  return l:cmd . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 
 " }}}1
-
 function! s:compiler.__pprint_append() abort dict " {{{1
   return [
         \ ['callback', self.callback],
@@ -238,16 +235,15 @@ endfunction
 
 " }}}1
 
-
 function! s:compiler.clean(full) abort dict " {{{1
   let l:cmd = (has('win32')
-        \   ? 'cd /D "' . self.root . '" & '
-        \   : 'cd ' . vimtex#util#shellescape(self.root) . '; ')
+        \   ? 'cd /D "' . self.state.root . '" & '
+        \   : 'cd ' . vimtex#util#shellescape(self.state.root) . '; ')
         \ . self.executable . ' ' . (a:full ? '-C ' : '-c ')
   if !empty(self.build_dir)
     let l:cmd .= printf(' -outdir=%s ', fnameescape(self.build_dir))
   endif
-  let l:cmd .= vimtex#util#shellescape(self.target)
+  let l:cmd .= vimtex#util#shellescape(self.state.base)
 
   call vimtex#process#run(l:cmd)
 endfunction
