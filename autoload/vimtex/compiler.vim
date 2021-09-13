@@ -35,10 +35,7 @@ endfunction
 function! vimtex#compiler#init_state(state) abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
-  let a:state.compiler = s:init_compiler({
-        \ 'state': a:state,
-        \ 'tex_program' : a:state.tex_program,
-        \})
+  let a:state.compiler = s:init_compiler({'state': a:state})
 endfunction
 
 " }}}1
@@ -126,11 +123,12 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
 
   let l:file = vimtex#parser#selection_to_texfile(l:opts)
   if empty(l:file) | return | endif
+  let l:tex_program = b:vimtex.get_tex_program()
+  let l:file.get_tex_program = {-> l:tex_program}
 
   " Create and initialize temporary compiler
   let l:compiler = s:init_compiler({
         \ 'state' : l:file,
-        \ 'tex_program' : b:vimtex.tex_program,
         \ 'continuous' : 0,
         \ 'callback' : 0,
         \})

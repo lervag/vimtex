@@ -25,7 +25,6 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
         \ ? vimtex#parser#preamble(l:new.tex, {'root' : l:new.root})
         \ : []
 
-  let l:new.tex_program = s:parse_tex_program(l:preamble)
   let l:new.documentclass = s:parse_documentclass(l:preamble)
   let l:new.packages = s:parse_packages(l:preamble)
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
@@ -62,10 +61,6 @@ function! s:vimtex.__pprint() abort dict " {{{1
 
   if !empty(self.packages)
     call add(l:items, ['packages', join(sort(keys(self.packages)))])
-  endif
-
-  if self.tex_program !=# '_'
-    call add(l:items, ['tex program', self.tex_program])
   endif
 
   if len(self.sources) >= 2
@@ -127,6 +122,17 @@ function! s:vimtex.update_packages() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:vimtex.get_tex_program() abort dict " {{{1
+  let l:tex_program_re =
+        \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
+
+  let l:lines = vimtex#parser#preamble(self.tex, {'root' : self.root})[:20]
+  call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
+  call filter(l:lines, '!empty(v:val)')
+  return tolower(get(l:lines, -1, '_'))
+endfunction
+
+" }}}1
 
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
   " Check for various output directories
@@ -178,16 +184,6 @@ endfunction
 " }}}1
 
 
-function! s:parse_tex_program(preamble) abort " {{{1
-  let l:lines = copy(a:preamble[:20])
-  let l:tex_program_re =
-        \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
-  call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
-  call filter(l:lines, '!empty(v:val)')
-  return tolower(get(l:lines, -1, '_'))
-endfunction
-
-" }}}1
 function! s:parse_documentclass(preamble) abort " {{{1
   let l:preamble_lines = filter(copy(a:preamble), {_, x -> x !~# '^\s*%'})
   return matchstr(join(l:preamble_lines, ''),

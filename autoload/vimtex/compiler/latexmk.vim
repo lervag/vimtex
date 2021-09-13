@@ -125,14 +125,6 @@ endfunction
 
 " }}}1
 function! s:compiler.__init() abort dict " {{{1
-  call self.__init_build_dir()
-  call self.__init_pdf_mode()
-  unlet self.__init_build_dir
-  unlet self.__init_pdf_mode
-endfunction
-
-" }}}1
-function! s:compiler.__init_build_dir() abort dict " {{{1
   " Check if .latexmkrc sets the build_dir - if so this should be respected
   let l:out_dir =
         \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'out_dir', 0, '')[0]
@@ -144,43 +136,6 @@ function! s:compiler.__init_build_dir() abort dict " {{{1
             \ 'Changed build_dir to: ' . l:out_dir)
     endif
     let self.build_dir = l:out_dir
-  endif
-endfunction
-
-" }}}1
-function! s:compiler.__init_pdf_mode() abort dict " {{{1
-  " If the TeX program directive was not set, and if the pdf_mode is set in
-  " a .latexmkrc file, then deduce the compiler engine from the value of
-  " pdf_mode.
-
-  " Parse the pdf_mode option. Returns -1 if not found.
-  let [l:pdf_mode, l:is_local] =
-        \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'pdf_mode', 1, -1)
-  if l:pdf_mode < 1 || l:pdf_mode > 5 | return | endif
-
-  let l:tex_program = [
-        \ 'pdflatex',
-        \ 'pdfps',
-        \ 'pdfdvi',
-        \ 'lualatex',
-        \ 'xelatex',
-        \][l:pdf_mode-1]
-
-  " Override self.tex_program if pdf_mode has a supported value and the current
-  " TeX program directive in self.tex_program is not specified
-  if self.tex_program ==# '_'
-    let self.tex_program = l:tex_program
-    return
-  endif
-
-  " Give warning when there may be a confusing conflict
-  if l:is_local && self.tex_program !=# l:tex_program
-    call vimtex#log#warning(
-          \ 'Value of pdf_mode from latexmkrc is inconsistent with ' .
-          \ 'TeX program directive!',
-          \ 'TeX program: ' . self.tex_program,
-          \ 'pdf_mode:    ' . l:tex_program,
-          \ 'The value of pdf_mode will be ignored.')
   endif
 endfunction
 
@@ -227,6 +182,7 @@ endfunction
 " }}}1
 function! s:compiler.__pprint_append() abort dict " {{{1
   return [
+        \ ['engine', self.get_engine()],
         \ ['callback', self.callback],
         \ ['continuous', self.continuous],
         \ ['executable', self.executable],
@@ -250,6 +206,39 @@ endfunction
 
 " }}}1
 function! s:compiler.get_engine() abort dict " {{{1
+  " Parse tex_program from TeX directive
+  let l:tex_program_directive = self.state.get_tex_program()
+  let l:tex_program = l:tex_program_directive
+
+
+  " Parse tex_program from from pdf_mode option in .latexmkrc
+  let [l:pdf_mode, l:is_local] =
+        \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'pdf_mode', 1, -1)
+
+  if l:pdf_mode >= 1 && l:pdf_mode <= 5
+    let l:tex_program_pdfmode = [
+          \ 'pdflatex',
+          \ 'pdfps',
+          \ 'pdfdvi',
+          \ 'lualatex',
+          \ 'xelatex',
+          \][l:pdf_mode-1]
+
+    " Use pdf_mode if there is no TeX directive
+    if l:tex_program_directive ==# '_'
+      let l:tex_program = l:tex_program_pdfmode
+    elseif l:is_local && l:tex_program_directive !=# l:tex_program_pdfmode
+      " Give warning when there may be a confusing conflict
+      call vimtex#log#warning(
+            \ 'Value of pdf_mode from latexmkrc is inconsistent with ' .
+            \ 'TeX program directive!',
+            \ 'TeX program: ' . l:tex_program_directive,
+            \ 'pdf_mode:    ' . l:tex_program_pdfmode,
+            \ 'The value of pdf_mode will be ignored.')
+    endif
+  endif
+
+
   return get(extend(g:vimtex_compiler_latexmk_engines,
         \ {
         \  'pdfdvi'           : '-pdfdvi',
@@ -261,7 +250,7 @@ function! s:compiler.get_engine() abort dict " {{{1
         \  'context (pdftex)' : '-pdf -pdflatex=texexec',
         \  'context (luatex)' : '-pdf -pdflatex=context',
         \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
-        \ }, 'keep'), self.tex_program, '-pdf')
+        \ }, 'keep'), l:tex_program, '-pdf')
 endfunction
 
 " }}}1

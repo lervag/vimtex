@@ -54,7 +54,7 @@ function! s:compiler.get_engine() abort dict " {{{1
         \  'pdflatex'         : 'pdflatex',
         \  'lualatex'         : 'lualatex',
         \  'xelatex'          : 'xelatex',
-        \ }, 'keep'), self.tex_program, '_')
+        \ }, 'keep'), self.state.get_tex_program(), '_')
 endfunction
 
 " }}}1
