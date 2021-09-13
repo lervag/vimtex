@@ -680,9 +680,7 @@ see |vimtex-tex-root|.
                                                            *vimtex-tex-program*
 The TeX program directive works by specifying the TeX compiler program in
 a comment in one of the first lines of the main project file. It is parsed
-during initialization, but if desired one may manually reload VimTeX in order
-to reset the program during an editing session. See |:VimtexReload| and
-|<plug>(vimtex-reload)| (by default mapped to `<localleader>lx`).
+only when it is required by a compiler backend.
 
 The syntax is best explained with an example: >
 
