@@ -30,6 +30,9 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
   let l:new.sources = s:gather_sources(l:new.tex, l:new.root)
 
+  " Update package list from fls file (if available)
+  call l:new.update_packages()
+
   " Initialize state in submodules
   let l:new.disabled_modules = get(s:, 'disabled_modules', [])
   for l:mod in filter(
