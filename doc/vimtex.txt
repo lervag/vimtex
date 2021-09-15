@@ -583,7 +583,7 @@ Buffer variable~
                                                               *vimtex-tex-root*
 TeX root directive~
   It is also possible to specify the main TeX file with a comment in one of
-  the first five lines of the current file. This is often reffered to as a TeX
+  the first five lines of the current file. This is often referred to as a TeX
   directive, see |vimtex-tex-directives| for more info. The syntax is best
   described by some examples: >
 
@@ -1769,7 +1769,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_grammar_vlty*
   This option is used to configure the `vlty` grammar checker. This checker
-  relies on the Python package `YaLafi` in ombination with the proofreading
+  relies on the Python package `YaLafi` in combination with the proofreading
   software `LanguageTool` (see |vimtex-grammar-vlty| for more details). The
   option is a dictionary with the following keys :
 
