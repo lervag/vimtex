@@ -582,6 +582,13 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ end="^\c\s*% VimTeX: SynIgnore\%( off\| disable\).*"
         \ contains=texComment,texCmd
 
+  " Also support Overleafs magic comment
+  " https://www.overleaf.com/learn/how-to/Code_Check
+  syntax region texSynIgnoreZone matchgroup=texComment
+        \ start="^%%begin novalidate\s*$"
+        \ end="^%%end novalidate\s*$"
+        \ contains=texComment,texCmd
+
   " }}}2
   " {{{2 Conceal mode support
 

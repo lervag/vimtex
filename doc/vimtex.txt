@@ -4053,15 +4053,25 @@ The above LaTeX code will look plain, but OK with VimTeX. Note: The directive
 is matched case insensitive, and the synonyms `enable` and `disable` may be
 used instead of `on` and `off`.
 
+Overleaf's magic comment [0] is also supported similarly as the `SynIgnore`
+method described above, i.e.: >
+
+  %%begin novalidate
+  \catcode`\$=11
+  $
+  \catcode`\$=3
+  %%end novalidate
+
 The VimTeX syntax plugin is loosely based on Dr Chip's syntax plugin for LaTeX
-which is shipped by default with Vim and neovim (|ft-tex-syntax|) [0]. There
+which is shipped by default with Vim and neovim (|ft-tex-syntax|) [1]. There
 are several major differences that users may want to be aware of:
 * VimTeX syntax use different names for almost all syntax groups.
 * VimTeX syntax does not support syntax based folding.
 * VimTeX syntax does not lint `@` in commands, e.g. `\@cmd` (you should know
   what you are doing).
 
-[0]: http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
+[0]: https://www.overleaf.com/learn/how-to/Code_Check
+[1]: http://www.drchip.org/astronaut/vim/index.html#SYNTAX_TEX
 
 Associated settings:
 * |g:vimtex_syntax_enabled|
