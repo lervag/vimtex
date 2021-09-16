@@ -5363,7 +5363,7 @@ A: Because it is complicated and requires some expensive searches for matching
    which is expensive. You can tune the timeout and stopline parameters for
    the searches with |g:vimtex_delim_timeout| and |g:vimtex_delim_stopline|,
    which may help. If it is still too slow, you can also try to use
-   vim-matchup [0].
+   vim-matchup [0], see also |vimtex-nf-enhanced-matchparen|.
 
    [0]: https://github.com/andymass/vim-matchup
 
