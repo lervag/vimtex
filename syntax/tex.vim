@@ -40,7 +40,7 @@ endif
 "    was not already done).
 augroup vimtex_syntax
   autocmd! * <buffer>
-  autocmd ColorScheme <buffer> * call vimtex#syntax#core#init_highlights()
+  autocmd ColorScheme <buffer> call vimtex#syntax#core#init_highlights()
   autocmd! User VimtexEventInitPost call vimtex#syntax#core#init_post()
 augroup END
 
