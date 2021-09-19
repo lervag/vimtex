@@ -195,9 +195,13 @@ function! s:get_os_info() abort " {{{1
       let s:win_info = vimtex#process#capture('systeminfo')
     endif
 
-    let l:name = matchstr(s:win_info[1], ':\s*\zs.*')
-    let l:version = matchstr(s:win_info[2], ':\s*\zs.*')
-    return l:name . ' (' . l:version . ')'
+    try
+      let l:name = matchstr(s:win_info[1], ':\s*\zs.*')
+      let l:version = matchstr(s:win_info[2], ':\s*\zs.*')
+      return l:name . ' (' . l:version . ')'
+    catch
+      return 'Windows (' . string(s:win_info) . ')'
+    endtry
   endif
 endfunction
 
