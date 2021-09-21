@@ -5062,17 +5062,31 @@ update Skim after successful compilations.
 Configuration: >
   let g:vimtex_view_method = 'skim'
 
+For backward search, Skim itself must be properly configured [0]. Open the
+settings panel in Skim, go to the `Sync` tab and set the options according to
+your desired version of Vim:
+* For `MacVim`, select the `MacVim` preset.
+* For `neovim`, select the `Custom` preset from the drop-down list and set:
+    Command: nvr~
+    Args: --remote +"%line" "%file"~
+  Well, this is not entirely true: `nvr` needs the servername argument to work
+  properly, and each neovim instance has a random servername. A workaround for
+  this was posted by @jdhao, see [1].
+
 Associated settings:
 * |g:vimtex_view_skim_activate|
 * |g:vimtex_view_skim_reading_bar|
-
 
 Note: One may set |g:vimtex_view_automatic| to 0 if one wants to prevent
       `latexmk` (or other build tools) from starting Skim and instead let
       VimTeX start Skim through the callback feature.
 
-Note: See |vimtex-faq-skimviewer| for more info on how to properly set up the
-      Skim viewer for backward search.
+Note: For use with neovim, please also see Please ensure that you have `nvr`
+      (neovim-remote) and the `pynvim` Python module available, see
+      |vimtex-faq-neovim|.
+
+[0]: https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
+[1]: https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
 
                                                        *vimtex-view-sumatrapdf*
 SumatraPDF~
@@ -5344,7 +5358,6 @@ help to users.
 
 Contents:
 * |vimtex-faq-slow-matchparen|
-* |vimtex-faq-skimviewer|
 * |vimtex-faq-surround|
 * |vimtex-faq-isfname|
 * |vimtex-faq-neovim|
@@ -5366,26 +5379,6 @@ A: Because it is complicated and requires some expensive searches for matching
    vim-matchup [0], see also |vimtex-nf-enhanced-matchparen|.
 
    [0]: https://github.com/andymass/vim-matchup
-
-------------------------------------------------------------------------------
-                                                        *vimtex-faq-skimviewer*
-Q: How do I properly set up VimTeX with Skim?
-A: Set |g:vimtex_view_method| to `skim` (and read |vimtex-view-skim| if you
-   did not already do so). Forward search should just work. Backward search
-   requires configuration in Skim that depends on which version of Vim you are
-   using. Open the settings panel in Skim, go to the `Sync` tab and set the
-   options according to your desired version of Vim:
-
-     * For `MacVim`, select the `MacVim` preset.
-     * For `neovim`, select the `Custom` preset from the drop-down list and set:
-         Command: nvr~
-         Args: --remote +"%line" "%file"~
-       Please ensure that you have the `nvr` (neovim-remote) utility and the
-       `pynvim` Python module available, see |vimtex-faq-neovim|.
-
-   Some related information may be found here:
-   https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
-   https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
 
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-sumatrapdf*
@@ -5482,16 +5475,17 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
                                                             *vimtex-faq-neovim*
 Q: Does VimTeX work with neovim?
 A: Yes, but backward sync requires the `neovim-remote` utility. It may be
-   installed and used by VimTeX as follows:
+   installed VimTeX as follows:
 
-     1. Install the `pynvim` and `neovim-remote` modules for python3 (e.g.,
-        using `pip3 install --user pynvim neovim-remote`; if `python3 -c
-        "import pynvim"` returns without error and `nvr` starts neovim from
-        the command line, everything should be good to go).
+     1. Install the `pynvim` and `neovim-remote` modules for python3, e.g. >
 
-     2. Configure your viewer to use `nvr --remote +"%line" "%file"` for
-        backward sync.
+          pip3 install --user pynvim neovim-remote
+<
+     2. Test; if the following returns without error and if `nvr` starts
+        neovim from the command line, you should be good to go. >
 
+          python3 -c "import pynvim"
+<
    See https://github.com/mhinz/neovim-remote for more information on `nvr`.
 
 ------------------------------------------------------------------------------
