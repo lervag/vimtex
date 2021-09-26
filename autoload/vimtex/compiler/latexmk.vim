@@ -182,7 +182,6 @@ endfunction
 " }}}1
 function! s:compiler.__pprint_append() abort dict " {{{1
   return [
-        \ ['engine', self.get_engine()],
         \ ['callback', self.callback],
         \ ['continuous', self.continuous],
         \ ['executable', self.executable],
