@@ -18,6 +18,22 @@ function! vimtex#complete#init_buffer() abort " {{{1
   endfor
 
   setlocal omnifunc=vimtex#complete#omnifunc
+
+  augroup vimtex_buffers
+    autocmd CompleteDone <buffer> call s:complete_autoindent()
+  augroup END
+endfunction
+
+function! s:complete_autoindent() abort
+  " Thanks to @hrsh7th for the inspiration
+  " https://github.com/neoclide/coc.nvim/issues/3394#issuecomment-926482558
+  let l:startofline = &startofline
+  let l:virtualedit = &virtualedit
+  set nostartofline
+  set virtualedit=all
+  normal! ==
+  let &startofline = l:startofline
+  let &virtualedit = l:virtualedit
 endfunction
 
 " }}}1
