@@ -5,7 +5,34 @@
 "
 
 function! vimtex#kpsewhich#find(file) abort " {{{1
-  return s:find_cached(a:file)
+  let l:cache = vimtex#cache#open('kpsewhich', {
+        \ 'default': []
+        \})
+
+  let l:root = exists('b:vimtex.root') ? b:vimtex.root : getcwd()
+  let l:current = l:cache.get(a:file)
+
+  " Check cache for result
+  for [l:result, l:result_root] in l:current
+    if empty(l:result_root) || l:result_root ==# l:root
+      return l:result
+    endif
+  endfor
+
+  " Perform search -> [result, result_root]
+  let l:result = get(vimtex#kpsewhich#run(fnameescape(a:file)), 0, '')
+  if !vimtex#paths#is_abs(l:result)
+    let l:result = empty(l:result) ? '' : simplify(l:root . '/' . l:result)
+    call add(l:current, [l:result, l:root])
+  else
+    call add(l:current, [l:result, ''])
+  endif
+
+  " Write cache to file
+  let l:cache.modified = 1
+  call l:cache.write()
+
+  return l:result
 endfunction
 
 " }}}1
@@ -24,26 +51,5 @@ function! vimtex#kpsewhich#run(args) abort " {{{1
 
   return l:output
 endfunction
-
-" }}}1
-
-function! s:find(file) abort " {{{1
-  let l:output = vimtex#kpsewhich#run(fnameescape(a:file))
-  if empty(l:output) | return '' | endif
-
-  let l:filename = l:output[0]
-
-  " Ensure absolute path
-  if !vimtex#paths#is_abs(l:filename) && exists('b:vimtex.root')
-    let l:filename = simplify(b:vimtex.root . '/' . l:filename)
-  endif
-
-  return l:filename
-endfunction
-
-" Use caching if possible (requires 'lambda' feature)
-let s:find_cached = has('lambda')
-      \ ? vimtex#cache#wrap(function('s:find'), 'kpsewhich')
-      \ : function('s:find')
 
 " }}}1
