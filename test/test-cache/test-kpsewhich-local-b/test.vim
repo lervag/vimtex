@@ -1,5 +1,5 @@
 set nocompatible
-set runtimepath^=~/.local/plugged/vimtex
+set runtimepath^=../../../
 filetype plugin indent on
 
 nnoremap q :qall!<cr>
