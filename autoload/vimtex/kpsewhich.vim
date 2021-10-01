@@ -13,11 +13,19 @@ function! vimtex#kpsewhich#find(file) abort " {{{1
   let l:current = l:cache.get(a:file)
 
   " Check cache for result
-  for [l:result, l:result_root] in l:current
-    if empty(l:result_root) || l:result_root ==# l:root
-      return l:result
-    endif
-  endfor
+  try
+    for [l:result, l:result_root] in l:current
+      if empty(l:result_root) || l:result_root ==# l:root
+        return l:result
+      endif
+    endfor
+  catch /E897:/
+    call vimtex#log#error(
+          \ 'Invalid kpsewhich cache!',
+          \ 'Please clear with ":VimtexClearCache kpsewhich"'
+          \)
+    return ''
+  endtry
 
   " Perform search -> [result, result_root]
   let l:result = get(vimtex#kpsewhich#run(fnameescape(a:file)), 0, '')
