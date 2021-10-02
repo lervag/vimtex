@@ -14,7 +14,7 @@ function! s:get_textidote_lang(lang) " {{{1
   let l:matched = matchlist(a:lang, '^\v(\a\a)%(_(\a\a))?')
   let l:string = l:matched[1]
   if !empty(l:matched[2])
-    let l:string .= toupper(l:matched[2])
+    let l:string .= '_' . toupper(l:matched[2])
   endif
   return l:string
 endfunction
