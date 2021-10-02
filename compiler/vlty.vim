@@ -75,7 +75,9 @@ if !exists('s:vlty.language')
 endif
 
 if !exists('s:list')
-  silent let s:list = split(system(s:vlty_lt_command . ' --list'), '[[:space:]]')
+  silent let s:list = split(
+        \ system(s:vlty_lt_command . ' --list NOFILE'),
+        \ '[[:space:]]')
 endif
 if !empty(s:list)
   if match(s:list, '\c^' . s:vlty.language . '$') == -1
