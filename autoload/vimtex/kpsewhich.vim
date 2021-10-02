@@ -19,7 +19,7 @@ function! vimtex#kpsewhich#find(file) abort " {{{1
         return l:result
       endif
     endfor
-  catch /E897:/
+  catch
     call vimtex#log#error(
           \ 'Invalid kpsewhich cache!',
           \ 'Please clear with ":VimtexClearCache kpsewhich"'
