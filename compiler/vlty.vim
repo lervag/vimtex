@@ -92,19 +92,15 @@ else
       echohl WarningMsg
       echomsg "Language '" . s:vlty.language . "'"
             \ . " not listed in output of the command "
-            \ . "'" . s:vlty_lt_command . " --list'! "
+            \ . "'" . s:vlty_lt_command . " --list NOFILE'! "
             \ . "Please check its output!"
-      echohl None
       if match(s:vlty.language, '-') != -1
         let s:vlty.language = matchstr(s:vlty.language, '\v^[^-]+')
-        echohl WarningMsg
         echomsg "Trying '" . s:vlty.language . "' instead."
-        echohl None
       else
-        echohl WarningMsg
         echomsg "Trying '" . s:vlty.language . "' anyway."
-        echohl None
       endif
+      echohl None
     endif
   endif
 endif
