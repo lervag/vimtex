@@ -19,9 +19,11 @@ function! vimtex#complete#init_buffer() abort " {{{1
 
   setlocal omnifunc=vimtex#complete#omnifunc
 
-  augroup vimtex_buffers
-    autocmd CompleteDone <buffer> call s:complete_autoindent()
-  augroup END
+  if g:vimtex_indent_enabled
+    augroup vimtex_buffers
+      autocmd CompleteDone <buffer> call s:complete_autoindent()
+    augroup END
+  endif
 endfunction
 
 function! s:complete_autoindent() abort
