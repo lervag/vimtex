@@ -58,7 +58,7 @@ function! s:skim.skim_available() abort " {{{1
           \ '(get application file id (id of application "Skim") as alias)''',
           \])
     let self._skim_available = !system(l:cmd)
-    if !self.self._skim_available
+    if !self._skim_available
       call vimtex#log#error('Skim is not installed!')
     endif
   endif
