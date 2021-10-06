@@ -210,8 +210,16 @@ function! s:indent_items(line, lnum, prev_line, prev_lnum) abort " {{{1
     return s:sw
   elseif a:line =~# s:envs_endlist && a:prev_line !~# s:envs_begitem
     return -s:sw
-  elseif a:line =~# s:envs_item && a:prev_line !~# s:envs_begitem
-    return -s:sw
+  elseif a:line =~# s:envs_item && a:prev_line !~# s:envs_item
+    let l:prev_lnum = a:prev_lnum
+    let l:prev_line = a:prev_line
+    while l:prev_lnum >= 1
+      if l:prev_line =~# s:envs_begitem
+        return -s:sw*(l:prev_line =~# s:envs_item)
+      endif
+      let l:prev_lnum = prevnonblank(l:prev_lnum - 1)
+      let l:prev_line = getline(l:prev_lnum)
+    endwhile
   endif
 
   return 0
