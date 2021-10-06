@@ -59,6 +59,7 @@ function! VimtexIndent(lnum) abort " {{{1
 
   " Indent environments, delimiters, and conditionals
   let l:ind += s:indent_envs(l:line, l:prev_line)
+  let l:ind += s:indent_items(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_conditionals(l:line, a:lnum, l:prev_line, l:prev_lnum)
 
@@ -183,23 +184,18 @@ endfunction
 
 " }}}1
 
-function! s:indent_envs(cur, prev) abort " {{{1
+function! s:indent_envs(line, prev_line) abort " {{{1
   let l:ind = 0
 
   " First for general environments
   let l:ind += s:sw*(
-        \    a:prev =~# s:envs_begin
-        \ && a:prev !~# s:envs_end
-        \ && a:prev !~# s:envs_ignored)
+        \    a:prev_line =~# s:envs_begin
+        \ && a:prev_line !~# s:envs_end
+        \ && a:prev_line !~# s:envs_ignored)
   let l:ind -= s:sw*(
-        \    a:cur !~# s:envs_begin
-        \ && a:cur =~# s:envs_end
-        \ && a:cur !~# s:envs_ignored)
-
-  " Indentation for prolonged items in lists
-  let l:ind += s:sw*((a:prev =~# s:envs_item)    && (a:cur  !~# s:envs_enditem))
-  let l:ind -= s:sw*((a:cur  =~# s:envs_item)    && (a:prev !~# s:envs_begitem))
-  let l:ind -= s:sw*((a:cur  =~# s:envs_endlist) && (a:prev !~# s:envs_begitem))
+        \    a:line !~# s:envs_begin
+        \ && a:line =~# s:envs_end
+        \ && a:line !~# s:envs_ignored)
 
   return l:ind
 endfunction
@@ -208,8 +204,21 @@ let s:envs_begin = '\\begin{.*}\|\\\@<!\\\['
 let s:envs_end = '\\end{.*}\|\\\]'
 let s:envs_ignored = '\v' . join(g:vimtex_indent_ignored_envs, '|')
 
+" }}}1
+function! s:indent_items(line, lnum, prev_line, prev_lnum) abort " {{{1
+  if a:prev_line =~# s:envs_item && a:line !~# s:envs_enditem
+    return s:sw
+  elseif a:line =~# s:envs_endlist && a:prev_line !~# s:envs_begitem
+    return -s:sw
+  elseif a:line =~# s:envs_item && a:prev_line !~# s:envs_begitem
+    return -s:sw
+  endif
+
+  return 0
+endfunction
+
 let s:envs_lists = join(g:vimtex_indent_lists, '\|')
-let s:envs_item = '^\s*\\item'
+let s:envs_item = '^\s*\\item\>'
 let s:envs_beglist = '\\begin{\%(' . s:envs_lists . '\)'
 let s:envs_endlist =   '\\end{\%(' . s:envs_lists . '\)'
 let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
