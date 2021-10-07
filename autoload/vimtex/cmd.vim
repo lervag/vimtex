@@ -672,13 +672,15 @@ function! s:get_cmd(direction) abort " {{{1
         \ 'pos_start' : { 'lnum' : lnum, 'cnum' : cnum },
         \ 'pos_end' : { 'lnum' : lnum, 'cnum' : cnum + strlen(match) - 1 },
         \ 'args' : [],
+        \ 'args_parens' : [],
+        \ 'args_chevrons' : [],
         \ 'opts' : [],
         \}
 
   " Environments always start with environment name and allows option
-  " afterwords
+  " afterwards
   if res.name ==# '\begin'
-    let arg = s:get_cmd_part('{', res.pos_end)
+    let arg = s:get_cmd_part_delim('{', res.pos_end)
     if empty(arg) | return res | endif
 
     call add(res.args, arg)
@@ -686,16 +688,9 @@ function! s:get_cmd(direction) abort " {{{1
     let res.pos_end.cnum = arg.close.cnum
   endif
 
-  " Get overlay specification
-  let res.overlay = s:get_cmd_overlay(res.pos_end.lnum, res.pos_end.cnum)
-  if !empty(res.overlay)
-    let res.pos_end.lnum = res.overlay.close.lnum
-    let res.pos_end.cnum = res.overlay.close.cnum
-  endif
-
-  " Get options and arguments
+  " Parse the arguments
   while v:true
-    let opt = s:get_cmd_part('[', res.pos_end)
+    let opt = s:get_cmd_part_delim('[', res.pos_end)
     if !empty(opt)
       call add(res.opts, opt)
       let res.pos_end.lnum = opt.close.lnum
@@ -703,9 +698,25 @@ function! s:get_cmd(direction) abort " {{{1
       continue
     endif
 
-    let arg = s:get_cmd_part('{', res.pos_end)
+    let arg = s:get_cmd_part_delim('{', res.pos_end)
     if !empty(arg)
       call add(res.args, arg)
+      let res.pos_end.lnum = arg.close.lnum
+      let res.pos_end.cnum = arg.close.cnum
+      continue
+    endif
+
+    let arg = s:get_cmd_part_simple(['(', ')'], res.pos_end)
+    if !empty(arg)
+      call add(res.args_parens, arg)
+      let res.pos_end.lnum = arg.close.lnum
+      let res.pos_end.cnum = arg.close.cnum
+      continue
+    endif
+
+    let arg = s:get_cmd_part_simple(['<', '>'], res.pos_end)
+    if !empty(arg)
+      call add(res.args_chevrons, arg)
       let res.pos_end.lnum = arg.close.lnum
       let res.pos_end.cnum = arg.close.cnum
       continue
@@ -730,14 +741,14 @@ function! s:get_cmd_name(next) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_cmd_part(part, start_pos) abort " {{{1
+function! s:get_cmd_part_delim(open_delim, start_pos) abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   call vimtex#pos#set_cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
   call vimtex#pos#set_cursor(l:save_pos)
 
   " Ensure that the next delimiter is found and is of the right type
-  if empty(l:open) || l:open.match !=# a:part | return {} | endif
+  if empty(l:open) || l:open.match !=# a:open_delim | return {} | endif
 
   " Ensure that the delimiter is the next non-whitespace character according to
   " a configurable rule
@@ -760,15 +771,19 @@ function! s:get_cmd_part(part, start_pos) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_cmd_overlay(lnum, cnum) abort " {{{1
-  let l:match = matchstr(getline(a:lnum), '^\s*<[^>]*>', a:cnum)
+function! s:get_cmd_part_simple(delims, start_pos) abort " {{{1
+  let l:lnum = a:start_pos.lnum
+  let l:cnum = a:start_pos.cnum
+  let l:regex = '^\s*' . a:delims[0] . '[^' . a:delims[1] . ']*' . a:delims[1]
+
+  let l:match = matchstr(getline(l:lnum), l:regex, l:cnum)
 
   return empty(l:match)
         \ ? {}
         \ : {
-        \    'open' : {'lnum' : a:lnum, 'cnum' : a:cnum + 1},
-        \    'close' : {'lnum' : a:lnum, 'cnum' : a:cnum + strlen(l:match)},
-        \    'text' : l:match
+        \    'open' : {'lnum' : l:lnum, 'cnum' : l:cnum + 1},
+        \    'close' : {'lnum' : l:lnum, 'cnum' : l:cnum + strlen(l:match)},
+        \    'text' : trim(l:match)
         \   }
 endfunction
 

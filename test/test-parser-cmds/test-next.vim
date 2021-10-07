@@ -4,7 +4,7 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-silent edit test.tex
+silent edit test-next.tex
 
 if empty($INMAKE) | finish | endif
 
