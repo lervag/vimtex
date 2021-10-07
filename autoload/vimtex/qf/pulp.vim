@@ -49,12 +49,12 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
     throw 'VimTeX: No log file found'
   endif
 
-  let l:tmp = fnameescape(fnamemodify(a:log, ':r') . '.pulp')
+  let l:tmp = fnamemodify(a:log, ':r') . '.pulp'
   let l:log = fnameescape(a:log)
 
-  silent call system(printf('pulp %s >%s', l:log, l:tmp))
+  call system(printf('pulp %s >%s', l:log, fnameescape(l:tmp)))
   call vimtex#qf#u#caddfile(self, l:tmp)
-  silent call system('rm ' . l:tmp)
+  call delete(l:tmp)
 endfunction
 
 " }}}1
