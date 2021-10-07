@@ -603,11 +603,13 @@ function! s:get_cmd(direction) abort " {{{1
         \ 'pos_start' : { 'lnum' : lnum, 'cnum' : cnum },
         \ 'pos_end' : { 'lnum' : lnum, 'cnum' : cnum + strlen(match) - 1 },
         \ 'args' : [],
+        \ 'args_parens' : [],
+        \ 'args_chevrons' : [],
         \ 'opts' : [],
         \}
 
   " Environments always start with environment name and allows option
-  " afterwords
+  " afterwards
   if res.name ==# '\begin'
     let arg = s:get_cmd_part('{', res.pos_end)
     if empty(arg) | return res | endif
@@ -617,15 +619,16 @@ function! s:get_cmd(direction) abort " {{{1
     let res.pos_end.cnum = arg.close.cnum
   endif
 
-  " Get overlay specification
-  let res.overlay = s:get_cmd_overlay(res.pos_end.lnum, res.pos_end.cnum)
-  if !empty(res.overlay)
-    let res.pos_end.lnum = res.overlay.close.lnum
-    let res.pos_end.cnum = res.overlay.close.cnum
-  endif
-
-  " Get options and arguments
+  " Get arguments
   while v:true
+    let arg = s:get_cmd_overlay(res.pos_end.lnum, res.pos_end.cnum)
+    if !empty(arg)
+      call add(res.args_chevrons, arg)
+      let res.pos_end.lnum = arg.close.lnum
+      let res.pos_end.cnum = arg.close.cnum
+      continue
+    endif
+
     let opt = s:get_cmd_part('[', res.pos_end)
     if !empty(opt)
       call add(res.opts, opt)
@@ -637,6 +640,14 @@ function! s:get_cmd(direction) abort " {{{1
     let arg = s:get_cmd_part('{', res.pos_end)
     if !empty(arg)
       call add(res.args, arg)
+      let res.pos_end.lnum = arg.close.lnum
+      let res.pos_end.cnum = arg.close.cnum
+      continue
+    endif
+
+    let arg = s:get_cmd_parens(res.pos_end.lnum, res.pos_end.cnum)
+    if !empty(arg)
+      call add(res.args_parens, arg)
       let res.pos_end.lnum = arg.close.lnum
       let res.pos_end.cnum = arg.close.cnum
       continue
@@ -691,6 +702,19 @@ function! s:get_cmd_part(part, start_pos) abort " {{{1
         \ 'close' : l:close,
         \ 'text' : s:text_between(l:open, l:close),
         \}
+endfunction
+
+" }}}1
+function! s:get_cmd_parens(lnum, cnum) abort " {{{1
+  let l:match = matchstr(getline(a:lnum), '^\s*[^)]*)', a:cnum)
+
+  return empty(l:match)
+        \ ? {}
+        \ : {
+        \    'open' : {'lnum' : a:lnum, 'cnum' : a:cnum + 1},
+        \    'close' : {'lnum' : a:lnum, 'cnum' : a:cnum + strlen(l:match)},
+        \    'text' : l:match
+        \   }
 endfunction
 
 " }}}1
