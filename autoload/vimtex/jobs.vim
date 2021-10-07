@@ -105,6 +105,16 @@ function! s:job.wait() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:job.is_running() abort dict " {{{1
+  try
+    let l:pid = jobpid(self.job)
+    return l:pid > 0
+  catch
+    return v:false
+  endtry
+endfunction
+
+" }}}1
   function! s:job.get_pid() abort dict " {{{1
     if !has_key(self, 'pid')
       try
@@ -118,16 +128,6 @@ endfunction
   endfunction
 
   " }}}1
-function! s:job.is_running() abort dict " {{{1
-  try
-    let l:pid = jobpid(self.job)
-    return l:pid > 0
-  catch
-    return v:false
-  endtry
-endfunction
-
-" }}}1
   function! s:job.output() abort dict " {{{1
     call self.wait()
 
@@ -187,6 +187,11 @@ function! s:job.wait() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:job.is_running() abort dict " {{{1
+  return job_status(self.job) ==# 'run'
+endfunction
+
+" }}}1
   function! s:job.get_pid() abort dict " {{{1
     if !has_key(self, 'pid')
       try
@@ -200,11 +205,6 @@ endfunction
   endfunction
 
   " }}}1
-function! s:job.is_running() abort dict " {{{1
-  return job_status(self.job) ==# 'run'
-endfunction
-
-" }}}1
   function! s:job.output() abort dict " {{{1
     call self.wait()
     return self.collect_output ? readfile(self._output) : []
