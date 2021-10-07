@@ -177,9 +177,9 @@ else
 
   " }}}1
 function! s:job.wait() abort dict " {{{1
-  for l:dummy in range(self.wait_timeout/100)
+  for l:dummy in range(self.wait_timeout/10)
+    sleep 10m
     if !self.is_running() | return | endif
-    sleep 100m
   endfor
 
   call vimtex#log#warning('Job timed out while waiting!', join(self.cmd))
