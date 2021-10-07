@@ -23,7 +23,7 @@ call assert_false(s:job.is_running())
 call s:job.stop()
 
 let s:output = vimtex#jobs#capture("echobaad foobar")
-call assert_match('command not found', s:output[0])
+call assert_match('not found', s:output[0])
 
 
 call vimtex#test#finished()
