@@ -37,13 +37,9 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(...) abort dict " {{{1
-  let l:cmd = (has('win32')
-        \   ? 'cd /D "' . self.state.root . '" & '
-        \   : 'cd ' . vimtex#util#shellescape(self.state.root) . '; ')
-        \ . 'latexrun --clean-all'
-        \ . ' -O '
-        \   . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
-  call vimtex#process#run(l:cmd)
+  let l:cmd = printf('latexrun --clean-all -O %s',
+        \ empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
+  call vimtex#jobs#run(l:cmd, {'cwd': self.state.root})
 endfunction
 
 " }}}1

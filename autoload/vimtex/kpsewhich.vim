@@ -49,7 +49,7 @@ function! vimtex#kpsewhich#run(args) abort " {{{1
   if exists('b:vimtex.root')
     call vimtex#paths#pushd(b:vimtex.root)
   endif
-  let l:output = vimtex#process#capture('kpsewhich ' . a:args)
+  let l:output = vimtex#jobs#capture('kpsewhich ' . a:args)
   if exists('b:vimtex.root')
     call vimtex#paths#popd()
   endif

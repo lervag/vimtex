@@ -34,7 +34,7 @@ function! vimtex#view#skim#compiler_callback() abort " {{{1
         \ '-e ''end tell''',
         \])
 
-  let b:vimtex.viewer.process = vimtex#process#start(l:cmd)
+  let b:vimtex.viewer.job = vimtex#jobs#start(l:cmd)
 endfunction
 
 " }}}1
@@ -98,7 +98,7 @@ function! s:skim.view(file) dict abort " {{{1
         \ '-e ''end tell''',
         \])
 
-  let self.process = vimtex#process#start(l:cmd)
+  let self.job = vimtex#jobs#start(l:cmd)
 
   if exists('#User#VimtexEventView')
     doautocmd <nomodeline> User VimtexEventView

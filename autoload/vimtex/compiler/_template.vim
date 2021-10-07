@@ -105,7 +105,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   call map(l:files, {_, x -> printf('%s/%s.%s',
         \ self.build_dir, fnamemodify(self.state.tex, ':t:r:S'), x)})
 
-  call vimtex#process#run('rm -f ' . join(l:files))
+  call vimtex#jobs#run('rm -f ' . join(l:files), {'cwd': self.state.root})
 endfunction
 
 " }}}1

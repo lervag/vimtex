@@ -48,24 +48,22 @@ function! vimtex#misc#wordcount(...) abort " {{{1
     let l:file = vimtex#parser#selection_to_texfile({'range': l:range})
   endif
 
-  let cmd  = 'cd ' . vimtex#util#shellescape(l:file.root)
-  let cmd .= has('win32') ? '& ' : '; '
-  let cmd .= 'texcount -nosub -sum '
-  let cmd .= get(l:opts, 'count_letters') ? '-letter ' : ''
-  let cmd .= get(l:opts, 'detailed') ? '-inc ' : '-q -1 -merge '
-  let cmd .= g:vimtex_texcount_custom_arg . ' '
-  let cmd .= vimtex#util#shellescape(l:file.base)
-  let lines = vimtex#process#capture(cmd)
+  let l:lines = vimtex#jobs#capture('texcount -nosub -sum '
+        \ . (get(l:opts, 'count_letters') ? '-letter ' : '')
+        \ . (get(l:opts, 'detailed') ? '-inc ' : '-q -1 -merge ')
+        \ . g:vimtex_texcount_custom_arg . ' '
+        \ . vimtex#util#shellescape(l:file.base),
+        \ {'cwd': l:file.root})
 
   if l:file.base !=# b:vimtex.base
     call delete(l:file.tex)
   endif
 
   if get(l:opts, 'detailed')
-    return lines
+    return l:lines
   else
-    call filter(lines, 'v:val !~# ''ERROR\|^\s*$''')
-    return join(lines, '')
+    call filter(l:lines, 'v:val !~# ''ERROR\|^\s*$''')
+    return join(l:lines, '')
   endif
 endfunction
 

@@ -112,9 +112,7 @@ function! s:parse_with_bibtex(file) abort " {{{1
         \ ], tmp.aux)
 
   " Create the temporary bbl file
-  call vimtex#process#run(
-        \ 'bibtex -terse ' . fnameescape(tmp.aux),
-        \ {'background' : 0})
+  call vimtex#jobs#run('bibtex -terse ' . fnameescape(tmp.aux))
 
   " Parse temporary bbl file
   let lines = join(readfile(tmp.bbl), "\n")
@@ -182,11 +180,7 @@ function! s:parse_with_bibparse(file) abort " {{{1
   call s:parse_with_bibparse_init()
   if s:bibparse_not_executable | return [] | endif
 
-  call vimtex#process#run(
-        \ 'bibparse ' . fnameescape(a:file) . ' >_vimtex_bibparsed.log',
-        \ {'background' : 0})
-  let l:lines = readfile('_vimtex_bibparsed.log')
-  call delete('_vimtex_bibparsed.log')
+  let l:lines = vimtex#jobs#capture('bibparse ' . fnameescape(a:file))
 
   let l:current = {}
   let l:entries = []
