@@ -45,13 +45,13 @@ function! s:general.view(file) dict abort " {{{1
   " Update the path for Windows on cygwin
   if executable('cygpath')
     let outfile = join(
-          \ vimtex#process#capture('cygpath -aw "' . outfile . '"'), '')
+          \ vimtex#jobs#capture('cygpath -aw "' . outfile . '"'), '')
   endif
 
   if vimtex#view#not_readable(outfile) | return | endif
 
   " Parse options
-  let l:cmd  = g:vimtex_view_general_viewer
+  let l:cmd = g:vimtex_view_general_viewer
   let l:cmd .= ' ' . g:vimtex_view_general_options
 
   " Substitute magic patterns
@@ -62,7 +62,7 @@ function! s:general.view(file) dict abort " {{{1
   let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
 
   " Start the view process
-  let self.process = vimtex#process#start(l:cmd, {'silent': 0})
+  let self.job = vimtex#jobs#start(l:cmd)
 
   if exists('#User#VimtexEventView')
     doautocmd <nomodeline> User VimtexEventView

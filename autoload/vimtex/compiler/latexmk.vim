@@ -191,16 +191,13 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
-  let l:cmd = (has('win32')
-        \   ? 'cd /D "' . self.state.root . '" & '
-        \   : 'cd ' . vimtex#util#shellescape(self.state.root) . '; ')
-        \ . self.executable . ' ' . (a:full ? '-C ' : '-c ')
+  let l:cmd = self.executable . ' ' . (a:full ? '-C ' : '-c ')
   if !empty(self.build_dir)
     let l:cmd .= printf(' -outdir=%s ', fnameescape(self.build_dir))
   endif
   let l:cmd .= vimtex#util#shellescape(self.state.base)
 
-  call vimtex#process#run(l:cmd)
+  call vimtex#jobs#run(l:cmd, {'cwd': self.state.root})
 endfunction
 
 " }}}1

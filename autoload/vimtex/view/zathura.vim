@@ -48,7 +48,7 @@ function! s:zathura.start(outfile) dict abort " {{{1
   endif
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  let self.process = vimtex#process#start(l:cmd)
+  let self.job = vimtex#jobs#start(l:cmd)
 
   call self.xwin_get_id()
   let self.outfile = a:outfile
@@ -62,13 +62,12 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
   let self.texfile = vimtex#paths#relative(expand('%:p'), b:vimtex.root)
   let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
 
-  let l:cmd  = 'zathura --synctex-forward '
-  let l:cmd .= line('.')
-  let l:cmd .= ':' . col('.')
-  let l:cmd .= ':' . vimtex#util#shellescape(self.texfile)
-  let l:cmd .= ' ' . vimtex#util#shellescape(self.outfile)
-  call vimtex#process#run(l:cmd)
-  let self.cmd_forward_search = l:cmd
+  let self.cmd_forward_search = printf(
+        \ 'zathura --synctex-forward %d:%d:%s %s',
+        \ line('.'), col('.'),
+        \ vimtex#util#shellescape(self.texfile),
+        \ vimtex#util#shellescape(self.outfile))
+  call vimtex#jobs#run(self.cmd_forward_search)
 endfunction
 
 " }}}1
