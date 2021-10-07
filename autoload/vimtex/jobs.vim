@@ -19,6 +19,7 @@ endfunction
 " }}}1
 function! vimtex#jobs#capture(cmd, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
+  let l:opts.collect_output = v:true
   let l:job = s:job.start(a:cmd, l:opts)
   return l:job.output()
 endfunction
@@ -36,6 +37,7 @@ function! s:job.start(cmd, opts) abort dict " {{{1
   let l:job.cwd = get(a:opts, 'cwd',
         \ exists('b:vimtex.root') ? b:vimtex.root : '')
   let l:job.wait_timeout = str2nr(get(a:opts, 'wait_timeout', 5000))
+  let l:job.collect_output = get(a:opts, 'collect_output', v:false)
 
   let l:job.cmd = has('win32')
         \ ? 'cmd /s /c "' . l:job.cmd_raw . '"'
@@ -61,20 +63,21 @@ endfunction
 
 if has('nvim')
   function! s:job.exec() abort dict " {{{1
-    let self._output = []
+    let l:options = {}
 
-    let l:shell = {
-          \ 'on_stdout': function('s:__callback'),
-          \ 'on_stderr': function('s:__callback'),
-          \ 'stdout_buffered': v:true,
-          \ 'stderr_buffered': v:true,
-          \ 'output': self._output,
-          \}
+    if self.collect_output
+      let self._output = []
+      let l:options.on_stdout = function('s:__callback')
+      let l:options.on_stderr = function('s:__callback')
+      let l:options.stdout_buffered = v:true
+      let l:options.stderr_buffered = v:true
+      let l:options.output = self._output
+    endif
     if !empty(self.cwd)
-      let l:shell.cwd = self.cwd
+      let l:options.cwd = self.cwd
     endif
 
-    let self.job = jobstart(self.cmd, l:shell)
+    let self.job = jobstart(self.cmd, l:options)
   endfunction
 
   function! s:__callback(id, data, event) abort dict
@@ -128,6 +131,8 @@ endfunction
   function! s:job.output() abort dict " {{{1
     call self.wait()
 
+    if !self.collect_output | return [] | endif
+
     " Trim output
     while len(self._output) > 0
       if !empty(self._output[0]) | break | endif
@@ -144,14 +149,19 @@ endfunction
   " }}}1
 else
   function! s:job.exec() abort dict " {{{1
-    let self._output = tempname()
+    let l:options = {}
 
-    let l:options = {
-          \ 'out_io': 'file',
-          \ 'err_io': 'file',
-          \ 'out_name': self._output,
-          \ 'err_name': self._output,
-          \}
+    if self.collect_output
+      let self._output = tempname()
+      let l:options.out_io = 'file'
+      let l:options.err_io = 'file'
+      let l:options.out_name = self._output
+      let l:options.err_name = self._output
+    else
+      let l:options.in_io = 'null'
+      let l:options.out_io = 'null'
+      let l:options.err_io = 'null'
+    endif
     if !empty(self.cwd)
       let l:options.cwd = self.cwd
     endif
@@ -197,7 +207,7 @@ endfunction
 " }}}1
   function! s:job.output() abort dict " {{{1
     call self.wait()
-    return readfile(self._output)
+    return self.collect_output ? readfile(self._output) : []
   endfunction
 
   " }}}1
