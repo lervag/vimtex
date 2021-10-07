@@ -133,12 +133,12 @@ function! s:focus_vim() abort " {{{1
   let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
 
   for l:pid in reverse(l:pids)
-    let l:xwinids = filter(reverse(split(system(
-        \ 'xdotool search --onlyvisible --pid ' . l:pid))),
-        \ '!empty(v:val)')
+    let l:xwinids = filter(reverse(
+          \ systemlist('xdotool search --onlyvisible --pid ' . l:pid)),
+          \ '!empty(v:val)')
 
     if !empty(l:xwinids)
-      silent call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
       call feedkeys("\<c-l>", 'tn')
       return l:xwinids[0]
       break

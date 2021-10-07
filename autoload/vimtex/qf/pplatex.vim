@@ -85,9 +85,10 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
   endif
 
   let l:tmp = fnamemodify(a:log, ':r') . '.pplatex'
-  silent call system(printf('pplatex -i "%s" >"%s"', a:log, l:tmp))
+
+  call system(printf('pplatex -i "%s" >"%s"', a:log, l:tmp))
   call vimtex#qf#u#caddfile(self, l:tmp)
-  silent call delete(l:tmp)
+  call delete(l:tmp)
 endfunction
 
 " }}}1
