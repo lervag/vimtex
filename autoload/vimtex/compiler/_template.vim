@@ -88,7 +88,7 @@ function! s:compiler.__pprint() abort dict " {{{1
     if self.continuous
       call add(l:job, ['pid', self.get_pid()])
     endif
-    call add(l:list, ['process', l:job])
+    call add(l:list, ['job', l:job])
   endif
 
   return l:list
