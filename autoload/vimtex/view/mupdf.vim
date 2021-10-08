@@ -47,7 +47,7 @@ function! s:mupdf.forward_search(outfile) dict abort " {{{1
         \ . vimtex#util#shellescape(expand('%:p'))
         \ . ' -o ' . vimtex#util#shellescape(a:outfile)
         \ . " | grep -m1 'Page:' | sed 's/Page://' | tr -d '\n'"
-  let self.page = system(self.cmd_synctex_view)
+  let self.page = vimtex#jobs#capture(self.cmd_synctex_view)[0]
 
   if self.page > 0
     let self.cmd_forward_search = 'xdotool'
@@ -88,25 +88,26 @@ function! s:mupdf.reverse_search() dict abort " {{{1
   endif
 
   " Get page number
-  let self.cmd_getpage  = 'xdotool getwindowname ' . self.xwin_id
-  let self.cmd_getpage .= " | sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
-  let self.cmd_getpage .= " | tr -d '\n'"
-  let self.page = system(self.cmd_getpage)
+  let self.cmd_getpage
+        \ = 'xdotool getwindowname ' . self.xwin_id
+        \ . "| sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
+        \ . "| tr -d '\n'"
+  let self.page = vimtex#jobs#capture(self.cmd_getpage)[0]
   if self.page <= 0 | return | endif
 
   " Get file
   let self.cmd_getfile  = 'synctex edit '
-  let self.cmd_getfile .= "-o \"" . self.page . ':288:108:' . outfile . "\""
-  let self.cmd_getfile .= "| grep 'Input:' | sed 's/Input://' "
-  let self.cmd_getfile .= "| head -n1 | tr -d '\n' 2>/dev/null"
-  let self.file = system(self.cmd_getfile)
+        \ . "-o \"" . self.page . ':288:108:' . outfile . "\""
+        \ . "| grep 'Input:' | sed 's/Input://' "
+        \ . "| head -n1 | tr -d '\n' 2>/dev/null"
+  let self.file = vimtex#jobs#capture(self.cmd_getfile)[0]
 
   " Get line
   let self.cmd_getline  = 'synctex edit '
-  let self.cmd_getline .= "-o \"" . self.page . ':288:108:' . outfile . "\""
-  let self.cmd_getline .= "| grep -m1 'Line:' | sed 's/Line://' "
-  let self.cmd_getline .= "| head -n1 | tr -d '\n'"
-  let self.line = system(self.cmd_getline)
+        \ . "-o \"" . self.page . ':288:108:' . outfile . "\""
+        \ . "| grep -m1 'Line:' | sed 's/Line://' "
+        \ . "| head -n1 | tr -d '\n'"
+  let self.line = vimtex#jobs#capture(self.cmd_getline)[0]
 
   " Go to file and line
   silent exec 'edit ' . fnameescape(self.file)

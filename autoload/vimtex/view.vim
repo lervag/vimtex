@@ -124,21 +124,22 @@ function! s:focus_vim() abort " {{{1
   if empty($TMUX)
     let l:current_pid = getpid()
   else
-    let l:pts = split(
-          \ trim(system('tmux display-message -p "#{client_tty}"')), '/')[-1]
-    let l:current_pid = str2nr(systemlist('ps o pid t ' . l:pts)[1])
+    let l:output = vimtex#jobs#capture('tmux display-message -p "#{client_tty}"')
+    let l:pts = split(trim(l:output[0]), '/')[-1]
+    let l:current_pid = str2nr(vimtex#jobs#capture('ps o pid t ' . l:pts)[1])
   endif
 
-  let l:pids = split(system('pstree -s -p ' . l:current_pid), '\D\+')
+  let l:output = vimtex#jobs#capture('pstree -s -p ' . l:current_pid)
+  let l:pids = split(l:output, '\D\+')
   let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
 
   for l:pid in reverse(l:pids)
-    let l:xwinids = filter(reverse(
-          \ systemlist('xdotool search --onlyvisible --pid ' . l:pid)),
-          \ '!empty(v:val)')
+    let l:output = vimtex#jobs#capture(
+          \ 'xdotool search --onlyvisible --pid ' . l:pid)
+    let l:xwinids = filter(reverse(l:output), '!empty(v:val)')
 
     if !empty(l:xwinids)
-      call system('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call vimtex#jobs#run('xdotool windowactivate ' . l:xwinids[0] . ' &')
       call feedkeys("\<c-l>", 'tn')
       return l:xwinids[0]
       break

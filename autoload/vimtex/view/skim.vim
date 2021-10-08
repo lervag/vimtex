@@ -52,10 +52,9 @@ function! s:skim.skim_available() abort " {{{1
     let self._requirements_checked = v:true
 
     " Check if Skim is installed
-    let l:cmd = 'osascript -e '
-          \ . '''tell application "Finder" to get id of application "Skim"'''
-    let self._skim_available =
-          \ match(system(l:cmd), '^net.sourceforge.skim-app') >= 0
+    let l:output = vimtex#jobs#capture('osascript -e '
+          \ . '''tell application "Finder" to get id of application "Skim"''')
+    let self._skim_available = l:output[0] =~# '^net.sourceforge.skim-app'
     if !self._skim_available
       call vimtex#log#error('Skim is not installed!')
     endif

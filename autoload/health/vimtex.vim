@@ -139,16 +139,16 @@ endfunction
 
 " }}}1
 function! s:check_view_skim() abort " {{{1
-  let l:cmd = join([
+  call vimtex#jobs#run(join([
         \ 'osascript -e ',
         \ '''tell application "Finder" to POSIX path of ',
         \ '(get application file id (id of application "Skim") as alias)''',
-        \])
+        \]))
 
-  if system(l:cmd)
-    call health#report_error('Skim is not installed!')
-  else
+  if v:shell_error == 0
     call health#report_ok('Skim viewer should work!')
+  else
+    call health#report_error('Skim is not installed!')
   endif
 endfunction
 

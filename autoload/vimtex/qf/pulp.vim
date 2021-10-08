@@ -52,7 +52,7 @@ function! s:qf.addqflist(tex, log) abort dict " {{{1
   let l:tmp = fnamemodify(a:log, ':r') . '.pulp'
   let l:log = fnameescape(a:log)
 
-  call system(printf('pulp %s >%s', l:log, fnameescape(l:tmp)))
+  call vimtex#jobs#run(printf('pulp %s >%s', l:log, fnameescape(l:tmp)))
   call vimtex#qf#u#caddfile(self, l:tmp)
   call delete(l:tmp)
 endfunction

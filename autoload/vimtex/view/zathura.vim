@@ -12,7 +12,7 @@ function! vimtex#view#zathura#new() abort " {{{1
   endif
 
   if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
-    let l:shared = systemlist("sh -c 'ldd $(which zathura)'")
+    let l:shared = vimtex#jobs#capture("sh -c 'ldd $(which zathura)'")
     if v:shell_error == 0
           \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
       call vimtex#log#warning('Zathura is not linked to libsynctex!')
@@ -93,16 +93,15 @@ endfunction
 function! s:zathura.get_pid() dict abort " {{{1
   " First try to match full output file name
   let l:outfile = fnamemodify(get(self, 'outfile', self.out()), ':t')
-  let l:cmd = 'pgrep -nf "^zathura.*' . escape(l:outfile, '~\%.') . '"'
-  let l:pid = str2nr(system(l:cmd)[:-2])
+  let l:output = vimtex#jobs#capture(
+        \ 'pgrep -nf "^zathura.*' . escape(l:outfile, '~\%.') . '"')[0]
+  let l:pid = str2nr(l:output)
+  if !empty(l:pid) | return l:pid | endif
 
   " Now try to match correct servername as fallback
-  if empty(l:pid)
-    let l:cmd = 'pgrep -nf "^zathura.+--servername ' . v:servername . '"'
-    let l:pid = str2nr(system(l:cmd)[:-2])
-  endif
-
-  return l:pid
+  let l:output = vimtex#jobs#capture(
+        \ 'pgrep -nf "^zathura.+--servername ' . v:servername . '"')[0]
+  return str2nr(l:output)
 endfunction
 
 " }}}1

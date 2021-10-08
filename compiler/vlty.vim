@@ -7,25 +7,31 @@ set cpo&vim
 let s:python = executable('python3') ? 'python3' : 'python'
 let s:vlty = g:vimtex_grammar_vlty
 
-function! s:installation_error(msg)
+function! s:installation_error(msg) abort " {{{1
   call vimtex#log#error(
         \ ['vlty compiler - ' . a:msg,
         \  'Please see ":help vimtex-grammar-vlty" for more details.'])
 endfunction
+
+" }}}1
+function! s:check_python(code) abort " {{{1
+  call vimtex#jobs#run(printf('%s -c "%s"', s:python, a:code))
+  return v:shell_error != 0
+endfunction
+
+" }}}1
 
 if !executable(s:python)
   call s:installation_error('requires Python')
   finish
 endif
 
-call system(s:python . ' -c "import sys; assert sys.version_info >= (3, 6)"')
-if v:shell_error != 0
+if s:check_python('import sys; assert sys.version_info >= (3, 6)')
   call s:installation_error('requires at least Python version 3.6')
   finish
 endif
 
-call system(s:python . ' -c "import yalafi"')
-if v:shell_error != 0
+if s:check_python('import yalafi')
   call s:installation_error('requires the Python module YaLafi')
   finish
 endif
@@ -83,9 +89,8 @@ else
   let s:vlty.language = substitute(s:vlty.language, '_', '-', '')
   let s:vlty_language = ' --language ' . s:vlty.language
   if !exists('s:list')
-    silent let s:list = split(
-          \ system(s:vlty_lt_command . ' --list NOFILE'),
-          \ '[[:space:]]')
+    let l:list = vimtex#jobs#capture(s:vlty_lt_command . ' --list NOFILE')
+    call map(l:list, {_, x -> split(x)[0]})
   endif
   if !empty(s:list)
     if match(s:list, '\c^' . s:vlty.language . '$') == -1

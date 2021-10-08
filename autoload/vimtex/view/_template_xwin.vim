@@ -174,8 +174,8 @@ function! s:template.focus_viewer() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_id > 0
-    call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
-    call system('xdotool windowraise ' . self.xwin_id)
+    call vimtex#jobs#run('xdotool windowactivate ' . self.xwin_id . ' --sync')
+    call vimtex#jobs#run('xdotool windowraise ' . self.xwin_id)
   endif
 endfunction
 
@@ -183,8 +183,8 @@ endfunction
 function! s:template.focus_vim() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
-  call system('xdotool windowactivate ' . v:windowid . ' --sync')
-  call system('xdotool windowraise ' . v:windowid)
+  call vimtex#jobs#run('xdotool windowactivate ' . v:windowid . ' --sync')
+  call vimtex#jobs#run('xdotool windowraise ' . v:windowid)
 endfunction
 
 " }}}1
