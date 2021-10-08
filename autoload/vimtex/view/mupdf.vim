@@ -24,9 +24,9 @@ let s:mupdf = {
       \}
 
 function! s:mupdf.start(outfile) dict abort " {{{1
-  let l:cmd = 'mupdf ' .  g:vimtex_view_mupdf_options
-        \ . ' ' . vimtex#util#shellescape(a:outfile)
-  let self.process = vimtex#process#start(l:cmd)
+  let self.job = vimtex#jobs#start('mupdf '
+        \ .  g:vimtex_view_mupdf_options
+        \ . ' ' . vimtex#util#shellescape(a:outfile))
 
   call self.xwin_get_id()
   call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
@@ -50,11 +50,10 @@ function! s:mupdf.forward_search(outfile) dict abort " {{{1
   let self.page = system(self.cmd_synctex_view)
 
   if self.page > 0
-    let l:cmd = 'xdotool'
+    let self.cmd_forward_search = 'xdotool'
           \ . ' type --window ' . self.xwin_id
           \ . ' "' . self.page . 'g"'
-    call vimtex#process#run(l:cmd)
-    let self.cmd_forward_search = l:cmd
+    call vimtex#jobs#run(self.cmd_forward_search)
   endif
 
   call self.focus_viewer()

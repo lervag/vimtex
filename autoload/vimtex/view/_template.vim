@@ -20,8 +20,8 @@ function! s:template.__pprint() abort dict " {{{1
     call add(l:list, ['xwin id', self.xwin_id])
   endif
 
-  if has_key(self, 'process')
-    call add(l:list, ['process', self.process])
+  if has_key(self, 'job')
+    call add(l:list, ['job', self.job])
   endif
 
   for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')

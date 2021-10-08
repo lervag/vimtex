@@ -87,7 +87,7 @@ function! s:template.xwin_get_id() dict abort " {{{1
   " Get the window ID
   "
   let cmd = 'xdotool search --class ' . self.name
-  let xwin_ids = split(system(cmd), '\n')
+  let xwin_ids = systemlist(cmd)
   if len(xwin_ids) == 0
     call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
     let self.xwin_id = 0
@@ -107,7 +107,7 @@ function! s:template.xwin_exists() dict abort " {{{1
   "
   if self.xwin_id > 0
     let cmd = 'xdotool search --class ' . self.name
-    if index(split(system(cmd), '\n'), self.xwin_id) < 0
+    if index(systemlist(cmd), self.xwin_id) < 0
       let self.xwin_id = 0
     endif
   endif
@@ -121,10 +121,10 @@ function! s:template.xwin_exists() dict abort " {{{1
       let cmd = 'xdotool search'
             \ . ' --all --pid ' . l:pid
             \ . ' --name ' . fnamemodify(self.out(), ':t')
-      let self.xwin_id = get(split(system(cmd), '\n'), 0)
+      let self.xwin_id = get(systemlist(cmd), 0)
     else
       let cmd = 'xdotool search --name ' . fnamemodify(self.out(), ':t')
-      let ids = split(system(cmd), '\n')
+      let ids = systemlist(cmd)
       let ids_already_used = filter(map(
             \   deepcopy(vimtex#state#list_all()),
             \   {_, x -> get(get(x, 'viewer', {}), 'xwin_id')}),
@@ -147,9 +147,7 @@ function! s:template.xwin_send_keys(keys) dict abort " {{{1
     return
   endif
 
-  let cmd  = 'xdotool key --window ' . self.xwin_id
-  let cmd .= ' ' . a:keys
-  silent call system(cmd)
+  call system('xdotool key --window ' . self.xwin_id . ' ' . a:keys)
 endfunction
 
 " }}}1
@@ -158,8 +156,7 @@ function! s:template.move(arg) abort " {{{1
     return
   endif
 
-  let l:cmd = 'xdotool windowmove ' . self.xwin_get_id() . ' ' . a:arg
-  silent call system(l:cmd)
+  call system('xdotool windowmove ' . self.xwin_get_id() . ' ' . a:arg)
 endfunction
 
 " }}}1
@@ -168,8 +165,7 @@ function! s:template.resize(arg) abort " {{{1
     return
   endif
 
-  let l:cmd = 'xdotool windowsize ' . self.xwin_get_id()  . ' ' . a:arg
-  silent call system(l:cmd)
+  call system('xdotool windowsize ' . self.xwin_get_id()  . ' ' . a:arg)
 endfunction
 
 " }}}1
@@ -177,8 +173,8 @@ function! s:template.focus_viewer() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
   if self.xwin_id > 0
-    silent call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
-    silent call system('xdotool windowraise ' . self.xwin_id)
+    call system('xdotool windowactivate ' . self.xwin_id . ' --sync')
+    call system('xdotool windowraise ' . self.xwin_id)
   endif
 endfunction
 
@@ -186,8 +182,8 @@ endfunction
 function! s:template.focus_vim() dict abort " {{{1
   if !executable('xdotool') | return | endif
 
-  silent call system('xdotool windowactivate ' . v:windowid . ' --sync')
-  silent call system('xdotool windowraise ' . v:windowid)
+  call system('xdotool windowactivate ' . v:windowid . ' --sync')
+  call system('xdotool windowraise ' . v:windowid)
 endfunction
 
 " }}}1
