@@ -108,12 +108,12 @@ endfunction
 
 
 function! s:vim_unix_run(cmd) abort " {{{1
-  silent call system(a:cmd)
+  silent! call system(a:cmd)
 endfunction
 
 " }}}1
 function! s:vim_unix_capture(cmd) abort " {{{1
-  silent let l:output = systemlist(a:cmd)
+  silent! let l:output = systemlist(a:cmd)
   return v:shell_error == 127 ? ['command not found'] : l:output
 endfunction
 
@@ -130,7 +130,7 @@ function! s:vim_win_run(cmd) abort " {{{1
         \]
   set shell& shellcmdflag& shellquote& shellxquote& shellredir& shellslash&
 
-  silent call system('cmd /s /c "' . a:cmd . '"')
+  silent! call system('cmd /s /c "' . a:cmd . '"')
 
   let [   &shell,
         \ &shellcmdflag,
@@ -152,7 +152,7 @@ function! s:vim_win_capture(cmd) abort " {{{1
         \]
   set shell& shellcmdflag& shellquote& shellxquote& shellredir& shellslash&
 
-  silent let l:output = systemlist('cmd /s /c "' . a:cmd . '"')
+  silent! let l:output = systemlist('cmd /s /c "' . a:cmd . '"')
 
   let [   &shell,
         \ &shellcmdflag,
