@@ -171,10 +171,16 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   " Note: This may need to create a hierarchical structure!
   if empty(self.build_dir) | return | endif
 
-  let l:dirs = split(glob(self.state.root . '/**/*.tex'), '\n')
-  call map(l:dirs, "fnamemodify(v:val, ':h')")
-  call map(l:dirs, 'strpart(v:val, strlen(self.state.root) + 1)')
+  if has_key(self.state, 'sources')
+    let l:dirs = copy(self.state.sources)
+    call map(l:dirs, "fnamemodify(v:val, ':h')")
+  else
+    let l:dirs = glob(self.state.root . '/**/*.tex', v:false, v:true)
+    call map(l:dirs, "fnamemodify(v:val, ':h')")
+    call map(l:dirs, 'strpart(v:val, strlen(self.state.root) + 1)')
+  endif
   call uniq(sort(filter(l:dirs, '!empty(v:val)')))
+
   call map(l:dirs, {_, x ->
         \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.state.root . '/')
         \ . self.build_dir . '/' . x})
