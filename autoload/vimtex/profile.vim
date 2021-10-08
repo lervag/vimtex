@@ -67,6 +67,20 @@ endfunction
 
 " }}}1
 
+function! vimtex#profile#time(...) abort " {{{1
+  let l:t1 = str2float(vimtex#jobs#capture('date +"%s.%N"')[0])
+
+  if a:0 > 0
+    echo printf(
+          \ "%s: %8.5f\n",
+          \ a:0 > 1 ? a:2 : 'Time elapsed', l:t1 - a:1)
+  endif
+
+  return l:t1
+endfunction
+
+" }}}1
+
 function! s:fix_sids() abort " {{{1
   let l:lines = readfile('prof.log')
   let l:new = []

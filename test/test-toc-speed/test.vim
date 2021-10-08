@@ -19,19 +19,17 @@ if empty($INMAKE) | finish | endif
 " profile start prof.log
 " profile func *
 
-silent let s:time = str2float(system('date +"%s.%N"'))
+let s:time = vimtex#profile#time()
 let s:toc = vimtex#toc#get_entries()
-echo 'Time elapsed (1st run):' str2float(system('date +"%s.%N"')) - s:time "\n"
+let s:time = vimtex#profile#time(s:time, 'Time elapsed (1st run)')
 
 " profile pause
 " quit!
 
-let s:time = str2float(system('date +"%s.%N"'))
 let s:toc = vimtex#toc#get_entries()
-echo 'Time elapsed (2nd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
+let s:time = vimtex#profile#time(s:time, 'Time elapsed (2nd run)')
 
-let s:time = str2float(system('date +"%s.%N"'))
 let s:toc = vimtex#toc#get_entries()
-echo 'Time elapsed (3rd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
+let s:time = vimtex#profile#time(s:time, 'Time elapsed (3rd run)')
 
 quit!
