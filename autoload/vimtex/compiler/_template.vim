@@ -173,7 +173,9 @@ function! s:compiler.create_build_dir() abort dict " {{{1
 
   if has_key(self.state, 'sources')
     let l:dirs = copy(self.state.sources)
-    call map(l:dirs, "fnamemodify(v:val, ':h')")
+    call filter(map(
+          \ l:dirs, "fnamemodify(v:val, ':h')"),
+          \ {_, x -> x !=# '.'})
   else
     let l:dirs = glob(self.state.root . '/**/*.tex', v:false, v:true)
     call map(l:dirs, "fnamemodify(v:val, ':h')")
@@ -190,6 +192,8 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   " Create the non-existing directories
   call vimtex#log#warning(["Creating build_dir directorie(s):"]
         \ + map(copy(l:dirs), {_, x -> '* ' . x}))
+
+  unsilent echo 'DBG' l:dirs "\n"
 
   for l:dir in l:dirs
     call mkdir(l:dir, 'p')
