@@ -92,8 +92,11 @@ function! s:logger.add(msg_arg, type) abort dict " {{{1
   let l:entry = {}
   let l:entry.type = a:type
   let l:entry.time = strftime('%T')
-  let l:entry.callstack = vimtex#debug#stacktrace()[1:]
   let l:entry.msg = l:msg_list
+  let l:entry.callstack = vimtex#debug#stacktrace()[2:]
+  for l:level in l:entry.callstack
+    let l:level.nr -= 2
+  endfor
   call add(self.entries, l:entry)
 
   if self.verbose

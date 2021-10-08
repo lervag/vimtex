@@ -5,14 +5,10 @@
 "
 
 function! vimtex#debug#stacktrace(...) abort " {{{1
-  "
   " This function builds on Luc Hermite's answer on Stack Exchange:
   " http://vi.stackexchange.com/a/6024/21
-  "
 
-  "
   " Get stack and exception
-  "
   if empty(v:throwpoint)
     try
       throw 'dummy'
@@ -25,9 +21,7 @@ function! vimtex#debug#stacktrace(...) abort " {{{1
     let l:exception = v:exception
   endif
 
-  "
   " Build the quickfix entries
-  "
   let l:qflist = []
   let l:files = {}
   for l:func in l:stack
