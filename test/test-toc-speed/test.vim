@@ -4,8 +4,7 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-let g:vimtex_cache_root = '.'
-" let g:vimtex_cache_persistent = 0
+let g:vimtex_cache_persistent = 0
 
 let g:vimtex_toc_custom_matchers = [
       \ { 'title' : 'My Custom Environment',
