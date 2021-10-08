@@ -60,5 +60,15 @@ function! vimtex#jobs#capture(cmd, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#jobs#cached(cmd) abort " {{{1
+  " Cached version of vimtex#jobs#capture(...)
+  let l:cache = vimtex#cache#open('capture')
+
+  return l:cache.has(a:cmd)
+        \ ? l:cache.get(a:cmd)
+        \ : l:cache.set(a:cmd, vimtex#jobs#capture(a:cmd))
+endfunction
+
+" }}}1
 
 let s:backend = has('nvim') ? 'neovim' : 'vim'

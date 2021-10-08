@@ -48,12 +48,12 @@ function! vimtex#misc#wordcount(...) abort " {{{1
     let l:file = vimtex#parser#selection_to_texfile({'range': l:range})
   endif
 
-  let l:lines = vimtex#jobs#capture('texcount -nosub -sum '
+  let l:cmd = 'texcount -nosub -sum '
         \ . (get(l:opts, 'count_letters') ? '-letter ' : '')
         \ . (get(l:opts, 'detailed') ? '-inc ' : '-q -1 -merge ')
         \ . g:vimtex_texcount_custom_arg . ' '
-        \ . vimtex#util#shellescape(l:file.base),
-        \ {'cwd': l:file.root})
+        \ . vimtex#util#shellescape(l:file.base)
+  let l:lines = vimtex#jobs#capture(l:cmd, {'cwd': l:file.root})
 
   if l:file.base !=# b:vimtex.base
     call delete(l:file.tex)

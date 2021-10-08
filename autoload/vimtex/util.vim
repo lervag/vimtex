@@ -45,7 +45,7 @@ function! vimtex#util#get_os() abort " {{{1
   if has('win32') || has('win32unix')
     return 'win'
   elseif has('unix')
-    if has('mac') || vimtex#jobs#capture('uname')[0] =~# 'Darwin'
+    if has('mac') || vimtex#jobs#cached('uname')[0] =~# 'Darwin'
       return 'mac'
     else
       return 'linux'
