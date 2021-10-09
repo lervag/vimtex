@@ -2388,8 +2388,7 @@ OPTIONS                                                        *vimtex-options*
     glossaries~
     gnuplottex~
     hyperref~
-      `conceal`  whether to enable conceal
-        Default: |g:vimtex_syntax_conceal_default|
+      `conceal`  whether to enable conceal; enabled by default
     ieeetrantools~
     listings~
     luacode~
@@ -5802,9 +5801,10 @@ The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
-2021-04-07: Better options for syntax conceal~
-Deprecated *g:vimtex_syntax_conceal_default* in favour of the more simple
-|g:vimtex_syntax_conceal_disable|.
+2021-10-09: Better options for syntax conceal~
+Deprecate *g:vimtex_syntax_conceal_default* in favor of
+|g:vimtex_syntax_conceal_disable|. The new option makes things more explicit
+and makes better sense (at least to me).
 
 2020-11-16: More flexible package syntax options~
 Deprecate *g:vimtex_syntax_autoload_packages* in favor of

@@ -1935,17 +1935,6 @@ function! s:match_conceal_cites_icon() abort " {{{1
 endfunction
 
 " }}}1
-
-function! s:gather_newtheorems() abort " {{{1
-  let l:lines = vimtex#parser#preamble(b:vimtex.tex)
-
-  call filter(l:lines, {_, x -> x =~# '^\s*\\newtheorem\>'})
-  call map(l:lines, {_, x -> matchstr(x, '^\s*\\newtheorem\>\*\?{\zs[^}]*')})
-
-  return l:lines
-endfunction
-
-" }}}1
 function! s:match_conceal_sections() abort " {{{1
   syntax match texCmdPart "\v\\%(sub)*section>\*?" contains=texPartConcealed nextgroup=texPartConcArgTitle
   syntax match texPartConcealed "\\" contained conceal cchar=#
@@ -1955,6 +1944,17 @@ function! s:match_conceal_sections() abort " {{{1
   call vimtex#syntax#core#new_arg('texPartConcArgTitle', {
         \ 'opts': 'contained keepend concealends'
         \})
+endfunction
+
+" }}}1
+
+function! s:gather_newtheorems() abort " {{{1
+  let l:lines = vimtex#parser#preamble(b:vimtex.tex)
+
+  call filter(l:lines, {_, x -> x =~# '^\s*\\newtheorem\>'})
+  call map(l:lines, {_, x -> matchstr(x, '^\s*\\newtheorem\>\*\?{\zs[^}]*')})
+
+  return l:lines
 endfunction
 
 " }}}1
