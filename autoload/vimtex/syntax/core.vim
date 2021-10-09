@@ -677,11 +677,15 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texSpecialChar      SpecialChar
   highlight def link texSymbol           SpecialChar
   highlight def link texTitleArg         Underlined
-  highlight def texStyleBold     gui=bold        cterm=bold
-  highlight def texStyleBoth     gui=bold,italic cterm=bold,italic
-  highlight def texStyleItal     gui=italic      cterm=italic
-  highlight def texMathStyleBold gui=bold        cterm=bold
-  highlight def texMathStyleItal gui=italic      cterm=italic
+  highlight def texStyleBold          gui=bold                  cterm=bold
+  highlight def texStyleItal          gui=italic                cterm=italic
+  highlight def texStyleUnder         gui=underline             cterm=underline
+  highlight def texStyleBoth          gui=bold,italic           cterm=bold,italic
+  highlight def texStyleBoldUnder     gui=bold,underline        cterm=bold,underline
+  highlight def texStyleItalUnder     gui=italic,underline      cterm=italic,underline
+  highlight def texStyleBoldItalUnder gui=bold,italic,underline cterm=bold,italic,underline
+  highlight def texMathStyleBold      gui=bold        cterm=bold
+  highlight def texMathStyleItal      gui=italic      cterm=italic
 
   " Inherited groups
   highlight def link texArgNew             texCmd
@@ -911,8 +915,11 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
     let l:style = get({
           \ 'bold': 'texStyleBold',
           \ 'ital': 'texStyleItal',
+          \ 'under': 'texStyleUnder',
           \ 'boldital': 'texStyleBoth',
-          \ 'italbold': 'texStyleBoth',
+          \ 'boldunder': 'texStyleBoldUnder',
+          \ 'italunder': 'texStyleItalUnder',
+          \ 'bolditalunder': 'texStyleBoldItalUnder',
           \}, l:cfg.argstyle,
           \ l:cfg.mathmode ? 'texMathArg' : '')
     if !empty(l:style)

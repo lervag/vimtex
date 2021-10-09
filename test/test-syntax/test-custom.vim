@@ -11,6 +11,7 @@ let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'R', 'mathmode': v:true, 'concealchar': 'ℝ'},
       \ {'name': 'E', 'mathmode': v:true, 'concealchar': '𝔼'},
       \ {'name': 'P', 'mathmode': v:true, 'concealchar': 'ℙ'},
+      \ {'name': 'undline', 'argstyle': 'bolditalunder'},
       \]
 
 silent edit test-custom.tex

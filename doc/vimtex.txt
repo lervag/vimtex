@@ -2289,8 +2289,15 @@ OPTIONS                                                        *vimtex-options*
 
     argstyle~
       Default: Undefined.
-      Can be set to `bold`, `ital`, or `boldital` to apply styling to the
-      command argument.
+      Can be set to  apply styling to the command argument. The following are
+      currently supported:
+        * `bold`
+        * `ital`
+        * `under`
+        * `boldital`
+        * `boldunder`
+        * `italunder`
+        * `bolditalunder`
 
   A couple of examples may be helpful: The first in the following list shows
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
