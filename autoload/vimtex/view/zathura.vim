@@ -94,14 +94,14 @@ function! s:zathura.get_pid() dict abort " {{{1
   " First try to match full output file name
   let l:outfile = fnamemodify(get(self, 'outfile', self.out()), ':t')
   let l:output = vimtex#jobs#capture(
-        \ 'pgrep -nf "^zathura.*' . escape(l:outfile, '~\%.') . '"')[0]
-  let l:pid = str2nr(l:output)
+        \ 'pgrep -nf "^zathura.*' . escape(l:outfile, '~\%.') . '"')
+  let l:pid = str2nr(join(l:output, ''))
   if !empty(l:pid) | return l:pid | endif
 
   " Now try to match correct servername as fallback
   let l:output = vimtex#jobs#capture(
-        \ 'pgrep -nf "^zathura.+--servername ' . v:servername . '"')[0]
-  return str2nr(l:output)
+        \ 'pgrep -nf "^zathura.+--servername ' . v:servername . '"')
+  return str2nr(join(l:output, ''))
 endfunction
 
 " }}}1
