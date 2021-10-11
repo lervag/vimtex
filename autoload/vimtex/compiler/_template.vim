@@ -215,6 +215,7 @@ endfunction
 let s:compiler_jobs = {}
 function! s:compiler_jobs.exec(cmd) abort dict " {{{1
   let l:options = {
+        \ 'in_io': 'null',
         \ 'out_io': 'file',
         \ 'err_io': 'file',
         \ 'out_name': self.output,
@@ -289,6 +290,7 @@ endfunction
 let s:compiler_nvim = {}
 function! s:compiler_nvim.exec(cmd) abort dict " {{{1
   let l:shell = {
+        \ 'stdin': 'null',
         \ 'on_stdout': function('s:callback_nvim_output'),
         \ 'on_stderr': function('s:callback_nvim_output'),
         \ 'cwd': self.state.root,
