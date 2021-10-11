@@ -68,7 +68,7 @@ endfunction
 " }}}1
 
 function! vimtex#profile#time(...) abort " {{{1
-  let l:t1 = str2float(vimtex#jobs#capture('date +"%s.%N"')[0])
+  let l:t1 = reltimefloat(reltime())
 
   if a:0 > 0
     echo printf(
