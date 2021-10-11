@@ -215,10 +215,10 @@ endfunction
 let s:compiler_jobs = {}
 function! s:compiler_jobs.exec(cmd) abort dict " {{{1
   let l:options = {
-        \ 'out_io' : 'file',
-        \ 'err_io' : 'file',
-        \ 'out_name' : self.output,
-        \ 'err_name' : self.output,
+        \ 'out_io': 'file',
+        \ 'err_io': 'file',
+        \ 'out_name': self.output,
+        \ 'err_name': self.output,
         \ 'cwd': self.state.root,
         \}
   if self.continuous
@@ -289,11 +289,11 @@ endfunction
 let s:compiler_nvim = {}
 function! s:compiler_nvim.exec(cmd) abort dict " {{{1
   let l:shell = {
-        \ 'on_stdout' : function('s:callback_nvim_output'),
-        \ 'on_stderr' : function('s:callback_nvim_output'),
-        \ 'cwd' : self.state.root,
-        \ 'tex' : self.state.tex,
-        \ 'output' : self.output,
+        \ 'on_stdout': function('s:callback_nvim_output'),
+        \ 'on_stderr': function('s:callback_nvim_output'),
+        \ 'cwd': self.state.root,
+        \ 'tex': self.state.tex,
+        \ 'output': self.output,
         \}
 
   if !self.continuous
