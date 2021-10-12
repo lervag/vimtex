@@ -13,7 +13,7 @@ test: $(TESTS)
 $(TESTS):
 	@rm -f $@_output.tex
 	@FILEIN=$@_input.tex FILEOUT=$@_output.tex $(MYVIM) -u test.vim
-	@diff $@_{output,reference}.tex
+	@diff $@_output.tex $@_reference.tex
 	@rm -f $@_output.tex
 
 test_ampersands-off: export FLAGS=1
