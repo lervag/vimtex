@@ -107,8 +107,6 @@ let s:verbatim_re_envdelim = '\v\\%(begin|end)\{%('
 " }}}1
 
 let s:indent_amps = {}
-let s:indent_amps.re_amp = g:vimtex#re#not_bslash . '\&'
-let s:indent_amps.re_align = '^[ \t\\]*' . s:indent_amps.re_amp
 function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   let self.finished = 0
   let self.amp_ind = -1
@@ -118,22 +116,22 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   let self.prev_ind = a:plnum > 0 ? indent(a:plnum) : 0
   if !g:vimtex_indent_on_ampersands | return self.prev_ind | endif
 
-  if a:cline =~# self.re_align
-        \ || a:cline =~# self.re_amp
+  if a:cline =~# s:re_align
+        \ || a:cline =~# s:re_amp
         \ || a:cline =~# '^\v\s*\\%(end|])'
     call self.parse_context(a:lnum, a:cline)
   endif
 
-  if a:cline =~# self.re_align
+  if a:cline =~# s:re_align
     let self.finished = 1
     let l:ind_diff =
-          \   strdisplaywidth(strpart(a:cline, 0, match(a:cline, self.re_amp)))
+          \   strdisplaywidth(strpart(a:cline, 0, match(a:cline, s:re_amp)))
           \ - strdisplaywidth(strpart(a:cline, 0, match(a:cline, '\S')))
     return self.amp_ind - l:ind_diff
   endif
 
   if self.amp_ind >= 0
-        \ && (a:cline =~# '^\v\s*\\%(end|])' || a:cline =~# self.re_amp)
+        \ && (a:cline =~# '^\v\s*\\%(end|])' || a:cline =~# s:re_amp)
     let self.prev_lnum = self.init_lnum
     let self.prev_line = self.init_line
     return self.init_ind
@@ -142,22 +140,24 @@ function! s:indent_amps.check(lnum, cline, plnum, pline) abort dict " {{{1
   return self.prev_ind
 endfunction
 
+let s:re_amp = g:vimtex#re#not_bslash . '\&'
+let s:re_align = '^[ \t\\]*' . s:re_amp
+
 " }}}1
 function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
   let l:depth = 1
-  let l:init_depth = l:depth
   let l:lnum = prevnonblank(a:lnum - 1)
 
   while l:lnum >= 1
     let l:line = getline(l:lnum)
 
-    if l:line =~# '\v%(^\s*%(}|\\])|\\end\s*\{\w+\*?})'
+    if l:line =~# s:re_depth_end
       let l:depth += 1
     endif
 
-    if l:line =~# '\v\\begin\s*\{|\\[|\\\w+\{\s*$'
+    if l:line =~# s:re_depth_beg
       let l:depth -= 1
-      if l:depth == l:init_depth - 1
+      if l:depth == 0
         let self.init_lnum = l:lnum
         let self.init_line = l:line
         let self.init_ind = indent(l:lnum)
@@ -165,12 +165,12 @@ function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
       endif
     endif
 
-    if l:depth == 1 && l:line =~# self.re_amp
+    if l:depth == 1 && l:line =~# s:re_amp
       if self.amp_ind < 0
         let self.amp_ind = strdisplaywidth(
-              \ strpart(l:line, 0, match(l:line, self.re_amp)))
+              \ strpart(l:line, 0, match(l:line, s:re_amp)))
       endif
-      if l:line !~# self.re_align
+      if l:line !~# s:re_align
         let self.init_lnum = l:lnum
         let self.init_line = l:line
         let self.init_ind = indent(l:lnum)
@@ -182,6 +182,9 @@ function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
   endwhile
 endfunction
 
+let s:re_depth_beg = g:vimtex#re#not_bslash . '\\%(begin\s*\{|[|\w+\{\s*$)'
+let s:re_depth_end = g:vimtex#re#not_bslash . '\\end\s*\{\w+\*?}|^\s*%(}|\\])'
+
 " }}}1
 
 function! s:indent_envs(line, prev_line) abort " {{{1
@@ -192,6 +195,7 @@ function! s:indent_envs(line, prev_line) abort " {{{1
         \    a:prev_line =~# s:envs_begin
         \ && a:prev_line !~# s:envs_end
         \ && a:prev_line !~# s:envs_ignored)
+  let l:xx = l:ind
   let l:ind -= s:sw*(
         \    a:line !~# s:envs_begin
         \ && a:line =~# s:envs_end

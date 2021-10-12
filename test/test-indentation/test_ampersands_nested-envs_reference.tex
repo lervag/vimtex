@@ -1,7 +1,18 @@
-\documentclass{minimal}
+\documentclass{beamer}
 \usepackage{amsmath}
+\usepackage{bytefield}
 \begin{document}
+
 \begin{align}
   x &= \begin{bmatrix} 1 \\ 3 \end{bmatrix}
 \end{align}
+
+\begin{frame}
+  \begin{bytefield}{2}
+    \begin{leftwordgroup}{Test}
+      \bitbox{1}{Test}  & \bitbox{1}{Test}
+    \end{leftwordgroup} \\[1.5ex]
+  \end{bytefield}
+\end{frame}
+
 \end{document}
