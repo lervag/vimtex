@@ -52,7 +52,7 @@ function! s:skim.skim_available() abort " {{{1
     let self._requirements_checked = v:true
 
     " Check if Skim is installed
-    let l:output = vimtex#jobs#cached(
+    let l:output = vimtex#jobs#capture(
           \ 'osascript -e '
           \ . '''tell application "Finder" to get id of application "Skim"''')
     let self._skim_available = l:output[0] =~# '^net.sourceforge.skim-app'

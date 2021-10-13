@@ -12,7 +12,7 @@ function! vimtex#view#zathura#new() abort " {{{1
   endif
 
   if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
-    let l:shared = vimtex#jobs#cached('ldd $(which zathura)')
+    let l:shared = vimtex#jobs#capture('ldd $(which zathura)')
     if v:shell_error == 0
           \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
       call vimtex#log#warning('Zathura is not linked to libsynctex!')
