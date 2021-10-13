@@ -21,7 +21,7 @@ function! vimtex#view#skim#compiler_callback() abort " {{{1
   if !filereadable(self.out()) | return | endif
   if !self.skim_available() | return | endif
 
-  let l:cmd = join([
+  let self.cmd_view_callback = join([
         \ 'osascript',
         \ '-e ''set theFile to POSIX file "' . self.out() . '"''',
         \ '-e ''set thePath to POSIX path of (theFile as alias)''',
@@ -34,7 +34,7 @@ function! vimtex#view#skim#compiler_callback() abort " {{{1
         \ '-e ''end tell''',
         \])
 
-  let b:vimtex.viewer.job = vimtex#jobs#start(l:cmd)
+  call vimtex#jobs#run(self.cmd_view_callback)
 endfunction
 
 " }}}1
@@ -80,7 +80,7 @@ function! s:skim.view(file) dict abort " {{{1
   endif
   if vimtex#view#not_readable(outfile) | return | endif
 
-  let l:cmd = join([
+  let self.cmd_view = join([
         \ 'osascript',
         \ '-e ''set theLine to ' . line('.') . ' as integer''',
         \ '-e ''set theFile to POSIX file "' . outfile . '"''',
@@ -98,7 +98,7 @@ function! s:skim.view(file) dict abort " {{{1
         \ '-e ''end tell''',
         \])
 
-  let self.job = vimtex#jobs#start(l:cmd)
+  call vimtex#jobs#run(self.cmd_view)
 
   if exists('#User#VimtexEventView')
     doautocmd <nomodeline> User VimtexEventView

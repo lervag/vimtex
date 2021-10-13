@@ -48,7 +48,10 @@ function! s:zathura.start(outfile) dict abort " {{{1
   endif
   let l:cmd .= ' ' . g:vimtex_view_zathura_options
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  let self.job = vimtex#jobs#start(l:cmd)
+  let l:cmd .= '&'
+  let self.cmd_start = l:cmd
+
+  call vimtex#jobs#run(self.cmd_start)
 
   call self.xwin_get_id()
   let self.outfile = a:outfile
@@ -67,6 +70,7 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
         \ line('.'), col('.'),
         \ vimtex#util#shellescape(self.texfile),
         \ vimtex#util#shellescape(self.outfile))
+
   call vimtex#jobs#run(self.cmd_forward_search)
 endfunction
 
