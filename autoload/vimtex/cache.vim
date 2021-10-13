@@ -130,7 +130,9 @@ function! s:cache.init(name, opts) dict abort " {{{1
 
   if has_key(a:opts, 'validate')
     call new.read()
-    if get(new.data, '__validate', {}) != a:opts.validate
+    if !has_key(new.data, '__validate')
+          \ || type(a:opts.validate) != type(new.data.__validate)
+          \ || a:opts.validate != new.data.__validate
       call new.clear()
       let new.data.__validate = deepcopy(a:opts.validate)
       call new.write()
