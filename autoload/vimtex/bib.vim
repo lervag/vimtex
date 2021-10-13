@@ -60,6 +60,7 @@ function! s:files_manual() abort " {{{1
 
   let l:cache = vimtex#cache#open('bibfiles', {
         \ 'local': 1,
+        \ 'validate': 'cache_v0',
         \ 'default': {'files': [], 'ftime': -1}
         \})
 

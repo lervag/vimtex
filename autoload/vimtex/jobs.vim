@@ -62,7 +62,9 @@ endfunction
 " }}}1
 function! vimtex#jobs#cached(cmd) abort " {{{1
   " Cached version of vimtex#jobs#capture(...)
-  let l:cache = vimtex#cache#open('capture')
+  let l:cache = vimtex#cache#open('capture', {
+        \ 'validate': 'cache_v0',
+        \})
 
   return l:cache.has(a:cmd)
         \ ? l:cache.get(a:cmd)
