@@ -24,7 +24,7 @@ function! s:template.__pprint() abort dict " {{{1
     call add(l:list, ['job', self.job])
   endif
 
-  for l:key in filter(keys(self), 'v:val =~# ''^cmd_''')
+  for l:key in filter(keys(self), 'v:val =~# ''^cmd''')
     call add(l:list, [l:key, self[l:key]])
   endfor
 

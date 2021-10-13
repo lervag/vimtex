@@ -62,6 +62,7 @@ function! s:general.view(file) dict abort " {{{1
   let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
 
   " Start the view process
+  " NB: Use vimtex#jobs#start to ensure it runs in the background
   let self.job = vimtex#jobs#start(l:cmd)
 
   if exists('#User#VimtexEventView')
