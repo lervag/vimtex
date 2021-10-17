@@ -5,6 +5,8 @@
 "
 
 function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load('nameref')
+
   syntax match texCmdHyperref '\\autoref\>' nextgroup=texRefOpt,texRefArg
   syntax match texCmdHyperref '\\hyperref\>' nextgroup=texRefOpt,texRefArg
 
