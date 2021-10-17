@@ -4757,6 +4757,7 @@ text for some tips on how one may use this feature.
 It is possible to use more automatic linting through dedicated plugins. For
 more information, see |vimtex-nf-linting|.
 
+See more details on configuring `chktex` here: |vimtex-lint-chktex|
 ------------------------------------------------------------------------------
 
 A common workflow is to utilize the |location-list| with |:lmake|:
@@ -4795,9 +4796,10 @@ Then, add to `~/.vim/after/ftplugin/bib.vim`: >
   augroup END
 
 If one minds that Vim becomes unresponsive while linting, then one may utilize
-plugins like |vim-dispatch| [4] or |AsyncRun| [5]. With `vim-dispatch`, one
-may simply replace the `:lmake` call with `:Make`. For `AsyncRun`, one may
-define a `:Make` command such as: >
+plugins like |vim-dispatch| [4], |AsyncRun| [5] or |tasks.vim| [6].
+With `tasks.vim`, one may simply replace the `:lmake` call by `:LMake`. With
+`vim-dispatch`, by `:Make`. For `AsyncRun`, one may define a `:Make` command
+such as: >
 
   command! -bang -nargs=* -complete=file Make
           \ AsyncRun<bang> -auto=make -program=make
@@ -4827,6 +4829,18 @@ Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
 [3] https://github.com/plk/biber
 [4] https://github.com/tpope/vim-dispatch
 [5] https://github.com/skywind3000/asyncrun.vim
+[6] https://github.com/mg979/tasks.vim
+
+------------------------------------------------------------------------------
+CHKTEX                                                     *vimtex-lint-chktex*
+
+Parameters can be passed to `chktex` by the string variable
+|g:vimtex_lint_chktex_parameters|. By default, `chktex` will look up a
+configuration file in `$XDG_CONFIG_HOME/chktexrc` (if `$XDG_CONFIG_HOME` is
+defined, otherwise in `$HOME/.config`).
+
+The string variable |vimtex_lint_chktex_ignore_warnings| lets chktex suppress
+certain warning messages, by default those of type '-n1 -n3 -n8 -n25 -n36'.
 
 ==============================================================================
 GRAMMAR CHECKING                                               *vimtex-grammar*
