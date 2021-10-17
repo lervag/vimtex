@@ -1,25 +1,24 @@
 if exists('current_compiler') | finish | endif
 let current_compiler = 'chktex'
 
-if exists(':CompilerSet') != 2		" older Vim always used :setlocal
-  command -nargs=* CompilerSet setlocal <args>
-endif
-
 let s:cpo_save = &cpo
 set cpo&vim
 
+if exists(":CompilerSet") != 2
+  command -nargs=* CompilerSet setlocal <args>
+endif
+
 let s:compiler = 'chktex'
 
-if empty($XDG_CONFIG_HOME)
-  let $XDG_CONFIG_HOME = $HOME . '/.config'
-endif
-let s:chktexrc = $XDG_CONFIG_HOME . '/chktexrc'
-let g:chktex_parameters = get(g:, 'chktex_parameters',
+let s:chktexrc = (empty($XDG_CONFIG_HOME)
+      \ ? $HOME . '/.config'
+      \ : $XDG_CONFIG_HOME) . '/chktexrc'
+let g:vimtex_lint_chktex_parameters = get(g:, 'vimtex_lint_chktex_parameters',
       \ filereadable(s:chktexrc) ? '--localrc ' . shellescape(s:chktexrc) : '')
 
-let g:chktex_ignore_warnings = get(g:, 'chktex_ignore_warnings', '-n1 -n3 -n8 -n25 -n36')
+let g:vimtex_lint_chktex_ignore_warnings = get(g:, 'vimtex_lint_chktex_ignore_warnings', '-n1 -n3 -n8 -n25 -n36')
 
-let &l:makeprg = s:compiler . ' --quiet --verbosity=4 ' . g:chktex_parameters . ' ' . g:chktex_ignore_warnings
+let &l:makeprg = s:compiler . ' --quiet --verbosity=4 ' . g:vimtex_lint_chktex_parameters . ' ' . g:vimtex_lint_chktex_ignore_warnings
 let &l:errorformat = '%A"%f"\, line %l: %m,' .
       \ '%-Z%p^,' .
       \ '%-C%.%#'
