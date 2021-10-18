@@ -96,7 +96,8 @@ endfunction
 
 function! vimtex#env#toggle_star() abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
-  if empty(l:open) | return | endif
+  if empty(l:open)
+        \ || l:open.name ==# 'document' | return | endif
 
   call vimtex#env#change(l:open, l:close,
         \ l:open.starred ? l:open.name : l:open.name . '*')
