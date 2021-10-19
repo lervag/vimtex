@@ -23,6 +23,50 @@ endfunction
 
 " }}}1
 
+function! vimtex#env#get_inner() abort " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
+
+  return empty(l:open) || l:open.name ==# 'document'
+        \ ? {}
+        \ : {'name': l:open.name, 'open': l:open, 'close': l:close}
+endfunction
+
+" }}}1
+function! vimtex#env#get_outer() abort " {{{1
+  let l:save_pos = vimtex#pos#get_cursor()
+  let l:current = {}
+
+  while v:true
+    let l:env = vimtex#env#get_inner()
+    if empty(l:env)
+      call vimtex#pos#set_cursor(l:save_pos)
+      return l:current
+    endif
+
+    let l:current = l:env
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:env.open))
+  endwhile
+endfunction
+
+" }}}1
+function! vimtex#env#get_all() abort " {{{1
+  let l:save_pos = vimtex#pos#get_cursor()
+  let l:stack = []
+
+  while v:true
+    let l:env = vimtex#env#get_inner()
+    if empty(l:env)
+      call vimtex#pos#set_cursor(l:save_pos)
+      return l:stack
+    endif
+
+    call add(l:stack, l:env)
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:env.open))
+  endwhile
+endfunction
+
+" }}}1
+
 function! vimtex#env#change(open, close, new) abort " {{{1
   "
   " Set target environment

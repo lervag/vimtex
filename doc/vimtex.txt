@@ -5377,6 +5377,20 @@ Note: This API is currently a work in progress!
   |VimtexEventViewReverse| at the end, which allows some user flexibility in
   behaviour after the reverse goto was issued.
 
+*vimtex#env#get_inner*
+*vimtex#env#get_outer*
+*vimtex#env#get_all*
+  Functions that return the surrounding inner or outer environment, or all
+  surrounding environments. The return value is a dictionary with the
+  following keys:
+
+    `name`: The environment name
+    `open`: The environment opening delimiter object
+    `close`: The environment closing delimiter object
+
+  The delimiter objects contain information about the locations and arguments
+  of the corresponding `\begin{...}[...]` and `\end{...}` commands.
+
 ==============================================================================
 FAQ                                                                *vimtex-faq*
 
