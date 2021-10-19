@@ -127,7 +127,12 @@ function! vimtex#parser#tex#input_parser(line, current_file, root) abort " {{{1
 endfunction
 
 function! s:input_to_filename(input, root) abort " {{{2
-  let l:file = matchstr(a:input, '\zs[^{}]\+\ze}\s*\%(%\|$\)')
+  " Assumption: The input matches g:vimtex#re#tex_input, which means it will
+  " begin with an input line macro, e.g. "  \input{...". We need to extract the
+  " argument part.
+  let l:i0 = match(a:input, '{') + 1
+  let [l:i1, l:_] = vimtex#parser#tex#find_closing(l:i0, a:input, 1, '{')
+  let l:file = strpart(a:input, l:i0, l:i1-l:i0)
 
   " Trim whitespaces and quotes from beginning/end of string
   let l:file = substitute(l:file, '^\(\s\|"\)*', '', '')
