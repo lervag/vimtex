@@ -259,6 +259,18 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_labels_enabled', 1)
   call s:init_option('vimtex_labels_refresh_always', 1)
 
+
+  let s:chktexrc = (empty($XDG_CONFIG_HOME)
+        \ ? $HOME . '/.config'
+        \ : $XDG_CONFIG_HOME) . '/chktexrc'
+
+  call s:init_option('vimtex_lint_chktex_parameters',
+        \ filereadable(s:chktexrc)
+        \   ? '--localrc ' . shellescape(s:chktexrc)
+        \   : '')
+  call s:init_option('vimtex_lint_chktex_ignore_warnings',
+        \ '-n1 -n3 -n8 -n25 -n36')
+
   call s:init_option('vimtex_parser_bib_backend', 'bibtex')
 
   call s:init_option('vimtex_quickfix_enabled', 1)

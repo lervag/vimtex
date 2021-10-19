@@ -4,8 +4,16 @@ let current_compiler = 'chktex'
 let s:cpo_save = &cpo
 set cpo&vim
 
-CompilerSet makeprg=chktex\ --localrc\ --inputfiles\ --quiet\ -v6\ %:S
-CompilerSet errorformat="%f",\ line\ %l.%c:\ %m
+" Ensure VimTeX options are loaded
+call vimtex#options#init()
+
+let &l:makeprg = printf('chktex --quiet --verbosity=4 %s %s',
+      \ s:compiler,
+      \ g:vimtex_lint_chktex_parameters,
+      \ g:vimtex_lint_chktex_ignore_warnings)
+let &l:errorformat = '%A"%f"\, line %l: %m'
+      \ . ',%-Z%p^'
+      \ . ',%-C%.%#'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
