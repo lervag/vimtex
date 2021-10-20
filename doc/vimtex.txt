@@ -270,12 +270,18 @@ Clientserver~
                                                           *vimtex-clientserver*
   |+clientserver| is necessary for backward search from PDF viewer to Vim.
 
-  A server will be started automatically if Vim is running on Windows, or if
+  Neovim does not have the same clientserver feature, but it implements the
+  MessagePack-RPC protocol, see |RPC|. This can be used in the same fashion as
+  the clientserver, see |v:servername|, and we can therefore use approximately
+  the same terminology in the following regardless of Vim/neovim. For neovim,
+  see also |vimtex-faq-neovim|.
+
+  A server will be started automatically if Vim is running on Windows or if
   running in a GUI.  If you use Vim under a terminal in Linux or macOS,
   a server will not be started by default.  Since Vim version 8.0.475, one can
   use |remote_startserver()| to start a server from your `vimrc` file. The
-  following will ensure Vim starts with a server, if it is possible from
-  vimscript: >
+  following vimrc configuration snippet will ensure Vim starts with a server,
+  if possible: >
 
     if empty(v:servername) && exists('*remote_startserver')
       call remote_startserver('VIM')
@@ -292,8 +298,6 @@ Clientserver~
 
   To test whether a server was successfully started, |serverlist()| can be
   used. E.g. `:echo serverlist()`
-
-  Note: For |+clientserver| on neovim, see |vimtex-faq-neovim|.
 
 ------------------------------------------------------------------------------
 FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
@@ -4991,7 +4995,8 @@ The generic interface is flexible. It relies on three options:
 The following is a list of popular PDF viewers, in alphabetic order, and how
 they can be configured to work with VimTeX.
 
-Note: Neovim users should read |vimtex-faq-neovim|!
+Note: Neovim users should ensure to have `nvr` (reovim-remote) and the
+      `pynvim` Python module available, please read |vimtex-faq-neovim|!
 
                                                            *vimtex-view-evince*
 Evince~
@@ -5047,36 +5052,20 @@ Configuration: >
   let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
   let g:vimtex_view_general_options_latexmk = '--unique'
 
-Backward search can be set up within Okular in the settings pane:
-
-  "Settings > Editor > Custom Text Editor"
-
-The following settings should work for Vim and neovim, respectively: >
-
-  vim --remote-silent +%l %f
-  nvr --remote-silent +%l %f
-
-  " Or with arguably more convenient reverse goto function:
-  vim --remote-expr "vimtex#view#reverse_goto(%l, '%f')"
-
-  " nvr uses the server name /tmp/nvimsocket by default. If you
-  " use a different server name, remember to specify it:
-  nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
+Backward search can be set up within Okular in the settings pane under
+"Settings > Editor > Custom Text Editor". Use configuration as explained in
+|vimtex-synctex-inverse-search|.
 
 Note: To perform a backward (or inverse) search in Okular, you do
       `shift + click` while browse mode is enabled, not `ctrl + click` as in
       most other viewers.
 
-Note: With |neovim|, it is useful to start the LaTeX editing session with
-      `nvim --listen /tmp/mynvimserver` (e.g. by using an alias) so as to use
-      a predictable servername. Then one may specify the servername in the
-      "Custom Text Editor" as indicated above.
-
                                                          *vimtex-view-qpdfview*
 qpdfview~
 https://launchpad.net/qpdfview
 qpdfview is a tabbed document viewer. It supports both forward and backward
-search. The latter must be set up from within the viewer.
+search. The latter must be set up from within the viewer. Use configuration as
+explained in |vimtex-synctex-inverse-search|.
 
 Configuration: >
   let g:vimtex_view_general_viewer = 'qpdfview'
@@ -5106,6 +5095,7 @@ Note: The above configuration assumes that Sioyek is installed and available
                                                              *vimtex-view-skim*
 Skim~
 https://skim-app.sourceforge.net/
+https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
 Skim is a PDF reader and note-taker for OS X. It is designed to help you read
 and annotate scientific papers in PDF, but is also great for viewing any PDF
 file. The VimTeX implementation supports forward search and uses a callback to
@@ -5114,38 +5104,29 @@ update Skim after successful compilations.
 Configuration: >
   let g:vimtex_view_method = 'skim'
 
-For backward search, Skim itself must be properly configured [0]. Open the
-settings panel in Skim, go to the `Sync` tab and set the options according to
-your desired version of Vim:
-* For `MacVim`, select the `MacVim` preset.
-* For `neovim`, select the `Custom` preset from the drop-down list and set:
-    Command: nvr~
-    Args: --remote +"%line" "%file"~
-  This configuration works well as long as you only have a single neovim
-  instance open. If you often have multiple neovim's open, then `nvr` needs
-  the servername argument to know which neovim instance to communicate to.
-  A workaround for this was posted by @jdhao, see [1].
+To configure backward search: Open the `Sync` tab in the settings panel in
+Skim and set the options according to your desired version of Vim. With
+MacVim, one may use the `MacVim` preset. For other versions, one can specify
+the `Custom` preset and use configuration as explained in
+|vimtex-synctex-inverse-search|. Some remarks:
+
+* The `Command` should be `nvr` (neovim) or `vim` (Vim).
+* The `Arguments` should be the remaining part of the shell commands listed
+  under |vimtex-synctex-inverse-search|.
+* Use `%line` and `%file` instead of `%l` and `%f` to indicate line and file.
+
+Backward search is activated by pressing `Shift` and `Command`, then clicking
+the text you want to inverse search.
 
 Associated settings:
 * |g:vimtex_view_skim_activate|
 * |g:vimtex_view_skim_reading_bar|
 
-Note: One may set |g:vimtex_view_automatic| to 0 if one wants to prevent
-      `latexmk` (or other build tools) from starting Skim and instead let
-      VimTeX start Skim through the callback feature.
-
-Note: For use with neovim, please ensure that you have `nvr` (neovim-remote)
-      and the `pynvim` Python module available, see |vimtex-faq-neovim|.
-
-[0]: https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization
-[1]: https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
-
                                                        *vimtex-view-sumatrapdf*
 SumatraPDF~
 https://www.sumatrapdfreader.org/free-pdf-reader.html
 SumatraPDF is a PDF viewer for windows that is powerful, small, portable and
-starts up very fast. It supports both forward and backward search. The latter
-must be configured from within SumatraPDF, see |vimtex-faq-sumatrapdf|.
+starts up very fast. It supports both forward and backward search.
 
 Configuration: >
   let g:vimtex_view_general_viewer = 'SumatraPDF'
@@ -5154,7 +5135,31 @@ Configuration: >
   let g:vimtex_view_general_options_latexmk = '-reuse-instance'
 
 For convenience, the above configuration is used by default on Windows if
-`SumatraPDF` is detected as executable:
+`SumatraPDF` is detected as executable.
+
+Backward search must be configured under `Settings --> Options` from within
+SumatraPDF. Find the section `Set inverse search command-line` in the bottom
+and use configuration as explained in |vimtex-synctex-inverse-search|.
+Backward search is activated with a double click in the PDF file.
+
+It is also possible to specify the backward search options from Vim/neovim,
+although it requires a relatively complex and nasty expression. Something
+like this: >
+
+  let g:vimtex_view_general_options
+        \ = '-reuse-instance -forward-search @tex @line @pdf'
+        \ . ' -inverse-search "' . exepath(v:progpath)
+        \ . ' --servername ' . v:servername
+        \ . ' --remote-send \"^<C-\^>^<C-n^>'
+        \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
+        \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
+        \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
+<
+Note: The expected behavior for the multi-line setting above is to refresh
+      the `InverseSearchCmdLine` setting in SumatraPDF. It may fail if the
+      Vim/gVim process is not running as Administrator on Windows 10.
+      A workaround is to ensure to launch Vim as Administrator when editing
+      tex files.
 
 Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       where the pdf file in SumatraPDF is not refreshed after compilation.
@@ -5232,23 +5237,73 @@ correctly set up, this allows one to go directly from a selected line in the
 viewer (typically by double clicking with the mouse or something similar) to
 the corresponding line inside the Vim instance.
 
-Backward search is typically set up inside the specific viewer through an
-option named something like "inverse search command-line".  A standard value
-for the option is: >
+Backward search relies on communicating with Vim/neovim from the viewer by use
+of shell commands. Each Vim or neovim instance is available through a server
+(|v:servername|) and we can communicate by use of the `--remote*` family of
+command-line arguments. Neovim does not have the `--remote` options itself.
+One must therefore use the utility `nvr` (see |vimtex-faq-neovim|). See also
+|vimtex-clientserver|. If one always uses a single instance of Vim/neovim,
+then one normally don't need to specify the servername. But when one uses
+multiple instances, then it is crucial to specify the correct servername for
+this feature to work.
 
-  gvim --remote-silent +%l "%f"
+Backward search is usually set up within the specific viewer through an option
+named something like "inverse search command-line".  Here one specifies
+a desired shell command where the target line and file are interpolated,
+usually as `%l` and `%f` (but this may be different in some viewers, e.g.
+|vimtex-view-okular|). The following are some examples of possible
+configurations for Vim and `nvr`. This also shows how one may use the utility
+function |vimtex#view#reverse_goto|. >
 
-VimTeX also provides a utility function |vimtex#view#reverse_goto| that can be
-used from a viewer. It is automatically used with Zathura.
+  vim --remote-silent +%l '%f'
+  nvr --remote-silent +%l '%f'
 
-Note: Inverse search relies on the |clientserver| functionality of vim.  Each
-      instance of vim runs its own server.  The above mentioned standard value
-      implies the default server name, which might not be the actual name of
-      the server for the vim instance you are using. For more info, see
-      |vimtex-clientserver|.
+  vim --remote-expr vimtex#view#reverse_goto(%l, '%f')
+  nvr --remote-expr vimtex#view#reverse_goto(%l, '%f')
 
-Note: For backward search to work on windows, one must ensure that the folder
-      that contains `gVim.exe` is in your `%PATH%` environment variable.
+  vim --servername MYSERVER --remote-silent +%l '%f'
+  nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
+
+If you often find yourself using multiple Vim or neovim instances, then you
+need to provide the correct servername argument to `vim` or `nvr`. This can be
+achieved in different ways. The most straightforward way is to specify the
+servername when starting Vim/neovim and then use that same servername in the
+viewer configuration. To specify the servername, use the following
+command-line arguments: >
+
+  # For Vim
+  vim --servername NAME
+
+  # For neovim
+  nvim --listen /tmp/mynvimservername
+
+Another way to specify the servername is to use a trick by @jdhao [0, 1]. This
+can be more convenient if you get it to work. The idea is to manually write
+the servername to a file when we open a `.tex` file. Add the following to your
+init.vim: >
+
+  augroup vimtex_common
+      autocmd!
+      autocmd FileType tex call writefile(
+            \ [v:servername],
+            \ (has('win32') ? $TEMP : "/tmp") . "/curnvimserver.txt")
+  augroup END
+
+Now we need to specify this servername within the viewer configuration. How to
+do that depends on the system. Here are some examples with neovim; it should
+work similarly with Vim. >
+
+  # On Linux and MacOS
+  nvr --servername `cat /tmp/curnvimserver.txt` --remote-silent +%l "%f"
+
+  # On Windows
+  cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\curnvimserver.txt') do nvr --servername %i --remote-silent +%l "%f"
+
+You may need to change the exact file path above for your Windows system. You
+can use the command `:echo $TEMP` to check the temp folder on your Windows.
+
+[0]: https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
+[1]: https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/#inverse-search-for-sumatra-pdf-on-windows
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
@@ -5447,65 +5502,6 @@ A: Because it is complicated and requires some expensive searches for matching
    [0]: https://github.com/andymass/vim-matchup
 
 ------------------------------------------------------------------------------
-                                                        *vimtex-faq-sumatrapdf*
-Q: How do I properly set up VimTeX with SumatraPDF?
-A: First, see and follow the guidelines in |vimtex-view-sumatrapdf|. Forward
-   search should work after this. Backward search requires configuration in
-   SumatraPDF that depends on which version of Vim you are using. The
-   following advice is for `neovim`; things should be simpler for Vim.
-
-   1. First, ensure that `neovim-remote` is installed (e.g.
-      `pip install neovim-remote`).
-
-   2. Add some configuration to your vimrc file to detect the servername: >
-
-        function! SetServerName()
-          let nvim_server_file = has('win32')
-                \ ? $TEMP . "/curnvimserver.txt"
-                \ : "/tmp/curnvimserver.txt"
-          call system(printf("echo %s > %s", v:servername, nvim_server_file))
-        endfunction
-
-        augroup vimtex_common
-            autocmd!
-            autocmd FileType tex call SetServerName()
-        augroup END
-<
-   3. Open `Settings --> Options` in SumatraPDF. Find the section
-      `Set inverse search command-line` in the bottom part and insert the
-      following long command there: >
-
-        cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\curnvimserver.txt') do nvr --servername %i -c "normal! zzzv" +"%l" "%f"
-<
-      You may need to change the exact file path above for your Windows
-      system. You can use the command `:echo $TEMP` to check the temp folder
-      on your Windows.
-
-   See the following blog posts for more related information:
-
-     https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex/
-     https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/#inverse-search-for-sumatra-pdf-on-windows
-
-   It is also possible to specify the backward search options from Vim,
-   although it requires a relatively complex and nasty expression. Something
-   like this: >
-
-      let g:vimtex_view_general_options
-          \ = '-reuse-instance -forward-search @tex @line @pdf'
-          \ . ' -inverse-search "' . exepath(v:progpath)
-          \ . ' --servername ' . v:servername
-          \ . ' --remote-send \"^<C-\^>^<C-n^>'
-          \ . ':execute ''drop '' . fnameescape(''\%f'')^<CR^>'
-          \ . ':\%l^<CR^>:normal\! zzzv^<CR^>'
-          \ . ':call remote_foreground('''.v:servername.''')^<CR^>^<CR^>\""'
-<
-   Note: The expected behavior for the multi-line setting above is to refresh
-         the `InverseSearchCmdLine` setting in SumatraPDF. It may fail if the
-         Vim/gVim process is not running as Administrator on Windows 10.
-         A workaround is to ensure to launch Vim as Administrator when editing
-         tex files.
-
-------------------------------------------------------------------------------
                                                           *vimtex-faq-surround*
 Q: VimTeX provides `dse`, `dsc`, `cse`, and `csc`.  These seem to be inspired by
    |surround.vim|.  Does VimTeX also provide the corresponding `yse` and `ysc`?
@@ -5540,8 +5536,9 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 ------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
 Q: Does VimTeX work with neovim?
-A: Yes, but backward sync requires the `neovim-remote` utility. It may be
-   installed VimTeX as follows:
+A: Yes, but backward sync requires `nvr` (neovim-remote) [0]. This is because
+   neovim does not have the `--remote` family of options itself [0]. To
+   install `nvr`:
 
      1. Install the `pynvim` and `neovim-remote` modules for python3, e.g. >
 
@@ -5552,7 +5549,12 @@ A: Yes, but backward sync requires the `neovim-remote` utility. It may be
 
           python3 -c "import pynvim"
 <
-   See https://github.com/mhinz/neovim-remote for more information on `nvr`.
+   It is worth mentioning that for `nvr` to communicate with a neovim
+   instance, one generally needs to indicate the proper servername, see
+   |v:servername|.
+
+   [0]: https://github.com/mhinz/neovim-remote
+   [1]: https://github.com/neovim/neovim/issues/1750
 
 ------------------------------------------------------------------------------
                                                               *vimtex-faq-tags*
