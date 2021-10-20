@@ -875,10 +875,12 @@ OPTIONS                                                        *vimtex-options*
   Default: 0
 
 *g:vimtex_compiler_progname*
-  Path to vim executable used for the callback functionality. It must be set
-  correctly in order for the callback function to work.  The default value
-  should work correctly in most cases, but in some cases, e.g. for MacVim, one
-  might need to set it manually to get the callbacks to work as expected.
+  Path to vim executable used for the automatic backward search settings with
+  Zathura (|vimtex-view-zathura|).
+
+  The reason it is called `_compiler_progname` is because it was previously
+  used for the compiler callback features. This is no longer the case, but to
+  avoid breaking changes the option name has not been changed.
 
   Default value on Vim:    |v:progpath| or |v:progname|
   Default value on neovim: `nvr` if available, else same as Vim

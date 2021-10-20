@@ -34,27 +34,7 @@ function! s:check_compiler() abort " {{{1
     return
   endif
 
-  let l:ok = 1
-  if !executable(g:vimtex_compiler_progname)
-    call health#report_warn(printf(
-          \ '|g:vimtex_compiler_progname| (`%s`) is not executable!',
-          \ g:vimtex_compiler_progname))
-    let l:ok = 0
-  endif
-
-  if has('nvim')
-        \ && fnamemodify(g:vimtex_compiler_progname, ':t') !=# 'nvr'
-    call health#report_warn('Compiler callbacks will not work!', [
-          \ '`neovim-remote` / `nvr` is required for callbacks to work with neovim',
-          \ "Please also set |g:vimtex_compiler_progname| = 'nvr'",
-          \ 'For more info, see :help |vimtex-faq-neovim|',
-          \])
-    let l:ok = 0
-  endif
-
-  if l:ok
-    call health#report_ok('Compiler should work!')
-  endif
+  call health#report_ok('Compiler should work!')
 endfunction
 
 " }}}1
