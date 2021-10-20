@@ -4814,10 +4814,12 @@ Then, add to `~/.vim/after/ftplugin/bib.vim`: >
   augroup END
 
 If one minds that Vim becomes unresponsive while linting, then one may utilize
-plugins like |vim-dispatch| [4], |AsyncRun| [5] or |tasks.vim| [6]. These
-plugins all provide wrapper commands. With `vim-dispatch`, one may replace
-the `:lmake` call with `:Make`. Similarly, with `tasks.vim`, use `:LMake`. For
-`AsyncRun`, one may define a cstom `:Make` command with: >
+plugins like |vim-dispatch| [4], |AsyncRun| [5] or |tasks.vim| [6]. With
+`vim-dispatch`, one may replace the `:lmake` call with `:Make`. Note that this
+may conflict with the listing of compilation errors, since `:Make` from
+`vim-dispatch` uses the quickfix window. `tasks.vim` provide `:LMake` which
+allows one to use the location list. For `AsyncRun`, one may define a cstom
+`:Make` command with: >
 
   command! -bang -nargs=* -complete=file Make
           \ AsyncRun<bang> -auto=make -program=make
