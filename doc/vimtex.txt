@@ -99,7 +99,7 @@ CONTENTS                                                      *vimtex-contents*
       Zathura                                   |vimtex-view-zathura|
     Synctex                                     |vimtex-synctex|
       Forward search                            |vimtex-synctex-forward-search|
-      Backward search                           |vimtex-synctex-backward-search|
+      Inverse search                            |vimtex-synctex-inverse-search|
   LaTeX Documentation                           |vimtex-latexdoc|
   Context menu                                  |vimtex-context-menu|
     Citation context                            |vimtex-context-citation|
@@ -268,7 +268,8 @@ Compiler backend~
 
 Clientserver~
                                                           *vimtex-clientserver*
-  |+clientserver| is necessary for backward search from PDF viewer to Vim.
+  |+clientserver| is necessary for inverse search from PDF viewer to Vim (see
+  |vimtex-synctex-inverse-search|).
 
   Neovim does not have the same clientserver feature, but it implements the
   MessagePack-RPC protocol, see |RPC|. This can be used in the same fashion as
@@ -879,7 +880,7 @@ OPTIONS                                                        *vimtex-options*
   Default: 0
 
 *g:vimtex_compiler_progname*
-  Path to vim executable used for the automatic backward search settings with
+  Path to vim executable used for the automatic inverse search settings with
   Zathura (|vimtex-view-zathura|).
 
   The reason it is called `_compiler_progname` is because it was previously
@@ -2810,10 +2811,10 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_view_reverse_search_edit_cmd*
-  When working in a multi-file project, initiating backward search
-  |vimtex-synctex-backward-search| may require opening a file that is not
+  When working in a multi-file project, initiating inverse search
+  |vimtex-synctex-inverse-search| may require opening a file that is not
   currently open in a window. This option controls the command that is used to
-  open files as a result of a backward search.
+  open files as a result of an inverse search.
 
   Examples:
     * `edit`     open buffer in current window
@@ -2894,7 +2895,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_view_zathura_check_libsynctex*
   Check on startup if Zathura is compiled with libsynctex. This is done by
   default because Zathura on some systems is compiled without libsynctex
-  support, in which case forward and backward search will not work. When this
+  support, in which case forward and inverse search will not work. When this
   is the case, the startup check will provide a notification to the user.
 
   If this option is set to 0 or |v:false|, then the check is skipped.
@@ -4977,10 +4978,10 @@ VIEWER CONFIGURATION                                *vimtex-view-configuration*
 
 |g:vimtex_view_method| is the main configuration variable. It allows to choose
 between a set of predefined viewers, including a general customizable
-interface. For the specific, predefined viewers, both forward and backward
+interface. For the specific, predefined viewers, both forward and inverse
 search with synctex should usually work without any further configuration.
 With the general viewer, one may often specify options to enable forward
-search. But options for backward search must be configured within the specific
+search. But options for inverse search must be configured within the specific
 viewer.
 
 The generic interface is flexible. It relies on three options:
@@ -5007,7 +5008,7 @@ PDFs. It comes by default with Gnome.
 Configuration: >
   let g:vimtex_view_general_viewer = 'evince'
 
-Note: It is not so easy to setup forward and backward search with Evince [0].
+Note: It is not so easy to setup forward and inverse search with Evince [0].
       If anyone has a good setup that could be documented here, please open an
       issue or email me. In the meantime, I can recommend to look into the
       other alternative viewers.
@@ -5018,8 +5019,8 @@ Note: It is not so easy to setup forward and backward search with Evince [0].
 MuPDF~
 https://www.mupdf.com/
 MuPDF is a very minimalistic and quick PDF viewer. It does not support synctex
-itself, but VimTeX provides both forward and backward search by abusing
-`xdotool`. Backward search must be used from within VimTeX with the command
+itself, but VimTeX provides both forward and inverse search by abusing
+`xdotool`. Inverse search must be used from within VimTeX with the command
 |:VimtexViewRSearch| (mapped to `'<localleader>lr'`).
 
 One can also use |g:vimtex_view_mupdf_send_keys| to specify a set of keys that
@@ -5032,8 +5033,8 @@ Associated settings:
 * |g:vimtex_view_mupdf_options|
 * |g:vimtex_view_mupdf_send_keys|
 
-Note: Both forward and backward search requires `xdotool` to work. Forward
-      search will only take you to the correct page. Backward search will take
+Note: Both forward and inverse search requires `xdotool` to work. Forward
+      search will only take you to the correct page. Inverse search will take
       you to the line in Vim that corresponds to the first line of the current
       page in MuPDF.
 
@@ -5044,7 +5045,7 @@ Note: Viewer handling uses window title matching. If there exists another pdf
                                                            *vimtex-view-okular*
 Okular~
 https://okular.kde.org/
-Okular is a very feature rich PDF viewer that supports forward and backward
+Okular is a very feature rich PDF viewer that supports forward and inverse
 search.
 
 Configuration: >
@@ -5052,18 +5053,17 @@ Configuration: >
   let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
   let g:vimtex_view_general_options_latexmk = '--unique'
 
-Backward search can be set up within Okular in the settings pane under
+Inverse search can be set up within Okular in the settings pane under
 "Settings > Editor > Custom Text Editor". Use configuration as explained in
 |vimtex-synctex-inverse-search|.
 
-Note: To perform a backward (or inverse) search in Okular, you do
-      `shift + click` while browse mode is enabled, not `ctrl + click` as in
-      most other viewers.
+To perform a inverse search in Okular, do `shift + click` while browse mode is
+enabled.
 
                                                          *vimtex-view-qpdfview*
 qpdfview~
 https://launchpad.net/qpdfview
-qpdfview is a tabbed document viewer. It supports both forward and backward
+qpdfview is a tabbed document viewer. It supports both forward and inverse
 search. The latter must be set up from within the viewer. Use configuration as
 explained in |vimtex-synctex-inverse-search|.
 
@@ -5104,7 +5104,7 @@ update Skim after successful compilations.
 Configuration: >
   let g:vimtex_view_method = 'skim'
 
-To configure backward search: Open the `Sync` tab in the settings panel in
+To configure inverse search: Open the `Sync` tab in the settings panel in
 Skim and set the options according to your desired version of Vim. With
 MacVim, one may use the `MacVim` preset. For other versions, one can specify
 the `Custom` preset and use configuration as explained in
@@ -5115,8 +5115,8 @@ the `Custom` preset and use configuration as explained in
   under |vimtex-synctex-inverse-search|.
 * Use `%line` and `%file` instead of `%l` and `%f` to indicate line and file.
 
-Backward search is activated by pressing `Shift` and `Command`, then clicking
-the text you want to inverse search.
+Inverse search is activated by pressing `Shift` and `Command`, then clicking
+the text you want to search.
 
 Associated settings:
 * |g:vimtex_view_skim_activate|
@@ -5126,7 +5126,7 @@ Associated settings:
 SumatraPDF~
 https://www.sumatrapdfreader.org/free-pdf-reader.html
 SumatraPDF is a PDF viewer for windows that is powerful, small, portable and
-starts up very fast. It supports both forward and backward search.
+starts up very fast. It supports both forward and inverse search.
 
 Configuration: >
   let g:vimtex_view_general_viewer = 'SumatraPDF'
@@ -5137,12 +5137,12 @@ Configuration: >
 For convenience, the above configuration is used by default on Windows if
 `SumatraPDF` is detected as executable.
 
-Backward search must be configured under `Settings --> Options` from within
+Inverse search must be configured under `Settings --> Options` from within
 SumatraPDF. Find the section `Set inverse search command-line` in the bottom
 and use configuration as explained in |vimtex-synctex-inverse-search|.
-Backward search is activated with a double click in the PDF file.
+Inverse search is activated with a double click in the PDF file.
 
-It is also possible to specify the backward search options from Vim/neovim,
+It is also possible to specify the inverse search options from Vim/neovim,
 although it requires a relatively complex and nasty expression. Something
 like this: >
 
@@ -5170,7 +5170,7 @@ Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
 Zathura~
 https://pwmt.org/projects/zathura/
 Zathura is, like MuPDF, a very fast and minimalistic viewer, but it allows
-more user configuration. Zathura supports forward and backward search. Zathura
+more user configuration. Zathura supports forward and inverse search. Zathura
 should be straightforward to install and use on Linux with Xorg. It should
 also work on macOS, but users may want to read |vimtex-faq-zathura-macos|.
 
@@ -5196,7 +5196,7 @@ Note: Recent versions of Zathura no longer ensures synctex support. This has
 
 Note: Viewer handling uses window title matching. If there exists another pdf
       viewer with the same name as the current project pdf file, then there
-      might be conflicts. In particular, this might affect forward/backward
+      might be conflicts. In particular, this might affect forward/inverse
       searching for Zathura.
 
 ------------------------------------------------------------------------------
@@ -5206,7 +5206,7 @@ Synctex is a tool that enables synchronization of the text editor position and
 the pdf viewer position.  The tool may be used to add mappings in vim to go to
 the current position in the compiled pdf document (forward search), and also
 to go from a specific position in the pdf file to the corresponding position
-in vim (inverse/backward search).
+in vim (inverse search).
 
 To make synctex work, it must be enabled. VimTeX enables this by default by
 passing `-synctex=1` on the command line, unless the user overrides the
@@ -5218,7 +5218,7 @@ Alternatively, for |vimtex-compiler-latexmk|, one can put this in ones
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
 
-Note: For |neovim| users, one must use `neovim-remote` for backward search. See
+Note: For |neovim| users, one must use `neovim-remote` for inverse search. See
       |vimtex-faq-neovim| for more info.
 
 Forward search~
@@ -5228,16 +5228,16 @@ search if the viewer is already opened.  The forward search will take you to
 the page or position in the viewer that corresponds to the current line in
 your vim session.  See |g:vimtex_view_method| for a list of supported viewers.
 
-Backward search~
-                                               *vimtex-synctex-backward-search*
+Inverse search~
                                                 *vimtex-synctex-inverse-search*
+                                               *vimtex-synctex-backward-search*
 
-In supported viewers one may set up backward or inverse search.  When
-correctly set up, this allows one to go directly from a selected line in the
-viewer (typically by double clicking with the mouse or something similar) to
-the corresponding line inside the Vim instance.
+In supported viewers one may set up inverse search, sometimes also called
+backward search. When correctly set up, this allows one to go directly from
+a selected line in the viewer (typically by double clicking with the mouse or
+something similar) to the corresponding line inside the Vim instance.
 
-Backward search relies on communicating with Vim/neovim from the viewer by use
+Inverse search relies on communicating with Vim/neovim from the viewer by use
 of shell commands. Each Vim or neovim instance is available through a server
 (|v:servername|) and we can communicate by use of the `--remote*` family of
 command-line arguments. Neovim does not have the `--remote` options itself.
@@ -5247,7 +5247,7 @@ then one normally don't need to specify the servername. But when one uses
 multiple instances, then it is crucial to specify the correct servername for
 this feature to work.
 
-Backward search is usually set up within the specific viewer through an option
+Inverse search is usually set up within the specific viewer through an option
 named something like "inverse search command-line".  Here one specifies
 a desired shell command where the target line and file are interpolated,
 usually as `%l` and `%f` (but this may be different in some viewers, e.g.
@@ -5536,9 +5536,9 @@ A: This might be due to the |isfname| setting, which by default contains `{,}`
 ------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
 Q: Does VimTeX work with neovim?
-A: Yes, but backward sync requires `nvr` (neovim-remote) [0]. This is because
-   neovim does not have the `--remote` family of options itself [0]. To
-   install `nvr`:
+A: Yes, but inverse search from PDF viewer to VimTeX requires `nvr`
+   (neovim-remote) [0]. This is because neovim does not have the `--remote`
+   family of options itself [0]. To install `nvr`:
 
      1. Install the `pynvim` and `neovim-remote` modules for python3, e.g. >
 
@@ -5679,7 +5679,7 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    opposed to %USERPROFILE% in Windows).
 
    However, client-server capabilities seem to be disabled (perhaps because
-   WSL does not have built-in support for X11) and therefore backward search
+   WSL does not have built-in support for X11) and therefore inverse search
    does not work. Neither does forward search work: While SumatraPDF opens
    fine the PDF file in \\wsl$\<DistroName>\..., the forward search in
    SumatraPDF itself does not find the corresponding source file in
@@ -6072,7 +6072,7 @@ to >
 
 2014-12-07: Added more general view functionality~
 Added new module for view functionality.  This allows more complex view
-functions (and commands), for instance to do forward (and possibly backwards)
+functions (and commands), for instance to do forward (and possibly inverse)
 searching through `synctex`.  In the first version, I added forward search for
 mupdf by use of the `synctex` command and `xdotool`.
 
