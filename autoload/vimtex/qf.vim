@@ -53,7 +53,9 @@ function! vimtex#qf#open(force) abort " {{{1
     endif
     return
   catch
-    call vimtex#log#error('Something went wrong when parsing log files!')
+    call vimtex#log#error(
+          \ 'Something went wrong when parsing log files!',
+          \ v:exception)
     if g:vimtex_quickfix_mode > 0
       cclose
     endif
