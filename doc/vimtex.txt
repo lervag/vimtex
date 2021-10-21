@@ -268,14 +268,16 @@ Compiler backend~
 
 Clientserver~
                                                           *vimtex-clientserver*
-  |+clientserver| is necessary for inverse search from PDF viewer to Vim (see
-  |vimtex-synctex-inverse-search|).
+  Vim requires |+clientserver| in order to allow inverse search from the PDF
+  viewer to Vim (see |vimtex-synctex-inverse-search|).
 
   Neovim does not have the same clientserver feature, but it implements the
-  MessagePack-RPC protocol, see |RPC|. This can be used in the same fashion as
-  the clientserver, see |v:servername|, and we can therefore use approximately
-  the same terminology in the following regardless of Vim/neovim. For neovim,
-  see also |vimtex-faq-neovim|.
+  MessagePack-RPC protocol (see |RPC|). This protocol be used in the same
+  fashion as the clientserver through neovim-remote (`nvr`); see
+  |vimtex-faq-neovim| for more info and installation help.
+
+  Both Vim and neovim has the |v:servername| variable that contains the
+  name/location of the server with which we need to communicate.
 
   A server will be started automatically if Vim is running on Windows or if
   running in a GUI.  If you use Vim under a terminal in Linux or macOS,
@@ -5237,23 +5239,24 @@ backward search. When correctly set up, this allows one to go directly from
 a selected line in the viewer (typically by double clicking with the mouse or
 something similar) to the corresponding line inside the Vim instance.
 
+NB! Users who want to have inverse search should read this entire section! The
+    concept is complicated and the best configuration requires some effort
+    from the user.
+
 Inverse search relies on communicating with Vim/neovim from the viewer by use
-of shell commands. Each Vim or neovim instance is available through a server
-(|v:servername|) and we can communicate by use of the `--remote*` family of
-command-line arguments. Neovim does not have the `--remote` options itself.
-One must therefore use the utility `nvr` (see |vimtex-faq-neovim|). See also
-|vimtex-clientserver|. If one always uses a single instance of Vim/neovim,
-then one normally don't need to specify the servername. But when one uses
-multiple instances, then it is crucial to specify the correct servername for
-this feature to work.
+of shell commands. Each Vim or neovim instance is normally available through
+a server (see |vimtex-clientserver|). We can communicate by use of the
+`--remote*` family of command-line arguments. These command-line arguments are
+not available in neovim, but one may use the external utility `nvr` (see
+|vimtex-faq-neovim|).
 
 Inverse search is usually set up within the specific viewer through an option
-named something like "inverse search command-line".  Here one specifies
+named something like "inverse search command-line". Here one specifies
 a desired shell command where the target line and file are interpolated,
 usually as `%l` and `%f` (but this may be different in some viewers, e.g.
-|vimtex-view-okular|). The following are some examples of possible
-configurations for Vim and `nvr`. This also shows how one may use the utility
-function |vimtex#view#reverse_goto|. >
+|vimtex-view-okular|). The following are some simple examples of possible
+configurations for Vim and neovim (`nvr`). This also shows how one may use the
+utility function |vimtex#view#reverse_goto|. >
 
   vim --remote-silent +%l '%f'
   nvr --remote-silent +%l '%f'
@@ -5264,12 +5267,26 @@ function |vimtex#view#reverse_goto|. >
   vim --servername MYSERVER --remote-silent +%l '%f'
   nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
 
-If you often find yourself using multiple Vim or neovim instances, then you
-need to provide the correct servername argument to `vim` or `nvr`. This can be
-achieved in different ways. The most straightforward way is to specify the
-servername when starting Vim/neovim and then use that same servername in the
-viewer configuration. To specify the servername, use the following
-command-line arguments: >
+If one always uses a single instance of Vim/neovim, then one normally don't
+need to specify the servername. A couple of caveats:
+* With Vim, it is important to ensure that the server is running; please read
+  |vimtex-clientserver|!
+* With neovim, `nvr` will not work unless it knows the correct servername! The
+  above simple solutions may still work, because neovim sets the environment
+  variable |$NVIM_LISTEN_ADDRESS|. If this environment variable is inherited
+  by the PDF viewer, then it will also be available to the forked `nvr`
+  command.
+
+Although the simple configuration examples above may work, they are prone to
+failure. For instance, if you use multiple instances of Vim or neovim, or if
+you for some reason open the viewer outside of VimTeX, then inverse search may
+not work as expected. To get a more robust experience, one should configure
+both VimTeX and the PDF viewer so as to use an explicit servername.
+
+The most straightforward way is to specify the servername when starting
+Vim/neovim and then use that same servername in the viewer configuration. To
+specify the servername for Vim and neovim, use the following command-line
+arguments: >
 
   # For Vim
   vim --servername NAME
@@ -5277,30 +5294,35 @@ command-line arguments: >
   # For neovim
   nvim --listen /tmp/mynvimservername
 
-Another way to specify the servername is to use a trick by @jdhao [0, 1]. This
-can be more convenient if you get it to work. The idea is to manually write
-the servername to a file when we open a `.tex` file. Add the following to your
-init.vim: >
+This is simple and works, but may be somewhat cumbersome. Also, if you start
+several instances of Vim or neovim and specify the same servername, then only
+the first instance will actually have that specific servername.
+
+Another, possibly more convenient way to specify the servername is to use
+a trick by @jdhao [0, 1]. The idea is to manually write the servername to
+a file when we open a `.tex` file. Add the following to your init.vim: >
 
   augroup vimtex_common
       autocmd!
       autocmd FileType tex call writefile(
             \ [v:servername],
-            \ (has('win32') ? $TEMP : "/tmp") . "/curnvimserver.txt")
+            \ (has('win32') ? $TEMP : "/tmp") . "/vimtexserver.txt")
   augroup END
 
-Now we need to specify this servername within the viewer configuration. How to
-do that depends on the system. Here are some examples with neovim; it should
-work similarly with Vim. >
+We also need to specify this servername within the viewer configuration. The
+following shows commands that should work on both Linux, MacOS and Windows for
+both Vim and neovim (`nvr`): >
 
-  # On Linux and MacOS
-  nvr --servername `cat /tmp/curnvimserver.txt` --remote-silent +%l "%f"
+  # Linux and MacOS
+  vim --servername `cat /tmp/vimtexserver.txt` --remote-silent +%l "%f"
+  nvr --servername `cat /tmp/vimtexserver.txt` --remote-silent +%l "%f"
 
-  # On Windows
-  cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\curnvimserver.txt') do nvr --servername %i --remote-silent +%l "%f"
+  # Windows
+  cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\vimtexserver.txt') do vim --servername %i --remote-silent +%l "%f"
+  cmd /c for /F %i in ('type C:\Users\ADMINI~1\AppData\Local\Temp\vimtexserver.txt') do nvr --servername %i --remote-silent +%l "%f"
 
-You may need to change the exact file path above for your Windows system. You
-can use the command `:echo $TEMP` to check the temp folder on your Windows.
+On Windows, please note that you may need to change the exact file path above.
+You can use the command `:echo $TEMP` within Vim/neovim to inspect the value.
 
 [0]: https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex
 [1]: https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/#inverse-search-for-sumatra-pdf-on-windows
