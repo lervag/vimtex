@@ -110,37 +110,87 @@ function! s:qf.addqflist(tex, log) abort dict "{{{1
   " Apply some post processing of the quickfix list
   let self.main = a:tex
   let self.root = b:vimtex.root
-  call self.fix_paths()
+  call self.fix_paths(a:log)
 endfunction
 
 " }}}1
-function! s:qf.fix_paths() abort dict " {{{1
+function! s:qf.fix_paths(log) abort dict " {{{1
   let l:qflist = getqflist()
+  let l:lines = readfile(a:log)
 
   for l:qf in l:qflist
-    " For errors and warnings that don't supply a file, the basename of the
-    " main file is used. However, if the working directory is not the root of
-    " the LaTeX project, than this results in bufnr = 0.
+    " Handle missing buffer/filename: Fallback to the main file (this is always
+    " correct in single-file projects and is thus a good fallback).
     if l:qf.bufnr == 0
-      let l:qf.bufnr = bufnr(self.main)
+      let l:bufnr_main = bufnr(self.main)
+      if bufnr(self.main) < 0
+        execute 'badd' self.main
+        let l:bufnr_main = bufnr(self.main)
+      endif
+      let l:qf.bufnr = l:bufnr_main
+    endif
+
+    " Try to parse the filename from logfile for certain errors
+    if s:fix_paths_hbox_warning(l:qf, l:lines, self.root)
       continue
     endif
 
-    " The buffer names of all file:line type errors are relative to the root of
-    " the main LaTeX file.
-    let l:file = fnamemodify(
-          \ simplify(self.root . '/' . bufname(l:qf.bufnr)), ':.')
-    if !filereadable(l:file) | continue | endif
-
-    if !bufexists(l:file)
-      execute 'badd' l:file
-    endif
-
-    let l:qf.filename = l:file
-    let l:qf.bufnr = bufnr(l:file)
+    " Check and possibly fix invalid file from file:line type entries
+    call s:fix_paths_invalid_bufname(l:qf, self.root)
   endfor
 
   call setqflist(l:qflist, 'r')
+endfunction
+
+" }}}1
+
+function! s:fix_paths_hbox_warning(qf, log, root) abort " {{{1
+  if a:qf.text !~# 'Underfull\|Overfull' | return v:false | endif
+
+  let l:index = match(a:log, '\V' . escape(a:qf.text, '\'))
+  if l:index < 0 | return v:false | endif
+
+  let l:file = matchstr(a:log[l:index - 1], '^\s*(\zs\f\+\ze)\s*$')
+  if empty(l:file) | return v:false | endif
+
+  if !vimtex#paths#is_abs(l:file)
+    let l:file = simplify(a:root . '/' . l:file)
+  endif
+
+  if !filereadable(l:file) | return v:false | endif
+
+  let l:bufnr = bufnr(l:file)
+  if l:bufnr > 0
+    let a:qf.bufnr = bufnr(l:file)
+  else
+    let a:qf.bufnr = 0
+    let a:qf.filename = fnamemodify(l:file, ':.')
+  endif
+
+  return v:true
+endfunction
+
+" }}}1
+function! s:fix_paths_invalid_bufname(qf, root) abort " {{{1
+  " First check if the entry bufnr is already valid
+  let l:file = getbufinfo(a:qf.bufnr)[0].name
+  if filereadable(l:file) | return | endif
+
+  " The file names of all file:line type entries in the log output are listed
+  " relative to the root of the main LaTeX file. The quickfix mechanism adds
+  " the buffer with the file string. Thus, if the current buffer is not
+  " correct, we can fix by prepending the root to the filename.
+  let l:file = fnamemodify(
+        \ simplify(a:root . '/' . bufname(a:qf.bufnr)), ':.')
+  if !filereadable(l:file) | return | endif
+
+  let l:bufnr = bufnr(l:file)
+  if l:bufnr > 0
+    let a:qf.bufnr = bufnr(l:file)
+  else
+    let a:qf.bufnr = 0
+    let a:qf.filename = l:file
+  endif
 endfunction
 
 " }}}1
