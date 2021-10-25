@@ -74,7 +74,7 @@ endfunction
 " }}}1
 function! vimtex#view#inverse_search(line, filename) abort " {{{1
   " Only activate in VimTeX buffers
-  if !exists('b:vimtex') | return | endif
+  if !exists('b:vimtex') | return -1 | endif
 
   " Only activate in relevant VimTeX projects
   let l:file = resolve(a:filename)
@@ -82,7 +82,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   if vimtex#paths#is_abs(l:file)
     call map(l:sources, {_, x -> b:vimtex.root . '/' . x})
   endif
-  if index(l:sources, l:file) < 0 | return | endif
+  if index(l:sources, l:file) < 0 | return -2 | endif
 
 
   if mode() ==# 'i' | stopinsert | endif
@@ -97,13 +97,13 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
               \ 'Reverse goto failed!',
               \ printf('Command error: %s %s',
               \        g:vimtex_view_reverse_search_edit_cmd, l:file)])
-        return
+        return -3
       endtry
     else
       call vimtex#log#warning([
             \ 'Reverse goto failed!',
             \ printf('File not readable: "%s"', l:file)])
-      return
+      return -4
     endif
   endif
 
