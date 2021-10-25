@@ -7,10 +7,6 @@ set nomore
 let g:vimtex_view_automatic = 0
 let g:vimtex_log_verbose = 0
 
-if has('nvim')
-  let g:vimtex_compiler_progname = 'nvr'
-endif
-
 function! RunTests(comp, list_opts)
   if !executable(a:comp)
     echo 'Warning! "' . a:comp . '" was not executable!'

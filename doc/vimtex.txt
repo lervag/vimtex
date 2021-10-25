@@ -887,19 +887,6 @@ OPTIONS                                                        *vimtex-options*
 
   Default: 0
 
-*g:vimtex_compiler_progname*
-  Path to vim executable used for the automatic inverse search settings with
-  Zathura (|vimtex-view-zathura|).
-
-  The reason it is called `_compiler_progname` is because it was previously
-  used for the compiler callback features. This is no longer the case, but to
-  avoid breaking changes the option name has not been changed.
-
-  Default value on Vim:    |v:progpath| or |v:progname|
-  Default value on neovim: `nvr` if available, else same as Vim
-
-  See also: |vimtex-faq-neovim|
-
 *g:vimtex_compiler_method*
   Set the compiler method. Available choices are:
 
@@ -963,9 +950,6 @@ OPTIONS                                                        *vimtex-options*
   callback~
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
     after compilation is finished.
-
-    Note: When using |clientserver|, the callback is run with the vim
-          executable defined by |g:vimtex_compiler_progname|.
 
   continuous~
     If enabled, `latexmk` will run in continuous mode, i.e. with the `-pvc`
@@ -4624,7 +4608,6 @@ Associated settings:
 * |g:vimtex_compiler_tectonic|
 * |g:vimtex_compiler_arara|
 * |g:vimtex_compiler_generic|
-* |g:vimtex_compiler_progname|
 * |$VIMTEX_OUTPUT_DIRECTORY|
 
 Associated events:
@@ -5680,12 +5663,6 @@ A: Yes and no.  I personally don't use Windows, and as such, it is difficult
    should work.  Here are some things that might not work quite as expected,
    with some workarounds.
 
-   * The full executable path for `gvim.exe` might include spaces, which might
-     lead to problems, see e.g. [0].  A workaround is to put the default
-     installation path of Vim (or neovim) to your %PATH% variable and set
-     |g:vimtex_compiler_progname| to |v:progname|. See [3] for a convenient
-     tool to adapt %PATH%.
-
    * VimTeX does not work well with the 'shell' setting set to Windows
      PowerShell. It is therefore recommended to use the default 'shell'
      settings. See [4] for more information.
@@ -5888,6 +5865,9 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2021-10-25: Better inverse search~
+Deprecate *g:vimtex_compiler_progname* as it is no longer necessary.
 
 2021-10-09: Better options for syntax conceal~
 Deprecate *g:vimtex_syntax_conceal_default* in favor of

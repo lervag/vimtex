@@ -35,10 +35,9 @@ let s:zathura = {
 function! s:zathura.start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
-    let l:cmd .= ' -x "' . g:vimtex_compiler_progname
-          \ . ' --servername ' . v:servername
-          \ . ' --remote-expr '
-          \ .     '\"vimtex#view#inverse_search(%{line}, ''%{input}'')\""'
+    let l:cmd .=
+          \ ' -x "' . s:inverse_search_cmd
+          \ . ' -c \"call vimtex#view#inverse_search_comm(%{line}, ''%{input}'')\""'
     if g:vimtex_view_forward_search_on_start
       let l:cmd .= ' --synctex-forward '
             \ .  line('.')
@@ -77,20 +76,20 @@ endfunction
 " }}}1
 function! s:zathura.latexmk_append_argument() dict abort " {{{1
   if g:vimtex_view_use_temp_files
-    let cmd = ' -view=none'
+    let l:cmd = ' -view=none'
   else
-    let zathura = 'zathura ' . g:vimtex_view_zathura_options
+    let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
     if self.has_synctex
-      let zathura .= ' -x \"' . g:vimtex_compiler_progname
-          \ . ' --servername ' . v:servername
-          \ . ' --remote-expr \"\\\"\"vimtex#view#inverse_search(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
+      let l:zathura .=
+            \ ' -x \"' . s:inverse_search_cmd
+            \ ' -c \"\\\"\"call vimtex#view#inverse_search_comm(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\"'
     endif
 
-    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer', zathura)
+    let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+    let l:cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:zathura)
   endif
 
-  return cmd
+  return l:cmd
 endfunction
 
 " }}}1
@@ -109,3 +108,8 @@ function! s:zathura.get_pid() dict abort " {{{1
 endfunction
 
 " }}}1
+
+let s:inverse_search_cmd = get(v:, 'progpath', get(v:, 'progname', ''))
+      \ . (has('nvim')
+      \   ? ' --headless'
+      \   : ' -T dumb --not-a-term -n')
