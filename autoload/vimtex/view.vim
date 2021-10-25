@@ -66,12 +66,19 @@ endfunction
 
 " }}}1
 function! vimtex#view#inverse_search(line, filename) abort " {{{1
+  " Only activate in VimTeX buffers
   if !exists('b:vimtex') | return | endif
-  " If a:fliename not in b:vimtex.sources: return
+
+  " Only activate in relevant VimTeX projects
+  let l:file = resolve(a:filename)
+  let l:sources = copy(b:vimtex.sources)
+  if vimtex#paths#is_abs(l:file)
+    call map(l:sources, {_, x -> b:vimtex.root . '/' . x})
+  endif
+  if index(l:sources, l:file) < 0 | return | endif
+
 
   if mode() ==# 'i' | stopinsert | endif
-
-  let l:file = resolve(a:filename)
 
   " Open file if necessary
   if !bufloaded(l:file)
@@ -119,7 +126,7 @@ endfunction
 function! s:inverse_search_comm_vim(line, filename) abort " {{{1
   for l:server in split(serverlist(), "\n")
     call remote_expr(l:server,
-          \ printf("vimtex#view#receive(%d, '%s')", a:line, a:filename))
+          \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
   endfor
 endfunction
 
@@ -138,7 +145,7 @@ EOF
     let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
     call rpcrequest(l:socket,
           \ 'nvim_call_function',
-          \ 'vimtex#view#receive',
+          \ 'vimtex#view#inverse_search',
           \ [a:line, a:filename])
     call chanclose(l:socket)
   endfor
