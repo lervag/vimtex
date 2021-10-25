@@ -35,8 +35,7 @@ let s:zathura = {
 function! s:zathura.start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
-    let l:cmd .=
-          \ ' -x "' . s:inverse_search_cmd
+    let l:cmd .= ' -x "' . s:inverse_search_cmd
           \ . ' -c \"call vimtex#view#inverse_search_comm(%{line}, ''%{input}'')\""'
     if g:vimtex_view_forward_search_on_start
       let l:cmd .= ' --synctex-forward '
@@ -80,9 +79,8 @@ function! s:zathura.latexmk_append_argument() dict abort " {{{1
   else
     let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
     if self.has_synctex
-      let l:zathura .=
-            \ ' -x \"' . s:inverse_search_cmd
-            \ ' -c \"\\\"\"call vimtex#view#inverse_search_comm(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\"'
+      let l:zathura .= ' -x \"' . s:inverse_search_cmd
+            \ . ' -c \"\\\"\"call vimtex#view#inverse_search_comm(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
     endif
 
     let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
