@@ -129,7 +129,7 @@ function! s:focus_vim() abort " {{{1
     let l:current_pid = str2nr(vimtex#jobs#capture('ps o pid t ' . l:pts)[1])
   endif
 
-  let l:output = vimtex#jobs#capture('pstree -s -p ' . l:current_pid)
+  let l:output = join(vimtex#jobs#capture('pstree -s -p ' . l:current_pid))
   let l:pids = split(l:output, '\D\+')
   let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
 
