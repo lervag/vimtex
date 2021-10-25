@@ -58,7 +58,7 @@ function! s:check_view() abort " {{{1
 
   if executable('xdotool') && !executable('pstree')
     call health#report_warn('pstree is not available',
-          \ 'vimtex#view#reverse_goto is better if pstree is available.')
+          \ 'vimtex#view#inverse_search is better if pstree is available.')
   endif
 endfunction
 
