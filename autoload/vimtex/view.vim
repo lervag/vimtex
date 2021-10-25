@@ -7,6 +7,13 @@
 function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
+  " Store neovim servername for inheritance to inverse search
+  if has('nvim')
+        \ && !empty($NVIM_LISTEN_ADDRESS)
+        \ && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
+    let $NVIM_LISTEN_ADDRESS_VIMTEX = $NVIM_LISTEN_ADDRESS
+  endif
+
   command! -buffer -nargs=? -complete=file VimtexView
         \ call vimtex#view#view(<q-args>)
 
@@ -132,7 +139,8 @@ endfunction
 
 " }}}1
 function! s:inverse_search_comm_nvim(line, filename) abort " {{{1
-  py3 <<EOF
+  if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
+    py3 <<EOF
 import psutil
 
 sockets = []
@@ -140,8 +148,12 @@ for proc in (p for p in psutil.process_iter(attrs=['name'])
              if p.info['name'] == 'nvim'):
     sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
 EOF
+    let l:socket_ids = filter(py3eval('sockets'), 'v:val != v:servername')
+  else
+    let l:socket_ids = [$NVIM_LISTEN_ADDRESS_VIMTEX]
+  endif
 
-  for l:socket_id in filter(py3eval('sockets'), 'v:val != v:servername')
+  for l:socket_id in l:socket_ids
     let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
     call rpcnotify(l:socket,
           \ 'nvim_call_function',
