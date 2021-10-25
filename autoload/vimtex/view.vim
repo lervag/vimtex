@@ -9,15 +9,8 @@ function! vimtex#view#init_buffer() abort " {{{1
 
   command! -buffer -nargs=? -complete=file VimtexView
         \ call vimtex#view#view(<q-args>)
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    command! -buffer -nargs=* VimtexViewRSearch
-         \ call vimtex#view#reverse_search()
-  endif
 
   nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    nnoremap <buffer> <plug>(vimtex-reverse-search) :VimtexViewRSearch<cr>
-  endif
 endfunction
 
 " }}}1
@@ -46,13 +39,6 @@ endfunction
 function! vimtex#view#view(...) abort " {{{1
   if exists('*b:vimtex.viewer.view')
     call b:vimtex.viewer.view(a:0 > 0 ? a:1 : '')
-  endif
-endfunction
-
-" }}}1
-function! vimtex#view#reverse_search() abort " {{{1
-  if exists('*b:vimtex.viewer.reverse_search')
-    call b:vimtex.viewer.reverse_search()
   endif
 endfunction
 

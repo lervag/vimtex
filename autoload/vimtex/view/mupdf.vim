@@ -13,6 +13,10 @@ function! vimtex#view#mupdf#new() abort " {{{1
     return {}
   endif
 
+  " Add reverse search mapping
+  nnoremap <buffer> <plug>(vimtex-reverse-search)
+        \ :<c-u>call b:vimtex.viewer.reverse_search()<cr>
+
   return vimtex#view#_template_xwin#apply(deepcopy(s:mupdf))
 endfunction
 
