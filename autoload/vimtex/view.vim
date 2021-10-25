@@ -114,6 +114,99 @@ endfunction
 
 " }}}1
 
+function! vimtex#view#send(line, filename) abort " {{{1
+  try
+    if has('nvim')
+      call vimtex#view#send_nvim(a:line, a:filename)
+    else
+      call vimtex#view#send_vim(a:line, a:filename)
+    endif
+  catch
+  endtry
+  quitall!
+endfunction
+
+" }}}1
+function! vimtex#view#send_vim(line, filename) abort " {{{1
+  for l:server in split(serverlist(), "\n")
+    call remote_expr(l:server,
+          \ printf("vimtex#view#receive(%d, '%s')", a:line, a:filename))
+  endfor
+endfunction
+
+" }}}1
+function! vimtex#view#send_nvim(line, filename) abort " {{{1
+  py3 <<EOF
+import psutil
+
+sockets = []
+for proc in (p for p in psutil.process_iter(attrs=['name'])
+             if p.info['name'] == 'nvim'):
+    sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
+EOF
+
+  for l:socket_id in filter(py3eval('sockets'), 'v:val != v:servername')
+    let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
+    call rpcrequest(l:socket,
+          \ 'nvim_call_function',
+          \ 'vimtex#view#receive',
+          \ [a:line, a:filename])
+    call chanclose(l:socket)
+  endfor
+endfunction
+
+" }}}1
+
+function! vimtex#view#receive(line, filename) abort " {{{1
+  if !exists('b:vimtex') | return | endif
+
+  if mode() ==# 'i' | stopinsert | endif
+
+  let l:file = resolve(a:filename)
+
+  " Open file if necessary
+  if !bufloaded(l:file)
+    if filereadable(l:file)
+      try
+        execute g:vimtex_view_reverse_search_edit_cmd l:file
+      catch
+        call vimtex#log#warning([
+              \ 'Reverse goto failed!',
+              \ printf('Command error: %s %s',
+              \        g:vimtex_view_reverse_search_edit_cmd, l:file)])
+        return
+      endtry
+    else
+      call vimtex#log#warning([
+            \ 'Reverse goto failed!',
+            \ printf('File not readable: "%s"', l:file)])
+      return
+    endif
+  endif
+
+  " Get buffer, window, and tab numbers
+  " * If tab/window exists, switch to it/them
+  let l:bufnr = bufnr(l:file)
+  try
+    let [l:winid] = win_findbuf(l:bufnr)
+    let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
+    execute l:tabnr . 'tabnext'
+    execute l:winnr . 'wincmd w'
+  catch
+    execute g:vimtex_view_reverse_search_edit_cmd l:file
+  endtry
+
+  execute 'normal!' a:line . 'G'
+  redraw
+  call s:focus_vim()
+
+  if exists('#User#VimtexEventViewReverse')
+    doautocmd <nomodeline> User VimtexEventViewReverse
+  endif
+endfunction
+
+" }}}1
+
 function! s:focus_vim() abort " {{{1
   if !executable('pstree') || !executable('xdotool') | return | endif
 
