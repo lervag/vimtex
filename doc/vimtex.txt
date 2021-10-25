@@ -3508,7 +3508,7 @@ further customization.
     been performed by the command |:VimtexView| or the related mapping.
 
   *VimtexEventViewReverse*
-    This event is triggered at the end of the |vimtex#view#reverse_goto|
+    This event is triggered at the end of the |vimtex#view#inverse_search|
     function, which can be used as the callback function for reverse goto from
     a PDF viewer.
 
@@ -5103,7 +5103,7 @@ Configuration: >
   let g:vimtex_view_general_viewer = 'sioyek'
   let g:vimtex_view_general_options = '--reuse-instance '
     \ . '--inverse-search '
-    \ .   '"nvr --remote-expr \"vimtex#view#reverse_goto(%2, ''%1'')\"" '
+    \ .   '"nvr --remote-expr \"vimtex#view#inverse_search(%2, ''%1'')\"" '
     \ . '--forward-search-file @tex --forward-search-line @line @pdf'
   let g:vimtex_view_general_options_latexmk = '--reuse-instance'
 
@@ -5274,13 +5274,13 @@ a desired shell command where the target line and file are interpolated,
 usually as `%l` and `%f` (but this may be different in some viewers, e.g.
 |vimtex-view-okular|). The following are some simple examples of possible
 configurations for Vim and neovim (`nvr`). This also shows how one may use the
-utility function |vimtex#view#reverse_goto|. >
+utility function |vimtex#view#inverse_search|. >
 
   vim --remote-silent +%l '%f'
   nvr --remote-silent +%l '%f'
 
-  vim --remote-expr vimtex#view#reverse_goto(%l, '%f')
-  nvr --remote-expr vimtex#view#reverse_goto(%l, '%f')
+  vim --remote-expr vimtex#view#inverse_search(%l, '%f')
+  nvr --remote-expr vimtex#view#inverse_search(%l, '%f')
 
   vim --servername MYSERVER --remote-silent +%l '%f'
   nvr --servername /tmp/mynvimserver --remote-silent +%l "%f"
@@ -5491,7 +5491,7 @@ Note: This API is currently a work in progress!
   arguments, the position refers to the cursor position. Else must be called
   with two arguments: the line number and column number.
 
-*vimtex#view#reverse_goto*
+*vimtex#view#inverse_search*
   Utility function for reverse search from pdf viewer. Takes two arguments:
   the line number and a filename. The function runs the event
   |VimtexEventViewReverse| at the end, which allows some user flexibility in
