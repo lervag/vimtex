@@ -143,7 +143,7 @@ EOF
 
   for l:socket_id in filter(py3eval('sockets'), 'v:val != v:servername')
     let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
-    call rpcrequest(l:socket,
+    call rpcnotify(l:socket,
           \ 'nvim_call_function',
           \ 'vimtex#view#inverse_search',
           \ [a:line, a:filename])
