@@ -370,7 +370,7 @@ function! s:toc.set_syntax() abort dict "{{{1
   syntax match VimtexTocIncl /\w\+ incl:/ contained
         \ nextgroup=VimtexTocInclPath
 
-  syntax match VimtexTocLabelsSecs /\v(chap|sec):.*$/ contained
+  syntax match VimtexTocLabelsSecs /\v(chap|(sub)*sec):.*$/ contained
   syntax match VimtexTocLabelsEq   /eq:.*$/ contained
   syntax match VimtexTocLabelsFig  /fig:.*$/ contained
   syntax match VimtexTocLabelsTab  /tab:.*$/ contained
