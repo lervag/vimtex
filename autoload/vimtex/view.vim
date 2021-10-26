@@ -107,8 +107,8 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   endtry
 
   execute 'normal!' a:line . 'G'
-  redraw
   call s:focus_vim()
+  redraw
 
   if exists('#User#VimtexEventViewReverse')
     doautocmd <nomodeline> User VimtexEventViewReverse
@@ -117,14 +117,21 @@ endfunction
 
 " }}}1
 function! vimtex#view#inverse_search_cmd(line, filename) abort " {{{1
-  try
-    if has('nvim')
-      call s:inverse_search_cmd_nvim(a:line, a:filename)
-    else
-      call s:inverse_search_cmd_vim(a:line, a:filename)
-    endif
-  catch
-  endtry
+  " One may call this function manually, but the main usage is to through the
+  " command "VimtexInverseSearch". See ":help vimtex-synctex-inverse-search"
+  " for more info.
+
+  if a:line > 0 && !empty(a:filename)
+    try
+      if has('nvim')
+        call s:inverse_search_cmd_nvim(a:line, a:filename)
+      else
+        call s:inverse_search_cmd_vim(a:line, a:filename)
+      endif
+    catch
+    endtry
+  endif
+
   quitall!
 endfunction
 
