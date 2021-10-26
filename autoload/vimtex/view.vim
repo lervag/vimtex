@@ -116,12 +116,12 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#inverse_search_comm(line, filename) abort " {{{1
+function! vimtex#view#inverse_search_cmd(line, filename) abort " {{{1
   try
     if has('nvim')
-      call s:inverse_search_comm_nvim(a:line, a:filename)
+      call s:inverse_search_cmd_nvim(a:line, a:filename)
     else
-      call s:inverse_search_comm_vim(a:line, a:filename)
+      call s:inverse_search_cmd_vim(a:line, a:filename)
     endif
   catch
   endtry
@@ -130,7 +130,7 @@ endfunction
 
 " }}}1
 
-function! s:inverse_search_comm_nvim(line, filename) abort " {{{1
+function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
   if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
     py3 <<EOF
 import psutil
@@ -156,7 +156,7 @@ EOF
 endfunction
 
 " }}}1
-function! s:inverse_search_comm_vim(line, filename) abort " {{{1
+function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
   for l:server in split(serverlist(), "\n")
     call remote_expr(l:server,
           \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))

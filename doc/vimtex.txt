@@ -5080,7 +5080,7 @@ Configuration: >
   let g:vimtex_view_general_viewer = 'sioyek'
   let g:vimtex_view_general_options = '--reuse-instance'
     \ . ' --inverse-search "nvim --headless'
-    \ .   ' " -c \"call vimtex#view#inverse_search_comm(%2, ''%1'')\""'
+    \ .   ' " -c \"call vimtex#view#inverse_search_cmd(%2, ''%1'')\""'
     \ . ' --forward-search-file @tex --forward-search-line @line @pdf'
   let g:vimtex_view_general_options_latexmk = '--reuse-instance'
 
@@ -5239,11 +5239,11 @@ However, VimTeX provides a convenience function to simplify the viewer
 configuration. So, instead it is recommended to use the following viewer
 configuration with Vim or neovim, respectively: >
 
-  vim -T dumb --not-a-term -n -c "call vimtex#view#inverse_search_comm(%l, '%f')"
+  vim -T dumb --not-a-term -n -c "call vimtex#view#inverse_search_cmd(%l, '%f')"
 
-  nvim --headless -c "call vimtex#view#inverse_search_comm(%l, '%f')"
+  nvim --headless -c "call vimtex#view#inverse_search_cmd(%l, '%f')"
 
-The function `vimtex#vimtex#view#inverse_search_comm` will execute
+The function `vimtex#vimtex#view#inverse_search_cmd` will execute
 |vimtex#view#inverse_search| with the target line and file as arguments inside
 the desired Vim or neovim instance. The latter function is the one that
 really performs the inverse search. The combined effect is a more robust
