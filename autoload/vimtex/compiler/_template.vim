@@ -144,8 +144,8 @@ endfunction
 function! s:compiler.stop() abort dict " {{{1
   if !self.is_running() | return | endif
 
-  call self.kill()
   let self.status = 0
+  call self.kill()
 
   if exists('#User#VimtexEventCompileStopped')
     doautocmd <nomodeline> User VimtexEventCompileStopped

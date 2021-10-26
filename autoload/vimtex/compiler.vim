@@ -320,6 +320,7 @@ endfunction
 " }}}1
 function! s:check_if_running(timer) abort " {{{1
   if s:check_timers[a:timer].compiler.is_running() | return | endif
+  if s:check_timers[a:timer].compiler.status < 1 | return | endif
 
   call timer_stop(a:timer)
 
@@ -337,7 +338,10 @@ endfunction
 
 let s:output_factory = {}
 function! s:output_factory.create(file) dict abort " {{{1
+  let l:vimtex = b:vimtex
   silent execute 'split' a:file
+  let b:vimtex = l:vimtex
+
   setlocal autoread
   setlocal nomodifiable
   setlocal bufhidden=wipe
