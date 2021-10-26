@@ -36,7 +36,7 @@ function! s:zathura.start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
     let l:cmd .= ' -x "' . s:inverse_search_cmd
-          \ . ' -c \"call vimtex#view#inverse_search_comm(%{line}, ''%{input}'')\""'
+          \ . ' -c \"call vimtex#view#inverse_search_cmd(%{line}, ''%{input}'')\""'
     if g:vimtex_view_forward_search_on_start
       let l:cmd .= ' --synctex-forward '
             \ .  line('.')
@@ -80,7 +80,7 @@ function! s:zathura.latexmk_append_argument() dict abort " {{{1
     let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
     if self.has_synctex
       let l:zathura .= ' -x \"' . s:inverse_search_cmd
-            \ . ' -c \"\\\"\"call vimtex#view#inverse_search_comm(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
+            \ . ' -c \"\\\"\"call vimtex#view#inverse_search_cmd(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
     endif
 
     let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
