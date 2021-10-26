@@ -59,19 +59,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#view#inverse_search_comm(line, filename) abort " {{{1
-  try
-    if has('nvim')
-      call s:inverse_search_comm_nvim(a:line, a:filename)
-    else
-      call s:inverse_search_comm_vim(a:line, a:filename)
-    endif
-  catch
-  endtry
-  quitall!
-endfunction
-
-" }}}1
 function! vimtex#view#inverse_search(line, filename) abort " {{{1
   " Only activate in VimTeX buffers
   if !exists('b:vimtex') | return -1 | endif
@@ -129,15 +116,20 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
 endfunction
 
 " }}}1
-
-function! s:inverse_search_comm_vim(line, filename) abort " {{{1
-  for l:server in split(serverlist(), "\n")
-    call remote_expr(l:server,
-          \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
-  endfor
+function! vimtex#view#inverse_search_comm(line, filename) abort " {{{1
+  try
+    if has('nvim')
+      call s:inverse_search_comm_nvim(a:line, a:filename)
+    else
+      call s:inverse_search_comm_vim(a:line, a:filename)
+    endif
+  catch
+  endtry
+  quitall!
 endfunction
 
 " }}}1
+
 function! s:inverse_search_comm_nvim(line, filename) abort " {{{1
   if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
     py3 <<EOF
@@ -160,6 +152,14 @@ EOF
           \ 'vimtex#view#inverse_search',
           \ [a:line, a:filename])
     call chanclose(l:socket)
+  endfor
+endfunction
+
+" }}}1
+function! s:inverse_search_comm_vim(line, filename) abort " {{{1
+  for l:server in split(serverlist(), "\n")
+    call remote_expr(l:server,
+          \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
   endfor
 endfunction
 
