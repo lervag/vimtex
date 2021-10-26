@@ -5162,7 +5162,7 @@ search options automatically. This means that, in most cases, inverse search
 should work as expected without any further configuration. One may still be
 interested in learning how inverse-search configuration works, in which case
 one should read |vimtex-synctex-inverse-search|. The interpolation variables
-for Zathura configuration are `%{line}` and `%{file}`, not `%l` and `%f`.
+for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
 
 Associated settings:
 * |g:vimtex_view_zathura_check_libsynctex|
