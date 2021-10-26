@@ -36,7 +36,7 @@ function! s:zathura.start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
     let l:cmd .= ' -x "' . s:inverse_search_cmd
-          \ . ' -c \"call vimtex#view#inverse_search_cmd(%{line}, ''%{input}'')\""'
+          \ . ' -c \"VimtexInverseSearch %{line} ''%{input}''\""'
     if g:vimtex_view_forward_search_on_start
       let l:cmd .= ' --synctex-forward '
             \ .  line('.')
@@ -79,8 +79,11 @@ function! s:zathura.latexmk_append_argument() dict abort " {{{1
   else
     let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
     if self.has_synctex
+      " The inverse search command requires insane amount of quote escapes,
+      " because the command is parsed through several layers of interpreting,
+      " e.g. perl -> shell, perhaps more.
       let l:zathura .= ' -x \"' . s:inverse_search_cmd
-            \ . ' -c \"\\\"\"call vimtex#view#inverse_search_cmd(\%{line}, ''"''"''\%{input}''"''"'')\"\\\"\"\" \%S'
+            \ . ' -c \"\\\"\"VimtexInverseSearch \%{line} ''"''"''\%{input}''"''"''\"\\\"\"\" \%S'
     endif
 
     let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
