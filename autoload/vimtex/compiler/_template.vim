@@ -238,7 +238,7 @@ endfunction
 " }}}1
 function! s:compiler_jobs.kill() abort dict " {{{1
   call job_stop(self.job)
-  sleep 25m
+  sleep 1m
 endfunction
 
 " }}}1
