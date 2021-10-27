@@ -101,25 +101,9 @@ let s:compiler = vimtex#compiler#_template#new({
       \})
 
 function! s:compiler.__check_requirements() abort dict " {{{1
-  let l:required = [self.executable]
-  if self.continuous && !(has('win32') || has('win32unix'))
-    let l:required += ['pgrep']
-  endif
-
-  " Check for required executables
-  for l:exe in l:required
-    if !executable(l:exe)
-      call vimtex#log#warning(l:exe . ' is not executable')
-      throw 'VimTeX: Requirements not met'
-    endif
-  endfor
-
-  " Check option validity
-  if self.callback && !(has('nvim') || has('job'))
-    call vimtex#log#warning(
-          \ 'Can''t use callbacks without +job or +nvim',
-          \ 'Callback option has been disabled.')
-    let self.callback = 0
+  if !executable(self.executable)
+    call vimtex#log#warning(self.executable . ' is not executable')
+    throw 'VimTeX: Requirements not met'
   endif
 endfunction
 
