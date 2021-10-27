@@ -186,10 +186,6 @@ function! vimtex#compiler#start() abort " {{{1
 
   call b:vimtex.compiler.start()
 
-  if b:vimtex.compiler.continuous
-    let b:vimtex.compiler.check_timer = s:check_if_running_start()
-  endif
-
   if g:vimtex_compiler_silent | return | endif
 
   " We add a redraw here to clear messages (e.g. file written). This is useful
@@ -213,7 +209,6 @@ function! vimtex#compiler#stop() abort " {{{1
   endif
 
   call b:vimtex.compiler.stop()
-  silent! call timer_stop(b:vimtex.compiler.check_timer)
 
   if g:vimtex_compiler_silent | return | endif
   call vimtex#log#info('Compiler stopped (' . b:vimtex.base . ')')
@@ -300,37 +295,6 @@ function! s:init_compiler(options) abort " {{{1
   endtry
 
   return {}
-endfunction
-
-" }}}1
-
-
-let s:check_timers = {}
-function! s:check_if_running_start() abort " {{{1
-  let l:timer = timer_start(50, function('s:check_if_running'), {'repeat': 20})
-
-  let s:check_timers[l:timer] = {
-        \ 'compiler' : b:vimtex.compiler,
-        \ 'vimtex_id' : b:vimtex_id,
-        \}
-
-  return l:timer
-endfunction
-
-" }}}1
-function! s:check_if_running(timer) abort " {{{1
-  if s:check_timers[a:timer].compiler.is_running() | return | endif
-  if s:check_timers[a:timer].compiler.status < 1 | return | endif
-
-  call timer_stop(a:timer)
-
-  if get(b:, 'vimtex_id', -1) == s:check_timers[a:timer].vimtex_id
-    call vimtex#compiler#output()
-  endif
-  call vimtex#log#error('Compiler did not start successfully!')
-
-  unlet s:check_timers[a:timer].compiler.check_timer
-  unlet s:check_timers[a:timer]
 endfunction
 
 " }}}1

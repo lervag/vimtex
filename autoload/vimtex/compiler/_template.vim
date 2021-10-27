@@ -127,10 +127,35 @@ function! s:compiler.start(...) abort dict " {{{1
   call self.exec(l:cmd)
   let self.status = 1
 
+  " Use timer to check that compiler started properly
+  if self.continuous
+    let self.check_timer
+          \ = timer_start(50, function('s:check_if_running'), {'repeat': 20})
+    let self.vimtex_id = b:vimtex_id
+    let s:check_timers[self.check_timer] = self
+  endif
+
   if exists('#User#VimtexEventCompileStarted')
     doautocmd <nomodeline> User VimtexEventCompileStarted
   endif
 endfunction
+
+
+let s:check_timers = {}
+function! s:check_if_running(timer) abort " {{{2
+  if s:check_timers[a:timer].is_running() | return | endif
+
+  call timer_stop(a:timer)
+  let l:compiler = remove(s:check_timers, a:timer)
+  unlet l:compiler.check_timer
+
+  if l:compiler.vimtex_id == get(b:, 'vimtex_id', -1)
+    call vimtex#compiler#output()
+  endif
+  call vimtex#log#error('Compiler did not start successfully!')
+endfunction
+
+" }}}2
 
 " }}}1
 function! s:compiler.start_single() abort dict " {{{1
@@ -144,8 +169,9 @@ endfunction
 function! s:compiler.stop() abort dict " {{{1
   if !self.is_running() | return | endif
 
-  let self.status = 0
+  silent! call timer_stop(self.check_timer)
   call self.kill()
+  let self.status = 0
 
   if exists('#User#VimtexEventCompileStopped')
     doautocmd <nomodeline> User VimtexEventCompileStopped
