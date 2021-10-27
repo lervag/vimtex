@@ -55,7 +55,10 @@ endfunction
 " }}}1
 function! s:job.stop() abort dict " {{{1
   call job_stop(self.job)
-  sleep 1m
+  for l:dummy in range(25)
+    sleep 1m
+    if !self.is_running() | return | endif
+  endfor
 endfunction
 
 " }}}1
