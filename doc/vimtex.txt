@@ -2285,6 +2285,11 @@ OPTIONS                                                        *vimtex-options*
     name~
       The command to highlight (`cmdname`).
 
+    hlgroup~
+      Default: Undefined
+      A string that can be used to indicate the target highlight group of the
+      command (`\cmdname`).
+
     mathmode~
       Default: |v:false|
       If true, then the command is a math mode command.
@@ -2323,13 +2328,20 @@ OPTIONS                                                        *vimtex-options*
         * `italunder`
         * `bolditalunder`
 
+    nextgroup~
+      Default: Undefined
+      This is a string that, if defined and not empty, specifies
+      a comma-separated list of possible next syntax groups.
+
   A couple of examples may be helpful: The first in the following list shows
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
-  second shows how to conceal `\R` with `ℝ`. >
+  second shows how to conceal `\R` with `ℝ`. The third shows how one may use
+  the `nextgroup` key. >
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
           \ {'name': 'R', 'mathmode': 1, 'concealchar': 'ℝ'},
+          \ {'name': 'mathnote', 'mathmode': 1, 'nextgroup': 'texMathTextArg'},
           \]
 <
   Default value: []

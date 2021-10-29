@@ -861,6 +861,8 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
         \ 'opt': v:true,
         \ 'arg': v:true,
         \ 'argstyle': '',
+        \ 'nextgroup': '',
+        \ 'hlgroup': '',
         \}, a:cfg)
 
   " Intuitive handling of concealchar
@@ -877,7 +879,6 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
     let l:cfg.optconceal = l:cfg.conceal
   endif
 
-
   " Define group names
   let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
   let l:pre = l:cfg.mathmode ? 'texMath' : 'tex'
@@ -885,64 +886,75 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
   let l:group_opt = l:pre . l:name . 'Opt'
   let l:group_arg = l:pre . l:name . 'Arg'
 
+  " Specify rules for next groups
+  if !empty(l:cfg.nextgroup)
+    let l:nextgroups = 'skipwhite nextgroup=' . l:cfg.nextgroup
+  else
+    " Add syntax rules for the optional group
+    let l:nextgroups = []
+    if l:cfg.opt
+      let l:nextgroups += [l:group_opt]
 
-  " Add syntax rules for the argument group and optional group
-  let l:nextgroups = []
-  if l:cfg.opt
-    let l:nextgroups += [l:group_opt]
+      let l:opt_cfg = {'opts': l:cfg.optconceal ? 'conceal' : ''}
+      if l:cfg.arg
+        let l:opt_cfg.next = l:group_arg
+      endif
+      call vimtex#syntax#core#new_opt(l:group_opt, l:opt_cfg)
 
-    let l:opt_cfg = {'opts': l:cfg.optconceal ? 'conceal' : ''}
+      execute 'highlight def link' l:group_opt 'texOpt'
+    endif
+
+    " Add syntax rules for the argument group
     if l:cfg.arg
-      let l:opt_cfg.next = l:group_arg
-    endif
-    call vimtex#syntax#core#new_opt(l:group_opt, l:opt_cfg)
+      let l:nextgroups += [l:group_arg]
 
-    execute 'highlight def link' l:group_opt 'texOpt'
+      let l:arg_cfg = {'opts': 'contained'}
+      if l:cfg.conceal && empty(l:cfg.concealchar)
+        let l:arg_cfg.opts .= ' concealends'
+      endif
+      if l:cfg.mathmode
+        let l:arg_cfg.contains = '@texClusterMath'
+      endif
+      call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
+
+      let l:style = get({
+            \ 'bold': 'texStyleBold',
+            \ 'ital': 'texStyleItal',
+            \ 'under': 'texStyleUnder',
+            \ 'boldital': 'texStyleBoth',
+            \ 'boldunder': 'texStyleBoldUnder',
+            \ 'italunder': 'texStyleItalUnder',
+            \ 'bolditalunder': 'texStyleBoldItalUnder',
+            \}, l:cfg.argstyle,
+            \ l:cfg.mathmode ? 'texMathArg' : '')
+      if !empty(l:style)
+        execute 'highlight def link' l:group_arg l:style
+      endif
+    endif
+
+    let l:nextgroups = !empty(l:nextgroups)
+          \ ? 'skipwhite nextgroup=' . join(l:nextgroups, ',')
+          \ : ''
   endif
 
-  if l:cfg.arg
-    let l:nextgroups += [l:group_arg]
-
-    let l:arg_cfg = {'opts': 'contained'}
-    if l:cfg.conceal && empty(l:cfg.concealchar)
-      let l:arg_cfg.opts .= ' concealends'
-    endif
-    if l:cfg.mathmode
-      let l:arg_cfg.contains = '@texClusterMath'
-    endif
-    call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
-
-    let l:style = get({
-          \ 'bold': 'texStyleBold',
-          \ 'ital': 'texStyleItal',
-          \ 'under': 'texStyleUnder',
-          \ 'boldital': 'texStyleBoth',
-          \ 'boldunder': 'texStyleBoldUnder',
-          \ 'italunder': 'texStyleItalUnder',
-          \ 'bolditalunder': 'texStyleBoldItalUnder',
-          \}, l:cfg.argstyle,
-          \ l:cfg.mathmode ? 'texMathArg' : '')
-    if !empty(l:style)
-      execute 'highlight def link' l:group_arg l:style
-    endif
-  endif
-
-  let l:nextgroups = !empty(l:nextgroups)
-        \ ? 'skipwhite nextgroup=' . join(l:nextgroups, ',')
-        \ : ''
-
-
-  " Add syntax rule for the command
+  " Add to cluster if necessary
   if l:cfg.mathmode
     execute 'syntax cluster texClusterMath add=' . l:group_cmd
   endif
+
+  " Create the final syntax rule
   execute 'syntax match' l:group_cmd
         \ '"\v\\' . l:cfg.name . '>"'
         \ l:cfg.conceal ? 'conceal' : ''
         \ !empty(l:cfg.concealchar) ? 'cchar=' . l:cfg.concealchar : ''
         \ l:nextgroups
         \ l:cfg.mathmode ? 'contained' : ''
-  execute 'highlight def link' l:group_cmd l:pre . 'Cmd'
+
+  " Define default highlight rule
+  execute 'highlight def link' l:group_cmd
+        \ !empty(l:cfg.hlgroup)
+        \   ? l:cfg.hlgroup
+        \   : l:pre . 'Cmd'
 endfunction
 
 " }}}1

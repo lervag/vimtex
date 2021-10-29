@@ -12,6 +12,10 @@ let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'E', 'mathmode': v:true, 'concealchar': '𝔼'},
       \ {'name': 'P', 'mathmode': v:true, 'concealchar': 'ℙ'},
       \ {'name': 'undline', 'argstyle': 'bolditalunder'},
+      \ {'name': 'mathnote', 'mathmode': 1,
+      \  'nextgroup': 'texMathTextArg', 'hlgroup': 'texMathCmdText'},
+      \ {'name': 'mathnoteC', 'mathmode': 1, 'conceal': 1,
+      \  'nextgroup': 'texMathTextConcArg', 'hlgroup': 'texMathCmdText'},
       \]
 
 silent edit test-custom.tex
