@@ -25,7 +25,7 @@ setlocal indentkeys=!^F,o,O,0(,0),0],0},\&,0=\\item,0=\\else,0=\\fi
 " Add standard closing math delimiters to indentkeys
 for s:delim in [
       \ 'rangle', 'rbrace', 'rvert', 'rVert', 'rfloor', 'rceil', 'urcorner']
-  let &l:indentkeys .= ',=\' . s:delim
+  let &l:indentkeys .= ',0=\' . s:delim
 endfor
 
 
