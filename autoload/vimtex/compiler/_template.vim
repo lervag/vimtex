@@ -293,7 +293,18 @@ endfunction
 
 " }}}1
 function! s:callback(ch, msg) abort " {{{1
-  call vimtex#compiler#callback(2 + vimtex#qf#inquire(s:cb_target))
+  try
+    call vimtex#compiler#callback(2 + vimtex#qf#inquire(s:cb_target))
+  catch /E565:/
+    " In some edge cases, the callback seems to be issued while executing code
+    " in a protected context where "cclose" is not allowed with the resulting
+    " error code from compiler#callback->qf#open. The reported error message
+    " is:
+    "
+    "   E565: Not allowed to change text or change window:       cclose
+    "
+    " See https://github.com/lervag/vimtex/issues/2225
+  endtry
 endfunction
 
 " }}}1
