@@ -20,7 +20,7 @@ set cpoptions&vim
 
 setlocal autoindent
 setlocal indentexpr=VimtexIndentExpr()
-setlocal indentkeys=!^F,o,O,(,),],},\&,=\\item,=\\else,=\\fi
+setlocal indentkeys=!^F,o,O,0(,0),0],0},\&,0=\\item,0=\\else,0=\\fi
 
 " Add standard closing math delimiters to indentkeys
 for s:delim in [
