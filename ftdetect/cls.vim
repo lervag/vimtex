@@ -6,4 +6,7 @@
 
 if !get(g:, 'vimtex_enabled', 1) | finish | endif
 
-autocmd BufRead,BufNewFile *.cls set filetype=tex
+autocmd BufNewFile,BufRead *.cls
+	\ if getline(1) =~ '^%' |
+	\  set filetype=tex |
+	\ endif
