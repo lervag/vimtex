@@ -40,13 +40,7 @@ endfunction
 
 " }}}1
 function! vimtex#log#toggle_verbose() abort " {{{1
-  if s:logger.verbose
-    let s:logger.verbose = 0
-    call vimtex#log#info('Logging is now quiet')
-  else
-    call vimtex#log#info('Logging is now verbose')
-    let s:logger.verbose = 1
-  endif
+  let s:logger.verbose = !s:logger.verbose
 endfunction
 
 " }}}1
