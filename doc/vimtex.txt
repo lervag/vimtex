@@ -16,13 +16,13 @@ License: MIT license {{{
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-  IN THE SOFTWARE.
+  The software is provided "as is", without warranty of any kind, express or
+  implied, including but not limited to the warranties of merchantability,
+  fitness for a particular purpose and noninfringement. In no event shall the
+  authors or copyright holders be liable for any claim, damages or other
+  liability, whether in an action of contract, tort or otherwise, arising
+  from, out of or in connection with the software or the use or other dealings
+  in the software.
 
 }}}
 
@@ -33,10 +33,10 @@ CONTENTS                                                      *vimtex-contents*
     Comment on internal tex plugin              |vimtex-comment-internal|
     Feature overview                            |vimtex-features|
     Requirements                                |vimtex-requirements|
-    Features provided by other plugins          |vimtex-non-features|
     Support for multi-file projects             |vimtex-multi-file|
     Support for TeX specifiers                  |vimtex-tex-directives|
     Package detection                           |vimtex-package-detection|
+    Integration with other plugins              |vimtex-and-friends|
   Usage                                         |vimtex-usage|
     Default mappings                            |vimtex-default-mappings|
     Options                                     |vimtex-options|
@@ -303,243 +303,6 @@ Clientserver~
   used. E.g. `:echo serverlist()`
 
 ------------------------------------------------------------------------------
-FEATURES PROVIDED BY OTHER PLUGINS                        *vimtex-non-features*
-
-The following is a list of features that one might think should be provided by
-VimTeX, but that are instead better provided by other plugins.
-
-* Linting and syntax checking                       |vimtex-nf-linting|
-* Snippets/Templates                                |vimtex-nf-snippets|
-* Tag navigation                                    |vimtex-nf-tag-nav|
-* Manipulate surrounding cmds/delims/envs           |vimtex-nf-surround|
-* Enhanced matching and highlighting of delimiters  |vimtex-nf-enhanced-matchparen|
-* Formatting                                        |vimtex-nf-formatting|
-* Filetype plugin for bib files                     |vimtex-nf-ftplugin-bib|
-* Language server / texlab                          |vimtex-nf-lsp|
-
-Linting and syntax checking~
-                                                            *vimtex-nf-linting*
-  VimTeX has some support for linting through the |:compiler| command, see
-  |vimtex-lint|. There exists several more dedicated, automatic linting
-  plugins. The following plugins have support for (La)TeX syntax checking
-  through `lacheck` [0], `chktex` [1], and `proselint` [2].
-
-    `ale`         https://github.com/dense-analysis/ale
-    `neomake`     https://github.com/neomake/neomake
-    `syntastic`   https://github.com/vim-syntastic/syntastic
-
-  `neomake` also supports `rubberinfo` [3]. One may also be interested in
-  `blacktex` [4], which may be used to clean up/fix LaTeX code.
-
-  [0]: https://www.ctan.org/pkg/lacheck
-  [1]: http://www.nongnu.org/chktex/
-  [2]: http://proselint.com/
-  [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
-  [4]: https://github.com/nschloe/blacktex
-
-Snippets/Templates~
-                                                           *vimtex-nf-snippets*
-  Snippets and/or templates are provided by for instance `neosnippet` and
-  `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
-
-Tag navigation~
-                                                            *vimtex-nf-tag-nav*
-  One may navigate by tags with the |CTRL-]| mapping, e.g. from
-  `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
-  this requires that a tag file has been generated with |ctags|. I recommend
-  that one uses the maintained version of ctags [0]. In addition,
-  I recommend that one uses a plugin that automatically generates the tag
-  files as necessary, e.g. |gutentags| [1].
-
-  See |vimtex-faq-tags| and |vimtex-faq-tags-bibtex| for concrete examples.
-
-  [0]: https://ctags.io/
-  [1]: https://github.com/ludovicchabant/vim-gutentags
-
-Manipulate surrounding commands/delimiters/environments~
-                                                           *vimtex-nf-surround*
-  VimTeX provides mappings that change, delete and toggle commands,
-  delimiters and environments (see the `ds`, `cs` and `ts` family of
-  mappings listed under |vimtex-default-mappings|).  These mappings are
-  inspired by the great `surround.vim` [0] (|surround.txt|) by Tim Pope,
-  which provides mappings to manipulate surrounding delimiters such as `''`,
-  `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from VimTeX
-  should work well together with, and as an extension of, `surround.vim`.
-  Consider also the customization described under |vimtex-faq-surround|.
-  The mappings may be repeated with the dot (|.|) command. See also
-  |g:vimtex_delim_list| if you are interested in customizing the delimiter
-  pairs that are recognized.
-
-  A different possibility is to use `vim-sandwich` [1] (|sandwich.txt|) by
-  Machakann, which may be considered a generalisation of `surround.vim` in
-  that it can handle much more complex sets of delimiters.  `vim-sandwich`
-  is relatively easy to expand with custom surroundings and has built in
-  support for LaTeX-specific surroundings such as quotations, ```text''`,
-  and math delimiters, `$\left(a+b\right)$`.  For a list of supported
-  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` supports
-  `vim-repeat` [2] in addition to `visualrepeat.vim` [3].
-
-  Note: The default mappings of `vim-sandwich` differ from those of
-    `surround.vim`, in that they use `s` as the prefix.  E.g., to add
-    surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
-    instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
-    the map variants from `surround.vim`, these are also available as an
-    option, see |sandwich-miscellaneous|.  And it is also easy to define
-    custom mappings, if one prefers that.
-
-  Note: `vim-sandwich` actually consists of three plugins that work
-    together.  One should make sure to read the docs for all of them:
-    |sandwich.txt|, |operator-sandwich.txt|, and |textobj-sandwich.txt|.
-
-  [0]: https://github.com/tpope/vim-surround
-  [1]: https://github.com/machakann/vim-sandwich
-  [2]: https://github.com/tpope/vim-repeat
-  [3]: http://www.vim.org/scripts/script.php?script_id=3848
-
-Enhanced matching and highlighting of delimiters~
-                                                *vimtex-nf-enhanced-matchparen*
-  VimTeX highlights and allows navigation between matching pairs of
-  delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
-  the `\begin` and `\end` tags of environments. However, the implementation
-  may be slow (see also |vimtex-faq-slow-matchparen|, and so one may use
-  |g:vimtex_matchparen_enabled| to disable the highlighting).
-
-  Alternatively, one may use the plugin |match-up| [0], which offers enhanced
-  |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
-  for a variety of file types.  For LaTeX documents, it:
-    - Extends highlighting and the `%` motion to a number of middle
-      delimiters including
-        - `\bigm` and `\middle` marked delimiters
-        - `\item`s in `itemize` and `enumerate` environments
-        - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
-        - `\if`, `\else` and `\endif`
-      Note: VimTeX does not support highlighting the middle delimiters.
-    - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
-      between matching delimiters and operate on delimited text.
-
-  For example, with match-up enabled, >
-
-    \left( \frac{a}{b} \middle| q \right)
-<
-  the motion `%` will cycle through `\left(`, `\middle|`, and `\right)`, whereas
-  with VimTeX only `\left(` and `\right)` will be matched.  The motion `g%`
-  will do the same, except in reverse.
-
-  To enable the plugin match-up after installation, add the following to
-  your vimrc: >
-
-    let g:matchup_override_vimtex = 1
-<
-  Matching may become computationally intensive for complex LaTeX documents.
-  If you experience slowdowns while moving the cursor, the following option
-  is recommended to delay highlighting slightly while navigating: >
-
-    let g:matchup_matchparen_deferred = 1
-<
-  Note: The exact set of delimiters recognized may differ between match-up
-    and VimTeX.  For example, the mappings `da%` and `dad` will not in general
-    be identical, particularly if you have customized VimTeX's delimiters.
-
-  [0]: https://github.com/andymass/vim-matchup
-
-Formatting~
-                                                         *vimtex-nf-formatting*
-  VimTeX has a custom |formatexpr| that may be enabled with the option
-  |g:vimtex_format_enabled|. However, there are a lot of different styles for
-  formatting LaTeX manuscripts. These are typically much more relevant when
-  writing in collaboration with others. A good reference on this topic is [0],
-  and note in particular the box "Directives for using LaTeX with version
-  control systems".
-
-  The most basic style is to hard wrap lines at a given column, e.g. 80
-  columns, and this is exactly the type of formatting that is supported by
-  VimTeX. However, this is usually not very friendly when collaborating with
-  others, as it tends to mess up diffs between versions of the document.
-  Instead, one might want to consider one of these:
-
-    a) keeping each sentence on a line (use soft wrapping)
-    b) add additional indentation for split sentences [1]
-    c) use semantic line feeds [2]
-
-  In order to make it easier to use one of these styles of formatting, one may
-  want to use an external formatter:
-
-    - latexindent.pl [3]
-    - vim-bucky [4] (note: this is an alpha version as of October 2018)
-
-  Further, there are a range of Vim plugins that can be used to format your
-  document with external tools. Some of these also allow autoformatting of
-  some kind. In no particular order:
-
-    - neoformat [5]
-    - vim-codefmt [6]
-    - vim-autoformat [7]
-    - ale [8]
-    - vim-sentence-chopper [9]
-
-  [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
-  [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
-  [2]: https://rhodesmill.org/brandon/2012/one-sentence-per-line/
-  [3]: https://github.com/cmhughes/latexindent.pl
-  [4]: https://github.com/dbmrq/vim-bucky
-  [5]: https://github.com/sbdchd/neoformat
-  [6]: https://github.com/google/vim-codefmt
-  [7]: https://github.com/Chiel92/vim-autoformat
-  [8]: https://github.com/dense-analysis/ale
-  [9]: https://github.com/Konfekt/vim-sentence-chopper
-
-Filetype plugin for bib files~
-                                                       *vimtex-nf-ftplugin-bib*
-  VimTeX is not a full filetype plugin for bibliography (`.bib`) files. However,
-  it does alter the 'comments' and 'commentstring' options and provide basic
-  indentation and folding; see |g:vimtex_indent_bib_enabled| and
-  |g:vimtex_fold_bib_enabled|, respectively.
-
-  Here are a couple of other related Vim plugins and external tools that might
-  be of interest:
-
-  - `bibtool`
-    An external tool for formatting, sorting, filtering, merging, and more of
-    `.bib` files.
-    http://www.gerd-neugebauer.de/software/TeX/BibTool/
-  - `GooseBib`
-    Some simple command-line tools to clean-up / modify BibTeX files.
-    https://github.com/tdegeus/GooseBib
-  - `tbibtools`
-    A set of ruby-based bibtex-related utilities for sorting, reformatting,
-    listing contents, and so on. Has optional Vim integration.
-    https://www.vim.org/scripts/script.php?script_id=1915
-
-  See also https://github.com/lervag/vimtex/issues/1293 for some related
-  discussions.
-
-Language server / texlab~
-                                                                *vimtex-nf-lsp*
-  In recent years, language servers (LSPs) [0] have become very popular. There
-  is a language server for LaTeX and bibtex called texlab [1]. It may be
-  interesting both as an alternative to VimTeX and/or an addition.
-
-  There is currently no known conflict between texlab and VimTeX, although
-  there is some feature overlap. E.g., both texlab and VimTeX provides
-  advanced completion in various contexts. As texlab is written in Rust and
-  runs in a separate thread, it is no surprise that it will have a clear
-  performance advantage. However, VimTeX does use caches to speed up
-  completion which should in most cases work well.
-
-  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovim's
-  built-in LSP client [3], or |coc-nvim| [4, 5].
-
-  See also this VimTeX issue [6] for more information.
-
-  [0]: https://langserver.org/
-  [1]: https://texlab.netlify.app/
-  [2]: https://github.com/prabirshrestha/vim-lsp
-  [3]: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#texlab
-  [4]: https://github.com/neoclide/coc.nvim
-  [5]: https://github.com/fannheyward/coc-texlab
-  [6]: https://github.com/lervag/vimtex/issues/1371
-
-------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
 
 VimTeX supports most multi-file documents.  The main method uses a recursive
@@ -732,6 +495,249 @@ The package list is determined in two ways: >
    VimTeX to parse the preamble again during an editing session. See
    |:VimtexReload| and |<plug>(vimtex-reload)| (by default mapped to
    `<localleader>lx`).
+
+------------------------------------------------------------------------------
+INTEGRATION WITH OTHER PLUGINS                             *vimtex-and-friends*
+
+VimTeX provides a lot of convenient and useful features for working with LaTeX
+files. However, there are several features that one might expect to be part of
+VimTeX, but that are left out because they are better served by other plugins.
+Let's call them "friends".
+
+The following is an overview of some such features. We also try to give hints
+and suggestions for how to best integrate with VimTeX experience, if that is
+applicable.
+
+* Linting and syntax checking                       |vimtex-af-linting|
+* Snippets/Templates                                |vimtex-af-snippets|
+* Tag navigation                                    |vimtex-af-tag-nav|
+* Manipulate surrounding cmds/delims/envs           |vimtex-af-surround|
+* Enhanced matching and highlighting of delimiters  |vimtex-af-enhanced-matchparen|
+* Formatting                                        |vimtex-af-formatting|
+* Filetype plugin for bib files                     |vimtex-af-ftplugin-bib|
+* Language server / texlab                          |vimtex-af-lsp|
+
+Linting and syntax checking~
+                                                            *vimtex-af-linting*
+  VimTeX has some support for linting through the |:compiler| command, see
+  |vimtex-lint|. There exists several more dedicated, automatic linting
+  plugins. The following plugins have support for (La)TeX syntax checking
+  through `lacheck` [0], `chktex` [1], and `proselint` [2].
+
+    `ale`         https://github.com/dense-analysis/ale
+    `neomake`     https://github.com/neomake/neomake
+    `syntastic`   https://github.com/vim-syntastic/syntastic
+
+  `neomake` also supports `rubberinfo` [3]. One may also be interested in
+  `blacktex` [4], which may be used to clean up/fix LaTeX code.
+
+  [0]: https://www.ctan.org/pkg/lacheck
+  [1]: http://www.nongnu.org/chktex/
+  [2]: http://proselint.com/
+  [3]: https://www.systutorials.com/docs/linux/man/1-rubber-info/
+  [4]: https://github.com/nschloe/blacktex
+
+Snippets/Templates~
+                                                           *vimtex-af-snippets*
+  Snippets and/or templates are provided by for instance `neosnippet` and
+  `UltiSnips`. See |vimtex-neosnippet| and |vimtex-UltiSnips| for more info.
+
+Tag navigation~
+                                                            *vimtex-af-tag-nav*
+  One may navigate by tags with the |CTRL-]| mapping, e.g. from
+  `\eqref{eq:example}` to the corresponding `\label{eq:example}`. However,
+  this requires that a tag file has been generated with |ctags|. I recommend
+  that one uses the maintained version of ctags [0]. In addition,
+  I recommend that one uses a plugin that automatically generates the tag
+  files as necessary, e.g. |gutentags| [1].
+
+  See |vimtex-faq-tags| and |vimtex-faq-tags-bibtex| for concrete examples.
+
+  [0]: https://ctags.io/
+  [1]: https://github.com/ludovicchabant/vim-gutentags
+
+Manipulate surrounding commands/delimiters/environments~
+                                                           *vimtex-af-surround*
+  VimTeX provides mappings that change, delete and toggle commands,
+  delimiters and environments (see the `ds`, `cs` and `ts` family of
+  mappings listed under |vimtex-default-mappings|).  These mappings are
+  inspired by the great `surround.vim` [0] (|surround.txt|) by Tim Pope,
+  which provides mappings to manipulate surrounding delimiters such as `''`,
+  `""`, `()`, `[]`, `{}`, and `<>`.  As such, the mappings from VimTeX
+  should work well together with, and as an extension of, `surround.vim`.
+  Consider also the customization described under |vimtex-faq-surround|.
+  The mappings may be repeated with the dot (|.|) command. See also
+  |g:vimtex_delim_list| if you are interested in customizing the delimiter
+  pairs that are recognized.
+
+  A different possibility is to use `vim-sandwich` [1] (|sandwich.txt|) by
+  Machakann, which may be considered a generalisation of `surround.vim` in
+  that it can handle much more complex sets of delimiters.  `vim-sandwich`
+  is relatively easy to expand with custom surroundings and has built in
+  support for LaTeX-specific surroundings such as quotations, ```text''`,
+  and math delimiters, `$\left(a+b\right)$`.  For a list of supported
+  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` supports
+  `vim-repeat` [2] in addition to `visualrepeat.vim` [3].
+
+  Note: The default mappings of `vim-sandwich` differ from those of
+    `surround.vim`, in that they use `s` as the prefix.  E.g., to add
+    surroundings, one uses `sa{motion/textobject}{type-of-surrounding}`
+    instead of `ys{motion/textobject}{type-of-surrounding}`.  If one prefers
+    the map variants from `surround.vim`, these are also available as an
+    option, see |sandwich-miscellaneous|.  And it is also easy to define
+    custom mappings, if one prefers that.
+
+  Note: `vim-sandwich` actually consists of three plugins that work
+    together.  One should make sure to read the docs for all of them:
+    |sandwich.txt|, |operator-sandwich.txt|, and |textobj-sandwich.txt|.
+
+  [0]: https://github.com/tpope/vim-surround
+  [1]: https://github.com/machakann/vim-sandwich
+  [2]: https://github.com/tpope/vim-repeat
+  [3]: http://www.vim.org/scripts/script.php?script_id=3848
+
+Enhanced matching and highlighting of delimiters~
+                                                *vimtex-af-enhanced-matchparen*
+  VimTeX highlights and allows navigation between matching pairs of
+  delimiters including those in math mode, such as `\bigl(` and `\bigr)`, and
+  the `\begin` and `\end` tags of environments. However, the implementation
+  may be slow (see also |vimtex-faq-slow-matchparen|, and so one may use
+  |g:vimtex_matchparen_enabled| to disable the highlighting).
+
+  Alternatively, one may use the plugin |match-up| [0], which offers enhanced
+  |matchparen| highlighting and `matchit.zip` style motions and |text-objects|
+  for a variety of file types.  For LaTeX documents, it:
+    - Extends highlighting and the `%` motion to a number of middle
+      delimiters including
+        - `\bigm` and `\middle` marked delimiters
+        - `\item`s in `itemize` and `enumerate` environments
+        - `\toprule`, `\midrule`, `\bottomrule` in the `tabular` environment.
+        - `\if`, `\else` and `\endif`
+      Note: VimTeX does not support highlighting the middle delimiters.
+    - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
+      between matching delimiters and operate on delimited text.
+
+  For example, with match-up enabled, >
+
+    \left( \frac{a}{b} \middle| q \right)
+<
+  the motion `%` will cycle through `\left(`, `\middle|`, and `\right)`, whereas
+  with VimTeX only `\left(` and `\right)` will be matched.  The motion `g%`
+  will do the same, except in reverse.
+
+  To enable the plugin match-up after installation, add the following to
+  your vimrc: >
+
+    let g:matchup_override_vimtex = 1
+<
+  Matching may become computationally intensive for complex LaTeX documents.
+  If you experience slowdowns while moving the cursor, the following option
+  is recommended to delay highlighting slightly while navigating: >
+
+    let g:matchup_matchparen_deferred = 1
+<
+  Note: The exact set of delimiters recognized may differ between match-up
+    and VimTeX.  For example, the mappings `da%` and `dad` will not in general
+    be identical, particularly if you have customized VimTeX's delimiters.
+
+  [0]: https://github.com/andymass/vim-matchup
+
+Formatting~
+                                                         *vimtex-af-formatting*
+  VimTeX has a custom |formatexpr| that may be enabled with the option
+  |g:vimtex_format_enabled|. However, there are a lot of different styles for
+  formatting LaTeX manuscripts. These are typically much more relevant when
+  writing in collaboration with others. A good reference on this topic is [0],
+  and note in particular the box "Directives for using LaTeX with version
+  control systems".
+
+  The most basic style is to hard wrap lines at a given column, e.g. 80
+  columns, and this is exactly the type of formatting that is supported by
+  VimTeX. However, this is usually not very friendly when collaborating with
+  others, as it tends to mess up diffs between versions of the document.
+  Instead, one might want to consider one of these:
+
+    a) keeping each sentence on a line (use soft wrapping)
+    b) add additional indentation for split sentences [1]
+    c) use semantic line feeds [2]
+
+  In order to make it easier to use one of these styles of formatting, one may
+  want to use an external formatter:
+
+    - latexindent.pl [3]
+    - vim-bucky [4] (note: this is an alpha version as of October 2018)
+
+  Further, there are a range of Vim plugins that can be used to format your
+  document with external tools. Some of these also allow autoformatting of
+  some kind. In no particular order:
+
+    - neoformat [5]
+    - vim-codefmt [6]
+    - vim-autoformat [7]
+    - ale [8]
+    - vim-sentence-chopper [9]
+
+  [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
+  [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
+  [2]: https://rhodesmill.org/brandon/2012/one-sentence-per-line/
+  [3]: https://github.com/cmhughes/latexindent.pl
+  [4]: https://github.com/dbmrq/vim-bucky
+  [5]: https://github.com/sbdchd/neoformat
+  [6]: https://github.com/google/vim-codefmt
+  [7]: https://github.com/Chiel92/vim-autoformat
+  [8]: https://github.com/dense-analysis/ale
+  [9]: https://github.com/Konfekt/vim-sentence-chopper
+
+Filetype plugin for bib files~
+                                                       *vimtex-af-ftplugin-bib*
+  VimTeX is not a full filetype plugin for bibliography (`.bib`) files. However,
+  it does alter the 'comments' and 'commentstring' options and provide basic
+  indentation and folding; see |g:vimtex_indent_bib_enabled| and
+  |g:vimtex_fold_bib_enabled|, respectively.
+
+  Here are a couple of other related Vim plugins and external tools that might
+  be of interest:
+
+  - `bibtool`
+    An external tool for formatting, sorting, filtering, merging, and more of
+    `.bib` files.
+    http://www.gerd-neugebauer.de/software/TeX/BibTool/
+  - `GooseBib`
+    Some simple command-line tools to clean-up / modify BibTeX files.
+    https://github.com/tdegeus/GooseBib
+  - `tbibtools`
+    A set of ruby-based bibtex-related utilities for sorting, reformatting,
+    listing contents, and so on. Has optional Vim integration.
+    https://www.vim.org/scripts/script.php?script_id=1915
+
+  See also https://github.com/lervag/vimtex/issues/1293 for some related
+  discussions.
+
+Language server / texlab~
+                                                                *vimtex-af-lsp*
+  In recent years, language servers (LSPs) [0] have become very popular. There
+  is a language server for LaTeX and bibtex called texlab [1]. It may be
+  interesting both as an alternative to VimTeX and/or an addition.
+
+  There is currently no known conflict between texlab and VimTeX, although
+  there is some feature overlap. E.g., both texlab and VimTeX provides
+  advanced completion in various contexts. As texlab is written in Rust and
+  runs in a separate thread, it is no surprise that it will have a clear
+  performance advantage. However, VimTeX does use caches to speed up
+  completion which should in most cases work well.
+
+  To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovim's
+  built-in LSP client [3], or |coc-nvim| [4, 5].
+
+  See also this VimTeX issue [6] for more information.
+
+  [0]: https://langserver.org/
+  [1]: https://texlab.netlify.app/
+  [2]: https://github.com/prabirshrestha/vim-lsp
+  [3]: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#texlab
+  [4]: https://github.com/neoclide/coc.nvim
+  [5]: https://github.com/fannheyward/coc-texlab
+  [6]: https://github.com/lervag/vimtex/issues/1371
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
@@ -4791,7 +4797,7 @@ compiler may then be used e.g. with |:make| or |:lmake|. See the following
 text for some tips on how one may use this feature.
 
 It is possible to use more automatic linting through dedicated plugins. For
-more information, see |vimtex-nf-linting|.
+more information, see |vimtex-af-linting|.
 
 Associated settings:
 * |g:vimtex_lint_chktex_parameters|
@@ -5531,7 +5537,7 @@ A: Because it is complicated and requires some expensive searches for matching
    which is expensive. You can tune the timeout and stopline parameters for
    the searches with |g:vimtex_delim_timeout| and |g:vimtex_delim_stopline|,
    which may help. If it is still too slow, you can also try to use
-   vim-matchup [0], see also |vimtex-nf-enhanced-matchparen|.
+   vim-matchup [0], see also |vimtex-af-enhanced-matchparen|.
 
    [0]: https://github.com/andymass/vim-matchup
 
@@ -5552,7 +5558,7 @@ A: The mentioned mappings are indeed inspired by |surround.vim|.  However,
    Remark also that, by default, |surround.vim| already provides the mapping
    `ys<text-object>l` for encapsulating a text object in a LaTeX environment.
 
-   Note: Please also read the section |vimtex-nf-surround|!
+   Note: Please also read the section |vimtex-af-surround|!
 
    Note: An alternative is to use `vim-sandwich` (see |sandwich.txt| or
          https://github.com/machakann/vim-sandwich), which has built-in
