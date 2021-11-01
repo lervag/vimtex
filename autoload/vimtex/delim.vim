@@ -26,7 +26,7 @@ function! vimtex#delim#init_buffer() abort " {{{1
         \ :<c-u>call <sid>operator_setup('delete')<bar>normal! g@l<cr>
 
   inoremap <silent><buffer> <plug>(vimtex-delim-close)
-        \ <c-r>=vimtex#delim#close()<cr>
+        \ <c-r>=vimtex#delim#close()<cr><c-f>
 endfunction
 
 " }}}1
