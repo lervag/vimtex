@@ -3342,13 +3342,13 @@ It is of course possible to customize the list of mappings. First, one may
 specifically disable the entire imaps feature with |g:vimtex_imaps_enabled| or
 specific default mappings through |g:vimtex_imaps_disabled|. Second, one may
 specify |g:vimtex_imaps_list|, which will overwrite the default list. Finally,
-one may add new maps through calls to the function |vimtex#imap#add_map|. The
+one may add new maps through calls to the function |vimtex#imaps#add_map|. The
 following are some examples of how to customize the mappings: >
 
   " Disable \alpha and \beta mappings
   let g:vimtex_imaps_disabled = ['a', 'b']
 
-  " Add custom mapping through vimtex#imap#add_map
+  " Add custom mapping through vimtex#imaps#add_map
   call vimtex#imaps#add_map({
         \ 'lhs' : 'test',
         \ 'rhs' : '\tested',
