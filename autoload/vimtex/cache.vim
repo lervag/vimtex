@@ -128,13 +128,18 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new.ftime = -1
   let new.modified = 0
 
-  if has_key(a:opts, 'validate')
+  " Validate cache
+  if new.persistent
+    let l:validation = get(a:opts, 'validate', s:_version)
+    if type(l:validation) == v:t_dict
+      let l:validation._version = s:_version
+    endif
     call new.read()
     if !has_key(new.data, '__validate')
-          \ || type(a:opts.validate) != type(new.data.__validate)
-          \ || a:opts.validate != new.data.__validate
+          \ || type(new.data.__validate) != type(l:validation)
+          \ || new.data.__validate != l:validation
       call new.clear()
-      let new.data.__validate = deepcopy(a:opts.validate)
+      let new.data.__validate = deepcopy(l:validation)
       call new.write()
     endif
   endif
@@ -232,3 +237,6 @@ function! s:local_name(name) abort " {{{1
 endfunction
 
 " }}}1
+
+
+let s:_version = 'cache_v0'

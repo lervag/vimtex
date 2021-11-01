@@ -5,10 +5,7 @@
 "
 
 function! vimtex#kpsewhich#find(file) abort " {{{1
-  let l:cache = vimtex#cache#open('kpsewhich', {
-        \ 'default': [],
-        \ 'validate': 'cache_v0',
-        \})
+  let l:cache = vimtex#cache#open('kpsewhich', {'default': []})
 
   let l:root = exists('b:vimtex.root') ? b:vimtex.root : getcwd()
   let l:current = l:cache.get(a:file)

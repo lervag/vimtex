@@ -148,7 +148,6 @@ function! s:completer_bib.gather_candidates() dict abort " {{{2
 
   let l:cache = vimtex#cache#open('bibcomplete', {
         \ 'local': 1,
-        \ 'validate': g:vimtex_complete_bib,
         \ 'default': {'result': [], 'ftime': -1}
         \})
 
@@ -754,10 +753,7 @@ endfunction
 " }}}1
 function! s:load_from_package(pkg, type) abort " {{{1
   let s:pkg_cache = get(s:, 'pkg_cache',
-        \ vimtex#cache#open('pkgcomplete', {
-        \   'default': {},
-        \   'validate': 'cache_v0',
-        \ }))
+        \ vimtex#cache#open('pkgcomplete', {'default': {}}))
   let l:current = s:pkg_cache.get(a:pkg)
 
   let l:pkg_file = s:complete_dir . '/' . a:pkg
@@ -795,10 +791,7 @@ endfunction
 " }}}1
 function! s:load_from_document(type) abort " {{{1
   let s:pkg_cache = get(s:, 'pkg_cache',
-        \ vimtex#cache#open('pkgcomplete', {
-        \   'default': {},
-        \   'validate': 'cache_v0',
-        \ }))
+        \ vimtex#cache#open('pkgcomplete', {'default': {}}))
 
   let l:ftime = b:vimtex.getftime()
   if l:ftime < 0 | return [] | endif

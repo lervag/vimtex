@@ -33,7 +33,6 @@ function! vimtex#parser#auxiliary#labels() abort " {{{1
 
   let l:cache = vimtex#cache#open('refcomplete', {
         \ 'local': 1,
-        \ 'validate': 'cache_v0',
         \ 'default': {'labels': [], 'ftime': -1}
         \})
 
