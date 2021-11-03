@@ -138,8 +138,21 @@ endfunction
 " }}}1
 
 function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
+  " WARNING: The following code is somewhat messy, as it mixes Python with
+  "          Vimscript. Read with care!
   if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    py3 <<EOF
+    if vimtex#util#is_win()
+      py3 << EOF
+import psutil
+
+sockets = [
+    p
+    for p in psutil.process_iter(attrs=["name"])
+    if p.info["name"] in ("nvim", "nvim.exe")
+]
+EOF
+    else
+      py3 << EOF
 import psutil
 
 sockets = []
@@ -147,7 +160,9 @@ for proc in (p for p in psutil.process_iter(attrs=['name'])
              if p.info['name'] == 'nvim'):
     sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
 EOF
+    endif
     let l:socket_ids = filter(py3eval('sockets'), 'v:val != v:servername')
+    unsilent echo l:socket_ids
   else
     let l:socket_ids = [$NVIM_LISTEN_ADDRESS_VIMTEX]
   endif
