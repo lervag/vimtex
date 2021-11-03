@@ -68,7 +68,7 @@ function! VimtexIndent(lnum) abort " {{{1
     let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   endif
 
-  return l:ind
+  return l:ind < 0 ? 0 : l:ind
 endfunction
 
 "}}}
