@@ -5239,7 +5239,7 @@ However, VimTeX provides a convenience function to simplify the viewer
 configuration. So, instead it is recommended to use the following viewer
 configuration with Vim or neovim, respectively: >
 
-  vim -T dumb --not-a-term -n -c "VimtexInverseSearch %l '%f'"
+  vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
 
   nvim --headless -c "VimtexInverseSearch %l '%f'"
 
