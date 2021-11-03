@@ -67,7 +67,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   let l:file = resolve(a:filename)
   let l:sources = copy(b:vimtex.sources)
   if vimtex#paths#is_abs(l:file)
-    call map(l:sources, {_, x -> b:vimtex.root . '/' . x})
+    call map(l:sources, {_, x -> vimtex#paths#join(b:vimtex.root, x)})
   endif
   if index(l:sources, l:file) < 0 | return -2 | endif
 

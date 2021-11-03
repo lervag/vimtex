@@ -23,6 +23,22 @@ endfunction
 
 " }}}1
 
+function! vimtex#paths#join(root, tail) abort " {{{1
+  return vimtex#paths#s(a:root . '/' . a:tail)
+endfunction
+
+" }}}1
+
+function! vimtex#paths#s(path) abort " {{{1
+  " Handle shellescape issues and simplify path
+  let l:path = exists('+shellslash') && !&shellslash
+        \ ? tr(a:path, '/', '\')
+        \ : a:path
+
+  return simplify(l:path)
+endfunction
+
+" }}}1
 function! vimtex#paths#is_abs(path) abort " {{{1
   return a:path =~# s:re_abs
 endfunction
