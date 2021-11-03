@@ -4,7 +4,7 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-if vimtex#util#get_os() ==# 'win' | quitall | endif
+if vimtex#util#is_win() | quitall | endif
 
 
 let s:output = vimtex#jobs#capture("echo 'a\nb'")
