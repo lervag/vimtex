@@ -5250,6 +5250,12 @@ search. The combined effect is a more robust experience that will seamlessly
 handle multiple Vim or neovim instances and multiple VimTeX instances. The
 user doesn't need to worry about passing the correct servernames.
 
+Note: The above commands should work also on Windows, but there may be an
+      annoying command window "popup". This may be avoided, or at least
+      reduced, if one prepends `cmd /c start /min ""`, e.g.: >
+
+        cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
 
