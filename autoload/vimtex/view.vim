@@ -146,9 +146,10 @@ function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
 import psutil
 
 sockets = [
-    p
+    p.environ()["NVIM_LISTEN_ADDRESS_VIMTEX"]
     for p in psutil.process_iter(attrs=["name"])
-    if p.info["name"] in ("nvim", "nvim.exe")
+    if ("nvim" in p.info["name"]
+            and "NVIM_LISTEN_ADDRESS_VIMTEX" in p.environ())
 ]
 EOF
     else
@@ -157,7 +158,7 @@ import psutil
 
 sockets = []
 for proc in (p for p in psutil.process_iter(attrs=['name'])
-             if p.info['name'] == 'nvim'):
+             if p.info['name'] in ('nvim', 'nvim.exe', 'nvim-qt.exe')):
     sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
 EOF
     endif
