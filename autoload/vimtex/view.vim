@@ -8,10 +8,8 @@ function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
   " Store neovim servername for inheritance to inverse search
-  if has('nvim')
-        \ && !empty($NVIM_LISTEN_ADDRESS)
-        \ && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    let $NVIM_LISTEN_ADDRESS_VIMTEX = $NVIM_LISTEN_ADDRESS
+  if has('nvim') && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
+    let $NVIM_LISTEN_ADDRESS_VIMTEX = v:servername
   endif
 
   command! -buffer -nargs=? -complete=file VimtexView
