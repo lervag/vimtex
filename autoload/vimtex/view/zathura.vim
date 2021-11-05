@@ -66,7 +66,7 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
   let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
 
   let self.cmd_forward_search = printf(
-        \ 'zathura --synctex-forward %d:%d:%s %s',
+        \ 'zathura --synctex-forward %d:%d:%s %s &',
         \ line('.'), col('.'),
         \ vimtex#util#shellescape(self.texfile),
         \ vimtex#util#shellescape(self.outfile))
