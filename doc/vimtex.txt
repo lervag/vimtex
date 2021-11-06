@@ -5464,13 +5464,7 @@ A: Yes. But there are some "gotchas":
 ------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
 Q: Does VimTeX support neovim?
-A: Yes, but some people may complain that VimTeX is not written in Lua! In any
-   case, a couple of requirements should be mentioned:
-
-   * |:VimtexInverseSearch| requires that neovim has a Python 3 provider
-     available, and the Python environment requires the `psutil` and `pynvim`
-     packages. See also |python-provider| for more info on how to setup neovim
-     with Python providers.
+A: Yes, but some people may complain that VimTeX is not written in Lua!
 
 ------------------------------------------------------------------------------
                                                    *vimtex-faq-slow-matchparen*
