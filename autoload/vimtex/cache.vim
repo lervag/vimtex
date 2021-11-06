@@ -10,6 +10,17 @@ endfunction
 
 " }}}1
 
+function! vimtex#cache#path(name) abort " {{{1
+  let l:root = s:root()
+  if !isdirectory(l:root)
+    call mkdir(l:root, 'p')
+  endif
+
+  return vimtex#paths#join(l:root, a:name)
+endfunction
+
+" }}}1
+
 function! vimtex#cache#open(name, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
   let l:name = get(l:opts, 'local') ? s:local_name(a:name) : a:name
@@ -109,13 +120,8 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new = deepcopy(self)
   unlet new.init
 
-  let l:root = s:root()
-  if !isdirectory(l:root)
-    call mkdir(l:root, 'p')
-  endif
-
   let new.name = a:name
-  let new.path = l:root . '/' . a:name . '.json'
+  let new.path = vimtex#cache#path(a:name . '.json')
   let new.local = get(a:opts, 'local')
   let new.persistent = get(a:opts, 'persistent',
         \ get(g:, 'vimtex_cache_persistent', 1))
