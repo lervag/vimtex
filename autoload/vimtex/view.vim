@@ -7,17 +7,15 @@
 function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
-  command! -buffer -nargs=? -complete=file VimtexView
-        \ call vimtex#view#view(<q-args>)
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    command! -buffer -nargs=* VimtexViewRSearch
-         \ call vimtex#view#reverse_search()
+  " Store neovim servername for inheritance to inverse search
+  if has('nvim') && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
+    let $NVIM_LISTEN_ADDRESS_VIMTEX = v:servername
   endif
 
+  command! -buffer -nargs=? -complete=file VimtexView
+        \ call vimtex#view#view(<q-args>)
+
   nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
-  if has_key(b:vimtex.viewer, 'reverse_search')
-    nnoremap <buffer> <plug>(vimtex-reverse-search) :VimtexViewRSearch<cr>
-  endif
 endfunction
 
 " }}}1
@@ -50,13 +48,6 @@ function! vimtex#view#view(...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#reverse_search() abort " {{{1
-  if exists('*b:vimtex.viewer.reverse_search')
-    call b:vimtex.viewer.reverse_search()
-  endif
-endfunction
-
-" }}}1
 function! vimtex#view#not_readable(output) abort " {{{1
   if filereadable(a:output) | return 0 | endif
 
@@ -66,10 +57,20 @@ endfunction
 
 " }}}1
 
-function! vimtex#view#reverse_goto(line, filename) abort " {{{1
-  if mode() ==# 'i' | stopinsert | endif
+function! vimtex#view#inverse_search(line, filename) abort " {{{1
+  " Only activate in VimTeX buffers
+  if !exists('b:vimtex') | return -1 | endif
 
+  " Only activate in relevant VimTeX projects
   let l:file = resolve(a:filename)
+  let l:sources = copy(b:vimtex.sources)
+  if vimtex#paths#is_abs(l:file)
+    call map(l:sources, {_, x -> vimtex#paths#join(b:vimtex.root, x)})
+  endif
+  if index(l:sources, l:file) < 0 | return -2 | endif
+
+
+  if mode() ==# 'i' | stopinsert | endif
 
   " Open file if necessary
   if !bufloaded(l:file)
@@ -81,13 +82,13 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
               \ 'Reverse goto failed!',
               \ printf('Command error: %s %s',
               \        g:vimtex_view_reverse_search_edit_cmd, l:file)])
-        return
+        return -3
       endtry
     else
       call vimtex#log#warning([
             \ 'Reverse goto failed!',
             \ printf('File not readable: "%s"', l:file)])
-      return
+      return -4
     endif
   endif
 
@@ -104,12 +105,83 @@ function! vimtex#view#reverse_goto(line, filename) abort " {{{1
   endtry
 
   execute 'normal!' a:line . 'G'
-  redraw
   call s:focus_vim()
+  redraw
 
   if exists('#User#VimtexEventViewReverse')
     doautocmd <nomodeline> User VimtexEventViewReverse
   endif
+endfunction
+
+" }}}1
+function! vimtex#view#inverse_search_cmd(line, filename) abort " {{{1
+  " One may call this function manually, but the main usage is to through the
+  " command "VimtexInverseSearch". See ":help vimtex-synctex-inverse-search"
+  " for more info.
+
+  if a:line > 0 && !empty(a:filename)
+    try
+      if has('nvim')
+        call s:inverse_search_cmd_nvim(a:line, a:filename)
+      else
+        call s:inverse_search_cmd_vim(a:line, a:filename)
+      endif
+    catch
+    endtry
+  endif
+
+  quitall!
+endfunction
+
+" }}}1
+
+function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
+  " WARNING: The following code is somewhat messy, as it mixes Python with
+  "          Vimscript. Read with care!
+  if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
+    if vimtex#util#is_win()
+      py3 << EOF
+import psutil
+
+sockets = [
+    p.environ()["NVIM_LISTEN_ADDRESS_VIMTEX"]
+    for p in psutil.process_iter(attrs=["name"])
+    if ("nvim" in p.info["name"]
+            and "NVIM_LISTEN_ADDRESS_VIMTEX" in p.environ())
+]
+EOF
+    else
+      py3 << EOF
+import psutil
+
+sockets = []
+for proc in (p for p in psutil.process_iter(attrs=['name'])
+             if p.info['name'] in ('nvim', 'nvim.exe', 'nvim-qt.exe')):
+    sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
+EOF
+    endif
+    let l:socket_ids = filter(py3eval('sockets'), 'v:val != v:servername')
+    unsilent echo l:socket_ids
+  else
+    let l:socket_ids = [$NVIM_LISTEN_ADDRESS_VIMTEX]
+  endif
+
+  for l:socket_id in l:socket_ids
+    let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
+    call rpcnotify(l:socket,
+          \ 'nvim_call_function',
+          \ 'vimtex#view#inverse_search',
+          \ [a:line, a:filename])
+    call chanclose(l:socket)
+  endfor
+endfunction
+
+" }}}1
+function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
+  for l:server in split(serverlist(), "\n")
+    call remote_expr(l:server,
+          \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
+  endfor
 endfunction
 
 " }}}1

@@ -23,6 +23,20 @@ endfunction
 
 " }}}1
 
+function! vimtex#paths#join(root, tail) abort " {{{1
+  return vimtex#paths#s(a:root . '/' . a:tail)
+endfunction
+
+" }}}1
+
+function! vimtex#paths#s(path) abort " {{{1
+  " Use backslash on Windows
+  return simplify(vimtex#util#is_win()
+        \ ? tr(a:path, '/', '\')
+        \ : a:path)
+endfunction
+
+" }}}1
 function! vimtex#paths#is_abs(path) abort " {{{1
   return a:path =~# s:re_abs
 endfunction
