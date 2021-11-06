@@ -7,15 +7,14 @@
 function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
-  " Store neovim servername for inheritance to inverse search
-  if has('nvim') && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    let $NVIM_LISTEN_ADDRESS_VIMTEX = v:servername
-  endif
-
   command! -buffer -nargs=? -complete=file VimtexView
         \ call vimtex#view#view(<q-args>)
 
   nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
+
+  if has('nvim')
+    call writefile([v:servername], s:nvim_servernames, 'a')
+  endif
 endfunction
 
 " }}}1
@@ -136,45 +135,32 @@ endfunction
 " }}}1
 
 function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
-  " WARNING: The following code is somewhat messy, as it mixes Python with
-  "          Vimscript. Read with care!
-  if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    if vimtex#util#is_win()
-      py3 << EOF
-import psutil
+  if !filereadable(s:nvim_servernames) | return | endif
 
-sockets = [
-    p.environ()["NVIM_LISTEN_ADDRESS_VIMTEX"]
-    for p in psutil.process_iter(attrs=["name"])
-    if ("nvim" in p.info["name"]
-            and "NVIM_LISTEN_ADDRESS_VIMTEX" in p.environ())
-]
-EOF
-    else
-      py3 << EOF
-import psutil
+  let l:servers = readfile(s:nvim_servernames)
+  let l:servers_connected = []
 
-sockets = []
-for proc in (p for p in psutil.process_iter(attrs=['name'])
-             if p.info['name'] in ('nvim', 'nvim.exe', 'nvim-qt.exe')):
-    sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
-EOF
-    endif
-    let l:socket_ids = filter(py3eval('sockets'), 'v:val != v:servername')
-    unsilent echo l:socket_ids
-  else
-    let l:socket_ids = [$NVIM_LISTEN_ADDRESS_VIMTEX]
-  endif
+  for l:server in l:servers
+    try
+      let l:socket = sockconnect('pipe', l:server, {'rpc': 1})
+    catch
+      continue
+    endtry
 
-  for l:socket_id in l:socket_ids
-    let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
+    call add(l:servers_connected, l:server)
     call rpcnotify(l:socket,
           \ 'nvim_call_function',
           \ 'vimtex#view#inverse_search',
           \ [a:line, a:filename])
     call chanclose(l:socket)
   endfor
+
+  if len(l:servers_connected) < len(l:servers)
+    call writefile(l:servers_connected, s:nvim_servernames)
+  endif
 endfunction
+
+let s:nvim_servernames = vimtex#cache#path('nvim_servernames.log')
 
 " }}}1
 function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
