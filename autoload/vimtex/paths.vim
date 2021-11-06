@@ -30,12 +30,10 @@ endfunction
 " }}}1
 
 function! vimtex#paths#s(path) abort " {{{1
-  " Handle shellescape issues and simplify path
-  let l:path = exists('+shellslash') && !&shellslash
+  " Use backslash on Windows
+  return simplify(vimtex#util#is_win()
         \ ? tr(a:path, '/', '\')
-        \ : a:path
-
-  return simplify(l:path)
+        \ : a:path)
 endfunction
 
 " }}}1
