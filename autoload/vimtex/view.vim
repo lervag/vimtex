@@ -137,7 +137,7 @@ endfunction
 function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
   if !filereadable(s:nvim_servernames) | return | endif
 
-  let l:servers = readfile(s:nvim_servernames)
+  let l:servers = vimtex#util#uniq_unsorted(readfile(s:nvim_servernames))
   let l:servers_connected = []
 
   for l:server in l:servers
