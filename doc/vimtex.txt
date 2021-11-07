@@ -5213,6 +5213,7 @@ your vim session. See |g:vimtex_view_method| for a list of supported viewers.
 Inverse search~
                                                 *vimtex-synctex-inverse-search*
                                                *vimtex-synctex-backward-search*
+                                                         *:VimtexInverseSearch*
 
 In supported viewers, one may set up inverse search, which allows one to go
 directly from a selected line in the viewer (typically by double clicking with
@@ -5220,23 +5221,16 @@ the mouse or something similar) to the corresponding line inside the Vim
 instance. This is sometimes also called backward search or reverse search.
 
 Inverse search relies on communicating with Vim/neovim from the viewer by use
-of shell commands executed by the viewer. Each Vim or neovim instance is
-(normally) available for communication as a server. Vim users should be aware,
-though, that one may need to ensure that the server is really running, see
-|vimtex-clientserver|.
-
-Inverse search is set up within the specific viewer through an option named
-something like "inverse search command-line". The option specifies the
-necessary shell command to perform the inverse search. The target line and
-file are provided as interpolation variables. In the following, we use `%l`
-and `%f`, but the interpolation variables may be named different in some
-viewers (e.g. |vimtex-view-skim|).
-
-Common configuration that one would find documented often looks like this: >
+of shell commands executed by the viewer. It is usually configured within the
+specific viewer through an option named something like "inverse search
+command-line". The option specifies the necessary shell command to perform the
+inverse search. The target line and file are provided as interpolation
+variables. In the following, we use `%l` and `%f`, but the interpolation
+variables may be named different in some viewers (e.g. |vimtex-view-skim|).
+A typical shell command looks like this: >
 
   vim --remote-silent +%l %f
-<
-                                                         *:VimtexInverseSearch*
+
 Luckily, VimTeX provides a convenience function to simplify the viewer
 configuration. The command `VimtexInverseSearch` will execute
 |vimtex#view#inverse_search| with the target line and file as arguments inside
@@ -5258,6 +5252,9 @@ This may be avoided, or at least reduced, with the following variants: >
   cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
 
   cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+
+Note: Vim users should be aware that one may need to ensure that the server is
+      really running, see |vimtex-clientserver|.
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
@@ -5464,13 +5461,7 @@ A: Yes. But there are some "gotchas":
 ------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
 Q: Does VimTeX support neovim?
-A: Yes, but some people may complain that VimTeX is not written in Lua! In any
-   case, a couple of requirements should be mentioned:
-
-   * |:VimtexInverseSearch| requires that neovim has a Python 3 provider
-     available, and the Python environment requires the `psutil` and `pynvim`
-     packages. See also |python-provider| for more info on how to setup neovim
-     with Python providers.
+A: Yes, but some people may complain that VimTeX is not written in Lua!
 
 ------------------------------------------------------------------------------
                                                    *vimtex-faq-slow-matchparen*

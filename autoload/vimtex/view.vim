@@ -7,15 +7,14 @@
 function! vimtex#view#init_buffer() abort " {{{1
   if !g:vimtex_view_enabled | return | endif
 
-  " Store neovim servername for inheritance to inverse search
-  if has('nvim') && empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    let $NVIM_LISTEN_ADDRESS_VIMTEX = v:servername
-  endif
-
   command! -buffer -nargs=? -complete=file VimtexView
         \ call vimtex#view#view(<q-args>)
 
   nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
+
+  if has('nvim')
+    call s:nvim_prune_servernames()
+  endif
 endfunction
 
 " }}}1
@@ -136,38 +135,14 @@ endfunction
 " }}}1
 
 function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
-  " WARNING: The following code is somewhat messy, as it mixes Python with
-  "          Vimscript. Read with care!
-  if empty($NVIM_LISTEN_ADDRESS_VIMTEX)
-    if vimtex#util#is_win()
-      py3 << EOF
-import psutil
+  if !filereadable(s:nvim_servernames) | return | endif
 
-sockets = [
-    p.environ()["NVIM_LISTEN_ADDRESS_VIMTEX"]
-    for p in psutil.process_iter(attrs=["name"])
-    if ("nvim" in p.info["name"]
-            and "NVIM_LISTEN_ADDRESS_VIMTEX" in p.environ())
-]
-EOF
-    else
-      py3 << EOF
-import psutil
+  for l:server in readfile(s:nvim_servernames)
+    try
+      let l:socket = sockconnect('pipe', l:server, {'rpc': 1})
+    catch
+    endtry
 
-sockets = []
-for proc in (p for p in psutil.process_iter(attrs=['name'])
-             if p.info['name'] in ('nvim', 'nvim.exe', 'nvim-qt.exe')):
-    sockets += [c.laddr for c in proc.connections('unix') if c.laddr]
-EOF
-    endif
-    let l:socket_ids = filter(py3eval('sockets'), 'v:val != v:servername')
-    unsilent echo l:socket_ids
-  else
-    let l:socket_ids = [$NVIM_LISTEN_ADDRESS_VIMTEX]
-  endif
-
-  for l:socket_id in l:socket_ids
-    let l:socket = sockconnect('pipe', l:socket_id, {'rpc': 1})
     call rpcnotify(l:socket,
           \ 'nvim_call_function',
           \ 'vimtex#view#inverse_search',
@@ -176,12 +151,34 @@ EOF
   endfor
 endfunction
 
-" }}}1
 function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
   for l:server in split(serverlist(), "\n")
     call remote_expr(l:server,
           \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
   endfor
+endfunction
+
+" }}}1
+
+function! s:nvim_prune_servernames() abort " {{{1
+  " Load servernames from file
+  let l:servers = filereadable(s:nvim_servernames)
+        \ ? readfile(s:nvim_servernames)
+        \ : []
+
+  " Check which servers are available
+  let l:available_servernames = []
+  for l:server in vimtex#util#uniq_unsorted(l:servers + [v:servername])
+    try
+      let l:socket = sockconnect('pipe', l:server)
+      call add(l:available_servernames, l:server)
+      call chanclose(l:socket)
+    catch
+    endtry
+  endfor
+
+  " Write the pruned list to file
+  call writefile(l:available_servernames, s:nvim_servernames)
 endfunction
 
 " }}}1
@@ -220,3 +217,6 @@ function! s:focus_vim() abort " {{{1
 endfunction
 
 " }}}1
+
+
+let s:nvim_servernames = vimtex#cache#path('nvim_servernames.log')
