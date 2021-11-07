@@ -20,4 +20,4 @@ $(TESTS_KPSEWHICH):
 test-cleanup: $(TESTS_ALL)
 	@rm kpsewhich.json
 	@rm capture.json
-	@rm nvim_servernames.log
+	@rm -f nvim_servernames.log

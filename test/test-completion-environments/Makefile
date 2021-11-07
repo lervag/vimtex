@@ -14,4 +14,4 @@ $(TESTS):
 	@$(MYVIM) -u $@.vim
 
 test-cleanup: $(TESTS)
-	@rm nvim_servernames.log
+	@rm -f nvim_servernames.log

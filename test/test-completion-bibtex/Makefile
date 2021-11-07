@@ -19,4 +19,4 @@ $(BACKENDS):
 	@BACKEND=$@ $(MYVIM) -u test_backend.vim
 
 test-cleanup: $(TESTS_ALL)
-	@rm nvim_servernames.log
+	@rm -f nvim_servernames.log
