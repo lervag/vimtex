@@ -207,8 +207,6 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   call vimtex#log#warning(["Creating build_dir directorie(s):"]
         \ + map(copy(l:dirs), {_, x -> '* ' . x}))
 
-  unsilent echo 'DBG' l:dirs "\n"
-
   for l:dir in l:dirs
     call mkdir(l:dir, 'p')
   endfor
