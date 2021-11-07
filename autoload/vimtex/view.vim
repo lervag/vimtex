@@ -13,7 +13,7 @@ function! vimtex#view#init_buffer() abort " {{{1
   nnoremap <buffer> <plug>(vimtex-view) :VimtexView<cr>
 
   if has('nvim')
-    call writefile([v:servername], s:nvim_servernames, 'a')
+    call s:nvim_prune_servernames()
   endif
 endfunction
 
@@ -137,37 +137,48 @@ endfunction
 function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
   if !filereadable(s:nvim_servernames) | return | endif
 
-  let l:servers = vimtex#util#uniq_unsorted(readfile(s:nvim_servernames))
-  let l:servers_connected = []
-
-  for l:server in l:servers
+  for l:server in readfile(s:nvim_servernames)
     try
       let l:socket = sockconnect('pipe', l:server, {'rpc': 1})
     catch
-      continue
     endtry
 
-    call add(l:servers_connected, l:server)
     call rpcnotify(l:socket,
           \ 'nvim_call_function',
           \ 'vimtex#view#inverse_search',
           \ [a:line, a:filename])
     call chanclose(l:socket)
   endfor
-
-  if len(l:servers_connected) < len(l:servers)
-    call writefile(l:servers_connected, s:nvim_servernames)
-  endif
 endfunction
 
-let s:nvim_servernames = vimtex#cache#path('nvim_servernames.log')
-
-" }}}1
 function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
   for l:server in split(serverlist(), "\n")
     call remote_expr(l:server,
           \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
   endfor
+endfunction
+
+" }}}1
+
+function! s:nvim_prune_servernames() abort " {{{1
+  " Load servernames from file
+  let l:servers = filereadable(s:nvim_servernames)
+        \ ? readfile(s:nvim_servernames)
+        \ : []
+
+  " Check which servers are available
+  let l:available_servernames = []
+  for l:server in vimtex#util#uniq_unsorted(l:servers + [v:servername])
+    try
+      let l:socket = sockconnect('pipe', l:server)
+      call add(l:available_servernames, l:server)
+      call chanclose(l:socket)
+    catch
+    endtry
+  endfor
+
+  " Write the pruned list to file
+  call writefile(l:available_servernames, s:nvim_servernames)
 endfunction
 
 " }}}1
@@ -206,3 +217,6 @@ function! s:focus_vim() abort " {{{1
 endfunction
 
 " }}}1
+
+
+let s:nvim_servernames = vimtex#cache#path('nvim_servernames.log')
