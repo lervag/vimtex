@@ -6,9 +6,12 @@ export INMAKE
 TESTS := $(wildcard *.vim)
 TESTS := $(TESTS:.vim=)
 
-.PHONY: test $(TESTS)
+.PHONY: test $(TESTS) test-cleanup
 
-test: $(TESTS)
+test: $(TESTS) test-cleanup
 
 $(TESTS):
 	@$(MYVIM) -u $@.vim
+
+test-cleanup: $(TESTS)
+	@rm nvim_servernames.log
