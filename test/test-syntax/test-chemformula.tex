@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{chemformula}
+
+\begin{document}
+
+\ch{M -> M^{n+} + ne^{-}}
+\ch{A + B ->[a] C}
+
+\ch[options]{input}
+\ch[decimal-marker={,}]{3.5}
+\ch[frac-style=xfrac]{3/2}
+
+\ch{ "escaped text" }
+\ch{ 'escaped text' }
+\ch{"\ldots\," Na + "\ldots\," Cl2 -> "\ldots\," NaCl}
+
+\ch{ $escaped math$ }
+\ch{ \(escaped math\) }
+\ch{$2n$ Na + $n$ Cl2 -> $2n$ NaCl}
+
+\begin{equation}
+  \ch{M -> M^{n+} + ne^{-}}
+\end{equation}
+
+\end{document}
