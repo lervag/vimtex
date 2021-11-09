@@ -43,7 +43,8 @@ function! vimtex#state#init_local() abort " {{{1
   if l:vimtex_id < 0
     let l:vimtex_id = s:vimtex_next_id
     let l:vimtex = vimtex#state#class#new(
-          \ l:filename, 'local file', l:preserve_root)
+          \ l:filename, 'local file',
+          \ l:preserve_root || s:check_standalone())
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
 
@@ -530,6 +531,13 @@ function! s:findfiles_recursive(expr, path) abort " {{{1
     let l:dirs .= ',' . l:path
   endwhile
   return split(globpath(fnameescape(l:dirs), a:expr), '\n')
+endfunction
+
+" }}}1
+
+function! s:check_standalone() abort " {{{1
+  return match(getline(1, 5),
+        \      '\v^\C\s*\\documentclass%(\[.*\])?\{standalone\}') >= 0
 endfunction
 
 " }}}1
