@@ -194,7 +194,6 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : 'w',  'rhs' : '\omega' },
         \ { 'lhs' : 'z',  'rhs' : '\zeta' },
         \ { 'lhs' : 'x',  'rhs' : '\xi' },
-        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
         \ { 'lhs' : 'D',  'rhs' : '\Delta' },
         \ { 'lhs' : 'F',  'rhs' : '\Phi' },
         \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
