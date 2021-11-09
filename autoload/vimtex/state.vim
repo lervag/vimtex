@@ -61,7 +61,7 @@ function! vimtex#state#init_local() abort " {{{1
         \ 'sub_id' : l:vimtex_id,
         \}
 
-  if g:vimtex_subfile_start_local
+  if b:vimtex.main_parser ==# 'subfiles' && g:vimtex_subfile_start_local
     silent call vimtex#state#toggle_main()
   endif
 endfunction
