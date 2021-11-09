@@ -1351,6 +1351,8 @@ let s:cmd_symbols = [
       \ ['leftharpoonup', '↼'],
       \ ['leftrightarrow', '↔'],
       \ ['Leftrightarrow', '⇔'],
+      \ ['lhd', '◁'],
+      \ ['rhd', '▷'],
       \ ['leq', '≤'],
       \ ['ll', '≪'],
       \ ['lmoustache', '╭'],
