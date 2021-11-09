@@ -187,58 +187,44 @@ function! s:get_main() abort " {{{1
     unlet s:disabled_modules
   endif
 
-  "
   " Use buffer variable if it exists
-  "
   if exists('b:vimtex_main') && filereadable(b:vimtex_main)
     return [fnamemodify(b:vimtex_main, ':p'), 'buffer variable']
   endif
 
-  "
   " Search for TEX root specifier at the beginning of file. This is used by
   " several other plugins and editors.
-  "
   let l:candidate = s:get_main_from_texroot()
   if !empty(l:candidate)
     return [l:candidate, 'texroot specifier']
   endif
 
   if &filetype ==# 'tex'
-    "
     " Check if the current file is a main file
-    "
     if s:file_is_main(expand('%:p'))
       return [expand('%:p'), 'current file verified']
     endif
 
-    "
     " Support for subfiles package
-    "
     let l:candidate = s:get_main_from_subfile()
     if !empty(l:candidate)
       return [l:candidate, 'subfiles']
     endif
   endif
 
-  "
   " Search for .latexmain-specifier
-  "
   let l:candidate = s:get_main_latexmain(expand('%:p'))
   if !empty(l:candidate)
     return [l:candidate, 'latexmain specifier']
   endif
 
-  "
   " Search for .latexmkrc @default_files specifier
-  "
   let l:candidate = s:get_main_latexmk()
   if !empty(l:candidate)
     return [l:candidate, 'latexmkrc @default_files']
   endif
 
-  "
   " Check if we are class or style file
-  "
   if index(['cls', 'sty'], expand('%:e')) >= 0
     let l:id = getbufvar('#', 'vimtex_id', -1)
     if l:id >= 0 && has_key(s:vimtex_states, l:id)
@@ -249,9 +235,7 @@ function! s:get_main() abort " {{{1
     endif
   endif
 
-  "
   " Search for main file recursively through include specifiers
-  "
   if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
     if &filetype ==# 'tex'
       let l:candidate = s:get_main_choose(s:get_main_recurse())
@@ -266,12 +250,10 @@ function! s:get_main() abort " {{{1
     endif
   endif
 
-  "
   " Fallbacks:
   " 1.  fallback candidate from get_main_latexmain
   " 2. a. tex: current file
   "    b. bib: check alternate file or current
-  "
   if exists('s:cand_fallback')
     let l:candidate = s:cand_fallback
     unlet s:cand_fallback
