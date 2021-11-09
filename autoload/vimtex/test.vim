@@ -92,12 +92,17 @@ function! vimtex#test#keys(keys, context, expect) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#test#main(file, expected) abort " {{{1
+function! vimtex#test#main(file, expected, ...) abort " {{{1
   execute 'silent edit' fnameescape(a:file)
+
+  " ToggleMain if extra arg supplied
+  if a:0 > 0
+    VimtexToggleMain
+  endif
 
   let l:expected = empty(a:expected) ? '' : fnamemodify(a:expected, ':p')
   call assert_true(exists('b:vimtex'))
-  call assert_equal(l:expected, b:vimtex.tex)
+  call assert_equal(fnamemodify(l:expected, ':.'), fnamemodify(b:vimtex.tex, ':.'))
 
   bwipeout!
 endfunction
