@@ -2260,10 +2260,9 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_syntax_custom_cmds*
-  A list of "simple" commands to highlight specifically with custom styling.
-  That is, this allows to apply bold text or italics on the command argument
-  or conceal on the macro part. Each command is expected to be of the
-  following type: >
+  A list of "simple" commands for which to apply custom styling. This includes
+  bolded or italized text arguments, conceals, or similar - see the below
+  keys. Each command is expected to be of the following type: >
 
     \cmdname[optional]{argument}
 <
@@ -2271,11 +2270,6 @@ OPTIONS                                                        *vimtex-options*
 
     name~
       The command to highlight (`cmdname`).
-
-    hlgroup~
-      Default: Undefined
-      A string that can be used to indicate the target highlight group of the
-      command (`\cmdname`).
 
     mathmode~
       Default: |v:false|
@@ -2315,20 +2309,32 @@ OPTIONS                                                        *vimtex-options*
         * `italunder`
         * `bolditalunder`
 
+    argspell~
+      Default: |v:true|
+      Specify this as |v:false| or 0 to disable spell checking of the command
+      argument.
+
     nextgroup~
       Default: Undefined
       This is a string that, if defined and not empty, specifies
       a comma-separated list of possible next syntax groups.
 
+    hlgroup~
+      Default: Undefined
+      A string that can be used to indicate the target highlight group of the
+      command (`\cmdname`).
+
   A couple of examples may be helpful: The first in the following list shows
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
-  second shows how to conceal `\R` with `ℝ`. The third shows how one may use
-  the `nextgroup` key. >
+  second example shows how to conceal `\R` with `ℝ`. The third example shows
+  how one may use the `nextgroup` key, and the fourth shows how to define
+  a command whose argument shoult not be spell checked. >
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
           \ {'name': 'R', 'mathmode': 1, 'concealchar': 'ℝ'},
           \ {'name': 'mathnote', 'mathmode': 1, 'nextgroup': 'texMathTextArg'},
+          \ {'name': 'nospell', 'argspell': 0},
           \]
 <
   Default value: []
@@ -2372,11 +2378,6 @@ OPTIONS                                                        *vimtex-options*
           \   ],
           \ }
           \}
-
-*g:vimtex_syntax_nospell_commands*
-  A list of commands whose argument should be excluded from spell checking.
-
-  Default value: []
 
 *g:vimtex_syntax_nospell_comments*
   Set to 1 to disable spell checking in comments.
@@ -4122,11 +4123,11 @@ are several major differences that users may want to be aware of:
 
 Associated settings:
 * |g:vimtex_syntax_enabled|
+* |g:vimtex_syntax_custom_cmds|
 * |g:vimtex_syntax_conceal|
 * |g:vimtex_syntax_conceal_cites|
 * |g:vimtex_syntax_conceal_disable|
 * |g:vimtex_syntax_nested|
-* |g:vimtex_syntax_nospell_commands|
 * |g:vimtex_syntax_packages|
 
 ------------------------------------------------------------------------------

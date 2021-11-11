@@ -282,13 +282,6 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Item elements in lists
   syntax match texCmdItem "\\item\>"
 
-  " Add @NoSpell for commands per configuration (TOP,@Spell implies NoSpell!)
-  for l:macro in g:vimtex_syntax_nospell_commands
-    execute 'syntax match texCmdNoSpell nextgroup=texNoSpellOpt,texNoSpellArg skipwhite skipnl "\\' . l:macro . '"'
-  endfor
-  call vimtex#syntax#core#new_opt('texNoSpellOpt', {'next': 'texNoSpellArg'})
-  call vimtex#syntax#core#new_arg('texNoSpellArg', {'next': 'texNoSpellArg', 'contains': 'TOP,@Spell'})
-
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
   call vimtex#syntax#core#new_arg('texEnvArgName', {
@@ -717,7 +710,6 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdNewcmd          texCmdNew
   highlight def link texCmdNewenv          texCmd
   highlight def link texCmdNewthm          texCmd
-  highlight def link texCmdNoSpell         texCmd
   highlight def link texCmdPackage         texCmd
   highlight def link texCmdParbox          texCmd
   highlight def link texCmdPart            texCmd
@@ -789,7 +781,6 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texNewthmArgName      texArg
   highlight def link texNewthmOptCounter   texOpt
   highlight def link texNewthmOptNumberby  texOpt
-  highlight def link texNoSpellOpt         texOpt
   highlight def link texOptEqual           texSymbol
   highlight def link texParboxOptHeight    texError
   highlight def link texParboxOptIPos      texError
@@ -861,6 +852,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
         \ 'opt': v:true,
         \ 'arg': v:true,
         \ 'argstyle': '',
+        \ 'argspell': v:true,
         \ 'nextgroup': '',
         \ 'hlgroup': '',
         \}, a:cfg)
@@ -914,6 +906,8 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
       endif
       if l:cfg.mathmode
         let l:arg_cfg.contains = '@texClusterMath'
+      elseif !l:cfg.argspell
+        let l:arg_cfg.contains = 'TOP,@Spell'
       endif
       call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
 

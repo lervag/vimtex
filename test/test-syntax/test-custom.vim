@@ -16,13 +16,16 @@ let g:vimtex_syntax_custom_cmds = [
       \  'nextgroup': 'texMathTextArg', 'hlgroup': 'texMathCmdText'},
       \ {'name': 'mathnoteC', 'mathmode': 1, 'conceal': 1,
       \  'nextgroup': 'texMathTextConcArg', 'hlgroup': 'texMathCmdText'},
+      \ {'name': 'mygls', 'argspell': 0},
       \]
 
 silent edit test-custom.tex
+set spell
 
 vsplit
 silent wincmd w
 set conceallevel=2
+set spell
 
 if empty($INMAKE) | finish | endif
 quitall!
