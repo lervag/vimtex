@@ -853,7 +853,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
         \ 'arg': v:true,
         \ 'argstyle': '',
         \ 'argspell': v:true,
-        \ 'arggready': v:false,
+        \ 'arggreedy': v:false,
         \ 'nextgroup': '',
         \ 'hlgroup': '',
         \}, a:cfg)
@@ -910,7 +910,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
       elseif !l:cfg.argspell
         let l:arg_cfg.contains = 'TOP,@Spell'
       endif
-      if l:cfg.arggready
+      if l:cfg.arggreedy
         let l:arg_cfg.next = l:group_arg
       endif
       call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
