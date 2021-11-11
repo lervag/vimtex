@@ -1421,7 +1421,7 @@ let s:cmd_symbols = [
       \ ['supseteq', '⊇'],
       \ ['surd', '√'],
       \ ['swarrow', '↙'],
-      \ ['times', 'x'],
+      \ ['times', '×'],
       \ ['to', '→'],
       \ ['top', '⊤'],
       \ ['triangle', '∆'],
