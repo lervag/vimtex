@@ -17,6 +17,7 @@ let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'mathnoteC', 'mathmode': 1, 'conceal': 1,
       \  'nextgroup': 'texMathTextConcArg', 'hlgroup': 'texMathCmdText'},
       \ {'name': 'mygls', 'argspell': 0},
+      \ {'name': 'slurp', 'argspell': 0, 'arggready': v:true},
       \]
 
 silent edit test-custom.tex
