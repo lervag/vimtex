@@ -2314,6 +2314,11 @@ OPTIONS                                                        *vimtex-options*
       Specify this as |v:false| or 0 to disable spell checking of the command
       argument.
 
+    arggreedy~
+      Default: |v:false|
+      If |v:true| or 1, the syntax rule will "eat" as many arguments as
+      possible: `\cmdname[opt]{arg1}{arg2}...{argn}`
+
     nextgroup~
       Default: Undefined
       This is a string that, if defined and not empty, specifies
