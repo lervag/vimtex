@@ -39,8 +39,19 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
 
   if g:vimtex_syntax_conceal.cites
     let s:re_concealed_cites = '\v\\%(' . join([
+          \ '%([Tt]ext|[Ss]mart|[Aa]uto)cite[s]?',
           \ '(foot)?cite[tp]?',
-          \ '%([Tt]ext|[Ss]mart|[Aa]uto)cite',
+          \ '[Aa]utocite[s]?',
+          \ '[Cc]ite%(title|author|year%(par)?|date)[s]?',
+          \ '[Pp]arencite[s]?',
+          \ '[Ppf]?[Nn]otecite',
+          \ '[pPfFsStTaA]?[Vv]olcite[s]?',
+          \ '[Ss]upercite[s]?',
+          \ 'cite%(num|text|url|field|list|name)',
+          \ 'citeal[tp]',
+          \ 'foot%(full)?cite%(text)?',
+          \ 'footcite%(s|texts)',
+          \ 'fullcite[s]?',
           \ ], '|') . ')>\*?'
     call s:match_conceal_cites_{g:vimtex_syntax_conceal_cites.type}()
   endif
