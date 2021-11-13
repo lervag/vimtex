@@ -33,9 +33,12 @@ function! vimtex#syntax#p#siunitx#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texSIArgNumNU', {'contains': 'texSIDelim', 'next': 'texSIArgNumU'})
 
   syntax match texMathCmdSI contained nextgroup=texSIOptU,texSIArgUnit skipwhite "\\si\>"
+  syntax match texMathCmdSI contained nextgroup=texSIOptU,texSIArgUnit skipwhite "\\unit\>"
   syntax match texMathCmdSI contained nextgroup=texSIOptN,texSIArgNum skipwhite "\\num\>"
   syntax match texMathCmdSI contained nextgroup=texSIOptNU,texSIArgNumU skipwhite "\\SI\>"
+  syntax match texMathCmdSI contained nextgroup=texSIOptNU,texSIArgNumU skipwhite "\\qty\>"
   syntax match texMathCmdSI contained nextgroup=texSIOptNNU,texSIArgNumNU skipwhite "\\SIrange\>"
+  syntax match texMathCmdSI contained nextgroup=texSIOptNNU,texSIArgNumNU skipwhite "\\qtyrange\>"
   syntax cluster texClusterMath add=texMathCmdSI
 
   highlight def link texCmdSI       texCmd
