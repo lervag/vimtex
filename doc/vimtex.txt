@@ -226,6 +226,16 @@ Vim version~
 
 Vim configuration~
 
+  VimTeX requires |:filetype-plugin-on| and optionally |:filetype-indent-on|.
+
+  There are several features in VimTeX that depend on the syntax parsing used
+  for syntax highlighting. Examples include functions like
+  |vimtex#syntax#in_mathzone| and text objects like |<plug>(vimtex-i$)|. This
+  is important to be aware of especially for neovim users who are interested
+  in Tree-sitter. If you use Tree-sitter for syntax highlighting and thus
+  disable the normal Vim syntax feature, then you will also loose the VimTeX
+  features that depend on the built-in syntax parser.
+
   Some of the VimTeX scripts contain UTF-8 characters, and as such, it is
   necessary to have the 'encoding' option set to utf8. This is not necessary
   in neovim, only in Vim. Add the following to your vimrc file: >

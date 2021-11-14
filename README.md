@@ -15,6 +15,7 @@ filetype and syntax plugin for LaTeX files.
 
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Quick Start](#quick-start)
 - [Screenshots](#screenshots)
 - [Features](#features)
@@ -66,6 +67,37 @@ If you use the new package feature in Vim, please note the following:
 * For more information on how to use the Vim native package solution, see
   [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it)
   and [here](https://shapeshed.com/vim-packages/).
+
+## Configuration
+
+After installing VimTeX, you should edit your `.vimrc` file or `init.vim` file
+to configure VimTeX to your liking. Users should read the documentation to
+learn the various configuration possibilities, but the below is a simple
+overview of some of the main aspects.
+
+```vim
+" This is necessary for VimTeX to load properly. The "indent" is optional.
+" Note that most plugin managers will do this automatically.
+filetype plugin indent on
+
+" This enables Vim's and noevim's syntax-related features. Without this, some
+" VimTeX features will not work (see ":help vimtex-requirements" for more
+" info).
+syntax enable
+
+" Viewer options: One may configure the viewer either by specifying a built-in
+" viewer method:
+let g:vimtex_view_method = 'zathura'
+
+" Or with a generic interface:
+let g:vimtex_view_general_viewer = 'okular'
+let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+let g:vimtex_view_general_options_latexmk = '--unique'
+
+" Most VimTeX mappings rely on localleader and this can be changed with the
+" following line. The default is usually fine and is the symbol "\".
+let maplocalleader = ","
+```
 
 ## Quick Start
 
