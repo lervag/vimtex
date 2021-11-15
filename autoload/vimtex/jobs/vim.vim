@@ -111,14 +111,48 @@ endfunction
 
 
 function! s:vim_unix_run(cmd) abort " {{{1
+  let s:saveshell = [
+        \ &shell,
+        \ &shellcmdflag,
+        \ &shellquote,
+        \ &shellredir,
+        \]
+  let &shell = s:shell
+  set shellcmdflag& shellquote& shellredir&
+
   silent! call system(a:cmd)
+
+  let [   &shell,
+        \ &shellcmdflag,
+        \ &shellquote,
+        \ &shellredir] = s:saveshell
 endfunction
 
 " }}}1
 function! s:vim_unix_capture(cmd) abort " {{{1
+  let s:saveshell = [
+        \ &shell,
+        \ &shellcmdflag,
+        \ &shellquote,
+        \ &shellredir,
+        \]
+  let &shell = s:shell
+  set shellcmdflag& shellquote& shellredir&
+
   silent! let l:output = systemlist(a:cmd)
+
+  let [   &shell,
+        \ &shellcmdflag,
+        \ &shellquote,
+        \ &shellredir] = s:saveshell
+
   return v:shell_error == 127 ? ['command not found'] : l:output
 endfunction
+
+let s:shell = executable('sh')
+      \ ? 'sh'
+      \ : (executable('/usr/bin/sh')
+      \    ? '/usr/bin/sh' : '/bin/sh')
 
 " }}}1
 
