@@ -942,7 +942,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
 
   " Create the final syntax rule
   execute 'syntax match' l:group_cmd
-        \ '"\v\\' . l:cfg.name . '>"'
+        \ '"\v\\' . get(l:cfg, 'cmdre', l:cfg.name . '>') . '"'
         \ l:cfg.conceal ? 'conceal' : ''
         \ !empty(l:cfg.concealchar) ? 'cchar=' . l:cfg.concealchar : ''
         \ l:nextgroups

@@ -18,6 +18,7 @@ let g:vimtex_syntax_custom_cmds = [
       \  'nextgroup': 'texMathTextConcArg', 'hlgroup': 'texMathCmdText'},
       \ {'name': 'mygls', 'argspell': 0},
       \ {'name': 'slurp', 'argspell': 0, 'arggreedy': v:true},
+      \ {'name': 'regex', 'cmdre': '[iI]?[aA]c[slaf]?p?\*?', 'conceal': 1},
       \]
 
 silent edit test-custom.tex

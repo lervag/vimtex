@@ -2279,7 +2279,14 @@ OPTIONS                                                        *vimtex-options*
   Each element in the list must be a dictionary with the following keys:
 
     name~
-      The command to highlight (`cmdname`).
+      The command to highlight (`cmdname`). This is also for defining the
+      syntax group names.
+
+    cmdre~
+      Default: Undefined
+      If this is defined, then it is used instead of `name` for matching the
+      `cmdname` part. It is interpreted as a regular expression with "very
+      magic" mode activated (see |/\v|).
 
     mathmode~
       Default: |v:false|
