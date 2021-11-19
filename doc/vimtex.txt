@@ -2279,6 +2279,7 @@ OPTIONS                                                        *vimtex-options*
   Each element in the list must be a dictionary with the following keys:
 
     name~
+      Default: Undefined (REQUIRED)
       The command to highlight (`cmdname`). This is also for defining the
       syntax group names.
 
