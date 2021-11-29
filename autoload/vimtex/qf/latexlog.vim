@@ -150,9 +150,16 @@ function! s:fix_paths_hbox_warning(qf, log, root) abort " {{{1
   let l:index = match(a:log, '\V' . escape(a:qf.text, '\'))
   if l:index < 0 | return v:false | endif
 
-  let l:file = matchstr(a:log[l:index - 1], '^\s*(\zs\f\+\ze)\s*$')
+  " Search for a line above the Overflow/Underflow message that specifies the
+  " correct source filename
+  for l:lnum in range(l:index - 1, 1, -1)
+    let l:file = matchstr(a:log[l:lnum], '(\zs\f\+\ze)\?\s*$')
+    if !empty(l:file) | break | endif
+  endfor
+
   if empty(l:file) | return v:false | endif
 
+  " Do some simple parsing and cleanup of the filename
   if !vimtex#paths#is_abs(l:file)
     let l:file = simplify(a:root . '/' . l:file)
   endif

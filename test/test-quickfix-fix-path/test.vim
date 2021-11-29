@@ -18,7 +18,9 @@ catch /VimTeX: No log file found/
 endtry
 
 let s:qf = getqflist()
-call assert_true(len(s:qf) == 2)
-call assert_equal(bufname(s:qf[1].bufnr), './test.tex')"}}}
+call assert_equal(4, len(s:qf))
+call assert_equal('./test.tex', bufname(s:qf[1].bufnr))
+call assert_equal('./test.tex', bufname(s:qf[2].bufnr))
+call assert_equal('test-new.tex', bufname(s:qf[3].bufnr))
 
 call vimtex#test#finished()
