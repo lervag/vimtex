@@ -63,6 +63,7 @@ CONTENTS                                                      *vimtex-contents*
       nvim-completion-manager                   |vimtex-complete-ncm|
       YouCompleteMe                             |vimtex-complete-youcompleteme|
       VimCompletesMe                            |vimtex-complete-vcm|
+      nvim-cmp                                  |vimtex-complete-nvim-cmp|
       nvim-compe                                |vimtex-complete-nvim-compe|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
@@ -4009,11 +4010,34 @@ for LaTeX documents with |VimCompletesMe| and VimTeX's omni completion function:
         \ let b:vcm_omni_pattern = g:vimtex#re#neocomplete
   augroup END
 
+nvim-cmp~
+                                                     *vimtex-complete-nvim-cmp*
+|nvim-cmp| [0] is the successor of |nvim-compe|. It provides completion for
+different sources, including omni-completion through the additional `cmp-omni`
+package [1]. It is relatively straightforward to configure with VimTeX. First,
+both |nvim-cmp| and `cmp-omni` has to be installed, then `cmp-omni` must be
+added to the list of sources in your config. For example, in Lua, it should
+look something like this: >
+
+  cmp = require("cmp")
+  cmp.setup {
+    -- additional config
+    sources = cmp.config.sources {
+      { name = 'omni' },
+      -- additional sources
+    }
+  }
+
+[0]: https://github.com/hrsh7th/nvim-cmp
+[1]: https://github.com/hrsh7th/cmp-omni
+
 nvim-compe~
                                                    *vimtex-complete-nvim-compe*
 |nvim-compe| is an automatic completion plugin for Neovim. It has support for
-many different completion sources, including omni-completion, making it is
-easy to use with VimTeX. The plugin is available here:
+many different completion sources, including omni-completion. However,
+|nvim-compe| has been deprecated in favor of the more recent |nvim-cmp|, see
+|vimtex-complete-nvim-cmp|. The following configuration examples should still
+be valid for anyone who for some reason would still wish to use |nvim-compe|.
 https://github.com/hrsh7th/nvim-compe.
 
 The omni-completion source can be enabled for TeX/LaTeX files by adding `omni`
