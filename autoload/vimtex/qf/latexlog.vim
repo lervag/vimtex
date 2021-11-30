@@ -153,7 +153,7 @@ function! s:fix_paths_hbox_warning(qf, log, root) abort " {{{1
   " Search for a line above the Overflow/Underflow message that specifies the
   " correct source filename
   for l:lnum in range(l:index - 1, 1, -1)
-    let l:file = matchstr(a:log[l:lnum], '(\zs\f\+\ze)\?\s*$')
+    let l:file = matchstr(a:log[l:lnum], '\v\(\zs\f+\ze\)?\s*%(\[\d+]?)?$')
     if !empty(l:file) | break | endif
   endfor
 
