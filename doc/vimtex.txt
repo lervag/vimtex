@@ -2927,6 +2927,15 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_callback_progpath*
+  The path to the vim binary that will be passed to viewers (for example
+  Zathura) for synctex callbacks. If unset, vimtex will fallback to use
+  |v:progpath|. You usually don't have to touch this variable, but if your
+  vim loads vimtex using a wrapper then it needs to be set otherwise
+  inverse search calls from viewers won't work.
+
+  Default value: unset
+
 *$VIMTEX_OUTPUT_DIRECTORY*
   This environment variable allows to specify the output directory of
   auxiliary LaTeX files. If it exists and is a valid path, this path will be
