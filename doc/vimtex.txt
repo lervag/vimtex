@@ -2929,13 +2929,15 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_callback_progpath*
-  The path to the vim binary that will be passed to viewers (for example
-  Zathura) for synctex callbacks. If unset, vimtex will fallback to use
-  |v:progpath|. You usually don't have to touch this variable, but if your
-  vim loads vimtex using a wrapper then it needs to be set otherwise
-  inverse search calls from viewers won't work.
+  The path to the Vim/neovim executable. This is currently passed to Zathura
+  (|vimtex-view-zathura|) for use with synctex callbacks.
 
-  Default value: unset
+  You usually don't have to touch this variable; VimTeX will |v:progpath| if
+  the option is not defined. But some people may use wrappers and similar to
+  load Vim/neovim, in which case one may want to specify the executable
+  directly.
+
+  Default value: Undefined
 
 *$VIMTEX_OUTPUT_DIRECTORY*
   This environment variable allows to specify the output directory of

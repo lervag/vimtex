@@ -111,7 +111,7 @@ endfunction
 " }}}1
 
 let s:inverse_search_cmd = get(g:, 'vimtex_callback_progpath',
-      \                      get(v:, 'progpath', get(v:, 'progname', '')))
+      \                        get(v:, 'progpath', get(v:, 'progname', '')))
       \ . (has('nvim')
       \   ? ' --headless'
       \   : ' -T dumb --not-a-term -n')
