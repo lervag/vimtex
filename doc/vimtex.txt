@@ -4714,9 +4714,9 @@ after compilation. This is used by VimTeX to achieve callbacks after
 compilation has finished through |vimtex#compiler#callback| with something
 like this: >
 
-  $compiling_cmd = "vim --remote-expr 'vimtex#compiler#callback(2)'";
-  $success_cmd = "vim --remote-expr 'vimtex#compiler#callback(1)'";
-  $failure_cmd = "vim --remote-expr 'vimtex#compiler#callback(0)'";
+  $compiling_cmd = "vim --remote-expr 'vimtex#compiler#callback(1)'";
+  $success_cmd = "vim --remote-expr 'vimtex#compiler#callback(2)'";
+  $failure_cmd = "vim --remote-expr 'vimtex#compiler#callback(3)'";
 
 Another neat way to use this is to use `xdotool` to change the window title of
 the viewer to indicate the compilation status: >
