@@ -89,8 +89,8 @@ else
   let s:vlty.language = substitute(s:vlty.language, '_', '-', '')
   let s:vlty_language = ' --language ' . s:vlty.language
   if !exists('s:list')
-    let l:list = vimtex#jobs#capture(s:vlty_lt_command . ' --list NOFILE')
-    call map(l:list, {_, x -> split(x)[0]})
+    let s:list = vimtex#jobs#capture(s:vlty_lt_command . ' --list NOFILE')
+    call map(s:list, {_, x -> split(x)[0]})
   endif
   if !empty(s:list)
     if match(s:list, '\c^' . s:vlty.language . '$') == -1
