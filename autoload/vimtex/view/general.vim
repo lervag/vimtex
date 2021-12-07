@@ -5,6 +5,17 @@
 "
 
 function! vimtex#view#general#new() abort " {{{1
+  return s:viewer.init()
+endfunction
+
+" }}}1
+
+
+let s:viewer = vimtex#view#_template#new({
+      \ 'name' : 'General'
+      \})
+
+function! s:viewer._check() abort " {{{1
   " Check if the viewer is executable
   " * split to ensure that we handle stuff like "gio open"
   let l:exe = get(split(g:vimtex_view_general_viewer), 0, '')
@@ -13,42 +24,22 @@ function! vimtex#view#general#new() abort " {{{1
         \     && !(vimtex#util#get_os() ==# 'win'
         \          && g:vimtex_view_general_viewer ==# 'start'))
     call vimtex#log#warning(
-          \ 'Selected viewer is not executable!',
-          \ '- Selection: ' . g:vimtex_view_general_viewer,
+          \ 'Generic viewer is not executable!',
+          \ '- Viewer: ' . g:vimtex_view_general_viewer,
           \ '- Executable: ' . l:exe,
           \ '- Please see :h g:vimtex_view_general_viewer')
-    return {}
+    return v:false
   endif
 
-  return vimtex#view#_template#apply(deepcopy(s:general))
+  return v:true
 endfunction
 
 " }}}1
-
-
-let s:general = {
-      \ 'name' : 'General'
-      \}
-
-function! s:general.view(file) dict abort " {{{1
-  if empty(a:file)
-    let outfile = self.out()
-
-    " Only copy files if they don't exist
-    if g:vimtex_view_use_temp_files && !filereadable(outfile)
-      call self.copy_files()
-    endif
-  else
-    let outfile = a:file
-  endif
-
-  " Update the path for Windows on cygwin
-  if executable('cygpath')
-    let outfile = join(
-          \ vimtex#jobs#capture('cygpath -aw "' . outfile . '"'), '')
-  endif
-
-  if vimtex#view#not_readable(outfile) | return | endif
+function! s:viewer._start(file) dict abort " {{{1
+  " Update file path for Windows+cygwin
+  let l:file = executable('cygpath')
+        \ ? join(vimtex#jobs#capture('cygpath -aw "' . a:file . '"'), '')
+        \ : a:file
 
   " Parse options
   let l:cmd = g:vimtex_view_general_viewer
@@ -59,30 +50,22 @@ function! s:general.view(file) dict abort " {{{1
   let l:cmd = substitute(l:cmd, '@col', col('.'), 'g')
   let l:cmd = substitute(l:cmd, '@tex',
         \ vimtex#util#shellescape(expand('%:p')), 'g')
-  let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(outfile), 'g')
+  let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(l:file), 'g')
 
   " Start the view process
   " NB: Use vimtex#jobs#start to ensure it runs in the background
   let self.job = vimtex#jobs#start(l:cmd)
-
-  if exists('#User#VimtexEventView')
-    doautocmd <nomodeline> User VimtexEventView
-  endif
 endfunction
 
 " }}}1
-function! s:general.latexmk_append_argument() dict abort " {{{1
-  if g:vimtex_view_use_temp_files
-    return ' -view=none'
-  else
-    let l:option = g:vimtex_view_general_viewer
-    if !empty(g:vimtex_view_general_options_latexmk)
-      let l:option .= ' '
-      let l:option .= substitute(g:vimtex_view_general_options_latexmk,
-            \                    '@line', line('.'), 'g')
-    endif
-    return vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:option)
+function! s:viewer._latexmk_append_argument() dict abort " {{{1
+  let l:option = g:vimtex_view_general_viewer
+  if !empty(g:vimtex_view_general_options_latexmk)
+    let l:option .= ' '
+    let l:option .= substitute(g:vimtex_view_general_options_latexmk,
+          \                    '@line', line('.'), 'g')
   endif
+  return vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:option)
 endfunction
 
 " }}}1
