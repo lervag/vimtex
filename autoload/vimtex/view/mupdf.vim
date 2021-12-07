@@ -5,39 +5,100 @@
 "
 
 function! vimtex#view#mupdf#new() abort " {{{1
-  " Check if the viewer is executable
-  if !executable('mupdf')
-    call vimtex#log#error(
-          \ 'MuPDF is not executable!',
-          \ '- VimTeX viewer will not work!')
-    return {}
-  endif
-
   " Add reverse search mapping
   nnoremap <buffer> <plug>(vimtex-reverse-search)
         \ :<c-u>call b:vimtex.viewer.reverse_search()<cr>
 
-  return vimtex#view#_template_xwin#apply(deepcopy(s:mupdf))
+  return s:viewer.init()
 endfunction
 
 " }}}1
 
 
-let s:mupdf = {
+let s:viewer = vimtex#view#_template#new({
       \ 'name': 'MuPDF',
-      \}
+      \ 'xwin_id': 0,
+      \})
 
-function! s:mupdf.start(outfile) dict abort " {{{1
+function! s:viewer.compiler_callback(outfile) dict abort " {{{1
+  call self.xdo_start_from_compiler_callback(a:outfile)
+  call self.xdo_send_keys('r')
+endfunction
+
+" }}}1
+function! s:viewer.reverse_search() dict abort " {{{1
+  if !executable('xdotool') | return | endif
+  if !executable('synctex') | return | endif
+
+  let l:outfile = self.out()
+  if !filereadable(l:outfile) || !self.xdo_exists()
+    call vimtex#log#warning('Reverse search failed (is MuPDF open?)')
+    return
+  endif
+
+  " Get page number
+  let self.cmd_getpage
+        \ = 'xdotool getwindowname ' . self.xwin_id
+        \ . "| sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
+        \ . "| tr -d '\n'"
+  let self.page = vimtex#jobs#capture(self.cmd_getpage)[0]
+  if self.page <= 0 | return | endif
+
+  " Get file
+  let self.cmd_getfile  = 'synctex edit '
+        \ . "-o \"" . self.page . ':288:108:' . l:outfile . "\""
+        \ . "| grep 'Input:' | sed 's/Input://' "
+        \ . "| head -n1 | tr -d '\n' 2>/dev/null"
+  let self.file = vimtex#jobs#capture(self.cmd_getfile)[0]
+
+  " Get line
+  let self.cmd_getline  = 'synctex edit '
+        \ . "-o \"" . self.page . ':288:108:' . l:outfile . "\""
+        \ . "| grep -m1 'Line:' | sed 's/Line://' "
+        \ . "| head -n1 | tr -d '\n'"
+  let self.line = vimtex#jobs#capture(self.cmd_getline)[0]
+
+  " Go to file and line
+  silent exec 'edit ' . fnameescape(self.file)
+  if self.line > 0
+    silent exec ':' . self.line
+    " Unfold, move to top line to correspond to top pdf line, and go to end of
+    " line in case the corresponding pdf line begins on previous pdf page.
+    normal! zvztg_
+  endif
+endfunction
+
+" }}}1
+
+function! s:viewer._check() dict abort " {{{1
+  " Check if MuPDF is executable
+  if !executable('mupdf')
+    call vimtex#log#error('MuPDF is not executable!')
+    return v:false
+  endif
+
+  return v:true
+endfunction
+
+" }}}1
+function! s:viewer._exists() dict abort " {{{1
+  return self.xdo_exists()
+endfunction
+
+" }}}1
+function! s:viewer._start(outfile) dict abort " {{{1
   let l:cmd = 'mupdf'
   if !empty(g:vimtex_view_mupdf_options)
     let l:cmd .= ' ' . g:vimtex_view_mupdf_options
   endif
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
+  let l:cmd .= '&'
+  let self.cmd_start = l:cmd
 
-  let self.job = vimtex#jobs#start(l:cmd)
+  call vimtex#jobs#run(self.cmd_start)
 
-  call self.xwin_get_id()
-  call self.xwin_send_keys(g:vimtex_view_mupdf_send_keys)
+  call self.xdo_get_id()
+  call self.xdo_send_keys(g:vimtex_view_mupdf_send_keys)
 
   if g:vimtex_view_forward_search_on_start
     call self.forward_search(a:outfile)
@@ -45,7 +106,7 @@ function! s:mupdf.start(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:mupdf.forward_search(outfile) dict abort " {{{1
+function! s:viewer._forward_search(outfile) dict abort " {{{1
   if !executable('xdotool') | return | endif
   if !executable('synctex') | return | endif
 
@@ -64,72 +125,18 @@ function! s:mupdf.forward_search(outfile) dict abort " {{{1
     call vimtex#jobs#run(self.cmd_forward_search)
   endif
 
-  call self.focus_viewer()
+  call self.xdo_focus_viewer()
 endfunction
 
 " }}}1
-function! s:mupdf.latexmk_append_argument() dict abort " {{{1
-  if g:vimtex_view_use_temp_files
-    let cmd = ' -view=none'
-  else
-    let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
-    let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
-          \ 'mupdf ' .  g:vimtex_view_mupdf_options)
-  endif
+function! s:viewer._latexmk_append_argument() dict abort " {{{1
+  let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
+  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
+  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
+        \ 'mupdf ' .  g:vimtex_view_mupdf_options)
 
   return cmd
-endfunction
-
-" }}}1
-function! s:mupdf.reverse_search() dict abort " {{{1
-  if !executable('xdotool') | return | endif
-  if !executable('synctex') | return | endif
-
-  let outfile = self.out()
-  if vimtex#view#not_readable(outfile) | return | endif
-
-  if !self.xwin_exists()
-    call vimtex#log#warning('Reverse search failed (is MuPDF open?)')
-    return
-  endif
-
-  " Get page number
-  let self.cmd_getpage
-        \ = 'xdotool getwindowname ' . self.xwin_id
-        \ . "| sed 's:.* - \\([0-9]*\\)/.*:\\1:'"
-        \ . "| tr -d '\n'"
-  let self.page = vimtex#jobs#capture(self.cmd_getpage)[0]
-  if self.page <= 0 | return | endif
-
-  " Get file
-  let self.cmd_getfile  = 'synctex edit '
-        \ . "-o \"" . self.page . ':288:108:' . outfile . "\""
-        \ . "| grep 'Input:' | sed 's/Input://' "
-        \ . "| head -n1 | tr -d '\n' 2>/dev/null"
-  let self.file = vimtex#jobs#capture(self.cmd_getfile)[0]
-
-  " Get line
-  let self.cmd_getline  = 'synctex edit '
-        \ . "-o \"" . self.page . ':288:108:' . outfile . "\""
-        \ . "| grep -m1 'Line:' | sed 's/Line://' "
-        \ . "| head -n1 | tr -d '\n'"
-  let self.line = vimtex#jobs#capture(self.cmd_getline)[0]
-
-  " Go to file and line
-  silent exec 'edit ' . fnameescape(self.file)
-  if self.line > 0
-    silent exec ':' . self.line
-    " Unfold, move to top line to correspond to top pdf line, and go to end of
-    " line in case the corresponding pdf line begins on previous pdf page.
-    normal! zvztg_
-  endif
-endfunction
-
-" }}}1
-function! s:mupdf.compiler_callback() dict abort " {{{1
-  call self.xwin_send_keys('r')
 endfunction
 
 " }}}1

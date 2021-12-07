@@ -290,7 +290,7 @@ function! s:init_default_mappings() abort " {{{1
 
   if has_key(b:vimtex, 'viewer')
     call s:map(0, 'n', '<localleader>lv', '<plug>(vimtex-view)')
-    if maparg('<plug>(vimtex-reverse-search)', 'n')
+    if !empty(maparg('<plug>(vimtex-reverse-search)', 'n'))
       call s:map(0, 'n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
     endif
   endif
