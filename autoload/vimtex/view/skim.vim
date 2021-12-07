@@ -50,11 +50,11 @@ function! s:viewer._check() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer._start(file) dict abort " {{{1
+function! s:viewer._start(outfile) dict abort " {{{1
   let self.cmd_view = join([
         \ 'osascript',
         \ '-e ''set theLine to ' . line('.') . ' as integer''',
-        \ '-e ''set theFile to POSIX file "' . outfile . '"''',
+        \ '-e ''set theFile to POSIX file "' . a:outfile . '"''',
         \ '-e ''set thePath to POSIX path of (theFile as alias)''',
         \ '-e ''set theSource to POSIX file "' . expand('%:p') . '"''',
         \ '-e ''tell application "Skim"''',
