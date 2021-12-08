@@ -236,7 +236,7 @@ function! s:viewer.xdo_focus_vim() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer.xdo_start_from_compiler_callback() dict abort " {{{1
+function! s:viewer.xdo_start_from_compiler_callback(outfile) dict abort " {{{1
   if !(self.xdo_check()
         \ && g:vimtex_view_automatic
         \ && g:vimtex_view_automatic_xwin
@@ -251,7 +251,7 @@ function! s:viewer.xdo_start_from_compiler_callback() dict abort " {{{1
     sleep 50m
   endfor
 
-  call self.start(self.out())
+  call self.start(a:outfile)
   let self.started_through_callback = 1
 endfunction
 
