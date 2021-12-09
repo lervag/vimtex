@@ -4,16 +4,101 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#view#_template#apply(viewer) abort " {{{1
-  return extend(a:viewer, deepcopy(s:template))
+function! vimtex#view#_template#new(viewer) abort " {{{1
+  return extend(deepcopy(s:viewer), a:viewer)
 endfunction
 
 " }}}1
 
 
-let s:template = {}
+let s:viewer = {}
 
-function! s:template.__pprint() abort dict " {{{1
+function! s:viewer.init() abort dict " {{{1
+  let l:viewer = deepcopy(self)
+  unlet l:viewer.init
+  return l:viewer
+endfunction
+
+" }}}1
+function! s:viewer.check() abort " {{{1
+  if !has_key(self, '_check_value')
+    let self._check_value = self._check()
+  endif
+
+  return self._check_value
+endfunction
+
+" }}}1
+function! s:viewer.out() dict abort " {{{1
+  let l:out = g:vimtex_view_use_temp_files
+        \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
+        \ : b:vimtex.out(1)
+
+  " Check if output files exist
+  if !filereadable(l:out) | return '' | endif
+
+  " Copy pdf and synctex files if we use temporary files
+  if g:vimtex_view_use_temp_files
+    if getftime(b:vimtex.out()) > getftime(l:out)
+      call writefile(readfile(b:vimtex.out(), 'b'), l:out, 'b')
+    endif
+
+    let l:old = b:vimtex.ext('synctex.gz')
+    let l:new = fnamemodify(l:out, ':r') . '.synctex.gz'
+    if getftime(l:old) > getftime(l:new)
+      call rename(l:old, l:new)
+    endif
+  endif
+
+  return l:out
+endfunction
+
+" }}}1
+function! s:viewer.latexmk_append_argument() dict abort " {{{1
+  if g:vimtex_view_use_temp_files
+    return ' -view=none'
+  endif
+
+  if !self.check() | return '' | endif
+
+  return self._latexmk_append_argument()
+endfunction
+
+" }}}1
+function! s:viewer.view(file) dict abort " {{{1
+  if !self.check() | return | endif
+
+  if !empty(a:file)
+    let l:outfile = a:file
+  else
+    let l:outfile = self.out()
+  endif
+
+  if !filereadable(l:outfile)
+    call vimtex#log#warning('Viewer cannot read PDF file!', l:outfile)
+    return
+  endif
+
+  if self._exists()
+    call self._forward_search(l:outfile)
+  else
+    call self._start(l:outfile)
+  endif
+
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
+  endif
+endfunction
+
+" }}}1
+
+function! s:viewer._exists() dict abort " {{{1
+  return v:false
+endfunction
+
+" }}}1
+
+function! s:viewer.__pprint() abort dict " {{{1
   let l:list = []
 
   if has_key(self, 'xwin_id')
@@ -33,37 +118,141 @@ endfunction
 
 " }}}1
 
-function! s:template.out() dict abort " {{{1
-  return g:vimtex_view_use_temp_files
-        \ ? b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-        \ : b:vimtex.out(1)
+
+" Methods that rely on xdotool. These are made available to all viewers, but
+" they are only relevant for those that has the "xwin_id" attribute.
+
+function! s:viewer.xdo_check() dict abort " {{{1
+  return executable('xdotool') && has_key(self, 'xwin_id')
 endfunction
 
 " }}}1
-function! s:template.synctex() dict abort " {{{1
-  return fnamemodify(self.out(), ':r') . '.synctex.gz'
+function! s:viewer.xdo_get_id() dict abort " {{{1
+  if !self.xdo_check() | return 0 | endif
+
+  if self.xwin_id <= 0
+    " Allow some time for the viewer to start properly
+    sleep 500m
+
+    let l:xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
+    if len(l:xwin_ids) == 0
+      call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
+      let self.xwin_id = 0
+    else
+      let self.xwin_id = l:xwin_ids[-1]
+    endif
+  endif
+
+  return self.xwin_id
 endfunction
 
 " }}}1
-function! s:template.copy_files() dict abort " {{{1
-  if !g:vimtex_view_use_temp_files | return | endif
+function! s:viewer.xdo_exists() dict abort " {{{1
+  if !self.xdo_check() | return v:false | endif
 
-  "
-  " Copy pdf file
-  "
-  let l:out = self.out()
-  if getftime(b:vimtex.out()) > getftime(l:out)
-    call writefile(readfile(b:vimtex.out(), 'b'), l:out, 'b')
+  " If xwin_id is already set, check if it still exists
+  if self.xwin_id > 0
+    let xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
+    if index(xwin_ids, self.xwin_id) < 0
+      let self.xwin_id = 0
+    endif
   endif
 
-  "
-  " Copy synctex file
-  "
-  let l:old = b:vimtex.ext('synctex.gz')
-  let l:new = self.synctex()
-  if getftime(l:old) > getftime(l:new)
-    call rename(l:old, l:new)
+  " If xwin_id is unset, check if matching viewer windows exist
+  if self.xwin_id == 0
+    let l:pid = has_key(self, 'get_pid') ? self.get_pid() : 0
+    if l:pid > 0
+      let xwin_ids = vimtex#jobs#capture(
+            \   'xdotool search --all --pid ' . l:pid
+            \ . ' --name ' . fnamemodify(self.out(), ':t'))
+      let self.xwin_id = get(xwin_ids, 0)
+    else
+      let xwin_ids = vimtex#jobs#capture(
+            \ 'xdotool search --name ' . fnamemodify(self.out(), ':t'))
+      let ids_already_used = filter(map(
+            \   deepcopy(vimtex#state#list_all()),
+            \   {_, x -> get(get(x, 'viewer', {}), 'xwin_id')}),
+            \ 'v:val > 0')
+      for id in xwin_ids
+        if index(ids_already_used, id) < 0
+          let self.xwin_id = id
+          break
+        endif
+      endfor
+    endif
   endif
+
+  return self.xwin_id > 0
+endfunction
+
+" }}}1
+function! s:viewer.xdo_send_keys(keys) dict abort " {{{1
+  if !self.xdo_check() || empty(a:keys) || self.xwin_id <= 0 | return | endif
+
+  call vimtex#jobs#run('xdotool key --window ' . self.xwin_id . ' ' . a:keys)
+endfunction
+
+" }}}1
+function! s:viewer.xdo_focus_viewer() dict abort " {{{1
+  if !self.xdo_check() || self.xwin_id <= 0 | return | endif
+
+  call vimtex#jobs#run('xdotool windowactivate ' . self.xwin_id . ' --sync')
+  call vimtex#jobs#run('xdotool windowraise ' . self.xwin_id)
+endfunction
+
+" }}}1
+function! s:viewer.xdo_focus_vim() dict abort " {{{1
+  if !executable('xdotool') | return | endif
+  if !executable('pstree') | return | endif
+
+  " The idea is to use xdotool to focus the window ID of the relevant windowed
+  " process. To do this, we need to check the process tree. Inside TMUX we need
+  " to check from the PID of the tmux client. We find this PID by listing the
+  " PIDS of the corresponding pty.
+  if empty($TMUX)
+    let l:current_pid = getpid()
+  else
+    let l:output = vimtex#jobs#capture('tmux display-message -p "#{client_tty}"')
+    let l:pts = split(trim(l:output[0]), '/')[-1]
+    let l:current_pid = str2nr(vimtex#jobs#capture('ps o pid t ' . l:pts)[1])
+  endif
+
+  let l:output = join(vimtex#jobs#capture('pstree -s -p ' . l:current_pid))
+  let l:pids = split(l:output, '\D\+')
+  let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
+
+  for l:pid in reverse(l:pids)
+    let l:output = vimtex#jobs#capture(
+          \ 'xdotool search --onlyvisible --pid ' . l:pid)
+    let l:xwinids = filter(reverse(l:output), '!empty(v:val)')
+
+    if !empty(l:xwinids)
+      call vimtex#jobs#run('xdotool windowactivate ' . l:xwinids[0] . ' &')
+      call feedkeys("\<c-l>", 'tn')
+      return l:xwinids[0]
+      break
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:viewer.xdo_start_from_compiler_callback(outfile) dict abort " {{{1
+  if !(self.xdo_check()
+        \ && g:vimtex_view_automatic
+        \ && g:vimtex_view_automatic_xwin
+        \ && !has_key(self, 'started_through_callback')) | return | endif
+
+  " Search for existing window created by latexmk
+  " Note: It may be necessary to wait some time before it is opened and
+  "       recognized. Sometimes it is very quick, other times it may take
+  "       a second. This way, we don't block longer than necessary.
+  for l:dummy in range(30)
+    if self.xdo_exists() | return | endif
+    sleep 50m
+  endfor
+
+  call self.start(a:outfile)
+  let self.started_through_callback = 1
 endfunction
 
 " }}}1

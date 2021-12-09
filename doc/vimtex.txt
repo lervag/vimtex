@@ -2877,7 +2877,8 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_view_mupdf_options*
 *g:vimtex_view_zathura_options*
-  Set options for mupdf/zathura (|vimtex-view-mupdf|, |vimtex-view-zathura|).
+  Set options for mupdf (|vimtex-view-mupdf|) and Zathura
+  (|vimtex-view-zathura|), respectively.
 
   Default value: ''
 
@@ -2905,6 +2906,15 @@ OPTIONS                                                        *vimtex-options*
   opened.
 
   Default value: ''
+
+*g:vimtex_view_sioyek_exe*
+  The name or path of the Sioyek executable. The default should usually work,
+  but in some cases it can be useful or necessary to specify the executable
+  directly. E.g., if one downloads a release version, it may be named
+  something like `'Sioyek-x86_64.AppImage'`. Unless the executable location is
+  available in `PATH` one must use an absolute path here.
+
+  Default value: `'sioyek'`
 
 *g:vimtex_view_skim_activate*
   Set this option to 1 to make Skim have focus after command |:VimtexView| in
@@ -3538,9 +3548,9 @@ Examples: >
 
   " Close viewers when VimTeX buffers are closed
   function! CloseViewers()
-    " Close viewers on quit
-    if executable('xdotool') && exists('b:vimtex')
-        \ && exists('b:vimtex.viewer') && b:vimtex.viewer.xwin_id > 0
+    if executable('xdotool')
+          \ && exists('b:vimtex.viewer.xwin_id')
+          \ && b:vimtex.viewer.xwin_id > 0
       call system('xdotool windowclose '. b:vimtex.viewer.xwin_id)
     endif
   endfunction
@@ -5146,20 +5156,18 @@ Sioyek is a PDF viewer designed for reading research papers and technical
 books.
 
 Configuration: >
-  let g:vimtex_view_general_viewer = 'sioyek'
-  let g:vimtex_view_general_options = '--reuse-instance'
-        \ . ' --inverse-search'
-        \ .   '"nvim --headless -c \"VimtexInverseSearch %2 ''%1''\""'
-        \ . ' --forward-search-file @tex --forward-search-line @line @pdf'
-  let g:vimtex_view_general_options_latexmk = '--reuse-instance'
+  let g:vimtex_view_method = 'sioyek'
 
-Note: The above configuration assumes that Sioyek is installed and available
-      in ones PATH as `'sioyek'`. If one downloads a release version, it may
-      be named something like `'Sioyek-x86_64.AppImage'. Make sure to point
-      the |g:vimtex_view_general_viewer| option to the correct path/name!
+Inverse search should be automatically configured and work out of the box.
+VimTeX will try to pass options to Sioyek to automatically configure inverse
+search. This means that, in most cases, inverse search should work as expected
+without any further configuration. One may still be interested in learning how
+inverse-search configuration works, in which case one should read
+|vimtex-synctex-inverse-search|. The interpolation variables for Sioyek
+configuration are `%2` and `%1`, not `%l` and `%f`.
 
-Note: The `--inverse-search` string should be adapted according to your Vim
-      flavor, see |vimtex-synctex-inverse-search| for more info.
+Associated settings:
+* |g:vimtex_view_sioyek_exe|
 
                                                              *vimtex-view-skim*
 Skim~

@@ -424,6 +424,7 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_view_mupdf_options', '')
   call s:init_option('vimtex_view_mupdf_send_keys', '')
+  call s:init_option('vimtex_view_sioyek_exe', 'sioyek')
   call s:init_option('vimtex_view_skim_activate', 0)
   call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')

@@ -5,34 +5,51 @@
 "
 
 function! vimtex#view#zathura#new() abort " {{{1
-  " Check if the viewer is executable
-  if !executable('zathura')
-    call vimtex#log#error('Zathura is not executable!')
-    return {}
-  endif
-
-  if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
-    let l:shared = vimtex#jobs#capture('ldd $(which zathura)')
-    if v:shell_error == 0
-          \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
-      call vimtex#log#warning('Zathura is not linked to libsynctex!')
-      let s:zathura.has_synctex = 0
-    endif
-  endif
-
-  " Use the xwin template
-  return vimtex#view#_template_xwin#apply(deepcopy(s:zathura))
+  return s:viewer.init()
 endfunction
 
 " }}}1
 
 
-let s:zathura = {
-      \ 'name' : 'Zathura',
-      \ 'has_synctex' : 1,
-      \}
+let s:viewer = vimtex#view#_template#new({
+      \ 'name': 'Zathura',
+      \ 'xwin_id': 0,
+      \ 'has_synctex': 1,
+      \})
 
-function! s:zathura.start(outfile) dict abort " {{{1
+function! s:viewer.compiler_callback(outfile) dict abort " {{{1
+  call self.xdo_start_from_compiler_callback(a:outfile)
+endfunction
+
+" }}}1
+
+function! s:viewer._check() dict abort " {{{1
+  " Check if Zathura is executable
+  if !executable('zathura')
+    call vimtex#log#error('Zathura is not executable!')
+    return v:false
+  endif
+
+  " Check if Zathura has libsynctex
+  if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
+    let l:shared = vimtex#jobs#capture('ldd $(which zathura)')
+    if v:shell_error == 0
+          \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
+      call vimtex#log#warning('Zathura is not linked to libsynctex!')
+      let s:viewer.has_synctex = 0
+    endif
+  endif
+
+  return v:true
+endfunction
+
+" }}}1
+function! s:viewer._exists() dict abort " {{{1
+  return self.xdo_exists()
+endfunction
+
+" }}}1
+function! s:viewer._start(outfile) dict abort " {{{1
   let l:cmd  = 'zathura'
   if self.has_synctex
     let l:cmd .= ' -x "' . s:inverse_search_cmd
@@ -51,14 +68,15 @@ function! s:zathura.start(outfile) dict abort " {{{1
 
   call vimtex#jobs#run(self.cmd_start)
 
-  call self.xwin_get_id()
-  let self.outfile = a:outfile
+  call self.xdo_get_id()
 endfunction
 
 " }}}1
-function! s:zathura.forward_search(outfile) dict abort " {{{1
+function! s:viewer._forward_search(outfile) dict abort " {{{1
   if !self.has_synctex | return | endif
-  if !filereadable(self.synctex()) | return | endif
+
+  let l:synctex_file = fnamemodify(a:outfile, ':r') . '.synctex.gz'
+  if !filereadable(l:synctex_file) | return | endif
 
   let self.texfile = vimtex#paths#relative(expand('%:p'), b:vimtex.root)
   let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
@@ -73,28 +91,25 @@ function! s:zathura.forward_search(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:zathura.latexmk_append_argument() dict abort " {{{1
-  if g:vimtex_view_use_temp_files
-    let l:cmd = ' -view=none'
-  else
-    let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
-    if self.has_synctex
-      " The inverse search command requires insane amount of quote escapes,
-      " because the command is parsed through several layers of interpreting,
-      " e.g. perl -> shell, perhaps more.
-      let l:zathura .= ' -x \"' . s:inverse_search_cmd
-            \ . ' -c \"\\\"\"VimtexInverseSearch \%{line} ''"''"''\%{input}''"''"''\"\\\"\"\" \%S'
-    endif
-
-    let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-    let l:cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:zathura)
+function! s:viewer._latexmk_append_argument() dict abort " {{{1
+  let l:zathura = 'zathura ' . g:vimtex_view_zathura_options
+  if self.has_synctex
+    " The inverse search command requires insane amount of quote escapes,
+    " because the command is parsed through several layers of interpreting,
+    " e.g. perl -> shell, perhaps more.
+    let l:zathura .= ' -x \"' . s:inverse_search_cmd
+          \ . ' -c \"\\\"\"VimtexInverseSearch \%{line} ''"''"''\%{input}''"''"''\"\\\"\"\" \%S'
   endif
+
+  let l:cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
+  let l:cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:zathura)
 
   return l:cmd
 endfunction
 
 " }}}1
-function! s:zathura.get_pid() dict abort " {{{1
+
+function! s:viewer.get_pid() dict abort " {{{1
   " First try to match full output file name
   let l:outfile = fnamemodify(get(self, 'outfile', self.out()), ':t')
   let l:output = vimtex#jobs#capture(
@@ -109,6 +124,7 @@ function! s:zathura.get_pid() dict abort " {{{1
 endfunction
 
 " }}}1
+
 
 let s:inverse_search_cmd = get(g:, 'vimtex_callback_progpath',
       \                        get(v:, 'progpath', get(v:, 'progname', '')))

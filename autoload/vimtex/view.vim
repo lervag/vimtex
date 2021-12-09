@@ -22,11 +22,10 @@ function! vimtex#view#init_state(state) abort " {{{1
   if !g:vimtex_view_enabled | return | endif
   if has_key(a:state, 'viewer') | return | endif
 
-  if g:vimtex_view_use_temp_files
-    augroup vimtex_view_buffer
-      autocmd User VimtexEventCompileSuccess call b:vimtex.viewer.copy_files()
-    augroup END
-  endif
+  augroup vimtex_viewer
+    autocmd!
+    autocmd User VimtexEventCompileSuccess call vimtex#view#compiler_callback()
+  augroup END
 
   try
     let a:state.viewer = vimtex#view#{g:vimtex_view_method}#new()
@@ -47,11 +46,15 @@ function! vimtex#view#view(...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#not_readable(output) abort " {{{1
-  if filereadable(a:output) | return 0 | endif
+function! vimtex#view#compiler_callback() abort " {{{1
+  if exists('*b:vimtex.viewer.compiler_callback')
+    if !b:vimtex.viewer.check() | return | endif
 
-  call vimtex#log#warning('Viewer cannot read PDF file!', a:output)
-  return 1
+    let l:outfile = b:vimtex.viewer.out()
+    if !filereadable(l:outfile) | return | endif
+
+    call b:vimtex.viewer.compiler_callback(l:outfile)
+  endif
 endfunction
 
 " }}}1
@@ -104,7 +107,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   endtry
 
   execute 'normal!' a:line . 'G'
-  call s:focus_vim()
+  call b:vimtex.viewer.xdo_focus_vim()
   redraw
 
   if exists('#User#VimtexEventViewReverse')
@@ -179,41 +182,6 @@ function! s:nvim_prune_servernames() abort " {{{1
 
   " Write the pruned list to file
   call writefile(l:available_servernames, s:nvim_servernames)
-endfunction
-
-" }}}1
-
-function! s:focus_vim() abort " {{{1
-  if !executable('pstree') || !executable('xdotool') | return | endif
-
-  " The idea is to use xdotool to focus the window ID of the relevant windowed
-  " process. To do this, we need to check the process tree. Inside TMUX we need
-  " to check from the PID of the tmux client. We find this PID by listing the
-  " PIDS of the corresponding pty.
-  if empty($TMUX)
-    let l:current_pid = getpid()
-  else
-    let l:output = vimtex#jobs#capture('tmux display-message -p "#{client_tty}"')
-    let l:pts = split(trim(l:output[0]), '/')[-1]
-    let l:current_pid = str2nr(vimtex#jobs#capture('ps o pid t ' . l:pts)[1])
-  endif
-
-  let l:output = join(vimtex#jobs#capture('pstree -s -p ' . l:current_pid))
-  let l:pids = split(l:output, '\D\+')
-  let l:pids = l:pids[: index(l:pids, string(l:current_pid))]
-
-  for l:pid in reverse(l:pids)
-    let l:output = vimtex#jobs#capture(
-          \ 'xdotool search --onlyvisible --pid ' . l:pid)
-    let l:xwinids = filter(reverse(l:output), '!empty(v:val)')
-
-    if !empty(l:xwinids)
-      call vimtex#jobs#run('xdotool windowactivate ' . l:xwinids[0] . ' &')
-      call feedkeys("\<c-l>", 'tn')
-      return l:xwinids[0]
-      break
-    endif
-  endfor
 endfunction
 
 " }}}1
