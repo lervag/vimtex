@@ -37,7 +37,7 @@ endfunction
 " }}}1
 function! s:info.gather_system_info() abort dict " {{{1
   let l:lines = [
-        \ 'System info',
+        \ 'System info:',
         \ '  OS: ' . s:get_os_info(),
         \ '  Vim version: ' . s:get_vim_info(),
         \]
