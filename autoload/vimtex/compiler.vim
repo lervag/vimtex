@@ -110,7 +110,16 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#compile_ss() abort " {{{1
+  if b:vimtex.compiler.is_running()
+    call vimtex#log#info(
+          \ 'Compiler is already running, use :VimtexStop to stop it!')
+    return
+  endif
+
   call b:vimtex.compiler.start_single()
+
+  if g:vimtex_compiler_silent | return | endif
+  call vimtex#log#info('Compiler started in background!')
 endfunction
 
 " }}}1
