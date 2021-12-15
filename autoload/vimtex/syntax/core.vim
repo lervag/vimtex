@@ -527,6 +527,7 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'text%(normal|rm|up|tt|sf|sc)?',
         \ 'intertext',
         \ '[mf]box',
+        \ 'label',
         \]
     execute 'syntax match texMathCmdText'
           \ '"\v\\' . l:re_cmd . '>"'
