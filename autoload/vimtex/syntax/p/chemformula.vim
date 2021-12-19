@@ -8,9 +8,9 @@ function! vimtex#syntax#p#chemformula#load(cfg) abort " {{{1
   syntax match texCHSymb contained "->\|+\|-"
 
   syntax region texCHText matchgroup=texDelim keepend start=/"/ end=/"/
-        \ contains=TOP,@NoSpell
+        \ contains=TOP,@NoSpell contained
   syntax region texCHText matchgroup=texDelim keepend start=/'/ end=/'/
-        \ contains=TOP,@NoSpell
+        \ contains=TOP,@NoSpell contained
 
   syntax match texCmdCH "\\ch\>"
         \ nextgroup=texCHOpt,texCHArg skipwhite skipnl
