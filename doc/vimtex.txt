@@ -523,7 +523,7 @@ applicable.
 * Enhanced matching and highlighting of delimiters  |vimtex-af-enhanced-matchparen|
 * Formatting                                        |vimtex-af-formatting|
 * Filetype plugin for bib files                     |vimtex-af-ftplugin-bib|
-* Language server / texlab                          |vimtex-af-lsp|
+* Language servers (texlab & ltex)                  |vimtex-af-lsp|
 
 Linting and syntax checking~
                                                             *vimtex-af-linting*
@@ -721,7 +721,7 @@ Filetype plugin for bib files~
   See also https://github.com/lervag/vimtex/issues/1293 for some related
   discussions.
 
-Language server / texlab~
+Language servers~
                                                                 *vimtex-af-lsp*
   In recent years, language servers (LSPs) [0] have become very popular. There
   is a language server for LaTeX and bibtex called texlab [1]. It may be
@@ -735,9 +735,13 @@ Language server / texlab~
   completion which should in most cases work well.
 
   To use texlab, one must use an LSP client, e.g. |vim-lsp| [2], neovim's
-  built-in LSP client [3], or |coc-nvim| [4, 5].
+  built-in LSP client [3], or |coc-nvim| [4, 5]. See also this VimTeX issue
+  [6] for more information.
 
-  See also this VimTeX issue [6] for more information.
+  In addition to texlab, there is also a dedicated grammar and spell checking
+  language server called LTeX [7]. It relies on LanguageTool and supports both
+  LaTeX and other markup languages. It may be a useful tool to use in
+  conjunction with VimTeX as an alternative to |vimtex-grammar|.
 
   [0]: https://langserver.org/
   [1]: https://texlab.netlify.app/
@@ -746,6 +750,7 @@ Language server / texlab~
   [4]: https://github.com/neoclide/coc.nvim
   [5]: https://github.com/fannheyward/coc-texlab
   [6]: https://github.com/lervag/vimtex/issues/1371
+  [7]: https://valentjn.github.io/ltex/index.html
 
 ==============================================================================
 USAGE                                                            *vimtex-usage*
@@ -4962,6 +4967,10 @@ The language of the Tex file is determined by the option |'spelllang'|. This
 option can be specified in ones vimrc file, but it can also be specified in
 a |modeline| (see also the user manual section |21.6| for a gentle
 introduction to the use of modelines).
+
+Finally, one should also notice the LTeX project. It is a grammar and spell
+checking tool available as a language server. See |vimtex-af-lsp| for more
+info.
 
 ------------------------------------------------------------------------------
 TEXTIDOTE                                            *vimtex-grammar-textidote*
