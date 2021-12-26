@@ -2927,6 +2927,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_view_skim_activate_on_start*
+  Set this option to 1 to make Skim have focus and be moved to the foreground
+  after it is first opened (usually via |:VimtexCompile| or similar).
+
+  Default value: 1
+
 *g:vimtex_view_skim_reading_bar*
   Set this option to 1 to highlight current line in PDF after command
   |:VimtexView|.

@@ -13,7 +13,7 @@ endfunction
 
 let s:viewer = vimtex#view#_template#new({
       \ 'name' : 'Skim',
-      \ 'startskim' : 'open -a Skim',
+      \ 'startskim' : 'open -a Skim' . (g:vimtex_view_skim_activate_on_start ? '' : ' -g'),
       \})
 
 function! s:viewer.compiler_callback(outfile) dict abort " {{{1
