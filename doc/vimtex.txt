@@ -5208,6 +5208,7 @@ the text you want to search.
 
 Associated settings:
 * |g:vimtex_view_skim_activate|
+* |g:vimtex_view_skim_activate_on_start|
 * |g:vimtex_view_skim_reading_bar|
 
                                                        *vimtex-view-sumatrapdf*
