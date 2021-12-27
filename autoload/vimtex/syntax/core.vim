@@ -434,7 +434,7 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Highlight \iffalse ... \fi blocks as comments
   syntax region texComment matchgroup=texCmd
-        \ start="^\s*\\iffalse\>" end="\\fi\>"
+        \ start="^\s*\\iffalse\>" end="\\\(fi\|else\)\>"
         \ contains=texCommentConditionals
   syntax region texCommentConditionals matchgroup=texComment
         \ start="\\if\w\+" end="\\fi\>"
