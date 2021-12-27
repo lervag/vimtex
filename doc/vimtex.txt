@@ -2927,11 +2927,15 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
-*g:vimtex_view_skim_activate_on_start*
-  Set this option to 1 to make Skim have focus and be moved to the foreground
-  after it is first opened (usually via |:VimtexCompile| or similar).
+*g:vimtex_view_skim_latexmk_previewer*
+  Command passed to `latexmk` to be used as the PDF previewer (i.e. the
+  `$pdf_previewer` variable for `latexmk`). This defaults to `'open -a Skim'`,
+  which means that `latexmk` will open Skim and give it focus after
+  successfully producing a PDF. If the focusing is unwanted, this can be
+  set to `'open -a Skim -g'`, which will open Skim but leave it in the
+  background.
 
-  Default value: 1
+  Default value: `'open -a Skim'`
 
 *g:vimtex_view_skim_reading_bar*
   Set this option to 1 to highlight current line in PDF after command

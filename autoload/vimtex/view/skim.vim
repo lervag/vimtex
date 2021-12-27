@@ -13,7 +13,6 @@ endfunction
 
 let s:viewer = vimtex#view#_template#new({
       \ 'name' : 'Skim',
-      \ 'startskim' : 'open -a Skim' . (g:vimtex_view_skim_activate_on_start ? '' : ' -g'),
       \})
 
 function! s:viewer.compiler_callback(outfile) dict abort " {{{1
@@ -74,7 +73,7 @@ endfunction
 
 " }}}1
 function! s:viewer._latexmk_append_argument() dict abort " {{{1
-  return vimtex#compiler#latexmk#wrap_option('pdf_previewer', self.startskim)
+  return vimtex#compiler#latexmk#wrap_option('pdf_previewer', g:vimtex_view_skim_latexmk_previewer)
 endfunction
 
 " }}}1
