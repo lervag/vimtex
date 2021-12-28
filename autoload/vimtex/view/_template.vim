@@ -251,7 +251,7 @@ function! s:viewer.xdo_start_from_compiler_callback(outfile) dict abort " {{{1
     sleep 50m
   endfor
 
-  call self.start(a:outfile)
+  call self._start(a:outfile)
   let self.started_through_callback = 1
 endfunction
 
