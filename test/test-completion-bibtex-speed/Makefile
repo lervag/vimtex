@@ -1,6 +1,6 @@
 .PHONY: test
 
-MYVIM ?= nvim --headless
+MYVIM ?= nvim --clean --headless
 
 test:
 	@INMAKE=1                      $(MYVIM) -u bibspeed.vim

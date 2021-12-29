@@ -1,4 +1,4 @@
-MYVIM ?= nvim --headless
+MYVIM ?= nvim --clean --headless
 
 INMAKE := 1
 export INMAKE
