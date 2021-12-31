@@ -3515,10 +3515,14 @@ further customization.
     post event may e.g. be used to automatically start compiling a document.
 
   *VimtexEventCompileStarted*
-    This event is triggered after compilation is started (in continuous mode).
+    This event is triggered after compilation is started.
 
   *VimtexEventCompileStopped*
     This event is triggered after compilation is stopped.
+
+  *VimtexEventCompiling*
+    This event is triggered when the compiler backend triggers a new
+    compilation. This is only supported by |vimtex-compiler-latexmk|.
 
   *VimtexEventCompileSuccess*
   *VimtexEventCompileFailed*
