@@ -78,9 +78,16 @@ endfunction
 
 " }}}1
 function! s:viewer.compiler_callback(outfile) dict abort " {{{1
-  if g:vimtex_view_automatic
-    call self._start(a:outfile)
-  endif
+  if !g:vimtex_view_automatic
+      \ || has_key(self, 'started_through_callback') | return | endif
+
+  call self._start(a:outfile)
+  let self.started_through_callback = 1
+endfunction
+
+" }}}1
+function! s:viewer.compiler_stopped() dict abort " {{{1
+  unlet! self.started_through_callback
 endfunction
 
 " }}}1

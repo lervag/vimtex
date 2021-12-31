@@ -25,6 +25,7 @@ function! vimtex#view#init_state(state) abort " {{{1
   augroup vimtex_viewer
     autocmd!
     autocmd User VimtexEventCompileSuccess call vimtex#view#compiler_callback()
+    autocmd User VimtexEventCompileStopped call vimtex#view#compiler_stopped()
   augroup END
 
   try
@@ -54,6 +55,13 @@ function! vimtex#view#compiler_callback() abort " {{{1
     if !filereadable(l:outfile) | return | endif
 
     call b:vimtex.viewer.compiler_callback(l:outfile)
+  endif
+endfunction
+
+" }}}1
+function! vimtex#view#compiler_stopped() abort " {{{1
+  if exists('*b:vimtex.viewer.compiler_stopped')
+    call b:vimtex.viewer.compiler_stopped()
   endif
 endfunction
 
