@@ -58,14 +58,3 @@ function! s:viewer._start(file) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer._latexmk_append_argument() dict abort " {{{1
-  let l:option = g:vimtex_view_general_viewer
-  if !empty(g:vimtex_view_general_options_latexmk)
-    let l:option .= ' '
-    let l:option .= substitute(g:vimtex_view_general_options_latexmk,
-          \                    '@line', line('.'), 'g')
-  endif
-  return vimtex#compiler#latexmk#wrap_option('pdf_previewer', l:option)
-endfunction
-
-" }}}1

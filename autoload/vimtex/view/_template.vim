@@ -51,17 +51,6 @@ function! s:viewer.out() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer.latexmk_append_argument() dict abort " {{{1
-  if g:vimtex_view_use_temp_files
-    return ' -view=none'
-  endif
-
-  if !self.check() | return '' | endif
-
-  return self._latexmk_append_argument()
-endfunction
-
-" }}}1
 function! s:viewer.view(file) dict abort " {{{1
   if !self.check() | return | endif
 
@@ -84,6 +73,13 @@ function! s:viewer.view(file) dict abort " {{{1
 
   if exists('#User#VimtexEventView')
     doautocmd <nomodeline> User VimtexEventView
+  endif
+endfunction
+
+" }}}1
+function! s:viewer.compiler_callback(outfile) dict abort " {{{1
+  if g:vimtex_view_automatic
+    call self._start(a:outfile)
   endif
 endfunction
 
@@ -236,7 +232,6 @@ endfunction
 function! s:viewer.xdo_start_from_compiler_callback(outfile) dict abort " {{{1
   if !(self.xdo_check()
         \ && g:vimtex_view_automatic
-        \ && g:vimtex_view_automatic_xwin
         \ && !has_key(self, 'started_through_callback')) | return | endif
 
   " Search for existing window created by latexmk

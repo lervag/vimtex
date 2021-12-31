@@ -129,14 +129,3 @@ function! s:viewer._forward_search(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer._latexmk_append_argument() dict abort " {{{1
-  let cmd  = vimtex#compiler#latexmk#wrap_option('new_viewer_always', '0')
-  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_method', '2')
-  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_update_signal', 'SIGHUP')
-  let cmd .= vimtex#compiler#latexmk#wrap_option('pdf_previewer',
-        \ 'mupdf ' .  g:vimtex_view_mupdf_options)
-
-  return cmd
-endfunction
-
-" }}}1

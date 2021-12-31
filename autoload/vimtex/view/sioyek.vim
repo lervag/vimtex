@@ -47,12 +47,6 @@ function! s:viewer._start(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer._latexmk_append_argument() dict abort " {{{1
-  return vimtex#compiler#latexmk#wrap_option(
-        \ 'pdf_previewer', 'sioyek --reuse-instance')
-endfunction
-
-" }}}1
 
 
 let s:inverse_search_cmd = get(g:, 'vimtex_callback_progpath',

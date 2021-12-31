@@ -389,7 +389,6 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
-  call s:init_option('vimtex_view_automatic_xwin', 1)
   call s:init_option('vimtex_view_method', 'general')
   call s:init_option('vimtex_view_use_temp_files', 0)
   call s:init_option('vimtex_view_forward_search_on_start', 1)
@@ -402,16 +401,12 @@ function! vimtex#options#init() abort " {{{1
       call s:init_option('vimtex_view_general_viewer', 'SumatraPDF')
       call s:init_option('vimtex_view_general_options',
             \ '-reuse-instance -forward-search @tex @line @pdf')
-      call s:init_option('vimtex_view_general_options_latexmk',
-            \ '-reuse-instance')
     elseif executable('mupdf')
       call s:init_option('vimtex_view_general_viewer', 'mupdf')
       call s:init_option('vimtex_view_general_options', '@pdf')
-      call s:init_option('vimtex_view_general_options_latexmk', '')
     else
       call s:init_option('vimtex_view_general_viewer', 'start')
       call s:init_option('vimtex_view_general_options', '@pdf')
-      call s:init_option('vimtex_view_general_options_latexmk', '')
     endif
   else
     call s:init_option('vimtex_view_general_viewer', get({
@@ -419,7 +414,6 @@ function! vimtex#options#init() abort " {{{1
           \ 'mac'   : 'open',
           \}, l:os, ''))
     call s:init_option('vimtex_view_general_options', '@pdf')
-    call s:init_option('vimtex_view_general_options_latexmk', '')
   endif
 
   call s:init_option('vimtex_view_mupdf_options', '')
@@ -499,9 +493,11 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_toc_split_pos',
         \ 'g:vimtex_toc_tocdepth',
         \ 'g:vimtex_toc_width',
+        \ 'g:vimtex_view_automatic_xwin',
         \ 'g:vimtex_view_general_callback',
         \ 'g:vimtex_view_general_hook_callback',
         \ 'g:vimtex_view_general_hook_view',
+        \ 'g:vimtex_view_general_options_latexmk',
         \ 'g:vimtex_view_mupdf_hook_callback',
         \ 'g:vimtex_view_mupdf_hook_view',
         \ 'g:vimtex_view_skim_hook_callback',

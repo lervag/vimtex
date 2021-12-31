@@ -10,13 +10,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#compiler#latexmk#wrap_option(name, value) abort " {{{1
-  return has('win32')
-        \ ? ' -e "$' . a:name . ' = ''' . a:value . '''"'
-        \ : ' -e ''$' . a:name . ' = "' . a:value . '"'''
-endfunction
-
-"}}}1
 function! vimtex#compiler#latexmk#get_rc_opt(root, opt, type, default) abort " {{{1
   "
   " Parse option from .latexmkrc.
@@ -137,17 +130,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
   endif
 
   if self.continuous
-    let l:cmd .= ' -pvc'
-
-    " Set viewer options
-    if !g:vimtex_view_automatic
-          \ || get(get(b:vimtex, 'viewer', {}), 'xwin_id') > 0
-          \ || self.silence_next_callback
-      let l:cmd .= ' -view=none'
-    elseif g:vimtex_view_enabled
-          \ && has_key(b:vimtex.viewer, 'latexmk_append_argument')
-      let l:cmd .= b:vimtex.viewer.latexmk_append_argument()
-    endif
+    let l:cmd .= ' -pvc -view=none'
 
     if self.callback
       for [l:opt, l:val] in [
