@@ -2776,17 +2776,6 @@ OPTIONS                                                        *vimtex-options*
   * |vimtex-compiler-arara|
   * |vimtex-compiler-tectonic|
 
-  Note: With this option enabled, the xwin based viewers |vimtex-view-mupdf|
-        and |vimtex-view-zathura| will use `xdotool` to check if a viewer was
-        opened by the compiler. If a viewer window is not found, VimTeX will
-        automatically start one. The search for a viewer window is implemented
-        with a loop that calls `xdotool` 30 times with 50 ms interval. If
-        a window is not found, the search will therefore interrupt the editing
-        session for 1.5 seconds; this happens on every successful compile
-        callback. Some users can't use `xdotool`, e.g. on Wayland, but the
-        viewers may still work quite reliably. In these cases, one may want to
-        disable this automatic view feature by setting the option to 0.
-
   Default value: 1
 
 *g:vimtex_view_use_temp_files*
