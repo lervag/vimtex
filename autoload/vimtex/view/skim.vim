@@ -40,23 +40,29 @@ endfunction
 
 
 function! s:make_cmd_view(outfile, sync) abort " {{{1
-  let cmd_view = join([ 'osascript -l JavaScript -e ''',
+  let l:script = [
         \ 'var app = Application("Skim");',
         \ 'var theFile = Path("' . a:outfile . '");',
         \ 'try { var theDocs = app.documents.whose({ file: { _equals: theFile }});',
         \ 'if (theDocs.length > 0) app.revert(theDocs) }',
         \ 'catch (e) {};',
-        \ 'app.open(theFile);' ])
+        \ 'app.open(theFile);'
+        \]
+
   if a:sync
-    let cmd_view .= join([
+    call extend(l:script, [
           \ 'app.documents[0].go({ to: app.texLines[' . (line('.')-1) . '],',
           \ 'from: Path("'. expand('%:p') . '")',
           \ (g:vimtex_view_skim_reading_bar ? ', showingReadingBar: true' : ''),
-          \ '});' ])
+          \ '});'
+          \])
   endif
+
   if g:vimtex_view_skim_activate
-    let cmd_view .= 'app.activate();'
+    call add(l:script, 'app.activate();')
   endif
-  return cmd_view . ''''
+
+  return printf("osascript -l JavaScript -e '%s'", join(l:script))
 endfunction
 
+" }}}1
