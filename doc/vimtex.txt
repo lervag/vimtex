@@ -5484,7 +5484,8 @@ Note: This API is currently a work in progress!
     3: Compilation complete - Failed
 
   The function does several useful things based on the status, such as running
-  the |VimtexEventCompileFailed| and |VimtexEventCompileSuccess| events.
+  the |VimtexEventCompiling|, |VimtexEventCompileFailed| and
+  |VimtexEventCompileSuccess| events.
 
 *vimtex#syntax#in_mathzone*
   Returns 1 if the position is inside a math zone. If called without
