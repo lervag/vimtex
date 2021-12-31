@@ -236,22 +236,3 @@ function! s:viewer.xdo_focus_vim() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:viewer.xdo_start_from_compiler_callback(outfile) dict abort " {{{1
-  if !(self.xdo_check()
-        \ && g:vimtex_view_automatic
-        \ && !has_key(self, 'started_through_callback')) | return | endif
-
-  " Search for existing window created by latexmk
-  " Note: It may be necessary to wait some time before it is opened and
-  "       recognized. Sometimes it is very quick, other times it may take
-  "       a second. This way, we don't block longer than necessary.
-  for l:dummy in range(30)
-    if self.xdo_exists() | return | endif
-    sleep 50m
-  endfor
-
-  call self._start(a:outfile)
-  let self.started_through_callback = 1
-endfunction
-
-" }}}1

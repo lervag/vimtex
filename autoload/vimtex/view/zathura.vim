@@ -17,12 +17,6 @@ let s:viewer = vimtex#view#_template#new({
       \ 'has_synctex': 1,
       \})
 
-function! s:viewer.compiler_callback(outfile) dict abort " {{{1
-  call self.xdo_start_from_compiler_callback(a:outfile)
-endfunction
-
-" }}}1
-
 function! s:viewer._check() dict abort " {{{1
   " Check if Zathura is executable
   if !executable('zathura')

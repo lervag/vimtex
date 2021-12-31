@@ -21,7 +21,11 @@ let s:viewer = vimtex#view#_template#new({
       \})
 
 function! s:viewer.compiler_callback(outfile) dict abort " {{{1
-  call self.xdo_start_from_compiler_callback(a:outfile)
+  if g:vimtex_view_automatic && !has_key(self, 'started_through_callback')
+    call self._start(a:outfile)
+    let self.started_through_callback = 1
+  endif
+
   call self.xdo_send_keys('r')
 endfunction
 
