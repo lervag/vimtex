@@ -56,18 +56,18 @@ function! s:make_cmd_view(outfile, open, sync) abort " {{{1
   if a:open
     call add(l:script, 'app.open(theFile);')
 
-    if a:sync
-      call extend(l:script, [
-            \ 'app.documents[0].go({ to: app.texLines[' . (line('.')-1) . '],',
-            \ 'from: Path("'. expand('%:p') . '")',
-            \ (g:vimtex_view_skim_reading_bar ? ', showingReadingBar: true' : ''),
-            \ '});'
-            \])
-    endif
-
     if g:vimtex_view_skim_activate
       call add(l:script, 'app.activate();')
     endif
+  endif
+
+  if a:sync
+    call extend(l:script, [
+          \ 'app.documents[0].go({ to: app.texLines[' . (line('.')-1) . '],',
+          \ 'from: Path("'. expand('%:p') . '")',
+          \ (g:vimtex_view_skim_reading_bar ? ', showingReadingBar: true' : ''),
+          \ '});'
+          \])
   endif
 
   return printf("osascript -l JavaScript -e '%s'", join(l:script))
