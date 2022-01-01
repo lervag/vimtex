@@ -49,6 +49,7 @@ for [s:in, s:out] in [
       \ ['\(a/p_\text{b}\)', '\(\frac{a}{p_\text{b}}\)'],
       \ ['$f(x+y)/g(z)$', '$\frac{f(x+y)}{g(z)}$'],
       \ ['$f(x)g(y)/h(z)$', '$f(x)\frac{g(y)}{h(z)}$'],
+      \ ['$\dfrac{x+1}{x-1}$', '$(x+1)/(x-1)$'],
       \]
   if s:in =~# '\/'
     call vimtex#test#keys('f/ltsf', s:in, s:out)
