@@ -475,8 +475,10 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ contained containedin=texE3Arg,texE3Group
 
   syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
-  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)*:[a-zA-Z]*"
+  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)*:[a-zA-Z]*" contains=texE3Type
   syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
+
+  syntax match texE3Type contained ":[a-zA-Z]*"
 
   syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
 
@@ -740,6 +742,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texE3Func             texCmdType
   highlight def link texE3Opt              texOpt
   highlight def link texE3Parm             texParm
+  highlight def link texE3Type             texParm
   highlight def link texE3Var              texCmd
   highlight def link texEnvOpt             texOpt
   highlight def link texEnvMArgName        texEnvArgName
