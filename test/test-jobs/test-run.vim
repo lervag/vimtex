@@ -10,7 +10,7 @@ if vimtex#util#is_win() | quitall | endif
 let s:t0 = vimtex#profile#time()
 call vimtex#jobs#run('sleep 0.2')
 let s:t1 = vimtex#profile#time()
-call assert_inrange(0.2, 0.35, s:t1 - s:t0)
+call assert_true(s:t1 - s:t0 > 0.20)
 
 
 call vimtex#jobs#run('echo foobar')
