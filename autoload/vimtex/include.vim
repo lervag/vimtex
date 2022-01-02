@@ -35,6 +35,9 @@ function! vimtex#include#expr() abort " {{{1
 
   " Search for file with kpsewhich
   if g:vimtex_include_search_enabled
+    " Parse package or documentclass commands
+    let l:fname = s:parse_package_documentclass(l:fname)
+
     let l:candidate = s:search_candidates_kpsewhich(l:fname)
     if !empty(l:candidate)
       return s:visited.check(l:candidate)
@@ -46,6 +49,7 @@ endfunction
 
 " }}}1
 
+
 function! s:parse_input(fname, type) abort " {{{1
   let [l:lnum, l:cnum] = searchpos(g:vimtex#re#{a:type}_input, 'bcn', line('.'))
   if l:lnum == 0 | return a:fname | endif
@@ -53,9 +57,8 @@ function! s:parse_input(fname, type) abort " {{{1
   let l:cmd = vimtex#cmd#get_at(l:lnum, l:cnum)
   if empty(l:cmd) | return a:fname | endif
 
-  let l:file = join(map(
-        \   get(l:cmd, 'args', [{}]),
-        \   "get(v:val, 'text', '')"),
+  let l:file = join(
+        \ map(get(l:cmd, 'args', [{}]), {_, x -> get(x, 'text', '')}),
         \ '')
   let l:file = substitute(l:file, '^\s*"\|"\s*$', '', 'g')
   let l:file = substitute(l:file, '\\space', '', 'g')
@@ -68,6 +71,34 @@ function! s:parse_input(fname, type) abort " {{{1
 endfunction
 
 " }}}1
+function! s:parse_package_documentclass(fname) abort " {{{1
+  let [l:lnum, l:cnum] = searchpos(s:re_cmds, 'bcn', line('.'))
+  if l:lnum == 0 | return a:fname | endif
+
+  let l:cmd = vimtex#cmd#get_at(l:lnum, l:cnum)
+  if empty(l:cmd) | return a:fname | endif
+
+  let l:args = get(l:cmd, 'args', [{}])
+  if l:cmd.name =~# 'PassOptionsTo'
+    let l:result = l:args[1].text
+  else
+    let l:result = l:args[0].text
+  endif
+
+  return vimtex#util#trim(l:result)
+endfunction
+
+let s:re_cmds = '\v\s*\\%(' . join([
+      \ 'documentclass',
+      \ 'LoadClass',
+      \ 'usepackage',
+      \ 'RequirePackage',
+      \ 'PassOptionsToClass',
+      \ 'PassOptionsToPackage'
+      \], '|') . ')'
+
+" }}}1
+
 function! s:search_candidates_texinputs(fname) abort " {{{1
   for l:suffix in [''] + split(&l:suffixesadd, ',')
     let l:candidates = glob(b:vimtex.root . '/**/'
@@ -103,7 +134,7 @@ function! s:search_candidates_kpsewhich(fname) abort " {{{1
   endfor
 
   for l:file in l:candidates
-    let l:candidate = vimtex#kpsewhich#find(l:file)
+    let l:candidate = get(vimtex#kpsewhich#run(fnameescape(l:file)), 0, '')
     if !empty(l:candidate) && filereadable(l:candidate) | return l:candidate | endif
   endfor
 
