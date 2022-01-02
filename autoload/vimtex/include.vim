@@ -8,42 +8,32 @@ function! vimtex#include#expr() abort " {{{1
   call s:visited.timeout()
   let l:fname = substitute(v:fname, '^\s*\|\s*$', '', 'g')
 
-  "
   " Check if v:fname matches exactly
-  "
   if filereadable(l:fname)
     return s:visited.check(l:fname)
   endif
 
-  "
   " Parse \include or \input style lines
-  "
-  let l:file = s:input(l:fname, 'tex')
+  let l:file = s:parse_input(l:fname, 'tex')
   for l:candidate in [l:file, l:file . '.tex']
     if filereadable(l:candidate)
       return s:visited.check(l:candidate)
     endif
   endfor
 
-  "
   " Parse \bibliography or \addbibresource
-  "
-  let l:candidate = s:input(l:fname, 'bib')
+  let l:candidate = s:parse_input(l:fname, 'bib')
   if filereadable(l:candidate)
     return s:visited.check(l:candidate)
   endif
 
-  "
   " Check if v:fname matches in $TEXINPUTS
-  "
   let l:candidate = s:search_candidates_texinputs(l:fname)
   if !empty(l:candidate)
     return s:visited.check(l:candidate)
   endif
 
-  "
   " Search for file with kpsewhich
-  "
   if g:vimtex_include_search_enabled
     let l:candidate = s:search_candidates_kpsewhich(l:fname)
     if !empty(l:candidate)
@@ -56,7 +46,7 @@ endfunction
 
 " }}}1
 
-function! s:input(fname, type) abort " {{{1
+function! s:parse_input(fname, type) abort " {{{1
   let [l:lnum, l:cnum] = searchpos(g:vimtex#re#{a:type}_input, 'bcn', line('.'))
   if l:lnum == 0 | return a:fname | endif
 
