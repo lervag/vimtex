@@ -87,7 +87,9 @@ endfunction
 
 " }}}1
 function! s:viewer.compiler_stopped() dict abort " {{{1
-  unlet! self.started_through_callback
+  if has_key(self, 'started_through_callback')
+    unlet self.started_through_callback
+  endif
 endfunction
 
 " }}}1
