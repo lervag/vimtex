@@ -203,8 +203,15 @@ function! s:cache.read() dict abort " {{{1
 
   if getftime(self.path) > self.ftime
     let self.ftime = getftime(self.path)
-    call extend(self.data,
-          \ json_decode(join(readfile(self.path))), 'keep')
+    let l:data = json_decode(join(readfile(self.path)))
+    if type(l:data) == v:t_dict
+      call extend(self.data, l:data, 'keep')
+    else
+      call vimtex#log#warning(
+            \ 'Inconsistent cache data while reading: ' . self.name,
+            \ 'Decoded data type: ' . type(l:data)
+            \)
+    endif
   endif
 endfunction
 
