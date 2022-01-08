@@ -4023,13 +4023,20 @@ look something like this: >
   cmp.setup {
     -- additional config
     sources = cmp.config.sources {
-      { name = 'omni' },
+      {
+        name = 'omni',
+        keyword_pattern = { vim.g["vimtex#re#neocomplete"] }
+      },
       -- additional sources
     }
   }
 
+Note: It is currently unclear if the `keyword_pattern` works as expected. If
+      it does not work, then one can try to remove that part.
+
 One may load this `cmp-omni` source only for TeX files. This is probably not
-necessary, but for the more conservative, this should do the trick: >
+necessary, but for the more conservative, the following should do the trick.
+The `keyword_pattern` key may also be added, if desired. >
 
   augroup VimTeX
     autocmd!
