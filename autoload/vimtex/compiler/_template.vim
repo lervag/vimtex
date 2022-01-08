@@ -394,7 +394,7 @@ function! s:callback_nvim_output(id, data, event) abort dict " {{{1
 
   call s:check_callback(
         \ get(filter(copy(a:data),
-        \   {_, x -> x =~# '^vimtex_compiler_callback'}), -1, ''))
+        \   {_, x -> x =~# 'vimtex_compiler_callback'}), -1, ''))
 
   try
     for l:Hook in get(get(get(b:, 'vimtex', {}), 'compiler', {}), 'hooks', [])
@@ -449,11 +449,11 @@ endfunction
 " }}}1
 
 function! s:check_callback(line) abort " {{{1
-  if a:line ==# 'vimtex_compiler_callback_compiling'
+  if a:line =~# 'vimtex_compiler_callback_compiling'
     call vimtex#compiler#callback(1)
-  elseif a:line ==# 'vimtex_compiler_callback_success'
+  elseif a:line =~# 'vimtex_compiler_callback_success'
     call vimtex#compiler#callback(2)
-  elseif a:line ==# 'vimtex_compiler_callback_failure'
+  elseif a:line =~# 'vimtex_compiler_callback_failure'
     call vimtex#compiler#callback(3)
   endif
 endfunction
