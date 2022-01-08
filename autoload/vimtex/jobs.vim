@@ -56,7 +56,10 @@ function! vimtex#jobs#capture(cmd, ...) abort " {{{1
   let l:output = vimtex#jobs#{s:backend}#capture(a:cmd)
   call vimtex#paths#popd()
 
-  return l:output
+  " On Windows there may be trailing CR characters
+  return has('win32')
+        \ ? map(l:output, {_, x -> substitute(x, '\r$', '', '')})
+        \ : l:output
 endfunction
 
 " }}}1
@@ -70,5 +73,6 @@ function! vimtex#jobs#cached(cmd) abort " {{{1
 endfunction
 
 " }}}1
+
 
 let s:backend = has('nvim') ? 'neovim' : 'vim'
