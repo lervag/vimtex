@@ -4021,28 +4021,32 @@ look something like this: >
 
   cmp = require('cmp')
   cmp.setup {
-    -- additional config
-    sources = cmp.config.sources {
-      {
-        name = 'omni',
-        keyword_pattern = { vim.g["vimtex#re#neocomplete"] }
-      },
-      -- additional sources
-    }
+    sources = cmp.config.sources { { name = 'omni', }, }
   }
 
-Note: It is currently unclear if the `keyword_pattern` works as expected. If
-      it does not work, then one can try to remove that part.
+One should note that |nvim-cmp| overrides the standard completion-menu
+formatting. To preserve the format as provided by VimTeX, one can supply
+a custom format function. One good solution is to put the |nvim-cmp|
+configuration for `.tex` files in your `after/ftplugin/tex.lua` with content
+similar to this:  >
 
-One may load this `cmp-omni` source only for TeX files. This is probably not
-necessary, but for the more conservative, the following should do the trick.
-The `keyword_pattern` key may also be added, if desired. >
-
-  augroup VimTeX
-    autocmd!
-    autocmd FileType tex
-          \ lua require('cmp').setup.buffer { sources = { { name = 'omni' } } }
-  augroup END
+  require('cmp').setup.buffer {
+    formatting = {
+      format = function(entry, vim_item)
+          vim_item.menu = ({
+            omni = (vim.inspect(vim_item.menu):gsub('%"', "")),
+            buffer = "[Buffer]",
+            -- formatting for other sources
+            })[entry.source.name]
+          return vim_item
+        end,
+    },
+    sources = {
+      { name = 'omni' },
+      { name = 'buffer' },
+      -- other sources
+    },
+  }
 
 [0]: https://github.com/hrsh7th/nvim-cmp
 [1]: https://github.com/hrsh7th/cmp-omni
