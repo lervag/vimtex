@@ -416,6 +416,9 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax match texComment "%.*$" contains=@Spell
   endif
 
+  " Don't spell check magic comments/directives
+  syntax match texComment "^\s*%\s*!.*" contains=@NoSpell
+
   " Do not check URLs and acronyms in comments
   " Source: https://github.com/lervag/vimtex/issues/562
   syntax match texCommentURL "\w\+:\/\/[^[:space:]]\+"
@@ -504,13 +507,18 @@ function! vimtex#syntax#core#init() abort " {{{1
     syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\("  end="\\)"
     syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
     syntax region texMathZoneX  matchgroup=texMathDelimZone concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+          \ nextgroup=texMathTextAfter
     syntax region texMathZoneXX matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
   else
     syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\("  end="\\)"
     syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\\[" end="\\]"
     syntax region texMathZoneX  matchgroup=texMathDelimZone contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
+          \ nextgroup=texMathTextAfter
     syntax region texMathZoneXX matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\$\$" end="\$\$"
   endif
+
+  " This is to disable spell check for text just after "$" (e.g. "$n$th")
+  syntax match texMathTextAfter "\w\+" contained contains=@NoSpell
 
   " Math regions: \ensuremath{...}
   syntax match texCmdMath "\\ensuremath\>" nextgroup=texMathZoneEnsured
