@@ -80,13 +80,13 @@ function! vimtex#complete#omnifunc(findstart, base) abort " {{{1
       endfor
     endfor
     return -3
-  else
-    if !exists('s:completer') | return [] | endif
-
-    return g:vimtex_complete_close_braces && get(s:completer, 'inside_braces', 1)
-          \ ? s:close_braces(s:completer.complete(a:base))
-          \ : s:completer.complete(a:base)
+  elseif !exists('s:completer')
+    return []
   endif
+
+  return g:vimtex_complete_close_braces && get(s:completer, 'inside_braces', 1)
+        \ ? s:close_braces(s:completer.complete(a:base))
+        \ : s:completer.complete(a:base)
 endfunction
 
 " }}}1
