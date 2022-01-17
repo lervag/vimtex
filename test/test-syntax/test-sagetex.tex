@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{sagetex}
+\begin{document}
+
+\begin{sagesilent}
+"""Example script."""
+import pickle
+import mytexmodule as tex
+
+with open('modes.p', 'rb') as file:
+    data = pickle.load(file)
+
+def random_function(arg):
+    return 3
+
+ans = random_function(data)
+
+# No actual data plotted
+plt = plot([], (0, 7),
+           axes_labels=[r"$\omega/\omega_\lambda$",
+                        r"$\beta_\lambda$"],
+           ticks=[[0, 1, sqrt(3), *optima], None],
+           tick_formatter=[[r"$0$", r"$1$", r"$\sqrt{3}$",
+                            *s.serialize(*optima, data=True)], None],
+           detect_poles='show')
+
+xi_eta_table = tex.Table(
+    title=r"Values of $\xi$ and $\eta$ for the first ten cylindrical modes")
+\end{sagesilent}
+
+The answer is \sagestr{tex.texify(ans)}.
+
+\begin{table}[ht]
+  \centering
+  \sagestr{xi_eta_table.latex}
+  \caption{Some caption here.}
+  \label{plot1}
+\end{table}
+
+\begin{figure}[ht]
+  \centering
+  \sageplot[]{plt}
+  \caption{Another caption here.}
+  \label{plot2}
+\end{figure}
+
+\end{document}
