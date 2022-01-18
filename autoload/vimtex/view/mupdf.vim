@@ -105,7 +105,7 @@ function! s:viewer._start(outfile) dict abort " {{{1
   call self.xdo_send_keys(g:vimtex_view_mupdf_send_keys)
 
   if g:vimtex_view_forward_search_on_start
-    call self.forward_search(a:outfile)
+    call self._forward_search(a:outfile)
   endif
 endfunction
 
