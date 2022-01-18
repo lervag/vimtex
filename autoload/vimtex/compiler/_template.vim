@@ -449,11 +449,11 @@ endfunction
 " }}}1
 
 function! s:check_callback(line) abort " {{{1
-  if a:line =~# 'vimtex_compiler_callback_compiling'
+  if a:line =~# 'echo vimtex_compiler_callback_compiling'
     call vimtex#compiler#callback(1)
-  elseif a:line =~# 'vimtex_compiler_callback_success'
+  elseif a:line =~# 'echo vimtex_compiler_callback_success'
     call vimtex#compiler#callback(2)
-  elseif a:line =~# 'vimtex_compiler_callback_failure'
+  elseif a:line =~# 'echo vimtex_compiler_callback_failure'
     call vimtex#compiler#callback(3)
   endif
 endfunction
