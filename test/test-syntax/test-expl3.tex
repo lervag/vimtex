@@ -45,3 +45,23 @@
       { \g__pdfoverlay_pdf_file_name_str }
   }
 \ExplSyntaxOff
+
+% Example from #2272
+\ExplSyntaxOn
+\c_tmpa_str
+\c_tmpa_str:nx
+\l_@@_int
+\cs_new:Nn \@@_shift_item:nn {
+  \str_set:Nx \l_tmpa_str { \str_head:n { #1 } }
+  \str_case:VnF \l_tmpa_str {
+    { x } {
+      \prop_put:Nnx \l_@@_b { #1 }
+        { \dim_eval:n { #2 + \l_@@_shiftx_dim } } }
+    { y } {
+      \prop_put:Nnx \l_@@_b { #1 }
+        { \dim_eval:n { #2 + \l_@@_shifty_dim } } }
+  } {
+    \prop_put:Nnn \l_@@_b { #1 } { #2 }
+  }
+}
+\ExplSyntaxOff

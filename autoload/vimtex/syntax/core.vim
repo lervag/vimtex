@@ -466,7 +466,8 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'opts': 'contained containedin=@texClusterE3',
         \})
 
-  syntax match texE3Cmd contained containedin=@texClusterE3 "\\\w\+"
+  syntax match texE3Cmd "\\\w\+"
+        \ contained containedin=@texClusterE3
         \ nextgroup=texE3Opt,texE3Arg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
   call vimtex#syntax#core#new_arg('texE3Arg', {
@@ -477,11 +478,16 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texE3CmdNestedZoneEnd '\\\ExplSyntaxOff'
         \ contained containedin=texE3Arg,texE3Group
 
-  syntax match texE3Var  contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)\+\>"
-  syntax match texE3Func contained containedin=@texClusterE3 "\\\a*\%(_\+[a-zA-Z]\+\)*:[a-zA-Z]*" contains=texE3Type
-  syntax match texE3Parm contained containedin=@texClusterE3 "#\+\d"
+  syntax match texE3Variable "\\[gl]_\%(\h\|@@_\@=\)*_\a\+"
+        \ contained containedin=@texClusterE3
+  syntax match texE3Constant "\\c_\%(\h\|@@_\@=\)*_\a\+"
+        \ contained containedin=@texClusterE3
+  syntax match texE3Function "\\\%(\h\|@@_\)\+:\a*"
+        \ contained containedin=@texClusterE3
+        \ contains=texE3Type
 
-  syntax match texE3Type contained ":[a-zA-Z]*"
+  syntax match texE3Type ":[a-zA-Z]*" contained
+  syntax match texE3Parm "#\+\d" contained containedin=@texClusterE3
 
   syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
 
@@ -747,11 +753,12 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texDefParm            texParm
   highlight def link texE3Cmd              texCmd
   highlight def link texE3Delim            texDelim
-  highlight def link texE3Func             texCmdType
+  highlight def link texE3Function         texCmdType
   highlight def link texE3Opt              texOpt
   highlight def link texE3Parm             texParm
   highlight def link texE3Type             texParm
-  highlight def link texE3Var              texCmd
+  highlight def link texE3Variable         texCmd
+  highlight def link texE3Constant         texE3Variable
   highlight def link texEnvOpt             texOpt
   highlight def link texEnvMArgName        texEnvArgName
   highlight def link texFileArg            texArg

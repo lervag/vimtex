@@ -4405,8 +4405,11 @@ Table 2: A list of the most common normal LaTeX groups.~
   texEnvArgName        PreCondit    \begin{ENVNAME}
   texCmdRef            texCmd       \CITE; \LABEL
   texRefArg            Special      \cite{REFERENCE}; \label{REF}
-  texE3Func            texCmdType   \STR_NEW:N
-  texE3Var             texCmd       \G_MYFILE_NAME_STR
+  texE3Variable        texCmd       \G_MYFILE_NAME_STR
+  texE3Constant        texE3Variable
+                                    \C_MYFILE_NAME_STR
+  texE3Function        texCmdType   \STR_NEW:n
+  texE3Type            texParm      \str_new:N
   texCmdParbox         texCmd       \PARBOX[p][h][i]{w}{c}
   texBoxOptPosVal      texSymbol    \parbox[P][h][i]{w}{c}
                                     \begin{minipage}[P][h][i]{w}
