@@ -190,6 +190,7 @@ function! s:compiler.create_build_dir() abort dict " {{{1
     call filter(map(
           \ l:dirs, "fnamemodify(v:val, ':h')"),
           \ {_, x -> x !=# '.'})
+    call filter(l:dirs, {_, x -> stridx(x, '../') != 0})
   else
     let l:dirs = glob(self.state.root . '/**/*.tex', v:false, v:true)
     call map(l:dirs, "fnamemodify(v:val, ':h')")
