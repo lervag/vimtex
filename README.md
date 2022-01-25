@@ -226,7 +226,7 @@ See the documentation for a thorough introduction to VimTeX (e.g. `:h vimtex`).
 Even though VimTeX provides a lot of nice features for working with LaTeX
 documents, there are several features that are better served by other,
 dedicated plugins. For a more detailed listing of these, please see [`:help
-vimtex-non-features`](doc/vimtex.txt#L156).
+vimtex-and-friends`](doc/vimtex.txt#L508).
 
 ### Linting and syntax checking
 

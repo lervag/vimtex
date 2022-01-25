@@ -4914,7 +4914,7 @@ suggested above) in `~/.vim/after/ftplugin/bib.vim`: >
         \ 'normal! m`' | silent AddMissingCommas | silent! exe 'normal! g``'
 
 Finally, for more full-fledged linting in Vim, see the plug-ins mentioned in
-|vimtex-non-features|.
+|vimtex-and-friends|.
 
 [1] https://ctan.org/pkg/lacheck
 [2] https://www.nongnu.org/chktex/
@@ -5910,7 +5910,7 @@ Deprecated options:
 Removed support for using `lacheck` for checking LaTeX syntax. The reason is
 that there exist several (good) external plugins for syntax checking files.
 These are general purpose plugins that work for multiple file types. For more
-info, see |vimtex-non-features|.
+info, see |vimtex-and-friends|.
 
 2017-05-20: Updated TOC options~
 There's been a few updates to the TOC. During this work, I removed some
