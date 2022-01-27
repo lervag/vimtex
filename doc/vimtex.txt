@@ -2163,7 +2163,8 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_syntax_conceal*
   A dictionary for specifying which core conceal features to activate. This
   mostly implies concealing particular elements with a replacement unicode
-  character. For more info, see |vimtex-syntax-conceal|.
+  character. For more info, see |vimtex-syntax-conceal|. To disable all
+  conceal features in one go, use |g:vimtex_syntax_conceal_disable|.
 
   The following keys are available:
 
@@ -2234,10 +2235,9 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_syntax_conceal_disable*
-  The option |g:vimtex_syntax_conceal| allows selectively disabling conceal
-  features. To disable all conceal features at once, set the option
-  |g:vimtex_syntax_conceal_disable| to 1 (or any nonzero value). For more
-  info, see |vimtex-syntax-conceal|.
+  This option allows to disable all conceal features at once. For more fine
+  tuned control, see |g:vimtex_syntax_conceal|. For more info, see
+  |vimtex-syntax-conceal|.
 
   Default value: 0
 
