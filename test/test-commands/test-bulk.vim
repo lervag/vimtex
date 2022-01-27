@@ -129,11 +129,7 @@ call vimtex#test#keys("jjcs$$\<cr>",
       \   '  math',
       \   '\]',
       \   'text' ],
-      \ [ 'text',
-      \   '$',
-      \   '  math',
-      \   '$',
-      \   'text' ])
+      \ ['text $math$ text'])
 
 
 call vimtex#test#finished()

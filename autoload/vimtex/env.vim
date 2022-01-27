@@ -68,13 +68,11 @@ endfunction
 " }}}1
 
 function! vimtex#env#change(open, close, new) abort " {{{1
-  "
   " Set target environment
-  "
   if a:new ==# ''
     let [l:beg, l:end] = ['', '']
   elseif a:new ==# '$'
-    let [l:beg, l:end] = ['$', '$']
+    return vimtex#env#change_to_inline_math(a:open, a:close)
   elseif a:new ==# '$$'
     let [l:beg, l:end] = ['$$', '$$']
   elseif a:new ==# '\['
@@ -108,6 +106,48 @@ function! vimtex#env#change(open, close, new) abort " {{{1
   let l:line = getline(a:close.lnum)
   call setline(a:close.lnum,
         \ strpart(l:line, 0, l:c1-1) . l:end . strpart(l:line, l:c2))
+endfunction
+
+function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
+  let l:line = getline(a:close.lnum)
+  if l:line =~# '^\s*\\]\s*$'
+    let l:line = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
+    call setline(a:close.lnum - 1, l:line)
+    execute a:close.lnum . 'delete _'
+    execute (a:close.lnum - 1) . 'join'
+  elseif l:line =~# '^\s*\\]'
+    let l:line1 = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
+    let l:line2 = substitute(strpart(l:line, a:close.cnum + 1), '^\s*', ' ', '')
+    call setline(a:close.lnum - 1, l:line1 . l:line2)
+    execute a:close.lnum . 'delete _'
+  else
+    let l:line1 = substitute(strpart(l:line, 0, a:close.cnum - 1), '\s*$', '$', '')
+    let l:line2 = strpart(l:line, a:close.cnum + len(a:close.match) - 1)
+    call setline(a:close.lnum, l:line1 . l:line2)
+  endif
+
+  let l:line = getline(a:open.lnum)
+  if l:line =~# '^\s*\\[\s*$'
+    execute a:open.lnum . 'delete _'
+    let l:line1 = substitute(getline(a:open.lnum - 1), '\s*$', ' ', '')
+    let l:line2 = substitute(getline(a:open.lnum), '^\s*', '$', '')
+    call setline(a:open.lnum - 1, l:line1 . l:line2)
+    execute a:open.lnum . 'delete _'
+    call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
+  elseif l:line =~# '\\[\s*$'
+    let l:line1 = strpart(l:line, 0, a:open.cnum-1)
+    let l:line2 = substitute(getline(a:open.lnum + 1), '^\s*', '$', '')
+    call setline(a:open.lnum, l:line1 . l:line2)
+    execute (a:open.lnum + 1) . 'delete _'
+    call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
+  else
+    let l:line1 = strpart(l:line, 0, a:open.cnum-1)
+    let l:line2 = substitute(
+          \ strpart(l:line, a:open.cnum + len(a:open.match) - 1),
+          \ '^\s*', '$', '')
+    call setline(a:open.lnum, l:line1 . l:line2)
+    call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
+  endif
 endfunction
 
 function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
