@@ -2234,9 +2234,10 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_syntax_conceal_disable*
-  The option |g:vimtex_syntax_conceal| allows to selectively disable conceal
-  features. For convenience, this option allows to disable all conceal
-  features in one go. For more info, see |vimtex-syntax-conceal|.
+  The option |g:vimtex_syntax_conceal| allows selectively disabling conceal
+  features. To disable all conceal features at once, set the option
+  |g:vimtex_syntax_conceal_disable| to 1 (or any nonzero value). For more
+  info, see |vimtex-syntax-conceal|.
 
   Default value: 0
 
