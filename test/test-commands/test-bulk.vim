@@ -118,4 +118,22 @@ call vimtex#test#keys('ds$',
       \ '\]',
       \], '2+2 = 4')
 
+
+" cs$  /  Change between math inline and display
+call vimtex#test#keys("f$cs$\\[\<cr>",
+      \ ['text $math$ text'],
+      \ ['text \[math\] text'])
+call vimtex#test#keys("jjcs$$\<cr>",
+      \ [ 'text',
+      \   '\[',
+      \   '  math',
+      \   '\]',
+      \   'text' ],
+      \ [ 'text',
+      \   '$',
+      \   '  math',
+      \   '$',
+      \   'text' ])
+
+
 call vimtex#test#finished()
