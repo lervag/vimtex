@@ -200,7 +200,7 @@ function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
     else
       call setline(a:open.lnum - 1, l:pre . l:post)
       execute a:open.lnum . 'delete _'
-      call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
+      call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:pre)+1])
     endif
   elseif l:post =~# '^\s*$'
     let l:post = substitute(getline(a:open.lnum + 1), '^\s*', '$', '')
