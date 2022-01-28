@@ -502,6 +502,16 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathEnvArgName',
         \ {'contains': 'texComment,@NoSpell'})
 
+  " Environments inside math zones
+  " * This is used to restrict the whitespace between environment name and
+  "   the option group (see https://github.com/lervag/vimtex/issues/2043).
+  syntax match texCmdEnvM "\v\\%(begin|end)>" contained nextgroup=texEnvMArgName
+  call vimtex#syntax#core#new_arg('texEnvMArgName', {
+        \ 'contains': 'texComment,@NoSpell',
+        \ 'next': 'texEnvOpt',
+        \ 'skipwhite': v:false
+        \})
+
   " Math regions: environments
   call vimtex#syntax#core#new_region_math('displaymath')
   call vimtex#syntax#core#new_region_math('eqnarray')
@@ -563,16 +573,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Bold and italic commands
   call s:match_bold_italic_math()
-
-  " Environments inside math zones
-  " * This is used to restrict the whitespace between environment name and
-  "   the option group (see https://github.com/lervag/vimtex/issues/2043).
-  syntax match texCmdEnvM "\v\\%(begin|end)>" contained nextgroup=texEnvMArgName
-  call vimtex#syntax#core#new_arg('texEnvMArgName', {
-        \ 'contains': 'texComment,@NoSpell',
-        \ 'next': 'texEnvOpt',
-        \ 'skipwhite': v:false
-        \})
 
   " Support for array environment
   syntax match texMathCmdEnv contained contains=texCmdMathEnv "\\begin{array}"
