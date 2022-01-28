@@ -290,7 +290,7 @@ function! vimtex#env#toggle_math() abort " {{{1
 
   let l:map = {
         \ '$': '\[',
-        \ '\[': '$',
+        \ '\[': 'equation',
         \ '$$': '\[',
         \ '\(': '$',
         \}
