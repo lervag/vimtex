@@ -170,50 +170,46 @@ function! vimtex#env#change(open, close, new) abort " {{{1
 endfunction
 
 function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
-  let l:line = getline(a:close.lnum)
-  if l:line =~# '^\s*\\]\s*$'
+  let [l:pre, l:post] = s:get_line_split(a:close)
+  if l:pre . l:post =~# '^\s*$'
     let l:line = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
     call setline(a:close.lnum - 1, l:line)
     execute a:close.lnum . 'delete _'
     if !empty(vimtex#util#trim(getline(a:close.lnum)))
       execute (a:close.lnum - 1) . 'join'
     endif
-  elseif l:line =~# '^\s*\\]'
-    let l:line1 = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
-    let l:line2 = substitute(strpart(l:line, a:close.cnum + 1), '^\s*', ' ', '')
-    call setline(a:close.lnum - 1, l:line1 . l:line2)
+  elseif l:pre =~# '^\s*$'
+    let l:pre = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
+    let l:post = substitute(l:post, '^\s*', ' ', '')
+    call setline(a:close.lnum - 1, l:pre . l:post)
     execute a:close.lnum . 'delete _'
   else
-    let l:line1 = substitute(strpart(l:line, 0, a:close.cnum - 1), '\s*$', '$', '')
-    let l:line2 = strpart(l:line, a:close.cnum + len(a:close.match) - 1)
-    call setline(a:close.lnum, l:line1 . l:line2)
+    let l:pre = substitute(l:pre, '\s*$', '$', '')
+    call setline(a:close.lnum, l:pre . l:post)
   endif
 
-  let l:line = getline(a:open.lnum)
-  if l:line =~# '^\s*\\[\s*$'
+  let [l:pre, l:post] = s:get_line_split(a:open)
+  if l:pre . l:post =~# '^\s*$'
     execute a:open.lnum . 'delete _'
-    let l:line1 = substitute(getline(a:open.lnum - 1), '\s*$', ' ', '')
-    let l:line2 = substitute(getline(a:open.lnum), '^\s*', '$', '')
-    if l:line1 =~# '^\s*$'
-      call setline(a:open.lnum, matchstr(l:line, '^\s*') . l:line2)
+    let l:indent = matchstr(l:pre, '^\s*')
+    let l:pre = substitute(getline(a:open.lnum - 1), '\s*$', ' ', '')
+    let l:post = substitute(getline(a:open.lnum), '^\s*', '$', '')
+    if l:pre =~# '^\s*$'
+      call setline(a:open.lnum, l:indent . l:post)
       call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
     else
-      call setline(a:open.lnum - 1, l:line1 . l:line2)
+      call setline(a:open.lnum - 1, l:pre . l:post)
       execute a:open.lnum . 'delete _'
       call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
     endif
-  elseif l:line =~# '\\[\s*$'
-    let l:line1 = strpart(l:line, 0, a:open.cnum-1)
-    let l:line2 = substitute(getline(a:open.lnum + 1), '^\s*', '$', '')
-    call setline(a:open.lnum, l:line1 . l:line2)
+  elseif l:post =~# '^\s*$'
+    let l:post = substitute(getline(a:open.lnum + 1), '^\s*', '$', '')
+    call setline(a:open.lnum, l:pre . l:post)
     execute (a:open.lnum + 1) . 'delete _'
     call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
   else
-    let l:line1 = strpart(l:line, 0, a:open.cnum-1)
-    let l:line2 = substitute(
-          \ strpart(l:line, a:open.cnum + len(a:open.match) - 1),
-          \ '^\s*', '$', '')
-    call setline(a:open.lnum, l:line1 . l:line2)
+    let l:post = substitute(l:post, '^\s*', '$', '')
+    call setline(a:open.lnum, l:pre . l:post)
     call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
   endif
 endfunction
@@ -222,27 +218,19 @@ function! vimtex#env#change_to_displaymath(open, close) abort " {{{1
   let l:pos = vimtex#pos#get_cursor()
   let l:nlines = a:close.lnum - a:open.lnum - 1 + 3
 
-  let l:line = getline(a:close.lnum)
-  let l:pre = substitute(
-        \ strpart(l:line, 0, a:close.cnum - 1),
-        \ '\s*$', '', '')
+  let [l:pre, l:post] = s:get_line_split(a:close)
+  let l:pre = substitute(l:pre, '\s*$', '', '')
+  let l:post = substitute(l:post, '^\s*', '', '')
   call setline(a:close.lnum, l:pre)
   call append(a:close.lnum, '\]')
-  let l:post = substitute(
-        \ strpart(l:line, a:close.cnum + len(a:close.match) - 1),
-        \ '^\s*', '', '')
   if !empty(l:post)
     call append(a:close.lnum+1, l:post)
     let l:nlines += 1
   endif
 
-  let l:line = getline(a:open.lnum)
-  let l:pre = substitute(
-        \ strpart(l:line, 0, a:open.cnum - 1),
-        \ '\s*$', '', '')
-  let l:post = substitute(
-        \ strpart(l:line, a:open.cnum + len(a:open.match) - 1),
-        \ '^\s*', '', '')
+  let [l:pre, l:post] = s:get_line_split(a:open)
+  let l:pre = substitute(l:pre, '\s*$', '', '')
+  let l:post = substitute(l:post, '^\s*', '', '')
   if !empty(l:pre)
     call setline(a:open.lnum, l:pre)
     call append(a:open.lnum, ['\[', l:post])
@@ -334,6 +322,17 @@ function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
   let l:cands = [s:env_name] + l:cands + ['\[']
 
   return filter(l:cands, {_, x -> x =~# '^' . a:lead})
+endfunction
+
+" }}}1
+
+function! s:get_line_split(delim) abort " {{{1
+  let l:line = getline(a:delim.lnum)
+
+  let l:pre = strpart(l:line, 0, a:delim.cnum - 1)
+  let l:post = strpart(l:line, a:delim.cnum + len(a:delim.match) - 1)
+
+  return [l:pre, l:post]
 endfunction
 
 " }}}1
