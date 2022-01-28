@@ -59,11 +59,17 @@ endfunction
 
 let s:math_envs = [
       \ 'align',
+      \ 'alignat',
       \ 'displaymath',
       \ 'eqnarray',
       \ 'equation',
+      \ 'flalign',
+      \ 'gather',
       \ 'math',
+      \ 'mathpar',
       \ 'multline',
+      \ 'xalignat',
+      \ 'xxalignat',
       \]
 
 " }}}1
