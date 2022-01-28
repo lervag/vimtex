@@ -5,17 +5,17 @@
 "
 
 function! vimtex#env#init_buffer() abort " {{{1
-  nnoremap <silent><buffer> <plug>(vimtex-env-delete)
-        \ :<c-u>call <sid>operator_setup('delete', 'env_tex')<bar>normal! g@l<cr>
-
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
         \ :<c-u>call <sid>operator_setup('change', 'env_tex')<bar>normal! g@l<cr>
 
-  nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
-        \ :<c-u>call <sid>operator_setup('delete', 'env_math')<bar>normal! g@l<cr>
-
   nnoremap <silent><buffer> <plug>(vimtex-env-change-math)
         \ :<c-u>call <sid>operator_setup('change', 'env_math')<bar>normal! g@l<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-env-delete)
+        \ :<c-u>call <sid>operator_setup('delete', 'env_tex')<bar>normal! g@l<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
+        \ :<c-u>call <sid>operator_setup('delete', 'env_math')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
         \ :<c-u>call <sid>operator_setup('toggle_star', '')<bar>normal! g@l<cr>
@@ -69,6 +69,13 @@ function! vimtex#env#get_all() abort " {{{1
 endfunction
 
 " }}}1
+
+function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  if empty(l:open) | return | endif
+
+  return vimtex#env#change(l:open, l:close, a:new)
+endfunction
 
 function! vimtex#env#change(open, close, new) abort " {{{1
   " Set target environment
@@ -208,12 +215,7 @@ function! vimtex#env#change_to_displaymath(open, close) abort " {{{1
   call vimtex#pos#set_cursor(l:pos)
 endfunction
 
-function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
-  if empty(l:open) | return | endif
-
-  return vimtex#env#change(l:open, l:close, a:new)
-endfunction
+" }}}1
 
 function! vimtex#env#delete(type) abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
