@@ -141,11 +141,12 @@ function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
     let l:line2 = substitute(getline(a:open.lnum), '^\s*', '$', '')
     if l:line1 =~# '^\s*$'
       call setline(a:open.lnum, matchstr(l:line, '^\s*') . l:line2)
+      call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
     else
       call setline(a:open.lnum - 1, l:line1 . l:line2)
       execute a:open.lnum . 'delete _'
+      call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
     endif
-    call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
   elseif l:line =~# '\\[\s*$'
     let l:line1 = strpart(l:line, 0, a:open.cnum-1)
     let l:line2 = substitute(getline(a:open.lnum + 1), '^\s*', '$', '')
@@ -249,9 +250,9 @@ function! vimtex#env#toggle_math() abort " {{{1
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
   if empty(l:open) | return | endif
 
-  if l:open.match ==# '$'
+  if l:open.match ==# '$' || l:open.match ==# '\('
     let l:target = '\['
-  elseif l:open.match ==# '\['
+  else
     let l:target = '$'
   endif
 
