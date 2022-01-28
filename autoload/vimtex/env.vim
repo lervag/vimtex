@@ -76,6 +76,9 @@ function! vimtex#env#change(open, close, new) abort " {{{1
   elseif a:new ==# '$$'
     let [l:beg, l:end] = ['$$', '$$']
   elseif a:new ==# '\['
+    if a:open.match ==# '$'
+      return vimtex#env#change_to_displaymath(a:open, a:close)
+    endif
     let [l:beg, l:end] = ['\[', '\]']
   elseif a:new ==# '\('
     let [l:beg, l:end] = ['\(', '\)']
@@ -148,6 +151,51 @@ function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
     call setline(a:open.lnum, l:line1 . l:line2)
     call vimtex#pos#set_cursor([a:open.lnum, a:open.cnum])
   endif
+endfunction
+
+function! vimtex#env#change_to_displaymath(open, close) abort " {{{1
+  let l:pos = vimtex#pos#get_cursor()
+  let l:nlines = a:close.lnum - a:open.lnum - 1 + 3
+
+  let l:line = getline(a:close.lnum)
+  let l:pre = substitute(
+        \ strpart(l:line, 0, a:close.cnum - 1),
+        \ '\s*$', '', '')
+  call setline(a:close.lnum, l:pre)
+  call append(a:close.lnum, '\]')
+  let l:post = substitute(
+        \ strpart(l:line, a:close.cnum + len(a:close.match) - 1),
+        \ '^\s*', '', '')
+  if !empty(l:post)
+    call append(a:close.lnum+1, l:post)
+    let l:nlines += 1
+  endif
+
+  let l:line = getline(a:open.lnum)
+  let l:pre = substitute(
+        \ strpart(l:line, 0, a:open.cnum - 1),
+        \ '\s*$', '', '')
+  let l:post = substitute(
+        \ strpart(l:line, a:open.cnum + len(a:open.match) - 1),
+        \ '^\s*', '', '')
+  if !empty(l:pre)
+    call setline(a:open.lnum, l:pre)
+    call append(a:open.lnum, ['\[', l:post])
+    call vimtex#pos#set_cursor(a:open.lnum+1, 1)
+    let l:pos[1] += 2
+  else
+    call setline(a:open.lnum, '\[')
+    call append(a:open.lnum, l:post)
+    call vimtex#pos#set_cursor(a:open.lnum, 1)
+    let l:pos[1] += 1
+  endif
+
+  " Indent the lines
+  silent execute printf('normal! =%dj', l:nlines)
+
+  " Adjust cursor position
+  let l:pos[2] -= a:open.cnum - indent(a:open.lnum) - &shiftwidth
+  call vimtex#pos#set_cursor(l:pos)
 endfunction
 
 function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
