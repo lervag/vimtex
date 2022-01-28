@@ -405,7 +405,7 @@ function! vimtex#options#init() abort " {{{1
       call s:init_option('vimtex_view_general_viewer', 'mupdf')
       call s:init_option('vimtex_view_general_options', '@pdf')
     else
-      call s:init_option('vimtex_view_general_viewer', 'start')
+      call s:init_option('vimtex_view_general_viewer', 'start ""')
       call s:init_option('vimtex_view_general_options', '@pdf')
     endif
   else
