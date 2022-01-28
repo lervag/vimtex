@@ -22,7 +22,7 @@ function! s:viewer._check() abort " {{{1
   if empty(l:exe)
         \ || (!executable(l:exe)
         \     && !(vimtex#util#get_os() ==# 'win'
-        \          && g:vimtex_view_general_viewer ==# 'start'))
+        \          && g:vimtex_view_general_viewer ==# 'start ""'))
     call vimtex#log#warning(
           \ 'Generic viewer is not executable!',
           \ '- Viewer: ' . g:vimtex_view_general_viewer,
