@@ -10,9 +10,9 @@ function! vimtex#text_obj#init_buffer() abort " {{{1
   " Note: I've permitted myself long lines here to make this more readable.
   for [l:map, l:name, l:opt] in [
         \ ['c', 'commands', ''],
-        \ ['d', 'delimited', 'delim_all'],
-        \ ['e', 'delimited', 'env_tex'],
-        \ ['$', 'delimited', 'env_math'],
+        \ ['d', 'delimited', 'delims'],
+        \ ['e', 'delimited', 'normal'],
+        \ ['$', 'delimited', 'math'],
         \ ['P', 'sections', ''],
         \ ['m', 'items', ''],
         \]
@@ -122,7 +122,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
     if a:mode
       let l:object = s:get_sel_delimited_visual(a:is_inner, a:type, l:startpos)
     else
-      let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+      let [l:open, l:close] = s:get_surrounding(a:type)
       let l:object = empty(l:open)
             \ ? {} : s:get_sel_delimited(l:open, l:close, a:is_inner)
     endif
@@ -234,7 +234,7 @@ endfunction
 function! s:get_sel_delimited_visual(is_inner, type, startpos) abort " {{{1
   if a:is_inner
     call vimtex#pos#set_cursor(vimtex#pos#next(a:startpos))
-    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+    let [l:open, l:close] = s:get_surrounding(a:type)
     if !empty(l:open)
       let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
 
@@ -246,7 +246,7 @@ function! s:get_sel_delimited_visual(is_inner, type, startpos) abort " {{{1
           \     && getpos("'<")[1] == l:object.pos_start[0]
           \     && getpos("'>")[1] == l:object.pos_end[0])
         call vimtex#pos#set_cursor(vimtex#pos#prev(l:open.lnum, l:open.cnum))
-        let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+        let [l:open, l:close] = s:get_surrounding(a:type)
         if empty(l:open) | return {} | endif
         return s:get_sel_delimited(l:open, l:close, a:is_inner)
       endif
@@ -254,7 +254,7 @@ function! s:get_sel_delimited_visual(is_inner, type, startpos) abort " {{{1
   endif
 
   call vimtex#pos#set_cursor(a:startpos)
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  let [l:open, l:close] = s:get_surrounding(a:type)
   if empty(l:open) | return {} | endif
   let l:object = s:get_sel_delimited(l:open, l:close, a:is_inner)
   if a:is_inner | return l:object | endif
@@ -267,7 +267,7 @@ function! s:get_sel_delimited_visual(is_inner, type, startpos) abort " {{{1
       \     && getpos("'<")[1] == l:object.pos_start[0]
       \     && getpos("'>")[1] == l:object.pos_end[0])
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:open.lnum, l:open.cnum))
-    let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+    let [l:open, l:close] = s:get_surrounding(a:type)
     if empty(l:open) | return {} | endif
     return s:get_sel_delimited(l:open, l:close, a:is_inner)
   endif
@@ -455,6 +455,16 @@ function! s:get_sel_items(is_inner) abort " {{{1
   endif
 
   return [l:pos_start, l:pos_end]
+endfunction
+
+" }}}1
+
+function! s:get_surrounding(type) abort " {{{1
+  if a:type ==# 'delims'
+    return vimtex#delim#get_surrounding('delim_all')
+  else
+    return vimtex#env#get_surrounding(a:type)
+  endif
 endfunction
 
 " }}}1

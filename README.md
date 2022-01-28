@@ -193,7 +193,7 @@ features are enabled by default, but each feature may be disabled if desired.
   - `ic ac` Commands
   - `id ad` Delimiters
   - `ie ae` LaTeX environments
-  - `i$ a$` Inline math structures
+  - `i$ a$` Math environments
   - `iP aP` Sections
   - `im am` Items
 - Other mappings

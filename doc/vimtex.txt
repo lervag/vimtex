@@ -182,7 +182,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `ic` `ac` Commands
   - `id` `ad` Delimiters
   - `ie` `ae` LaTeX environments
-  - `i$` `a$` Inline math structures
+  - `i$` `a$` Math environments
   - `iP` `aP` Sections
   - `im` `am` Items
 - Other mappings
@@ -3244,7 +3244,7 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-id)*
 *<plug>(vimtex-ae)*   Environments
 *<plug>(vimtex-ie)*
-*<plug>(vimtex-a$)*   Inline math
+*<plug>(vimtex-a$)*   Math environments
 *<plug>(vimtex-i$)*
 *<plug>(vimtex-aP)*   Sections
 *<plug>(vimtex-iP)*
