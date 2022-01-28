@@ -6,16 +6,16 @@
 
 function! vimtex#env#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
-        \ :<c-u>call <sid>operator_setup('change', 'env_tex')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('change', 'normal')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-change-math)
-        \ :<c-u>call <sid>operator_setup('change', 'env_math')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('change', 'math')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-delete)
-        \ :<c-u>call <sid>operator_setup('delete', 'env_tex')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('delete', 'normal')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
-        \ :<c-u>call <sid>operator_setup('delete', 'env_math')<bar>normal! g@l<cr>
+        \ :<c-u>call <sid>operator_setup('delete', 'math')<bar>normal! g@l<cr>
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
         \ :<c-u>call <sid>operator_setup('toggle_star', '')<bar>normal! g@l<cr>
@@ -26,8 +26,50 @@ endfunction
 
 " }}}1
 
-function! vimtex#env#get_inner() abort " {{{1
+function! vimtex#env#get_surrounding(type) abort " {{{1
+  " Get surrounding environment delimiters.
+  "
+  " This works similar to vimtex#delim#get_surrounding, except specialized for
+  " environments. For normal environments it is equivalent to
+  " vimtex#delim#get_surrounding('env_tex'). For math environments it combines
+  " the 'env_math' delimiter type with normal known math environments.
+
+  if a:type ==# 'normal'
+    return vimtex#delim#get_surrounding('env_tex')
+  endif
+
+  if a:type !=# 'math'
+    call vimtex#log#error('Wrong argument!')
+    return [{}, {}]
+  endif
+
+  " First check for special math env delimiters
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
+  if !empty(l:open) | return [l:open, l:close] | endif
+
+  " Next check for standard math environments (only works for 1 level depth)
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
+  if !empty(l:open) &&
+        \ index(s:math_envs, substitute(l:open.name, '\*$', '', '')) >= 0
+    return [l:open, l:close]
+  endif
+
+  return [{}, {}]
+endfunction
+
+let s:math_envs = [
+      \ 'align',
+      \ 'displaymath',
+      \ 'eqnarray',
+      \ 'equation',
+      \ 'math',
+      \ 'multline',
+      \]
+
+" }}}1
+
+function! vimtex#env#get_inner() abort " {{{1
+  let [l:open, l:close] = vimtex#env#get_surrounding('normal')
 
   return empty(l:open) || l:open.name ==# 'document'
         \ ? {}
@@ -70,8 +112,8 @@ endfunction
 
 " }}}1
 
-function! vimtex#env#change_surrounding_to(type, new) abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+function! vimtex#env#change_surrounding(type, new) abort " {{{1
+  let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
   return vimtex#env#change(l:open, l:close, a:new)
@@ -218,10 +260,10 @@ endfunction
 " }}}1
 
 function! vimtex#env#delete(type) abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
-  if a:type ==# 'env_tex'
+  if a:type ==# 'normal'
     call vimtex#cmd#delete_all(l:close)
     call vimtex#cmd#delete_all(l:open)
   else
@@ -239,7 +281,7 @@ function! vimtex#env#delete(type) abort " {{{1
 endfunction
 
 function! vimtex#env#toggle_star() abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
+  let [l:open, l:close] = vimtex#env#get_surrounding('normal')
   if empty(l:open)
         \ || l:open.name ==# 'document' | return | endif
 
@@ -249,7 +291,7 @@ endfunction
 
 " }}}1
 function! vimtex#env#toggle_math() abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
+  let [l:open, l:close] = vimtex#env#get_surrounding('math')
   if empty(l:open) | return | endif
 
   if l:open.match ==# '$' || l:open.match ==# '\('
@@ -290,7 +332,7 @@ endfunction
 " }}}1
 
 function! s:change_prompt(type) abort " {{{1
-  let [l:open, l:close] = vimtex#delim#get_surrounding(a:type)
+  let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
   if g:vimtex_env_change_autofill
@@ -343,7 +385,7 @@ function! s:operator_function(_) abort " {{{1
   let l:name = get(s:, 'operator_name', '')
 
   execute 'call vimtex#env#' . {
-        \   'change': 'change_surrounding_to(l:type, l:name)',
+        \   'change': 'change_surrounding(l:type, l:name)',
         \   'delete': 'delete(l:type)',
         \   'toggle_star': 'toggle_star()',
         \   'toggle_math': 'toggle_math()',
