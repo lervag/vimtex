@@ -137,8 +137,12 @@ function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
     execute a:open.lnum . 'delete _'
     let l:line1 = substitute(getline(a:open.lnum - 1), '\s*$', ' ', '')
     let l:line2 = substitute(getline(a:open.lnum), '^\s*', '$', '')
-    call setline(a:open.lnum - 1, l:line1 . l:line2)
-    execute a:open.lnum . 'delete _'
+    if l:line1 =~# '^\s*$'
+      call setline(a:open.lnum, matchstr(l:line, '^\s*') . l:line2)
+    else
+      call setline(a:open.lnum - 1, l:line1 . l:line2)
+      execute a:open.lnum . 'delete _'
+    endif
     call vimtex#pos#set_cursor([a:open.lnum - 1, strlen(l:line1)+1])
   elseif l:line =~# '\\[\s*$'
     let l:line1 = strpart(l:line, 0, a:open.cnum-1)

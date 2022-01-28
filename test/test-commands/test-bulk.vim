@@ -134,6 +134,16 @@ call vimtex#test#keys("jjcs$$\<cr>",
       \   '\]',
       \   'text' ],
       \ ['text $math$ text'])
+call vimtex#test#keys("3jcs$$\<cr>",
+      \ [ '  indented text',
+      \   '',
+      \   '  \[',
+      \   '          m = a t_h',
+      \   '  \]',
+      \   '  More text' ],
+      \ [ '  indented text',
+      \   '',
+      \   '  $m = a t_h$ More text'])
 
 
 call vimtex#test#finished()
