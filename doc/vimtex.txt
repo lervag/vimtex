@@ -2869,7 +2869,7 @@ OPTIONS                                                        *vimtex-options*
   Default value:
     Linux:   `xdg-open`
     macOS:   `open`
-    Windows: `SumatraPDF` or `mupdf` if available, else `start`
+    Windows: `SumatraPDF` or `mupdf` if available, else `start ""`
 
 *g:vimtex_view_mupdf_send_keys*
   A string of keys that will be sent to MuPDF just after the PDF file has been
