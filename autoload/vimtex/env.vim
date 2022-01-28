@@ -300,13 +300,14 @@ function! vimtex#env#toggle_math() abort " {{{1
   let [l:open, l:close] = vimtex#env#get_surrounding('math')
   if empty(l:open) | return | endif
 
-  if l:open.match ==# '$' || l:open.match ==# '\('
-    let l:target = '\['
-  else
-    let l:target = '$'
-  endif
+  let l:map = {
+        \ '$': '\[',
+        \ '\[': '$',
+        \ '$$': '\[',
+        \ '\(': '$',
+        \}
 
-  call vimtex#env#change(l:open, l:close, l:target)
+  call vimtex#env#change(l:open, l:close, get(l:map, l:open.match, '$'))
 endfunction
 
 " }}}1
