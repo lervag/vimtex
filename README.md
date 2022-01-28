@@ -202,6 +202,7 @@ features are enabled by default, but each feature may be disabled if desired.
   - Change the surrounding command, environment or delimiter with
     `csc`/`cse`/`cs$`/`csd`
   - Toggle starred command or environment with `tsc`/`tse`
+  - Toggle inline and displaymath with `ts$`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Toggle (inline) fractions with `tsf`
   - Close the current environment/delimiter in insert mode with `]]`

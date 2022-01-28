@@ -191,6 +191,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Change the surrounding command, environment or delimiter with
     `csc`/`cse`/`cs$`/`csd`
   - Toggle starred command or environment with `tsc`/`tse`
+  - Toggle inline and displaymath with `ts$`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`/`tsD`
   - Toggle (inline) fractions with `tsf`
   - Close the current environment/delimiter in insert mode with `]]`
@@ -829,6 +830,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsf              |<plug>(vimtex-cmd-toggle-frac)|                `nx`
    tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
    tse              |<plug>(vimtex-env-toggle-star)|                `n`
+   ts$              |<plug>(vimtex-env-toggle-math)|                `n`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|          `nx`
    tsD              |<plug>(vimtex-delim-toggle-modifier-reverse)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|                     `nxi`
@@ -3192,6 +3194,13 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
   Toggle starred command/environment.
+
+*<plug>(vimtex-env-toggle-math)*
+  Toggle between inline math and displayed math, e.g.: >
+
+                      ts$        \[
+    $f(x) = 1$         ↔            f(x) = 1
+                                 \]
 
 *<plug>(vimtex-delim-toggle-modifier)*
 *<plug>(vimtex-delim-toggle-modifier-reverse)*

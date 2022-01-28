@@ -134,6 +134,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(1, 'n', 'dse', '<plug>(vimtex-env-delete)')
   call s:map(1, 'n', 'cse', '<plug>(vimtex-env-change)')
   call s:map(1, 'n', 'tse', '<plug>(vimtex-env-toggle-star)')
+  call s:map(1, 'n', 'ts$', '<plug>(vimtex-env-toggle-math)')
 
   call s:map(0, 'n', 'dsc',  '<plug>(vimtex-cmd-delete)')
   call s:map(0, 'n', 'csc',  '<plug>(vimtex-cmd-change)')

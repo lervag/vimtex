@@ -19,6 +19,9 @@ function! vimtex#env#init_buffer() abort " {{{1
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
         \ :<c-u>call <sid>operator_setup('toggle_star', '')<bar>normal! g@l<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-env-toggle-math)
+        \ :<c-u>call <sid>operator_setup('toggle_math', '')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
@@ -236,6 +239,20 @@ function! vimtex#env#toggle_star() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#env#toggle_math() abort " {{{1
+  let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
+  if empty(l:open) | return | endif
+
+  if l:open.match ==# '$'
+    let l:target = '\['
+  elseif l:open.match ==# '\['
+    let l:target = '$'
+  endif
+
+  call vimtex#env#change(l:open, l:close, l:target)
+endfunction
+
+" }}}1
 
 function! vimtex#env#is_inside(env) abort " {{{1
   let l:re_start = '\\begin\s*{' . a:env . '\*\?}'
@@ -320,6 +337,7 @@ function! s:operator_function(_) abort " {{{1
         \   'change': 'change_surrounding_to(l:type, l:name)',
         \   'delete': 'delete(l:type)',
         \   'toggle_star': 'toggle_star()',
+        \   'toggle_math': 'toggle_math()',
         \ }[s:operator]
 endfunction
 
