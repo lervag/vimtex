@@ -120,7 +120,9 @@ function! vimtex#env#change_to_inline_math(open, close) abort " {{{1
     let l:line = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
     call setline(a:close.lnum - 1, l:line)
     execute a:close.lnum . 'delete _'
-    execute (a:close.lnum - 1) . 'join'
+    if !empty(vimtex#util#trim(getline(a:close.lnum)))
+      execute (a:close.lnum - 1) . 'join'
+    endif
   elseif l:line =~# '^\s*\\]'
     let l:line1 = substitute(getline(a:close.lnum - 1), '\s*$', '$', '')
     let l:line2 = substitute(strpart(l:line, a:close.cnum + 1), '^\s*', ' ', '')
