@@ -519,19 +519,29 @@ function! vimtex#syntax#core#init() abort " {{{1
   call vimtex#syntax#core#new_region_math('math')
 
   " Math regions: Inline Math Zones
-  if g:vimtex_syntax_conceal.math_bounds
-    syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathZone   matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathZoneX  matchgroup=texMathDelimZone concealends contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-          \ nextgroup=texMathTextAfter
-    syntax region texMathZoneXX matchgroup=texMathDelimZone concealends contains=@texClusterMath keepend start="\$\$" end="\$\$"
-  else
-    syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\("  end="\\)"
-    syntax region texMathZone   matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\\\[" end="\\]"
-    syntax region texMathZoneX  matchgroup=texMathDelimZone contains=@texClusterMath         start="\$"   skip="\\\\\|\\\$"  end="\$"
-          \ nextgroup=texMathTextAfter
-    syntax region texMathZoneXX matchgroup=texMathDelimZone contains=@texClusterMath keepend start="\$\$" end="\$\$"
-  endif
+  let l:conceal = g:vimtex_syntax_conceal.math_bounds ? 'concealends' : ''
+  execute 'syntax region texMathZone matchgroup=texMathDelimZone'
+          \ 'start="\\("'
+          \ 'end="\\)"'
+          \ 'contains=@texClusterMath keepend'
+          \ l:conceal
+  execute 'syntax region texMathZone matchgroup=texMathDelimZone'
+          \ 'start="\\\["'
+          \ 'end="\\]"'
+          \ 'contains=@texClusterMath keepend'
+          \ l:conceal
+  execute 'syntax region texMathZoneX matchgroup=texMathDelimZone'
+          \ 'start="\$"'
+          \ 'skip="\\\\\|\\\$"'
+          \ 'end="\$"'
+          \ 'contains=@texClusterMath'
+          \ 'nextgroup=texMathTextAfter'
+          \ l:conceal
+  execute 'syntax region texMathZoneXX matchgroup=texMathDelimZone'
+          \ 'start="\$\$"'
+          \ 'end="\$\$"'
+          \ 'contains=@texClusterMath keepend'
+          \ l:conceal
 
   " This is to disable spell check for text just after "$" (e.g. "$n$th")
   syntax match texMathTextAfter "\w\+" contained contains=@NoSpell
