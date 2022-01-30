@@ -5078,12 +5078,13 @@ PDFs. It comes by default with Gnome.
 Configuration: >
   let g:vimtex_view_general_viewer = 'evince'
 
-Note: It is not so easy to setup forward and inverse search with Evince [0].
-      If anyone has a good setup that could be documented here, please open an
-      issue or email me. In the meantime, I can recommend to look into the
-      other alternative viewers.
 
-      [0]: https://github.com/lervag/vimtex/issues/179
+Note: VimTeX does not include everything necessary to setup forward and
+      inverse search for Evince. It is possible to use other plugins to add
+      this functionality in, such as `SVED` by Peter Jorgensen. See the plugin
+      page for `SVED` for more [0].
+
+      [0]: https://github.com/peterbjorgensen/sved
 
                                                             *vimtex-view-mupdf*
 MuPDF~
