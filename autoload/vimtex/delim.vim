@@ -123,6 +123,50 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#delim#toggle_modifier_all() abort " {{{1
+  call vimtex#util#undostore()
+
+  " Use syntax highlights to detect region math region
+  let l:ww = &whichwrap
+  set whichwrap=h
+  let l:cursor = vimtex#pos#get_cursor()
+  while vimtex#syntax#in_mathzone()
+    normal! h
+  endwhile
+  let &whichwrap = l:ww
+  let l:startval = vimtex#pos#val(vimtex#pos#get_cursor())
+  call vimtex#pos#set_cursor(l:cursor)
+
+
+  while v:true
+    let [l:open, l:close] = vimtex#delim#get_surrounding('delim_modq_math')
+    if empty(l:open) || vimtex#pos#val(l:open) <= l:startval
+      break
+    endif
+
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+    if !empty(l:open.mod) | continue | endif
+
+    " Add close modifier
+    let line = getline(l:close.lnum)
+    let line = strpart(line, 0, l:close.cnum - 1)
+          \ .  '\right' . strpart(line, l:close.cnum - 1)
+    call setline(l:close.lnum, line)
+
+    " Add open modifier
+    let line = getline(l:open.lnum)
+    let line = strpart(line, 0, l:open.cnum - 1)
+          \ . '\left' . strpart(line, l:open.cnum - 1)
+    call setline(l:open.lnum, line)
+
+    " Adjust cursor position
+    let l:cursor[2] += 5
+  endwhile
+
+  call vimtex#pos#set_cursor(l:cursor)
+endfunction
+
+" }}}1
 function! vimtex#delim#toggle_modifier_visual(...) abort " {{{1
   let l:args = a:0 > 0 ? a:1 : {}
   call extend(l:args, {
