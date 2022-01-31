@@ -1518,6 +1518,19 @@ OPTIONS                                                        *vimtex-options*
 
   Default: 0
 
+*g:vimtex_env_toggle_math_map*
+  Specify toggle map for |<plug>(vimtex-env-toggle-math)|. You can use this to
+  change the desired toggle sequence.
+
+  Default value: >
+
+    let g:vimtex_env_toggle_math_map = {
+          \ '$': '\[',
+          \ '\[': 'equation',
+          \ '$$': '\[',
+          \ '\(': '$',
+          \}
+
 *g:vimtex_fold_enabled*
   Use this option to enable folding. More detailed info can be found in the
   section |vimtex-folding|.
@@ -3201,6 +3214,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
                       ts$        \[
     $f(x) = 1$         ↔            f(x) = 1
                                  \]
+<
+  One may change the toggle sequence with |g:vimtex_env_toggle_math_map|.
 
 *<plug>(vimtex-delim-toggle-modifier)*
 *<plug>(vimtex-delim-toggle-modifier-reverse)*

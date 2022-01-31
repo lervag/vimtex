@@ -55,6 +55,12 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_echo_verbose_input', 1)
 
   call s:init_option('vimtex_env_change_autofill', 0)
+  call s:init_option('vimtex_env_toggle_math_map', {
+        \ '$': '\[',
+        \ '\[': 'equation',
+        \ '$$': '\[',
+        \ '\(': '$',
+        \})
 
   if &diff
     let g:vimtex_fold_enabled = 0
