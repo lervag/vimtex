@@ -136,7 +136,7 @@ function! vimtex#env#change(open, close, new) abort " {{{1
   elseif a:new ==# '$$'
     let [l:beg, l:end] = ['$$', '$$']
   elseif a:new ==# '\['
-    if a:open.match ==# '$'
+    if a:open.match ==# '$' || a:open.match ==# '\('
       return vimtex#env#change_to_displaymath(a:open, a:close)
     endif
     let [l:beg, l:end] = ['\[', '\]']
