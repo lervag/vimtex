@@ -132,6 +132,7 @@ function! vimtex#delim#toggle_modifier_all() abort " {{{1
   let l:cursor = vimtex#pos#get_cursor()
   while vimtex#syntax#in_mathzone()
     normal! h
+    if vimtex#pos#get_cursor()[1:2] == [1, 1] | break | endif
   endwhile
   let &whichwrap = l:ww
   let l:startval = vimtex#pos#val(vimtex#pos#get_cursor())
