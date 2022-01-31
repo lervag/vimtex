@@ -5094,10 +5094,11 @@ Configuration: >
   let g:vimtex_view_general_viewer = 'evince'
 
 
-Note: VimTeX does not include everything necessary to setup forward and
-      inverse search for Evince. It is possible to use other plugins to add
-      this functionality in, such as `SVED` by Peter Jorgensen. See the plugin
-      page for `SVED` for more [0].
+Note: Evince only supports synctex through DBus, which is not supported by
+      VimTeX. Thus VimTeX does not support forward and inverse search with
+      Evince. However, the Vim plugin `SVED` by Peter Jorgensen is reported to
+      work well in combination with VimTeX. See the plugin page [0] for more
+      information.
 
       [0]: https://github.com/peterbjorgensen/sved
 
