@@ -285,6 +285,8 @@ function! s:toc.create() abort dict " {{{1
   nnoremap <silent><buffer><nowait> -             :call b:toc.decrease_depth()<cr>
   nnoremap <silent><buffer><nowait> +             :call b:toc.increase_depth()<cr>
 
+  command! -buffer VimtexTocToggle call b:toc.close()
+
   for [type, key] in items(self.layer_keys)
     execute printf(
           \ 'nnoremap <silent><buffer><nowait> %s'
