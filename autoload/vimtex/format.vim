@@ -26,11 +26,7 @@ function! vimtex#format#formatexpr() abort " {{{1
   let l:tries = 5
   let s:textwidth = &l:textwidth == 0 ? 79 : &l:textwidth
 
-  " This is a hack to make undo restore the correct position
-  if mode() !=# 'i'
-    normal! ix
-    normal! x
-  endif
+  call vimtex#util#undostore()
 
   " Main formatting algorithm
   while l:tries > 0

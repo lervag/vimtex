@@ -268,6 +268,15 @@ function! vimtex#util#uniq_unsorted(list) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#undostore() abort " {{{1
+  " This is a hack to make undo restore the correct position
+  if mode() !=# 'i'
+    normal! ix
+    normal! x
+  endif
+endfunction
+
+" }}}1
 function! vimtex#util#www(url) abort " {{{1
   let l:os = vimtex#util#get_os()
 
