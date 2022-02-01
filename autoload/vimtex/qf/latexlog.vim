@@ -157,7 +157,7 @@ function! s:fix_paths_hbox_warning(qf, log, root) abort " {{{1
   for l:lnum in range(l:index - 1, 1, -1)
     let l:level += vimtex#util#count(a:log[l:lnum], ')')
     let l:level -= vimtex#util#count(a:log[l:lnum], '(')
-    if l:level > 0 | continue | endif
+    if l:lnum < l:index - 1 && l:level > 0 | continue | endif
 
     let l:file = matchstr(a:log[l:lnum], '\v\(\zs\f+\ze\)?\s*%(\[\d+]?)?$')
     if !empty(l:file) | break | endif
