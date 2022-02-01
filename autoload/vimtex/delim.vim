@@ -27,6 +27,9 @@ function! vimtex#delim#init_buffer() abort " {{{1
 
   inoremap <silent><buffer><expr> <plug>(vimtex-delim-close)
         \ vimtex#delim#close()
+
+  nnoremap <silent><buffer> <plug>(vimtex-delim-add-modifiers)
+        \ :<c-u>call vimtex#delim#add_modifiers()<cr>
 endfunction
 
 " }}}1

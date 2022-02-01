@@ -195,6 +195,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`/`tsD`
   - Toggle (inline) fractions with `tsf`
   - Close the current environment/delimiter in insert mode with `]]`
+  - Add `\left ... \right)` modifiers to surrounding delimiters with `<F8>`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`
@@ -835,6 +836,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsD              |<plug>(vimtex-delim-toggle-modifier-reverse)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|                     `nxi`
    ]]               |<plug>(vimtex-delim-close)|                    `i`
+   <F8>             |<plug>(vimtex-delim-add-modifiers)|            `n`
    ac               |<plug>(vimtex-ac)|                             `xo`
    ic               |<plug>(vimtex-ic)|                             `xo`
    ad               |<plug>(vimtex-ad)|                             `xo`
@@ -3249,6 +3251,10 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 
 *<plug>(vimtex-delim-close)*
   Close the current environment or delimiter (insert mode).
+
+*<plug>(vimtex-delim-add-modifiers)*
+  Add `\left` and `\right)` modifiers to all surrounding "unmodified"
+  delimiteres in the current math scope.
 
 *<plug>(vimtex-reverse-search)*
   Do reverse search for the MuPDF viewer, see |vimtex-view-mupdf|.

@@ -206,6 +206,7 @@ features are enabled by default, but each feature may be disabled if desired.
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`
   - Toggle (inline) fractions with `tsf`
   - Close the current environment/delimiter in insert mode with `]]`
+  - Add `\left ... \right)` modifiers to surrounding delimiters with `<F8>`
   - Insert new command with `<F7>`
   - Convenient insert mode mappings for faster typing of e.g. maths
   - Context menu on citations (e.g. `\cite{...}`) mapped to `<cr>`

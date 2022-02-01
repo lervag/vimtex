@@ -152,6 +152,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(1, 'n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
   call s:map(1, 'x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
   call s:map(1, 'i', ']]',  '<plug>(vimtex-delim-close)')
+  call s:map(1, 'n', '<F8>', '<plug>(vimtex-delim-add-modifiers)')
 
   if g:vimtex_compiler_enabled
     call s:map(0, 'n', '<localleader>ll', '<plug>(vimtex-compile)')
