@@ -124,20 +124,21 @@ endfunction
 
 " }}}1
 function! vimtex#delim#toggle_modifier_all() abort " {{{1
-  call vimtex#util#undostore()
+  " Save cursor position
+  let l:cursor = vimtex#pos#get_cursor()
 
   " Use syntax highlights to detect region math region
   let l:ww = &whichwrap
   set whichwrap=h
-  let l:cursor = vimtex#pos#get_cursor()
   while vimtex#syntax#in_mathzone()
     normal! h
     if vimtex#pos#get_cursor()[1:2] == [1, 1] | break | endif
   endwhile
   let &whichwrap = l:ww
   let l:startval = vimtex#pos#val(vimtex#pos#get_cursor())
-  call vimtex#pos#set_cursor(l:cursor)
 
+  let l:undostore = v:true
+  call vimtex#pos#set_cursor(l:cursor)
 
   while v:true
     let [l:open, l:close] = vimtex#delim#get_surrounding('delim_modq_math')
@@ -147,6 +148,13 @@ function! vimtex#delim#toggle_modifier_all() abort " {{{1
 
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
     if !empty(l:open.mod) | continue | endif
+
+    if l:undostore
+      let l:undostore = v:false
+      call vimtex#pos#set_cursor(l:cursor)
+      call vimtex#util#undostore()
+      call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+    endif
 
     " Add close modifier
     let line = getline(l:close.lnum)
