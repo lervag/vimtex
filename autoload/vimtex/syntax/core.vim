@@ -436,6 +436,25 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax region texComment matchgroup=texCmd
         \ start="^\s*\\iffalse\>" end="\\\(fi\|else\)\>"
         \ contains=texCommentConditionals
+
+  syntax cluster texIftrueCluster contains=TOP
+  syntax cluster texIftrueClusterCommon contains=@texIftrueCluster,texIftrueConditionals
+
+  syntax region texIftrue matchgroup=texCmd
+        \ start="^\s*\\iftrue\>"  end="\(\\\(fi\|else\)\>\)\@="
+        \ transparent contains=@texIftrueClusterCommon
+        \ nextgroup=texIftrueElseComment
+
+  syntax region texIftrueElseComment matchgroup=texCmd
+        \ start="\(\(\\fi\>\)@=\|\\else\>\)"  end="\\fi\>"
+        \ contained contains=texCommentConditionals
+
+  highlight def link texIftrueElseComment texComment
+
+  syntax region texIftrueConditionals matchgroup=texCmd
+        \ start="\\if\w\+" end="\\fi\>"
+        \ contained contains=@texIftrueClusterCommon
+
   syntax region texCommentConditionals matchgroup=texComment
         \ start="\\if\w\+" end="\\fi\>"
         \ contained transparent
