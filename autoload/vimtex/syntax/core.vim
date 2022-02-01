@@ -433,31 +433,28 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax case match
 
   " Highlight \iffalse ... \fi blocks as comments
-  syntax region texComment matchgroup=texCmd
-        \ start="^\s*\\iffalse\>" end="\\\(fi\|else\)\>"
+  syntax region texComment matchgroup=texCmdConditional
+        \ start="^\s*\\iffalse\>" end="\\\%(fi\|else\)\>"
         \ contains=texCommentConditionals
-
-  syntax cluster texIftrueCluster contains=TOP
-  syntax cluster texIftrueClusterCommon contains=@texIftrueCluster,texIftrueConditionals
-
-  syntax region texIftrue matchgroup=texCmd
-        \ start="^\s*\\iftrue\>"  end="\(\\\(fi\|else\)\>\)\@="
-        \ transparent contains=@texIftrueClusterCommon
-        \ nextgroup=texIftrueElseComment
-
-  syntax region texIftrueElseComment matchgroup=texCmd
-        \ start="\(\(\\fi\>\)@=\|\\else\>\)"  end="\\fi\>"
-        \ contained contains=texCommentConditionals
-
-  highlight def link texIftrueElseComment texComment
-
-  syntax region texIftrueConditionals matchgroup=texCmd
-        \ start="\\if\w\+" end="\\fi\>"
-        \ contained contains=@texIftrueClusterCommon
 
   syntax region texCommentConditionals matchgroup=texComment
         \ start="\\if\w\+" end="\\fi\>"
         \ contained transparent
+
+  " Highlight \iftrue ... \else ... \fi blocks as comments
+  syntax region texConditionalTrueZone matchgroup=texCmdConditional
+        \ start="^\s*\\iftrue\>"  end="\v\\fi>|%(\\else>)@="
+        \ contains=TOP nextgroup=texCommentFalse
+        \ transparent
+
+  syntax region texConditionalNested matchgroup=texCmdConditional
+        \ start="\\if\w\+" end="\\fi\>"
+        \ contained contains=TOP
+        \ containedin=texConditionalTrueZone,texConditionalNested
+
+  syntax region texCommentFalse matchgroup=texCmdConditional
+        \ start="\\else\>"  end="\\fi\>"
+        \ contained contains=texCommentConditionals
 
   " }}}2
   " {{{2 Zone: Verbatim
@@ -775,6 +772,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdTitle           texCmd
   highlight def link texCmdVerb            texCmd
   highlight def link texCommentAcronym     texComment
+  highlight def link texCommentFalse       texComment
   highlight def link texCommentURL         texComment
   highlight def link texConditionalArg     texArg
   highlight def link texConditionalINCChar texSymbol
