@@ -3,7 +3,8 @@ MYVIM ?= nvim --clean --headless
 INMAKE := 1
 export INMAKE
 
-TESTS := $($(wildcard test-*.vim):.vim=)
+TESTS := $(wildcard test-*.vim)
+TESTS := $(TESTS:.vim=)
 TESTS_KPSEWHICH := test-kpsewhich-local-a test-kpsewhich-local-b
 TESTS_ALL := $(TESTS) $(TESTS_KPSEWHICH)
 
