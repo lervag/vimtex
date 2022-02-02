@@ -75,8 +75,7 @@ function! vimtex#cache#clear(name) abort " {{{1
   if empty(a:name) | return | endif
 
   if a:name ==# 'ALL'
-    let l:caches = globpath(s:root(),
-          \ (a:name ==# 'ALL' ? '' : a:name) . '*.json', 0, 1)
+    let l:caches = globpath(s:root(), '*.json', 0, 1)
     for l:file in map(l:caches, {_, x -> fnamemodify(x, ':t:r')})
       let l:cache = vimtex#cache#open(l:file)
       call l:cache.clear()
@@ -189,9 +188,10 @@ function! s:cache.write() dict abort " {{{1
     return
   endif
 
-  if !self.modified | return | endif
-
   call self.read()
+
+  if !self.modified || empty(self.data) | return | endif
+
   call writefile([json_encode(self.data)], self.path)
   let self.ftime = getftime(self.path)
   let self.modified = 0
@@ -200,19 +200,23 @@ endfunction
 " }}}1
 function! s:cache.read() dict abort " {{{1
   if !self.persistent | return | endif
+  if getftime(self.path) <= self.ftime | return | endif
 
-  if getftime(self.path) > self.ftime
-    let self.ftime = getftime(self.path)
-    let l:data = json_decode(join(readfile(self.path)))
-    if type(l:data) == v:t_dict
-      call extend(self.data, l:data, 'keep')
-    else
-      call vimtex#log#warning(
-            \ 'Inconsistent cache data while reading: ' . self.name,
-            \ 'Decoded data type: ' . type(l:data)
-            \)
-    endif
+  let self.ftime = getftime(self.path)
+  let l:contents = join(readfile(self.path))
+  if empty(l:contents) | return | endif
+
+  let l:data = json_decode(l:contents)
+
+  if type(l:data) != v:t_dict
+    call vimtex#log#warning(
+          \ 'Inconsistent cache data while reading: ' . self.name,
+          \ 'Decoded data type: ' . type(l:data)
+          \)
+    return
   endif
+
+  call extend(self.data, l:data, 'keep')
 endfunction
 
 " }}}1
@@ -252,4 +256,4 @@ endfunction
 " }}}1
 
 
-let s:_version = 'cache_v0'
+let s:_version = 'cache_v1'
