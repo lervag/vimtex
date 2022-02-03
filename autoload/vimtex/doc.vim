@@ -40,17 +40,36 @@ function! vimtex#doc#make_selection(context) abort " {{{1
   if len(a:context.candidates) == 0
     if exists('a:context.name')
       echohl ErrorMsg
-      echo 'Sorry, no doc for '.a:context.name
+      echo 'Sorry, no doc for ' . a:context.name
       echohl NONE
     endif
     let a:context.selected = ''
     return
   endif
 
+  if len(a:context.candidates) == 1
+    call vimtex#echo#formatted([
+          \ 'Open documentation for ',
+          \ ['VimtexSuccess', a:context.candidates[0]], ' [y/N]? '
+          \])
+
+    let l:choice = nr2char(getchar())
+    if l:choice ==# 'y'
+      echon 'y'
+      let a:context.selected = a:context.candidates[0]
+    else
+      echohl VimtexWarning
+      echon l:choice =~# '\w' ? l:choice : 'N'
+      echohl NONE
+      let a:context.selected = ''
+    endif
+
+    return
+  endif
+
   let a:context.selected = vimtex#ui#choose(a:context.candidates, {
         \ 'prompt': 'Multiple candidates detected, please select one:',
         \})
-  let a:context.ask_before_open = len(a:context.candidates) == 1
 endfunction
 
 " }}}1
@@ -197,28 +216,8 @@ endfunction
 
 " }}}1
 function! s:packages_open(context) abort " {{{1
-  if !has_key(a:context, 'selected')
-    call vimtex#doc#make_selection(a:context)
-  endif
-
-  if empty(a:context.selected) | return | endif
-
-  if get(a:context, 'ask_before_open', 1)
-    call vimtex#echo#formatted([
-          \ 'Open documentation for ',
-          \ ['VimtexSuccess', a:context.selected], ' [y/N]? '
-          \])
-
-    let l:choice = nr2char(getchar())
-    if l:choice ==# 'y'
-      echon 'y'
-    else
-      echohl VimtexWarning
-      echon l:choice =~# '\w' ? l:choice : 'N'
-      echohl NONE
-      return
-    endif
-  endif
+  call vimtex#doc#make_selection(a:context)
+  if empty(a:context.selected) | return 0 | endif
 
   call vimtex#util#www('http://texdoc.net/pkg/' . a:context.selected)
   redraw!

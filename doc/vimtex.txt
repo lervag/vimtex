@@ -1450,10 +1450,19 @@ OPTIONS                                                        *vimtex-options*
   Default value: 0
 
 *g:vimtex_doc_handlers*
-  By default, package documentation is looked up online through
-  http://texdoc.net/pkg/packagename. With this option, one may specify a list
-  of custom handlers. A handler is a function that takes a single |Dict|
-  argument with the following keys:
+  With this option, one may specify a list of custom documentation handlers.
+  The following pre-made handlers are available:
+
+    'vimtex#doc#handler#texdoc'  Open documentation with local `texdoc`.
+    Fallback                     Open documentation online through
+                                 http://texdoc.net/pkg/packagename.
+
+  To use the local `texdoc`, set: >
+
+    let g:vimtex_doc_handlers = ['vimtex#doc#handlers#texdoc']
+<
+  A handler is a function that takes a single |Dict| argument with the
+  following keys:
 
     type~
       One of `documentclass`, `usepackage`, `command` or `word`.
@@ -1471,24 +1480,24 @@ OPTIONS                                                        *vimtex-options*
       not defined.
 
   Each handler in the list will be tried until a handler provides a return
-  value of 1. One may add handlers that only makes minor modifications of the
-  context and passes it on to the default handler, as well as handlers that
-  fully completes the lookup e.g. through a local lookup with `texdoc`.
+  value of 1 or |v:true|. One may thus add handlers that only makes minor
+  modifications of the context and passes it on to the next handler.
 
-  Note that the context may have multiple candidates, and that the handlers
-  are applied before any internal selection is made. Thus the `selected` key
-  may not defined. This allows the handler to perform the selection itself, or
-  one may manually call the selection function `vimtex#doc#make_selection` to
-  get a simple selection menu.
+  The context may have multiple candidates and the handlers are applied before
+  any internal selection is made. Thus the `selected` key may be not defined.
+  This allows the handler to perform the selection itself. One may manually
+  call the selection function `vimtex#doc#make_selection` to get a simple
+  selection menu.
 
-  The following example uses the local `texdoc` to open the documentation: >
+  The following shows a generic example of how to write a custom handler: >
 
     let g:vimtex_doc_handlers = ['MyHandler']
+
     function! MyHandler(context)
       call vimtex#doc#make_selection(a:context)
-      if !empty(a:context.selected)
-        execute '!texdoc' a:context.selected '&'
-      endif
+      if empty(a:context.selected) | return 0 | endif
+
+      execute '!myhandler' a:context.selected '&'
       return 1
     endfunction
 <
