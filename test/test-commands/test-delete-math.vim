@@ -1,6 +1,6 @@
 set nocompatible
 let &rtp = '../..,' . &rtp
-filetype plugin indent on
+filetype plugin on
 syntax on
 
 setfiletype tex

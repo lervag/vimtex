@@ -1,7 +1,6 @@
 set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
-syntax on
 
 setfiletype tex
 
