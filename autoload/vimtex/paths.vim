@@ -98,4 +98,4 @@ let s:cd = haslocaldir()
       \ : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
 let s:qpath = get(s:, 'qpath', [])
 
-let s:re_abs = has('win32') ? '^[A-Z]:[\\/]' : '^/'
+let s:re_abs = has('win32') ? '^\a:[\\/]' : '^/'
