@@ -1,6 +1,6 @@
 set nocompatible
 let &rtp = '../..,' . &rtp
-filetype plugin on
+filetype plugin indent on
 syntax on
 
 set shiftwidth=2
