@@ -19,14 +19,6 @@ $(TESTS):
 
 
 #
-# Force serial processing
-#
-test-indentation: MAKEFLAGS := $(MAKEFLAGS) -j1
-test-completion-bibtex: MAKEFLAGS := $(MAKEFLAGS) -j1
-test-completion-bibtex-speed: MAKEFLAGS := $(MAKEFLAGS) -j1
-
-
-#
 # Ensure that some goals are run first/last
 #
 ifndef MAKECMDGOALS
