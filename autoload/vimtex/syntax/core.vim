@@ -1848,6 +1848,10 @@ function! s:match_conceal_accents() abort " {{{1
   syntax match texCmdAccent   "\\AA\>" conceal cchar=Å
   syntax match texCmdAccent   "\\o\>"  conceal cchar=ø
   syntax match texCmdAccent   "\\O\>"  conceal cchar=Ø
+  syntax match texCmdAccent   "\\i\>"  conceal cchar=ı
+  syntax match texCmdAccent   "\\j\>"  conceal cchar=ȷ
+  syntax match texCmdAccent   "\\lq\>" conceal cchar=‘
+  syntax match texCmdAccent   "\\rq\>" conceal cchar=′
   syntax match texCmdLigature "\\AE\>" conceal cchar=Æ
   syntax match texCmdLigature "\\ae\>" conceal cchar=æ
   syntax match texCmdLigature "\\oe\>" conceal cchar=œ
