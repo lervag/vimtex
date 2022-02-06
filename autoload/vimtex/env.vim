@@ -222,15 +222,14 @@ function! vimtex#env#change_to_indented(open, close, new) abort " {{{1
     call setline(a:open.lnum, l:before)
     call append(a:open.lnum, a:new[0])
     call vimtex#pos#set_cursor(a:open.lnum+1, 1)
+    let l:cursor[1] += 1
   else
     call setline(a:open.lnum, a:new[0])
     call vimtex#pos#set_cursor(a:open.lnum, 1)
   endif
   if !empty(l:after)
-    call append(a:open.lnum+1, l:after)
-    let l:cursor[1] += 2
-  else
-    let l:cursor[1] += !empty(l:before)
+    call append(a:open.lnum + !empty(l:before), l:after)
+    let l:cursor[1] += 1
   endif
 
   " Indent the lines

@@ -52,6 +52,14 @@ call vimtex#test#keys("f$cs$\\[\<cr>",
       \  'text'])
 
 " cs$ -> \[
+call vimtex#test#keys("cs$\\[\<cr>",
+      \ ['$math$ text'],
+      \ ['\[',
+      \  '  math',
+      \  '\]',
+      \  'text'])
+
+" cs$ -> \[
 call vimtex#test#keys("f$cs$\\[\<cr>",
       \ ['text $',
       \  'math',
