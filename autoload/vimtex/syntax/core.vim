@@ -1862,6 +1862,8 @@ function! s:match_conceal_accents() abort " {{{1
   syntax match texLigature    "``"     conceal cchar=“
   syntax match texLigature    "''"     conceal cchar=”
   syntax match texLigature    ",,"     conceal cchar=„
+  syntax match texLigature    "!`"     conceal cchar=¡
+  syntax match texLigature    "?`"     conceal cchar=¿
 endfunction
 
 let s:key_accents = [
