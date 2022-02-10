@@ -25,6 +25,54 @@ function! vimtex#util#count(line, pattern) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#count_open(line, re_open, re_close) abort " {{{1
+  " Counts the number of unclosed opening patterns in the given line.
+  let l:i = match(a:line, a:re_open)
+  if l:i < 0 | return 0 | endif
+
+  let l:sum = 0
+  let l:imin_last = l:i
+  while l:i >= 0
+    let l:sum += 1
+    let l:i += len(matchstr(a:line, a:re_open, l:i))
+    let l:i = match(a:line, a:re_open, l:i)
+  endwhile
+
+  let l:i = match(a:line, a:re_close, l:imin_last)
+  while l:i >= 0
+    let l:sum -= 1
+    let l:i += len(matchstr(a:line, a:re_close, l:i))
+    let l:i = match(a:line, a:re_close, l:i)
+  endwhile
+
+  return max([l:sum, 0])
+endfunction
+
+" }}}1
+function! vimtex#util#count_close(line, re_open, re_close) abort " {{{1
+  " Counts the number of unopened closing patterns in the given line.
+  let l:i = match(a:line, a:re_close)
+  if l:i < 0 | return 0 | endif
+
+  let l:sum = 0
+  while l:i >= 0
+    let l:sum += 1
+    let l:imax_first = l:i
+    let l:i += len(matchstr(a:line, a:re_close, l:i))
+    let l:i = match(a:line, a:re_close, l:i)
+  endwhile
+
+  let l:i = match(a:line, a:re_open)
+  while l:i >= 0 && l:i < l:imax_first
+    let l:sum -= 1
+    let l:i += len(matchstr(a:line, a:re_open, l:i))
+    let l:i = match(a:line, a:re_open, l:i)
+  endwhile
+
+  return l:sum
+endfunction
+
+" }}}1
 function! vimtex#util#flatten(list) abort " {{{1
   let l:result = []
 
