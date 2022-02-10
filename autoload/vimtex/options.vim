@@ -288,6 +288,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_syntax_enabled', 1)
   call s:init_option('vimtex_syntax_conceal', {
         \ 'accents': 1,
+        \ 'ligatures': 1,
         \ 'cites': 1,
         \ 'fancy': 1,
         \ 'greek': 1,

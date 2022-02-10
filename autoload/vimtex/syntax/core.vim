@@ -644,9 +644,14 @@ function! vimtex#syntax#core#init() abort " {{{1
       call s:match_conceal_greek()
     endif
 
-    " Conceal replace accented characters and ligatures
+    " Conceal replace accented characters
     if g:vimtex_syntax_conceal.accents
       call s:match_conceal_accents()
+    endif
+
+    " Conceal replace ligatures
+    if g:vimtex_syntax_conceal.ligatures
+      call s:match_conceal_ligatures()
     endif
 
     " Conceal cite commands
@@ -1843,27 +1848,6 @@ function! s:match_conceal_accents() abort " {{{1
       execute 'syntax match texCmdAccent /' . l:re . '/ conceal cchar=' . l:target
     endfor
   endfor
-
-  syntax match texCmdAccent   "\\aa\>" conceal cchar=å
-  syntax match texCmdAccent   "\\AA\>" conceal cchar=Å
-  syntax match texCmdAccent   "\\o\>"  conceal cchar=ø
-  syntax match texCmdAccent   "\\O\>"  conceal cchar=Ø
-  syntax match texCmdAccent   "\\i\>"  conceal cchar=ı
-  syntax match texCmdAccent   "\\j\>"  conceal cchar=ȷ
-  syntax match texCmdAccent   "\\lq\>" conceal cchar=‘
-  syntax match texCmdAccent   "\\rq\>" conceal cchar=′
-  syntax match texCmdLigature "\\AE\>" conceal cchar=Æ
-  syntax match texCmdLigature "\\ae\>" conceal cchar=æ
-  syntax match texCmdLigature "\\oe\>" conceal cchar=œ
-  syntax match texCmdLigature "\\OE\>" conceal cchar=Œ
-  syntax match texCmdLigature "\\ss\>" conceal cchar=ß
-  syntax match texLigature    "--"     conceal cchar=–
-  syntax match texLigature    "---"    conceal cchar=—
-  syntax match texLigature    "``"     conceal cchar=“
-  syntax match texLigature    "''"     conceal cchar=”
-  syntax match texLigature    ",,"     conceal cchar=„
-  syntax match texLigature    "!`"     conceal cchar=¡
-  syntax match texLigature    "?`"     conceal cchar=¿
 endfunction
 
 let s:key_accents = [
@@ -1922,6 +1906,32 @@ let s:map_accents = [
       \ ['Z',  '' ,'Ź','' ,'' ,'' ,'Ż','' ,'' ,'' ,'' ,'' ,'' ,'Ž'],
       \ ['\\i','ì','í','î','ï','ĩ','į','' ,'' ,'' ,'' ,'' ,'ĭ',''],
       \]
+
+" }}}1
+function! s:match_conceal_ligatures() abort " {{{1
+  syntax match texCmdLigature "\\lq\>" conceal cchar=‘
+  syntax match texCmdLigature "\\rq\>" conceal cchar=′
+  syntax match texCmdLigature "\\i\>"  conceal cchar=ı
+  syntax match texCmdLigature "\\j\>"  conceal cchar=ȷ
+  syntax match texCmdLigature "\\AE\>" conceal cchar=Æ
+  syntax match texCmdLigature "\\ae\>" conceal cchar=æ
+  syntax match texCmdLigature "\\oe\>" conceal cchar=œ
+  syntax match texCmdLigature "\\OE\>" conceal cchar=Œ
+  syntax match texCmdLigature "\\o\>"  conceal cchar=ø
+  syntax match texCmdLigature "\\O\>"  conceal cchar=Ø
+  syntax match texCmdLigature "\\aa\>" conceal cchar=å
+  syntax match texCmdLigature "\\AA\>" conceal cchar=Å
+  syntax match texCmdLigature "\\ss\>" conceal cchar=ß
+  syntax match texLigature    "--"     conceal cchar=–
+  syntax match texLigature    "---"    conceal cchar=—
+  syntax match texLigature    "`"      conceal cchar=‘
+  syntax match texLigature    "'"      conceal cchar=’
+  syntax match texLigature    "``"     conceal cchar=“
+  syntax match texLigature    "''"     conceal cchar=”
+  syntax match texLigature    ",,"     conceal cchar=„
+  syntax match texLigature    "!`"     conceal cchar=¡
+  syntax match texLigature    "?`"     conceal cchar=¿
+endfunction
 
 " }}}1
 function! s:match_conceal_fancy() abort " {{{1

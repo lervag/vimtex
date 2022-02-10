@@ -2195,8 +2195,10 @@ OPTIONS                                                        *vimtex-options*
   The following keys are available:
 
     accents~
-      Replace TeX accents into the accented character, e.g. `\aa` --> å. This
-      will also replace a few ligatures.
+      Conceal accented characters, e.g. `\^a` --> `â`.
+
+    ligatures~
+      Conceal ligatures such as `\aa` --> `å` and `''` --> `“`.
 
     cites~
       Conceal LaTeX cite commands such as `\citet[...]{ref00}`. The conceal
