@@ -1025,8 +1025,10 @@ OPTIONS                                                        *vimtex-options*
 
     let g:vimtex_compiler_latexmk_engines = {
         \ '_'                : '-pdf',
+        \ 'pdfdvi'           : '-pdfdvi',
+        \ 'pdfps'            : '-pdfps',
         \ 'pdflatex'         : '-pdf',
-        \ 'dvipdfex'         : '-pdfdvi',
+        \ 'luatex'           : '-lualatex',
         \ 'lualatex'         : '-lualatex',
         \ 'xelatex'          : '-xelatex',
         \ 'context (pdftex)' : '-pdf -pdflatex=texexec',

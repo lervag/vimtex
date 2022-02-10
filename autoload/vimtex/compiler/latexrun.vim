@@ -44,13 +44,9 @@ endfunction
 
 " }}}1
 function! s:compiler.get_engine() abort dict " {{{1
-  return get(extend(g:vimtex_compiler_latexrun_engines,
-        \ {
-        \  '_'                : 'pdflatex',
-        \  'pdflatex'         : 'pdflatex',
-        \  'lualatex'         : 'lualatex',
-        \  'xelatex'          : 'xelatex',
-        \ }, 'keep'), self.state.get_tex_program(), '_')
+  return get(g:vimtex_compiler_latexrun_engines,
+        \ self.state.get_tex_program(),
+        \ g:vimtex_compiler_latexrun_engines._)
 endfunction
 
 " }}}1

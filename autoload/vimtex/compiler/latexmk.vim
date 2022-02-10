@@ -201,19 +201,9 @@ function! s:compiler.get_engine() abort dict " {{{1
     endif
   endif
 
-
-  return get(extend(g:vimtex_compiler_latexmk_engines,
-        \ {
-        \  'pdfdvi'           : '-pdfdvi',
-        \  'pdfps'            : '-pdfps',
-        \  'pdflatex'         : '-pdf',
-        \  'luatex'           : '-lualatex',
-        \  'lualatex'         : '-lualatex',
-        \  'xelatex'          : '-xelatex',
-        \  'context (pdftex)' : '-pdf -pdflatex=texexec',
-        \  'context (luatex)' : '-pdf -pdflatex=context',
-        \  'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
-        \ }, 'keep'), l:tex_program, '-pdf')
+  return get(g:vimtex_compiler_latexmk_engines,
+        \ l:tex_program,
+        \ g:vimtex_compiler_latexmk_engines._)
 endfunction
 
 " }}}1
