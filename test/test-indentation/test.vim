@@ -15,6 +15,11 @@ if !empty($FLAGS)
     let g:vimtex_indent_ignored_envs = ['proof']
   elseif $FLAGS == 3
     let g:vimtex_indent_delims = {'close_indented': 1}
+  elseif $FLAGS == 4
+    let g:vimtex_indent_delims = {
+          \ 'open': ['{', '\['],
+          \ 'close': ['}', '\]'],
+          \ }
   endif
 endif
 

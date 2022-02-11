@@ -19,3 +19,4 @@ $(TESTS):
 test_ampersands-off: export FLAGS=1
 test_environments-ignored: export FLAGS=2
 test_close-indented: export FLAGS=3
+test_close_open_same_line: export FLAGS=4
