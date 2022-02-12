@@ -206,7 +206,7 @@ endfunction
 
 let s:envs_begin = '\\begin{.*}\|\\\@<!\\\['
 let s:envs_end = '\\end{.*}\|\\\]'
-let s:envs_ignored = '\v' . join(g:vimtex_indent_ignored_envs, '|')
+let s:envs_ignored = '\v<%(' . join(g:vimtex_indent_ignored_envs, '|') . ')>'
 
 " }}}1
 function! s:indent_items(line, lnum, prev_line, prev_lnum) abort " {{{1
