@@ -69,7 +69,7 @@ function! vimtex#util#count_close(line, re_open, re_close) abort " {{{1
     let l:i = match(a:line, a:re_open, l:i)
   endwhile
 
-  return l:sum
+  return max([l:sum, 0])
 endfunction
 
 " }}}1
