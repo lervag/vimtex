@@ -18,7 +18,8 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   endif
 
   let l:ext = fnamemodify(a:main, ':e')
-  let l:new.tex = l:ext ==# 'tex' ? a:main : ''
+  let l:new.tex = index(['tex', 'dtx', 'tikz'], l:ext) >= 0
+        \ ? a:main : ''
 
   " Get preamble for some state parsing
   let l:preamble = !empty(l:new.tex)
