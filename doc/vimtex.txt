@@ -5377,8 +5377,11 @@ installation as the main method, they may use the following config: >
 
   let g:vimtex_doc_handlers = ['vimtex#doc#handlers#texdoc']
 <
+See https://www.tug.org/texdoc/doc/texdoc.pdf for more info about `texdoc`.
+
 In the following, I list some relevant online and offline alternatives for
-accessing LaTeX documentation.
+accessing LaTeX documentation. Please note that these methods are not
+integrated into VimTeX and are listed purely for the readers convenience.
 
 ------------------------------------------------------------------------------
 ONLINE                                                 *vimtex-latexdoc-online*
@@ -5405,15 +5408,8 @@ The above systems may be accessed from vim through dash.vim [3], zeavim.vim
 [4] or vim-dasht [5], respectively. Other alternative vim plugins include
 investigate.vim [6].
 
-A different option is to rely on texdoc [7]. If you specify e.g. in your
-`~/.vim/after/ftplugin/tex.vim` to use `setlocal keywordprg=texdoc`, then
-press |K| on a package name in `\usepackage{name}`, this will open the
-documentation pdf of this package. Note, though, that this assumes that the
-documentation is available offline, which it might not be (e.g. on Arch Linux
-it is not available through the texlive packages).
-
 The unofficial LaTeX(2e) reference manual (latexref) should also be mentioned,
-since it may be easily downloaded in various formats from [8].
+since it may be easily downloaded in various formats from [7].
 
 [0]: https://kapeli.com/dash
 [1]: https://zealdocs.org/
@@ -5422,8 +5418,7 @@ since it may be easily downloaded in various formats from [8].
 [4]: https://github.com/sunaku/vim-dasht
 [5]: https://github.com/KabbAmine/zeavim.vim
 [6]: https://github.com/keith/investigate.vim
-[7]: https://www.tug.org/texdoc/doc/texdoc.pdf
-[8]: https://latexref.xyz/dev/
+[7]: https://latexref.xyz/dev/
 
 ==============================================================================
 CONTEXT MENU                                              *vimtex-context-menu*
