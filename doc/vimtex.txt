@@ -5367,12 +5367,18 @@ Note: Vim users should be aware that one may need to ensure that the server is
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
 
 VimTeX provides the command |:VimtexDocPackage| to open documentation for
-packages and documentclasses. The command is mapped to `K` by default, and by
-default package documentation is looked up through http://texdoc.net/. This
-can be customized through |g:vimtex_doc_handlers|.
+packages and documentclasses. The command is mapped to `K` by default.
 
-In the following, I list some alternative and relevant options for access to
-LaTeX documentation, both online and offline.
+For simplicity, the standard method provided by VimTeX is to look up
+documentation online through http://texdoc.net/. However, this can be
+customized with the option |g:vimtex_doc_handlers|. The option allows much
+flexibility for advanced users. For users that want to use a local `texdoc`
+installation as the main method, they may use the following config: >
+
+  let g:vimtex_doc_handlers = ['vimtex#doc#handlers#texdoc']
+<
+In the following, I list some relevant online and offline alternatives for
+accessing LaTeX documentation.
 
 ------------------------------------------------------------------------------
 ONLINE                                                 *vimtex-latexdoc-online*
