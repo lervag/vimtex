@@ -1492,6 +1492,7 @@ let s:cmd_symbols = [
       \ ['implies', '⇒'],
       \ ['choose', 'C'],
       \ ['sqrt', '√'],
+      \ ['colon', ':'],
       \ ['coloneqq', '≔'],
       \]
 
