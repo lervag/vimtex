@@ -616,8 +616,8 @@ function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
         \ : substitute(a:match, 'end', 'begin', '')
 
   let result.re = {
-        \ 'open' : '\m\\begin\s*{\w\+\*\?}',
-        \ 'close' : '\m\\end\s*{\w\+\*\?}',
+        \ 'open' : '\m\\begin\s*{[^}]*}',
+        \ 'close' : '\m\\end\s*{[^}]*}',
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
