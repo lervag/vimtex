@@ -4746,7 +4746,7 @@ be configured through the |g:vimtex_compiler_latexmk| option.
 If the `callback` key is enabled (it is by default and there is really no
 reason to disable it!), then compilation errors will be parsed automatically.
 This is done by utilizing the tricks explained below. Although `latexmk`
-can contorl viewers directly, VimTeX disables this feature with `-view=none`
+can control viewers directly, VimTeX disables this feature with `-view=none`
 so as to get full control of the viewers.
 
 As stated, one may customize the `latexmk` options through
