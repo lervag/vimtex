@@ -44,21 +44,7 @@ endfunction
 
 " }}}1
 function! s:viewer._start(outfile) dict abort " {{{1
-  let l:cmd  = 'zathura'
-  if self.has_synctex
-    let l:cmd .= ' -x "' . s:inverse_search_cmd
-          \ . ' -c \"VimtexInverseSearch %{line} ''%{input}''\""'
-    if g:vimtex_view_forward_search_on_start
-      let l:cmd .= ' --synctex-forward '
-            \ .  line('.')
-            \ .  ':' . col('.')
-            \ .  ':' . vimtex#util#shellescape(expand('%:p'))
-    endif
-  endif
-  let l:cmd .= ' ' . g:vimtex_view_zathura_options
-  let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  let l:cmd .= '&'
-  let self.cmd_start = l:cmd
+  let self.cmd_start = s:cmdline(a:outfile, self.has_synctex, 1)
 
   call vimtex#jobs#run(self.cmd_start)
 
@@ -72,14 +58,7 @@ function! s:viewer._forward_search(outfile) dict abort " {{{1
   let l:synctex_file = fnamemodify(a:outfile, ':r') . '.synctex.gz'
   if !filereadable(l:synctex_file) | return | endif
 
-  let self.texfile = vimtex#paths#relative(expand('%:p'), b:vimtex.root)
-  let self.outfile = vimtex#paths#relative(a:outfile, getcwd())
-
-  let self.cmd_forward_search = printf(
-        \ 'zathura --synctex-forward %d:%d:%s %s &',
-        \ line('.'), col('.'),
-        \ vimtex#util#shellescape(self.texfile),
-        \ vimtex#util#shellescape(self.outfile))
+  let self.cmd_forward_search = s:cmdline(a:outfile, self.has_synctex, 0)
 
   call vimtex#jobs#run(self.cmd_forward_search)
 endfunction
@@ -98,6 +77,34 @@ function! s:viewer.get_pid() dict abort " {{{1
   let l:output = vimtex#jobs#capture(
         \ 'pgrep -nf "^zathura.+--servername ' . v:servername . '"')
   return str2nr(join(l:output, ''))
+endfunction
+
+" }}}1
+
+
+function! s:cmdline(outfile, synctex, start) abort " {{{1
+  let l:cmd  = 'zathura'
+
+  if a:start
+    let l:cmd .= ' ' . g:vimtex_view_zathura_options
+    if a:synctex
+      let l:cmd .= printf(
+            \ ' -x "%s -c \"VimtexInverseSearch %{line} ''%{input}''\""',
+            \ s:inverse_search_cmd)
+    endif
+  endif
+
+  if a:synctex && (!a:start || g:vimtex_view_forward_search_on_start)
+    let l:cmd .= printf(
+          \ ' --synctex-forward %d:%d:%s',
+          \ line('.'), col('.'),
+          \ vimtex#util#shellescape(
+          \   vimtex#paths#relative(expand('%:p'), b:vimtex.root)))
+  endif
+
+  return l:cmd . ' '
+        \ . vimtex#util#shellescape(vimtex#paths#relative(a:outfile, getcwd()))
+        \ . '&'
 endfunction
 
 " }}}1
