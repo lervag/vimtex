@@ -18,6 +18,6 @@ test-spaces: file\ with\ errors.log
 file\ with\ errors.log: file\ with\ errors.tex input\ with\ spaces.tex
 	@latexmk -file-line-error -interaction=nonstopmode -recorder -pdf \
 	    file\ with\ errors.tex >/dev/null 2>&1 || true
-	@mv "$@"{,.bak}
+	@mv "$@" "$@.bak"
 	@latexmk -C >/dev/null 2>&1
-	@mv "$@"{.bak,}
+	@mv "$@.bak" "$@"
