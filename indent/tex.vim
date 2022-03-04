@@ -238,6 +238,8 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
 function! s:indent_delims(line, lnum, prev_line, prev_lnum) abort " {{{1
+  if s:re_delim_trivial | return 0 | endif
+
   if s:re_opt.close_indented
     return s:sw*(vimtex#util#count(a:prev_line, s:re_open)
           \ - vimtex#util#count(a:prev_line, s:re_close))
@@ -259,6 +261,7 @@ if s:re_opt.include_modified_math
   let s:re_open .= (empty(s:re_open) ? '' : '\|') . g:vimtex#delim#re.delim_mod_math.open
   let s:re_close .= (empty(s:re_close) ? '' : '\|') . g:vimtex#delim#re.delim_mod_math.close
 endif
+let s:re_delim_trivial = empty(s:re_open) || empty(s:re_close)
 
 " }}}1
 function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
