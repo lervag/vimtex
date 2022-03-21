@@ -1391,6 +1391,8 @@ let s:cmd_symbols = [
       \ ['in', '∈'],
       \ ['infty', '∞'],
       \ ['int', '∫'],
+      \ ['iint', '∬'],
+      \ ['iiint', '∭'],
       \ ['jmath', '𝚥'],
       \ ['land', '∧'],
       \ ['lnot', '¬'],
@@ -1841,12 +1843,13 @@ function! s:match_conceal_accents() abort " {{{1
   for [l:chr; l:targets] in s:map_accents
     for i in range(13)
       let l:target = l:targets[i]
-      let l:accent = s:key_accents[i]
       if empty(l:target) | continue | endif
 
-      let l:re = l:accent . '\%(\s*{' . l:chr . '}\|'
-            \ . (l:accent =~# '\a' ? '\s\+' : '\s*') . l:chr . '\)'
-      execute 'syntax match texCmdAccent /' . l:re . '/ conceal cchar=' . l:target
+      let l:accent = s:key_accents[i]
+      let l:re_ws = l:accent =~# '^\\\\\a$' ? '\s\+' : '\s*'
+      let l:re = l:accent . '\%(\s*{' . l:chr . '}\|' . l:re_ws . l:chr . '\)'
+      execute 'syntax match texCmdAccent /' . l:re . '/'
+            \ 'conceal cchar=' . l:target
     endfor
   endfor
 endfunction
@@ -1856,7 +1859,7 @@ let s:key_accents = [
       \ '\\''',
       \ '\\^',
       \ '\\"',
-      \ '\\\~',
+      \ '\\\%(\~\|tilde\)',
       \ '\\\.',
       \ '\\=',
       \ '\\c',
