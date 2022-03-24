@@ -34,9 +34,6 @@ function! s:complete_autoindent() abort
   let l:line = getline('.')[:col('.') - 2]
   if matchstr(l:line, '\S*$') !=# '\item' | return | endif
 
-  let l:curpos = getcurpos()
-  let l:indent_pre = indent('.')
-
   let l:startofline = &startofline
   let l:virtualedit = &virtualedit
   set nostartofline
@@ -44,11 +41,6 @@ function! s:complete_autoindent() abort
   normal! ==
   let &startofline = l:startofline
   let &virtualedit = l:virtualedit
-
-  let l:shift = indent('.') - l:indent_pre
-  let l:curpos[2] += l:shift
-  let l:curpos[4] += l:shift
-  call cursor(l:curpos[1:])
 endfunction
 
 " }}}1
