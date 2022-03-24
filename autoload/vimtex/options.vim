@@ -146,6 +146,20 @@ function! vimtex#options#init() abort " {{{1
         \})
 
   call s:init_option('vimtex_format_enabled', 0)
+  call s:init_option('vimtex_format_border_begin', '\v^\s*%(' . join([
+        \ '\\item',
+        \ '\\begin',
+        \ '\\end',
+        \ '%(\\\[|\$\$)\s*$',
+        \], '|') . ')')
+  call s:init_option('vimtex_format_border_end', '\v\\%(' . join([
+        \ '\\\*?',
+        \ 'clear%(double)?page',
+        \ 'linebreak',
+        \ 'new%(line|page)',
+        \ 'pagebreak',
+        \ '%(begin|end)\{[^}]*\}',
+        \], '|') . ')\s*$' . '|^\s*%(\\\]|\$\$)\s*$')
 
   call s:init_option('vimtex_grammar_textidote', {
         \ 'jar': '',

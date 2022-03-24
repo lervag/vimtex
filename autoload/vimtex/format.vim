@@ -90,14 +90,14 @@ function! s:format(top, bottom) abort " {{{1
       let l:mark = l:current-1
     endif
 
-    if l:line =~# s:border_end
+    if l:line =~# g:vimtex_format_border_end
       if l:current < l:mark
         let l:bottom += s:format_build_lines(l:current+1, l:mark)
       endif
       let l:mark = l:current
     endif
 
-    if l:line =~# s:border_beginning
+    if l:line =~# g:vimtex_format_border_begin
       if l:current < l:mark
         let l:bottom += s:format_build_lines(l:current, l:mark)
       endif
@@ -183,27 +183,5 @@ function! s:get_indents(number) abort " {{{1
         \ ? repeat("\t", a:number/&l:tabstop)
         \ : repeat(' ', a:number)
 endfunction
-
-" }}}1
-
-
-" {{{1 Initialize module
-
-let s:border_beginning = '\v^\s*%(' . join([
-      \ '\\item',
-      \ '\\begin',
-      \ '\\end',
-      \ '%(\\\[|\$\$)\s*$',
-      \], '|') . ')'
-
-let s:border_end = '\v\\%(' . join([
-      \   '\\\*?',
-      \   'clear%(double)?page',
-      \   'linebreak',
-      \   'new%(line|page)',
-      \   'pagebreak',
-      \   '%(begin|end)\{[^}]*\}',
-      \  ], '|') . ')\s*$'
-      \ . '|^\s*%(\\\]|\$\$)\s*$'
 
 " }}}1

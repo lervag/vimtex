@@ -1786,6 +1786,14 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_format_border_begin*
+*g:vimtex_format_border_end*
+  Regular expressions that define the "borders" of a region that should be
+  formatted. The defaults should be more or less OK for most people, but some
+  people may be interested in adjusting to handle more complex LaTeX code.
+
+  Default value: See source in `/autoload/vimtex/options.vim`
+
 *g:vimtex_grammar_textidote*
   This option is used to configure the `textidote` grammar and document checker,
   see |vimtex-grammar-textidote|. It is a dictionary with the following keys
