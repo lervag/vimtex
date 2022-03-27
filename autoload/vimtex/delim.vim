@@ -596,7 +596,7 @@ function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
   let result = {}
 
   let result.type = 'env'
-  let result.name = matchstr(a:match, '{\zs\k*\ze\*\?}')
+  let result.name = matchstr(a:match, '{\zs[^}*]*\ze\*\?}')
   let result.starred = match(a:match, '\*}$') > 0
   let result.side = a:match =~# '\\begin' ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
