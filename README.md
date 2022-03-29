@@ -149,8 +149,10 @@ here](https://github.com/lervag/vimtex/issues/1946#issuecomment-843674951).
 
 Below is a list of features offered by VimTeX. The features are accessible as
 both commands and mappings. The mappings generally start with `<localleader>l`,
-but if desired one can disable default mappings to define custom mappings. All
-features are enabled by default, but each feature may be disabled if desired.
+but if desired one can disable default mappings to define custom mappings. 
+Nearly all features are enabled by default, but each feature may be disabled if
+desired. The two exceptions are code folding and formating, which are disabled
+by default and must be manually enabled.
 
 - Document compilation with
   [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/),
