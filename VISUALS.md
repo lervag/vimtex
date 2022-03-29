@@ -41,7 +41,7 @@ plain-text documentation.
 
 ### Navigating sections
 
-![Navigating sections](https://github.com/ejmastnak/vimtex-media/blob/main/move/move-sections.gif)
+![Navigating sections](https://github.com/ejmastnak/vimtex-media/blob/main/move/move-section.gif)
 
 ### Navigating environments
 
@@ -62,7 +62,7 @@ plain-text documentation.
 ## Text objects
 
 ### The delimiter and environment objects
-![Delimiter and environment objects](https://github.com/ejmastnak/vimtex-media/tree/main/text-objects)
+![Delimiter and environment objects](https://github.com/ejmastnak/vimtex-media/blob/main/text-objects/text-objects.gif)
 
 ## Deleting surrounding LaTeX content
 
