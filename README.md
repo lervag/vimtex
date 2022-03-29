@@ -110,12 +110,15 @@ let maplocalleader = ","
   start them. To inspect the compiler output, use `<localleader>lo`.
 
 ## Quick Start
+An article covering VimTeX's core features, written with plenty of examples and
+high-resolution animations specifically to help new users ease into working with
+the plugin, is available at the third-party link [Getting started with the
+VimTeX plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
 
-The following is a video guide for how to use VimTeX (credits:
+Additionally, the following video shows how to use VimTeX's main features (credits:
 [@DustyTopology](https://github.com/DustyTopology) from
 [#1946](https://github.com/lervag/vimtex/issues/1946#issuecomment-846345095)).
-It displays some of the main features. The example LaTeX file used in the video
-is available under
+The example LaTeX file used in the video is available under
 [`test/example-quick-start/main.tex`](test/example-quick-start/main.tex) and it
 may be instructive to copy the file and play with it to learn some of these
 basic functions.
