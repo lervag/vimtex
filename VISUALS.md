@@ -86,6 +86,9 @@ sections, and items. Currently only delimiters and environments have a GIF.
 
 ### The delimiter and environment objects
 
+The following GIF uses Vim's visual mode to show highlight the scope of the
+`id`, `ad`, `ie`, and `ae` text objects.
+
 ![Delimiter and environment objects](https://github.com/ejmastnak/vimtex-media/blob/main/text-objects/text-objects.gif)
 
 ## Deleting surrounding LaTeX content
