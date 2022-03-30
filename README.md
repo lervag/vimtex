@@ -114,9 +114,7 @@ let maplocalleader = ","
 An article covering VimTeX's core features, containing plenty of examples and
 high-resolution animations intended to help new users ease into working with the
 plugin, is available at the third-party link [Getting started with the VimTeX
-plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html). <!--
-**TODO:** similar to @DustyTopology's contribution below, perhaps eventually add
-reference to PR/commit implementing these changes and credit @ejmastnak --> 
+plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
 
 Additionally, the following video shows how to use VimTeX's main features (credits:
 [@DustyTopology](https://github.com/DustyTopology) from
