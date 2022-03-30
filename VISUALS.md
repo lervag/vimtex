@@ -1,4 +1,4 @@
-# Visuals
+# VimTeX Visualized
 
 This page contains animated GIFs demonstrating many of the core VimTeX editing
 features listed in `:help vimtex-features` and documented in `:help
@@ -6,7 +6,7 @@ vimtex-mappings`. Hopefully the animations can give you a clearer mental image
 of what these mappings do and how you might use them.
 
 You may want to scroll through this page while simultaneously looking
-through `:help vimtex-features`---the animations should nicely complement the
+through `:help vimtex-features`—the animations should nicely complement the
 plain-text documentation.
 
 ## Table of contents
