@@ -17,7 +17,7 @@ filetype and syntax plugin for LaTeX files.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Quick Start](#quick-start)
-- [Screenshots](#screenshots)
+- [Screenshots and GIFs](#screenshots-and-gifs)
 - [Features](#features)
 - [Other relevant plugins](#other-relevant-plugins)
   - [Linting and syntax checking](#linting-and-syntax-checking)
@@ -138,7 +138,7 @@ supplementary documents:
 * [CONTRIBUTING.md](CONTRIBUTING.md)
 * [DOCUMENTATION.md](DOCUMENTATION.md)
 
-## Screenshots
+## Screenshots and GIFs
 
 Here is an example of the syntax highlighting provided by VimTeX. The example
 is made by @DustyTopology with the
@@ -147,6 +147,9 @@ some minor adjustments [described
 here](https://github.com/lervag/vimtex/issues/1946#issuecomment-843674951).
 
 ![Syntax example](https://github.com/lervag/vimtex-media/blob/main/img/syntax.png)
+
+Additionally, you can find animated demonstrations of VimTeX's core motions,
+text-editing commands, and text objects in the file [VISUALS.md](VISUALS.md).
 
 ## Features
 
