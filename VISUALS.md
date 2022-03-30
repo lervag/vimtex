@@ -1,13 +1,16 @@
 # VimTeX Visualized
 
 This page contains animated GIFs demonstrating many of the core VimTeX editing
-features listed in `:help vimtex-features` and documented in `:help
-vimtex-mappings`. Hopefully the animations can give you a clearer mental image
-of what these mappings do and how you might use them.
+features listed in `:help vimtex-features` and documented in more detail at
+`:help vimtex-mappings`. The GIFs and accompanying descriptions are used with
+permission from [@ejmastnak](https://github.com/ejmastnak)'s guide to [Getting
+started with the VimTeX
+plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
 
-You may want to scroll through this page while simultaneously looking
-through `:help vimtex-features`—the animations should nicely complement the
-plain-text documentation.
+Hopefully the animations can give you a clearer mental image of what these
+mappings do and how you might use them. You may want to scroll through this page
+while simultaneously looking through `:help vimtex-features`—the animations
+should nicely complement the plain-text documentation.
 
 ## Table of contents
 <!-- vim-markdown-toc GFM -->
