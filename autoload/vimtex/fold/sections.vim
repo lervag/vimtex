@@ -63,9 +63,9 @@ function! s:folder.text(line, level) abort dict " {{{1
   elseif a:line =~# '\\appendix'
     let l:title = 'Appendix'
   elseif a:line =~# self.re.secpat1
-    let l:title = self.parse_title(matchstr(a:line, self.re.secpat1), 0)
+    let l:title = s:parse_title(a:line, self.re.secpat1, '{')
   elseif a:line =~# self.re.secpat2
-    let l:title = self.parse_title(matchstr(a:line, self.re.secpat2), 1)
+    let l:title = s:parse_title(a:line, self.re.secpat2, '[')
   elseif a:line =~# self.re.fake_sections
     let l:title = matchstr(a:line, self.re.fake_sections)
   endif
@@ -112,26 +112,6 @@ function! s:folder.parse_level(lnum, level) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:folder.parse_title(string, type) abort dict " {{{1
-  let l:idx = -1
-  let l:length = strlen(a:string)
-  let l:level = 1
-  while l:level >= 1
-    let l:idx += 1
-    if l:idx > l:length
-      break
-    elseif a:string[l:idx] ==# ['}',']'][a:type]
-      let l:level -= 1
-    elseif a:string[l:idx] ==# ['{','['][a:type]
-      let l:level += 1
-    endif
-  endwhile
-  let l:parsed = strpart(a:string, 0, l:idx)
-  return empty(l:parsed)
-        \ ? '<untitled>' : l:parsed
-endfunction
-
-" }}}1
 function! s:folder.refresh() abort dict " {{{1
   "
   " Parse current buffer to find which sections to fold and their levels.  The
@@ -171,6 +151,31 @@ function! s:folder.refresh() abort dict " {{{1
       endif
     endfor
   endfor
+endfunction
+
+" }}}1
+
+function! s:parse_title(line, re, type) abort " {{{1
+  let l:title = matchstr(a:line, a:re)
+  let [l:end, l:depth] = vimtex#parser#tex#find_closing(
+        \ 0, l:title, 1, a:type)
+
+  let l:lnum = v:foldstart
+  while l:depth > 0 && l:lnum <= v:foldend
+    let l:lnum += 1
+    let l:start = strlen(l:title)
+    let l:title .= getline(l:lnum)
+    let [l:end, l:depth] = vimtex#parser#tex#find_closing(
+          \ l:start, l:title, l:depth, a:type)
+  endwhile
+
+  if l:depth == 0
+    let l:title = strpart(l:title, 0, l:end)
+  endif
+
+  let l:title = substitute(l:title, '^\s*', '', '')
+  let l:title = substitute(l:title, '\s\{2,}', ' ', 'g')
+  return vimtex#parser#tex#texorpdfstring(l:title)
 endfunction
 
 " }}}1
