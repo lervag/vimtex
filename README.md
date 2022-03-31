@@ -310,3 +310,16 @@ plugins for Vim, see:
 * [What are the differences between LaTeX plugins](http://vi.stackexchange.com/questions/2047/what-are-the-differences-between-latex-plugins)
 * [List of LaTeX editors (not only Vim)](https://tex.stackexchange.com/questions/339/latex-editors-ides)
 
+## VimTeX on the Web
+
+VimTeX users may be interested in reading
+[@ejmastnak](https://github.com/ejmastnak)'s series on [Efficient LaTeX Using
+(Neo)Vim](https://ejmastnak.github.io/tutorials/vim-latex/intro.html), which
+covers all the fundamentals of setting up a VimTeX-based LaTeX workflow,
+including usage of the VimTeX plugin, compilation, setting up forward and
+inverse search with a PDF reader, and Vimscript tools for user-specific
+customization.
+
+If you know of (or create) other up-to-date, high-quality guides to VimTeX's
+features on third-party websites, feel free to submit a pull request updating
+this section.
