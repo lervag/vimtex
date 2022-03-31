@@ -29,6 +29,9 @@ call assert_equal(
       \ '      Preamble',
       \ foldtextresult(1))
 call assert_equal(
+      \ '      test 4',
+      \ foldtextresult(217))
+call assert_equal(
       \ '\usepackage[...]{biblatex}',
       \ foldtextresult(48))
 call assert_equal(

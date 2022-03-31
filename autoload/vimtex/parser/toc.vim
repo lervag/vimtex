@@ -42,31 +42,39 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
   "
   " Begin parsing LaTeX files
   "
+  let l:context = {}
   let l:lnum_total = 0
   let l:matcher_list = l:matchers.preamble
   for [l:file, l:lnum, l:line] in l:content
     let l:lnum_total += 1
+
+    " Handle multi-line entries
+    if has_key(l:context, 'continue')
+      call extend(l:context, {
+            \ 'line': l:line,
+            \ 'lnum': l:lnum,
+            \ 'lnum_total': l:lnum_total,
+            \ 'entry': get(l:entries, -1, {}),
+            \})
+      call l:matchers.d[l:context.continue].continue(l:context)
+      continue
+    endif
+
     let l:context = {
-          \ 'file' : l:file,
-          \ 'line' : l:line,
-          \ 'lnum' : l:lnum,
-          \ 'lnum_total' : l:lnum_total,
-          \ 'level' : s:level,
-          \ 'max_level' : l:max_level,
-          \ 'entry' : get(l:entries, -1, {}),
-          \ 'num_entries' : len(l:entries),
+          \ 'file': l:file,
+          \ 'line': l:line,
+          \ 'lnum': l:lnum,
+          \ 'lnum_total': l:lnum_total,
+          \ 'level': s:level,
+          \ 'max_level': l:max_level,
+          \ 'entry': get(l:entries, -1, {}),
+          \ 'num_entries': len(l:entries),
           \}
 
     " Detect end of preamble
     if s:level.preamble && l:line =~# '\v^\s*\\begin\{document\}'
       let s:level.preamble = 0
       let l:matcher_list = l:matchers.content
-      continue
-    endif
-
-    " Handle multi-line entries
-    if has_key(l:context, 'continue')
-      call l:matchers.d[l:context.continue].continue(l:context)
       continue
     endif
 
@@ -77,6 +85,7 @@ function! vimtex#parser#toc#parse(file) abort " {{{1
     for l:matcher in l:matcher_list
       if l:line =~# l:matcher.re
         let l:entry = l:matcher.get_entry(l:context)
+
         if type(l:entry) == v:t_list
           call extend(l:entries, l:entry)
         elseif !empty(l:entry)
