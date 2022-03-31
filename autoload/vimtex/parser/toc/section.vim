@@ -91,6 +91,8 @@ endfunction
 
 function! s:parse_title(title) abort " {{{1
   let l:title = substitute(a:title, '\v%(\]|\})\s*$', '', '')
+  let l:title = substitute(l:title, '^\s*', '', '')
+  let l:title = substitute(l:title, '\s\{2,}', ' ', 'g')
   return vimtex#parser#tex#texorpdfstring(l:title)
 endfunction
 
