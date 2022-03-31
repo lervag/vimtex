@@ -12,6 +12,19 @@ mappings do and how you might use them. You may want to scroll through this page
 while simultaneously looking through `:help vimtex-features`—the animations
 should nicely complement the plain-text documentation.
 
+#### This page is community-maintained
+
+* This page is made possible only with help from the community.
+  [@ejmastnak](https://github.com/ejmastnak), not
+  [@lervag](https://github.com/lervag), takes primary responsibility for
+  maintaining it, but contributions from all VimTeX users are welcome.
+
+* If you notice mistakes or outdated content (following a VimTeX update, say)
+  feel free to open a PR to fix it yourself, or alternatively contact
+  [@ejmastnak](https://github.com/ejmastnak) at
+  [ejmastnak@gmail.com](mailto:ejmastnak@gmail.com), who will be happy to
+  help fix it.
+
 ## Table of contents
 <!-- vim-markdown-toc GFM -->
 
