@@ -183,7 +183,7 @@ by default and must be manually enabled.
   - glossary entries
   - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
-  - table of content
+  - table of contents
   - table of labels
   - proper settings for `'include'`, `'includexpr'`, `'suffixesadd'` and
     `'define'`, which among other things
