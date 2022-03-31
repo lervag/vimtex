@@ -24,6 +24,7 @@ filetype and syntax plugin for LaTeX files.
   - [Snippets and templates](#snippets-and-templates)
   - [Tag navigation](#tag-navigation)
 - [Alternatives](#alternatives)
+- [VimTeX on the Web](#vimtex-on-the-web)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
