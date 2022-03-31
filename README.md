@@ -230,6 +230,10 @@ by default and must be manually enabled.
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
 
+For orientation, you can watch concise demonstrations of many of the motions,
+text objects, and text-editing features provided by VimTeX in the file
+[VISUALS.md](VISUALS.md).
+
 See the documentation for a thorough introduction to VimTeX (e.g. `:h vimtex`).
 
 ## Other relevant plugins
