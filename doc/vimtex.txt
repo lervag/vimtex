@@ -3264,10 +3264,13 @@ MAP DEFINITIONS                                               *vimtex-mappings*
   Insert mode:
     Convert the preceding text into a LaTeX command. That is, it prepends
     a backslash and adds an opening brace. It also moves the cursor to the end
-    of the word. If you also want the closing brace (emulating delimitMate),
-    you can add the following to your `~/.vim/after/ftplugin/tex.vim`
+    of the word. If you also want the closing brace (e.g. to emulate
+    delimitMate [0] or any of its like), you can add the following to your
+    `~/.vim/after/ftplugin/tex.vim`: >
 
-    imap <buffer> <F7> <Plug>(vimtex-cmd-create)}<Left>
+      imap <buffer> <f7> <plug>(vimtex-cmd-create)}<left>
+<
+    [0]: https://github.com/Raimondi/delimitMate
 
   Normal/Visual mode:
     Surrounds the word under the cursor/visual selection by the command
