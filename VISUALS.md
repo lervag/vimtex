@@ -1,13 +1,13 @@
 # VimTeX Visualized
 
-This page contains animated GIFs demonstrating many of the core VimTeX editing
-features listed in `:help vimtex-features` and documented in more detail at
-`:help vimtex-mappings`. The GIFs and accompanying descriptions are used with
-permission from [@ejmastnak](https://github.com/ejmastnak)'s guide to [Getting
-started with the VimTeX
-plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
+This page contains animated GIFs that demonstrate many of the core VimTeX
+editing features listed in `:help vimtex-features`. The related mappings are
+documented in detail at `:help vimtex-mappings`. The GIFs and accompanying
+descriptions are used with permission from
+[@ejmastnak](https://github.com/ejmastnak)'s guide to [Getting started with the
+VimTeX plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
 
-Hopefully the animations can give you a clearer mental image of what these
+Hopefully, the animations can give you a clearer mental image of what VimTeX's
 mappings do and how you might use them. You may want to scroll through this page
 while simultaneously looking through `:help vimtex-features`—the animations
 should nicely complement the plain-text documentation.
@@ -19,11 +19,11 @@ should nicely complement the plain-text documentation.
   [@lervag](https://github.com/lervag), takes primary responsibility for
   maintaining it, but contributions from all VimTeX users are welcome.
 
-* If you notice mistakes or outdated content (following a VimTeX update, say)
-  feel free to open a PR to fix it yourself, or alternatively contact
+* If you notice mistakes or outdated content (following a VimTeX update, say),
+  feel free to open a PR to fix it yourself. Alternatively, contact
   [@ejmastnak](https://github.com/ejmastnak) at
-  [ejmastnak@gmail.com](mailto:ejmastnak@gmail.com), who will be happy to
-  help fix it.
+  [ejmastnak@gmail.com](mailto:ejmastnak@gmail.com), who will be happy to help
+  fix it.
 
 ## Table of contents
 <!-- vim-markdown-toc GFM -->

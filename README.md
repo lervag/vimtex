@@ -112,12 +112,7 @@ let maplocalleader = ","
 
 ## Quick Start
 
-An article covering VimTeX's core features, containing plenty of examples and
-high-resolution animations intended to help new users ease into working with the
-plugin, is available at the third-party link [Getting started with the VimTeX
-plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
-
-Additionally, the following video shows how to use VimTeX's main features (credits:
+The following video shows how to use VimTeX's main features (credits:
 [@DustyTopology](https://github.com/DustyTopology) from
 [#1946](https://github.com/lervag/vimtex/issues/1946#issuecomment-846345095)).
 The example LaTeX file used in the video is available under
@@ -127,20 +122,27 @@ basic functions.
 
 https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-8a31-7ff7b9a4a020.mp4
 
-Users are of course _strongly_
-encouraged to read the documentation, at least the introduction, to learn about
-the different features and possibilities provided by VimTeX (see [`:h
-vimtex`](doc/vimtex.txt)).
-Advanced users and potential developers may also be interested in reading the
-supplementary documents:
+Both new and experienced users are also encouraged to read the third-party
+article [Getting started with the VimTeX
+plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html). The
+article covers VimTeX's core features and contains plenty of examples and
+high-resolution animations intended to help new users ease into working with
+the plugin.
+
+Users are of course _strongly_ encouraged to read the documentation, at least
+the introduction, to learn about the different features and possibilities
+provided by VimTeX (see [`:h vimtex`](doc/vimtex.txt)). Advanced users and
+potential developers may also be interested in reading the supplementary
+documents:
 
 * [CONTRIBUTING.md](CONTRIBUTING.md)
 * [DOCUMENTATION.md](DOCUMENTATION.md)
 
 ## Screenshots and GIFs
 
-Here is an example of the syntax highlighting provided by VimTeX. The example
-is made by @DustyTopology with the
+Here is an example of the syntax highlighting provided by VimTeX. The conceal
+feature is active on the right-hand side split. The example is made by
+@DustyTopology with the
 [vim-colors-xcode](https://github.com/arzg/vim-colors-xcode) colorscheme with
 some minor adjustments [described
 here](https://github.com/lervag/vimtex/issues/1946#issuecomment-843674951).
