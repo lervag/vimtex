@@ -185,6 +185,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_imaps_leader', '`')
   call s:init_option('vimtex_imaps_list', [
         \ { 'lhs' : '0',  'rhs' : '\emptyset' },
+        \ { 'lhs' : '2',  'rhs' : '\sqrt' },
         \ { 'lhs' : '6',  'rhs' : '\partial' },
         \ { 'lhs' : '8',  'rhs' : '\infty' },
         \ { 'lhs' : '=',  'rhs' : '\equiv' },
@@ -200,7 +201,9 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : '(',  'rhs' : '\subset' },
         \ { 'lhs' : ')',  'rhs' : '\supset' },
         \ { 'lhs' : 'A',  'rhs' : '\forall' },
+        \ { 'lhs' : 'B',  'rhs' : '\boldsymbol' },
         \ { 'lhs' : 'E',  'rhs' : '\exists' },
+        \ { 'lhs' : 'N',  'rhs' : '\nabla' },
         \ { 'lhs' : 'jj', 'rhs' : '\downarrow' },
         \ { 'lhs' : 'jJ', 'rhs' : '\Downarrow' },
         \ { 'lhs' : 'jk', 'rhs' : '\uparrow' },
