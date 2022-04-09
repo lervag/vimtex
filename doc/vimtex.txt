@@ -3277,7 +3277,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
     provided in an input prompt.
 
 *<plug>(vimtex-delim-close)*
-  Close the current environment or delimiter (insert mode).
+  Close the current environment or delimiter (insert mode), except the
+  top-level `document` environment.
 
 *<plug>(vimtex-delim-add-modifiers)*
   Add `\left` and `\right)` modifiers to all surrounding "unmodified"
@@ -3290,7 +3291,7 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-ic)*
 *<plug>(vimtex-ad)*   Delimiters
 *<plug>(vimtex-id)*
-*<plug>(vimtex-ae)*   Environments
+*<plug>(vimtex-ae)*   Environments (except top-level `document`)
 *<plug>(vimtex-ie)*
 *<plug>(vimtex-a$)*   Math environments
 *<plug>(vimtex-i$)*
