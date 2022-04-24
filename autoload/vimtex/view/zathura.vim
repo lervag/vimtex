@@ -99,7 +99,7 @@ function! s:cmdline(outfile, synctex, start) abort " {{{1
           \ ' --synctex-forward %d:%d:%s',
           \ line('.'), col('.'),
           \ vimtex#util#shellescape(
-          \   vimtex#paths#relative(expand('%:p'), b:vimtex.root)))
+          \   expand('%:p')))
   endif
 
   return l:cmd . ' '
