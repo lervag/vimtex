@@ -163,6 +163,10 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
   call vimtex#pos#set_cursor(l:object.pos_start)
   normal! o
   call vimtex#pos#set_cursor(l:object.pos_end)
+
+  if &selection ==# 'exclusive'
+    normal! l
+  endif
 endfunction
 
 " }}}1
