@@ -214,8 +214,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
 REQUIREMENTS                                              *vimtex-requirements*
 
 The following is a list of specific requirements for running VimTeX and some
-of its key features. Windows users should also read |vimtex-faq-windows|, and
-neovim users should read |vimtex-faq-neovim|.
+of its key features. Windows users should also read |vimtex-faq-windows|.
 
 Vim version~
                                                          *vimtex_version_check*
