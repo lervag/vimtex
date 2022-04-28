@@ -129,30 +129,30 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(0, 'n', '<localleader>lq', '<plug>(vimtex-log)')
   call s:map(1, 'n', '<localleader>la', '<plug>(vimtex-context-menu)')
 
-  call s:map(1, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
-  call s:map(1, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
-  call s:map(1, 'n', 'dse', '<plug>(vimtex-env-delete)')
-  call s:map(1, 'n', 'cse', '<plug>(vimtex-env-change)')
-  call s:map(1, 'n', 'tse', '<plug>(vimtex-env-toggle-star)')
-  call s:map(1, 'n', 'ts$', '<plug>(vimtex-env-toggle-math)')
+  call s:map(0, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
+  call s:map(0, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
+  call s:map(0, 'n', 'dse', '<plug>(vimtex-env-delete)')
+  call s:map(0, 'n', 'cse', '<plug>(vimtex-env-change)')
+  call s:map(0, 'n', 'tse', '<plug>(vimtex-env-toggle-star)')
+  call s:map(0, 'n', 'ts$', '<plug>(vimtex-env-toggle-math)')
 
   call s:map(0, 'n', 'dsc',  '<plug>(vimtex-cmd-delete)')
   call s:map(0, 'n', 'csc',  '<plug>(vimtex-cmd-change)')
-  call s:map(1, 'n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
-  call s:map(1, 'n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
-  call s:map(1, 'x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map(0, 'n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
+  call s:map(0, 'n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map(0, 'x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
   call s:map(0, 'i', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(0, 'n', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(0, 'x', '<F7>', '<plug>(vimtex-cmd-create)')
 
-  call s:map(1, 'n', 'dsd', '<plug>(vimtex-delim-delete)')
-  call s:map(1, 'n', 'csd', '<plug>(vimtex-delim-change-math)')
-  call s:map(1, 'n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
-  call s:map(1, 'x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
-  call s:map(1, 'n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
-  call s:map(1, 'x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
-  call s:map(1, 'i', ']]',  '<plug>(vimtex-delim-close)')
-  call s:map(1, 'n', '<F8>', '<plug>(vimtex-delim-add-modifiers)')
+  call s:map(0, 'n', 'dsd', '<plug>(vimtex-delim-delete)')
+  call s:map(0, 'n', 'csd', '<plug>(vimtex-delim-change-math)')
+  call s:map(0, 'n', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map(0, 'x', 'tsd', '<plug>(vimtex-delim-toggle-modifier)')
+  call s:map(0, 'n', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+  call s:map(0, 'x', 'tsD', '<plug>(vimtex-delim-toggle-modifier-reverse)')
+  call s:map(0, 'i', ']]',  '<plug>(vimtex-delim-close)')
+  call s:map(0, 'n', '<F8>', '<plug>(vimtex-delim-add-modifiers)')
 
   if g:vimtex_compiler_enabled
     call s:map(0, 'n', '<localleader>ll', '<plug>(vimtex-compile)')
@@ -274,10 +274,10 @@ function! s:init_default_mappings() abort " {{{1
       endif
       let g:vimtex_text_obj_variant = 'vimtex'
 
-      call s:map(1, 'x', 'ie', '<plug>(vimtex-ie)')
-      call s:map(1, 'x', 'ae', '<plug>(vimtex-ae)')
-      call s:map(1, 'o', 'ie', '<plug>(vimtex-ie)')
-      call s:map(1, 'o', 'ae', '<plug>(vimtex-ae)')
+      call s:map(0, 'x', 'ie', '<plug>(vimtex-ie)')
+      call s:map(0, 'x', 'ae', '<plug>(vimtex-ae)')
+      call s:map(0, 'o', 'ie', '<plug>(vimtex-ie)')
+      call s:map(0, 'o', 'ae', '<plug>(vimtex-ae)')
       call s:map(0, 'x', 'ic', '<plug>(vimtex-ic)')
       call s:map(0, 'x', 'ac', '<plug>(vimtex-ac)')
       call s:map(0, 'o', 'ic', '<plug>(vimtex-ic)')
@@ -293,7 +293,7 @@ function! s:init_default_mappings() abort " {{{1
   if has_key(b:vimtex, 'viewer')
     call s:map(0, 'n', '<localleader>lv', '<plug>(vimtex-view)')
     if !empty(maparg('<plug>(vimtex-reverse-search)', 'n'))
-      call s:map(0, 'n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
+      call s:map(1, 'n', '<localleader>lr', '<plug>(vimtex-reverse-search)')
     endif
   endif
 
@@ -302,7 +302,7 @@ function! s:init_default_mappings() abort " {{{1
   endif
 
   if g:vimtex_doc_enabled
-    call s:map(0,'n', 'K', '<plug>(vimtex-doc-package)')
+    call s:map(1, 'n', 'K', '<plug>(vimtex-doc-package)')
   endif
 endfunction
 
