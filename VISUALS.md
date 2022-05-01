@@ -35,7 +35,9 @@ should nicely complement the plain-text documentation.
   * [Navigating frames](#navigating-frames)
   * [Navigating matching delimiters](#navigating-matching-delimiters)
 * [Text objects](#text-objects)
-  * [The delimiter and environment objects](#the-delimiter-and-environment-objects)
+  * [The math text object](#the-math-text-object)
+  * [The section, delimiter, and command text objects](#the-section-delimiter-and-command-text-objects)
+  * [The environment and item text objects](#the-environment-and-item-text-objects)
 * [Deleting surrounding LaTeX content](#deleting-surrounding-latex-content)
   * [Delete surrounding commands](#delete-surrounding-commands)
   * [Delete surrounding environments](#delete-surrounding-environments)
@@ -48,6 +50,7 @@ should nicely complement the plain-text documentation.
   * [Change surrounding delimiters](#change-surrounding-delimiters)
 * [Toggling commands](#toggling-commands)
   * [Toggling starred commands and environments](#toggling-starred-commands-and-environments)
+  * [Toggling between inline and display math](#toggling-between-inline-and-display-math)
   * [Toggling delimiter modifiers](#toggling-delimiter-modifiers)
   * [Toggling fractions](#toggling-fractions)
 
@@ -97,15 +100,32 @@ Use `%` to move between matching delimiters, inline-math `$` delimiters, and LaT
 
 ## Text objects
 
-VimTeX provides text objects for commands, delimiters, environments, math zones,
-sections, and items. Currently only delimiters and environments have a GIF.
+VimTeX provides text objects for commands, delimiters, environments,
+math zones, sections, and items. The following GIFs use Vim's visual
+mode to show the scope of the text objects.
 
-### The delimiter and environment objects
+### The math text object
 
-The following GIF uses Vim's visual mode to show highlight the scope of the
-`id`, `ad`, `ie`, and `ae` text objects.
+The `i$` and `a$` text objects select inline math, display math, and
+common math environments.
 
-![Delimiter and environment objects](https://github.com/lervag/vimtex-media/blob/main/gif/text-objects/text-objects.gif)
+![The math text object](https://github.com/lervag/vimtex-media/blob/main/gif/text-objects/obj-math.gif)
+
+### The section, delimiter, and command text objects
+
+The `iP` and `aP` text objects select LaTeX sections (their
+subsection variations); the `id` and `ad` objects select delimiters
+(parentheses, brackets, braces...); the `ic` and `ac` objects select
+LaTeX commands.
+
+![The section, delimiter, and command text objects](https://github.com/lervag/vimtex-media/blob/main/gif/text-objects/obj-sec-delim-cmd.gif)
+
+### The environment and item text objects
+
+The `ie` and `ae` text objects select LaTeX environments and the `im`
+and `am` objects select items in enumerated environments.
+
+![The environment and item text objects](https://github.com/lervag/vimtex-media/blob/main/gif/text-objects/obj-env-item.gif)
 
 ## Deleting surrounding LaTeX content
 
@@ -179,6 +199,12 @@ Use `tsc` and `tse` to toggle between starred and un-starred versions of
 commands and environments, respectively.
 
 ![`tsc` and `tse`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsc-tse.gif)
+
+### Toggling between inline and display math
+
+Use `ts$` to toggle between inline math, display math, and standard math environments.
+
+![`ts$`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsm.gif)
 
 ### Toggling delimiter modifiers
 
