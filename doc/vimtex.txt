@@ -65,6 +65,7 @@ CONTENTS                                                      *vimtex-contents*
       VimCompletesMe                            |vimtex-complete-vcm|
       nvim-cmp                                  |vimtex-complete-nvim-cmp|
       nvim-compe                                |vimtex-complete-nvim-compe|
+      MUcomplete                                |vimtex-complete-mucomplete|
   Folding                                       |vimtex-folding|
   Indentation                                   |vimtex-indent|
   Syntax highlighting                           |vimtex-syntax|
@@ -4138,6 +4139,19 @@ And in Vimscript, it should look something like this: >
         \  'filetypes': ['tex'],
         \ }
         \}
+
+MUcomplete~
+                                                   *vimtex-complete-mucomplete*
+MUcomplete is an implementation of chained (fallback) completion, whereby
+several completion methods are attempted one after another until a result is
+returned. The plugin is available here:
+https://github.com/lifepillar/vim-mucomplete.
+
+To enable automatic completion with MUcomplete, use the following options: >
+
+  let g:mucomplete#can_complete = {}
+  let g:mucomplete#can_complete.tex =
+    \ { 'omni': { t -> t =~# g:vimtex#re#neocomplete . '$' } }
 
 ==============================================================================
 FOLDING                                                        *vimtex-folding*
