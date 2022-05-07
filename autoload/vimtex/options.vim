@@ -459,6 +459,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_skim_activate', 0)
   call s:init_option('vimtex_view_skim_sync', 0)
   call s:init_option('vimtex_view_skim_reading_bar', 0)
+  call s:init_option('vimtex_view_texshop_activate', 0)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
 
@@ -540,6 +541,8 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_view_mupdf_hook_view',
         \ 'g:vimtex_view_skim_hook_callback',
         \ 'g:vimtex_view_skim_hook_view',
+        \ 'g:vimtex_view_texshop_hook_callback',
+        \ 'g:vimtex_view_texshop_hook_view',
         \ 'g:vimtex_view_zathura_hook_callback',
         \ 'g:vimtex_view_zathura_hook_view',
         \], 'exists(v:val)')

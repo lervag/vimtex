@@ -98,6 +98,7 @@ CONTENTS                                                      *vimtex-contents*
       Sioyek                                    |vimtex-view-sioyek|
       Skim                                      |vimtex-view-skim|
       SumatraPDF                                |vimtex-view-sumatrapdf|
+      TeXShop                                   |vimtex-view-texshop|
       Zathura                                   |vimtex-view-zathura|
     Synctex                                     |vimtex-synctex|
       Forward search                            |vimtex-synctex-forward-search|
@@ -5284,6 +5285,23 @@ Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       A workaround was found and posted by @Whitebeard0 here:
       https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
 
+
+                                                         *vimtex-view-texshop*
+TeXShop~
+https://pages.uoregon.edu/koch/texshop/index.html
+TeXShop is a TeX front end program for macOS, specifically, it allows
+editing TeX-related files in a dedicated editor (which can be replaced
+by other external editors such as MacVim), provides a front-end to 
+call TeX programs to process source files, and provides a PDF viewer
+that supports syncing with the corresponding source. |vimtex| supports
+forward searches (source to PDF) with TeXShop.
+
+Note: See |vimtex-faq-texshopviewer| for more info on how to properly set
+up the TeXShop viewer for backward search.
+
+
+
+
                                                           *vimtex-view-zathura*
 Zathura~
 https://pwmt.org/projects/zathura/
@@ -5807,6 +5825,71 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
    [1]: https://brew.sh
+
+
+------------------------------------------------------------------------------
+                                                    *vimtex-faq-texshopviewer*
+Q: How do I properly set up vimtex with TeXShop? 
+A: (Note: Tested for MacVim only) 
+   Set |g:vimtex_view_method| to `texshop` (and read |vimtex-view-texshop| if you
+   did not already do so). Forward search should just work. Backward search
+   (Command-clicking on a location in the PDF displayed by TeXShop to reach
+   the corresponding location in the source file) requires several 
+   configuration steps.
+ 
+   First, TeXShop requires the following preferences to be set (the first
+   one is a hidden preference, the second one could be set within TeXShop's
+   preference pane):
+
+   defaults write TeXShop OtherEditorSync YES
+   defaults write TeXShop UseExternalEditor -bool true 
+
+   (Note that the above are terminal commands that are to be run just once,
+   as they modify TeXShop's preference file in 
+   ~/Library/Preferences/TeXShop.plist
+   and therefore persist through sessions.)
+
+   To support backward search when using an external editor, TeXShop expects
+   to find a script:
+
+   /usr/local/bin/othereditor
+
+   that it can call when backward jumping to the correct position in the
+   .tex file. If using MacVim (mvim) as the external editor, the content
+   of that script should be: 
+   
+   #!/bin/bash
+   TEXLINE=$1
+   TEXFILE=$2
+   /usr/local/bin/mvim --remote-silent +$TEXLINE "$TEXFILE" 
+ 
+   This script file needs to be executable:
+   chmod +x /usr/local/bin/othereditor
+
+   If you wish for the TeXShop window to pop to the front during forward
+   search, set (e.g. in your .vimrc):
+   let g:vimtex_view_texshop_activate=1
+   otherwise (to keep the TeXShop window in the background) set
+   let g:vimtex_view_texshop_activate=0
+
+   Note that since TeXShop is a front end to various compilers,
+   it could also be used for compiling the .tex files (instead of
+   using vimtex's compilation mechanism). If the PDF is compiled
+   with TeXShop and an error arises, the 'Goto Error'
+   button in TeXShop's compilation console window (or using the
+   keyboard shortcut Command-Control-E) will take the user to 
+   the error line in MacVim.  
+
+   Some related information on backward searches with external editors
+   may be found in the TeXShop release notes, specifically the ones
+   describing changes in versions 4.24 and 4.25:
+
+   https://pages.uoregon.edu/koch/texshop/changes_3.html
+
+
+
+
+
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
