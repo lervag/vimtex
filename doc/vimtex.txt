@@ -5857,6 +5857,13 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
        -- more stuff here
      }
 <
+   Of course, some people may still want to use Tree-sitter for highlighting
+   regardless of the arguments raised above. In this case, it is advised to
+   use these options for VimTeX to avoid the startup warning: >
+
+     let g:vimtex_syntax_enabled = 0
+     let g:vimtex_syntax_conceal_disable = 1
+<
    [0]: https://tree-sitter.github.io/tree-sitter/
    [1]: https://github.com/nvim-treesitter/nvim-treesitter
 
