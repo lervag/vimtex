@@ -236,7 +236,7 @@ Vim configuration~
   |vimtex#syntax#in_mathzone| and text objects like |<plug>(vimtex-i$)|. This
   is important to be aware of especially for neovim users who are interested
   in Tree-sitter. If you use Tree-sitter for syntax highlighting and thus
-  disable the normal Vim syntax feature, then you will also loose the VimTeX
+  disable the normal Vim syntax feature, then you will also lose the VimTeX
   features that depend on the built-in syntax parser. For more info, see
   |vimtex-faq-treesitter|.
 
