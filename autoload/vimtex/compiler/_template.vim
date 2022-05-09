@@ -452,13 +452,16 @@ endfunction
 " }}}1
 
 function! s:check_callback(line) abort " {{{1
-  if a:line ==# 'vimtex_compiler_callback_compiling'
-    call vimtex#compiler#callback(1)
-  elseif a:line ==# 'vimtex_compiler_callback_success'
-    call vimtex#compiler#callback(2)
-  elseif a:line ==# 'vimtex_compiler_callback_failure'
-    call vimtex#compiler#callback(3)
-  endif
+  let l:status = get(s:callbacks, substitute(a:line, "\n$", '', ''))
+  if l:status <= 0 | return | endif
+
+  call vimtex#compiler#callback(l:status)
 endfunction
+
+let s:callbacks = {
+      \ 'vimtex_compiler_callback_compiling': 1,
+      \ 'vimtex_compiler_callback_success': 2,
+      \ 'vimtex_compiler_callback_failure': 3,
+      \}
 
 " }}}1
