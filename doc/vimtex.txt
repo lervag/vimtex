@@ -237,7 +237,8 @@ Vim configuration~
   is important to be aware of especially for neovim users who are interested
   in Tree-sitter. If you use Tree-sitter for syntax highlighting and thus
   disable the normal Vim syntax feature, then you will also loose the VimTeX
-  features that depend on the built-in syntax parser.
+  features that depend on the built-in syntax parser. For more info, see
+  |vimtex-faq-treesitter|.
 
   Some of the VimTeX scripts contain UTF-8 characters, and as such, it is
   necessary to have the 'encoding' option set to utf8. This is not necessary
@@ -5807,6 +5808,57 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
    [1]: https://brew.sh
+
+------------------------------------------------------------------------------
+                                                        *vimtex-faq-treesitter*
+Q: How does VimTeX compare to Tree-sitter?
+A: VimTeX implements a traditional syntax script for syntax highlighting of
+   LaTeX documents (see |syntax.txt|). The implementation is quite complete
+   and has support for a lot of packages. It should work well for most people.
+   See |vimtex-syntax| for detailed information.
+
+   Tree-sitter [0] is a modern library for incremental parsing of code. Neovim
+   has built-in support for Tree-sitter (see |treesitter|). With the
+   additional Tree-sitter plugin [1], one can have syntax highlighting based
+   on the Tree-sitter parser. The general benefit of this is that it should be
+   very fast, and that, for a lot of languages, it can provide high quality
+   results.
+
+   However, it is hard to write a general parser for LaTeX. This is because
+   LaTeX is a semantic language with a large amount of different commands and
+   macros from thousands of available packages, many of which makes sense to
+   highlight in a different manner. That is, we need to handle a whole lot of
+   special cases and edge cases!
+
+   Furthermore, Tree-sitter highlighting does not currently support
+   concealing, which many people find useful (see |vimtex-syntax-conceal|).
+
+   Finally, some features of VimTeX relies on the VimTeX syntax highlighting
+   to work. Examples include the math text objects (e.g. |<plug>(vimtex-a$)|
+   and |<plug>(vimtex-i$)|) as these text objects check the syntax groups to
+   determine a math region.
+
+   Thus, for people who use Tree-sitter, it is strongly advised to disable
+   Tree-sitter highlighting for LaTeX buffers. This can be done with the
+   `ignore_install` option for the setup part of `nvim-treesitter`, e.g.: >
+
+     require 'nvim-treesitter.configs'.setup {
+       ignore_install = { "latex" },
+       -- more stuff here
+     }
+<
+   Or, alternatively, to only disable the highlighting: >
+
+     require 'nvim-treesitter.configs'.setup {
+       highlight = {
+         enable = true,
+         disable = { "latex" },
+       },
+       -- more stuff here
+     }
+<
+   [0]: https://tree-sitter.github.io/tree-sitter/
+   [1]: https://github.com/nvim-treesitter/nvim-treesitter
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
