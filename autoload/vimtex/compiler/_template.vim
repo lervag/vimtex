@@ -452,7 +452,7 @@ endfunction
 " }}}1
 
 function! s:check_callback(line) abort " {{{1
-  let l:status = get(s:callbacks, substitute(a:line, "\n$", '', ''))
+  let l:status = get(s:callbacks, substitute(a:line, '\r', '', ''))
   if l:status <= 0 | return | endif
 
   call vimtex#compiler#callback(l:status)
