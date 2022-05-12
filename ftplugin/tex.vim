@@ -27,7 +27,7 @@ call vimtex#init()
 " Check if user has tree-sitter enabled and give a warning if that is the case.
 " This is useful, since a lot of users are not aware of the clash between
 " VimTeX's syntax highlighting and Tree-sitters syntax highlighting.
-if has('nvim')
+if has('nvim-0.5')
       \ && g:vimtex_syntax_enabled
       \ && !g:vimtex_syntax_conceal_disable
   call timer_start(1000, 'vimtex#nvim#check_treesitter')
