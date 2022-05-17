@@ -1295,7 +1295,7 @@ OPTIONS                                                        *vimtex-options*
   custom pattern >
 
      let g:vimtex_complete_ref = {
-        \ 'custom_patterns' = ['\\figref\*\?{[^}]*$']
+        \ 'custom_patterns': ['\\figref\*\?{[^}]*$']
         \ }
 
 *g:vimtex_context_pdf_viewer*
