@@ -5781,7 +5781,9 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
       `brew install dbus`, or, if it is already installed, reinstall (this
       seems necessary for some unknown reason): `brew reinstall dbus`
 
-   2. Add this to your `.bashrc` or `.zshrc` file (or similar): >
+   2. The `DBUS_SESSION_BUS_ADDRESS` environment variable must be set for
+      Zathura to work with VimTeX; see [2] for details. This can be done by
+      adding the following to your `.bashrc` or `.zshrc` file (or similar): >
 
       export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
 <
@@ -5808,6 +5810,7 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
 
    [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
    [1]: https://brew.sh
+   [2]: https://github.com/lervag/vimtex/issues/2391#issuecomment-1127678531
 
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-treesitter*
