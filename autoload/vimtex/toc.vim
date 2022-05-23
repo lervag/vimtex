@@ -232,6 +232,7 @@ function! s:toc.create() abort dict " {{{1
   let b:vimtex = l:vimtex
   let b:vimtex_syntax = l:vimtex_syntax
 
+  setlocal noreadonly
   setlocal bufhidden=wipe
   setlocal buftype=nofile
   setlocal concealcursor=nvic

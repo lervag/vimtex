@@ -25,6 +25,7 @@ function! s:scratch.open() abort dict " {{{1
   let b:scratch = self
   let b:vimtex = l:vimtex
 
+  setlocal noreadonly
   setlocal bufhidden=wipe
   setlocal buftype=nofile
   setlocal concealcursor=nvic
