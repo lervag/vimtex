@@ -40,6 +40,9 @@ function! s:job.start() abort dict " {{{1
     let l:options.stderr_buffered = v:true
     let l:options.output = self._output
   endif
+  if self.detached
+    let l:options.detach = v:true
+  endif
   if !empty(self.cwd)
     let l:options.cwd = self.cwd
   endif

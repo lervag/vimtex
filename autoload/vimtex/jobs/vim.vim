@@ -43,6 +43,9 @@ function! s:job.start() abort dict " {{{1
     let l:options.out_io = 'null'
     let l:options.err_io = 'null'
   endif
+  if self.detached
+    let l:options.stoponexit = ''
+  endif
   if !empty(self.cwd)
     let l:options.cwd = self.cwd
   endif

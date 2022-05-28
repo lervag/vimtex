@@ -170,7 +170,8 @@ function! s:actions.open_pdf() abort dict " {{{1
 
   call vimtex#jobs#start(
         \ g:vimtex_context_pdf_viewer
-        \ . ' ' . vimtex#util#shellescape(l:file))
+        \ . ' ' . vimtex#util#shellescape(l:file),
+        \ {'detached': v:true})
 endfunction
 
 " }}}1

@@ -23,6 +23,7 @@ function! vimtex#jobs#start(cmd, ...) abort " {{{1
         \ exists('b:vimtex.root') ? b:vimtex.root : '')
   let l:job.wait_timeout = str2nr(get(l:opts, 'wait_timeout', 5000))
   let l:job.capture_output = get(l:opts, 'capture_output', v:false)
+  let l:job.detached = get(l:opts, 'detached', v:false)
 
   return l:job.start()
 endfunction
