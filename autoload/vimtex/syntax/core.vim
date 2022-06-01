@@ -258,7 +258,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   " Reference and cite commands
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\nocite\>"
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\label\>"
-  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\\(page\|eq\)ref\>"
+  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\\(page\|eq\|auto\|[cC]\)ref\>"
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\v\?ref\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[tp]\>\*\?"
