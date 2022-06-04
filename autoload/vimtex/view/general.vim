@@ -37,9 +37,15 @@ endfunction
 " }}}1
 function! s:viewer._start(file) dict abort " {{{1
   " Update file path for Windows+cygwin
-  let l:file = executable('cygpath')
+  let l:path_pdf = executable('cygpath')
         \ ? join(vimtex#jobs#capture('cygpath -aw "' . a:file . '"'), '')
         \ : a:file
+
+  " Escapes for shell command and the substitute
+  let l:path_tex = vimtex#util#shellescape(expand('%:p'))
+  let l:path_tex = escape(l:path_tex, '&')
+  let l:path_pdf = vimtex#util#shellescape(l:path_pdf)
+  let l:path_pdf = escape(l:path_pdf, '&')
 
   " Parse options
   let l:cmd = g:vimtex_view_general_viewer
@@ -48,9 +54,8 @@ function! s:viewer._start(file) dict abort " {{{1
   " Substitute magic patterns
   let l:cmd = substitute(l:cmd, '@line', line('.'), 'g')
   let l:cmd = substitute(l:cmd, '@col', col('.'), 'g')
-  let l:cmd = substitute(l:cmd, '@tex',
-        \ vimtex#util#shellescape(expand('%:p')), 'g')
-  let l:cmd = substitute(l:cmd, '@pdf', vimtex#util#shellescape(l:file), 'g')
+  let l:cmd = substitute(l:cmd, '@tex', l:path_tex, 'g')
+  let l:cmd = substitute(l:cmd, '@pdf', l:path_pdf, 'g')
 
   " Start the view process
   " NB: Use vimtex#jobs#start to ensure it runs in the background
