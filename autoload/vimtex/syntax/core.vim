@@ -308,21 +308,6 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'contains': '@texClusterTabular'
         \})
 
-  syntax match texCmdTabularx "\\begin{tabularx}"
-        \ skipwhite skipnl
-        \ nextgroup=texTabularxOpt,texTabularxWidth
-        \ contains=texCmdEnv
-  call vimtex#syntax#core#new_opt('texTabularxOpt', {
-        \ 'next': 'texTabularxWidth',
-        \ 'contains': 'texComment,@NoSpell',
-        \})
-  call vimtex#syntax#core#new_arg('texTabularxWidth', {
-        \ 'next': 'texTabularxArg',
-        \})
-  call vimtex#syntax#core#new_arg('texTabularxArg', {
-        \ 'contains': '@texClusterTabular'
-        \})
-
   syntax match texTabularAtSep     "@"     contained nextgroup=texTabularLength
   syntax match texTabularCol       "[lcr]" contained
   syntax match texTabularCol       "\*"    contained nextgroup=texTabularMulti
