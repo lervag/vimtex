@@ -12,16 +12,12 @@ endfunction
 function! vimtex#util#count(line, pattern) abort " {{{1
   if empty(a:pattern) | return 0 | endif
 
-  let l:sum = 0
-  let l:indx = match(a:line, a:pattern)
-  while l:indx >= 0
-    let l:sum += 1
-    let l:match = matchstr(a:line, a:pattern, l:indx)
-    let l:indx += len(l:match)
-    let l:indx = match(a:line, a:pattern, l:indx)
+  let l:count = 1
+  while match(a:line, a:pattern, 0, l:count) >= 0
+    let l:count += 1
   endwhile
 
-  return l:sum
+  return l:count - 1
 endfunction
 
 " }}}1
