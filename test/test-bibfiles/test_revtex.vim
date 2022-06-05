@@ -4,6 +4,8 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
+let g:vimtex_view_automatic = 0
+
 call vimtex#log#set_silent()
 
 let g:ready = 0
