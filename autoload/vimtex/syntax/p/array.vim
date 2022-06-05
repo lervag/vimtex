@@ -29,12 +29,9 @@ function! vimtex#syntax#p#array#load(cfg) abort " {{{1
 
 
   syntax match texTabularCol       "[mb]"   contained nextgroup=texTabularLength
-  syntax match texTabularCol       "\*"     contained nextgroup=texTabularMulti
-  syntax match texTabularVertline  "||\?"   contained
   syntax match texTabularPostPre   "[<>]"   contained nextgroup=texTabularPostPreArg
   syntax match texTabularMathdelim "\$\$\?" contained
 
-  call vimtex#syntax#core#new_arg('texTabularMulti', {'next': 'texTabularArg'})
   call vimtex#syntax#core#new_arg('texTabularPostPreArg', {
         \ 'contains': 'texLength,texTabularCmd,texTabularMathdelim'
         \})
@@ -50,12 +47,10 @@ function! vimtex#syntax#p#array#load(cfg) abort " {{{1
         \ 'opts': 'contained transparent',
         \})
 
-  syntax cluster texClusterTabular
-        \ add=texTabularVertline,texTabularPostPre,texTabularMathdelim
+  syntax cluster texClusterTabular add=texTabularPostPre,texTabularMathdelim
 
   highlight def link texTabularCmd        texCmd
   highlight def link texTabularCmdOpt     texOpt
-  highlight def link texTabularVertline   texMathDelim
   highlight def link texTabularPostPre    texMathDelim
   highlight def link texTabularMathdelim  texMathDelimZone
 

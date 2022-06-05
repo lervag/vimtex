@@ -308,14 +308,17 @@ function! vimtex#syntax#core#init() abort " {{{1
         \ 'contains': '@texClusterTabular'
         \})
 
-  syntax match texTabularCol   "[lcr]" contained
-  syntax match texTabularCol   "p"     contained nextgroup=texTabularLength
-  syntax match texTabularAtSep "@"     contained nextgroup=texTabularLength
+  syntax match texTabularAtSep     "@"     contained nextgroup=texTabularLength
+  syntax match texTabularCol       "[lcr]" contained
+  syntax match texTabularCol       "\*"    contained nextgroup=texTabularMulti
+  syntax match texTabularCol       "p"     contained nextgroup=texTabularLength
+  syntax match texTabularVertline  "||\?"  contained
   syntax cluster texClusterTabular contains=texTabular.*
 
   call vimtex#syntax#core#new_arg('texTabularLength', {
         \ 'contains': 'texLength,texCmd'
         \})
+  call vimtex#syntax#core#new_arg('texTabularMulti', {'next': 'texTabularArg'})
 
   " {{{2 Commands: \begin{minipage}[position][height][inner-pos]{width}
 
@@ -851,6 +854,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texTabularChar        texSymbol
   highlight def link texTabularCol         texOpt
   highlight def link texTabularOpt         texEnvOpt
+  highlight def link texTabularVertline    texMathDelim
   highlight def link texTheoremEnvOpt      texEnvOpt
   highlight def link texVerbZone           texZone
   highlight def link texVerbZoneInline     texVerbZone
