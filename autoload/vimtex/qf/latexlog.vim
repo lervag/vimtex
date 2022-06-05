@@ -117,6 +117,7 @@ endfunction
 function! s:qf.fix_paths(log) abort dict " {{{1
   let l:qflist = getqflist()
   let l:lines = readfile(a:log)
+  let l:hbox_cache = {'index': {}, 'paths': {}}
 
   for l:qf in l:qflist
     " Handle missing buffer/filename: Fallback to the main file (this is always
@@ -131,7 +132,7 @@ function! s:qf.fix_paths(log) abort dict " {{{1
     endif
 
     " Try to parse the filename from logfile for certain errors
-    if s:fix_paths_hbox_warning(l:qf, l:lines, self.root)
+    if s:fix_paths_hbox_warning(l:qf, l:lines, self.root, l:hbox_cache)
       continue
     endif
 
@@ -144,40 +145,62 @@ endfunction
 
 " }}}1
 
-function! s:fix_paths_hbox_warning(qf, log, root) abort " {{{1
+function! s:fix_paths_hbox_warning(qf, log, root, cache) abort " {{{1
   if a:qf.text !~# 'Underfull\|Overfull' | return v:false | endif
 
   let l:index = match(a:log, '\V' . escape(a:qf.text, '\'))
   if l:index < 0 | return v:false | endif
+
+  " Check index cache first
+  if has_key(a:cache.index, l:index)
+    if has_key(a:cache.index[l:index], 'bufnr')
+      let a:qf.bufnr = a:cache.index[l:index].bufnr
+    else
+      let a:qf.bufnr = 0
+      let a:qf.filename = a:cache.index[l:index].filename
+    endif
+    return v:true
+  endif
 
   " Search for a line above the Overflow/Underflow message that specifies the
   " correct source filename
   let l:file = ''
   let l:level = 1
   for l:lnum in range(l:index - 1, 1, -1)
+    " Check line number cache
+    if has_key(a:cache.paths, l:lnum)
+      let l:file = a:cache.paths[l:lnum]
+      let a:cache.paths[l:index] = l:file
+      break
+    endif
+
     let l:level += vimtex#util#count(a:log[l:lnum], ')')
     let l:level -= vimtex#util#count(a:log[l:lnum], '(')
     if l:lnum < l:index - 1 && l:level > 0 | continue | endif
 
     let l:file = matchstr(a:log[l:lnum], '\v\(\zs\f+\ze\)?\s*%(\[\d+]?)?$')
-    if !empty(l:file) | break | endif
+    if !empty(l:file)
+      " Do some simple parsing and cleanup of the filename
+      if !vimtex#paths#is_abs(l:file)
+        let l:file = simplify(a:root . '/' . l:file)
+      endif
+
+      " Store in line number cache
+      let a:cache.paths[l:index] = l:file
+      break
+    endif
   endfor
 
-  if empty(l:file) | return v:false | endif
-
-  " Do some simple parsing and cleanup of the filename
-  if !vimtex#paths#is_abs(l:file)
-    let l:file = simplify(a:root . '/' . l:file)
-  endif
-
-  if !filereadable(l:file) | return v:false | endif
+  if empty(l:file) || !filereadable(l:file) | return v:false | endif
 
   let l:bufnr = bufnr(l:file)
   if l:bufnr > 0
     let a:qf.bufnr = bufnr(l:file)
+    let a:cache.index[l:index] = {'bufnr': a:qf.bufnr}
   else
     let a:qf.bufnr = 0
     let a:qf.filename = fnamemodify(l:file, ':.')
+    let a:cache.index[l:index] = {'filename': a:qf.filename}
   endif
 
   return v:true
