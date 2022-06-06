@@ -21,6 +21,10 @@ function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texTabularxArg', {
         \ 'contains': '@texClusterTabular'
         \})
+
+  highlight def link texTabularxArg         texOpt
+  highlight def link texTabularxWidth       texOpt
+  highlight def link texTabularxOpt         texEnvOpt
 endfunction
 
 " }}}1
