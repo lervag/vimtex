@@ -37,6 +37,7 @@ function! s:viewer._start(outfile) dict abort " {{{1
         \ .   ' -c \"VimtexInverseSearch %2 ''%1''\""'
         \ . ' --forward-search-file ' . vimtex#util#shellescape(expand('%:p'))
         \ . ' --forward-search-line ' . line('.')
+        \ . ' --forward-search-column ' . col('.')
         \ . ' ' . vimtex#util#shellescape(l:file)
 
   " Start the view process
