@@ -2953,6 +2953,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_zathura_synctex_command*
+  Define a custom command for inverse search in Zathura. If empty, VimTeX
+  falls back to `VimtexInverseSeach`, which works straight out of the box in
+  most cases.
+
+  Default value: ''
+
 *g:vimtex_callback_progpath*
   The path to the Vim/neovim executable. This is currently passed to Zathura
   (|vimtex-view-zathura|) for use with synctex callbacks.
@@ -5307,6 +5314,7 @@ for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
 Associated settings:
 * |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
+* |g:vimtex_view_zathura_synctex_command|
 
 Note: Forward search requires `xdotool` to work properly. That is, `xdotool`
       is used to avoid duplicate Zathura instances when the
