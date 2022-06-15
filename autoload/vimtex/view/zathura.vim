@@ -88,9 +88,13 @@ function! s:cmdline(outfile, synctex, start) abort " {{{1
   if a:start
     let l:cmd .= ' ' . g:vimtex_view_zathura_options
     if a:synctex
-      let l:cmd .= printf(
-            \ ' -x "%s -c \"VimtexInverseSearch %%{line} ''%%{input}''\""',
-            \ s:inverse_search_cmd)
+      if empty(g:vimtex_view_zathura_synctex_command)
+        let l:cmd .= printf(
+              \ ' -x "%s -c \"VimtexInverseSearch %%{line} ''%%{input}''\""',
+              \ s:inverse_search_cmd)
+      else
+        let l:cmd .= ' -x ' . g:vimtex_view_zathura_synctex_command
+      endif
     endif
   endif
 

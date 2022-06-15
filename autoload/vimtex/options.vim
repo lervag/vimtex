@@ -461,6 +461,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_skim_reading_bar', 0)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
+  call s:init_option('vimtex_view_zathura_synctex_command', '')
 
   " Fallback option
   if g:vimtex_context_pdf_viewer ==# 'NONE'
