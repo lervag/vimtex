@@ -17,7 +17,13 @@ function! s:check_general() abort " {{{1
   endif
 
   if !executable('bibtex')
-    call health#report_warn('bibtex is not executable, so bibtex completions are disabled.')
+    call health#report_warn('bibtex is not executable!',
+          \ 'bibtex is required for cite completions.')
+  endif
+  if !executable('biber')
+    call health#report_warn(
+          \ 'biber is not executable!',
+          \ 'Biber is often required so this may give unexpected problems.')
   endif
 endfunction
 
