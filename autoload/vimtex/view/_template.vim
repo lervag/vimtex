@@ -152,7 +152,7 @@ endfunction
 function! s:viewer.xdo_exists() dict abort " {{{1
   if !self.xdo_check() | return v:false | endif
 
-  " If xwin_id is already set, check if it still exists
+  " If xwin_id is already set, check if a matching viewer window still exists
   if self.xwin_id > 0
     let xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
     if index(xwin_ids, self.xwin_id) < 0
@@ -162,25 +162,13 @@ function! s:viewer.xdo_exists() dict abort " {{{1
 
   " If xwin_id is unset, check if matching viewer windows exist
   if self.xwin_id == 0
-    let l:pid = has_key(self, 'get_pid') ? self.get_pid() : 0
-    if l:pid > 0
-      let xwin_ids = vimtex#jobs#capture(
-            \   'xdotool search --all --pid ' . l:pid
-            \ . ' --name ' . fnamemodify(self.out(), ':t'))
-      let self.xwin_id = get(xwin_ids, 0)
-    else
-      let xwin_ids = vimtex#jobs#capture(
-            \ 'xdotool search --name ' . fnamemodify(self.out(), ':t'))
-      let ids_already_used = filter(map(
-            \   deepcopy(vimtex#state#list_all()),
-            \   {_, x -> get(get(x, 'viewer', {}), 'xwin_id')}),
-            \ 'v:val > 0')
-      for id in xwin_ids
-        if index(ids_already_used, id) < 0
-          let self.xwin_id = id
-          break
-        endif
-      endfor
+
+    " First try searching for window ID by viewer PID...
+    let self.xwin_id = self.xdo_find_win_id_by_pid()
+
+    " ...then potentially search by the viewer's window name as a fallback.
+    if self.xwin_id > 0
+      let self.xwin_id = self.xdo_find_win_id_by_name()
     endif
   endif
 
