@@ -132,28 +132,17 @@ endfunction
 function! s:viewer.xdo_get_id() dict abort " {{{1
   if !self.xdo_check() | return 0 | endif
 
-  if self.xwin_id <= 0
-    " Allow some time for the viewer to start properly
-    sleep 500m
+  if self.xwin_id > 0 | return self.xwin_id | endif
 
-    " Note: Since `xdo_find_win_id_by_{name,pid,class}()` return zero if no
-    " window ID is found, they can be used to directly set `self.xwin_id`
-    " without introducing and if/else testing intermediate variables like
-    " `l:win_id_by_{name,pid,class}`.
+  " Allow some time for the viewer to start properly
+  sleep 500m
 
-    " First try search by viewer's PID
-    let self.xwin_id = self.xdo_find_win_id_by_pid()
-
-    " If search by PID failed, try search by viewer's window name
-    if self.xwin_id <= 0
-      let self.xwin_id = self.xdo_find_win_id_by_name()
-    endif
-
-    " Fallback to search by viewer class
-    if self.xwin_id <= 0
-      let self.xwin_id = self.xdo_find_win_id_by_class()
-    endif
-  endif
+  " Try finding viewer's window ID, first attempting search by PID, then by
+  " window name, and finally, as a fallback, by window class.
+  for l:method in ['pid', 'name', 'class']
+    execute "let self.xwin_id = self.xdo_find_win_id_by_" . l:method . "()"
+    if self.xwin_id > 0 | break | endif
+  endfor
 
   if self.xwin_id <= 0
     call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
@@ -190,22 +179,18 @@ function! s:viewer.xdo_exists() dict abort " {{{1
 endfunction
 
 " }}}1
-" Attempts to find the viewer's X window ID using `xdotool` search by window
-" class. Returns the viewer's window ID if one is found, and `0` otherwise.
 function! s:viewer.xdo_find_win_id_by_class() dict abort " {{{1
+  " Attempts to find the viewer's X window ID using `xdotool` search by window
+  " class. Returns the viewer's window ID if one is found, and `0` otherwise.
   let l:xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
-  if len(l:xwin_ids) == 0
-    return 0
-  else
-    return l:xwin_ids[-1]
-  endif
+  return empty(l:xwin_ids) ? 0 : l:xwin_ids[-1]
 endfunction
 
 " }}}1
-" Attempts to find the viewer's X window ID using `xdotool` search by window
-" name (i.e. the string in the window titlebar). Returns the viewer's window
-" ID if one is found, and `0` otherwise.
 function! s:viewer.xdo_find_win_id_by_name() dict abort " {{{1
+  " Attempts to find the viewer's X window ID using `xdotool` search by window
+  " name (i.e. the string in the window titlebar). Returns the viewer's window
+  " ID if one is found, and `0` otherwise.
   let l:xwin_ids = vimtex#jobs#capture(
         \ 'xdotool search --name ' . fnamemodify(self.out(), ':t'))
   let ids_already_used = filter(map(
@@ -222,19 +207,17 @@ function! s:viewer.xdo_find_win_id_by_name() dict abort " {{{1
 endfunction
 
 " }}}1
-" Attempts to find the viewer's X window ID using `xdotool` search by the
-" viewer's process ID. Returns the viewer's window ID if one is found, and `0`
-" otherwise.
 function! s:viewer.xdo_find_win_id_by_pid() dict abort " {{{1
+  " Attempts to find the viewer's X window ID using `xdotool` search by the
+  " viewer's process ID. Returns the viewer's window ID if one is found, and `0`
+  " otherwise.
   let l:pid = has_key(self, 'get_pid') ? self.get_pid() : 0
-  if l:pid > 0
-    let xwin_ids = vimtex#jobs#capture(
-          \   'xdotool search --all --pid ' . l:pid
-          \ . ' --name ' . fnamemodify(self.out(), ':t'))
-    return get(xwin_ids, 0)
-  else
-    return 0
-  endif
+  if l:pid <= 0 | return 0 | endif
+
+  let xwin_ids = vimtex#jobs#capture(
+        \   'xdotool search --all --pid ' . l:pid
+        \ . ' --name ' . fnamemodify(self.out(), ':t'))
+  return get(xwin_ids, 0)
 endfunction
 
 " }}}1
