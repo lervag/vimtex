@@ -136,13 +136,27 @@ function! s:viewer.xdo_get_id() dict abort " {{{1
     " Allow some time for the viewer to start properly
     sleep 500m
 
-    let l:xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
-    if len(l:xwin_ids) == 0
-      call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
-      let self.xwin_id = 0
-    else
-      let self.xwin_id = l:xwin_ids[-1]
+    " Note: Since `xdo_find_win_id_by_{name,pid,class}()` return zero if no
+    " window ID is found, they can be used to directly set `self.xwin_id`
+    " without introducing and if/else testing intermediate variables like
+    " `l:win_id_by_{name,pid,class}`.
+
+    " First try search by viewer's PID
+    let self.xwin_id = self.xdo_find_win_id_by_pid()
+
+    " If search by PID failed, try search by viewer's window name
+    if self.xwin_id <= 0
+      let self.xwin_id = self.xdo_find_win_id_by_name()
     endif
+
+    " Fallback to search by viewer class
+    if self.xwin_id <= 0
+      let self.xwin_id = self.xdo_find_win_id_by_class()
+    endif
+  endif
+
+  if self.xwin_id <= 0
+    call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
   endif
 
   return self.xwin_id
@@ -176,16 +190,11 @@ function! s:viewer.xdo_exists() dict abort " {{{1
 endfunction
 
 " }}}1
-" Begin new code
-" --------------------------------------------- "
 " Attempts to find the viewer's X window ID using `xdotool` search by window
 " class. Returns the viewer's window ID if one is found, and `0` otherwise.
 function! s:viewer.xdo_find_win_id_by_class() dict abort " {{{1
   let l:xwin_ids = vimtex#jobs#capture('xdotool search --class ' . self.name)
   if len(l:xwin_ids) == 0
-    " TODO: probably move logging to the higher-level functions `xdo_exists`
-    " and `xdo_get_id`
-    call vimtex#log#warning('Viewer cannot find ' . self.name . ' window ID!')
     return 0
   else
     return l:xwin_ids[-1]
@@ -229,8 +238,6 @@ function! s:viewer.xdo_find_win_id_by_pid() dict abort " {{{1
 endfunction
 
 " }}}1
-" --------------------------------------------- "
-" End new code
 function! s:viewer.xdo_send_keys(keys) dict abort " {{{1
   if !self.xdo_check() || empty(a:keys) || self.xwin_id <= 0 | return | endif
 
