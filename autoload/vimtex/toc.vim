@@ -235,6 +235,7 @@ function! s:toc.create() abort dict " {{{1
   setlocal noreadonly
   setlocal bufhidden=wipe
   setlocal buftype=nofile
+  setlocal filetype=vimtex-toc
   setlocal concealcursor=nvic
   setlocal conceallevel=2
   setlocal cursorline
