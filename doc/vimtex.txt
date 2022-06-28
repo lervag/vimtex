@@ -354,12 +354,15 @@ Buffer variable~
         for more info on the |autocmd| file pattern syntax.
 
   Note: Users may be interested in the concept of project specific vim
-        configuration. This is supported in Vim and neovim already, see 'exrc'
-        and 'secure'. There are also several plugins to help work with project
-        specific settings, such as:
+        configuration. This is supported in Vim, see 'exrc' and 'secure'.
+        There are also several plugins to help work with project specific
+        settings, such as:
 
         * https://github.com/embear/vim-localvimrc
         * https://github.com/tpope/vim-projectionist
+        * https://github.com/jenterkin/vim-autosource
+        * https://github.com/ii14/exrc.vim
+        * https://klen/nvim-config-local (neovim only)
 
                                                               *vimtex-tex-root*
 TeX root directive~
