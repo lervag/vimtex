@@ -14,8 +14,11 @@ call assert_true(vimtex#syntax#in('texDelim', 65, 39))
 call assert_true(vimtex#syntax#in('texNewthmArgPrinted', 39, 23))
 " call assert_true(vimtex#syntax#in('texTheoremEnvOpt', 115, 18))
 
-call assert_true(vimtex#syntax#in('texCmdBibitem', 120, 3))
-call assert_true(vimtex#syntax#in('texBibitemArg', 120, 13))
-call assert_true(vimtex#syntax#in('texBibitemOpt', 121, 13))
+call assert_true(vimtex#syntax#in('texMathTextConcArg', 106, 59))
+call assert_true(vimtex#syntax#in('texMathTextConcArg', 105, 59))
+
+call assert_true(vimtex#syntax#in('texCmdBibitem', 124, 3))
+call assert_true(vimtex#syntax#in('texBibitemArg', 124, 13))
+call assert_true(vimtex#syntax#in('texBibitemOpt', 125, 13))
 
 call vimtex#test#finished()

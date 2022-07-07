@@ -542,12 +542,12 @@ function! vimtex#syntax#core#init() abort " {{{1
   execute 'syntax region texMathZone matchgroup=texMathDelimZone'
           \ 'start="\%(\\\@<!\)\@<=\\("'
           \ 'end="\%(\\\@<!\)\@<=\\)"'
-          \ 'contains=@texClusterMath keepend'
+          \ 'contains=@texClusterMath'
           \ l:conceal
   execute 'syntax region texMathZone matchgroup=texMathDelimZone'
           \ 'start="\\\["'
           \ 'end="\\]"'
-          \ 'contains=@texClusterMath keepend'
+          \ 'contains=@texClusterMath'
           \ l:conceal
   execute 'syntax region texMathZoneX matchgroup=texMathDelimZone'
           \ 'start="\$"'
