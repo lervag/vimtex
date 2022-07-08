@@ -418,7 +418,16 @@ function! vimtex#delim#get_surrounding(type) abort " {{{1
   let l:pos_val_last = l:pos_val_cursor
   let l:pos_val_open = l:pos_val_cursor - 1
 
-  while l:pos_val_open < l:pos_val_last
+  " Avoid long iterations
+  let l:count = 0
+  let l:max_tries = get({
+        \ 'env_tex': 100,
+        \ 'env_math': 3,
+        \ 'env_all': 100,
+        \} , a:type, 100)
+
+  while l:pos_val_open < l:pos_val_last && l:count < l:max_tries
+    let l:count += 1
     let l:open = vimtex#delim#get_prev(a:type, 'open')
     if empty(l:open) | break | endif
 
