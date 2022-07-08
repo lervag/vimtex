@@ -170,9 +170,9 @@ function! s:init_default_mappings() abort " {{{1
 
   if g:vimtex_motion_enabled
     " These are forced in order to overwrite matchit mappings
-    call s:map(0, 'n', '%', '<plug>(vimtex-%)', 1)
-    call s:map(0, 'x', '%', '<plug>(vimtex-%)', 1)
-    call s:map(0, 'o', '%', '<plug>(vimtex-%)', 1)
+    call s:map(1, 'n', '%', '<plug>(vimtex-%)', 1)
+    call s:map(1, 'x', '%', '<plug>(vimtex-%)', 1)
+    call s:map(1, 'o', '%', '<plug>(vimtex-%)', 1)
 
     call s:map(1, 'n', ']]', '<plug>(vimtex-]])')
     call s:map(1, 'n', '][', '<plug>(vimtex-][)')
