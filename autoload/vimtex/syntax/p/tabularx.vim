@@ -7,22 +7,24 @@
 function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
   call vimtex#syntax#packages#load('array')
 
+  " The format is \begin{tabularx}{WIDTH}[POS]{PREAMBLE}
   syntax match texCmdTabularx "\\begin{tabularx}"
         \ skipwhite skipnl
-        \ nextgroup=texTabularxOpt,texTabularxWidth
+        \ nextgroup=texTabularxWidth
         \ contains=texCmdEnv
+  call vimtex#syntax#core#new_arg('texTabularxWidth', {
+        \ 'next': 'texTabularxPreamble,texTabularxOpt,',
+        \ 'contains': 'texLength',
+        \})
   call vimtex#syntax#core#new_opt('texTabularxOpt', {
-        \ 'next': 'texTabularxWidth',
+        \ 'next': 'texTabularxPreamble',
         \ 'contains': 'texComment,@NoSpell',
         \})
-  call vimtex#syntax#core#new_arg('texTabularxWidth', {
-        \ 'next': 'texTabularxArg',
-        \})
-  call vimtex#syntax#core#new_arg('texTabularxArg', {
+  call vimtex#syntax#core#new_arg('texTabularxPreamble', {
         \ 'contains': '@texClusterTabular'
         \})
 
-  highlight def link texTabularxArg         texOpt
+  highlight def link texTabularxPreamble    texOpt
   highlight def link texTabularxWidth       texOpt
   highlight def link texTabularxOpt         texEnvOpt
 endfunction
