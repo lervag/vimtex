@@ -25,7 +25,7 @@ function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
         \})
 
   highlight def link texTabularxPreamble    texOpt
-  highlight def link texTabularxWidth       texOpt
+  highlight def link texTabularxWidth       texLength
   highlight def link texTabularxOpt         texEnvOpt
 endfunction
 
