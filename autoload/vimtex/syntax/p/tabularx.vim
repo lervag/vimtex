@@ -14,7 +14,6 @@ function! vimtex#syntax#p#tabularx#load(cfg) abort " {{{1
         \ contains=texCmdEnv
   call vimtex#syntax#core#new_arg('texTabularxWidth', {
         \ 'next': 'texTabularxPreamble,texTabularxOpt,',
-        \ 'contains': 'texLength',
         \})
   call vimtex#syntax#core#new_opt('texTabularxOpt', {
         \ 'next': 'texTabularxPreamble',
