@@ -38,7 +38,7 @@ endfunction
 function! s:compiler.__build_cmd() abort dict " {{{1
   let l:outdir = !empty(self.build_dir)
         \ ? self.build_dir
-        \ : fnamemodify(self.state.tex, ':p:h')
+        \ : fnamemodify(self.state.tex, ':p:h')->fnameescape()
 
   return 'tectonic ' . join(self.options)
         \ . ' --outdir=' . l:outdir
