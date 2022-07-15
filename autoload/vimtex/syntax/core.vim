@@ -262,6 +262,8 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\v\?ref\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\>"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[tp]\>\*\?"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\citeauthor\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\textcite\>"
   call vimtex#syntax#core#new_opt('texRefOpt', {'next': 'texRefOpt,texRefArg'})
   call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
