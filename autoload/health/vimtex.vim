@@ -124,6 +124,20 @@ function! s:check_view_mupdf() abort " {{{1
 endfunction
 
 " }}}1
+function! s:check_view_sioyek() abort " {{{1
+  let l:ok = 1
+
+  if !executable(g:vimtex_view_sioyek_exe)
+    call health#report_error('Sioyek is not executable!')
+    let l:ok = 0
+  endif
+
+  if l:ok
+    call health#report_ok('Sioyek should work properly!')
+  endif
+endfunction
+
+" }}}1
 function! s:check_view_skim() abort " {{{1
   call vimtex#jobs#run(join([
         \ 'osascript -e ',
