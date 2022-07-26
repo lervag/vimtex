@@ -42,11 +42,15 @@ Users are encouraged to read the requirements section in the
 
 ## Installation
 
-If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
-following line to your `vimrc` file:
+If you use [vim-plug](https://github.com/junegunn/vim-plug) or [packer.nvim](https://github.com/wbthomason/packer.nvim), then add one of the
+following lines to your `vimrc` file, correspondingly:
 
 ```vim
+" vim-plug
 Plug 'lervag/vimtex'
+
+" packer.nvim
+use 'lervag/vimtex'
 ```
 
 Or use some other plugin manager:
