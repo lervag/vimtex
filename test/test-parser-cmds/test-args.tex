@@ -1,0 +1,23 @@
+\documentclass{minimal}
+\begin{document}
+
+THIS DOCUMENT DOES NOT COMPILE!
+
+\setmainfont{LucidaBrightOT}[
+  Extension = .otf,
+  BoldItalicFont = *-DemiItalic
+]
+
+\begin{helloworld}[
+  Extension = .otf,
+  BoldItalicFont = *-DemiItalic
+]
+\end{helloworld}
+
+\begin{textblock*}{3in}[0,0] (3in,1in)
+  Hello world
+\end{textblock*}
+
+\test \foo(bar)
+
+\end{document}
