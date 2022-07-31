@@ -106,14 +106,9 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
   call setline(l:open.lnum, line)
 
   let l:cnum = l:close.cnum
+  let l:shift = len(newmods[0]) - len(l:open.mod)
   if l:open.lnum == l:close.lnum
-    let n = len(newmods[0]) - len(l:open.mod)
-    let l:cnum += n
-    let pos = vimtex#pos#get_cursor()
-    if pos[2] > l:open.cnum + len(l:open.mod)
-      let pos[2] += n
-      call vimtex#pos#set_cursor(pos)
-    endif
+    let l:cnum += l:shift
   endif
 
   let line = getline(l:close.lnum)
@@ -121,6 +116,19 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
         \ . newmods[1]
         \ . strpart(line, l:cnum + len(l:close.mod) - 1)
   call setline(l:close.lnum, line)
+
+  let l:pos = vimtex#pos#get_cursor()
+  if l:pos[1] == l:open.lnum && l:pos[2] > l:open.cnum
+    if l:pos[2] > l:open.cnum + len(l:open.mod)
+      let l:pos[2] += l:shift
+    elseif l:shift < 0
+      let l:pos[2] = l:open.cnum
+    endif
+  endif
+  if l:pos[1] == l:close.lnum && l:pos[2] >= l:cnum
+    let l:pos[2] = l:cnum + max([0, len(newmods[1]) - len(l:close.mod)])
+  endif
+  call vimtex#pos#set_cursor(l:pos)
 
   return newmods
 endfunction
