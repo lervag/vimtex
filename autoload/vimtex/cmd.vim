@@ -695,7 +695,7 @@ endfunction
 
 " }}}1
 function! s:get_cmd_overlay(lnum, cnum) abort " {{{1
-  let l:match = matchstr(getline(a:lnum), '^\s*[^>]*>', a:cnum)
+  let l:match = matchstr(getline(a:lnum), '^\s*<[^>]*>', a:cnum)
 
   return empty(l:match)
         \ ? {}
