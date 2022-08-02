@@ -99,24 +99,14 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
     endif
   endfor
 
-  let line = getline(l:open.lnum)
-  let line = strpart(line, 0, l:open.cnum - 1)
-        \ . newmods[0]
-        \ . strpart(line, l:open.cnum + len(l:open.mod) - 1)
-  call setline(l:open.lnum, line)
-
+  " Possibly shift right delimiter position
   let l:cnum = l:close.cnum
   let l:shift = len(newmods[0]) - len(l:open.mod)
   if l:open.lnum == l:close.lnum
     let l:cnum += l:shift
   endif
 
-  let line = getline(l:close.lnum)
-  let line = strpart(line, 0, l:cnum - 1)
-        \ . newmods[1]
-        \ . strpart(line, l:cnum + len(l:close.mod) - 1)
-  call setline(l:close.lnum, line)
-
+  " Calculate new position
   let l:pos = vimtex#pos#get_cursor()
   if l:pos[1] == l:open.lnum && l:pos[2] > l:open.cnum
     if l:pos[2] > l:open.cnum + len(l:open.mod)
@@ -128,6 +118,20 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
   if l:pos[1] == l:close.lnum && l:pos[2] >= l:cnum
     let l:pos[2] = l:cnum + max([0, len(newmods[1]) - len(l:close.mod)])
   endif
+
+  " Change current text
+  let line = getline(l:open.lnum)
+  let line = strpart(line, 0, l:open.cnum - 1)
+        \ . newmods[0]
+        \ . strpart(line, l:open.cnum + len(l:open.mod) - 1)
+  call setline(l:open.lnum, line)
+
+  let line = getline(l:close.lnum)
+  let line = strpart(line, 0, l:cnum - 1)
+        \ . newmods[1]
+        \ . strpart(line, l:cnum + len(l:close.mod) - 1)
+  call setline(l:close.lnum, line)
+
   call vimtex#pos#set_cursor(l:pos)
 
   return newmods
