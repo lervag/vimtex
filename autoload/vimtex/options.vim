@@ -261,7 +261,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_indent_bib_enabled', 1)
   call s:init_option('vimtex_indent_tikz_commands', 1)
   call s:init_option('vimtex_indent_conditionals', {
-        \ 'open': '\v%(\\newif)@<!\\if%(f>|field|name|numequal|thenelse)@!',
+        \ 'open': '\v%(\\newif)@<!\\if%(f>|field|name|numequal|thenelse|toggle)@!',
         \ 'else': '\\else\>',
         \ 'close': '\\fi\>',
         \})
