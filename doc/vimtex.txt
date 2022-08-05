@@ -1946,7 +1946,7 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: >
     let g:vimtex_indent_conditionals = {
-          \ 'open': '\v%(\\newif)@<!\\if%(f>|field|name|numequal|thenelse)@!',
+          \ 'open': '\v%(\\newif)@<!\\if%(f>|field|name|numequal|thenelse|toggle)@!',
           \ 'else': '\\else\>',
           \ 'close': '\\fi\>',
           \}
@@ -2264,6 +2264,7 @@ OPTIONS                                                        *vimtex-options*
 
     let g:vimtex_syntax_conceal = {
           \ 'accents': 1,
+          \ 'ligatures': 1,
           \ 'cites': 1,
           \ 'fancy': 1,
           \ 'greek': 1,
