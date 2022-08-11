@@ -289,10 +289,13 @@ Clientserver~
 
   A server will be started automatically if Vim is running on Windows or if it
   is running in a GUI (gVim). If you use Vim under a terminal in Linux or
-  MacOS, a server will not be started by default. Since Vim version 8.0.475,
-  one can use |remote_startserver()| to start a server from your `vimrc` file.
-  The following vimrc configuration snippet will ensure that Vim starts with
-  a server, if possible: >
+  MacOS, a server will not be started by defaul. Also, MacVim users should be
+  aware of some differences from regular Vim and should therefore read
+  |macvim-clientserver| carefully.
+
+  Since Vim version 8.0.475, one can use |remote_startserver()| to start
+  a server from your `vimrc` file. The following vimrc configuration snippet
+  will ensure that Vim starts with a server, if possible: >
 
     if empty(v:servername) && exists('*remote_startserver')
       call remote_startserver('VIM')
