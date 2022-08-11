@@ -108,6 +108,7 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
 
   " Calculate new position
   let l:pos = vimtex#pos#get_cursor()
+  let l:do_adjust_right = l:pos[2] >= l:close.cnum + len(l:close.mod)
   if l:pos[1] == l:open.lnum && l:pos[2] > l:open.cnum
     if l:pos[2] > l:open.cnum + len(l:open.mod)
       let l:pos[2] += l:shift
@@ -116,7 +117,11 @@ function! vimtex#delim#toggle_modifier(...) abort " {{{1
     endif
   endif
   if l:pos[1] == l:close.lnum && l:pos[2] >= l:cnum
-    let l:pos[2] = l:cnum + max([0, len(newmods[1]) - len(l:close.mod)])
+    if l:do_adjust_right
+      let l:pos[2] += len(newmods[1]) - len(l:close.mod)
+    else
+      let l:pos[2] = l:cnum
+    endif
   endif
 
   " Change current text
