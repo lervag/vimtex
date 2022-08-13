@@ -112,6 +112,8 @@ function! s:parse_labels(file, prefix) abort " {{{1
   for l:line in l:lines
     let l:line = vimtex#util#tex2unicode(l:line)
     let l:tree = vimtex#util#tex2tree(l:line)[1:]
+    if len(l:tree) < 2 | continue | endif
+
     let l:name = get(remove(l:tree, 0), 0, '')
     if empty(l:name) | continue | endif
 
