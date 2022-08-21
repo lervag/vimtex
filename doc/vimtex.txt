@@ -4380,11 +4380,11 @@ general idea can be described as follows.
 
   `tex{type}Zone`
     Some commands open specific syntax regions that have different rules. Math
-    mode is a good example. Math mode is highlighted differently, and the
-    syntax regions are name `texMathZone*`. The `tex{type}Zone`s may typically
-    contain their own (sub)sets of syntax groups that are only matched within
-    the specific region. Another example is the inclusion of nested syntax
-    highlighting with e.g. the `minted` or `listings` packages.
+    mode is a good example. Math mode is highlighted differently, and the main
+    syntax regions are named `texMathZone*`. The `tex{type}Zone`s may
+    typically contain their own (sub)sets of syntax groups that are only
+    matched within the specific region. Another example is the inclusion of
+    nested syntax highlighting with e.g. the `minted` or `listings` packages.
 
   `tex{type}{element}`
     Some regions or commands include other types of elements, e.g. parameters
@@ -4499,22 +4499,30 @@ Table 2: A list of the most common normal LaTeX groups.~
 
 Table 3: A list of math mode groups.~
 >
-  GROUP                    DEFAULT        EXAMPLE
+  GROUP                    DEFAULT           EXAMPLE
   ----------------------------------------------------------------------------
-  texMathZone              Special        \( HERE \); \[ HERE \]
-  texMathZoneEnv           texMathZone    \begin{menv}  HERE \end{menv}
-  texMathZoneEnvStarred    texMathZone    \begin{menv*} HERE \end{menv*}
-  texMathZoneX             texMathZone    $ HERE $
-  texMathZoneXX            texMathZone    $$ HERE $$
-  texMathZoneEnsured       texMathZone    \ensuremath{HERE}
-  texCmdMathEnv            texCmdEnv      \BEGIN; \END (for math environments)
-  texMathEnvArgName        Delimiter      \begin{EQUATION}
-  texCmdMath               texCmd         \ENSUREMATH
-  texMathDelim             Type           \LVERT
-  texMathDelimMod          texMathDelim   \LEFT\lvert \RIGHT\rvert
-  texMathOper              Operator       Basic operators: +-=/
-  texMathSuperSub          texMathOper    Sub and super operators (^, _)
-  texMathError             texError       Unmatched region endings
+  texMathZone              Special
+  texMathZoneLI            texMathZone       \( HERE \)
+  texMathZoneLD            texMathZone       \[ HERE \]
+  texMathZoneTI            texMathZone       $ HERE $
+  texMathZoneTD            texMathZone       $$ HERE $$
+  texMathZoneEnv           texMathZone       \begin{menv}  HERE \end{menv}
+  texMathZoneEnvStarred    texMathZone       \begin{menv*} HERE \end{menv*}
+  texMathZoneEnsured       texMathZone       \ensuremath{HERE}
+  texMathDelimZone         texDelim
+  texMathDelimZoneLI       texMathDelimZone  \(; \)
+  texMathDelimZoneLD       texMathDelimZone  \[; \]
+  texMathDelimZoneTI       texMathDelimZone  $
+  texMathDelimZoneTD       texMathDelimZone  $$
+  texCmdMathEnv            texCmdEnv         \BEGIN; \END
+                                             (Only for math environments.)
+  texMathEnvArgName        Delimiter         \begin{EQUATION}
+  texCmdMath               texCmd            \ENSUREMATH
+  texMathDelim             Type              \LVERT
+  texMathDelimMod          texMathDelim      \LEFT\lvert \RIGHT\rvert
+  texMathOper              Operator          Basic operators: +-=/
+  texMathSuperSub          texMathOper       Sub and super operators (^, _)
+  texMathError             texError          Unmatched region endings
 
 Table 4: A list of other important groups.~
 >

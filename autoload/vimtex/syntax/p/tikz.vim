@@ -6,7 +6,7 @@
 
 function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax cluster texClusterTikz    contains=texCmdTikz,texTikzEnvBgn,texTikzSemicolon,texTikzDraw,texTikzCycle,texCmd,texGroup,texComment
-  syntax cluster texClusterTikzset contains=texTikzsetArg,texMathZoneX,texTypeSize,@texClusterOpt
+  syntax cluster texClusterTikzset contains=texTikzsetArg,texMathZoneLI,texMathZoneTI,texTypeSize,@texClusterOpt
 
   syntax match texCmdTikzset "\\tikzset\>"
         \ nextgroup=texTikzsetArg skipwhite skipnl

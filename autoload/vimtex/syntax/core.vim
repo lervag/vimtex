@@ -539,24 +539,24 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " Math regions: Inline Math Zones
   let l:conceal = g:vimtex_syntax_conceal.math_bounds ? 'concealends' : ''
-  execute 'syntax region texMathZone matchgroup=texMathDelimZone'
+  execute 'syntax region texMathZoneLI matchgroup=texMathDelimZoneLI'
           \ 'start="\%(\\\@<!\)\@<=\\("'
           \ 'end="\%(\\\@<!\)\@<=\\)"'
           \ 'contains=@texClusterMath'
           \ l:conceal
-  execute 'syntax region texMathZone matchgroup=texMathDelimZone'
+  execute 'syntax region texMathZoneLD matchgroup=texMathDelimZoneLD'
           \ 'start="\\\["'
           \ 'end="\\]"'
           \ 'contains=@texClusterMath'
           \ l:conceal
-  execute 'syntax region texMathZoneX matchgroup=texMathDelimZone'
+  execute 'syntax region texMathZoneTI matchgroup=texMathDelimZoneTI'
           \ 'start="\$"'
           \ 'skip="\\\\\|\\\$"'
           \ 'end="\$"'
           \ 'contains=@texClusterMath'
           \ 'nextgroup=texMathTextAfter'
           \ l:conceal
-  execute 'syntax region texMathZoneXX matchgroup=texMathDelimZone'
+  execute 'syntax region texMathZoneTD matchgroup=texMathDelimZoneTD'
           \ 'start="\$\$"'
           \ 'end="\$\$"'
           \ 'contains=@texClusterMath keepend'
@@ -816,14 +816,20 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathCmdText        texCmd
   highlight def link texMathDelimMod       texMathDelim
   highlight def link texMathDelimZone      texDelim
+  highlight def link texMathDelimZoneLI    texMathDelimZone
+  highlight def link texMathDelimZoneLD    texMathDelimZone
+  highlight def link texMathDelimZoneTI    texMathDelimZone
+  highlight def link texMathDelimZoneTD    texMathDelimZone
   highlight def link texMathError          texError
   highlight def link texMathErrorDelim     texError
   highlight def link texMathGroup          texMathZone
+  highlight def link texMathZoneLI         texMathZone
+  highlight def link texMathZoneLD         texMathZone
+  highlight def link texMathZoneTI         texMathZone
+  highlight def link texMathZoneTD         texMathZone
   highlight def link texMathZoneEnsured    texMathZone
   highlight def link texMathZoneEnv        texMathZone
   highlight def link texMathZoneEnvStarred texMathZone
-  highlight def link texMathZoneX          texMathZone
-  highlight def link texMathZoneXX         texMathZone
   highlight def link texMathStyleConcArg   texMathZone
   highlight def link texMathSub            texMathZone
   highlight def link texMathSuper          texMathZone

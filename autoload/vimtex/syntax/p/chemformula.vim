@@ -18,7 +18,7 @@ function! vimtex#syntax#p#chemformula#load(cfg) abort " {{{1
         \ nextgroup=texCHOpt,texCHArg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texCHOpt', {'next': 'texCHArg'})
   call vimtex#syntax#core#new_arg('texCHArg', {
-        \ 'contains': 'texCmd,texCHArg,texMathZone,texMathZoneX,texCHSymb,texCHText'
+        \ 'contains': 'texCmd,texCHArg,texMathZoneTI,texMathZoneLI,texCHSymb,texCHText'
         \})
 
   syntax cluster texClusterMath add=texMathCmdCH
