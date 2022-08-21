@@ -482,7 +482,7 @@ function! s:file_is_main(file) abort " {{{1
   "   \documentclass[...]{standalone}
   "
   let l:lines = readfile(a:file, 0, 50)
-  call filter(l:lines, 'v:val =~# ''\C\\documentclass\_\s*[\[{]''')
+  call filter(l:lines, 'v:val =~# ''^\s*\\documentclass\_\s*[\[{]''')
   call filter(l:lines, 'v:val !~# ''{subfiles}''')
   call filter(l:lines, 'v:val !~# ''{standalone}''')
   if len(l:lines) == 0 | return 0 | endif
@@ -492,7 +492,7 @@ function! s:file_is_main(file) abort " {{{1
         \ 'inclusive' : 1,
         \ 'root' : fnamemodify(a:file, ':p:h'),
         \})
-  call filter(l:lines, 'v:val =~# ''\\begin\s*{document}''')
+  call filter(l:lines, 'v:val =~# ''^\s*\\begin\s*{document}''')
   return len(l:lines) > 0
 endfunction
 
