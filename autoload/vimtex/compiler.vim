@@ -187,6 +187,14 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#start() abort " {{{1
+  if b:vimtex.main_parser ==# 'fallback current file'
+    call vimtex#log#error(
+          \ 'Compilation error due to failed mainfile detection!',
+          \ 'Please ensure that VimTeX can locate the proper main .tex file.',
+          \ 'Read ":help vimtex-multi-file" for more info.'
+          \)
+    return
+  endif
   if b:vimtex.compiler.is_running()
     call vimtex#log#warning(
           \ 'Compiler is already running for `' . b:vimtex.base . "'")

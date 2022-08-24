@@ -14,7 +14,7 @@ endfunction
 
 " }}}1
 function! vimtex#state#init() abort " {{{1
-  let [l:main, l:main_type] = s:get_main()
+  let [l:main, l:main_parser] = s:get_main()
   let l:id = s:get_main_id(l:main)
 
   if l:id >= 0
@@ -22,7 +22,7 @@ function! vimtex#state#init() abort " {{{1
     let b:vimtex = s:vimtex_states[l:id]
   else
     let b:vimtex_id = s:vimtex_next_id
-    let b:vimtex = vimtex#state#class#new(l:main, l:main_type, 0)
+    let b:vimtex = vimtex#state#class#new(l:main, l:main_parser, 0)
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
   endif
@@ -268,7 +268,7 @@ function! s:get_main() abort " {{{1
       return [expand('%:p'), 'bib file']
     endif
   else
-    return [expand('%:p'), 'current file']
+    return [expand('%:p'), 'fallback current file']
   endif
 endfunction
 
