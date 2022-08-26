@@ -222,6 +222,11 @@ function! s:get_number(max, digits, abort) abort " {{{1
 
     let l:input = nr2char(getchar())
 
+    if index(["\<C-c>", "\<Esc>"], l:input) >= 0
+      echon 'aborted!'
+      return -2
+    endif
+
     if a:abort && l:input ==# 'x'
       echon l:input
       return -2
