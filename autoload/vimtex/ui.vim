@@ -20,42 +20,6 @@ function! vimtex#ui#echo(input, ...) abort " {{{1
 endfunction
 
 " }}}1
-
-function! s:echo_string(msg, opts) abort " {{{1
-  echohl VimtexMsg
-  echo repeat(' ', a:opts.indent) . a:msg
-  echohl None
-endfunction
-
-" }}}1
-function! s:echo_formatted(parts, opts) abort " {{{1
-  echo repeat(' ', a:opts.indent)
-  try
-    for l:part in a:parts
-      if type(l:part) == v:t_string
-        echohl VimtexMsg
-        echon l:part
-      else
-        execute 'echohl' l:part[0]
-        echon l:part[1]
-      endif
-      unlet l:part
-    endfor
-  finally
-    echohl None
-  endtry
-endfunction
-
-" }}}1
-function! s:echo_dict(dict, opts) abort " {{{1
-  for [l:key, l:val] in items(a:dict)
-    call s:echo_formatted([['Label', l:key . ': '], l:val], a:opts)
-  endfor
-endfunction
-
-" }}}1
-
-
 function! vimtex#ui#input(opts) abort " {{{1
   let l:opts = extend(#{prompt: '> ', text: ''}, a:opts)
 
@@ -76,13 +40,7 @@ endfunction
 function! vimtex#ui#input_quick_from(prompt, choices) abort " {{{1
   while v:true
     redraw!
-    if type(a:prompt) == v:t_list
-      for l:msg in a:prompt
-        call vimtex#ui#echo(l:msg)
-      endfor
-    else
-      call vimtex#ui#echo(a:prompt)
-    endif
+    call vimtex#ui#echo(a:prompt)
     let l:input = nr2char(getchar())
 
     if index(["\<C-c>", "\<Esc>"], l:input) >= 0
@@ -98,7 +56,6 @@ function! vimtex#ui#input_quick_from(prompt, choices) abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#ui#confirm(prompt) abort " {{{1
   if type(a:prompt) != v:t_list
     let l:prompt = [a:prompt]
@@ -111,7 +68,6 @@ function! vimtex#ui#confirm(prompt) abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#ui#menu(actions) abort " {{{1
   " Argument: The 'actions' argument is a dictionary/object which contains
   "   a list of menu items and corresponding actions (dict functions).
@@ -145,7 +101,6 @@ function! vimtex#ui#menu(actions) abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#ui#select(container, ...) abort " {{{1
   if empty(a:container) | return '' | endif
 
@@ -172,6 +127,40 @@ function! vimtex#ui#select(container, ...) abort " {{{1
   endif
 
   return l:index
+endfunction
+
+" }}}1
+
+function! s:echo_string(msg, opts) abort " {{{1
+  echohl VimtexMsg
+  echo repeat(' ', a:opts.indent) . a:msg
+  echohl None
+endfunction
+
+" }}}1
+function! s:echo_formatted(parts, opts) abort " {{{1
+  echo repeat(' ', a:opts.indent)
+  try
+    for l:part in a:parts
+      if type(l:part) == v:t_string
+        echohl VimtexMsg
+        echon l:part
+      else
+        execute 'echohl' l:part[0]
+        echon l:part[1]
+      endif
+      unlet l:part
+    endfor
+  finally
+    echohl None
+  endtry
+endfunction
+
+" }}}1
+function! s:echo_dict(dict, opts) abort " {{{1
+  for [l:key, l:val] in items(a:dict)
+    call s:echo_formatted([['Label', l:key . ': '], l:val], a:opts)
+  endfor
 endfunction
 
 " }}}1

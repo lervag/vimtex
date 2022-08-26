@@ -50,9 +50,10 @@ function! vimtex#doc#make_selection(context) abort " {{{1
   if len(a:context.candidates) == 1
     if vimtex#ui#confirm([
           \ 'Open documentation for ',
-          \ ['VimtexSuccess', a:context.candidates[0]], ' [y/N]? '
+          \ ['VimtexSuccess', a:context.candidates[0]], '?'
           \])
       let a:context.selected = a:context.candidates[0]
+    else
       let a:context.selected = ''
     endif
 
