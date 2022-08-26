@@ -60,10 +60,12 @@ call vimtex#test#keys("cs$\\[\<cr>",
       \  'text'])
 
 " cs$ -> \[
-call vimtex#test#keys("f$cs$\\[\<cr>",
-      \ ['text $',
+call vimtex#test#keys("jcs$\\[\<cr>",
+      \ ['text',
+      \  '$',
       \  'math',
-      \  '$ text'],
+      \  '$',
+      \  'text'],
       \ ['text',
       \  '\[',
       \  '  math',
@@ -71,12 +73,10 @@ call vimtex#test#keys("f$cs$\\[\<cr>",
       \  'text'])
 
 " cs$ -> \[
-call vimtex#test#keys("jcs$\\[\<cr>",
-      \ ['text',
-      \  '$',
+call vimtex#test#keys("f$cs$\\[\<cr>",
+      \ ['text $',
       \  'math',
-      \  '$',
-      \  'text'],
+      \  '$ text'],
       \ ['text',
       \  '\[',
       \  '  math',
