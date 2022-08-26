@@ -463,7 +463,7 @@ function! s:get_main_choose(list) abort " {{{1
       let l:choices[l:tex] = vimtex#paths#relative(l:tex, getcwd())
     endfor
 
-    unsilent return vimtex#ui#choose(l:choices, {
+    unsilent return vimtex#ui#select(l:choices, {
           \ 'prompt': 'Please select an appropriate main file:',
           \ 'abort': v:false,
           \})

@@ -4,7 +4,149 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#ui#choose(container, ...) abort " {{{1
+function! vimtex#ui#echo(input, ...) abort " {{{1
+  if empty(a:input) | return | endif
+  let l:opts = extend(#{indent: 0}, a:0 > 0 ? a:1 : {})
+
+  if type(a:input) == v:t_string
+    call s:echo_string(a:input, l:opts)
+  elseif type(a:input) == v:t_list
+    call s:echo_formatted(a:input, l:opts)
+  elseif type(a:input) == v:t_dict
+    call s:echo_dict(a:input, l:opts)
+  else
+    call vimtex#log#warn('Argument not supported: ' . type(a:input))
+  endif
+endfunction
+
+" }}}1
+
+function! s:echo_string(msg, opts) abort " {{{1
+  echohl VimtexMsg
+  echo repeat(' ', a:opts.indent) . a:msg
+  echohl None
+endfunction
+
+" }}}1
+function! s:echo_formatted(parts, opts) abort " {{{1
+  echo repeat(' ', a:opts.indent)
+  try
+    for l:part in a:parts
+      if type(l:part) == v:t_string
+        echohl VimtexMsg
+        echon l:part
+      else
+        execute 'echohl' l:part[0]
+        echon l:part[1]
+      endif
+      unlet l:part
+    endfor
+  finally
+    echohl None
+  endtry
+endfunction
+
+" }}}1
+function! s:echo_dict(dict, opts) abort " {{{1
+  for [l:key, l:val] in items(a:dict)
+    call s:echo_formatted([['Label', l:key . ': '], l:val], a:opts)
+  endfor
+endfunction
+
+" }}}1
+
+
+function! vimtex#ui#input(opts) abort " {{{1
+  let l:opts = extend(#{prompt: '> ', text: ''}, a:opts)
+
+  if g:vimtex_echo_verbose_input && has_key(l:opts, 'info')
+    redraw!
+    call vimtex#ui#echo(l:opts.info)
+  endif
+
+  echohl VimtexMsg
+  let l:reply = has_key(l:opts, 'completion')
+        \ ? input(l:opts.prompt, l:opts.text, l:opts.completion)
+        \ : input(l:opts.prompt, l:opts.text)
+  echohl None
+  return l:reply
+endfunction
+
+" }}}1
+function! vimtex#ui#input_quick_from(prompt, choices) abort " {{{1
+  while v:true
+    redraw!
+    if type(a:prompt) == v:t_list
+      for l:msg in a:prompt
+        call vimtex#ui#echo(l:msg)
+      endfor
+    else
+      call vimtex#ui#echo(a:prompt)
+    endif
+    let l:input = nr2char(getchar())
+
+    if index(["\<C-c>", "\<Esc>"], l:input) >= 0
+      echon 'aborted!'
+      return ''
+    endif
+
+    if index(a:choices, l:input) >= 0
+      echon l:input
+      return l:input
+    endif
+  endwhile
+endfunction
+
+" }}}1
+
+function! vimtex#ui#confirm(prompt) abort " {{{1
+  if type(a:prompt) != v:t_list
+    let l:prompt = [a:prompt]
+  else
+    let l:prompt = a:prompt
+  endif
+  let l:prompt[-1] .= ' [y]es/[n]o: '
+
+  return vimtex#ui#input_quick_from(l:prompt, ['y', 'n']) ==# 'y'
+endfunction
+
+" }}}1
+
+function! vimtex#ui#menu(actions) abort " {{{1
+  " Argument: The 'actions' argument is a dictionary/object which contains
+  "   a list of menu items and corresponding actions (dict functions).
+  "   Something like this:
+  "
+  "   let a:actions = {
+  "         \ 'prompt': 'Prompt string for menu',
+  "         \ 'menu': [
+  "         \   {'name': 'My first action',
+  "         \    'func': 'action1'},
+  "         \   {'name': 'My second action',
+  "         \    'func': 'action2'},
+  "         \   ...
+  "         \ ],
+  "         \ 'action1': Func,
+  "         \ 'action2': Func,
+  "         \ ...
+  "         \}
+  if empty(a:actions) | return | endif
+
+  let l:choice = vimtex#ui#select(a:actions.menu, {
+        \ 'prompt': a:actions.prompt,
+        \})
+  if empty(l:choice) | return | endif
+
+  try
+    call a:actions[l:choice.func]()
+  catch
+    " error here
+  endtry
+endfunction
+
+" }}}1
+
+function! vimtex#ui#select(container, ...) abort " {{{1
   if empty(a:container) | return '' | endif
 
   let l:options = extend(
@@ -30,39 +172,6 @@ function! vimtex#ui#choose(container, ...) abort " {{{1
   endif
 
   return l:index
-endfunction
-
-" }}}1
-function! vimtex#ui#menu(actions) abort " {{{1
-  " Argument: The 'actions' argument is a dictionary/object which contains
-  "   a list of menu items and corresponding actions (dict functions).
-  "   Something like this:
-  "
-  "   let a:actions = {
-  "         \ 'prompt': 'Prompt string for menu',
-  "         \ 'menu': [
-  "         \   {'name': 'My first action',
-  "         \    'func': 'action1'},
-  "         \   {'name': 'My second action',
-  "         \    'func': 'action2'},
-  "         \   ...
-  "         \ ],
-  "         \ 'action1': Func,
-  "         \ 'action2': Func,
-  "         \ ...
-  "         \}
-  if empty(a:actions) | return | endif
-
-  let l:choice = vimtex#ui#choose(a:actions.menu, {
-        \ 'prompt': a:actions.prompt,
-        \})
-  if empty(l:choice) | return | endif
-
-  try
-    call a:actions[l:choice.func]()
-  catch
-    " error here
-  endtry
 endfunction
 
 " }}}1
@@ -94,9 +203,9 @@ function! s:choose_from(list, options) abort " {{{1
   while 1
     redraw!
 
-    call vimtex#echo#echo(a:options.prompt)
+    call vimtex#ui#echo(a:options.prompt)
     for l:line in l:menu
-      call vimtex#echo#formatted(l:line)
+      call vimtex#ui#echo(l:line)
     endfor
 
     try

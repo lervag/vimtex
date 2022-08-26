@@ -31,7 +31,7 @@ if empty(s:cfg.jar) || !filereadable(fnamemodify(s:cfg.jar, ':p'))
   finish
 endif
 
-let s:language = vimtex#ui#choose(split(&spelllang, ','), {
+let s:language = vimtex#ui#select(split(&spelllang, ','), {
       \ 'prompt': 'Multiple spelllang languages detected, please select one:',
       \ 'abort': v:false,
       \})

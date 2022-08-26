@@ -111,7 +111,7 @@ endfunction
 function! s:actions.show() abort dict " {{{1
   let l:entry = deepcopy(self.entry)
 
-  call vimtex#echo#formatted([
+  call vimtex#ui#echo([
         \ ['Normal', '@'],
         \ ['VimtexMsg', l:entry.type],
         \ ['Normal', '{'],
@@ -127,7 +127,7 @@ function! s:actions.show() abort dict " {{{1
 
   for l:x in ['title', 'author', 'year']
     if has_key(l:entry, l:x)
-      call vimtex#echo#formatted([
+      call vimtex#ui#echo([
             \ ['VimtexInfoValue', '  ' . l:x . ': '],
             \ ['Normal', remove(l:entry, l:x)]
             \])
@@ -135,7 +135,7 @@ function! s:actions.show() abort dict " {{{1
   endfor
 
   for [l:key, l:val] in items(l:entry)
-      call vimtex#echo#formatted([
+      call vimtex#ui#echo([
             \ ['VimtexInfoValue', '  ' . l:key . ': '],
             \ ['Normal', l:val]
             \])
@@ -162,7 +162,7 @@ function! s:actions.open_pdf() abort dict " {{{1
     return
   endif
 
-  let l:file = vimtex#ui#choose(l:readable, {
+  let l:file = vimtex#ui#select(l:readable, {
         \ 'prompt': 'Open file:',
         \ 'abort': v:false,
         \})

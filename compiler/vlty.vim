@@ -73,7 +73,7 @@ let s:packages = join(keys(s:vimtex.packages), ',')
 
 " Guess language if it is not defined
 if !exists('s:vlty.language')
-  let s:vlty.language = vimtex#ui#choose(split(&spelllang, ','), {
+  let s:vlty.language = vimtex#ui#select(split(&spelllang, ','), {
         \ 'prompt': 'Multiple spelllang languages detected, please select one:',
         \ 'abort': v:false,
         \})

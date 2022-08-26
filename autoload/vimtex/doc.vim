@@ -48,26 +48,18 @@ function! vimtex#doc#make_selection(context) abort " {{{1
   endif
 
   if len(a:context.candidates) == 1
-    call vimtex#echo#formatted([
+    if vimtex#ui#confirm([
           \ 'Open documentation for ',
           \ ['VimtexSuccess', a:context.candidates[0]], ' [y/N]? '
           \])
-
-    let l:choice = nr2char(getchar())
-    if l:choice ==# 'y'
-      echon 'y'
       let a:context.selected = a:context.candidates[0]
-    else
-      echohl VimtexWarning
-      echon l:choice =~# '\w' ? l:choice : 'N'
-      echohl NONE
       let a:context.selected = ''
     endif
 
     return
   endif
 
-  let a:context.selected = vimtex#ui#choose(a:context.candidates, {
+  let a:context.selected = vimtex#ui#select(a:context.candidates, {
         \ 'prompt': 'Multiple candidates detected, please select one:',
         \})
 endfunction

@@ -191,9 +191,8 @@ endfunction
 
 " }}}1
 function! vimtex#cmd#create_visual() abort " {{{1
-  let l:cmd = vimtex#echo#input({
-        \ 'info' :
-        \   ['Create command: ', ['VimtexWarning', '(empty to cancel)']],
+  let l:cmd = vimtex#ui#input(#{
+        \ info: ['Create command: ', ['VimtexWarning', '(empty to cancel)']],
         \})
   let l:cmd = substitute(l:cmd, '^\\', '', '')
   call vimtex#cmd#create(l:cmd, 1)
@@ -563,12 +562,12 @@ function! s:operator_setup(operator) abort " {{{1
     let l:current = vimtex#cmd#get_current()
     if empty(l:current) | return | endif
 
-    let s:operator_cmd_name = substitute(vimtex#echo#input({
-          \ 'info' : ['Change command: ', ['VimtexWarning', l:current.name]],
+    let s:operator_cmd_name = substitute(vimtex#ui#input(#{
+          \ info: ['Change command: ', ['VimtexWarning', l:current.name]],
           \}), '^\\', '', '')
   elseif s:operator ==# 'create'
-    let s:operator_cmd_name = substitute(vimtex#echo#input({
-          \ 'info' : ['Create command: ', ['VimtexWarning', '(empty to cancel)']],
+    let s:operator_cmd_name = substitute(vimtex#ui#input(#{
+          \ info: ['Create command: ', ['VimtexWarning', '(empty to cancel)']],
           \}), '^\\', '', '')
   endif
 endfunction

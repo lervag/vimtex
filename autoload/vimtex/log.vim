@@ -108,15 +108,18 @@ function! s:logger.notify(msg_list, type) abort dict " {{{1
     if join(a:msg_list) =~# l:re | return | endif
   endfor
 
-  call vimtex#echo#formatted([
+  call vimtex#ui#echo([
         \ [self.type_to_highlight[a:type], 'VimTeX:'],
         \ ' ' . a:msg_list[0]
         \])
 
-  if len(a:msg_list) > 1
-    call vimtex#echo#echo(
-          \ join(map(a:msg_list[1:], "'        ' . v:val"), "\n"))
-  endif
+  " if len(a:msg_list) > 1
+  "   call vimtex#ui#echo(
+  "         \ join(map(a:msg_list[1:], "'        ' . v:val"), "\n"))
+  " endif
+  for l:msg in a:msg_list[1:]
+    call vimtex#ui#echo(l:msg, #{indent: 8})
+  endfor
 endfunction
 
 " }}}1

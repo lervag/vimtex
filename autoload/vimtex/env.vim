@@ -347,20 +347,20 @@ function! s:change_prompt(type) abort " {{{1
   if g:vimtex_env_change_autofill
     let l:name = get(l:open, 'name', l:open.match)
     let s:env_name = l:name
-    return vimtex#echo#input({
-          \ 'prompt' : 'Change surrounding environment: ',
-          \ 'default' : l:name,
-          \ 'complete' : 'customlist,vimtex#env#input_complete',
+    return vimtex#ui#input(#{
+          \ prompt: 'Change surrounding environment: ',
+          \ default: l:name,
+          \ completion: 'customlist,vimtex#env#input_complete',
           \})
   else
     let l:name = get(l:open, 'name', l:open.is_open
           \ ? l:open.match . ' ... ' . l:open.corr
           \ : l:open.match . ' ... ' . l:open.corr)
     let s:env_name = l:name
-    return vimtex#echo#input({
-          \ 'info' :
+    return vimtex#ui#input(#{
+          \ info:
           \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
-          \ 'complete' : 'customlist,vimtex#env#input_complete',
+          \ completion: 'customlist,vimtex#env#input_complete',
           \})
   endif
 endfunction
