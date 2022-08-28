@@ -377,9 +377,10 @@ TeX root directive~
     %! TEX root = /path/to/my-main.tex
     % ! TeX root = ../*.tex
     %!Tex Root=**/main.tex
+    %! TeX root: ../main.tex
 <
   As can be seen, the words "tex root" are recognized regardless of casing and
-  the spaces are ignored.
+  the spaces are ignored. Also, both a colon and an equal sign can be used.
 
   Note: It is allowed to use a globbing pattern (see |wildcards|). If there
         are multiple matches, then VimTeX will ask for input when the buffer
