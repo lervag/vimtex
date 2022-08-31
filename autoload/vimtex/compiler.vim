@@ -187,7 +187,7 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#start() abort " {{{1
-  if b:vimtex.main_parser ==# 'fallback current file invalid'
+  if !b:vimtex.is_compileable()
     call vimtex#log#error(
           \ 'Compilation error due to failed mainfile detection!',
           \ 'Please ensure that VimTeX can locate the proper main .tex file.',

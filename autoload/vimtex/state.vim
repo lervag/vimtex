@@ -268,10 +268,7 @@ function! s:get_main() abort " {{{1
       return [expand('%:p'), 'bib file']
     endif
   else
-    return [expand('%:p'), s:check_current_is_compileable()
-          \ ? 'fallback current file'
-          \ : 'fallback current file invalid'
-          \]
+    return [expand('%:p'), 'fallback current file']
   endif
 endfunction
 
@@ -541,23 +538,6 @@ endfunction
 function! s:check_standalone() abort " {{{1
   return match(getline(1, 5),
         \      '\v^\C\s*\\documentclass%(\[.*\])?\{standalone\}') >= 0
-endfunction
-
-" }}}1
-
-function! s:check_current_is_compileable() abort " {{{1
-  " This does a weak check of whether the file is compileable by looking for
-  " the classic preamble header and \begin{document} + \end{document}.
-
-  let l:lines = getline(1, '$')
-  let l:index = match(l:lines, '^\s*\\documentclass\_\s*[\[{]')
-  if l:index < 0 | return v:false | endif
-
-  let l:index = match(l:lines, '^\s*\\begin\s*{document}', l:index+1)
-  if l:index < 0 | return v:false | endif
-
-  let l:index = match(l:lines, '^\s*\\end\s*{document}', l:index+1)
-  return l:index >= 0
 endfunction
 
 " }}}1

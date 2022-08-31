@@ -137,6 +137,29 @@ function! s:vimtex.get_tex_program() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:vimtex.is_compileable() abort dict " {{{1
+  if self.main_parser ==# 'fallback current file'
+    " This conditional branch essentially means VimTeX gave up on finding the
+    " current project's main file. This _sometimes_ indicates a file that is
+    " not compileable. We therefore do a weak check of whether the file is
+    " compileable by looking for the classic preamble header and
+    " \begin{document} + \end{document}.
+
+    let l:lines = getline(1, '$')
+    let l:index = match(l:lines, '^\s*\\documentclass\_\s*[\[{]')
+    if l:index < 0 | return v:false | endif
+
+    let l:index = match(l:lines, '^\s*\\begin\s*{document}', l:index+1)
+    if l:index < 0 | return v:false | endif
+
+    let l:index = match(l:lines, '^\s*\\end\s*{document}', l:index+1)
+    return l:index >= 0
+  endif
+
+  return v:true
+endfunction
+
+" }}}1
 
 function! s:vimtex.ext(ext, ...) abort dict " {{{1
   " Check for various output directories
