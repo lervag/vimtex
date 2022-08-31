@@ -6,7 +6,7 @@
 
 function! vimtex#ui#echo(input, ...) abort " {{{1
   if empty(a:input) | return | endif
-  let l:opts = extend(#{indent: 0}, a:0 > 0 ? a:1 : {})
+  let l:opts = extend({'indent': 0}, a:0 > 0 ? a:1 : {})
 
   if type(a:input) == v:t_string
     call s:echo_string(a:input, l:opts)
@@ -21,7 +21,7 @@ endfunction
 
 " }}}1
 function! vimtex#ui#input(opts) abort " {{{1
-  let l:opts = extend(#{prompt: '> ', text: ''}, a:opts)
+  let l:opts = extend({'prompt': '> ', 'text': ''}, a:opts)
 
   if g:vimtex_echo_verbose_input && has_key(l:opts, 'info')
     redraw!

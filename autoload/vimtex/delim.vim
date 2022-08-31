@@ -283,9 +283,12 @@ function! vimtex#delim#change(...) abort " {{{1
           \ ? l:open.match . ' ... ' . l:open.corr
           \ : l:open.match . ' ... ' . l:open.corr)
 
-    let l:new_delim = vimtex#ui#input(#{
-          \ info: ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
-          \ completion: 'customlist,vimtex#delim#change_input_complete',
+    let l:new_delim = vimtex#ui#input({
+          \ 'info': [
+          \   'Change surrounding delimiter: ',
+          \   ['VimtexWarning', l:name]
+          \ ],
+          \ 'completion': 'customlist,vimtex#delim#change_input_complete',
           \})
   endif
 
@@ -479,9 +482,12 @@ function! s:operator_setup(operator) abort " {{{1
           \ ? l:open.match . ' ... ' . l:open.corr
           \ : l:open.match . ' ... ' . l:open.corr)
 
-    let s:operator_delim = vimtex#ui#input(#{
-          \ info: ['Change surrounding delimiter: ', ['VimtexWarning', l:name]],
-          \ completion: 'customlist,vimtex#delim#change_input_complete',
+    let s:operator_delim = vimtex#ui#input({
+          \ 'info': [
+          \   'Change surrounding delimiter: ',
+          \   ['VimtexWarning', l:name]
+          \ ],
+          \ 'completion': 'customlist,vimtex#delim#change_input_complete',
           \})
   endif
 endfunction

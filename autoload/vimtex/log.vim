@@ -118,7 +118,7 @@ function! s:logger.notify(msg_list, type) abort dict " {{{1
   "         \ join(map(a:msg_list[1:], "'        ' . v:val"), "\n"))
   " endif
   for l:msg in a:msg_list[1:]
-    call vimtex#ui#echo(l:msg, #{indent: 8})
+    call vimtex#ui#echo(l:msg, {'indent': 8})
   endfor
 endfunction
 
