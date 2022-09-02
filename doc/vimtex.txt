@@ -5747,11 +5747,15 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
                                                                *vimtex-faq-wsl*
 Q: Does VimTeX support WSL (Windows Subsystem for Linux)?
 A: For the moment, rudimentarily, as follows: To set up the viewer, install
-   mupdf [0] or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
+   sioyek [8], mupdf [0], or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
    [2]. In your vimrc, the lines
 >
    if has('win32') || (has('unix') && exists('$WSLENV'))
-     if executable('mupdf.exe')
+     if executable('sioyek.exe')
+       let g:vimtex_view_method = 'sioyek'
+       let g:vimtex_view_sioyek_exe = 'sioyek.exe'
+       let g:vimtex_callback_progpath = 'wsl nvim'
+     elseif executable('mupdf.exe')
        let g:vimtex_view_general_viewer = 'mupdf.exe'
      elseif executable('SumatraPDF.exe')
        let g:vimtex_view_general_viewer = 'SumatraPDF.exe'
@@ -5763,11 +5767,10 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    and the compiled file is contained in the Linux home directory $HOME (as
    opposed to %USERPROFILE% in Windows).
 
-   However, client-server capabilities seem to be disabled (perhaps because
-   WSL does not have built-in support for X11) and therefore inverse search
-   does not work. Neither does forward search work: While SumatraPDF opens
-   fine the PDF file in \\wsl$\<DistroName>\..., the forward search in
-   SumatraPDF itself does not find the corresponding source file in
+   With this configuration, both forward and inverse search should work with 
+   sioyek + neovim, though the same is not true of SumatraPDF: though SumatraPDF 
+   is able to find the PDF file in \\wsl$\<DistroName>\..., the forward search in
+   SumatraPDF is not able to find the corresponding source file in
    \\wsl$\<DistroName>\....
 
    To set up a LaTeX distribution, while reusing that of Windows as proposed
@@ -5789,6 +5792,7 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    [5]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
    [6]: https://yihui.org/tinytex/
    [7]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
+   [8]: https://sioyek.info/
 
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-zathura-macos*
