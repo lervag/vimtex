@@ -2963,7 +2963,8 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_callback_progpath*
   The path to the Vim/neovim executable. This is currently passed to Zathura
-  (|vimtex-view-zathura|) for use with synctex callbacks.
+  and Sioyek for use with synctex callbacks; see |vimtex-view-zathura| and
+  |vimtex-view-sioyek|.
 
   You usually don't have to touch this variable; VimTeX will |v:progpath| if
   the option is not defined. But some people may use wrappers and similar to
@@ -5247,6 +5248,7 @@ inverse-search configuration works, in which case one should read
 configuration are `%2` and `%1`, not `%l` and `%f`.
 
 Associated settings:
+* |g:vimtex_callback_progpath|
 * |g:vimtex_view_sioyek_exe|
 
                                                              *vimtex-view-skim*
@@ -5321,6 +5323,7 @@ one should read |vimtex-synctex-inverse-search|. The interpolation variables
 for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
 
 Associated settings:
+* |g:vimtex_callback_progpath|
 * |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
 
