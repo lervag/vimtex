@@ -5747,8 +5747,8 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
                                                                *vimtex-faq-wsl*
 Q: Does VimTeX support WSL (Windows Subsystem for Linux)?
 A: For the moment, rudimentarily, as follows: To set up the viewer, install
-   sioyek [8], mupdf [0], or SumatraPDF [1], add the executable to %PATH%, say by Rapidee
-   [2]. In your vimrc, the lines
+   Sioyek [0], MuPDF [1], or SumatraPDF [2], add the executable to `%PATH%`,
+   say by Rapidee [3]. In your vimrc, the lines
 >
    if has('win32') || (has('unix') && exists('$WSLENV'))
      if executable('sioyek.exe')
@@ -5763,36 +5763,36 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    endif
 <
    make |:VimtexView| work under Windows, and also under WSL, provided that at
-   least Windows 10 version 1903 [3] of WSL is installed, the current work dir
-   and the compiled file is contained in the Linux home directory $HOME (as
-   opposed to %USERPROFILE% in Windows).
+   least Windows 10 version 1903 [4] of WSL is installed, the current work dir
+   and the compiled file is contained in the Linux home directory `$HOME` (as
+   opposed to `%USERPROFILE%` in Windows).
 
-   With this configuration, both forward and inverse search should work with 
-   sioyek + neovim, though the same is not true of SumatraPDF: though SumatraPDF 
-   is able to find the PDF file in \\wsl$\<DistroName>\..., the forward search in
-   SumatraPDF is not able to find the corresponding source file in
-   \\wsl$\<DistroName>\....
+   With this configuration, both forward and inverse search should work with
+   Sioyek and neovim. However, forward search does not work for SumatraPDF. It
+   seems that, while SumatraPDF is able to find the PDF file in
+   `\\wsl$\<DistroName>\...`, the corresponding source file in
+   `\\wsl$\<DistroName>\...` is not available.
 
    To set up a LaTeX distribution, while reusing that of Windows as proposed
-   at [4] seems efficient, in practice accessing files on mounted NTFS drives
-   from WSL is slow, even more so under WSL2 [5]. Therefore a full TeXLive
+   at [5] seems efficient, in practice accessing files on mounted NTFS drives
+   from WSL is slow, even more so under WSL2 [6]. Therefore a full TeXLive
    installation is recommended.
 
    If only basic functionality is required, then a minimal TeXLive
-   installation, such as TinyTeX [6] or a minimal set of packages to compile
-   LaTeX as provided by your distribution, is an option, as discussed at [7].
+   installation, such as TinyTeX [7] or a minimal set of packages to compile
+   LaTeX as provided by your distribution, is an option, as discussed at [8].
    For example, under openSUSE, it suffices to install the packages
    texlive-scheme-basic, texlive-latexmk, texlive-collection-fontsrecommended.
 
-   [0]: https://chocolatey.org/packages/mupdf
-   [1]: https://chocolatey.org/packages/sumatrapdf
-   [2]: https://www.rapidee.com/en/about
-   [3]: https://devblogs.microsoft.com/commandline/whats-new-for-wsl-in-windows-10-version-1903/
-   [4]: https://github.com/lervag/vimtex/issues/1380
-   [5]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
-   [6]: https://yihui.org/tinytex/
-   [7]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
-   [8]: https://sioyek.info/
+   [0]: https://sioyek.info/
+   [1]: https://chocolatey.org/packages/mupdf
+   [2]: https://chocolatey.org/packages/sumatrapdf
+   [3]: https://www.rapidee.com/en/about
+   [4]: https://devblogs.microsoft.com/commandline/whats-new-for-wsl-in-windows-10-version-1903/
+   [5]: https://github.com/lervag/vimtex/issues/1380
+   [6]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
+   [7]: https://yihui.org/tinytex/
+   [8]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
 
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-zathura-macos*
