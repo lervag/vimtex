@@ -49,8 +49,9 @@ function! vimtex#doc#make_selection(context) abort " {{{1
 
   if len(a:context.candidates) == 1
     if vimtex#ui#confirm([
-          \ 'Open documentation for ',
-          \ ['VimtexSuccess', a:context.candidates[0]], '?'
+          \ 'Open documentation for ' . a:context.type . ': ',
+          \ ['VimtexSuccess', a:context.candidates[0]],
+          \ '?'
           \])
       let a:context.selected = a:context.candidates[0]
     else
@@ -77,6 +78,8 @@ function! s:packages_get_from_cursor() abort " {{{1
     return s:packages_from_documentclass(l:cmd)
   elseif l:cmd.name =~# '\v\\%(begin|end)$'
     return s:packages_from_environment(l:cmd)
+  elseif l:cmd.name ==# '\usetikzlibrary'
+    return s:packages_from_usetikzlibrary(l:cmd)
   else
     return s:packages_from_command(strpart(l:cmd.name, 1))
   endif
@@ -177,11 +180,40 @@ function! s:packages_from_command(cmd) abort " {{{1
 endfunction
 
 " }}}1
+function! s:packages_from_usetikzlibrary(cmd) abort " {{{1
+  try
+    let l:candidate = a:cmd.args[0].text
+    let l:path = vimtex#kpsewhich#find('tikzlibrary' . l:candidate . '.code.tex')
+    if empty(l:path) | return v:true | endif
+
+    if l:path =~# 'pgf.*tikz.libraries'
+      return {
+            \ 'type': 'command',
+            \ 'name': 'usetikzlibrary',
+            \ 'candidates': ['tikz'],
+            \}
+    endif
+
+    return {
+          \ 'type': 'tikzlibrary',
+          \ 'candidates': [l:candidate],
+          \}
+  catch
+    call vimtex#log#warning('Could not parse the package from \usetikzlibrary!')
+    return {}
+  endtry
+endfunction
+
+" }}}1
 
 function! s:packages_remove_invalid(context) abort " {{{1
-  let l:invalid_packages = filter(copy(a:context.candidates), {_, x ->
-        \    empty(vimtex#kpsewhich#find(x . '.sty'))
-        \ && empty(vimtex#kpsewhich#find(x . '.cls'))})
+  if a:context.type !=# 'tikzlibrary'
+    let l:invalid_packages = filter(copy(a:context.candidates), {_, x ->
+          \    empty(vimtex#kpsewhich#find(x . '.sty'))
+          \ && empty(vimtex#kpsewhich#find(x . '.cls'))})
+  else
+    let l:invalid_packages = []
+  endif
 
   call filter(l:invalid_packages, "index(['latex2e', 'lshort'], v:val) < 0")
 
