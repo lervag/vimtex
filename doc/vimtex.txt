@@ -1859,7 +1859,7 @@ OPTIONS                                                        *vimtex-options*
     shell_options~
       Pass additional options to `YaLafi`, e.g., `--equation-punctuation displ`;
       for more info, see:
-      https://github.com/matze-dd/YaLafi
+      https://github.com/torik42/YaLafi
 
     show_suggestions~
       If set to 1, then `LanguageTool's` replacement suggestions are included
@@ -5104,7 +5104,7 @@ be found.
 Note: Spell checking with `LanguageTool` is only enabled if a country code is
       specified in |'spelllang'|.
 
-[1] https://github.com/matze-dd/YaLafi
+[1] https://github.com/torik42/YaLafi
 [2] https://www.languagetool.org
 [3] https://www.languagetool.org/download/
 
