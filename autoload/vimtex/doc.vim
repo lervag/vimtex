@@ -12,16 +12,24 @@ endfunction
 
 " }}}1
 
-function! vimtex#doc#package(word) abort " {{{1
-  let l:context = empty(a:word)
+function! vimtex#doc#get_context(...) abort " {{{1
+  let l:context = a:0 == 0 || empty(a:1)
         \ ? s:packages_get_from_cursor()
         \ : {
         \     'type': 'word',
         \     'candidates': [a:word],
         \   }
-  if empty(l:context) | return | endif
+  if empty(l:context) | return {} | endif
 
   call s:packages_remove_invalid(l:context)
+
+  return l:context
+endfunction
+
+" }}}1
+function! vimtex#doc#package(word) abort " {{{1
+  let l:context = vimtex#doc#get_context(a:word)
+  if empty(l:context) | return | endif
 
   for l:handler in g:vimtex_doc_handlers
     try
