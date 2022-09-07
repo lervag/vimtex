@@ -107,7 +107,8 @@ function! s:packages_from_usepackage(cmd) abort " {{{1
           \}
 
     let l:cword = expand('<cword>')
-    if len(l:context.candidates) > 1 && index(l:context.candidates, l:cword) >= 0
+    if len(l:context.candidates) > 1
+          \ && index(l:context.candidates, l:cword) >= 0
       let l:context.selected = l:cword
     endif
 
@@ -190,23 +191,33 @@ endfunction
 " }}}1
 function! s:packages_from_usetikzlibrary(cmd) abort " {{{1
   try
-    let l:candidate = a:cmd.args[0].text
-    let l:path = vimtex#kpsewhich#find('tikzlibrary' . l:candidate . '.code.tex')
-    if empty(l:path) | return v:true | endif
+    " Gather and filter candidates
+    let l:candidates = a:cmd.args[0].text
+    let l:candidates = substitute(l:candidates, '\s*', '', 'g')
+    let l:candidates = split(l:candidates, ',')
+    let l:candidates_paths = map(l:candidates, { _, x -> [x,
+          \ vimtex#kpsewhich#find('tikzlibrary' . x . '.code.tex')]})
+    let l:candidates = filter(l:candidates_paths,
+          \ { _, x -> !empty(x[1]) && x[1] !~# 'pgf.*tikz.libraries' })
+    let l:candidates = map(l:candidates, { _, x -> x[0] })
 
-    if l:path =~# 'pgf.*tikz.libraries'
-      return {
-            \ 'type': 'command',
-            \ 'name': 'usetikzlibrary',
-            \ 'candidates': ['tikz'],
-            \}
+    " Include tikz package itself
+    call insert(l:candidates, 'tikz', 0)
+
+    let l:context = {
+          \ 'type': 'tikzlibrary',
+          \ 'candidates': l:candidates,
+          \}
+
+    " Check selected
+    let l:cword = expand('<cword>')
+    if len(l:context.candidates) > 1
+          \ && index(l:context.candidates, l:cword) >= 0
+      let l:context.selected = l:cword
     endif
 
-    return {
-          \ 'type': 'tikzlibrary',
-          \ 'candidates': [l:candidate],
-          \}
-  catch
+    return l:context
+  catch /'testting/
     call vimtex#log#warning('Could not parse the package from \usetikzlibrary!')
     return {}
   endtry
