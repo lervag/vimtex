@@ -5891,25 +5891,24 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
      let g:vimtex_syntax_enabled = 0
      let g:vimtex_syntax_conceal_disable = 1
 <
-Q: How to use Vimtex with markdown plugins that needs treesitter enabled?
-A: If one wants to use plugins alongside Vimtex in a markdown document that
-   requires treesitter highlighting to be enabled one can do: >
+Q: Can I use VimTeX with Markdown plugins that need Tree-sitter enabled?
+A: Yes, it is possible by using the "additional_vim_regex_highlighting" option
+   in the `nvim-treesitter` setup (|nvim-treesitter-highlight-mod|), e.g.: >
 
-   require 'nvim-treesitter.configs'.setup {
-     ensure_installed = { "markdown" },
-     highlight = {
-             enable = true,
-             disable = { "latex" },
-             additional_vim_regex_highlighting = { "latex", "markdown" },
-     },
-     --other treesitter settings
-   } 
+     require 'nvim-treesitter.configs'.setup {
+       ensure_installed = { "markdown" },
+       highlight = {
+               enable = true,
+               disable = { "latex" },
+               additional_vim_regex_highlighting = { "latex", "markdown" },
+       },
+       --other treesitter settings
+     }
 <
-   Be warned though that this does not disable the legacy syntax engine when
-   attaching a treesitter parser (via syntax off), i.e., it runs both
-   treesitter and regex highlighting in parallel (completely negating any
-   performance benefit, and possibly can lead to weird results since both
-   types of highlighting are applied, one over the other).
+   Be warned, though, that this will run both Tree-sitter and regex
+   highlighting in parallel. This negates any performance benefit, and it can
+   possibly lead to weird results since both types of highlighting are
+   applied, one over the other.
 
    [0]: https://tree-sitter.github.io/tree-sitter/
    [1]: https://github.com/nvim-treesitter/nvim-treesitter
