@@ -1207,7 +1207,7 @@ endfunction
 let s:re_sub =
       \ '[-+=()0-9aehijklmnoprstuvx]\|\\\%('
       \ . join([
-      \     'beta', 'delta', 'phi', 'gamma', 'chi'
+      \     'beta', 'rho', 'phi', 'gamma', 'chi'
       \ ], '\|') . '\)\>'
 let s:re_super = '[-+=()<>:;0-9a-pr-zABDEG-PRTUVW]'
 
