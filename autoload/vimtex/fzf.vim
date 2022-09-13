@@ -34,15 +34,18 @@ function! vimtex#fzf#run(...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#fzf#open_selection(sel) abort " {{{1
-  let [l:line, l:file; _] = split(a:sel, '#####')
+" {{{1 function! vimtex#fzf#open_selection(sel) abort
+if !exists('*vimtex#fzf#open_selection')
+  function! vimtex#fzf#open_selection(sel) abort
+    let [l:line, l:file; _] = split(a:sel, '#####')
 
-  if expand('%:p') == l:file
-    execute 'normal! ' . l:line . 'gg'
-  else
-    execute printf('edit +%s %s', l:line, l:file)
-  endif
-endfunction
+    if expand('%:p') == l:file
+      execute 'normal! ' . l:line . 'gg'
+    else
+      execute printf('edit +%s %s', l:line, l:file)
+    endif
+  endfunction
+endif
 
 " }}}1
 
@@ -93,7 +96,7 @@ def colorize(e):
 def create_candidate(e, depth):
   number = format_number(dict(e['number']))
   return (
-    f"{e.get('line', 0)}#####{e['file']}#####{colorize(e)}#####{number}"
+    f"{e.get('line', 0)}#####{e['file']}#####{colorize(e)} {number}"
   )
 
 entries = vim.eval('vimtex#parser#toc()')
