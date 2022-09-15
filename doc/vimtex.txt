@@ -708,7 +708,7 @@ Formatting~
 
 Filetype plugin for bib files~
                                                        *vimtex-af-ftplugin-bib*
-  VimTeX is not a full filetype plugin for bibliography (`.bib`) files. However,
+  VimTeX is not a full filetype plugin for bibliography files (`.bib`). However,
   it does alter the 'comments' and 'commentstring' options and provide basic
   indentation and folding; see |g:vimtex_indent_bib_enabled| and
   |g:vimtex_fold_bib_enabled|, respectively.
@@ -723,6 +723,9 @@ Filetype plugin for bib files~
   - `GooseBib`
     Some simple command-line tools to clean-up / modify BibTeX files.
     https://github.com/tdegeus/GooseBib
+  - `bibtex-tidy`
+    Another tool for formatting and cleaning `.bib` files.
+    https://flamingtempura.github.io/bibtex-tidy/
   - `tbibtools`
     A set of ruby-based bibtex-related utilities for sorting, reformatting,
     listing contents, and so on. Has optional Vim integration.
