@@ -297,8 +297,10 @@ function! vimtex#env#toggle_math() abort " {{{1
   let [l:open, l:close] = vimtex#env#get_surrounding('math')
   if empty(l:open) | return | endif
 
-  call vimtex#env#change(l:open, l:close,
-        \ get(g:vimtex_env_toggle_math_map, l:open.match, '$'))
+  let l:current = get(l:open, 'name', l:open.match)
+  let l:target = get(g:vimtex_env_toggle_math_map, l:current, '$')
+
+  call vimtex#env#change(l:open, l:close, l:target)
 endfunction
 
 " }}}1
