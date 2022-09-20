@@ -17,7 +17,10 @@ filetype and syntax plugin for LaTeX files.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Quick Start](#quick-start)
-- [Screenshots and GIFs](#screenshots-and-gifs)
+  - [Tutorial](#tutorial)
+  - [Documentation](#documentation)
+- [Screenshots](#screenshots)
+  - [GIFs](#gifs)
 - [Features](#features)
 - [Other relevant plugins](#other-relevant-plugins)
   - [Linting and syntax checking](#linting-and-syntax-checking)
@@ -126,12 +129,16 @@ basic functions.
 
 https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-8a31-7ff7b9a4a020.mp4
 
+### Tutorial
+
 Both new and experienced users are also encouraged to read the third-party
 article [Getting started with the VimTeX
-plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html). The
+plugin](https://www.ejmastnak.com/tutorials/vim-latex/vimtex.html). The
 article covers VimTeX's core features and contains plenty of examples and
 high-resolution animations intended to help new users ease into working with
 the plugin.
+
+### Documentation
 
 Users are of course _strongly_ encouraged to read the documentation, at least
 the introduction, to learn about the different features and possibilities
@@ -142,7 +149,7 @@ documents:
 * [CONTRIBUTING.md](CONTRIBUTING.md)
 * [DOCUMENTATION.md](DOCUMENTATION.md)
 
-## Screenshots and GIFs
+## Screenshots
 
 Here is an example of the syntax highlighting provided by VimTeX. The conceal
 feature is active on the right-hand side split. The example is made by
@@ -153,8 +160,10 @@ here](https://github.com/lervag/vimtex/issues/1946#issuecomment-843674951).
 
 ![Syntax example](https://github.com/lervag/vimtex-media/blob/main/img/syntax.png)
 
-Additionally, you can find animated demonstrations of VimTeX's core motions,
-text-editing commands, and text objects in the file [VISUALS.md](VISUALS.md).
+### GIFs
+
+See the file [VISUALS.md](VISUALS.md) for screencast-style GIFs demonstrating
+VimTeX's core motions, text-editing commands, and text objects.
 
 ## Features
 
@@ -198,21 +207,21 @@ by default and must be manually enabled.
     - give enhanced `gf` command
 - Easy access to (online) documentation of packages
 - Word count (through `texcount`)
-- Motions
+- Motions ([link to GIF demonstrations](VISUALS.md#motion-commands))
   - Move between section boundaries with `[[`, `[]`, `][`, and `]]`
   - Move between environment boundaries with `[m`, `[M`, `]m`, and `]M`
   - Move between math environment boundaries with `[n`, `[N`, `]n`, and `]N`
   - Move between frame environment boundaries with `[r`, `[R`, `]r`, and `]R`
   - Move between comment boundaries with `[*` and `]*`
   - Move between matching delimiters with `%`
-- Text objects
+- Text objects ([link to GIF demonstrations](VISUALS.md#text-objects))
   - `ic ac` Commands
   - `id ad` Delimiters
   - `ie ae` LaTeX environments
   - `i$ a$` Math environments
   - `iP aP` Sections
   - `im am` Items
-- Other mappings
+- Other mappings ([link to GIF demonstrations](VISUALS.md#deleting-surrounding-latex-content))
   - Delete the surrounding command, environment or delimiter with
     `dsc`/`dse`/`ds$`/`dsd`
   - Change the surrounding command, environment or delimiter with
@@ -236,10 +245,6 @@ by default and must be manually enabled.
 - Support for multi-file project packages
   - [import](http://ctan.uib.no/macros/latex/contrib/import/import.pdf)
   - [subfiles](http://ctan.uib.no/macros/latex/contrib/subfiles/subfiles.pdf)
-
-For orientation, you can watch concise demonstrations of many of the motions,
-text objects, and text-editing features provided by VimTeX in the file
-[VISUALS.md](VISUALS.md).
 
 See the documentation for a thorough introduction to VimTeX (e.g. `:h vimtex`).
 
@@ -321,7 +326,7 @@ plugins for Vim, see:
 
 VimTeX users may be interested in reading
 [@ejmastnak](https://github.com/ejmastnak)'s series on [Efficient LaTeX Using
-(Neo)Vim](https://ejmastnak.github.io/tutorials/vim-latex/intro.html), which
+(Neo)Vim](https://www.ejmastnak.com/tutorials/vim-latex/intro.html), which
 covers all the fundamentals of setting up a VimTeX-based LaTeX workflow,
 including usage of the VimTeX plugin, compilation, setting up forward and
 inverse search with a PDF reader, and Vimscript tools for user-specific
