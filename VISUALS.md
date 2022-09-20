@@ -5,7 +5,7 @@ editing features listed in `:help vimtex-features`. The related mappings are
 documented in detail at `:help vimtex-mappings`. The GIFs and accompanying
 descriptions are used with permission from
 [@ejmastnak](https://github.com/ejmastnak)'s guide to [Getting started with the
-VimTeX plugin](https://ejmastnak.github.io/tutorials/vim-latex/vimtex.html).
+VimTeX plugin](https://www.ejmastnak.com/tutorials/vim-latex/vimtex.html).
 
 Hopefully, the animations can give you a clearer mental image of what VimTeX's
 mappings do and how you might use them. You may want to scroll through this page
