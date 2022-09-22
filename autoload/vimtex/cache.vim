@@ -20,37 +20,6 @@ function! vimtex#cache#path(name) abort " {{{1
 endfunction
 
 " }}}1
-
-function! vimtex#cache#open(name, ...) abort " {{{1
-  let l:opts = a:0 > 0 ? a:1 : {}
-  let l:name = get(l:opts, 'local') ? s:local_name(a:name) : a:name
-
-  let s:caches = get(s:, 'caches', {})
-  if has_key(s:caches, l:name)
-    return s:caches[l:name]
-  endif
-
-  let s:caches[l:name] = s:cache.init(l:name, l:opts)
-  return s:caches[l:name]
-endfunction
-
-" }}}1
-function! vimtex#cache#close(name) abort " {{{1
-  let s:caches = get(s:, 'caches', {})
-
-  " Try global name first, then local name
-  let l:name = a:name
-  if !has_key(s:caches, l:name)
-    let l:name = s:local_name(l:name)
-  endif
-  if !has_key(s:caches, l:name) | return | endif
-
-  let l:cache = s:caches[l:name]
-  call l:cache.write()
-  unlet s:caches[l:name]
-endfunction
-
-" }}}1
 function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
   if !has('lambda')
     throw 'error: vimtex#cache#wrap requires +lambda'
@@ -71,44 +40,49 @@ function! vimtex#cache#wrap(Func, name, ...) abort " {{{1
 endfunction
 
 " }}}1
+
+function! vimtex#cache#open(name, ...) abort " {{{1
+  let l:opts = extend({
+        \ 'local': v:false,
+        \ 'default': 0,
+        \ 'persistent': get(g:, 'vimtex_cache_persistent', v:true),
+        \ 'validate': s:_version,
+        \}, a:0 > 0 ? a:1 : {})
+
+  let l:project_local = remove(l:opts, 'local')
+  return s:cache_open(a:name, l:project_local, l:opts)
+endfunction
+
+" }}}1
+function! vimtex#cache#close(name) abort " {{{1
+  " Note: This will close BOTH local and global cache!
+
+  for [l:name, l:cache] in s:cache_get_both(a:name)
+    if !empty(l:cache) && has_key(s:caches, l:name)
+      call l:cache.write()
+      unlet s:caches[l:name]
+    endif
+  endfor
+endfunction
+
+" }}}1
 function! vimtex#cache#clear(name) abort " {{{1
   if empty(a:name) | return | endif
-  let s:caches = get(s:, 'caches', {})
 
   if a:name ==# 'ALL'
-    let l:caches = globpath(s:root(), '*.json', 0, 1)
-    for l:file in map(l:caches, {_, x -> fnamemodify(x, ':t:r')})
-      let l:cache = vimtex#cache#open(l:file)
-      call l:cache.clear()
-      unlet! s:caches[l:file]
-    endfor
-    return
+    return s:cache_clear_all()
   endif
 
   let l:persistent = get(g:, 'vimtex_cache_persistent', 1)
-
-  " Clear global caches first (check if opened, then look for files)
-  let l:cache = get(s:caches, a:name, {})
-  if !empty(l:cache)
-    call l:cache.clear()
-    unlet! s:caches[a:name]
-  elseif l:persistent
-    let l:cache = vimtex#cache#open(a:name)
-    call l:cache.clear()
-    unlet! s:caches[a:name]
-  endif
-
-  " Clear local caches
-  let l:name = s:local_name(a:name)
-  let l:cache = get(s:caches, l:name, {})
-  if !empty(l:cache)
-    call l:cache.clear()
-    unlet! s:caches[l:name]
-  elseif l:persistent
-    let l:cache = vimtex#cache#open(a:name, {'local': 1})
-    call l:cache.clear()
-    unlet! s:caches[l:name]
-  endif
+  for [l:name, l:cache] in s:cache_get_both(a:name)
+    if !empty(l:cache)
+      call l:cache.clear()
+      unlet s:caches[l:name]
+    elseif l:persistent
+      let l:path = vimtex#cache#path(l:name . '.json')
+      call delete(l:path)
+    endif
+  endfor
 endfunction
 
 " }}}1
@@ -120,50 +94,103 @@ endfunction
 
 " }}}1
 
-let s:cache = {}
+function! s:cache_open(name, project_local, opts) abort " {{{1
+  let l:name = a:project_local ? s:local_name(a:name) : a:name
 
-function! s:cache.init(name, opts) dict abort " {{{1
-  let new = deepcopy(self)
-  unlet new.init
-
-  let new.name = a:name
-  let new.path = vimtex#cache#path(a:name . '.json')
-  let new.local = get(a:opts, 'local')
-  let new.persistent = get(a:opts, 'persistent',
-        \ get(g:, 'vimtex_cache_persistent', 1))
-
-  if has_key(a:opts, 'default')
-    let new.default = a:opts.default
+  let s:caches = get(s:, 'caches', {})
+  if !has_key(s:caches, l:name)
+    let l:path = vimtex#cache#path(l:name . '.json')
+    let s:caches[l:name] = s:cache.init(l:path, a:opts)
   endif
 
-  let new.data = {}
-  let new.ftime = -1
-  let new.modified = 0
-
-  " Validate cache
-  if new.persistent
-    let l:validation = get(a:opts, 'validate', s:_version)
-    if type(l:validation) == v:t_dict
-      let l:validation._version = s:_version
-    endif
-    call new.read()
-    if !has_key(new.data, '__validate')
-          \ || type(new.data.__validate) != type(l:validation)
-          \ || new.data.__validate != l:validation
-      call new.clear()
-      let new.data.__validate = deepcopy(l:validation)
-      call new.write()
-    endif
-  endif
-
-  return new
+  return s:caches[l:name]
 endfunction
 
 " }}}1
-function! s:cache.get(key) dict abort " {{{1
+function! s:cache_get(name, ...) abort " {{{1
+  let l:project_local = a:0 > 0 ? a:1 : v:false
+  let l:name = l:project_local ? s:local_name(a:name) : a:name
+
+  let s:caches = get(s:, 'caches', {})
+  return [l:name, get(s:caches, l:name, {})]
+endfunction
+
+" }}}1
+function! s:cache_get_both(name) abort " {{{1
+  return map(
+        \ [v:false, v:true],
+        \ { _, x -> s:cache_get(a:name, x) }
+        \)
+endfunction
+
+" }}}1
+function! s:cache_clear_all() abort " {{{1
+  " Delete cache state map
+  unlet! s:caches
+
+  if !get(g:, 'vimtex_cache_persistent', 1) | return | endif
+
+  " Delete cache files
+  for l:file in globpath(s:root(), '*.json', 0, 1)
+    call delete(l:file)
+  endfor
+endfunction
+
+" }}}1
+
+let s:cache = {}
+
+function! s:cache.init(path, opts) dict abort " {{{1
+  let new = deepcopy(self)
+  unlet new.init
+
+  let new.data = {}
+  let new.path = a:path
+  let new.ftime = -1
+  let new.default = a:opts.default
+
+  if a:opts.persistent
+    call extend(new, s:cache_persistent)
+    call new.validate(a:opts.validate)
+    return new
+  endif
+
+  return extend(new, s:cache_volatile)
+endfunction
+
+" }}}1
+
+let s:cache_persistent = {
+      \ 'type': 'persistent',
+      \ 'modified': 0,
+      \}
+function! s:cache_persistent.validate(value) dict abort " {{{1
+  let self.__validation_value = deepcopy(a:value)
+  if type(self.__validation_value) == v:t_dict
+    let self.__validation_value._version = s:_version
+  endif
+
   call self.read()
 
-  if has_key(self, 'default') && !has_key(self.data, a:key)
+  if empty(self.data)
+    let self.data.__validate = deepcopy(self.__validation_value)
+    return
+  endif
+
+  if !has_key(self.data, '__validate')
+        \ || type(self.data.__validate) != type(self.__validation_value)
+        \ || self.data.__validate != self.__validation_value
+    call self.clear()
+    let self.data.__validate = deepcopy(self.__validation_value)
+    call self.write()
+  endif
+endfunction
+
+" }}}1
+function! s:cache_persistent.get(key) dict abort " {{{1
+  call self.read()
+
+  if !has_key(self.data, a:key)
     let self.data[a:key] = deepcopy(self.default)
   endif
 
@@ -171,33 +198,28 @@ function! s:cache.get(key) dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:cache.has(key) dict abort " {{{1
+function! s:cache_persistent.has(key) dict abort " {{{1
   call self.read()
 
   return has_key(self.data, a:key)
 endfunction
 
 " }}}1
-function! s:cache.set(key, value) dict abort " {{{1
+function! s:cache_persistent.set(key, value) dict abort " {{{1
   call self.read()
 
   let self.data[a:key] = a:value
-  let self.modified = 1
-  call self.write()
+  call self.write(1)
 
   return a:value
 endfunction
 
 " }}}1
-function! s:cache.write() dict abort " {{{1
-  if !self.persistent
-    let self.modified = 0
-    return
-  endif
-
+function! s:cache_persistent.write(...) dict abort " {{{1
   call self.read()
 
-  if !self.modified || empty(self.data) | return | endif
+  let l:modified = self.modified || a:0 > 0
+  if !l:modified || empty(self.data) | return | endif
 
   call writefile([json_encode(self.data)], self.path)
   let self.ftime = getftime(self.path)
@@ -205,8 +227,7 @@ function! s:cache.write() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:cache.read() dict abort " {{{1
-  if !self.persistent | return | endif
+function! s:cache_persistent.read() dict abort " {{{1
   if getftime(self.path) <= self.ftime | return | endif
 
   let self.ftime = getftime(self.path)
@@ -217,7 +238,8 @@ function! s:cache.read() dict abort " {{{1
 
   if type(l:data) != v:t_dict
     call vimtex#log#warning(
-          \ 'Inconsistent cache data while reading: ' . self.name,
+          \ 'Inconsistent cache data while reading:',
+          \ self.path,
           \ 'Decoded data type: ' . type(l:data)
           \)
     return
@@ -227,31 +249,55 @@ function! s:cache.read() dict abort " {{{1
 endfunction
 
 " }}}1
-function! s:cache.clear() dict abort " {{{1
-  call self.wipe()
+function! s:cache_persistent.clear() dict abort " {{{1
+  let self.data = { '__validate': deepcopy(self.__validation_value) }
   let self.ftime = -1
   let self.modified = 0
-
-  if self.persistent
-    call delete(self.path)
-  endif
-endfunction
-
-" }}}1
-function! s:cache.wipe() dict abort " {{{1
-  if has_key(self.data, '__validate')
-    let l:validate = self.data.__validate
-    let self.data = { '__validate': l:validate }
-  else
-    let self.data = {}
-  endif
+  call delete(self.path)
 endfunction
 
 " }}}1
 
-"
+let s:cache_volatile = {
+      \ 'type': 'volatile',
+      \}
+function! s:cache_volatile.get(key) dict abort " {{{1
+  if !has_key(self.data, a:key)
+    let self.data[a:key] = deepcopy(self.default)
+  endif
+
+  return get(self.data, a:key)
+endfunction
+
+" }}}1
+function! s:cache_volatile.has(key) dict abort " {{{1
+  return has_key(self.data, a:key)
+endfunction
+
+" }}}1
+function! s:cache_volatile.set(key, value) dict abort " {{{1
+  let self.data[a:key] = a:value
+  let self.ftime = localtime()
+  return a:value
+endfunction
+
+" }}}1
+function! s:cache_volatile.write(...) dict abort " {{{1
+endfunction
+
+" }}}1
+function! s:cache_volatile.read() dict abort " {{{1
+endfunction
+
+" }}}1
+function! s:cache_volatile.clear() dict abort " {{{1
+  let self.data = {}
+  let self.ftime = -1
+endfunction
+
+" }}}1
+
 " Utility functions
-"
 function! s:root() abort " {{{1
   return get(g:, 'vimtex_cache_root',
         \ (empty($XDG_CACHE_HOME) ? $HOME . '/.cache' : $XDG_CACHE_HOME)
@@ -273,4 +319,4 @@ endfunction
 " }}}1
 
 
-let s:_version = 'cache_v1'
+let s:_version = 'cache_v2'
