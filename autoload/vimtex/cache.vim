@@ -91,22 +91,24 @@ function! vimtex#cache#clear(name) abort " {{{1
   let l:cache = get(s:caches, a:name, {})
   if !empty(l:cache)
     call l:cache.clear()
+    unlet! s:caches[a:name]
   elseif l:persistent
     let l:cache = vimtex#cache#open(a:name)
     call l:cache.clear()
+    unlet! s:caches[a:name]
   endif
-  unlet! s:caches[a:name]
 
   " Clear local caches
   let l:name = s:local_name(a:name)
   let l:cache = get(s:caches, l:name, {})
   if !empty(l:cache)
     call l:cache.clear()
+    unlet! s:caches[l:name]
   elseif l:persistent
     let l:cache = vimtex#cache#open(a:name, {'local': 1})
     call l:cache.clear()
+    unlet! s:caches[l:name]
   endif
-  unlet! s:caches[l:name]
 endfunction
 
 " }}}1
