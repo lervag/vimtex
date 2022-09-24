@@ -4,8 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-scriptencoding utf-8
-
 function! vimtex#syntax#p#optidef#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_region_math('\(arg\)\?mini')
   call vimtex#syntax#core#new_region_math('\(arg\)\?mini[e!]', {'starred': 0})
