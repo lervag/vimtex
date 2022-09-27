@@ -5584,6 +5584,12 @@ Note: This API is currently a work in progress!
   The delimiter objects contain information about the locations and arguments
   of the corresponding `\begin{...}[...]` and `\end{...}` commands.
 
+*vimtex#env#is_inside*
+  A function that returns the start position of the `\begin{environment}` of
+  the environment name that was passed as the only mandatory argument. That
+  is, the return value is a list of two numbers: The line number and the
+  column number. These are both 0 if no surrounding environment was found.
+
 ==============================================================================
 FAQ                                                                *vimtex-faq*
 
