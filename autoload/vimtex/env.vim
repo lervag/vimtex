@@ -22,6 +22,13 @@ function! vimtex#env#init_buffer() abort " {{{1
 
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-math)
         \ :<c-u>call <sid>operator_setup('toggle_math', '')<bar>normal! g@l<cr>
+
+  nnoremap <silent><buffer><expr> <plug>(vimtex-env-surround-operator)
+        \ vimtex#env#surround_opfunc('operator')
+  nmap     <silent><buffer>       <plug>(vimtex-env-surround-line)
+        \ <plug>(vimtex-env-surround-operator)_
+  xnoremap <silent><buffer>       <plug>(vimtex-env-surround-visual)
+        \ :<c-u>call vimtex#env#surround_opfunc('visual')<cr>
 endfunction
 
 " }}}1
@@ -258,6 +265,46 @@ function! vimtex#env#change_in_place(open, close, new) abort " {{{1
       call vimtex#pos#set_cursor(l:pos)
     endif
   endif
+endfunction
+
+" }}}1
+
+function! vimtex#env#surround(l1, l2, name) abort " {{{1
+  if a:l1 < 1 || a:l2 < a:l1 || empty(a:name)
+    return
+  endif
+
+  let l:pos = vimtex#pos#get_cursor()
+  let l:pos[1] += l:pos[1] > a:l2
+  let l:pos[1] += l:pos[1] >= a:l1
+
+  call append(a:l2, printf('\end{%s}', a:name))
+  call append(a:l1-1, printf('\begin{%s}', a:name))
+
+  silent execute printf("normal! %dG%d==", a:l1, a:l2 - a:l1 + 3)
+
+  call vimtex#pos#set_cursor(l:pos)
+endfunction
+
+" }}}1
+function! vimtex#env#surround_opfunc(type) abort " {{{1
+  if a:type ==# 'operator'
+    set opfunc=vimtex#env#surround_opfunc
+    return 'g@'
+  elseif a:type ==# 'visual'
+    let l:lnum1 = getpos("'<")[1]
+    let l:lnum2 = getpos("'>")[1]
+  else
+    let l:lnum1 = getpos("'[")[1]
+    let l:lnum2 = getpos("']")[1]
+  endif
+
+  let l:name = vimtex#ui#input({
+        \ 'prompt': 'Surround with environment: ',
+        \})
+
+  call vimtex#env#surround(l:lnum1, l:lnum2, l:name)
+  normal! zv
 endfunction
 
 " }}}1

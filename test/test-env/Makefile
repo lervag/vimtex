@@ -11,4 +11,4 @@ TESTS := $(TESTS:.vim=)
 test: $(TESTS)
 
 $(TESTS):
-	@$(MYVIM) -u $@.vim
+	@chronic $(MYVIM) -u $@.vim

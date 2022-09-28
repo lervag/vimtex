@@ -843,6 +843,9 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
    tse              |<plug>(vimtex-env-toggle-star)|                `n`
    ts$              |<plug>(vimtex-env-toggle-math)|                `n`
+   <F6>             |<plug>(vimtex-env-surround-line)|              `n`
+                    |<plug>(vimtex-env-surround-operator)|          `n`
+   <F6>             |<plug>(vimtex-env-surround-visual)|            `x`
    tsd              |<plug>(vimtex-delim-toggle-modifier)|          `nx`
    tsD              |<plug>(vimtex-delim-toggle-modifier-reverse)|  `nx`
    <F7>             |<plug>(vimtex-cmd-create)|                     `nxi`
@@ -3252,6 +3255,18 @@ MAP DEFINITIONS                                               *vimtex-mappings*
                                  \]
 <
   One may change the toggle sequence with |g:vimtex_env_toggle_math_map|.
+
+*<plug>(vimtex-env-surround-line)*
+*<plug>(vimtex-env-surround-operator)*
+*<plug>(vimtex-env-surround-visual)*
+  Surround the current line, operated text, or visually selected text, with an
+  environment specified during execution. More specifically, this adds
+  `\begin{ENV}` on the line above and `\end{ENV}` on the line below the
+  specified region. The resulting region is filtered to apply proper
+  indentation (see |==|).
+
+  Note: This only works linewise!
+  Note: There is no default for the operator version.
 
 *<plug>(vimtex-delim-toggle-modifier)*
 *<plug>(vimtex-delim-toggle-modifier-reverse)*
