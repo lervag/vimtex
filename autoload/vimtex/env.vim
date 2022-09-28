@@ -321,7 +321,7 @@ function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
   let l:cands = map(vimtex#complete#complete('env', '', '\begin'), 'v:val.word')
 
   " Never include document and remove current env (place it first)
-  call filter(l:cands, "index(['document', s:env_name], v:val) < 0")
+  call filter(l:cands, { _, x -> index(['document', s:env_name], v:val) < 0 })
 
   " Always include current env and displaymath
   let l:cands = [s:env_name] + l:cands + ['\[']
@@ -338,33 +338,6 @@ function! s:get_line_split(delim) abort " {{{1
   let l:after = strpart(l:line, a:delim.cnum + len(a:delim.match) - 1)
 
   return [l:before, l:after]
-endfunction
-
-" }}}1
-
-function! s:change_prompt(type) abort " {{{1
-  let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
-  if empty(l:open) | return | endif
-
-  if g:vimtex_env_change_autofill
-    let l:name = get(l:open, 'name', l:open.match)
-    let s:env_name = l:name
-    return vimtex#ui#input({
-          \ 'prompt': 'Change surrounding environment: ',
-          \ 'default': l:name,
-          \ 'completion': 'customlist,vimtex#env#input_complete',
-          \})
-  else
-    let l:name = get(l:open, 'name', l:open.is_open
-          \ ? l:open.match . ' ... ' . l:open.corr
-          \ : l:open.match . ' ... ' . l:open.corr)
-    let s:env_name = l:name
-    return vimtex#ui#input({
-          \ 'info':
-          \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
-          \ 'completion': 'customlist,vimtex#env#input_complete',
-          \})
-  endif
 endfunction
 
 " }}}1
@@ -404,6 +377,34 @@ function! s:operator_function(_) abort " {{{1
 endfunction
 
 " }}}1
+
+function! s:change_prompt(type) abort " {{{1
+  let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
+  if empty(l:open) | return | endif
+
+  if g:vimtex_env_change_autofill
+    let l:name = get(l:open, 'name', l:open.match)
+    let s:env_name = l:name
+    return vimtex#ui#input({
+          \ 'prompt': 'Change surrounding environment: ',
+          \ 'default': l:name,
+          \ 'completion': 'customlist,vimtex#env#input_complete',
+          \})
+  else
+    let l:name = get(l:open, 'name', l:open.is_open
+          \ ? l:open.match . ' ... ' . l:open.corr
+          \ : l:open.match . ' ... ' . l:open.corr)
+    let s:env_name = l:name
+    return vimtex#ui#input({
+          \ 'info':
+          \   ['Change surrounding environment: ', ['VimtexWarning', l:name]],
+          \ 'completion': 'customlist,vimtex#env#input_complete',
+          \})
+  endif
+endfunction
+
+" }}}1
+
 function! s:snr() abort " {{{1
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
