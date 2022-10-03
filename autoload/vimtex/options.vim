@@ -424,6 +424,12 @@ function! vimtex#options#init() abort " {{{1
         \ 'FIXME': 'FIXME: '
         \})
 
+  call s:init_option('vimtex_toggle_fractions', {
+        \ 'INLINE': 'frac',
+        \ 'frac': 'INLINE',
+        \ 'dfrac': 'INLINE',
+        \})
+
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
   call s:init_option('vimtex_view_method', 'general')

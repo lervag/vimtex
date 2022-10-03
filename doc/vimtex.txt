@@ -2563,6 +2563,18 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: `'auto'`
 
+*g:vimtex_toggle_fractions*
+  Specify rules for toggling fractions with |<plug>(vimtex-cmd-toggle-frac)|,
+  which is mapped to `tsf` by default.
+
+  Default value: >
+
+    let g:vimtex_toggle_fractions = {
+          \ 'INLINE': 'frac',
+          \ 'frac': 'INLINE',
+          \ 'dfrac': 'INLINE',
+          \}
+
 *g:vimtex_toc_enabled*
   Use this option to disable/enable table of contents (ToC).
 
@@ -3236,7 +3248,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 
 *<plug>(vimtex-cmd-toggle-frac)*
   Toggle fractions between inline mode (`num/den`) and command mode
-  (`\frac{num}{den}`).
+  (`\frac{num}{den}`). Fractions are toggled according to the map specified by
+  |g:vimtex_toggle_fractions|.
 
   In visual mode, the selected text is toggled if it matches either
   a `\frac{}{}` command or a `numerator / denominator` string. In normal mode,
