@@ -3722,11 +3722,19 @@ COMPLETION                                                  *vimtex-completion*
 
 If |g:vimtex_complete_enabled| is 1 (default), then VimTeX sets the
 'omnifunc' to provide omni completion, see |compl-omni|.  Omni completion is
-then accessible with |i_CTRL-X_CTRL-O|.
+then accessible with |i_CTRL-X_CTRL-O|. If desired, one may set
+|g:vimtex_complete_close_braces|, which makes the completion include closing
+braces.
 
 The omni completion completes citations, labels, glossary entries and
-filenames. If desired, one may set |g:vimtex_complete_close_braces|, which
-makes the completion include closing braces.
+filenames. The following sections document the various kinds of completions
+provided by VimTeX's completion function.
+
+A lot of people expect VimTeX and Vim/neovim to provide `automatic`
+completion, aka `autocomplete`. However, autocompletion is not a built-in
+feature of Vim/neovim. The last section of this chapter presents some
+alternatives to plugins that provide an autocomplete engine and how to
+configure it with VimTeX, see |vimtex-complete-auto|.
 
 Associated settings:
 * |g:vimtex_complete_bib|
