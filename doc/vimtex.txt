@@ -1106,6 +1106,7 @@ OPTIONS                                                        *vimtex-options*
 
     let g:vimtex_compiler_tectonic = {
         \ 'build_dir' : '',
+        \ 'hooks' : [],
         \ 'options' : [
         \   '--keep-logs',
         \   '--synctex'
@@ -1117,6 +1118,9 @@ OPTIONS                                                        *vimtex-options*
 
   build_dir~
     Same as |g:vimtex_compiler_latexmk| / `build_dir`.
+
+  hooks~
+    Same as |g:vimtex_compiler_latexmk| / `hooks`.
 
   options~
     This is a list of options that are passed to `tectonic`. The default
@@ -1139,6 +1143,7 @@ OPTIONS                                                        *vimtex-options*
 
     let g:vimtex_compiler_arara = {
         \ 'options' : ['--log'],
+        \ 'hooks' : [],
         \}
 <
   The default value shows which entries may be changed. Here the different
@@ -1148,6 +1153,9 @@ OPTIONS                                                        *vimtex-options*
     This is a list of options that are passed to `arara`. The default options
     should work well for most people.
 
+  hooks~
+    Same as |g:vimtex_compiler_latexmk| / `hooks`.
+
 *g:vimtex_compiler_generic*
   This dictionary allows customization of the |vimtex-compiler-generic|
   compiler. This compiler is, as the name hints, generic. It allows to specify
@@ -1155,12 +1163,11 @@ OPTIONS                                                        *vimtex-options*
   configuration values set by the user will take precedence over the default
   values.
 
-  This could be used e.g. to run `make` or something like that.
-
   Default value: >
 
     let g:vimtex_compiler_generic = {
         \ 'command' : '',
+        \ 'hooks' : [],
         \}
 <
   The default value shows which entries may be changed. Here the different
@@ -1169,6 +1176,9 @@ OPTIONS                                                        *vimtex-options*
   command~
     This is the command to run to start compilation. This can be any command,
     and the command is run from the project root.
+
+  hooks~
+    Same as |g:vimtex_compiler_latexmk| / `hooks`.
 
 *g:vimtex_complete_enabled*
   Use this option to disable/enable VimTeX completion.
@@ -4907,6 +4917,17 @@ and |:VimtexClean| clean these files.
 
 The compiler may be configured through the |g:vimtex_compiler_tectonic| option.
 
+Some users may be interested in using a custom command for running `tectonic` in
+a forced continuous mode by use of external tools like `entr` [0]. This could
+be achieved with the |vimtex-compiler-generic| interface, e.g. like this: >
+
+  let g:vimtex_compiler_method = 'generic'
+  let g:vimtex_compiler_generic = {
+        \ 'cmd': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
+        \}
+
+[0]: http://eradman.com/entrproject/
+
 ------------------------------------------------------------------------------
 ARARA                                                   *vimtex-compiler-arara*
 
@@ -4938,6 +4959,29 @@ possible to simply use things like a Makefile. The generic backend allows to
 use mostly whatever you want. However, since it is a generic implementation,
 it will not be as well integrated as e.g. |vimtex-compiler-latexmk|.
 
+An example may be illuminating. Let's say you want to use a Makefile to
+compile your project. Then the following shows how to configure with the
+generic interface, including how to include a simple callback function that
+reacts to the compiler program output. >
+
+  function! Callback(msg)
+    " Use a regex match on the compiler output to get automatic VimtexErrors
+    " functionality. The below conditional must likely be changed to be
+    " useful, of course!
+    if a:msg =~# 'error'
+      call vimtex#compiler#callback(!vimtex#qf#inquire(b:vimtex.tex))
+    endif
+  endfunction
+
+  let g:vimtex_compiler_method = 'generic'
+  let g:vimtex_compiler_generic = {
+      \ 'command' : 'make',
+      \ 'hooks': [function('Callback')],
+      \}
+<
+See also |vimtex-compiler-tectonic| for another example that relies on the
+generic interface to run a "continuous" tectonic command.
+
 Some examples of build tools that can be used with the generic backend:
 
 * Light LaTeX Make (llmk)
@@ -4958,8 +5002,6 @@ Some examples of build tools that can be used with the generic backend:
   >   Everything is stored in the tex file (so that you are not missing some
   > piece of information that is located somewhere else), in a human-readable
   > format (no need to know SpiX to understand it).
-
-TODO: More documentation here. Examples of configuration.
 
 ==============================================================================
 SYNTAX CHECKING (LINTING)                                       *vimtex-lint*
