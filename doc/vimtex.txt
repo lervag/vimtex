@@ -165,7 +165,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - glossary entries
   - package and documentclass names based on available `.sty` and `.cls` files
 - Document navigation through
-  - table of content
+  - table of contents
   - proper settings for |'include'|, |'includeexpr'|, |'suffixesadd'| and
     |'define'|, which among other things
     - allow |include-search| and |definition-search|
@@ -289,7 +289,7 @@ Clientserver~
 
   A server will be started automatically if Vim is running on Windows or if it
   is running in a GUI (gVim). If you use Vim under a terminal in Linux or
-  MacOS, a server will not be started by defaul. Also, MacVim users should be
+  MacOS, a server will not be started by default. Also, MacVim users should be
   aware of some differences from regular Vim and should therefore read
   |macvim-clientserver| carefully.
 
@@ -476,7 +476,7 @@ The syntax is best explained with an example: >
     %! TEX TS-program = xelatex
 
 The left-hand side must contain the text "tex program" or "tex ts-program" and
-as for |vimtex-tex-root|, the words are recognized regardless of casing and
+as with |vimtex-tex-root|, the words are recognized regardless of casing and
 the spaces are ignored. The right-hand side must correspond to a key in the
 |g:vimtex_compiler_latexmk_engines| or |g:vimtex_compiler_latexrun_engines|
 dictionaries. See also [0,1].
@@ -2341,7 +2341,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_syntax_custom_cmds*
   A list of "simple" commands for which to apply custom styling. This includes
-  bolded or italized text arguments, conceals, or similar - see the below
+  bolded or italicized text arguments, conceals, or similar - see the below
   keys. Each command is expected to be of the following type: >
 
     \cmdname[optional]{argument}
@@ -2421,7 +2421,7 @@ OPTIONS                                                        *vimtex-options*
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
   second example shows how to conceal `\R` with `ℝ`. The third example shows
   how one may use the `nextgroup` key, and the fourth shows how to define
-  a command whose argument shoult not be spell checked. >
+  a command whose argument should not be spell checked. >
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
@@ -3333,7 +3333,7 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 
 *<plug>(vimtex-delim-add-modifiers)*
   Add `\left` and `\right)` modifiers to all surrounding "unmodified"
-  delimiteres in the current math scope.
+  delimiters in the current math scope.
 
 *<plug>(vimtex-reverse-search)*
   Do reverse search for the MuPDF viewer, see |vimtex-view-mupdf|.
@@ -5061,7 +5061,7 @@ plugins like |vim-dispatch| [4], |AsyncRun| [5] or |tasks.vim| [6]. With
 `vim-dispatch`, one may replace the `:lmake` call with `:Make`. Note that this
 may conflict with the listing of compilation errors, since `:Make` from
 `vim-dispatch` uses the quickfix window. `tasks.vim` provide `:LMake` which
-allows one to use the location list. For `AsyncRun`, one may define a cstom
+allows one to use the location list. For `AsyncRun`, one may define a custom
 `:Make` command with: >
 
   command! -bang -nargs=* -complete=file Make
