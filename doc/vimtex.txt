@@ -1235,6 +1235,13 @@ OPTIONS                                                        *vimtex-options*
     `vim`:      The slowest but perhaps most robust solution, as it does not
               require any external utilities.
 
+  Some people may want to conditionally change this option if a backend is
+  available. For example: >
+
+    if executable('bibparse')
+      let g:vimtex_parser_bib_backend = 'bibparse'
+    endif
+<
   Default value: `bibtex`
 
 *g:vimtex_bibliography_commands*
