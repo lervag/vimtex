@@ -4923,7 +4923,7 @@ be achieved with the |vimtex-compiler-generic| interface, e.g. like this: >
 
   let g:vimtex_compiler_method = 'generic'
   let g:vimtex_compiler_generic = {
-        \ 'cmd': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
+        \ 'command': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
         \}
 
 [0]: http://eradman.com/entrproject/
