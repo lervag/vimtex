@@ -3868,11 +3868,13 @@ COMPLETE PACKAGE FILES                               *vimtex-complete-packages*
                                                       *vimtex-complete-classes*
                                                      *vimtex-complete-bibstyle*
 
-Package, documentclass, and bibliography style completion are available for
-the `\usepackage{`, `\documentclass{`, and `\bibliographystyle` commands,
-respectively.
+Package completion is available for the `\usepackage`, `\RequirePackage`, and
+`\PassOptionsToPackage` commands. Similarly, documentclass completion is
+available for `\documentclass` and `\PassOptionsToClass`, and bibliography
+style completion is available for `\bibliographystyle`.
 
-The completion relies on the contents of `ls-R` files that are found with: >
+These completion types all rely on the contents of `ls-R` files that are found
+with: >
 
   kpsewhich --all ls-R
 

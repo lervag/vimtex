@@ -639,7 +639,10 @@ endfunction
 " {{{1 Documentclasses (\documentclass)
 
 let s:completer_doc = {
-      \ 'patterns' : ['\v\\documentclass%(\s*\[[^]]*\])?\s*\{[^}]*$'],
+      \ 'patterns' : [
+      \   '\v\\documentclass%(\s*\[[^]]*\])?\s*\{[^}]*$',
+      \   '\v\\PassOptionsToClass\s*\{[^}]*\}\s*\{[^}]*$',
+      \ ],
       \ 'candidates' : [],
       \}
 
