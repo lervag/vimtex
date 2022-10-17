@@ -254,6 +254,7 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
     let l:options.err_cb = function('s:callback_continuous_output')
   else
     let s:cb_target = self.state.tex !=# b:vimtex.tex ? self.state.tex : ''
+    let s:cb_output = self.output
     let l:options.exit_cb = function('s:callback')
   endif
 
@@ -306,6 +307,17 @@ function! s:callback(ch, msg) abort " {{{1
     "   E565: Not allowed to change text or change window:       cclose
     "
     " See https://github.com/lervag/vimtex/issues/2225
+  endtry
+
+  if !exists('b:vimtex.compiler.hooks') | return | endif
+  try
+    let l:lines = readfile(s:cb_output)
+    for l:Hook in b:vimtex.compiler.hooks
+      for l:line in l:lines
+        call l:Hook(l:line)
+      endfor
+    endfor
+  catch /E716/
   endtry
 endfunction
 
