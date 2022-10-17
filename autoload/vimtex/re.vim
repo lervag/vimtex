@@ -10,7 +10,9 @@ let g:vimtex#re#not_comment = '\v%(' . g:vimtex#re#not_bslash . '\%.*)@<!'
 let g:vimtex#re#tex_input_root =
       \ '\v^\c\s*\%\s*!?\s*tex\s+root\s*[=:]\s*\zs.*\ze\s*$'
 let g:vimtex#re#tex_input_latex = '\v\\%('
-      \ . join(get(g:, 'vimtex_include_indicators', ['input', 'include']), '|')
+      \ . join(get(g:, 'vimtex_include_indicators',
+      \            ['input', 'include', 'includeonly']),
+      \        '|')
       \ . ')\s*\{'
 let g:vimtex#re#tex_input_import = '\v\\%('
       \ . 'subfile%(include)?'
