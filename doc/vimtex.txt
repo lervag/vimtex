@@ -4851,7 +4851,7 @@ If the `callback` key is enabled (it is by default and there is really no
 reason to disable it!), then compilation errors will be parsed automatically.
 This is done by utilizing the tricks explained below. Although `latexmk`
 can control viewers directly, VimTeX disables this feature with `-view=none`
-so as to get full control of the viewers.
+to get full control of the viewers.
 
 As stated, one may customize the `latexmk` options through
 |g:vimtex_compiler_latexmk|.  However, one may also configure `latexmk`
@@ -4863,16 +4863,11 @@ particular things in a configuration file.
 A particular set of options are very convenient for a good coupling between
 `latexmk` and Vim: `$compiling_cmd`, `$success_cmd`, and `$failure_cmd`. These
 options can be used to specify commands that are run by `latexmk` before and
-after compilation. This is used by VimTeX to achieve callbacks after
-compilation has finished through |vimtex#compiler#callback| with something
-like this: >
+after compilation. They are used by VimTeX to achieve callbacks after
+compilation has finished through |vimtex#compiler#callback|.
 
-  $compiling_cmd = "vim --remote-expr 'vimtex#compiler#callback(1)'";
-  $success_cmd = "vim --remote-expr 'vimtex#compiler#callback(2)'";
-  $failure_cmd = "vim --remote-expr 'vimtex#compiler#callback(3)'";
-
-Another neat way to use this is to use `xdotool` to change the window title of
-the viewer to indicate the compilation status: >
+Another neat way to use these options is to use `xdotool` to change the window
+title of the viewer to indicate the compilation status: >
 
   $compiling_cmd = "xdotool search --name \"%D\" " .
                    "set_window --name \"%D compiling...\"";
