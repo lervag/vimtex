@@ -2678,7 +2678,8 @@ OPTIONS                                                        *vimtex-options*
         nnoremap <silent> <localleader>lf :call vimtex#toc#refresh()
 <
     `show_help` : 1
-      Whether to display the index help text.
+      Whether to display help text on top when the ToC is opened. If this is
+      disabled, we only show "Press h to toggle help text.".
 
     `show_numbers` : 1
       Set whether or not to show section numbers in ToC.
