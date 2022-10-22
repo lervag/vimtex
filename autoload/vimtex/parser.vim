@@ -142,9 +142,9 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
 
   " Write content to temporary file
   let l:file = {}
-  let l:file.root = b:vimtex.root
   let l:file.base = l:opts.name
-  let l:file.tex = l:file.root . '/' . l:file.base . '.tex'
+  let l:file.root = l:build_dir
+  let l:file.tex = l:build_dir . '/' . l:file.base . '.tex'
   let l:file.pdf = l:build_dir . '/' . l:file.base . '.pdf'
   let l:file.log = l:build_dir . '/' . l:file.base . '.log'
   let l:file.base .= '.tex'

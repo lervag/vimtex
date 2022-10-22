@@ -109,7 +109,7 @@ function! s:qf.addqflist(tex, log) abort dict "{{{1
 
   " Apply some post processing of the quickfix list
   let self.main = a:tex
-  let self.root = b:vimtex.root
+  let self.root = fnamemodify(a:tex, ':h')
   call self.fix_paths(a:log)
 endfunction
 

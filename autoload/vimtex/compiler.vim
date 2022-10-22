@@ -137,9 +137,10 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
 
   " Create and initialize temporary compiler
   let l:compiler = s:init_compiler({
-        \ 'state' : l:file,
-        \ 'continuous' : 0,
-        \ 'callback' : 0,
+        \ 'state': l:file,
+        \ 'build_dir': '',
+        \ 'continuous': 0,
+        \ 'callback': 0,
         \})
   if empty(l:compiler) | return | endif
 
@@ -149,7 +150,7 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
   call l:compiler.wait()
 
   " Check if successful
-  if vimtex#qf#inquire(l:file.base)
+  if vimtex#qf#inquire(l:file.tex)
     call vimtex#log#set_silent_restore()
     call vimtex#log#warning('Compiling selected lines ... failed!')
     botright cwindow
