@@ -2494,53 +2494,17 @@ OPTIONS                                                        *vimtex-options*
       1 = enable this syntax package if it is detected (DEFAULT)
       2 = always enable this syntax package
 
-  The following is a list of the available packages and, if applicable, their
-  configuration keys or where they deviate from the above specified defaults.
+  The following is a list of packages with additional options or packages that
+  deviate from the above specified defaults:
 
     amsmath~
       `load`  is 2 by default
-    amssymb~
-    array~
-    asymptote~
+
     babel~
       `conceal`  whether to enable conceal; enabled by default
-    beamer~
-    biblatex~
-    booktabs~
-    breqn~
-    cases~
-    circuitikz~
-    cleveref~
-    comment~
-    csquotes~
-    dot2texi~
-    geometry~
-    glossaries_extra~
-    glossaries~
-    gnuplottex~
+
     hyperref~
       `conceal`  whether to enable conceal; enabled by default
-    ieeetrantools~
-    listings~
-    luacode~
-    markdown~
-    mathtools~
-    mhequ~
-    minted~
-    moreverb~
-    natbib~
-    pdfpages~
-    pgfplots~
-    pythontex~
-    siunitx~
-    subfile~
-    tabularx~
-    tcolorbox~
-    tikz~
-    todonotes~
-    url~
-    varioref~
-    wiki~
 
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
