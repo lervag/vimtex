@@ -1,0 +1,23 @@
+---
+# yamllint disable-line rule:truthy
+on:
+  push:
+    paths:
+      - ${{ github.paths }}
+  pull_request:
+    paths:
+      - ${{ github.paths }}
+
+env:
+  paths: assets/json/*.json
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if a json is sorted
+        run: |
+          for json in ${{ github.paths }} ; do
+            diff <(jq -S . $json) $json || exit 1
+          done
