@@ -1,3 +1,5 @@
+---
+# yamllint disable-line rule:truthy
 name: Validate assets
 
 on:
