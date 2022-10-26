@@ -20,8 +20,8 @@ function! vimtex#context#init_state(state) abort " {{{1
 endfunction
 
 let s:handlers = map(
-      \ glob(fnamemodify(expand('<sfile>'), ':r') . '/*.vim', 0, 1),
-      \ "fnamemodify(v:val, ':t:r')")
+      \ glob(expand('<sfile>:r') . '/*.vim', 0, 1),
+      \ { _, x -> fnamemodify(x, ':t:r') })
 
 " }}}1
 

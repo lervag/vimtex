@@ -4,6 +4,14 @@
 " Email:      karl.yngve@gmail.com
 "
 
+function! vimtex#paths#asset(name) abort " {{{1
+  return vimtex#paths#join(s:root, 'assets/' . a:name)
+endfunction
+
+let s:root = resolve(expand('<sfile>:p:h:h:h'))
+
+" }}}1
+
 function! vimtex#paths#pushd(path) abort " {{{1
   if empty(a:path) || getcwd() ==# fnamemodify(a:path, ':p')
     let s:qpath += ['']

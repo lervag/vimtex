@@ -956,4 +956,4 @@ let s:completers = map(
       \ filter(items(s:), 'v:val[0] =~# ''^completer_'''),
       \ 'v:val[1]')
 
-let s:complete_dir = fnamemodify(expand('<sfile>'), ':r') . '/'
+let s:complete_dir = expand('<sfile>:r') . '/'

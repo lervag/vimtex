@@ -269,4 +269,4 @@ endfunction
 
 " }}}1
 
-let s:complete_dir = fnamemodify(expand('<sfile>'), ':h') . '/complete/'
+let s:complete_dir = expand('<sfile>:h') . '/complete/'

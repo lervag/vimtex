@@ -210,8 +210,8 @@ function! vimtex#parser#toc#get_matchers() abort " {{{1
 endfunction
 
 let s:matchers = map(
-      \ glob(fnamemodify(expand('<sfile>'), ':r') . '/*.vim', 0, 1),
-      \ "fnamemodify(v:val, ':t:r')")
+      \ glob(expand('<sfile>:r') . '/*.vim', 0, 1),
+      \ { _, x -> fnamemodify(x, ':t:r') })
 
 " }}}1
 function! vimtex#parser#toc#level(level) abort " {{{1

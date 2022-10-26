@@ -58,7 +58,7 @@ function! s:register_packages() abort " {{{1
 endfunction
 
 let s:addons = map(
-      \ glob(fnamemodify(expand('<sfile>'), ':h') . '/p/*.vim', 0, 1),
-      \ "fnamemodify(v:val, ':t:r')")
+      \ glob(expand('<sfile>:h') . '/p/*.vim', 0, 1),
+      \ { _, x -> fnamemodify(x, ':t:r') })
 
 " }}}1
