@@ -386,8 +386,8 @@ endfunction
 " {{{1 Initialize module
 
 let s:modules = map(
-      \ glob(fnamemodify(expand('<sfile>'), ':r') . '/*.vim', 0, 1),
-      \ "fnamemodify(v:val, ':t:r')")
+      \ glob(expand('<sfile>:r') . '/*.vim', 0, 1),
+      \ { _, x -> fnamemodify(x, ':t:r') })
 call remove(s:modules, index(s:modules, 'test'))
 
 " }}}1

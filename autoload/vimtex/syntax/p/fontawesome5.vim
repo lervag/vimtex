@@ -45,7 +45,6 @@ endfunction
 
 " }}}1
 
-let s:root = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h:h:h')
-let s:fontawesome = json_decode(join(readfile(
-      \ s:root . '/assets/json/fontawesome.json'
-      \)))
+let s:fontawesome = json_decode(join(
+      \ readfile(vimtex#paths#asset('json/fontawesome.json'))
+      \))
