@@ -1,5 +1,5 @@
----
-# yamllint disable-line rule:truthy
+name: Validate assets
+
 on:
   push:
     paths:
@@ -9,14 +9,14 @@ on:
       - ${{ github.paths }}
 
 env:
-  paths: assets/json/*.json
+  paths: assets/json/fontawesome.json
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Check that fontawesome.json is sorted
       - uses: actions/checkout@v3
-      - name: Check if a json is sorted
         run: |
           for json in ${{ github.paths }} ; do
             diff <(jq -S . $json) $json || exit 1
