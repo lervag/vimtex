@@ -18,17 +18,18 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
     " -alt variants correspond to starred commands
     if l:name[-4:] ==# '-alt'
       let l:name = l:name[:-5]
-      let l:nameCased = substitute(l:name, '\%(^\|-\)\(.\)', '\u\1', 'g')
+      let l:nameCased = substitute(l:name, '\v%(^|-)(.)', '\u\1', 'g')
       let l:re =
             \   '\\fa' . l:nameCased . '\*\|'
             \ . '\\faIcon\*\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
     elseif l:name =~# '^\D'
-      let l:nameCased = substitute(l:name, '\%(^\|-\)\(.\)', '\u\1', 'g')
+      let l:nameCased = substitute(l:name, '\v%(^|-)(.)', '\u\1', 'g')
       let l:re =
             \   '\\fa' . l:nameCased . '\>\|'
             \ . '\\faIcon\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
     else
-      " 500px does not have the \faName variant
+      " In this branch l:name ==# "500px"
+      " This case does not have the \faName variant!
       let l:re = '\\faIcon\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
     endif
 
@@ -37,7 +38,6 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
           \ l:re, l:symbol)
   endfor
 
-
   highlight def link texCmdFontawesome texCmd
   highlight def link texFontawesomeArg texArg
   highlight def link texFontawesomeOpt texOpt
@@ -45,6 +45,7 @@ endfunction
 
 " }}}1
 
-let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h:h:h')
-let s:json_path = s:path . '/assets/json/fontawesome.json'
-let s:fontawesome = json_decode(join(readfile(s:json_path), ''))
+let s:root = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h:h:h')
+let s:fontawesome = json_decode(join(readfile(
+      \ s:root . '/assets/json/fontawesome.json'
+      \)))
