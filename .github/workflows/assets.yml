@@ -1,7 +1,7 @@
 ---
-# yamllint disable-line rule:truthy
 name: Validate assets
 
+# yamllint disable-line rule:truthy
 on:
   push:
     paths:
@@ -9,7 +9,6 @@ on:
   pull_request:
     paths:
       - ${{ github.paths }}
-  workflow_dispatch:
 
 env:
   paths: assets/json/fontawesome.json
