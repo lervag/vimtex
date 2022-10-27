@@ -1,18 +1,16 @@
----
 name: Validate assets
 
-# yamllint disable-line rule:truthy
+env:
+  paths: assets/json/fontawesome.json
+
 on:
+  workflow_dispatch:
   push:
     paths:
       - ${{ env.paths }}
   pull_request:
     paths:
       - ${{ env.paths }}
-  workflow_dispatch:
-
-env:
-  paths: assets/json/fontawesome.json
 
 jobs:
   test:
