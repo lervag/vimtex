@@ -1,14 +1,14 @@
 ---
-# yamllint disable-line rule:truthy
 name: Validate assets
 
+# yamllint disable-line rule:truthy
 on:
   push:
     paths:
-      - ${{ github.paths }}
+      - ${{ env.paths }}
   pull_request:
     paths:
-      - ${{ github.paths }}
+      - ${{ env.paths }}
   workflow_dispatch:
 
 env:
@@ -21,6 +21,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check that fontawesome.json is sorted
         run: |
-          for json in ${{ github.paths }} ; do
+          for json in ${{ env.paths }} ; do
             diff <(jq -S . $json) $json || exit 1
           done
