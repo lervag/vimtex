@@ -14,7 +14,7 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
         \ 'opts': 'conceal containedin=texCmdFontawesome',
         \})
 
-  for [l:name, l:symbol] in s:fontawesome
+  for [l:name, l:symbol] in items(s:fontawesome)
     " -alt variants correspond to starred commands
     if l:name[-4:] ==# '-alt'
       let l:name = l:name[:-5]
@@ -25,7 +25,7 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
     elseif l:name =~# '^\D'
       let l:nameCased = substitute(l:name, '\v%(^|-)(.)', '\u\1', 'g')
       let l:re =
-            \   '\\fa' . l:nameCased . '\>\|'
+            \   '\\fa' . l:nameCased . '\>\([^*]\|$\)\@=\|'
             \ . '\\faIcon\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
     else
       " In this branch l:name ==# "500px"
