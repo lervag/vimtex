@@ -20,17 +20,17 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
       let l:name = l:name[:-5]
       let l:nameCased = substitute(l:name, '\v%(^|-)(.)', '\u\1', 'g')
       let l:re =
-            \   '\\fa' . l:nameCased . '\*\|'
-            \ . '\\faIcon\*\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
+            \ '\v\\fa' . l:nameCased . '\*|'
+            \ . '\\faIcon\*\s*%(\[%(regular|solid)])?\s*\{' . l:name . '\}'
     elseif l:name =~# '^\D'
       let l:nameCased = substitute(l:name, '\v%(^|-)(.)', '\u\1', 'g')
       let l:re =
-            \   '\\fa' . l:nameCased . '\>\([^*]\|$\)\@=\|'
-            \ . '\\faIcon\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
+            \ '\v\\fa' . l:nameCased . '>\ze%([^*]|$)|'
+            \ . '\\faIcon\s*%(\[%(regular|solid)])?\s*\{' . l:name . '\}'
     else
       " In this branch l:name ==# "500px"
       " This case does not have the \faName variant!
-      let l:re = '\\faIcon\s*\%(\[\%(regular\|solid\)]\)\?\s*{' . l:name . '}'
+      let l:re = '\v\\faIcon\s*%(\[%(regular|solid)])?\s*\{' . l:name . '\}'
     endif
 
     execute printf(
