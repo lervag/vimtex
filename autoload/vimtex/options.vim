@@ -574,11 +574,18 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexInfoOther', ''],
         \ ['VimtexMsg', 'ModeMsg'],
         \ ['VimtexSuccess', 'Statement'],
+        \ ['VimtexTodo', 'Todo'],
+        \ ['VimtexWarning', 'WarningMsg'],
+        \ ['VimtexError', 'ErrorMsg'],
+        \ ['VimtexFatal', 'Error'],
         \ ['VimtexTocHelp', 'helpVim'],
         \ ['VimtexTocHelpKey', 'ModeMsg'],
         \ ['VimtexTocHelpLayerOn', 'Statement'],
         \ ['VimtexTocHelpLayerOff', 'Comment'],
-        \ ['VimtexTocTodo', 'Todo'],
+        \ ['VimtexTocTodo', 'VimtexTodo'],
+        \ ['VimtexTocWarning', 'VimtexWarning'],
+        \ ['VimtexTocError', 'VimtexError'],
+        \ ['VimtexTocFatal', 'VimtexFatal'],
         \ ['VimtexTocNum', 'Number'],
         \ ['VimtexTocSec0', 'Title'],
         \ ['VimtexTocSec1', ''],
@@ -592,8 +599,6 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexTocLabelsTab', 'String'],
         \ ['VimtexTocIncl', 'Number'],
         \ ['VimtexTocInclPath', ''],
-        \ ['VimtexWarning', 'WarningMsg'],
-        \ ['VimtexError', 'ErrorMsg'],
         \]
     if !hlexists(l:name) && !empty(l:target)
       silent execute 'highlight default link' l:name l:target

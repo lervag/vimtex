@@ -4458,18 +4458,25 @@ Table 1: A list of groups that are only primitive link targets.~
 >
   GROUP                DEFAULT
   ----------------------------------------------------------------------------
+  VimtexMsg            ModeMsg
+  VimtexInfo           Question
+  VimtexTodo           Todo
+  VimtexWarning        WarningMsg
+  VimtexError          ErrorMsg
+  VimtexFatal          Error
+  VimtexSuccess        Statement
   texCmdType           Type
-  texError             Error
   texParm              Special
   texZone              PreCondit
   texSymbol            SpecialChar
+  texError             VimtexError
 
 Table 2: A list of the most common normal LaTeX groups.~
 >
   GROUP                DEFAULT      EXAMPLE
   ----------------------------------------------------------------------------
   texComment           Comment      % COMMENT
-  texCommentTodo       Todo         % TODO
+  texCommentTodo       VimtexTodo   % TODO
   texDelim             Delimiter    {, }, [, and ]
   texCmd               Statement    \CMD
   texOpt               Identifier   \cmd[OPT]
@@ -4560,7 +4567,7 @@ Table 4: A list of other important groups.~
   texCmdLigature       texSpecialChar  \ss; \ae
   texCmdSpaceCodeChar  Special         Catcodes. For more info, see:
                                        https://en.wikibooks.org/wiki/TeX/catcode
-  texCmdTodo           Todo            \TODOSOMETHING
+  texCmdTodo           VimtexTodo      \TODOSOMETHING
   texCmdVerb           texCmd          \VERB
   texVerbZoneInline    texZone         \verb+VERB TEXT+
   texVerbZone          texZone         \begin{verbatim} VERB TEXT \end{verbatim}
