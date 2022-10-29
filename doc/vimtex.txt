@@ -343,7 +343,7 @@ Buffer variable~
   the buffer is already loaded, |:VimtexReloadState| (by default bound to
   |<localleader>lX|) can be used to make VimTeX aware of its new value.
   A convenient way to use this feature is to add an |BufReadPre| |autocmd| in
-  ones |vimrc|. An example is warranted: >
+  one's |vimrc|. An example is warranted: >
 
     augroup VimTeX
       autocmd!
@@ -5094,7 +5094,7 @@ The following is a list of the available checkers:
     https://github.com/nspring/style-check.git
 
 The language of the Tex file is determined by the option |'spelllang'|. This
-option can be specified in ones vimrc file, but it can also be specified in
+option can be specified in one's vimrc file, but it can also be specified in
 a |modeline| (see also the user manual section |21.6| for a gentle
 introduction to the use of modelines).
 
@@ -5410,10 +5410,10 @@ in vim (inverse search).
 
 To make synctex work, it must be enabled. VimTeX enables this by default by
 passing `-synctex=1` on the command line, unless the user overrides the
-option (see the `option` key for |g:vimtex_compiler_latexmk| or
+option (see the `options` key for |g:vimtex_compiler_latexmk| or
 |g:vimtex_compiler_latexrun|).
 
-Alternatively, for |vimtex-compiler-latexmk|, one can put this in ones
+Alternatively, for |vimtex-compiler-latexmk|, one can put this in one's
 `~/.latexmkrc` file: >
 
   $pdflatex = 'pdflatex -synctex=1 %O %S';
@@ -6003,7 +6003,7 @@ Tips:
    operating system's PATH environment variable.
 2. Ensure that the option `-interaction=nonstopmode` is provided to latexmk.
    This is done by default by VimTeX, unless the user provides custom options
-   through |g:vimtex_compiler_latexmk| (see the `option` key). In the latter
+   through |g:vimtex_compiler_latexmk| (see the `options` key). In the latter
    case, the user must ensure that the said option is also provided.
 
 Problem: Text objects on Windows~
