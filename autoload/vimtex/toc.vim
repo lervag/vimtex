@@ -368,9 +368,12 @@ function! s:toc.set_syntax() abort dict "{{{1
   endif
 
   execute 'syntax match VimtexTocTodo'
-        \ '/\v\zs%('
-        \   . toupper(join(keys(g:vimtex_toc_todo_labels), '|')) . '):\ze /'
+        \ '"\v\zs%('
+        \   . toupper(join(keys(g:vimtex_toc_todo_labels), '|')) . '):\ze "'
         \ 'contained'
+  syntax match VimtexTocTodo
+        \ "\v\zs%(an)?fx%(warning|error|fatal|note):\ze "
+        \ contained
 
   syntax match VimtexTocInclPath /.*/ contained
   syntax match VimtexTocIncl /\w\+ incl:/ contained
