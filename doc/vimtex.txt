@@ -684,27 +684,29 @@ Formatting~
 
     - latexindent.pl [3]
     - vim-bucky [4] (note: this is an alpha version as of October 2018)
+    - semantic-linebreaker [5] (note: this is a web-based tool)
 
   Further, there are a range of Vim plugins that can be used to format your
   document with external tools. Some of these also allow autoformatting of
   some kind. In no particular order:
 
-    - neoformat [5]
-    - vim-codefmt [6]
-    - vim-autoformat [7]
-    - ale [8]
-    - vim-sentence-chopper [9]
+    - neoformat [6]
+    - vim-codefmt [7]
+    - vim-autoformat [8]
+    - ale [9]
+    - vim-sentence-chopper [10]
 
   [0]: https://en.wikibooks.org/wiki/LaTeX/Collaborative_Writing_of_LaTeX_Documents
   [1]: http://dustycloud.org/blog/vcs-friendly-patchable-document-line-wrapping/
   [2]: https://rhodesmill.org/brandon/2012/one-sentence-per-line/
   [3]: https://github.com/cmhughes/latexindent.pl
   [4]: https://github.com/dbmrq/vim-bucky
-  [5]: https://github.com/sbdchd/neoformat
-  [6]: https://github.com/google/vim-codefmt
-  [7]: https://github.com/Chiel92/vim-autoformat
-  [8]: https://github.com/dense-analysis/ale
-  [9]: https://github.com/Konfekt/vim-sentence-chopper
+  [5]: https://github.com/waldyrious/semantic-linebreaker
+  [6]: https://github.com/sbdchd/neoformat
+  [7]: https://github.com/google/vim-codefmt
+  [8]: https://github.com/Chiel92/vim-autoformat
+  [9]: https://github.com/dense-analysis/ale
+  [10]: https://github.com/Konfekt/vim-sentence-chopper
 
 Filetype plugin for bib files~
                                                        *vimtex-af-ftplugin-bib*
