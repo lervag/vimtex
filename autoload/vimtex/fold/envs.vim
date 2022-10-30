@@ -81,10 +81,6 @@ function! s:folder.text(line, level) abort dict " {{{1
     let caption = self.parse_caption(a:line)
   endif
 
-  let width = winwidth(0)
-        \ - (&number ? &numberwidth : 0)
-        \ - str2nr(matchstr(&foldcolumn, '\d\+$'))
-
   " Always make room for the label
   let width_rhs = 0
   if !empty(label)
@@ -93,7 +89,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   endif
 
   " Use the remaining width for the left-hand side content
-  let width_lhs = width - width_rhs - 2
+  let width_lhs = vimtex#ui#get_winwidth() - width_rhs - 2
 
   " Add the possibly indented \begin{...} part
   let width_ind = len(matchstr(a:line, '^\s*'))
