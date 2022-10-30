@@ -131,6 +131,41 @@ endfunction
 
 " }}}1
 
+function! vimtex#ui#get_winwidth() abort " {{{1
+  let l:numwidth = (&number || &relativenumber)
+        \ ? max([&numberwidth, strlen(line('$')) + 1])
+        \ : 0
+  let l:foldwidth = str2nr(matchstr(&foldcolumn, '\d\+$'))
+
+  " Get width of signcolumn
+  " Note: A signcolumn is 2-char wide, so in some cases we multiply by 2
+  if &signcolumn ==# 'yes'
+    let l:signwidth = 2
+  elseif &signcolumn =~# 'yes'
+    let l:signwidth = 2*split(&signcolumn, ':')[1]
+  elseif &signcolumn ==# 'auto'
+    let l:signlist = split(execute(
+          \ printf('sign place %s buffer=%d',
+          \   has('nvim-0.4.2') || has('patch-8.1.614') ? 'group=*' : '',
+          \   bufnr())), "\n")
+    let l:signwidth = len(l:signlist) > 2 ? 2 : 0
+  elseif &signcolumn =~# 'auto'
+    " Get number of signs on each line that has a sign
+    let l:sign_lenths = map(
+          \ sign_getplaced(bufnr(), {'group': '*'})[0].signs,
+          \ { _, x -> len(
+          \   sign_getplaced(bufnr(),
+          \                  {'group': '*', 'lnum': x.lnum})[0].signs)})
+    let l:signwidth = 2*max(l:sign_lenths)
+  else
+    let l:signwidth = 0
+  endif
+
+  return winwidth(0) - l:numwidth - l:foldwidth - l:signwidth
+endfunction
+
+" }}}1
+
 function! s:echo_string(msg, opts) abort " {{{1
   echohl VimtexMsg
   echo repeat(' ', a:opts.indent) . a:msg

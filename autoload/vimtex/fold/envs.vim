@@ -81,39 +81,6 @@ function! s:folder.text(line, level) abort dict " {{{1
     let caption = self.parse_caption(a:line)
   endif
 
-  let width = winwidth(0)
-  let numberwidth = max([&numberwidth, strlen(line('$')) + 1])
-  let numwidth = (&number || &relativenumber) ? numberwidth : 0
-  let foldwidth = str2nr(matchstr(&foldcolumn, '\d\+$'))
-
-  if &signcolumn == 'yes'
-    let signwidth = 2
-  elseif &signcolumn =~ 'yes'
-    let signwidth = &signcolumn
-    let signwidth = split(signwidth, ':')[1]
-    let signwidth *= 2  " each signcolumn is 2-char wide
-  elseif &signcolumn == 'auto'
-    let supports_sign_groups = has('nvim-0.4.2') || has('patch-8.1.614')
-    let signlist = execute(printf('sign place ' . (supports_sign_groups ? 'group=* ' : '') . 'buffer=%d', bufnr('')))
-    let signlist = split(signlist, "\n")
-    let signwidth = len(signlist) > 2 ? 2 : 0
-  elseif &signcolumn =~ 'auto'
-    let signwidth = 0
-    if len(sign_getplaced(bufnr(),{'group':'*'})[0].signs)
-      let signwidth = 0
-      for l:sign in sign_getplaced(bufnr(),{'group':'*'})[0].signs
-        let lnum = l:sign.lnum
-        let signs = len(sign_getplaced(bufnr(),{'group':'*', 'lnum':lnum})[0].signs)
-        let signwidth = (signs > signwidth ? signs : signwidth)
-      endfor
-    endif
-    let signwidth *= 2   " each signcolumn is 2-char wide
-  else
-    let signwidth = 0
-  endif
-
-  let width = width - numwidth - foldwidth - signwidth
-
   " Always make room for the label
   let width_rhs = 0
   if !empty(label)
@@ -122,7 +89,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   endif
 
   " Use the remaining width for the left-hand side content
-  let width_lhs = width - width_rhs - 2
+  let width_lhs = vimtex#ui#get_winwidth() - width_rhs - 2
 
   " Add the possibly indented \begin{...} part
   let width_ind = len(matchstr(a:line, '^\s*'))
