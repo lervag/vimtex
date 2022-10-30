@@ -1412,7 +1412,7 @@ OPTIONS                                                        *vimtex-options*
         |g:vimtex#delim#re|, which contains full regexes for matching opening
         and/or closing delimiters of the desired type.
 
-  Default value: See `s:init_delim_lists()` in `autoload/vimtex/delim.vim`.
+  Default value: See `s:init_delim_lists()` in `/autoload/vimtex/delim.vim`.
 
 *g:vimtex_delim_toggle_mod_list*
   Defines a list of delimiter modifiers to toggle through using the maps:
@@ -1931,7 +1931,7 @@ OPTIONS                                                        *vimtex-options*
   The list of mappings to generate on start up. The list of activated mappings
   can be viewed with |:VimtexImapsList|.
 
-  Default value: See `autoload/vimtex/options.vim` (it's a long list)
+  Default value: See `/autoload/vimtex/options.vim` (it's a long list)
 
 *g:vimtex_include_indicators*
   VimTeX will recognize included files for a lot of different purposes. Most
@@ -2696,7 +2696,7 @@ OPTIONS                                                        *vimtex-options*
           \}
 <
   Note: The available built-in matchers are defined in separate files under
-        `autoload/vimtex/parser/toc/*.vim`.
+        `/autoload/vimtex/parser/toc/*.vim`.
 
   Default value: {}
 
@@ -2707,7 +2707,7 @@ OPTIONS                                                        *vimtex-options*
   the specification of the `toc entry` return value. However, since this kind
   of customization is advanced I refer users to the source file for further
   specification of these objects. In particular, see the function
-  `s:toc.parse(...)` in `autoload/vimtex/toc.vim`.
+  `s:toc.parse(...)` in `/autoload/vimtex/toc.vim`.
 
     re~
       Type: |String|
@@ -2762,8 +2762,8 @@ OPTIONS                                                        *vimtex-options*
       Returns: `toc entry`
       Required: `no`
       This is the general way to define ToC entries. It allows to define the
-      ToC entry based on the context. See `autoload/vimtex/parser/toc.vim` for
-      examples on how to use this.
+      ToC entry based on the context. See `/autoload/vimtex/parser/toc.vim`
+      for examples on how to use this.
 
     continue~
       Type: |Dictionary-function|
@@ -3803,8 +3803,8 @@ completion is also available after `\begin{` or `\end{`.  As with commands, the
 suggested environment names come from the loaded packages and `\newenvironment`
 definitions in the preamble.
 
-A lot of packages are supported, see the path `VIMTEX/autoload/vimtex/complete`
-for a relevant file listing.
+A lot of packages are supported, see the path `/autoload/vimtex/complete` for
+a relevant file listing.
 
 ------------------------------------------------------------------------------
 COMPLETE FILE NAMES                                 *vimtex-complete-filenames*
@@ -4446,10 +4446,10 @@ primitive groups are linked to conventional syntax groups as listed in
 parts are matched by the current group. For even more details, please refer to
 the code itself:
 * Core elements: The `vimtex#syntax#core#init_highlights()` function in the
-  file `autoload/vimtex/syntax/core.vim` specifies the default highlighting of
-  the core groups.
+  file `/autoload/vimtex/syntax/core.vim` specifies the default highlighting
+  of the core groups.
 * Package specific groups and elements are defined in the package specific
-  scripts: `autoload/vimtex/syntax/p/*.vim`.
+  scripts: `/autoload/vimtex/syntax/p/*.vim`.
 
 Note:
 * This is only a reference of the main groups. There are also other groups
