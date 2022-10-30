@@ -1578,8 +1578,14 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_fold_enabled*
-  Use this option to enable folding. More detailed info can be found in the
-  section |vimtex-folding|.
+  Use this option to enable folding, which means VimTeX will enable the
+  following options for LaTeX files: >
+
+    setlocal foldmethod=expr
+    setlocal foldexpr=vimtex#fold#level(v:lnum)
+    setlocal foldtext=vimtex#fold#text()
+<
+  More detailed info can be found in the section |vimtex-folding|.
 
   Default value: 0
 
@@ -1789,8 +1795,13 @@ OPTIONS                                                        *vimtex-options*
           \}
 
 *g:vimtex_fold_bib_enabled*
-  Use this option to enable/disable folding in .bib files.
+  Use this option to enable/disable folding in `.bib` files. When enabled,
+  VimTeX will set the following options for `.bib` files: >
 
+    setlocal foldmethod=expr
+    setlocal foldexpr=vimtex#fold#bib#level(v:lnum)
+    setlocal foldtext=vimtex#fold#bib#text()
+<
   Note: The default value is the same as |g:vimtex_fold_enabled|. Thus, it
         suffices to enabled folds for tex files to also enable for bib files.
         But if you want to enable in tex files but keep bib folding disabled,
