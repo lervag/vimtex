@@ -3523,8 +3523,9 @@ https://github.com/lervag/vimtex/issues/295#issuecomment-164262446
 It has been decided that the best approach is to only provide basic mappings,
 and to let users manually create automatic snippets through the anonymous
 snippet functions in |UltiSnips| and |neosnippet|, please see |UltiSnips#Anon|
-and |neosnippet#anonymous|, respectively. Here are a couple of examples that
-show how to create such mappings: >
+and |neosnippet#anonymous|, respectively (these will work if the respective
+plugins are installed). Here are a couple of examples that show how to create
+such mappings: >
 
     " Using neosnippet#anonymous
     inoremap <silent><expr> __ neosnippet#anonymous('_${1}${0}')
