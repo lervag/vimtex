@@ -15,7 +15,7 @@ let s:matcher = {
       \ 'prefilter_re' : '\%\s*%('
       \   . join(keys(g:vimtex_toc_todo_labels), '|') . ')',
       \ 'priority' : 2,
-      \ 're' : g:vimtex#re#not_bslash . '\%\s+('
+      \ 're' : g:vimtex#re#not_bslash . '\%\s*('
       \   . join(keys(g:vimtex_toc_todo_labels), '|') . ')[ :]+\s*(.*)',
       \}
 function! s:matcher.get_entry(context) abort dict " {{{1
