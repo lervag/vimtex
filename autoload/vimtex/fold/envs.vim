@@ -81,10 +81,6 @@ function! s:folder.text(line, level) abort dict " {{{1
     let caption = self.parse_caption(a:line)
   endif
 
-  " let width = winwidth(0)
-  "       \ - (&number ? &numberwidth : 0)
-  "       \ - str2nr(matchstr(&foldcolumn, '\d\+$'))
-
   let width = winwidth(0)
   let numberwidth = max([&numberwidth, strlen(line('$')) + 1])
   let numwidth = (&number || &relativenumber) ? numberwidth : 0
