@@ -109,8 +109,8 @@ function! vimtex#qf#setqflist(...) abort " {{{1
     let l:jump = 0
   else
     let l:tex = b:vimtex.tex
-    let l:log = b:vimtex.log()
-    let l:blg = b:vimtex.ext('blg')
+    let l:log = b:vimtex.get_aux_file('log')
+    let l:blg = b:vimtex.get_aux_file('blg')
     let l:jump = g:vimtex_quickfix_autojump
   endif
 

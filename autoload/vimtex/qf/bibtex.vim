@@ -73,7 +73,7 @@ endfunction
 " }}}1
 function! s:qf.get_db_files() abort " {{{1
   if empty(self.db_files)
-    let l:build_dir = fnamemodify(b:vimtex.ext('log'), ':.:h') . '/'
+    let l:build_dir = fnamemodify(b:vimtex.get_aux_file('log'), ':.:h') . '/'
     for l:file in map(
           \ filter(readfile(self.file), 'v:val =~# ''Database file #\d:'''),
           \ 'matchstr(v:val, '': \zs.*'')')

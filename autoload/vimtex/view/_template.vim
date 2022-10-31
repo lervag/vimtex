@@ -38,7 +38,7 @@ function! s:viewer.out() dict abort " {{{1
       call writefile(readfile(b:vimtex.out(), 'b'), l:out, 'b')
     endif
 
-    let l:old = b:vimtex.ext('synctex.gz')
+    let l:old = b:vimtex.get_aux_file('synctex.gz')
     let l:new = fnamemodify(l:out, ':r') . '.synctex.gz'
     if getftime(l:old) > getftime(l:new)
       call rename(l:old, l:new)

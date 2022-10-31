@@ -74,7 +74,7 @@ function! RunTests(comp, list_opts)
     silent call vimtex#compiler#clean(1)
     sleep 650m
 
-    if !empty(b:vimtex.out()) || !empty(b:vimtex.aux())
+    if !empty(b:vimtex.out()) || !empty(b:vimtex.get_aux_file('aux'))
       echo "VimtexClean failed!\n"
       cquit
     endif

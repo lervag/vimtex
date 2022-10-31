@@ -116,7 +116,7 @@ endfunction
 function! s:vimtex.update_packages() abort dict " {{{1
   " Try to parse .fls file if present, as it is usually more complete. That is,
   " it contains a generated list of all the packages that are used.
-  for l:line in vimtex#parser#fls(self.fls())
+  for l:line in vimtex#parser#fls(self.get_aux_file('fls'))
     let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
     let l:package = fnamemodify(l:package, ':t')
     if !empty(l:package)
@@ -161,7 +161,7 @@ endfunction
 
 " }}}1
 
-function! s:vimtex.ext(ext, ...) abort dict " {{{1
+function! s:vimtex.get_aux_file(ext, ...) abort dict " {{{1
   " Check for various output directories
   " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
   "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
@@ -189,23 +189,8 @@ function! s:vimtex.ext(ext, ...) abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:vimtex.log() abort dict " {{{1
-  return self.ext('log')
-endfunction
-
-" }}}1
-function! s:vimtex.aux() abort dict " {{{1
-  return self.ext('aux')
-endfunction
-
-" }}}1
-function! s:vimtex.fls() abort dict " {{{1
-  return self.ext('fls')
-endfunction
-
-" }}}1
 function! s:vimtex.out(...) abort dict " {{{1
-  return call(self.ext, ['pdf'] + a:000, self)
+  return call(self.get_aux_file, ['pdf'] + a:000, self)
 endfunction
 
 " }}}1

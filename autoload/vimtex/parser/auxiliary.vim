@@ -19,11 +19,13 @@ function! vimtex#parser#auxiliary#labels() abort " {{{1
   "
   " Returns a list of candidates like {'word': name, 'menu': type number page}.
   "
-  let l:files = [[b:vimtex.aux(), '']]
+  let l:files = [[b:vimtex.get_aux_file('aux'), '']]
 
   " Handle local file editing (e.g. subfiles package)
   if exists('b:vimtex_local') && b:vimtex_local.active
-    let l:files += [[vimtex#state#get(b:vimtex_local.main_id).aux(), '']]
+    let l:files += [
+          \ [vimtex#state#get(b:vimtex_local.main_id).get_aux_file('aux'), '']
+          \]
   endif
 
   " Add externaldocuments (from \externaldocument in preamble)

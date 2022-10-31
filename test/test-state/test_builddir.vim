@@ -9,7 +9,7 @@ call vimtex#log#set_silent()
 function! TestBuildDir(expected) abort
   silent edit test.tex
   let l:build_dir = vimtex#paths#shorten_relative(
-        \ fnamemodify(b:vimtex.ext('dummy', 1), ':h'))
+        \ fnamemodify(b:vimtex.get_aux_file('dummy', 1), ':h'))
   call assert_equal(a:expected, l:build_dir)
   bwipeout
 endfunction

@@ -6,7 +6,7 @@
 
 function! vimtex#bib#files() abort " {{{1
   if has_key(b:vimtex.packages, 'biblatex')
-    let l:file = b:vimtex.ext('bcf')
+    let l:file = b:vimtex.get_aux_file('bcf')
     if filereadable(l:file)
       let l:bibs = map(
             \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
@@ -18,7 +18,7 @@ function! vimtex#bib#files() abort " {{{1
     endif
   endif
 
-  let l:file = b:vimtex.ext('blg')
+  let l:file = b:vimtex.get_aux_file('blg')
   if filereadable(l:file)
     let l:bibs = map(
           \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
