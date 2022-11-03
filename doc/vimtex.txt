@@ -382,8 +382,9 @@ TeX root directive~
   As can be seen, the words "tex root" are recognized regardless of casing and
   the spaces are ignored. Also, both a colon and an equal sign can be used.
 
-  You need to reload (`:VimtexReload`) or restart whenever you change the tex
-  root directive.
+  VimTeX parses this directive during initialization. Thus, users should be
+  aware that they need to reload (with |:VimtexReload|) or restart Vim/neovim
+  if they change the TeX root directive.
 
   Note: It is allowed to use a globbing pattern (see |wildcards|). If there
         are multiple matches, then VimTeX will ask for input when the buffer
