@@ -319,11 +319,16 @@ Clientserver~
 ------------------------------------------------------------------------------
 SUPPORT FOR MULTI-FILE PROJECTS                             *vimtex-multi-file*
 
-VimTeX supports most multi-file documents.  The main method uses a recursive
-search algorithm that should find the main LaTeX file in most cases.  For
-special cases, there are several alternative methods for specifying the main
-file.  These alternative methods all require some explicit declaration of the
-main file.  Thus, these methods will be tried first, and the recursive search
+VimTeX supports most multi-file documents and has several methods to locate
+the `main` document. Locating this file is very important, because the main
+file is the one that must be compiled.
+
+The main method for locating the main file uses a recursive search algorithm
+that should find the main LaTeX file in most cases (method 6 in the list
+below). There are several alternative methods for specifying the main file
+that can be more flexible and is relevant for certain work flows and use
+cases. These alternative methods all require some explicit declaration of the
+main file. Thus, these methods will be tried first, and the recursive search
 is tried last if there are no explicit declarations that yield an appropriate
 main LaTeX file candidate.
 
@@ -445,18 +450,44 @@ Local latexmkrc file specifier~
 Recursive search~
   If no other method provides an appropriate candidate, then the recursive
   search detects the main LaTeX file by searching for a file in the current
-  and parent directories that includes the present file and has the
-  `\documentclass` line.
+  and parent directories that
 
-  This should work in most cases, but it may fail if for instance the project
-  structure is something like this: >
+  1. includes the present file (directly or indirectly),
+  2. has a `\documentclass` line near the top, and
+  3. contains `\begin{document}` (or includes a file that does).
+
+  As long as a project follows these rules, the recursive search should work.
+  Notice, though, that the first point is important and is where the recursive
+  nature is implemented. There must be a "straight" inclusive line from the
+  main file to the present file. If not, then rule 1 is violated.
+
+  Let's consider a common construct that will fail: >
+
+    % preamble.tex
+    \documentclass{article}
+    \usepackage{mypackages}
+    ...
+
+    % main.tex
+    \input{preamble}
+    \begin{document}
+    Hello world
+    \end{document}
+<
+  In this case, `main.tex` is _not_ recognized as a valid main file, because
+  it does not include `\documentclass`. Further, no other main file is found
+  that includes this file. Thus, VimTeX is not able to properly parse it.
+
+  Another example where the algorithm may fail: >
 
     path1/main.tex
     path2/chapter.tex
 <
-  That is, the main file detection will not work for the file `chapter.tex`,
-  because the main file does not live in the same folder or a parent folder.
-  In this particular case, the TeX root directive should work.
+  In this example, the main file does not live in the same folder or a parent
+  folder, and so the recursive search fails.
+
+  In these cases where the recursive method fails, one may safely rely on the
+  TeX root directive as an alternative.
 
   Note: In rare cases, such as if there are _very_ many tex files in the
         directory tree, this method may be slow. One may therefore disable it
