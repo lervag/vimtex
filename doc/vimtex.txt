@@ -453,8 +453,8 @@ Recursive search~
   and parent directories that
 
   1. includes the present file (directly or indirectly),
-  2. has a `\documentclass` line near the top, and
-  3. contains `\begin{document}` (or includes a file that does).
+  2. has a `\documentclass` line near the top of its parsed content, and
+  3. contains `\begin{document}` in its parsed content.
 
   As long as a project follows these rules, the recursive search should work.
   Notice, though, that the first point is important and is where the recursive
@@ -462,23 +462,6 @@ Recursive search~
   main file to the present file. If not, then rule 1 is violated.
 
   Let's consider a common construct that will fail: >
-
-    % preamble.tex
-    \documentclass{article}
-    \usepackage{mypackages}
-    ...
-
-    % main.tex
-    \input{preamble}
-    \begin{document}
-    Hello world
-    \end{document}
-<
-  In this case, `main.tex` is _not_ recognized as a valid main file, because
-  it does not include `\documentclass`. Further, no other main file is found
-  that includes this file. Thus, VimTeX is not able to properly parse it.
-
-  Another example where the algorithm may fail: >
 
     path1/main.tex
     path2/chapter.tex

@@ -475,23 +475,23 @@ endfunction
 function! s:file_is_main(file) abort " {{{1
   if !filereadable(a:file) | return 0 | endif
 
+  let l:preamble = vimtex#parser#preamble(a:file, {
+        \ 'inclusive' : 1,
+        \ 'root' : fnamemodify(a:file, ':p:h'),
+        \})
+
   " Check if a:file is a main file by looking for the \documentclass command,
   " but ignore the following:
-  "
-  "   \documentclass[...]{subfiles}
-  "   \documentclass[...]{standalone}
-  "
-  let l:lines = readfile(a:file, 0, 50)
+  " * \documentclass[...]{subfiles}
+  " * \documentclass[...]{standalone}
+  let l:lines = copy(l:preamble)
   call filter(l:lines, 'v:val =~# ''^\s*\\documentclass\_\s*[\[{]''')
   call filter(l:lines, 'v:val !~# ''{subfiles}''')
   call filter(l:lines, 'v:val !~# ''{standalone}''')
   if len(l:lines) == 0 | return 0 | endif
 
-  " A main file contains `\begin{document}`
-  let l:lines = vimtex#parser#preamble(a:file, {
-        \ 'inclusive' : 1,
-        \ 'root' : fnamemodify(a:file, ':p:h'),
-        \})
+  " A main file must also contain `\begin{document}`
+  let l:lines = copy(l:preamble)
   call filter(l:lines, 'v:val =~# ''^\s*\\begin\s*{document}''')
   return len(l:lines) > 0
 endfunction
