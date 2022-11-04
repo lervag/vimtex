@@ -60,4 +60,9 @@ call vimtex#test#main('test-bib-alternate/references.bib', 'test-bib-alternate/m
 call vimtex#test#main('test-standalone/a/a.tex', 'test-standalone/main.tex')
 call vimtex#test#main('test-standalone/a/a.tex', 'test-standalone/a/a.tex', 1)
 
+" Test included preamble
+call vimtex#test#main(
+      \ './test-included-preamble/preamble.tex',
+      \ './test-included-preamble/main.tex')
+
 call vimtex#test#finished()
