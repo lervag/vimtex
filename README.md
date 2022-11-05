@@ -61,6 +61,12 @@ Or use some other plugin manager:
 * [neobundle](https://github.com/Shougo/neobundle.vim)
 * [pathogen](https://github.com/tpope/vim-pathogen)
 
+Note that some plugin managers provide mechanisms for lazy loading of plugins,
+e.g., based on the filetype. This is explicitly _discouraged_. Firstly, it
+complicates some mechansims, e.g., inverse search through PDF viewers.
+Secondly, there is also little gain in this since VimTeX is already lazily
+loaded as a filetype plugin.
+
 If you use the new package feature in Vim, please note the following:
 * Make sure to read and understand the package feature: `:help package`!
 * Use the `/pack/foo/start` subdirectory to make sure the filetype plugin is
