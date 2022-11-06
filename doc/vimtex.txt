@@ -477,10 +477,6 @@ Directory scan~
   In cases where automatic detection of the main file through the directory
   scan fails, one may explicitly set up method 1 to 5 instead.
 
-  Note: In rare cases, such as if there are _very_ many tex files in the
-        directory tree, this method may be slow. One may therefore disable it
-        by the option |g:vimtex_disable_directory_scan_main_file_detection|.
-
 ------------------------------------------------------------------------------
 SUPPORT FOR TEX DIRECTIVES                              *vimtex-tex-directives*
 
@@ -1497,15 +1493,6 @@ OPTIONS                                                        *vimtex-options*
   should work well for most people.
 
   Default value: 500
-
-*g:vimtex_disable_directory_scan_main_file_detection*
-  In rare cases, the directory scan method of finding the main file in multi
-  file projects may be slow. This might happen for instance when there are
-  _very_ many tex files in the directories scanned. In such cases, one may
-  disable the directory scan method by setting this variable to a nonzero
-  value.
-
-  Default value: 0
 
 *g:vimtex_doc_handlers*
   With this option, one may specify a list of custom documentation handlers.
@@ -6120,10 +6107,9 @@ The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
-2022-11-05: Better main file detection algorithm~
+2022-11-06: Better main file detection algorithm~
 The detection whether a file is a main file has been improved. In course of
-this *g:vimtex_disable_recursive_main_file_detection* has been deprecated in
-favor of |g:vimtex_disable_directory_scan_main_file_detection|.
+this *g:vimtex_disable_recursive_main_file_detection* has been removed.
 
 2021-10-25: Better inverse search~
 Deprecate *g:vimtex_compiler_progname* as it is no longer necessary.
