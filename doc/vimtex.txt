@@ -323,7 +323,7 @@ VimTeX supports most multi-file documents and has several methods to locate
 the `main` document. Locating this file is very important, because the main
 file is the one that must be compiled.
 
-The default method for locating the main file uses a directory scan algorithm
+The default method for locating the main file uses a directory-scan algorithm
 that searches for a main LaTeX file, see method 6 below. It is expected to
 work in the vast majority of cases.
 
@@ -449,33 +449,31 @@ Local latexmkrc file specifier~
         entry that is found.
 
 Directory scan~
-  If the above methods give no appropriate candidate for a main file of the
-  present file then a search for a suitable main file from the current
-  directory upwards is started.
+  If the above methods don't give an appropriate candidate for a main file of
+  the present file, then a search for a suitable main file from the current
+  directory and upwards is started.
 
-  To test whether a candidate tex file qualifies as a main file the following
-  happens: First, the candidate tex file is parsed and recursively expanded by
-  all tex files included. Then it is checked whether all of the following
-  three requirements are met in order to qualify as a main file for the
-  present file:
+  A candidate `.tex` file qualifies as a main file if the following three
+  requirements are all satisfied:
 
   1. It includes the present file, either directly or indirectly.
   2. The expanded content contains a `\documentclass` line near the top.
   3. The expanded content contains `\begin{document}`.
 
-  Note that the main file itself does not need to contain the `\documentclass`
-  line and `\begin{docment}`; it could instead stem from included tex files.
-
-  See details on |g:vimtex_include_indicators| for all commands that are
-  considered to include tex files by the parser for the recursive expansion.
-
-  Note that no recursive directory descents are performed to find a main file.
-  That is, if the current file is `./B/chapter.tex` then `./A/main.tex` will not
-  be found as the main file, because the descent to subdirectory `./A/` is not
-  performed.
+  Notice that the main file itself does not need to contain the
+  `\documentclass` line and `\begin{docment}`, since these can stem from
+  included `.tex` files. The option |g:vimtex_include_indicators| is used by
+  the parser to specify commands that include `.tex` files for the recursive
+  expansion.
 
   In cases where automatic detection of the main file through the directory
-  scan fails, one may explicitly set up method 1 to 5 instead.
+  scan fails, one may explicitly set up method 1 to 5 instead. The
+  |vimtex-tex-root| is usually a good alternative.
+
+  Note: Recursive directory descents are not performed to find the main file.
+        That is, if the current file is `./B/chapter.tex` then `./A/main.tex`
+        will not be found as the main file, because the descent to
+        subdirectory `./A/` is not performed.
 
 ------------------------------------------------------------------------------
 SUPPORT FOR TEX DIRECTIVES                              *vimtex-tex-directives*
@@ -6108,8 +6106,9 @@ changes that break backwards compatibility.  See the git log for the detailed
 changelog.
 
 2022-11-06: Better main file detection algorithm~
-The detection whether a file is a main file has been improved. In course of
-this *g:vimtex_disable_recursive_main_file_detection* has been removed.
+The detection whether a file is a main file has seen gradual improvements. In
+course of this, *g:vimtex_disable_recursive_main_file_detection* has been
+removed.
 
 2021-10-25: Better inverse search~
 Deprecate *g:vimtex_compiler_progname* as it is no longer necessary.
