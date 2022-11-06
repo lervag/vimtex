@@ -323,23 +323,24 @@ VimTeX supports most multi-file documents and has several methods to locate
 the `main` document. Locating this file is very important, because the main
 file is the one that must be compiled.
 
-The main method for locating the main file uses a recursive search algorithm
-that should find the main LaTeX file in most cases (method 6 in the list
-below). There are several alternative methods for specifying the main file
-that can be more flexible and is relevant for certain work flows and use
-cases. These alternative methods all require some explicit declaration of the
-main file. Thus, these methods will be tried first, and the recursive search
-is tried last if there are no explicit declarations that yield an appropriate
-main LaTeX file candidate.
+The default method for locating the main file uses a directory scan algorithm
+that searches for a main LaTeX file, see method 6 below. It is expected to
+work in the vast majority of cases.
 
-The methods are tried in the following order:
+There are several alternative methods for specifying the main file that can be
+more flexible and are relevant for certain work flows and use cases. These
+methods all require some explicit declaration of the main file and are
+therefore tried prior to the directory scan.
+
+The complete list of methods in the order of priority is as follows and are
+then described in more detail:
 
   1. Buffer variable
   2. TeX root directive
   3. Subfiles package
   4. File `.latexmain` specifier
   5. Local `latexmkrc` file specifier (from `@default_files` option)
-  6. Recursive search
+  6. Directory scan
 
                                                                  *b:vimtex_main*
 Buffer variable~
@@ -447,34 +448,38 @@ Local latexmkrc file specifier~
   Note: `@default_files` is a list of files, VimTeX will use the first
         entry that is found.
 
-Recursive search~
-  If no other method provides an appropriate candidate, then the recursive
-  search detects the main LaTeX file by searching for a file in the current
-  and parent directories that
+Directory scan~
+  If the above methods give no appropriate candidate for a main file of the
+  present file then a search for a suitable main file from the current
+  directory upwards is started.
 
-  1. includes the present file (directly or indirectly),
-  2. has a `\documentclass` line near the top of its parsed content, and
-  3. contains `\begin{document}` in its parsed content.
+  To test whether a candidate tex file qualifies as a main file the following
+  happens: First, the candidate tex file is parsed and recursively expanded by
+  all tex files included. Then it is checked whether all of the following
+  three requirements are met in order to qualify as a main file for the
+  present file:
 
-  As long as a project follows these rules, the recursive search should work.
-  Notice, though, that the first point is important and is where the recursive
-  nature is implemented. There must be a "straight" inclusive line from the
-  main file to the present file. If not, then rule 1 is violated.
+  1. It includes the present file, either directly or indirectly.
+  2. The expanded content contains a `\documentclass` line near the top.
+  3. The expanded content contains `\begin{document}`.
 
-  Let's consider a common construct that will fail: >
+  Note that the main file itself does not need to contain the `\documentclass`
+  line and `\begin{docment}`; it could instead stem from included tex files.
 
-    path1/main.tex
-    path2/chapter.tex
-<
-  In this example, the main file does not live in the same folder or a parent
-  folder, and so the recursive search fails.
+  See details on |g:vimtex_include_indicators| for all commands that are
+  considered to include tex files by the parser for the recursive expansion.
 
-  In these cases where the recursive method fails, one may safely rely on the
-  TeX root directive as an alternative.
+  Note that no recursive directory descents are performed to find a main file.
+  That is, if the current file is `./B/chapter.tex` then `./A/main.tex` will not
+  be found as the main file, because the descent to subdirectory `./A/` is not
+  performed.
+
+  In cases where automatic detection of the main file through the directory
+  scan fails, one may explicitly set up method 1 to 5 instead.
 
   Note: In rare cases, such as if there are _very_ many tex files in the
         directory tree, this method may be slow. One may therefore disable it
-        through the option |g:vimtex_disable_recursive_main_file_detection|.
+        by the option |g:vimtex_disable_directory_scan_main_file_detection|.
 
 ------------------------------------------------------------------------------
 SUPPORT FOR TEX DIRECTIVES                              *vimtex-tex-directives*
@@ -1493,11 +1498,11 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 500
 
-*g:vimtex_disable_recursive_main_file_detection*
-  In rare cases, the recursive method of finding the main file in multi file
-  projects may be slow. This might happen for instance when there are _very_
-  many tex files in the directory tree that is searched. In such cases, one
-  may disable the recursive method by setting this variable to a nonzero
+*g:vimtex_disable_directory_scan_main_file_detection*
+  In rare cases, the directory scan method of finding the main file in multi
+  file projects may be slow. This might happen for instance when there are
+  _very_ many tex files in the directories scanned. In such cases, one may
+  disable the directory scan method by setting this variable to a nonzero
   value.
 
   Default value: 0
@@ -6114,6 +6119,11 @@ CHANGELOG                                                    *vimtex-changelog*
 The following changelog only logs particularly important changes, such as
 changes that break backwards compatibility.  See the git log for the detailed
 changelog.
+
+2022-11-05: Better main file detection algorithm~
+The detection whether a file is a main file has been improved. In course of
+this *g:vimtex_disable_recursive_main_file_detection* has been deprecated in
+favor of |g:vimtex_disable_directory_scan_main_file_detection|.
 
 2021-10-25: Better inverse search~
 Deprecate *g:vimtex_compiler_progname* as it is no longer necessary.

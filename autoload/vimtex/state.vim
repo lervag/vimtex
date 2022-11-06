@@ -237,7 +237,7 @@ function! s:get_main() abort " {{{1
   endif
 
   " Search for main file recursively through include specifiers
-  if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
+  if !get(g:, 'vimtex_disable_directory_scan_main_file_detection', 0)
     if &filetype ==# 'tex'
       let l:candidate = s:get_main_choose(s:get_main_recurse())
       if !empty(l:candidate)
