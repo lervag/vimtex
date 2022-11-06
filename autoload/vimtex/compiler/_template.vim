@@ -357,10 +357,9 @@ function! s:compiler_nvim.exec(cmd) abort dict " {{{1
     let l:shell.on_exit = function('s:callback_nvim_exit')
   endif
 
-  let s:saveshell = [&shell, &shellcmdflag]
-  set shell& shellcmdflag&
+  call vimtex#jobs#neovim#shell_default()
   let self.job = jobstart(a:cmd, l:shell)
-  let [&shell, &shellcmdflag] = s:saveshell
+  call vimtex#jobs#neovim#shell_restore()
 endfunction
 
 " }}}1

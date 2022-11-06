@@ -24,6 +24,18 @@ endfunction
 
 " }}}1
 
+function! vimtex#jobs#neovim#shell_default() abort " {{{1
+  let s:saveshell = [&shell, &shellcmdflag, &shellslash]
+  set shell& shellcmdflag& shellslash&
+endfunction
+
+" }}}1
+function! vimtex#jobs#neovim#shell_restore() abort " {{{1
+  let [&shell, &shellcmdflag, &shellslash] = s:saveshell
+endfunction
+
+" }}}1
+
 let s:os = has('win32') ? 'win' : 'unix'
 
 
@@ -144,22 +156,16 @@ endfunction
 " }}}1
 
 function! s:neovim_win_run(cmd) abort " {{{1
-  let s:saveshell = [&shell, &shellcmdflag, &shellslash]
-  set shell& shellcmdflag& shellslash&
-
+  call vimtex#jobs#neovim#shell_default()
   call system('cmd /s /c "' . a:cmd . '"')
-
-  let [&shell, &shellcmdflag, &shellslash] = s:saveshell
+  call vimtex#jobs#neovim#shell_restore()
 endfunction
 
 " }}}1
 function! s:neovim_win_capture(cmd) abort " {{{1
-  let s:saveshell = [&shell, &shellcmdflag, &shellslash]
-  set shell& shellcmdflag& shellslash&
-
+  call vimtex#jobs#neovim#shell_default()
   let l:output = systemlist('cmd /s /c "' . a:cmd . '"')
-
-  let [&shell, &shellcmdflag, &shellslash] = s:saveshell
+  call vimtex#jobs#neovim#shell_restore()
 
   return l:output
 endfunction
