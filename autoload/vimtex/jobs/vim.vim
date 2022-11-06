@@ -33,7 +33,8 @@ function! vimtex#jobs#vim#shell_default() abort " {{{1
         \ &shellredir,
         \ &shellslash
         \]
-  set shell& shellcmdflag& shellquote& shellxquote& shellredir& shellslash&
+  set shellcmdflag& shellquote& shellxquote& shellredir& shellslash&
+  let &shell = 'cmd.exe'
 endfunction
 
 " }}}1

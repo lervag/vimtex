@@ -26,7 +26,8 @@ endfunction
 
 function! vimtex#jobs#neovim#shell_default() abort " {{{1
   let s:saveshell = [&shell, &shellcmdflag, &shellslash]
-  set shell& shellcmdflag& shellslash&
+  set shellcmdflag& shellslash&
+  let &shell = 'cmd.exe'
 endfunction
 
 " }}}1
