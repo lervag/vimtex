@@ -61,11 +61,12 @@ Or use some other plugin manager:
 * [neobundle](https://github.com/Shougo/neobundle.vim)
 * [pathogen](https://github.com/tpope/vim-pathogen)
 
-Note that some plugin managers provide mechanisms for lazy loading of plugins,
-e.g., based on the filetype. This is explicitly _discouraged_. Firstly, it
-complicates some mechansims, e.g., inverse search through PDF viewers.
-Secondly, there is also little gain in this since VimTeX is already lazily
-loaded as a filetype plugin.
+**Note**: Many plugin managers provide mechanisms to lazy load plugins. Please
+    don't use this for VimTeX! VimTeX is already lazy loaded by virtue of being
+    a filetype plugin and by using the autoload mechanisms. There is therefore
+    nothing to gain by forcing VimTeX to lazily load through the plugin
+    manager. In fact, doing it will _break_ the inverse-search mechanism, which
+    relies on a _global_ command (`:VimtexInverseSearch`).
 
 If you use the new package feature in Vim, please note the following:
 * Make sure to read and understand the package feature: `:help package`!

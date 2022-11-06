@@ -5503,10 +5503,9 @@ This may be avoided, or at least reduced, with the following variants: >
 Note: Vim users should be aware that one may need to ensure that the server is
       really running, see |vimtex-clientserver|.
 
-Note: Various plugin managers support lazy plugin loading, e.g., based on the
-      filetype. It is discouraged to use this feature with VimTeX. In
-      particular, the above command lines for inverse search would need work
-      around this.
+Note: Many plugin managers provide mechanisms to lazy load plugins. There is
+      no need to use such a mechanism for VimTeX, and in fact, doing it will
+      prevent Vim/neovim from loading the `:VimtexInverseSearch` command.
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
