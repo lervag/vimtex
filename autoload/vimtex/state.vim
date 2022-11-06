@@ -237,17 +237,15 @@ function! s:get_main() abort " {{{1
   endif
 
   " Search for main file recursively through include specifiers
-  if !get(g:, 'vimtex_disable_recursive_main_file_detection', 0)
-    if &filetype ==# 'tex'
-      let l:candidate = s:get_main_choose(s:get_main_recurse())
-      if !empty(l:candidate)
-        return [l:candidate, 'recursive search']
-      endif
-    else
-      let l:candidate = s:get_main_choose(s:get_main_recurse_from_bib())
-      if !empty(l:candidate)
-        return [l:candidate, 'recursive search (bib)']
-      endif
+  if &filetype ==# 'tex'
+    let l:candidate = s:get_main_choose(s:get_main_recurse())
+    if !empty(l:candidate)
+      return [l:candidate, 'recursive search']
+    endif
+  else
+    let l:candidate = s:get_main_choose(s:get_main_recurse_from_bib())
+    if !empty(l:candidate)
+      return [l:candidate, 'recursive search (bib)']
     endif
   endif
 
@@ -340,7 +338,7 @@ endfunction
 
 " }}}1
 function! s:get_main_latexmain(file) abort " {{{1
-  for l:cand in s:findfiles_recursive('*.latexmain', expand('%:p:h'))
+  for l:cand in s:globpath_upwards('*.latexmain', expand('%:p:h'))
     let l:cand = fnamemodify(l:cand, ':p:r')
     if s:file_reaches_current(l:cand)
       return l:cand
@@ -394,9 +392,9 @@ function! s:get_main_recurse(...) abort " {{{1
   let l:re_filter1 = fnamemodify(l:file, ':t:r')
   let l:re_filter2 = g:vimtex#re#tex_input . '\s*\f*' . l:re_filter1
 
-  " Search through candidates found recursively upwards in the directory tree
+  " Search through candidates found upwards in the directory tree
   let l:results = []
-  for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
+  for l:cand in s:globpath_upwards('*.tex', fnamemodify(l:file, ':p:h'))
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
 
@@ -420,9 +418,9 @@ function! s:get_main_recurse_from_bib() abort " {{{1
   let l:re_filter1 = fnamemodify(l:file, ':t:r')
   let l:re_filter2 = g:vimtex#re#bib_input . '\s*\f*' . l:re_filter1
 
-  " Search through candidates found recursively upwards in the directory tree
+  " Search through candidates found upwards in the directory tree
   let l:results = []
-  for l:cand in s:findfiles_recursive('*.tex', fnamemodify(l:file, ':p:h'))
+  for l:cand in s:globpath_upwards('*.tex', fnamemodify(l:file, ':p:h'))
     if index(l:tried[l:file], l:cand) >= 0 | continue | endif
     call add(l:tried[l:file], l:cand)
 
@@ -523,7 +521,9 @@ function! s:file_reaches_current(file) abort " {{{1
 endfunction
 
 " }}}1
-function! s:findfiles_recursive(expr, path) abort " {{{1
+function! s:globpath_upwards(expr, path) abort " {{{1
+  " Returns the list of files obtained by globpath(p, a:expr) with p going from
+  " a:path and upwards in the directory tree.
   let l:path = a:path
   let l:dirs = l:path
   while l:path != fnamemodify(l:path, ':h')

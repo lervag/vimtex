@@ -487,6 +487,7 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_change_set_formatexpr',
         \ 'g:vimtex_change_toggled_delims',
         \ 'g:vimtex_compiler_callback_hooks',
+        \ 'g:vimtex_disable_recursive_main_file_detection',
         \ 'g:vimtex_env_complete_list',
         \ 'g:vimtex_fold_commands',
         \ 'g:vimtex_fold_commands_default',
