@@ -58,6 +58,7 @@ function! vimtex#test#completion(context, ...) abort " {{{1
     call assert_report(
           \ printf("\n  Context: %s\n  Base: %s\n%s",
           \        a:context, l:base, v:exception))
+    return []
   endtry
 endfunction
 
