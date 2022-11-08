@@ -34,7 +34,7 @@ function! vimtex#jobs#vim#shell_default() abort " {{{1
         \ &shellslash
         \]
   let &shell = 'cmd.exe'
-  let &shellcmdflag="/s /c"
+  let &shellcmdflag = '/s /c'
   set shellquote& shellxquote& shellredir& shellslash&
 endfunction
 

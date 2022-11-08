@@ -27,7 +27,7 @@ endfunction
 function! vimtex#jobs#neovim#shell_default() abort " {{{1
   let s:saveshell = [&shell, &shellcmdflag, &shellslash]
   let &shell = 'cmd.exe'
-  let &shellcmdflag="/s /c"
+  let &shellcmdflag = '/s /c'
   set shellslash&
 endfunction
 
@@ -61,7 +61,9 @@ function! s:job.start() abort dict " {{{1
     let l:options.cwd = self.cwd
   endif
 
+  call vimtex#jobs#neovim#shell_default()
   let self.job = jobstart(self.cmd, l:options)
+  call vimtex#jobs#neovim#shell_restore()
 
   return self
 endfunction
