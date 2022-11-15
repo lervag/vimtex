@@ -115,7 +115,9 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   endtry
 
   execute 'normal!' a:line . 'G'
-  call b:vimtex.viewer.xdo_focus_vim()
+  if b:vimtex.viewer.xdo_check()
+    call b:vimtex.viewer.xdo_focus_vim()
+  endif
   redraw
 
   if exists('#User#VimtexEventViewReverse')
