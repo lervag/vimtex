@@ -232,6 +232,7 @@ endfunction
 
 " }}}1
 function! s:viewer.xdo_focus_vim() dict abort " {{{1
+  if has('unix') && system('uname') =~# 'Darwin' | return | endif
   if !executable('xdotool') | return | endif
   if !executable('pstree') | return | endif
 
