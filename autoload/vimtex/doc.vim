@@ -13,11 +13,12 @@ endfunction
 " }}}1
 
 function! vimtex#doc#get_context(...) abort " {{{1
-  let l:context = a:0 == 0 || empty(a:1)
+  let l:word = a:0 > 0 ? a:1 : ''
+  let l:context = empty(l:word)
         \ ? s:packages_get_from_cursor()
         \ : {
         \     'type': 'word',
-        \     'candidates': [a:word],
+        \     'candidates': [l:word],
         \   }
   if empty(l:context) | return {} | endif
 
