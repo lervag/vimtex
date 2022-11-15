@@ -66,6 +66,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_include_search_enabled', 1)
 
   call s:init_option('vimtex_doc_enabled', 1)
+  call s:init_option('vimtex_doc_confirm_single', v:true)
   call s:init_option('vimtex_doc_handlers', [])
 
   call s:init_option('vimtex_echo_verbose_input', 1)

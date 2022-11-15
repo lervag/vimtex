@@ -57,7 +57,7 @@ function! vimtex#doc#make_selection(context) abort " {{{1
   endif
 
   if len(a:context.candidates) == 1
-    if vimtex#ui#confirm([
+    if g:vimtex_doc_confirm_single && vimtex#ui#confirm([
           \ 'Open documentation for ' . a:context.type . ': ',
           \ ['VimtexSuccess', a:context.candidates[0]],
           \ '?'

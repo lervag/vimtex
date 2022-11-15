@@ -1492,6 +1492,23 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 500
 
+*g:vimtex_doc_enabled*
+  Use this option to disable features related to |vimtex-latexdoc|.
+
+  Default value: 1
+
+*g:vimtex_doc_confirm_single*
+  When enabled (set to 1 or |v:true|), then VimTeX will open the specified
+  documentation only after a confirmation prompt such as: >
+
+    Open documentation for usepackage: foobar? [y]es/[n]o
+<
+  Thus, one may disable this option (set to 0 or |v:false|) to avoid the
+  confirmation and open directly. Note that this is only relevant when there
+  is only a single recognized documentation source.
+
+  Default value: |v:true|
+
 *g:vimtex_doc_handlers*
   With this option, one may specify a list of custom documentation handlers.
   The following pre-made handlers are available:
@@ -5512,6 +5529,11 @@ installation as the main method, they may use the following config: >
   let g:vimtex_doc_handlers = ['vimtex#doc#handlers#texdoc']
 <
 See https://www.tug.org/texdoc/doc/texdoc.pdf for more info about `texdoc`.
+
+Associated settings:
+* |g:vimtex_doc_enabled|
+* |g:vimtex_doc_confirm_single|
+* |g:vimtex_doc_handlers|
 
 In the following, I list some relevant online and offline alternatives for
 accessing LaTeX documentation. Please note that these methods are not
