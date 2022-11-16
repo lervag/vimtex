@@ -130,7 +130,7 @@ function! s:vimtex.get_tex_program() abort dict " {{{1
   let l:tex_program_re =
         \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
 
-  let l:lines = vimtex#parser#preamble(self.tex, {'root' : self.root})[:20]
+  let l:lines = vimtex#parser#preamble(self.base, {'root' : self.root})[:20]
   call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
   call filter(l:lines, '!empty(v:val)')
   return tolower(get(l:lines, -1, '_'))
