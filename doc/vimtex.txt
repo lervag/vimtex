@@ -2432,8 +2432,10 @@ OPTIONS                                                        *vimtex-options*
 
     argstyle~
       Default: Undefined.
-      Can be set to  apply styling to the command argument. The following are
-      currently supported:
+      Can be set to apply styling to the command argument by linking the
+      argument syntax group to one of the `texStyle` highlight groups (see
+      Table 5 in |vimtex-syntax-reference|). The following options are
+      available:
         * `bold`
         * `ital`
         * `under`
@@ -2441,6 +2443,12 @@ OPTIONS                                                        *vimtex-options*
         * `boldunder`
         * `italunder`
         * `bolditalunder`
+
+      Note: Fine grained control is of course also possible. Each defined
+            command gets one or more match groups, e.g. if you create a custom
+            command named `foo`, then it will usually have these groups:
+            `texCmdCFoo`, `texCFooOpt`, `texCFooArg`. One may then customize
+            the highlights as explained in |vimtex-syntax-core|.
 
     argspell~
       Default: |v:true|
@@ -4614,6 +4622,23 @@ Table 4: A list of other important groups.~
   texDefArgName        texArgNew       \def\NAME
   texDefParm           texParm         \def\name #1
   texCmdItem           texCmd          \item
+
+Table 5: Bold, italic and underline groups.~
+
+  These groups are used as targets for various (nested) commands, e.g.
+  `\emph{\textbf{...}}`.
+>
+  GROUP                   EFFECT
+  ----------------------------------------------------------------------------
+  texStyleBold            Bold
+  texStyleItal            Italic
+  texStyleUnder           Underlined
+  texStyleBoth            Bold + italic
+  texStyleBoldUnder       Bold + underlined
+  texStyleItalUnder       Italic + underlined
+  texStyleBoldItalUnder   Bold + italic + underlined
+  texMathStyleBold        Bold [ONLY in math mode]
+  texMathStyleItal        Italic [ONLY in math mode]
 
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
