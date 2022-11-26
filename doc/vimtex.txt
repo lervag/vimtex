@@ -2344,8 +2344,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_syntax_conceal_disable*
   This option allows to disable all conceal features at once. For more fine
-  tuned control, see |g:vimtex_syntax_conceal|. For more info, see
-  |vimtex-syntax-conceal|.
+  tuned control, use |g:vimtex_syntax_conceal| and |g:vimtex_syntax_packages|.
 
   Default value: 0
 
@@ -2541,13 +2540,20 @@ OPTIONS                                                        *vimtex-options*
       2 = always enable this syntax package
 
   The following is a list of packages with additional options or packages that
-  deviate from the above specified defaults:
+  deviate from the above specified defaults. Notice that conceal options
+  are affected by |g:vimtex_syntax_conceal_disable|.
 
     amsmath~
       `load`  is 2 by default
 
     babel~
       `conceal`  whether to enable conceal; enabled by default
+
+    fontawesome5~
+      `conceal`  whether to enable conceal; enabled by default. Notice that
+                 the only point of this package is to apply conceals to
+                 fontawesome commands. Thus, disabling conceal here is
+                 equivalent to disabling the package.
 
     hyperref~
       `conceal`  whether to enable conceal; enabled by default
