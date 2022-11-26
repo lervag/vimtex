@@ -370,6 +370,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'amsmath': {'load': 2},
         \ 'babel': {'conceal': 1},
         \ 'hyperref': {'conceal': 1},
+        \ 'fontawesome5': {'conceal': 1},
         \})
 
   " Disable conceals if chosen
@@ -377,6 +378,7 @@ function! vimtex#options#init() abort " {{{1
     call map(g:vimtex_syntax_conceal, {k, v -> 0})
     let g:vimtex_syntax_packages.babel.conceal = 0
     let g:vimtex_syntax_packages.hyperref.conceal = 0
+    let g:vimtex_syntax_packages.fontawesome5.conceal = 0
   endif
 
   call s:init_option('vimtex_texcount_custom_arg', '')

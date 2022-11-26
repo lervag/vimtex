@@ -5,13 +5,15 @@
 "
 
 function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
+  if !a:cfg.conceal | return | endif
+
   call vimtex#syntax#core#new_opt('texFontawesomeOpt', {
         \ 'contains': '',
         \ 'opts': 'conceal contained containedin=texCmdFontawesome',
         \})
   call vimtex#syntax#core#new_arg('texFontawesomeArg', {
         \ 'contains': '',
-        \ 'opts': 'conceal containedin=texCmdFontawesome',
+        \ 'opts': 'conceal contained containedin=texCmdFontawesome',
         \})
 
   for [l:name, l:symbol] in items(s:fontawesome)

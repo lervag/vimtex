@@ -2344,8 +2344,7 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_syntax_conceal_disable*
   This option allows to disable all conceal features at once. For more fine
-  tuned control, see |g:vimtex_syntax_conceal|. For more info, see
-  |vimtex-syntax-conceal|.
+  tuned control, use |g:vimtex_syntax_conceal| and |g:vimtex_syntax_packages|.
 
   Default value: 0
 
@@ -2432,8 +2431,10 @@ OPTIONS                                                        *vimtex-options*
 
     argstyle~
       Default: Undefined.
-      Can be set to  apply styling to the command argument. The following are
-      currently supported:
+      Can be set to apply styling to the command argument by linking the
+      argument syntax group to one of the `texStyle` highlight groups (see
+      Table 5 in |vimtex-syntax-reference|). The following options are
+      available:
         * `bold`
         * `ital`
         * `under`
@@ -2441,6 +2442,12 @@ OPTIONS                                                        *vimtex-options*
         * `boldunder`
         * `italunder`
         * `bolditalunder`
+
+      Note: Fine grained control is of course also possible. Each defined
+            command gets one or more match groups, e.g. if you create a custom
+            command named `foo`, then it will usually have these groups:
+            `texCmdCFoo`, `texCFooOpt`, `texCFooArg`. One may then customize
+            the highlights as explained in |vimtex-syntax-core|.
 
     argspell~
       Default: |v:true|
@@ -2533,13 +2540,20 @@ OPTIONS                                                        *vimtex-options*
       2 = always enable this syntax package
 
   The following is a list of packages with additional options or packages that
-  deviate from the above specified defaults:
+  deviate from the above specified defaults. Notice that conceal options
+  are affected by |g:vimtex_syntax_conceal_disable|.
 
     amsmath~
       `load`  is 2 by default
 
     babel~
       `conceal`  whether to enable conceal; enabled by default
+
+    fontawesome5~
+      `conceal`  whether to enable conceal; enabled by default. Notice that
+                 the only point of this package is to apply conceals to
+                 fontawesome commands. Thus, disabling conceal here is
+                 equivalent to disabling the package.
 
     hyperref~
       `conceal`  whether to enable conceal; enabled by default
@@ -4615,6 +4629,23 @@ Table 4: A list of other important groups.~
   texDefParm           texParm         \def\name #1
   texCmdItem           texCmd          \item
 
+Table 5: Bold, italic and underline groups.~
+
+  These groups are used as targets for various (nested) commands, e.g.
+  `\emph{\textbf{...}}`.
+>
+  GROUP                   EFFECT
+  ----------------------------------------------------------------------------
+  texStyleBold            Bold
+  texStyleItal            Italic
+  texStyleUnder           Underlined
+  texStyleBoth            Bold + italic
+  texStyleBoldUnder       Bold + underlined
+  texStyleItalUnder       Italic + underlined
+  texStyleBoldItalUnder   Bold + italic + underlined
+  texMathStyleBold        Bold [ONLY in math mode]
+  texMathStyleItal        Italic [ONLY in math mode]
+
 ==============================================================================
 NAVIGATION                                                  *vimtex-navigation*
 
@@ -5394,6 +5425,9 @@ and use the viewer configuration as explained in
 
 Inverse search is activated with a double click in the PDF file.
 
+Note: If you want to use SumatraPDF with VimTeX from within WSL, please read
+      |vimtex-faq-sumatrapdf-wsl|.
+
 Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       where the pdf file in SumatraPDF is not refreshed after compilation.
       A workaround was found and posted by @Whitebeard0 here:
@@ -5708,6 +5742,7 @@ Contents:
 * |vimtex-faq-tags-bibtex|
 * |vimtex-faq-texmfhome|
 * |vimtex-faq-wsl|
+* |vimtex-faq-sumatrapdf-wsl|
 * |vimtex-faq-zathura-macos|
 * |vimtex-faq-treesitter|
 
@@ -5857,7 +5892,7 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
 
 ------------------------------------------------------------------------------
                                                                *vimtex-faq-wsl*
-Q: Does VimTeX support WSL (Windows Subsystem for Linux)?
+Q: Does VimTeX support WSL (the Windows Subsystem for Linux)?
 A: For the moment, rudimentarily, as follows: To set up the viewer, install
    Sioyek [0], MuPDF [1], or SumatraPDF [2], add the executable to `%PATH%`,
    say by Rapidee [3]. In your vimrc, the lines
@@ -5905,6 +5940,40 @@ A: For the moment, rudimentarily, as follows: To set up the viewer, install
    [6]: https://vxlabs.com/2019/12/06/wsl2-io-measurements/
    [7]: https://yihui.org/tinytex/
    [8]: https://tex.stackexchange.com/questions/397174/minimal-texlive-installation
+
+------------------------------------------------------------------------------
+                                                    *vimtex-faq-sumatrapdf-wsl*
+Q: Does VimTeX work with SumatraPDF from within WSL (the Windows Subsystem for
+   Linux)?
+A: SumatraPDF expects all path arguments to be in the regular Windows format,
+   for instance `C:\Path\To\file.pdf`. When you work in WSL you will typically
+   work in a Bash shell where the corresponding path would be
+   `/mnt/c/Path/To/file.pdf`. This means SumatraPDF will not work with VimTeX
+   inside WSL without some adjustments.
+
+   Luckily, there is a CLI tool `wslpath` that can be used to translate these
+   paths. This means we can make VimTeX work with SumatraPDF from within WSL
+   by writing a simple wrapper script for SumatraPDF and using it instead.
+   Essentially, we will achieve most of the functionality we expected, except
+   backward search from SumatraPDF to VimTeX. That may also be possible, but
+   it is currently uncharted territory.
+
+   First, create a script called `sumatrapdf.sh` and put it under
+   `~/.local/bin` inside your WSL environment. You may copy the script
+   provided by @Liampor on GitHub [0] or write something similar on your own.
+   The main idea is to let the wrapper of the script do two things:
+
+     1. Convert all paths to Windows style paths with `wslpath`.
+     2. Update the Synctex file (`*.synctex.gz` ) correspondingly to allow
+        forward search.
+
+   Now, configure the viewer like this: >
+
+     let g:vimtex_view_general_viewer = '~/.local/bin/sumatrapdf.sh'
+     let g:vimtex_view_general_options
+           \ = '-reuse-instance -forward-search @tex @line @pdf'
+<
+   [0]: https://github.com/lervag/vimtex/issues/2566#issuecomment-1322886643
 
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-zathura-macos*
