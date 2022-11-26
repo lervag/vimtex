@@ -18,8 +18,10 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   endif
 
   let l:ext = fnamemodify(a:main, ':e')
-  let l:new.tex = index(['tex', 'dtx', 'tikz', 'ins'], l:ext) >= 0
-        \ ? a:main : ''
+  " Recognise (La)TeX-related file extensions
+  let l:new.tex = empty(filter(['^(la)?tex$', '^dtx$', '^tikz$'],
+                             \  'l:ext =~? v:val'))
+                \ ? a:main : ''
 
   " Get preamble for some state parsing
   let l:preamble = !empty(l:new.tex)
@@ -130,7 +132,7 @@ function! s:vimtex.get_tex_program() abort dict " {{{1
   let l:tex_program_re =
         \ '\v^\c\s*\%\s*!?\s*tex\s+%(ts-)?program\s*\=\s*\zs.*\ze\s*$'
 
-  let l:lines = vimtex#parser#preamble(self.base, {'root' : self.root})[:20]
+  let l:lines = vimtex#parser#preamble(self.tex, {'root' : self.root})[:20]
   call map(l:lines, 'matchstr(v:val, l:tex_program_re)')
   call filter(l:lines, '!empty(v:val)')
   return tolower(get(l:lines, -1, '_'))
