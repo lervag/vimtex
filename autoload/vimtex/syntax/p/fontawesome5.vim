@@ -13,7 +13,7 @@ function! vimtex#syntax#p#fontawesome5#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texFontawesomeArg', {
         \ 'contains': '',
-        \ 'opts': 'conceal containedin=texCmdFontawesome',
+        \ 'opts': 'conceal contained containedin=texCmdFontawesome',
         \})
 
   for [l:name, l:symbol] in items(s:fontawesome)
