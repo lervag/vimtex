@@ -3747,6 +3747,11 @@ cursor position before the operation. >
     \item hello moon|          dam     \end{itemize}
   \end{itemize}
 
+Note: Some of the text objects rely on syntax highlighting (|vimtex-syntax|)
+      to work. That is, some text objects check the syntax groups to determine
+      the proper regions. Examples include the math text objects (e.g.
+      |<plug>(vimtex-a$)| and |<plug>(vimtex-i$)|).
+
 Associated settings:
 * |g:vimtex_text_obj_enabled|
 * |g:vimtex_text_obj_linewise_operators|
@@ -4304,6 +4309,11 @@ SYNTAX HIGHLIGHTING                                             *vimtex-syntax*
 VimTeX provides a core syntax plugin combined with package specific addons.
 The syntax plugin aims to be both consistent, structured, and efficient. The
 package specific addons are generally only loaded when applicable.
+
+In these modern times, a lot of people have started to rely on Tree-sitter for
+syntax highlighting (and more). Thus, it is pertinent to mention that a couple
+of the text objects rely on the syntax highlighting rules to work. See also
+|vimtex-text-objects| and |vimtex-faq-treesitter|.
 
 LaTeX is a macro expansion language and it is impossible to write a fully
 correct syntax parser without running the `tex` compiler itself. VimTeX aims
