@@ -18,8 +18,7 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   endif
 
   let l:ext = fnamemodify(a:main, ':e')
-  " Recognise (La)TeX-related file extensions
-  let l:new.tex = l:ext =~? '^\(\(la\)\=tex\|dtx\|tikz\)$' ? a:main : ''
+  let l:new.tex = l:ext =~? '\v^%(%(la)?tex|dtx|tikz|ins)$' ? a:main : ''
 
   " Get preamble for some state parsing
   let l:preamble = !empty(l:new.tex)
