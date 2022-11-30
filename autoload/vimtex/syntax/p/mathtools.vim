@@ -23,6 +23,14 @@ function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
   highlight def link texMathToolsOptPos1  texOpt
   highlight def link texMathToolsOptPos2  texOpt
   highlight def link texMathToolsOptWidth texOpt
+
+  " Support for shortintertext
+  syntax match texMathCmdText contained skipwhite nextgroup=texMathTextArg "\\shortintertext"
+
+  if g:vimtex_syntax_conceal.styles
+    syntax match texMathCmdText contained skipwhite conceal nextgroup=texMathTextConcArg "\\shortintertext"
+  endif
+
 endfunction
 
 " }}}1
