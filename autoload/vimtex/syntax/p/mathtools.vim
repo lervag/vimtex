@@ -7,7 +7,14 @@
 function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
   call vimtex#syntax#packages#load('amsmath')
 
-  " Support for various envionrments with option groups
+  " Support for shortintertext
+  if g:vimtex_syntax_conceal.styles
+    syntax match texMathCmdText "\\shortintertext" contained skipwhite nextgroup=texMathTextConcArg conceal
+  else
+    syntax match texMathCmdText "\\shortintertext" contained skipwhite nextgroup=texMathTextArg
+  endif
+
+  " Support for various environments with option groups
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{aligned}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[lr]gathered}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[pbBvV]\?\%(small\)\?matrix\*}"
@@ -23,14 +30,6 @@ function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
   highlight def link texMathToolsOptPos1  texOpt
   highlight def link texMathToolsOptPos2  texOpt
   highlight def link texMathToolsOptWidth texOpt
-
-  " Support for shortintertext
-  syntax match texMathCmdText contained skipwhite nextgroup=texMathTextArg "\\shortintertext"
-
-  if g:vimtex_syntax_conceal.styles
-    syntax match texMathCmdText contained skipwhite conceal nextgroup=texMathTextConcArg "\\shortintertext"
-  endif
-
 endfunction
 
 " }}}1
