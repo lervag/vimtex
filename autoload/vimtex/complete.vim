@@ -228,6 +228,7 @@ let s:completer_ref = {
       \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
       \   '\\hyperref\s*\[[^]]*$',
       \   '\\subref\*\?{[^}]*$',
+      \   '\\nameref{[^}]*$',
       \ ],
       \ 're_context' : '\\\w*{[^}]*$',
       \ 'initialized' : 0,

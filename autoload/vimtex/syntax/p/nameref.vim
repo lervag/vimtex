@@ -5,9 +5,9 @@
 "
 
 function! vimtex#syntax#p#nameref#load(cfg) abort " {{{1
-  syntax match texCmdNameref '\\[nN]ameref\>' nextgroup=texRefOpt,texRefArg
+  syntax match texCmdNameref '\\nameref\>' nextgroup=texRefOpt,texRefArg
 
-  highlight def link texCmdNameref texCmd
+  highlight def link texCmdNameref texCmdRef
 endfunction
 
 " }}}1
