@@ -464,6 +464,7 @@ function! s:get_main_choose(list) abort " {{{1
     unsilent return vimtex#ui#select(l:choices, {
           \ 'prompt': 'Please select an appropriate main file:',
           \ 'abort': v:false,
+          \ 'return': 'key',
           \})
   endif
 endfunction
