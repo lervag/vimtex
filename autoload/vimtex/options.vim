@@ -322,6 +322,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'ligatures': 1,
         \ 'cites': 1,
         \ 'fancy': 1,
+        \ 'spacing': 1,
         \ 'greek': 1,
         \ 'math_bounds': 1,
         \ 'math_delimiters': 1,

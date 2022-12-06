@@ -2286,6 +2286,10 @@ OPTIONS                                                        *vimtex-options*
     fancy~
       Some extra fancy replacements, e.g. `\item` --> ○.
 
+    spacing~
+      Conceal spacing commands such as `\quad` and `\hspace{1em}` in both
+      normal mode and math mode.
+
     greek~
       Replace TeX greek letter commands into the equivalent unicode greek
       letter.

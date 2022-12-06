@@ -642,6 +642,11 @@ function! vimtex#syntax#core#init() abort " {{{1
       call s:match_conceal_fancy()
     endif
 
+    " Conceal spacing commands
+    if g:vimtex_syntax_conceal.spacing
+      call s:match_conceal_spacing()
+    endif
+
     " Conceal replace greek letters
     if g:vimtex_syntax_conceal.greek
       call s:match_conceal_greek()
@@ -1325,7 +1330,6 @@ function! s:match_math_symbols() abort " {{{1
   " Many of these symbols were contributed by Björn Winckler
   if !g:vimtex_syntax_conceal.math_symbols | return | endif
 
-  syntax match texMathSymbol '\\[,:;!]'              contained conceal
   syntax match texMathSymbol '\\|'                   contained conceal cchar=‖
   syntax match texMathSymbol '\\sqrt\[3]'            contained conceal cchar=∛
   syntax match texMathSymbol '\\sqrt\[4]'            contained conceal cchar=∜
@@ -1456,8 +1460,6 @@ let s:cmd_symbols = [
       \ ['propto', '∝'],
       \ ['rceil', '⌉'],
       \ ['Re', 'ℜ'],
-      \ ['quad', ' '],
-      \ ['qquad', ' '],
       \ ['rightarrow', '→'],
       \ ['Rightarrow', '⇒'],
       \ ['leftarrow', '←'],
@@ -1958,6 +1960,37 @@ function! s:match_conceal_fancy() abort " {{{1
   syntax match texCmd         '\\ldots\>' conceal cchar=…
   syntax match texCmdItem     '\\item\>'  conceal cchar=○
   syntax match texTabularChar '\\\\'      conceal cchar=⏎
+endfunction
+
+" }}}1
+function! s:match_conceal_spacing() abort " {{{1
+  syntax match texSpecialChar "\\[,;:!]"       conceal
+  syntax match texCmd         '\\bigskip\>'    conceal
+  syntax match texCmd         '\\hfill\>'      conceal
+  syntax match texCmd         '\\medspace\>'   conceal
+  syntax match texCmd         '\\qquad\>'      conceal
+  syntax match texCmd         '\\quad\>'       conceal
+  syntax match texCmd         '\\thickspace\>' conceal
+  syntax match texCmd         '\\thinspace\>'  conceal
+  syntax match texCmd         '\\vfill\>'      conceal
+  syntax match texCmd         "\\[hv]space\>"  conceal
+        \ skipwhite nextgroup=texConcealedArg
+
+  syntax match texMathCmd '\\[,:;!]'       contained conceal
+  syntax match texMathCmd '\\bigskip\>'    contained conceal
+  syntax match texMathCmd '\\hfill\>'      contained conceal
+  syntax match texMathCmd '\\medspace\>'   contained conceal
+  syntax match texMathCmd '\\qquad\>'      contained conceal
+  syntax match texMathCmd '\\quad\>'       contained conceal
+  syntax match texMathCmd '\\thickspace\>' contained conceal
+  syntax match texMathCmd '\\thinspace\>'  contained conceal
+  syntax match texMathCmd '\\vfill\>'      contained conceal
+  syntax match texMathCmd "\\[hv]space\>"  contained conceal
+        \ skipwhite nextgroup=texConcealedArg
+
+  call vimtex#syntax#core#new_arg('texConcealedArg', {
+        \ 'opts': 'keepend contained conceal concealends',
+        \})
 endfunction
 
 " }}}1
