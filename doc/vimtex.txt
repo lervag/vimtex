@@ -252,12 +252,12 @@ Compiler backend~
 
     `latexmk`: http://users.phys.psu.edu/~collins/software/latexmk-jcc
     "a perl script for running LaTeX the correct number of times to resolve
-  cross references, etc; it also runs auxiliary programs (bibtex, makeindex if
-  necessary, and dvips and/or a previewer as requested).  It has a number of
-  other useful capabilities, for example to start a previewer and then run
-  latex whenever the source files are updated, so that the previewer gives an
-  up-to-date view of the document. The script runs on both UNIX and MS-WINDOWS
-  (XP, etc)." [Copied from the latexmk page.]  (|vimtex-compiler-latexmk|)
+  cross references, etc; it also runs auxiliary programs (e.g. bibtex).  It
+  has a number of other useful capabilities, for example to start a previewer
+  and then run latex whenever the source files are updated, so that the
+  previewer gives an up-to-date view of the document. The script runs on both
+  UNIX and MS-WINDOWS (XP, etc)." [Copied from the latexmk page.]
+  (|vimtex-compiler-latexmk|)
 
     `latexrun`: https://github.com/aclements/latexrun
     Similar to `latexmk` in that it runs the desired LaTeX engine an
@@ -4891,12 +4891,11 @@ LATEXMK                                               *vimtex-compiler-latexmk*
 
                       http://users.phys.psu.edu/~collins/software/latexmk-jcc
 > latexmk is a perl script for running LaTeX the correct number of times to
-> resolve cross references, etc; it also runs auxiliary programs (bibtex,
-> makeindex if necessary, and dvips and/or a previewer as requested).  It has
-> a number of other useful capabilities, for example to start a previewer and
-> then run latex whenever the source files are updated, so that the previewer
-> gives an up-to-date view of the document. The script runs on both UNIX and
-> MS-WINDOWS (XP, etc).
+> resolve cross references, etc; it also runs auxiliary programs (e.g.
+> bibtex). It has a number of other useful capabilities, for example to start
+> a previewer and then run latex whenever the source files are updated, so
+> that the previewer gives an up-to-date view of the document. The script runs
+> on both UNIX and MS-WINDOWS (XP, etc).
 
 `latexmk` is a compiler backend that handles recompilation of LaTeX documents
 when source files have been changed.  VimTeX uses the continuous mode by
