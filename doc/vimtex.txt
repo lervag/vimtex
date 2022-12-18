@@ -5991,7 +5991,11 @@ A: SumatraPDF expects all path arguments to be in the regular Windows format,
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-zathura-macos*
 Q: Does Zathura + VimTeX work on macOS?
-A: Yes, it should work.  The following recipe has been reported to work [0].
+A: Yes, it should work.  The following recipe has been reported to work [0],
+   although users with Apple Silicon CPUs have reported difficulties starting
+   `dbus`. These users may want to try the more involved recipe given in [3]
+   if the below procedure fails.
+
    The steps assume the user has installed and knows how to use Homebrew [1].
 
    1. Zathura needs `dbus` to work properly. Install it with the following:
@@ -6008,7 +6012,9 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
       `/usr/local/opt/dbus/share/dbus-1/session.conf` from `EXTERNAL` to
       `DBUS_COOKIE_SHA1`.
 
-   4. Run `brew services start dbus`
+   4. Run `brew services start dbus`, and use `brew services info dbus` to
+      double-check that `dbus` is running. Apple Silicon users that encounter
+      problems at this step should try the recipe in [3].
 
    5. Now install Zathura (most recent version, aka HEAD): >
 
@@ -6028,6 +6034,7 @@ A: Yes, it should work.  The following recipe has been reported to work [0].
    [0]: https://github.com/lervag/vimtex/issues/1737#issuecomment-759953886
    [1]: https://brew.sh
    [2]: https://github.com/lervag/vimtex/issues/2391#issuecomment-1127678531
+   [3]: https://github.com/zegervdv/homebrew-zathura/issues/99
 
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-treesitter*
