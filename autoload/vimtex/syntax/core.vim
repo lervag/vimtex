@@ -779,7 +779,6 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCmdRefConcealed    texCmdRef
   highlight def link texCmdSize            texCmdType
   highlight def link texCmdSpaceCode       texCmd
-  highlight def link texCmdStyle           texCmd
   highlight def link texCmdStyle           texCmdType
   highlight def link texCmdStyleBold       texCmd
   highlight def link texCmdStyleBoldItal   texCmd
