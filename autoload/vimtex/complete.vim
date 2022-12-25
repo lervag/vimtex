@@ -215,6 +215,10 @@ function! s:bib_to_candidate(entry) abort " {{{2
     endfor
   endif
 
+  let l:cand.info = "TITLE: " . l:substitutes['@title']
+  let l:cand.info .= "\nAUTHOR: " . auth
+  let l:cand.info .= "\nYEAR: " . l:substitutes['@year']
+
   return l:cand
 endfunction
 
