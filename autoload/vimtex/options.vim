@@ -45,6 +45,7 @@ function! vimtex#options#init() abort " {{{1
         \ 'simple': 0,
         \ 'match_str_fmt': '@key [@type] @author_all (@year), "@title"',
         \ 'menu_fmt': '[@type] @author_short (@year), "@title"',
+        \ 'info_fmt': "TITLE: @title\nAUTHOR: @author_all\nYEAR: @year",
         \ 'abbr_fmt': '',
         \ 'auth_len': 20,
         \ 'custom_patterns': [],

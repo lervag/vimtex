@@ -1309,6 +1309,12 @@ OPTIONS                                                        *vimtex-options*
     entry is not added to the completion candidates. See the description of
     `match_str_fmt` for the allowed keys.
 
+  info_fmt~
+    Default value: `"TITLE: @title\nAUTHOR: @author_all\nYEAR: @year"`
+    The format used for the `info` entry for bib completion candidates (see
+    |complete-items|). See the description of `match_str_fmt` for the allowed
+    keys.
+
   abbr_fmt~
     Default value: `''`
     The format used for the `abbr` entry for bib completion candidates (see

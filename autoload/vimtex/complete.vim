@@ -201,11 +201,19 @@ function! s:bib_to_candidate(entry) abort " {{{2
   " Create match and menu strings
   let l:cand.mstr = copy(g:vimtex_complete_bib.match_str_fmt)
   let l:cand.menu = copy(g:vimtex_complete_bib.menu_fmt)
+  let l:cand.info = copy(g:vimtex_complete_bib.info_fmt)
   for [l:key, l:val] in items(l:substitutes)
     let l:val = escape(l:val, '&')
     let l:cand.mstr = substitute(l:cand.mstr, l:key, l:val, '')
     let l:cand.menu = substitute(l:cand.menu, l:key, l:val, '')
+    let l:cand.info = substitute(l:cand.info, l:key, l:val, '')
   endfor
+  if empty(l:cand.menu)
+    unlet l:cand.menu
+  endif
+  if empty(l:cand.info)
+    unlet l:cand.info
+  endif
 
   " Create abbreviation string (if necessary)
   if !empty(g:vimtex_complete_bib.abbr_fmt)
@@ -214,10 +222,6 @@ function! s:bib_to_candidate(entry) abort " {{{2
       let l:cand.abbr = substitute(l:cand.abbr, l:key, escape(l:val, '&'), '')
     endfor
   endif
-
-  let l:cand.info = "TITLE: " . l:substitutes['@title']
-  let l:cand.info .= "\nAUTHOR: " . auth
-  let l:cand.info .= "\nYEAR: " . l:substitutes['@year']
 
   return l:cand
 endfunction
