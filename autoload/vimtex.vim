@@ -118,12 +118,6 @@ function! s:init_buffer() abort " {{{1
 endfunction
 
 " }}}1
-function! s:map_prefixed(ftype, mode, lhs, rhs) abort " {{{1
-  let l:lhs = g:vimtex_mappings_prefix . a:lhs
-  call s:map(a:ftype, a:mode, l:lhs, a:rhs)
-endfunction
-
-" }}}1
 function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
@@ -374,6 +368,12 @@ endfunction
 
 " }}}1
 
+function! s:map_prefixed(ftype, mode, lhs, rhs) abort " {{{1
+  let l:lhs = g:vimtex_mappings_prefix . a:lhs
+  call s:map(a:ftype, a:mode, l:lhs, a:rhs)
+endfunction
+
+" }}}1
 function! s:map(ftype, mode, lhs, rhs, ...) abort " {{{1
   if (a:ftype == 0
         \     || a:ftype == 1 && &filetype ==# 'tex'
