@@ -801,10 +801,13 @@ VimTeX is designed to be controlled by a selection of mappings.  Note,
 though, that most of the mappings are also available as commands, see
 |vimtex-commands|.
 
-Many of the mappings utilize the |maplocalleader|. The right-hand sides are
-provided as <plug>-mappings, see |using-<plug>|. For any given <plug> map, the
-default mapping will only be created if it does not already exist. This means
-that if a user defines a custom mapping, e.g. with >
+Many of the mappings use `<localleader>l` as a common prefix, where the
+default |<localleader>| is `\`. Thus, `<localleader>ll` will for most people
+mean `\ll`. The prefix may be changed with |g:vimtex_mappings_prefix|.
+
+The right-hand sides are provided as <plug>-mappings, see |using-<plug>|. For
+any given <plug> map, the default mapping will only be created if it does not
+already exist. This means that if a user defines a custom mapping, e.g. with >
 
   nmap <space>li <plug>(vimtex-info)
 
@@ -2111,6 +2114,11 @@ OPTIONS                                                        *vimtex-options*
   mappings on conflict.
 
   Default value: 0
+
+*g:vimtex_mappings_prefix*
+  The default prefix for `<localleader>` based mappings.
+
+  Default value: `'<localleader>l'`
 
 *g:vimtex_matchparen_enabled*
   Enable highlighting of matching delimiters.

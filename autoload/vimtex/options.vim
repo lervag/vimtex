@@ -286,6 +286,8 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_mappings_disable', {})
   call s:init_option('vimtex_mappings_override_existing', 0)
 
+  call s:init_option('vimtex_mappings_prefix', '<localleader>l')
+
   call s:init_option('vimtex_matchparen_enabled', 1)
   call s:init_option('vimtex_motion_enabled', 1)
 
