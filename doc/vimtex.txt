@@ -2104,6 +2104,11 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: {}
 
+*g:vimtex_mappings_prefix*
+  The default prefix for all usually `<localleader>` based mappings.
+
+  Default value: <localleader>l
+
 *g:vimtex_mappings_override_existing*
   Control behaviour on mapping conflicts, in particular whether or not to
   override pre-existing mappings. By default, VimTeX does not override existing

@@ -118,18 +118,22 @@ function! s:init_buffer() abort " {{{1
 endfunction
 
 " }}}1
+function! s:map_prefixed(ftype, mode, lhs, rhs) abort " {{{1
+  let l:lhs = g:vimtex_mappings_prefix . a:lhs
+  call s:map(a:ftype, a:mode, l:lhs, a:rhs)
+endfunction
+
+" }}}1
 function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
-  let l:prfx = g:vimtex_mappings_prefix
-
-  call s:map(0, 'n', '<localleader>' .. l:prfx .. 'i', '<plug>(vimtex-info)')
-  call s:map(0, 'n', '<localleader>' .. l:prfx .. 'I', '<plug>(vimtex-info-full)')
-  call s:map(0, 'n', '<localleader>' .. l:prfx .. 'x', '<plug>(vimtex-reload)')
-  call s:map(0, 'n', '<localleader>' .. l:prfx .. 'X', '<plug>(vimtex-reload-state)')
-  call s:map(1, 'n', '<localleader>' .. l:prfx .. 's', '<plug>(vimtex-toggle-main)')
-  call s:map(0, 'n', '<localleader>' .. l:prfx .. 'q', '<plug>(vimtex-log)')
-  call s:map(1, 'n', '<localleader>' .. l:prfx .. 'a', '<plug>(vimtex-context-menu)')
+  call s:map_prefixed(0, 'n', 'i', '<plug>(vimtex-info)')
+  call s:map_prefixed(0, 'n', 'I', '<plug>(vimtex-info-full)')
+  call s:map_prefixed(0, 'n', 'x', '<plug>(vimtex-reload)')
+  call s:map_prefixed(0, 'n', 'X', '<plug>(vimtex-reload-state)')
+  call s:map_prefixed(1, 'n', 's', '<plug>(vimtex-toggle-main)')
+  call s:map_prefixed(0, 'n', 'q', '<plug>(vimtex-log)')
+  call s:map_prefixed(1, 'n', 'a', '<plug>(vimtex-context-menu)')
 
   call s:map(0, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
   call s:map(0, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
@@ -159,17 +163,17 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(0, 'n', '<F8>', '<plug>(vimtex-delim-add-modifiers)')
 
   if g:vimtex_compiler_enabled
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'l', '<plug>(vimtex-compile)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'o', '<plug>(vimtex-compile-output)')
-    call s:map(1, 'n', '<localleader>' .. l:prfx .. 'L', '<plug>(vimtex-compile-selected)')
-    call s:map(1, 'x', '<localleader>' .. l:prfx .. 'L', '<plug>(vimtex-compile-selected)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'k', '<plug>(vimtex-stop)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'K', '<plug>(vimtex-stop-all)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'e', '<plug>(vimtex-errors)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'c', '<plug>(vimtex-clean)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'C', '<plug>(vimtex-clean-full)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'g', '<plug>(vimtex-status)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'G', '<plug>(vimtex-status-all)')
+    call s:map_prefixed(0, 'n', 'l', '<plug>(vimtex-compile)')
+    call s:map_prefixed(0, 'n', 'o', '<plug>(vimtex-compile-output)')
+    call s:map_prefixed(1, 'n', 'L', '<plug>(vimtex-compile-selected)')
+    call s:map_prefixed(1, 'x', 'L', '<plug>(vimtex-compile-selected)')
+    call s:map_prefixed(0, 'n', 'k', '<plug>(vimtex-stop)')
+    call s:map_prefixed(0, 'n', 'K', '<plug>(vimtex-stop-all)')
+    call s:map_prefixed(0, 'n', 'e', '<plug>(vimtex-errors)')
+    call s:map_prefixed(0, 'n', 'c', '<plug>(vimtex-clean)')
+    call s:map_prefixed(0, 'n', 'C', '<plug>(vimtex-clean-full)')
+    call s:map_prefixed(0, 'n', 'g', '<plug>(vimtex-status)')
+    call s:map_prefixed(0, 'n', 'G', '<plug>(vimtex-status-all)')
   endif
 
   if g:vimtex_motion_enabled
@@ -290,19 +294,19 @@ function! s:init_default_mappings() abort " {{{1
   endif
 
   if g:vimtex_toc_enabled
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 't', '<plug>(vimtex-toc-open)')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'T', '<plug>(vimtex-toc-toggle)')
+    call s:map_prefixed(0, 'n', 't', '<plug>(vimtex-toc-open)')
+    call s:map_prefixed(0, 'n', 'T', '<plug>(vimtex-toc-toggle)')
   endif
 
   if has_key(b:vimtex, 'viewer')
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'v', '<plug>(vimtex-view)')
+    call s:map_prefixed(0, 'n', 'v', '<plug>(vimtex-view)')
     if !empty(maparg('<plug>(vimtex-reverse-search)', 'n'))
-      call s:map(1, 'n', '<localleader>' .. l:prfx .. 'r', '<plug>(vimtex-reverse-search)')
+      call s:map_prefixed(1, 'n', 'r', '<plug>(vimtex-reverse-search)')
     endif
   endif
 
   if g:vimtex_imaps_enabled
-    call s:map(0, 'n', '<localleader>' .. l:prfx .. 'm', '<plug>(vimtex-imaps-list)')
+    call s:map_prefixed(0, 'n', 'm', '<plug>(vimtex-imaps-list)')
   endif
 
   if g:vimtex_doc_enabled
