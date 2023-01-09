@@ -68,7 +68,7 @@ function! s:files_manual() abort " {{{1
   let l:vimtex = vimtex#state#get(l:id)
 
   let l:bibfiles = []
-  for l:file in map(copy(l:vimtex.sources), 'l:vimtex.root . ''/'' . v:val')
+  for l:file in map(l:vimtex.get_sources(), 'l:vimtex.root . ''/'' . v:val')
     let l:current = l:cache.get(l:file)
 
     let l:ftime = getftime(l:file)

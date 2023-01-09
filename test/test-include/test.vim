@@ -31,6 +31,6 @@ call assert_equal([
       \ 'sub/file1.tex',
       \ 'sub/file2.tex',
       \ 'sub/file3.tex',
-      \], b:vimtex.sources)
+      \], b:vimtex.get_sources())
 
 call vimtex#test#finished()

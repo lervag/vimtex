@@ -12,6 +12,7 @@ call vimtex#log#set_silent()
 if empty($INMAKE) | finish | endif
 
 silent! edit test_recursive.tex
+call b:vimtex.get_sources()
 
 let s:log = vimtex#log#get()
 call assert_equal(1, len(s:log))

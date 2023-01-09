@@ -28,7 +28,6 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   let l:new.documentclass = s:parse_documentclass(l:preamble)
   let l:new.packages = s:parse_packages(l:preamble)
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
-  let l:new.sources = s:gather_sources(l:new.tex, l:new.root)
 
   " Update package list from fls file (if available)
   call l:new.update_packages()
@@ -66,8 +65,9 @@ function! s:vimtex.__pprint() abort dict " {{{1
     call add(l:items, ['packages', join(sort(keys(self.packages)))])
   endif
 
-  if len(self.sources) >= 2
-    call add(l:items, ['source files', self.sources])
+  let l:sources = self.get_sources()
+  if len(l:sources) >= 2
+    call add(l:items, ['source files', l:sources])
   endif
 
   call add(l:items, ['compiler', get(self, 'compiler', {})])
@@ -108,7 +108,7 @@ endfunction
 
 " }}}1
 function! s:vimtex.getftime() abort dict " {{{1
-  return max(map(copy(self.sources), 'getftime(self.root . ''/'' . v:val)'))
+  return max(map(self.get_sources(), 'getftime(self.root . ''/'' . v:val)'))
 endfunction
 
 " }}}1
@@ -156,6 +156,16 @@ function! s:vimtex.is_compileable() abort dict " {{{1
   endif
 
   return v:true
+endfunction
+
+" }}}1
+
+function! s:vimtex.get_sources() abort dict " {{{1
+  if !has_key(self, '__sources')
+    let self.__sources = s:gather_sources(self.tex, self.root)
+  endif
+
+  return copy(self.__sources)
 endfunction
 
 " }}}1

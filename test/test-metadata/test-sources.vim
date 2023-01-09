@@ -10,6 +10,6 @@ call assert_equal([
   \ 'sub1/include2.tex',
   \ 'sub2/include3.tex',
   \ 'subfile.tex',
-  \], b:vimtex.sources)
+  \], b:vimtex.get_sources())
 
 call vimtex#test#finished()

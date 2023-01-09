@@ -185,8 +185,8 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   " Note: This may need to create a hierarchical structure!
   if empty(self.build_dir) | return | endif
 
-  if has_key(self.state, 'sources')
-    let l:dirs = copy(self.state.sources)
+  if has_key(self.state, 'get_sources')
+    let l:dirs = self.state.get_sources()
     call filter(map(
           \ l:dirs, "fnamemodify(v:val, ':h')"),
           \ {_, x -> x !=# '.'})
