@@ -1,6 +1,6 @@
-MYVIM ?= nvim
+MYVIM ?= nvim --clean
 
-.PHONY: default
+.PHONY: default basic
 
 default:
 	hyperfine --min-runs 5 '$(MYVIM) -u minivimrc'

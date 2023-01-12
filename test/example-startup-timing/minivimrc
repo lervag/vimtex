@@ -1,6 +1,6 @@
 set nocompatible
-let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
-let &rtp .= ',~/.vim/bundle/vimtex/after'
+set runtimepath^=../..
+set runtimepath+=../../after
 filetype plugin indent on
 syntax enable
 
