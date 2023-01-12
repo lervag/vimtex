@@ -10,6 +10,8 @@ endfunction
 
 " }}}1
 function! vimtex#parser#preamble(file, ...) abort " {{{1
+  " This will return the list of lines of the current project from the
+  " beginning of the preamble until and including the `\begin{document}`
   return vimtex#parser#tex#parse_preamble(a:file, a:0 > 0 ? a:1 : {})
 endfunction
 
@@ -125,7 +127,6 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
     let l:lines = l:template[:l:i-1] + l:lines + l:template[l:i+1:]
   else
     let l:lines = vimtex#parser#preamble(b:vimtex.tex)
-          \ + ['\begin{document}']
           \ + l:lines
           \ + ['\end{document}']
   endif

@@ -1,3 +1,4 @@
 \documentclass{minimal}
 \newcommand{\test}{...}
 
+\begin{document}

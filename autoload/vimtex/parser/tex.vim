@@ -13,7 +13,7 @@ function! vimtex#parser#tex#parse(file, opts) abort " {{{1
   let l:cache = vimtex#cache#open('parser_tex', {
         \ 'local': 1,
         \ 'persistent': v:false,
-        \ 'default': {'ftime': -1},
+        \ 'default': {'ftime': -2},
         \})
 
   let l:parsed = s:parse(a:file, l:opts, l:cache)
@@ -34,7 +34,7 @@ function! vimtex#parser#tex#parse_files(file, opts) abort " {{{1
   let l:cache = vimtex#cache#open('parser_tex', {
         \ 'local': 1,
         \ 'persistent': v:false,
-        \ 'default': {'ftime': -1},
+        \ 'default': {'ftime': -2},
         \})
 
   return vimtex#util#uniq_unsorted(

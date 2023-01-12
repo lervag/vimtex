@@ -14,7 +14,7 @@ let s:candidates = vimtex#test#completion('\gls{', '')
 call assert_true(len(s:candidates) == 0)
 
 call vimtex#cache#clear('kpsewhich')
-call vimtex#cache#clear('texparser')
+call vimtex#cache#clear('parser_tex')
 let $TEXINPUTS = getcwd() . '/texinclude:'
 let s:candidates = vimtex#test#completion('\gls{', '')
 call assert_true(len(s:candidates) > 0)
