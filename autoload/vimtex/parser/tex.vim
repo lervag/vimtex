@@ -10,10 +10,10 @@ function! vimtex#parser#tex#parse(file, opts) abort " {{{1
         \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
         \}, a:opts)
 
-  let l:cache = vimtex#cache#open('texparser', {
+  let l:cache = vimtex#cache#open('parser_tex', {
         \ 'local': 1,
-        \ 'persistent': 0,
-        \ 'default': {'ftime': -2},
+        \ 'persistent': v:false,
+        \ 'default': {'ftime': -1},
         \})
 
   let l:parsed = s:parse(a:file, l:opts, l:cache)
@@ -31,10 +31,10 @@ function! vimtex#parser#tex#parse_files(file, opts) abort " {{{1
         \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
         \}, a:opts)
 
-  let l:cache = vimtex#cache#open('texparser', {
+  let l:cache = vimtex#cache#open('parser_tex', {
         \ 'local': 1,
-        \ 'persistent': 0,
-        \ 'default': {'ftime': -2},
+        \ 'persistent': v:false,
+        \ 'default': {'ftime': -1},
         \})
 
   return vimtex#util#uniq_unsorted(
@@ -44,11 +44,22 @@ endfunction
 " }}}1
 function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
   let l:opts = extend({
-          \ 'inclusive' : 0,
-          \ 'root' : exists('b:vimtex.root') ? b:vimtex.root : '',
+          \ 'root': exists('b:vimtex.root') ? b:vimtex.root : '',
           \}, a:opts)
 
-  return s:parse_preamble(a:file, l:opts, [])
+  let l:cache = vimtex#cache#open('parser_preamble', {
+        \ 'persistent': v:false,
+        \ 'default': {'time': -1},
+        \})
+  let l:current = l:cache.get(a:file)
+
+  let l:time = localtime()
+  if l:time > l:current.time + 60
+    let l:current.time = l:time
+    let l:current.lines = s:parse_preamble(a:file, l:opts, [])
+  endif
+
+  return deepcopy(l:current.lines)
 endfunction
 
 " }}}1
@@ -249,18 +260,15 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
 
   let l:lines = []
   for l:line in readfile(a:file)
-    if l:line =~# '\\begin\s*{document}'
-      if a:opts.inclusive
-        call add(l:lines, l:line)
-      endif
-      break
-    endif
-
     if l:line =~# g:vimtex#re#tex_input
       let l:file = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
       call extend(l:lines, s:parse_preamble(l:file, a:opts, a:parsed_files))
     else
       call add(l:lines, l:line)
+    endif
+
+    if l:line =~# '\\begin\s*{document}'
+      break
     endif
   endfor
 

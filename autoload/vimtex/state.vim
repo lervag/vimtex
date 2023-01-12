@@ -475,7 +475,6 @@ function! s:file_is_main(file) abort " {{{1
   if !filereadable(a:file) | return 0 | endif
 
   let l:preamble = vimtex#parser#preamble(a:file, {
-        \ 'inclusive' : 1,
         \ 'root' : fnamemodify(a:file, ':p:h'),
         \})
 

@@ -27,8 +27,8 @@ endfunction
 function! vimtex#parser#toc(...) abort " {{{1
   let l:vimtex = a:0 > 0 ? a:1 : b:vimtex
 
-  let l:cache = vimtex#cache#open('parsertoc', {
-        \ 'persistent': 0,
+  let l:cache = vimtex#cache#open('parser_toc', {
+        \ 'persistent': v:false,
         \ 'default': {'entries': [], 'ftime': -1},
         \})
   let l:current = l:cache.get(l:vimtex.tex)
@@ -36,7 +36,6 @@ function! vimtex#parser#toc(...) abort " {{{1
   " Update cache if relevant
   let l:ftime = l:vimtex.getftime()
   if l:ftime > l:current.ftime
-    let l:cache.modified = 1
     let l:current.ftime = l:ftime
     let l:current.entries = vimtex#parser#toc#parse(l:vimtex.tex)
   endif
