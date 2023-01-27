@@ -33,6 +33,7 @@ function! s:viewer._start(outfile) dict abort " {{{1
         \ : a:outfile
 
   let l:cmd  = g:vimtex_view_sioyek_exe
+        \ . ' ' . g:vimtex_view_sioyek_options
         \ . ' --inverse-search "' . s:inverse_search_cmd
         \ .   ' -c \"VimtexInverseSearch %2 ''%1''\""'
         \ . ' --forward-search-file ' . vimtex#util#shellescape(expand('%:p'))

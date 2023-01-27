@@ -3004,6 +3004,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: `'sioyek'`
 
+*g:vimtex_view_sioyek_options*
+  Set additional command-line options for Sioyek (|vimtex-view-sioyek|). This
+  can e.g. be used to add the `--reuse-instance` or `--reuse-window` option,
+  which some users prefer.
+
+  Default value: ''
+
 *g:vimtex_view_skim_activate*
   Set this option to 1 to make Skim have focus after command |:VimtexView| in
   addition to being moved to the foreground.
