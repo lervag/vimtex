@@ -5,7 +5,14 @@
 "
 
 function! vimtex#syntax#p#comment#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_env('texComment', 'comment')
+  syntax region texComment
+        \ start="\\begin{comment}"
+        \ end="\\end{comment}"
+        \ contains=texCommentEnv
+        \ keepend
+  syntax match texCommentEnv "\\\%(begin\|end\){comment}"
+        \ contained
+        \ contains=texCmdEnv
 endfunction
 
 " }}}1
