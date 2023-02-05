@@ -6,9 +6,18 @@
 
 function! vimtex#jobs#neovim#new(cmd) abort " {{{1
   let l:job = deepcopy(s:job)
-  let l:job.cmd = has('win32')
-        \ ? 'cmd /s /c "' . a:cmd . '"'
-        \ : ['sh', '-c', a:cmd]
+  let l:modifier = get(g:, 'vimtex_job_cmd_modifier', has('win32') ? 'start ' : '')
+  if type(l:modifier) == v:t_func || (type(l:modifier) == v:t_string && exists('*' . l:modifier)) 
+    let l:job.cmd = call(l:modifier, a:cmd)
+  else
+    if empty(l:modifier)
+      let l:job.cmd = has('win32')
+            \ ? 'cmd /s /c "' . a:cmd . '"'
+            \ : ['sh', '-c', a:cmd]
+    else
+      let l:job.cmd = l:modifier . a:cmd
+    endif
+  endif
   return l:job
 endfunction
 
