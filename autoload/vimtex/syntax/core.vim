@@ -675,11 +675,6 @@ function! vimtex#syntax#core#init() abort " {{{1
 
   " }}}2
 
-  " Apply custom command syntax specifications
-  for l:item in g:vimtex_syntax_custom_cmds
-    call vimtex#syntax#core#new_cmd(l:item)
-  endfor
-
   let b:current_syntax = 'tex'
 endfunction
 
@@ -697,6 +692,12 @@ function! vimtex#syntax#core#init_post() abort " {{{1
   endfor
 
   call vimtex#syntax#packages#init()
+
+  " Apply custom command syntax specifications; these may override syntax
+  " extensions from packages if they are loaded during initialization.
+  for l:item in g:vimtex_syntax_custom_cmds
+    call vimtex#syntax#core#new_cmd(l:item)
+  endfor
 endfunction
 
 " }}}1
