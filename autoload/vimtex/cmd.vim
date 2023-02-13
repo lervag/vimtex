@@ -270,8 +270,7 @@ endfunction
 " }}}1
 
 function! vimtex#cmd#parser_separator_check(separator_string) abort " {{{1
-  return empty(substitute(a:separator_string, '\_s\+', '', 'g'))
-        \ && count(a:separator_string, "\n") < 2
+  return a:separator_string =~# '\v^%(\n\s*)?$'
 endfunction
 
 " }}}1
