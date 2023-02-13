@@ -14,12 +14,18 @@ function! vimtex#syntax#packages#init() abort " {{{1
 
   call s:register_packages()
 
+  let l:loaded = 0
   for [l:pkg, l:cfg] in items(b:vimtex_syntax)
     if !l:cfg.__load || l:cfg.__loaded | continue | endif
 
     call vimtex#syntax#p#{l:pkg}#load(l:cfg)
     let l:cfg.__loaded = 1
+    let l:loaded += 1
   endfor
+
+  if l:loaded > 0
+    call vimtex#syntax#core#init_custom()
+  endif
 endfunction
 
 " }}}1

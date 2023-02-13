@@ -2410,6 +2410,10 @@ OPTIONS                                                        *vimtex-options*
 
     \cmdname[optional]{argument}
 <
+  It is important to be aware that these customizations will be applied on top
+  of the existing syntax rules. These may therefore override both the core
+  syntax rules and extensions from syntax packages.
+
   Each element in the list must be a dictionary with the following keys:
 
     name ~

@@ -692,9 +692,13 @@ function! vimtex#syntax#core#init_post() abort " {{{1
   endfor
 
   call vimtex#syntax#packages#init()
+  call vimtex#syntax#core#init_custom()
+endfunction
 
-  " Apply custom command syntax specifications; these may override syntax
-  " extensions from packages if they are loaded during initialization.
+" }}}1
+function! vimtex#syntax#core#init_custom() abort " {{{1
+  " Apply custom command syntax specifications
+  " Note: These will override syntax extensions from packages!
   for l:item in g:vimtex_syntax_custom_cmds
     call vimtex#syntax#core#new_cmd(l:item)
   endfor
