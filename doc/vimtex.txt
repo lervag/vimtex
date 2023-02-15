@@ -1266,14 +1266,75 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: `bibtex`
 
-*g:vimtex_bibliography_commands*
-    A list of command names for commands that include bibliography files.
-    Each list entry is interpreted as a pattern (very magic, see |/\v|) to
-    match a particular command name. This option may be useful if one defines
-    custom commands that includes bibliography files.
+*g:vimtex_parser_cmd_separator_check*
+  This option specifies the policy for deciding whether successive groups of
+  `[opt]` and `{arg}` following a `\command` should be recognized as arguments
+  to that `\command`.
 
-    Default value: >
-        ['%(no)?bibliography', 'add%(bibresource|globalbib|sectionbib)']
+  In fact, parsing a LaTeX command without additional knowledge is a hard
+  problem. When we read `\foo{bar}{baz}` — is `{baz}` going to be consumed as
+  an argument to `\foo`? The only way to know this is to read the definition
+  of the `\foo` command/macro.
+
+  A pragmatic choice when we write a parser, therefore, is to rely on some
+  heuristics and common practises. This will never be perfect, but it can be
+  good enough for practical use. In VimTeX, the core heuristics are that
+  a command will look like this: >tex
+
+    \foo<overlay>[[opt]{arg}]...
+    \begin{name}<overlay>[[opt]{arg}]...
+<
+  The parser greedily swallows as many groups of `[opt]` and `{arg}` as
+  possible as long as the function specified via this option returns true for
+  the text between successive such groups.
+
+  The default function will allow a line break and possibly white space on the
+  preceding line before a new group. E.g.: >tex
+
+    % command                number of args
+    % -------                --------------
+    \foo{bar}{baz}           % 2
+    \foo{bar} {baz}          % 1
+    \foo{bar}
+    {baz}                    % 2
+    \foo{bar}
+      {baz}                  % 2
+    \foo{bar}__
+      {baz}                  % 1 (_ indicates spaces)
+<
+  The option should be either the name of the function (a string) or
+  a |Funcref|. The function takes a single argument, which is the string
+  between successive `[opt]` and `{arg}` groups. It should return |v:true|
+  if the parser should continue and |v:false| if the parser should stop.
+
+  A user may want to change this behaviour e.g. to specify that all whitespace
+  should be allowed, including and up to a single newline: >vim
+
+    function! MyCmdSeparatorRule(separator_string)
+      return a:separator_string =~# '^\_s\+$'
+            \ && count(a:separator_string, "\n") < 2
+    endfunction
+
+    let g:vimtex_parser_cmd_separator_check = 'MyCmdSeparatorRule'
+<
+  Note: This option is relevant for any feature that relies on the parsing of
+        a command. This includes, but is not limited to the
+        |<plug>(vimtex-ac)| text object (|vimtex-text-objects|).
+
+  Note: |Funcref|s are only possible when it is used with neovim Lua
+        configuration, because in Vimscript, variable names must be
+        capitalized in order to point to |Funcref|s.
+
+  Default: `'vimtex#cmd#parser_separator_check'`
+
+*g:vimtex_bibliography_commands*
+  A list of command names for commands that include bibliography files. Each
+  list entry is interpreted as a pattern (very magic, see |/\v|) to match
+  a particular command name. This option may be useful if one defines custom
+  commands that includes bibliography files.
+
+  Default value: >
+      ['%(no)?bibliography', 'add%(bibresource|globalbib|sectionbib)']
 
 *g:vimtex_complete_bib*
   This option is a dictionary for controlling the citation completion. The
@@ -3777,6 +3838,9 @@ cursor position before the operation. >
   \begin{itemize}                      \begin{itemize}
     \item hello moon|          dam     \end{itemize}
   \end{itemize}
+
+Note: The "greediness" of the command text objects (`ic` and `ac`) can be
+      controlled with |g:vimtex_parser_cmd_separator_check|.
 
 Note: Some of the text objects rely on syntax highlighting (|vimtex-syntax|)
       to work. That is, some text objects check the syntax groups to determine

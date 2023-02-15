@@ -307,6 +307,8 @@ function! vimtex#options#init() abort " {{{1
         \ '-n1 -n3 -n8 -n25 -n36')
 
   call s:init_option('vimtex_parser_bib_backend', 'bibtex')
+  call s:init_option('vimtex_parser_cmd_separator_check',
+        \ 'vimtex#cmd#parser_separator_check')
 
   call s:init_option('vimtex_quickfix_enabled', 1)
   call s:init_option('vimtex_quickfix_method', 'latexlog')

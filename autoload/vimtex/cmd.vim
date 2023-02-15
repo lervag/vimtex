@@ -269,6 +269,12 @@ endfunction
 
 " }}}1
 
+function! vimtex#cmd#parser_separator_check(separator_string) abort " {{{1
+  return a:separator_string =~# '\v^%(\n\s*)?$'
+endfunction
+
+" }}}1
+
 function! s:get_frac_toggled(origin, numerator, denominator) abort " {{{1
   let l:target = get(g:vimtex_toggle_fractions, a:origin, 'INLINE')
 
@@ -686,18 +692,15 @@ function! s:get_cmd_part(part, start_pos) abort " {{{1
   call vimtex#pos#set_cursor(a:start_pos)
   let l:open = vimtex#delim#get_next('delim_tex', 'open')
   call vimtex#pos#set_cursor(l:save_pos)
-  if empty(l:open) | return | endif
 
-  "
-  " Ensure that the delimiter
-  " 1) is of the right type,
-  " 2) and is the next non-whitespace character.
-  "
-  let l:separate = s:text_between(a:start_pos, l:open)
-  let l:newlines = count(l:separate, "\n")
-  if l:open.match !=# a:part
-        \ || strlen(substitute(l:separate, '\_s\+', '', 'g')) != 0
-        \ || l:newlines > 1
+  " Ensure that the next delimiter is found and is of the right type
+  if empty(l:open) || l:open.match !=# a:part | return {} | endif
+
+  " Ensure that the delimiter is the next non-whitespace character according to
+  " a configurable rule
+  if ! call(g:vimtex_parser_cmd_separator_check, [
+        \ s:text_between(a:start_pos, l:open)
+        \])
     return {}
   endif
 
