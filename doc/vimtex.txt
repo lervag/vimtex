@@ -1267,30 +1267,29 @@ OPTIONS                                                        *vimtex-options*
   Default value: `bibtex`
 
 *g:vimtex_parser_cmd_separator_check*
-  This option specifies the function that is used to check the separator
-  string between command arguments. The option should be either the name of
-  the function (a string) or a |Funcref|. The function takes a single argument,
-  which is the separator string. It should return |v:true| if the parser
-  should continue and |v:false| if the parser should stop.
+  This option specifies the policy for deciding whether successive groups of
+  `[opt]` and `{arg}` following a `\command` should be recognized as arguments
+  to that `\command`.
 
-  It is a hard problem to parse a LaTeX command without additional knowledge.
-  When we read `\foo{bar}{baz}` — is `{baz}` going to be consumed as an
-  argument to `\foo`? The only way to know this is to read the definition of
-  the `\foo` command/macro.
+  In fact, parsing a LaTeX command without additional knowledge is a hard
+  problem. When we read `\foo{bar}{baz}` — is `{baz}` going to be consumed as
+  an argument to `\foo`? The only way to know this is to read the definition
+  of the `\foo` command/macro.
 
-  A pragmatic choice when we write a parser is therefore to instead rely on
-  some heuristics and common practises. This will never be perfect, but it can
-  be good enough for practical use. In VimTeX, the core heuristics are that
+  A pragmatic choice when we write a parser, therefore, is to rely on some
+  heuristics and common practises. This will never be perfect, but it can be
+  good enough for practical use. In VimTeX, the core heuristics are that
   a command will look like this: >tex
 
     \foo<overlay>[[opt]{arg}]...
     \begin{name}<overlay>[[opt]{arg}]...
 <
-  The parser is greedy and will swallow as many groups of `[opts]` and
-  `{args}` as possible as long as the condition on the separator string
-  between the arguments is satisfied (i.e. this option!). The default function
-  will allow a line break and possibly white space on the preceding line
-  before a new group. E.g.: >tex
+  The parser greedily swallows as many groups of `[opt]` and `{arg}` as
+  possible as long as the function specified via this option returns true for
+  the text between successive such groups.
+
+  The default function will allow a line break and possibly white space on the
+  preceding line before a new group. E.g.: >tex
 
     % command                number of args
     % -------                --------------
@@ -1303,6 +1302,11 @@ OPTIONS                                                        *vimtex-options*
     \foo{bar}__
       {baz}                  % 1 (_ indicates spaces)
 <
+  The option should be either the name of the function (a string) or
+  a |Funcref|. The function takes a single argument, which is the string
+  between successive `[opt]` and `{arg}` groups. It should return |v:true|
+  if the parser should continue and |v:false| if the parser should stop.
+
   A user may want to change this behaviour e.g. to specify that all whitespace
   should be allowed, including and up to a single newline: >vim
 
