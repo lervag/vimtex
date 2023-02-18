@@ -203,6 +203,10 @@ endfunction
 
 " }}}1
 function! s:viewer.xdo_find_win_id_by_pid() dict abort " {{{1
+  g:vimtex_wayland = get(g:, 'vimtex_wayland', 0)
+  if g:vimtex_wayland
+    return 1
+  endif
   " Attempt to find the viewer's X window ID by the viewer's process ID.
   " Returns the viewer's window ID if one is found or 0. If more than one ID is
   " found, return the first.
