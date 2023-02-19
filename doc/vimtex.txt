@@ -2569,6 +2569,60 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: []
 
+*g:vimtex_syntax_custom_cmds_with_concealed_delims*
+  This option works exactly as |g:vimtex_syntax_custom_cmds|, except it is
+  used specifically to add conceals with custom replacement characters for
+  single-argument commands, e.g. >
+
+    \cmdname{argument}
+<
+  Each element in the list must be a dictionary with the following keys:
+
+    name ~
+      Default: Undefined (REQUIRED)
+      The command to highlight (`cmdname`). This is also for defining the
+      syntax group names.
+
+    cchar_open ~
+      Default: Undefined (REQUIRED)
+      Specify single letter replacement for the head (`\cmdname{`).
+
+    cchar_close ~
+      Default: Undefined (REQUIRED)
+      Specify single letter replacement for the tail (`}`).
+
+    cmdre ~
+      Default: Undefined
+      If this is defined, then it is used instead of `name` for matching the
+      `cmdname` part. It is interpreted as a regular expression with "very
+      magic" mode activated (see |/\v|).
+
+    mathmode ~
+      Default: |v:false|
+      If true, then the command is a math mode command.
+
+    argspell ~
+      Default: |v:true|
+      Specify this as |v:false| or 0 to disable spell checking of the command
+      argument.
+
+    hlgroup ~
+      Default: Undefined
+      A string that can be used to indicate the target highlight group of the
+      command (`\cmdname`).
+
+  The following example will add a custom conceal rule to `\ket{x}` so that it
+  will render as `|x>`. >vim
+
+    let g:vimtex_syntax_custom_cmds_with_concealed_delims = [
+          \ {'name': 'ket',
+          \  'mathmode': 1,
+          \  'cchar_open': '|',
+          \  'cchar_close': '>'},
+          \]
+<
+  Default value: []
+
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
   available for configuration:
@@ -4454,6 +4508,7 @@ are several major differences that users may want to be aware of:
 Associated settings:
 * |g:vimtex_syntax_enabled|
 * |g:vimtex_syntax_custom_cmds|
+* |g:vimtex_syntax_custom_cmds_with_concealed_delims|
 * |g:vimtex_syntax_conceal|
 * |g:vimtex_syntax_conceal_cites|
 * |g:vimtex_syntax_conceal_disable|

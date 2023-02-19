@@ -702,6 +702,10 @@ function! vimtex#syntax#core#init_custom() abort " {{{1
   for l:item in g:vimtex_syntax_custom_cmds
     call vimtex#syntax#core#new_cmd(l:item)
   endfor
+
+  for l:item in g:vimtex_syntax_custom_cmds_with_concealed_delims
+    call vimtex#syntax#core#new_cmd_with_concealed_delims(l:item)
+  endfor
 endfunction
 
 " }}}1
@@ -1023,6 +1027,59 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
         \ !empty(l:cfg.concealchar) ? 'cchar=' . l:cfg.concealchar : ''
         \ l:nextgroups
         \ l:cfg.mathmode ? 'contained' : ''
+
+  " Define default highlight rule
+  execute 'highlight def link' l:group_cmd
+        \ !empty(l:cfg.hlgroup)
+        \   ? l:cfg.hlgroup
+        \   : l:pre . 'Cmd'
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
+  if empty(get(a:cfg, 'name')) | return | endif
+
+  " Parse options/config
+  let l:cfg = extend({
+        \ 'mathmode': v:false,
+        \ 'argspell': v:true,
+        \ 'hlgroup': '',
+        \}, a:cfg)
+
+  let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
+  let l:pre = l:cfg.mathmode ? 'texMath' : 'tex'
+  let l:group_cmd = l:pre . 'Cmd' . l:name
+  let l:group_arg = l:pre . l:name . 'Arg'
+  let l:group_delims = l:pre . l:name . 'ConcealedDelim'
+
+  let l:arg_cfg = {
+        \ 'opts': 'contained',
+        \}
+  if l:cfg.mathmode
+    let l:arg_cfg.contains = '@texClusterMath'
+  elseif !l:cfg.argspell
+    let l:arg_cfg.contains = 'TOP,@Spell'
+  endif
+  call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
+
+  " Add to cluster if necessary
+  if l:cfg.mathmode
+    execute 'syntax cluster texClusterMath add=' . l:group_cmd
+  endif
+
+  execute 'syntax match' l:group_cmd
+        \ '"\v\\' . get(l:cfg, 'cmdre', l:cfg.name . '>') . '"'
+        \ l:cfg.mathmode ? 'contained' : ''
+        \ 'conceal'
+        \ 'skipwhite nextgroup=' . l:group_arg
+
+  execute 'syntax match' l:group_delims '"{"'
+        \ 'contained containedin=' . l:group_arg
+        \ 'conceal cchar=' . l:cfg.cchar_open
+
+  execute 'syntax match' l:group_delims '"}"'
+        \ 'contained containedin=' . l:group_arg
+        \ 'conceal cchar=' . l:cfg.cchar_close
 
   " Define default highlight rule
   execute 'highlight def link' l:group_cmd
