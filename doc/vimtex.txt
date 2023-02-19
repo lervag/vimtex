@@ -3070,9 +3070,10 @@ OPTIONS                                                        *vimtex-options*
 
   Possible values:
     * `'general'`
-    * `'mupdf'`      |vimtex-view-mupdf|
-    * `'skim'`       |vimtex-view-skim|
-    * `'zathura'`    |vimtex-view-zathura|
+    * `'mupdf'`             |vimtex-view-mupdf|
+    * `'skim'`              |vimtex-view-skim|
+    * `'zathura'`           |vimtex-view-zathura|
+    * `'zathura_simple'`    |vimtex-view-zathura-simple|
 
   See |vimtex-view-configuration| for more information on various popular
   viewers and on how to configure them.
@@ -3092,8 +3093,10 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_view_mupdf_options*
 *g:vimtex_view_zathura_options*
-  Set options for mupdf (|vimtex-view-mupdf|) and Zathura
-  (|vimtex-view-zathura|), respectively.
+  Set options for mupdf and Zathura, respectively. See also:
+    * |vimtex-view-mupdf|
+    * |vimtex-view-zathura|
+    * |vimtex-view-zathura-simple|
 
   Default value: ''
 
@@ -5625,6 +5628,16 @@ Note: Viewer handling uses window title matching. If there exists another pdf
       viewer with the same name as the current project pdf file, then there
       might be conflicts. In particular, this might affect forward/inverse
       searching for Zathura.
+
+                                                   *vimtex-view-zathura-simple*
+Zathura (simple) ~
+This is a simpler implementation of the Zathura viewer; the user should first
+read the docs for |vimtex-view-zathura|.
+
+This variant does not rely on `xdotool`. It leads to a much simpler version
+that should work well in most cases. However, `xdotool` is useful in order to
+prevent duplicate windows and to detect existing viewer windows when you start
+a VimTeX session.
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
