@@ -692,7 +692,6 @@ function! vimtex#syntax#core#init_post() abort " {{{1
   endfor
 
   call vimtex#syntax#packages#init()
-  call vimtex#syntax#core#init_custom()
 endfunction
 
 " }}}1
@@ -953,8 +952,8 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
   endif
 
   " Define group names
-  let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
   let l:pre = l:cfg.mathmode ? 'texMath' : 'tex'
+  let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
   let l:group_cmd = l:pre . 'Cmd' . l:name
   let l:group_opt = l:pre . l:name . 'Opt'
   let l:group_arg = l:pre . l:name . 'Arg'
@@ -1046,14 +1045,15 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
         \ 'hlgroup': '',
         \}, a:cfg)
 
-  let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
   let l:pre = l:cfg.mathmode ? 'texMath' : 'tex'
+  let l:name = 'C' . toupper(l:cfg.name[0]) . l:cfg.name[1:]
   let l:group_cmd = l:pre . 'Cmd' . l:name
   let l:group_arg = l:pre . l:name . 'Arg'
   let l:group_delims = l:pre . l:name . 'ConcealedDelim'
 
   let l:arg_cfg = {
-        \ 'opts': 'contained',
+        \ 'opts': 'keepend contained',
+        \ 'matchgroup': '',
         \}
   if l:cfg.mathmode
     let l:arg_cfg.contains = '@texClusterMath'
