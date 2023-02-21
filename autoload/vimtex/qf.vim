@@ -196,6 +196,10 @@ endfunction
 
 " }}}1
 function! s:qf_autoclose_check() abort " {{{1
+  " Avoid this check if command-line window is open
+  " See :help E11
+  if bufexists("[Command Line]") | return | endif
+
   if get(s:, 'keystroke_counter') == 0
     let s:keystroke_counter = g:vimtex_quickfix_autoclose_after_keystrokes
   endif
