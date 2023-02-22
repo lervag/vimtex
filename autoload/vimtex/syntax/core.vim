@@ -1051,35 +1051,26 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
   let l:group_arg = l:pre . l:name . 'Arg'
   let l:group_delims = l:pre . l:name . 'ConcealedDelim'
 
-  let l:arg_cfg = {
-        \ 'opts': 'keepend contained',
-        \ 'matchgroup': '',
-        \}
   if l:cfg.mathmode
-    let l:arg_cfg.contains = '@texClusterMath'
-  elseif !l:cfg.argspell
-    let l:arg_cfg.contains = 'TOP,@Spell'
-  endif
-  call vimtex#syntax#core#new_arg(l:group_arg, l:arg_cfg)
-
-  " Add to cluster if necessary
-  if l:cfg.mathmode
+    let l:contains = '@texClusterMath'
     execute 'syntax cluster texClusterMath add=' . l:group_cmd
+  elseif !l:cfg.argspell
+    let l:contains = 'TOP,@Spell'
+  else
+    let l:contains = 'TOP,@NoSpell'
   endif
 
   execute 'syntax match' l:group_cmd
         \ '"\v\\' . get(l:cfg, 'cmdre', l:cfg.name . '>') . '"'
         \ l:cfg.mathmode ? 'contained' : ''
-        \ 'conceal'
+        \ 'conceal cchar=' . l:cfg.cchar_open
         \ 'skipwhite nextgroup=' . l:group_arg
 
-  execute 'syntax match' l:group_delims '"{"'
-        \ 'contained containedin=' . l:group_arg
-        \ 'conceal cchar=' . l:cfg.cchar_open
-
-  execute 'syntax match' l:group_delims '"}"'
-        \ 'contained containedin=' . l:group_arg
-        \ 'conceal cchar=' . l:cfg.cchar_close
+  execute 'syntax region' l:group_arg
+        \ 'matchgroup=' . l:group_delims
+        \ 'concealends cchar=' . l:cfg.cchar_close
+        \ 'start="{" skip="\\\\\|\\}" end="}"'
+        \ 'contained contains=' . l:contains
 
   " Define default highlight rule
   execute 'highlight def link' l:group_cmd
