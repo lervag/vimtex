@@ -96,6 +96,35 @@ endfunction
 
 " }}}1
 
+function! s:compiler.get_file(ext) abort dict " {{{1
+  " Check for various output directories
+  " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
+  "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
+  " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
+  "   available as b:vimtex.compiler.build_dir.
+  " * Fallback to the main root directory
+  for l:root in [
+        \ $VIMTEX_OUTPUT_DIRECTORY,
+        \ self.build_dir,
+        \ self.state.root
+        \]
+    if empty(l:root) | continue | endif
+
+    let l:cand = printf('%s/%s.%s', l:root, self.state.name, a:ext)
+    if !vimtex#paths#is_abs(l:root)
+      let l:cand = self.state.root . '/' . l:cand
+    endif
+
+    if filereadable(l:cand)
+      return fnamemodify(l:cand, ':p')
+    endif
+  endfor
+
+  return ''
+endfunction
+
+" }}}1
+
 function! s:compiler.clean(full) abort dict " {{{1
   let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log']
   if a:full

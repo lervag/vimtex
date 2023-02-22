@@ -66,7 +66,7 @@ function! RunTests(comp, list_opts)
     endif
 
     " Check that the PDF has been built
-    if empty(b:vimtex.out())
+    if empty(b:vimtex.compiler.get_file('pdf'))
       echo "PDF was not built properly\n"
       cquit
     endif
@@ -74,7 +74,8 @@ function! RunTests(comp, list_opts)
     silent call vimtex#compiler#clean(1)
     sleep 650m
 
-    if !empty(b:vimtex.out()) || !empty(b:vimtex.get_aux_file('aux'))
+    if !empty(b:vimtex.compiler.get_file('pdf'))
+          \ || !empty(b:vimtex.compiler.get_file('aux'))
       echo "VimtexClean failed!\n"
       cquit
     endif

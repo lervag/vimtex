@@ -119,9 +119,11 @@ endfunction
 
 " }}}1
 function! s:vimtex.update_packages() abort dict " {{{1
+  if !has_key(self, 'compiler') | return | endif
+
   " Try to parse .fls file if present, as it is usually more complete. That is,
   " it contains a generated list of all the packages that are used.
-  for l:line in vimtex#parser#fls(self.get_aux_file('fls'))
+  for l:line in vimtex#parser#fls(self.compiler.get_file('fls'))
     let l:package = matchstr(l:line, '^INPUT \zs.\+\ze\.sty$')
     let l:package = fnamemodify(l:package, ':t')
     if !empty(l:package)
@@ -172,40 +174,6 @@ function! s:vimtex.get_sources() abort dict " {{{1
   endif
 
   return copy(self.__sources)
-endfunction
-
-" }}}1
-
-function! s:vimtex.get_aux_file(ext, ...) abort dict " {{{1
-  " Check for various output directories
-  " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
-  "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
-  " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
-  "   available as b:vimtex.compiler.build_dir.
-  " * Fallback to the main root directory
-  for l:root in [
-        \ $VIMTEX_OUTPUT_DIRECTORY,
-        \ get(get(self, 'compiler', {}), 'build_dir', ''),
-        \ self.root
-        \]
-    if empty(l:root) | continue | endif
-
-    let l:cand = printf('%s/%s.%s', l:root, self.name, a:ext)
-    if !vimtex#paths#is_abs(l:root)
-      let l:cand = self.root . '/' . l:cand
-    endif
-
-    if a:0 > 0 || filereadable(l:cand)
-      return fnamemodify(l:cand, ':p')
-    endif
-  endfor
-
-  return ''
-endfunction
-
-" }}}1
-function! s:vimtex.out(...) abort dict " {{{1
-  return call(self.get_aux_file, ['pdf'] + a:000, self)
 endfunction
 
 " }}}1

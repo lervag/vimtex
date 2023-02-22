@@ -426,7 +426,7 @@ endfunction
 
 function! s:completer_img.gather_candidates() dict abort " {{{2
   let l:added_files = []
-  let l:generated_pdf = b:vimtex.out()
+  let l:generated_pdf = b:vimtex.compiler.get_file('pdf')
 
   let l:candidates = []
   for l:path in b:vimtex.graphicspath + [b:vimtex.root]
