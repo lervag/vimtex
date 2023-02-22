@@ -4,21 +4,28 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
+function! vimtex#state#class#new(opts) abort " {{{1
+  let l:opts = extend({
+        \ 'main': '',
+        \ 'main_parser': '',
+        \ 'preserve_root': v:false,
+        \ 'unsupported_modules': [],
+        \}, a:opts)
+
   let l:new = deepcopy(s:vimtex)
 
-  let l:new.root = fnamemodify(a:main, ':h')
-  let l:new.base = fnamemodify(a:main, ':t')
-  let l:new.name = fnamemodify(a:main, ':t:r')
-  let l:new.main_parser = a:main_parser
+  let l:new.root = fnamemodify(l:opts.main, ':h')
+  let l:new.base = fnamemodify(l:opts.main, ':t')
+  let l:new.name = fnamemodify(l:opts.main, ':t:r')
+  let l:new.main_parser = l:opts.main_parser
 
-  if a:preserve_root && exists('b:vimtex')
+  if l:opts.preserve_root && exists('b:vimtex')
     let l:new.root = b:vimtex.root
-    let l:new.base = vimtex#paths#relative(a:main, l:new.root)
+    let l:new.base = vimtex#paths#relative(l:opts.main, l:new.root)
   endif
 
-  let l:ext = fnamemodify(a:main, ':e')
-  let l:new.tex = l:ext =~? '\v^%(%(la)?tex|dtx|tikz|ins)$' ? a:main : ''
+  let l:ext = fnamemodify(l:opts.main, ':e')
+  let l:new.tex = l:ext =~? '\v^%(%(la)?tex|dtx|tikz|ins)$' ? l:opts.main : ''
 
   " Get preamble for some state parsing
   let l:preamble = !empty(l:new.tex)
@@ -29,16 +36,15 @@ function! vimtex#state#class#new(main, main_parser, preserve_root) abort " {{{1
   let l:new.packages = s:parse_packages(l:preamble)
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
 
-  " Update package list from fls file (if available)
-  call l:new.update_packages()
-
   " Initialize state in submodules
-  let l:new.disabled_modules = get(s:, 'disabled_modules', [])
   for l:mod in filter(
         \ ['view', 'compiler', 'qf', 'toc', 'fold', 'context'],
-        \ 'index(l:new.disabled_modules, v:val) < 0')
+        \ 'index(l:opts.unsupported_modules, v:val) < 0')
     call vimtex#{l:mod}#init_state(l:new)
   endfor
+
+  " Update package list from fls file (if available)
+  call l:new.update_packages()
 
   return l:new
 endfunction

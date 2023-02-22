@@ -14,7 +14,7 @@ endfunction
 
 " }}}1
 function! vimtex#state#init() abort " {{{1
-  let [l:main, l:main_parser] = s:get_main()
+  let [l:main, l:main_parser, l:unsupported_modules] = s:get_main()
   let l:id = s:get_main_id(l:main)
 
   if l:id >= 0
@@ -22,7 +22,11 @@ function! vimtex#state#init() abort " {{{1
     let b:vimtex = s:vimtex_states[l:id]
   else
     let b:vimtex_id = s:vimtex_next_id
-    let b:vimtex = vimtex#state#class#new(l:main, l:main_parser, 0)
+    let b:vimtex = vimtex#state#class#new({
+          \ 'main': l:main,
+          \ 'main_parser': l:main_parser,
+          \ 'unsupported_modules': l:unsupported_modules
+          \})
     let s:vimtex_next_id += 1
     let s:vimtex_states[b:vimtex_id] = b:vimtex
   endif
@@ -42,9 +46,11 @@ function! vimtex#state#init_local() abort " {{{1
 
   if l:vimtex_id < 0
     let l:vimtex_id = s:vimtex_next_id
-    let l:vimtex = vimtex#state#class#new(
-          \ l:filename, 'local file',
-          \ l:preserve_root || s:check_standalone())
+    let l:vimtex = vimtex#state#class#new({
+          \ 'main': l:filename,
+          \ 'main_parser': 'local file',
+          \ 'preserve_root': l:preserve_root || s:check_standalone(),
+          \})
     let s:vimtex_next_id += 1
     let s:vimtex_states[l:vimtex_id] = l:vimtex
 
@@ -184,55 +190,58 @@ function! s:get_main_id(main) abort " {{{1
 endfunction
 
 function! s:get_main() abort " {{{1
-  if exists('s:disabled_modules')
-    unlet s:disabled_modules
-  endif
-
   " Use buffer variable if it exists
   if exists('b:vimtex_main') && filereadable(b:vimtex_main)
-    return [fnamemodify(b:vimtex_main, ':p'), 'buffer variable']
+    return [fnamemodify(b:vimtex_main, ':p'), 'buffer variable', []]
   endif
 
   " Search for TEX root specifier at the beginning of file. This is used by
   " several other plugins and editors.
   let l:candidate = s:get_main_from_texroot()
   if !empty(l:candidate)
-    return [l:candidate, 'texroot specifier']
+    return [l:candidate, 'texroot specifier', []]
   endif
 
   if &filetype ==# 'tex'
     " Check if the current file is a main file
     if s:file_is_main(expand('%:p'))
-      return [expand('%:p'), 'current file verified']
+      return [expand('%:p'), 'current file verified', []]
     endif
 
     " Support for subfiles package
     let l:candidate = s:get_main_from_subfile()
     if !empty(l:candidate)
-      return [l:candidate, 'subfiles']
+      return [l:candidate, 'subfiles', []]
     endif
   endif
 
   " Search for .latexmain-specifier
   let l:candidate = s:get_main_latexmain(expand('%:p'))
   if !empty(l:candidate)
-    return [l:candidate, 'latexmain specifier']
+    return [l:candidate, 'latexmain specifier', []]
   endif
 
   " Search for .latexmkrc @default_files specifier
   let l:candidate = s:get_main_latexmk()
   if !empty(l:candidate)
-    return [l:candidate, 'latexmkrc @default_files']
+    return [l:candidate, 'latexmkrc @default_files', []]
   endif
 
   " Check if we are class or style file
   if index(['cls', 'sty'], expand('%:e')) >= 0
     let l:id = getbufvar('#', 'vimtex_id', -1)
     if l:id >= 0 && has_key(s:vimtex_states, l:id)
-      return [s:vimtex_states[l:id].tex, 'cls/sty file (inherit from alternate)']
+      return [
+            \ s:vimtex_states[l:id].tex,
+            \ 'cls/sty file (inherit from alternate)',
+            \ []
+            \]
     else
-      let s:disabled_modules = ['compiler', 'view', 'toc', 'qf']
-      return [expand('%:p'), 'cls/sty file']
+      return [
+            \ expand('%:p'),
+            \ 'cls/sty file',
+            \ ['compiler', 'view', 'toc', 'qf']
+            \]
     endif
   endif
 
@@ -240,12 +249,12 @@ function! s:get_main() abort " {{{1
   if &filetype ==# 'tex'
     let l:candidate = s:get_main_choose(s:get_main_recurse())
     if !empty(l:candidate)
-      return [l:candidate, 'recursive search']
+      return [l:candidate, 'recursive search', []]
     endif
   else
     let l:candidate = s:get_main_choose(s:get_main_recurse_from_bib())
     if !empty(l:candidate)
-      return [l:candidate, 'recursive search (bib)']
+      return [l:candidate, 'recursive search (bib)', []]
     endif
   endif
 
@@ -256,17 +265,24 @@ function! s:get_main() abort " {{{1
   if exists('s:cand_fallback')
     let l:candidate = s:cand_fallback
     unlet s:cand_fallback
-    return [l:candidate, 'fallback']
+    return [l:candidate, 'fallback', []]
   elseif &filetype ==# 'bib'
     let l:id = getbufvar('#', 'vimtex_id', -1)
     if l:id >= 0 && has_key(s:vimtex_states, l:id)
-      return [s:vimtex_states[l:id].tex, 'bib file (inherit from alternate)']
+      return [
+            \ s:vimtex_states[l:id].tex,
+            \ 'bib file (inherit from alternate)',
+            \ []
+            \]
     else
-      let s:disabled_modules = ['compiler', 'view', 'toc', 'qf', 'fold']
-      return [expand('%:p'), 'bib file']
+      return [
+            \ expand('%:p'),
+            \ 'bib file',
+            \ ['compiler', 'view', 'toc', 'qf', 'fold']
+            \]
     endif
   else
-    return [expand('%:p'), 'fallback current file']
+    return [expand('%:p'), 'fallback current file', []]
   endif
 endfunction
 
