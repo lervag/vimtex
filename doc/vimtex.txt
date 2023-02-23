@@ -2576,12 +2576,12 @@ OPTIONS                                                        *vimtex-options*
 
     \cmdname{argument}
 <
-  Each element in the list must be a dictionary with the following keys:
+  Each element in the list must be a dictionary with the following keys. Most
+  of these keys are documented here: |g:vimtex_syntax_custom_cmds|. Only
+  the unique keys are described in full here.
 
     name ~
       Default: Undefined (REQUIRED)
-      The command to highlight (`cmdname`). This is also for defining the
-      syntax group names.
 
     cchar_open ~
       Default: Undefined (REQUIRED)
@@ -2593,23 +2593,18 @@ OPTIONS                                                        *vimtex-options*
 
     cmdre ~
       Default: Undefined
-      If this is defined, then it is used instead of `name` for matching the
-      `cmdname` part. It is interpreted as a regular expression with "very
-      magic" mode activated (see |/\v|).
 
     mathmode ~
       Default: |v:false|
-      If true, then the command is a math mode command.
+
+    argstyle ~
+      Default: Undefined.
 
     argspell ~
       Default: |v:true|
-      Specify this as |v:false| or 0 to disable spell checking of the command
-      argument.
 
     hlgroup ~
       Default: Undefined
-      A string that can be used to indicate the target highlight group of the
-      command (`\cmdname`).
 
   The following example will add a custom conceal rule to `\ket{x}` so that it
   will render as `|x>`. >vim

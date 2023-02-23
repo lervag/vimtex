@@ -1041,6 +1041,7 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
   " Parse options/config
   let l:cfg = extend({
         \ 'mathmode': v:false,
+        \ 'argstyle': '',
         \ 'argspell': v:true,
         \ 'hlgroup': '',
         \}, a:cfg)
@@ -1077,6 +1078,20 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
         \ !empty(l:cfg.hlgroup)
         \   ? l:cfg.hlgroup
         \   : l:pre . 'Cmd'
+
+  let l:style = get({
+        \ 'bold': 'texStyleBold',
+        \ 'ital': 'texStyleItal',
+        \ 'under': 'texStyleUnder',
+        \ 'boldital': 'texStyleBoth',
+        \ 'boldunder': 'texStyleBoldUnder',
+        \ 'italunder': 'texStyleItalUnder',
+        \ 'bolditalunder': 'texStyleBoldItalUnder',
+        \}, l:cfg.argstyle,
+        \ l:cfg.mathmode ? 'texMathArg' : '')
+  if !empty(l:style)
+    execute 'highlight def link' l:group_arg l:style
+  endif
 endfunction
 
 " }}}1
