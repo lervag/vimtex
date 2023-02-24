@@ -797,6 +797,8 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texCommentAcronym     texComment
   highlight def link texCommentFalse       texComment
   highlight def link texCommentURL         texComment
+  highlight def link texConcealedArg       texArg
+  highlight def link texConcealedArgGroup  texConcealedArg
   highlight def link texConditionalArg     texArg
   highlight def link texConditionalINCChar texSymbol
   highlight def link texDefArgName         texArgNew
@@ -2042,6 +2044,8 @@ function! s:match_conceal_spacing() abort " {{{1
   syntax match texCmd         '\\vfill\>'      conceal
   syntax match texCmd         "\\[hv]space\>"  conceal
         \ skipwhite nextgroup=texConcealedArg
+  syntax match texCmd         "\\hphantom\>"   conceal
+        \ skipwhite nextgroup=texConcealedArg
 
   syntax match texMathCmd '\\[,:;!]'       contained conceal
   syntax match texMathCmd '\\bigskip\>'    contained conceal
@@ -2054,9 +2058,17 @@ function! s:match_conceal_spacing() abort " {{{1
   syntax match texMathCmd '\\vfill\>'      contained conceal
   syntax match texMathCmd "\\[hv]space\>"  contained conceal
         \ skipwhite nextgroup=texConcealedArg
+  syntax match texMathCmd "\\hphantom\>"   contained conceal
+        \ skipwhite nextgroup=texConcealedArg
 
   call vimtex#syntax#core#new_arg('texConcealedArg', {
-        \ 'opts': 'keepend contained conceal concealends',
+        \ 'opts': 'contained conceal',
+        \ 'contains': 'texConcealedArgGroup',
+        \})
+  call vimtex#syntax#core#new_arg('texConcealedArgGroup', {
+        \ 'matchgroup': 'matchgroup=NONE',
+        \ 'opts': 'contained conceal',
+        \ 'contains': 'texConcealedArgGroup',
         \})
 endfunction
 
