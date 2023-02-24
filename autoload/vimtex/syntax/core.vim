@@ -1879,6 +1879,8 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelim contained conceal cchar=) "\\right)"
   syntax match texMathDelim contained conceal cchar=[ "\\left\["
   syntax match texMathDelim contained conceal cchar=] "\\right]"
+  syntax match texMathDelim contained conceal cchar={ "\\{"
+  syntax match texMathDelim contained conceal cchar=} "\\}"
   syntax match texMathDelim contained conceal cchar={ "\\left\\{"
   syntax match texMathDelim contained conceal cchar=} "\\right\\}"
   syntax match texMathDelim contained conceal cchar=⟨ '\\langle\>'
