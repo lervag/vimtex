@@ -2044,7 +2044,7 @@ function! s:match_conceal_spacing() abort " {{{1
   syntax match texCmd         '\\vfill\>'      conceal
   syntax match texCmd         "\\[hv]space\>"  conceal
         \ skipwhite nextgroup=texConcealedArg
-  syntax match texCmd         "\\hphantom\>"   conceal
+  syntax match texCmd         "\\h\?phantom\>" conceal
         \ skipwhite nextgroup=texConcealedArg
 
   syntax match texMathCmd '\\[,:;!]'       contained conceal
@@ -2058,7 +2058,7 @@ function! s:match_conceal_spacing() abort " {{{1
   syntax match texMathCmd '\\vfill\>'      contained conceal
   syntax match texMathCmd "\\[hv]space\>"  contained conceal
         \ skipwhite nextgroup=texConcealedArg
-  syntax match texMathCmd "\\hphantom\>"   contained conceal
+  syntax match texMathCmd "\\h\?phantom\>" contained conceal
         \ skipwhite nextgroup=texConcealedArg
 
   call vimtex#syntax#core#new_arg('texConcealedArg', {
