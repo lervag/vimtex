@@ -31,7 +31,7 @@ function! vimtex#syntax#in_mathzone(...) abort " {{{1
   " commands, the texMathTextArg group, are actively ignored as these should
   " not be considered to be math environments.
   let l:groups = reverse(call('vimtex#syntax#stack', a:000))
-  let l:group = matchstr(l:groups, '\v^tex%(Math%(Zone|Text)|RefArg)')
+  let l:group = matchstr(l:groups, '\v^tex%(Math%(Zone|Text|Tag)|RefArg)')
   return l:group =~# '^texMathZone'
 endfunction
 
