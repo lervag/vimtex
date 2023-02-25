@@ -23,7 +23,7 @@ endfunction
 " }}}1
 function! s:viewer._start(outfile) dict abort " {{{1
   let self.cmd_start
-        \ = vimtex#view#zathura#cmdline(a:outfile, self.has_synctex, 1)
+        \ = vimtex#view#zathura#cmdline(a:outfile, self.has_synctex, 2)
 
   call vimtex#jobs#run(self.cmd_start)
 endfunction

@@ -44,7 +44,7 @@ function! vimtex#view#zathura#cmdline(outfile, synctex, start) abort " {{{1
     endif
   endif
 
-  if a:synctex && (!(a:start == 1) || g:vimtex_view_forward_search_on_start)
+  if a:synctex && (a:start != 1 || g:vimtex_view_forward_search_on_start)
     let l:cmd .= printf(
           \ ' --synctex-forward %d:%d:%s',
           \ line('.'), col('.'),
