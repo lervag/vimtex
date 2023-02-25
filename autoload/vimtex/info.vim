@@ -186,10 +186,14 @@ function! s:get_os_info() abort " {{{1
         \ : vimtex#jobs#cached('uname -sr')[0]
     return substitute(l:result, '^\s*', '', '')
   elseif l:os ==# 'mac'
-    let l:name = vimtex#jobs#cached('sw_vers -productName')[0]
-    let l:version = vimtex#jobs#cached('sw_vers -productVersion')[0]
-    let l:build = vimtex#jobs#cached('sw_vers -buildVersion')[0]
-    return l:name . ' ' . l:version . ' (' . l:build . ')'
+    if executable('sw_vers')
+      let l:name = vimtex#jobs#cached('sw_vers -productName')[0]
+      let l:version = vimtex#jobs#cached('sw_vers -productVersion')[0]
+      let l:build = vimtex#jobs#cached('sw_vers -buildVersion')[0]
+      return l:name . ' ' . l:version . ' (' . l:build . ')'
+    else
+      return 'MacOS/i[Pad]OS'
+    endif
   else
     if !exists('s:win_info')
       let s:win_info = vimtex#jobs#cached('systeminfo')
