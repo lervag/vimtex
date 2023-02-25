@@ -84,10 +84,10 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
 
     " Amsmath [lr][vV]ert
     if &encoding ==# 'utf-8'
-      syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert"
-      syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?r\|right\)\\rvert"
-      syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert"
-      syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?r\|right\)\\rVert"
+      syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert\>\s*"
+      syntax match texMathDelim contained conceal cchar=| "\s*\\\%([bB]igg\?r\|right\)\\rvert\>"
+      syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert\>\s*"
+      syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\|right\)\\rVert\>"
     endif
   endif
 
