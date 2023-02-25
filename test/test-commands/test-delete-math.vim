@@ -1,9 +1,7 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin on
 syntax on
-
-setfiletype tex
 
 
 " ds$  /  Delete surrounding math ($...$ and \[...\])

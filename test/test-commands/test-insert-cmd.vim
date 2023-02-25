@@ -1,8 +1,6 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin on
-
-setfiletype tex
 
 
 " F7   /  Insert command (insert mode, normal mode and visual mode)

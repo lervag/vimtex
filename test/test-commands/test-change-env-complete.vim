@@ -1,11 +1,9 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin on
 
 set wildmode=longest:full,full
 set wildcharm=<c-z>
-
-setfiletype tex
 
 
 " cse  /  Change surrounding environment

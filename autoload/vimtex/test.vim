@@ -64,6 +64,9 @@ endfunction
 
 " }}}1
 function! vimtex#test#keys(keys, context, expect) abort " {{{1
+  bwipeout!
+  setfiletype tex
+
   if type(a:context) == v:t_string
     let l:ctx = [a:context]
     let l:msg_context = printf("Context: %s", a:context)
@@ -73,7 +76,6 @@ function! vimtex#test#keys(keys, context, expect) abort " {{{1
   endif
 
   try
-    normal! gg0dG
     call append(1, l:ctx)
     normal! ggdd
     silent execute 'normal' a:keys

@@ -25,8 +25,6 @@ call vimtex#imaps#add_map({
   \ 'context' : ['enumerate'],
   \})
 
-setfiletype tex
-
 " Test ;b -> \beta
 call vimtex#test#keys('$i;b;;', '$2+2 = $', '$2+2 = \beta;;$')
 

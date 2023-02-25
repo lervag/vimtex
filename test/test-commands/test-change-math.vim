@@ -1,12 +1,10 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin indent on
 syntax on
 
 set shiftwidth=2
 set expandtab
-
-setfiletype tex
 
 
 " cs$ -> $

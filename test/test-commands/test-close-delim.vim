@@ -1,10 +1,8 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin indent on
 
 set shiftwidth=2
-
-setfiletype tex
 
 
 " ]]   /  Close current delimiter or environment

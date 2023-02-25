@@ -1,8 +1,6 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin on
-
-setfiletype tex
 
 
 " csc  /  Change surrounding command
