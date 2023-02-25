@@ -244,10 +244,9 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#stop_all() abort " {{{1
-  if !b:vimtex.compiler.enabled | return | endif
-
   for l:state in vimtex#state#list_all()
-    if exists('l:state.compiler.is_running')
+    if exists('l:state.compiler.enabled')
+          \ && l:state.compiler.enabled
           \ && l:state.compiler.is_running()
       call l:state.compiler.stop()
       call vimtex#log#info('Compiler stopped (' . l:state.compiler.state.base . ')')
