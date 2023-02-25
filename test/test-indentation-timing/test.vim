@@ -1,19 +1,16 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
-let &rtp .= ',../../after'
-filetype plugin on
+set runtimepath^=../..
+set runtimepath+=../../after
+filetype plugin indent on
 syntax enable
 
 nnoremap q :qall!<cr>
 
 silent edit thesis.tex
 
-" profile start prof.log
-" profile func *
-
+" call vimtex#profile#start()
 silent normal! gg=G
-
-" profile pause
+" call vimtex#profile#stop()
 
 quit!
 

@@ -19,7 +19,7 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal autoindent
-setlocal indentexpr=VimtexIndentExpr()
+setlocal indentexpr=VimtexIndent(v:lnum)
 setlocal indentkeys=!^F,o,O,0(,0),],},\&,0=\\item\ ,0=\\item[,0=\\else,0=\\fi
 
 " Add standard closing math delimiters to indentkeys
@@ -29,11 +29,6 @@ for s:delim in [
 endfor
 
 
-function! VimtexIndentExpr() abort " {{{1
-  return VimtexIndent(v:lnum)
-endfunction
-
-"}}}
 function! VimtexIndent(lnum) abort " {{{1
   let s:sw = shiftwidth()
 
@@ -42,7 +37,7 @@ function! VimtexIndent(lnum) abort " {{{1
   let l:line = s:clean_line(getline(a:lnum))
 
   " Check for verbatim modes
-  if s:is_verbatim(l:line, a:lnum)
+  if s:in_verbatim(a:lnum)
     return empty(l:line) ? indent(l:prev_lnum) : indent(a:lnum)
   endif
 
@@ -77,7 +72,7 @@ function! s:get_prev_lnum(lnum) abort " {{{1
   let l:lnum = a:lnum
   let l:line = getline(l:lnum)
 
-  while l:lnum != 0 && (l:line =~# '^\s*%' || s:is_verbatim(l:line, l:lnum))
+  while l:lnum > 0 && (l:line =~# '^\s*%' || s:in_verbatim(l:lnum))
     let l:lnum = prevnonblank(l:lnum - 1)
     let l:line = getline(l:lnum)
   endwhile
@@ -94,15 +89,12 @@ function! s:clean_line(line) abort " {{{1
 endfunction
 
 " }}}1
-function! s:is_verbatim(line, lnum) abort " {{{1
-  return a:line !~# s:verbatim_re_envdelim
-        \ && vimtex#env#is_inside(s:verbatim_re_list)[0]
-endfunction
+function! s:in_verbatim(lnum) abort " {{{1
+  let l:synstack = vimtex#syntax#stack(a:lnum, col([a:lnum, '$']) - 2)
 
-let s:verbatim_envs = ['lstlisting', 'verbatim', 'minted', 'markdown']
-let s:verbatim_re_list = '\%(' . join(s:verbatim_envs, '\|') . '\)'
-let s:verbatim_re_envdelim = '\v\\%(begin|end)\{%('
-      \ . join(s:verbatim_envs, '|') . ')'
+  return match(l:synstack, '\v^tex%(Lst|Verb|Markdown|Minted)Zone') >= 0
+        \ && match(l:synstack, '\v^tex%(Minted)?Env') < 0
+endfunction
 
 " }}}1
 
@@ -296,8 +288,11 @@ endfunction
 function! s:indent_tikz(lnum, prev) abort " {{{1
   if !has_key(b:vimtex.packages, 'tikz') | return 0 | endif
 
-  let l:env_pos = vimtex#env#is_inside('tikzpicture')
-  if l:env_pos[0] > 0 && l:env_pos[0] < a:lnum
+  let l:synstack = vimtex#syntax#stack(a:lnum, 1)
+  if match(l:synstack, '^texTikzZone') < 0 | return 0 | endif
+
+  let l:env_lnum = search('\\begin\s*{tikzpicture\*\?}', 'bn')
+  if l:env_lnum > 0 && l:env_lnum < a:lnum
     let l:prev_starts = a:prev =~# s:tikz_commands
     let l:prev_stops  = a:prev =~# ';\s*$'
 
@@ -308,7 +303,7 @@ function! s:indent_tikz(lnum, prev) abort " {{{1
 
     " Decrease indent on tikz command end, i.e. on semicolon
     if ! l:prev_starts && l:prev_stops
-      let l:context = join(getline(l:env_pos[0], a:lnum-1), '')
+      let l:context = join(getline(l:env_lnum, a:lnum-1), '')
       return -s:sw*(l:context =~# s:tikz_commands)
     endif
   endif

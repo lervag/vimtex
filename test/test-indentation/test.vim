@@ -1,6 +1,7 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin indent on
+syntax on
 
 nnoremap q :qall!<cr>
 
