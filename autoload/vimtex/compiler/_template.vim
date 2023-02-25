@@ -13,6 +13,7 @@ endfunction
 
 let s:compiler = {
       \ 'name': '__template__',
+      \ 'enabled': v:true,
       \ 'build_dir': '',
       \ 'continuous': 0,
       \ 'hooks': [],
@@ -44,6 +45,7 @@ endfunction
 " }}}1
 
 function! s:compiler.__check_requirements() abort dict " {{{1
+  let self.enabled = v:false
 endfunction
 
 " }}}1

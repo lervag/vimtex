@@ -18,7 +18,7 @@ let s:compiler = vimtex#compiler#_template#new({
 function! s:compiler.__check_requirements() abort dict " {{{1
   if !executable('arara')
     call vimtex#log#warning('arara is not executable!')
-    throw 'VimTeX: Requirements not met'
+    let self.enabled = v:false
   endif
 endfunction
 
