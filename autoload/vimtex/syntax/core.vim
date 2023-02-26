@@ -69,7 +69,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texSpecialChar "\\[$&%#{}_]"
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
-  syntax match texSpecialChar "\\[,;:!]"
+  syntax match texSpecialChar "\\[,;:!>]"
 
   " }}}2
   " {{{2 Commands: general
@@ -2045,7 +2045,7 @@ endfunction
 
 " }}}1
 function! s:match_conceal_spacing() abort " {{{1
-  syntax match texSpecialChar "\\[,;:!]"       conceal
+  syntax match texSpecialChar "\\[,;:!>]"      conceal
   syntax match texCmd         '\\bigskip\>'    conceal
   syntax match texCmd         '\\hfill\>'      conceal
   syntax match texCmd         '\\medspace\>'   conceal
