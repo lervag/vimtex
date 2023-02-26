@@ -7,41 +7,66 @@
 function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   call vimtex#syntax#packages#load('nameref')
 
-  syntax match texCmdHyperref '\\autoref\>' nextgroup=texRefOpt,texRefArg
-  syntax match texCmdHyperref '\\hyperref\>' nextgroup=texRefOpt,texRefArg
+  syntax match texCmdHyperref '\\autoref\>'
+        \ skipwhite nextgroup=texRefOpt,texRefArg
+  syntax match texCmdHyperref '\\hyperref\>'
+        \ skipwhite nextgroup=texRefOpt,texRefArg
 
-  syntax match texCmdHyperref "\\url\>" nextgroup=texUrlArg skipwhite
-  syntax region texUrlArg matchgroup=texDelim
-        \ contained contains=@NoSpell
-        \ start="\z([^\ta-zA-Z]\)" end="\z1"
+  syntax match texCmdHyperref "\\url\>"
+        \ skipwhite nextgroup=texUrlArg
   call vimtex#syntax#core#new_arg('texUrlArg', {'contains': '@NoSpell'})
 
   if a:cfg.conceal
-    syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
+    syntax match texCmdHyperref '\\href\>'
+          \ skipwhite nextgroup=texHrefArgLink
           \ conceal
     call vimtex#syntax#core#new_arg('texHrefArgLink', {
           \ 'opts': 'contained conceal',
           \ 'next': 'texHrefArgTextC',
           \ 'contains': 'texHrefLinkGroup,@NoSpell',
           \})
+    call vimtex#syntax#core#new_arg('texHrefLinkGroup', {
+          \ 'matchgroup': 'matchgroup=NONE',
+          \ 'opts': 'contained conceal',
+          \ 'contains': 'texHrefLinkGroup',
+          \})
     call vimtex#syntax#core#new_arg('texHrefArgTextC', {
           \ 'opts': 'contained concealends',
           \})
 
-    " To match possibly nested groups of {}s in an url string
-    syntax region texHrefLinkGroup start="{" end="}" conceal
-          \ contained contains=texHrefLinkGroup
+    syntax match texCmdHyperref '\\texorpdfstring\>'
+          \ skipwhite nextgroup=texTOPSArgTex
+          \ conceal
+    call vimtex#syntax#core#new_arg('texTOPSArgTex', {
+          \ 'opts': 'contained concealends transparent',
+          \ 'next': 'texTOPSArgPdf',
+          \})
+    call vimtex#syntax#core#new_arg('texTOPSArgPdf', {
+          \ 'opts': 'contained conceal',
+          \ 'contains': '',
+          \})
   else
-    syntax match texCmdHyperref '\\href\>' nextgroup=texHrefArgLink skipwhite
+    syntax match texCmdHyperref '\\href\>'
+          \ skipwhite nextgroup=texHrefArgLink
     call vimtex#syntax#core#new_arg('texHrefArgLink', {
           \ 'next': 'texHrefArgText',
           \ 'contains': 'texHrefLinkGroup,@NoSpell',
           \})
+    call vimtex#syntax#core#new_arg('texHrefLinkGroup', {
+          \ 'matchgroup': 'matchgroup=NONE',
+          \ 'contains': 'texHrefLinkGroup',
+          \})
     call vimtex#syntax#core#new_arg('texHrefArgText')
 
-    " To match possibly nested groups of {}s in an url string
-    syntax region texHrefLinkGroup start="{" end="}"
-          \ contained contains=texHrefLinkGroup
+    syntax match texCmdHyperref '\\texorpdfstring\>'
+          \ skipwhite nextgroup=texTOPSArgTex
+    call vimtex#syntax#core#new_arg('texTOPSArgTex', {
+          \ 'opts': 'contained transparent',
+          \ 'next': 'texTOPSArgPdf',
+          \})
+    call vimtex#syntax#core#new_arg('texTOPSArgPdf', {
+          \ 'contains': '',
+          \})
   endif
 
   highlight def link texCmdHyperref   texCmd
@@ -49,6 +74,7 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   highlight def link texHrefArgTextC  texArg
   highlight def link texHrefLinkGroup texHrefArgLink
   highlight def link texUrlArg        texOpt
+  highlight def link texTOPSArgPdf    texOpt
 endfunction
 
 " }}}1

@@ -1,5 +1,5 @@
 set nocompatible
-let &rtp = '../..,' . &rtp
+set runtimepath^=../..
 filetype plugin on
 syntax enable
 
