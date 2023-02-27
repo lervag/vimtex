@@ -374,7 +374,7 @@ function! vimtex#options#init() abort " {{{1
         \})
   call s:init_option('vimtex_syntax_nospell_comments', 0)
   call s:init_option('vimtex_syntax_packages', {
-        \ 'amsmath': {'load': 2},
+        \ 'amsmath': {'conceal': 1, 'load': 2},
         \ 'babel': {'conceal': 1},
         \ 'hyperref': {'conceal': 1},
         \ 'fontawesome5': {'conceal': 1},
@@ -383,6 +383,7 @@ function! vimtex#options#init() abort " {{{1
   " Disable conceals if chosen
   if g:vimtex_syntax_conceal_disable
     call map(g:vimtex_syntax_conceal, {k, v -> 0})
+    let g:vimtex_syntax_packages.amsmath.conceal = 0
     let g:vimtex_syntax_packages.babel.conceal = 0
     let g:vimtex_syntax_packages.hyperref.conceal = 0
     let g:vimtex_syntax_packages.fontawesome5.conceal = 0

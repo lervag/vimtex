@@ -53,42 +53,19 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody', {'contains': 'TOP,@Spell'})
 
-  " \operatorname
-  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
-  call vimtex#syntax#core#new_arg('texOpnameArg', {
-        \ 'contains': 'TOP,@Spell'
-        \})
-
   " \tag{label} or \tag*{label}
   syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
   call vimtex#syntax#core#new_arg('texMathTagArg', {'contains': 'TOP,@Spell'})
 
-  " Add conceal rules
-  if g:vimtex_syntax_conceal.math_delimiters
-    " Conceal the command and delims of "\operatorname{ ... }"
-    syntax region texMathConcealedArg contained matchgroup=texMathCmd
-          \ start="\\operatorname\*\?\s*{" end="}"
-          \ concealends
-    syntax cluster texClusterMath add=texMathConcealedArg
-
-    " Conceal "\eqref{ ... }" as "( ... )"
-    syntax match texCmdRefEq nextgroup=texRefEqConcealedArg
-          \ conceal skipwhite skipnl "\\eqref\>"
-    call vimtex#syntax#core#new_arg('texRefEqConcealedArg', {
-          \ 'contains': 'texComment,@NoSpell,texRefEqConcealedDelim',
-          \ 'opts': 'keepend contained',
-          \ 'matchgroup': '',
+  " Conditionally add conceal rules (or alternatives)
+  if !a:cfg.conceal
+    " \operatorname
+    syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
+    call vimtex#syntax#core#new_arg('texOpnameArg', {
+          \ 'contains': 'TOP,@Spell'
           \})
-    syntax match texRefEqConcealedDelim contained "{" cchar=( conceal
-    syntax match texRefEqConcealedDelim contained "}" cchar=) conceal
-
-    " Amsmath [lr][vV]ert
-    if &encoding ==# 'utf-8'
-      syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\|left\)\\lvert\>\s*"
-      syntax match texMathDelim contained conceal cchar=| "\s*\\\%([bB]igg\?r\|right\)\\rvert\>"
-      syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\|left\)\\lVert\>\s*"
-      syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\|right\)\\rVert\>"
-    endif
+  else
+    call s:add_conceals()
   endif
 
   highlight def link texCmdDeclmathoper     texCmdNew
@@ -106,6 +83,41 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   highlight def link texOpnameArg           texMathZone
   highlight def link texSubjClassArg        texArg
   highlight def link texSubjClassOpt        texOpt
+endfunction
+
+" }}}1
+
+function! s:add_conceals() abort " {{{1
+  " Conceal "\eqref{ … }" as "(…)"
+  syntax match texCmdRefEq nextgroup=texRefEqConcealedArg
+        \ conceal skipwhite skipnl "\\eqref\>"
+  call vimtex#syntax#core#new_arg('texRefEqConcealedArg', {
+        \ 'contains': 'texComment,@NoSpell,texRefEqConcealedDelim',
+        \ 'opts': 'keepend contained',
+        \ 'matchgroup': '',
+        \})
+  syntax match texRefEqConcealedDelim contained "{" conceal cchar=(
+  syntax match texRefEqConcealedDelim contained "}" conceal cchar=)
+
+  " \operatorname
+  "   conceal the command and delims
+  "   \operatorname{ … }  ⇒  …
+  syntax region texMathConcealedArg contained matchgroup=texMathCmd
+        \ start="\\operatorname\*\?\s*{\s*" end="\s*}"
+        \ concealends
+  syntax cluster texClusterMath add=texMathConcealedArg
+
+  " The last part are amsmath specific math delimiters and should respect the
+  " global config value
+  if !g:vimtex_syntax_conceal.math_delimiters | return | endif
+
+  " Amsmath [lr][vV]ert
+  if &encoding ==# 'utf-8'
+    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\?\|left\)\\lvert\>\s*"
+    syntax match texMathDelim contained conceal cchar=| "\s*\\\%([bB]igg\?r\?\|right\)\\rvert\>"
+    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\?\|left\)\\lVert\>\s*"
+    syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\?\|right\)\\rVert\>"
+  endif
 endfunction
 
 " }}}1

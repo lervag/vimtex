@@ -2678,7 +2678,8 @@ OPTIONS                                                        *vimtex-options*
   are affected by |g:vimtex_syntax_conceal_disable|.
 
     amsmath ~
-      `load`  is 2 by default
+      `load`     is 2 by default
+      `conceal`  whether to enable conceal; enabled by default
 
     babel ~
       `conceal`  whether to enable conceal; enabled by default
