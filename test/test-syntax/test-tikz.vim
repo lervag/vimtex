@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-tikz.tex
+EditConcealed test-tikz.tex
 
 if empty($INMAKE) | finish | endif
 

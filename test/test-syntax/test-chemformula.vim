@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-chemformula.tex
+EditConcealed test-chemformula.tex
 
 if empty($INMAKE) | finish | endif
 

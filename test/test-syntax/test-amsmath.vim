@@ -1,8 +1,6 @@
 source common.vim
 
-silent edit test-amsmath.tex
-
-set spell
+EditConcealed test-amsmath.tex
 
 if empty($INMAKE) | finish | endif
 

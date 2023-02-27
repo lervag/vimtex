@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-pyluatex.tex
+EditConcealed test-pyluatex.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-cleveref.tex
+EditConcealed test-cleveref.tex
 
 if empty($INMAKE) | finish | endif
 

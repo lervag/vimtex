@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-ifnextchar.tex
+EditConcealed test-ifnextchar.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-minted.tex
+EditConcealed test-minted.tex
 
 if empty($INMAKE) | finish | endif
 

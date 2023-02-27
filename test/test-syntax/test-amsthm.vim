@@ -1,8 +1,6 @@
 source common.vim
 
-silent edit test-amsthm.tex
-
-set spell
+EditConcealed test-amsthm.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-listings.tex
+EditConcealed test-listings.tex
 
 if empty($INMAKE) | finish | endif
 

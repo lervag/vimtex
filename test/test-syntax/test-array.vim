@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-array.tex
+EditConcealed test-array.tex
 
 if empty($INMAKE) | finish | endif
 

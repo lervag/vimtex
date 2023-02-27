@@ -19,4 +19,5 @@ silent call vimtex#compiler#callback(2)
 call assert_true(b:vimtex_syntax.url.__loaded)
 
 call delete(s:fls)
+
 call vimtex#test#finished()

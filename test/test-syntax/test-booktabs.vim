@@ -1,8 +1,7 @@
 source common.vim
 
-silent edit test-booktabs.tex
+EditConcealed test-booktabs.tex
 
 if empty($INMAKE) | finish | endif
 
-
-quit!
+call vimtex#test#finished()

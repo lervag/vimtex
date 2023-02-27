@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-tcolorbox.tex
+EditConcealed test-tcolorbox.tex
 
 if empty($INMAKE) | finish | endif
 

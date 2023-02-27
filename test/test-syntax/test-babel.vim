@@ -1,7 +1,7 @@
 source common.vim
 
-silent edit test-babel.tex
+EditConcealed test-babel.tex
 
 if empty($INMAKE) | finish | endif
 
-quit!
+call vimtex#test#finished()

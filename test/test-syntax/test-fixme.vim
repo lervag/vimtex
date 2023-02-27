@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-fixme.tex
+EditConcealed test-fixme.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,9 +1,8 @@
 source common.vim
 
 " let g:vimtex_syntax_conceal = {'styles': 0}
-set conceallevel=2
 
-silent edit test-bold-italic.tex
+EditConcealed test-bold-italic.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-markdown.tex
+EditConcealed test-markdown.tex
 
 if empty($INMAKE) | finish | endif
 

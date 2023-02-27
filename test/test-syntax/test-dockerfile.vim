@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-dockerfile.tex
+EditConcealed test-dockerfile.tex
 
 if empty($INMAKE) | finish | endif
 

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-various-packages.tex
+EditConcealed test-various-packages.tex
 
 if empty($INMAKE) | finish | endif
 

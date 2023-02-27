@@ -1,7 +1,7 @@
 source common.vim
 
-silent edit test-cases.tex
+EditConcealed test-cases.tex
 
 if empty($INMAKE) | finish | endif
 
-quit!
+call vimtex#test#finished()

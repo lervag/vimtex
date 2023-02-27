@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-pythontex.tex
+EditConcealed test-pythontex.tex
 
 if empty($INMAKE) | finish | endif
 

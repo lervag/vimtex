@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-breqn.tex
+EditConcealed test-breqn.tex
 
 if empty($INMAKE) | finish | endif
 

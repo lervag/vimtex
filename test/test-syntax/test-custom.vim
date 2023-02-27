@@ -1,7 +1,5 @@
 source common.vim
 
-highlight Conceal ctermfg=4 ctermbg=7 guibg=NONE guifg=blue
-
 let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'footnote', 'argstyle': 'bold'},
       \ {'name': 'cmda', 'conceal': 1, 'optconceal': 0},
@@ -21,13 +19,8 @@ let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'regex', 'cmdre': '[iI]?[aA]c[slaf]?p?\*?', 'conceal': 1},
       \]
 
-silent edit test-custom.tex
-set spell
-
-vsplit
-silent wincmd w
-set conceallevel=2
-set spell
+EditConcealed test-custom.tex
 
 if empty($INMAKE) | finish | endif
-quitall!
+
+call vimtex#test#finished()

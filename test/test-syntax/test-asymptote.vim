@@ -1,10 +1,9 @@
 source common.vim
 
-let &rtp = '.,' . &rtp
+set runtimepath^=.
 
-silent edit test-asymptote.tex
+EditConcealed test-asymptote.tex
 
 if empty($INMAKE) | finish | endif
-
-
-quit!
+ 
+call vimtex#test#finished()

@@ -1,6 +1,6 @@
 source common.vim
 
-silent edit test-wiki.tex
+EditConcealed test-wiki.tex
 
 if empty($INMAKE) | finish | endif
 
