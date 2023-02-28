@@ -99,6 +99,7 @@ CONTENTS                                                      *vimtex-contents*
       Skim                                      |vimtex-view-skim|
       SumatraPDF                                |vimtex-view-sumatrapdf|
       Zathura                                   |vimtex-view-zathura|
+      Zathura (simple)                          |vimtex-view-zathura-simple|
     Synctex                                     |vimtex-synctex|
       Forward search                            |vimtex-synctex-forward-search|
       Inverse search                            |vimtex-synctex-inverse-search|
@@ -3046,7 +3047,7 @@ OPTIONS                                                        *vimtex-options*
   search to the current cursor position.
 
   Note: This option is only relevant when |g:vimtex_view_method| is set to
-        either `mupdf` or `zathura`. See also the specific viewer sections for
+        either `mupdf`, `zathura`. See also the specific viewer sections for
         more info: |vimtex-view-mupdf|, |vimtex-view-zathura|.
 
   Default value: 1
@@ -5591,6 +5592,7 @@ Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
 
                                                           *vimtex-view-zathura*
+                                                   *vimtex-view-zathura-simple*
 Zathura ~
 https://pwmt.org/projects/zathura/
 Zathura is, like MuPDF, a very fast and minimalistic viewer. Compared to
@@ -5600,24 +5602,27 @@ use on Linux with Xorg. It should also work on macOS, but users may want to
 read |vimtex-faq-zathura-macos|.
 
 Configuration: >vim
+  " Main variant with xdotool
   let g:vimtex_view_method = 'zathura'
 
-VimTeX will try to start Zathura with the `-x` argument to specify the inverse
-search options automatically. This means that, in most cases, inverse search
-should work as expected without any further configuration. One may still be
+  " For simple variant without xdotool
+  let g:vimtex_view_method = 'zathura_simple'
+
+VimTeX will start Zathura with the `-x` argument to specify the inverse search
+options automatically. This means that, in most cases, inverse search should
+work as expected without any further configuration. One may still be
 interested in learning how inverse-search configuration works, in which case
 one should read |vimtex-synctex-inverse-search|. The interpolation variables
 for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
+
+The main variant uses `xdotool` to help avoid duplicate Zathura instances.
+However, in some environments, `xdotool` is not available. Here the simple
+variant should work well.
 
 Associated settings:
 * |g:vimtex_callback_progpath|
 * |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
-
-Note: Forward search requires `xdotool` to work properly. That is, `xdotool`
-      is used to avoid duplicate Zathura instances when the
-      |:VimtexView| command is issued. This is a more severe restriction
-      if the |g:vimtex_view_forward_search_on_start| option is disabled.
 
 Note: Recent versions of Zathura no longer ensures synctex support. This has
       resulted in synctex support being dropped on some platforms, e.g. on
@@ -5628,16 +5633,6 @@ Note: Viewer handling uses window title matching. If there exists another pdf
       viewer with the same name as the current project pdf file, then there
       might be conflicts. In particular, this might affect forward/inverse
       searching for Zathura.
-
-                                                   *vimtex-view-zathura-simple*
-Zathura (simple) ~
-This is a simpler implementation of the Zathura viewer; the user should first
-read the docs for |vimtex-view-zathura|.
-
-This variant does not rely on `xdotool`. It leads to a much simpler version
-that should work well in most cases. However, `xdotool` is useful in order to
-prevent duplicate windows and to detect existing viewer windows when you start
-a VimTeX session.
 
 ------------------------------------------------------------------------------
 SYNCTEX SUPPORT                                                *vimtex-synctex*
