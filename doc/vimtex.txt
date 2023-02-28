@@ -99,6 +99,7 @@ CONTENTS                                                      *vimtex-contents*
       Skim                                      |vimtex-view-skim|
       SumatraPDF                                |vimtex-view-sumatrapdf|
       Zathura                                   |vimtex-view-zathura|
+      Zathura (simple)                          |vimtex-view-zathura-simple|
     Synctex                                     |vimtex-synctex|
       Forward search                            |vimtex-synctex-forward-search|
       Inverse search                            |vimtex-synctex-inverse-search|
@@ -3046,7 +3047,7 @@ OPTIONS                                                        *vimtex-options*
   search to the current cursor position.
 
   Note: This option is only relevant when |g:vimtex_view_method| is set to
-        either `mupdf` or `zathura`. See also the specific viewer sections for
+        either `mupdf`, `zathura`. See also the specific viewer sections for
         more info: |vimtex-view-mupdf|, |vimtex-view-zathura|.
 
   Default value: 1
@@ -3070,9 +3071,10 @@ OPTIONS                                                        *vimtex-options*
 
   Possible values:
     * `'general'`
-    * `'mupdf'`      |vimtex-view-mupdf|
-    * `'skim'`       |vimtex-view-skim|
-    * `'zathura'`    |vimtex-view-zathura|
+    * `'mupdf'`             |vimtex-view-mupdf|
+    * `'skim'`              |vimtex-view-skim|
+    * `'zathura'`           |vimtex-view-zathura|
+    * `'zathura_simple'`    |vimtex-view-zathura-simple|
 
   See |vimtex-view-configuration| for more information on various popular
   viewers and on how to configure them.
@@ -3092,8 +3094,10 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_view_mupdf_options*
 *g:vimtex_view_zathura_options*
-  Set options for mupdf (|vimtex-view-mupdf|) and Zathura
-  (|vimtex-view-zathura|), respectively.
+  Set options for mupdf and Zathura, respectively. See also:
+    * |vimtex-view-mupdf|
+    * |vimtex-view-zathura|
+    * |vimtex-view-zathura-simple|
 
   Default value: ''
 
@@ -5588,6 +5592,7 @@ Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
 
                                                           *vimtex-view-zathura*
+                                                   *vimtex-view-zathura-simple*
 Zathura ~
 https://pwmt.org/projects/zathura/
 Zathura is, like MuPDF, a very fast and minimalistic viewer. Compared to
@@ -5597,24 +5602,27 @@ use on Linux with Xorg. It should also work on macOS, but users may want to
 read |vimtex-faq-zathura-macos|.
 
 Configuration: >vim
+  " Main variant with xdotool
   let g:vimtex_view_method = 'zathura'
 
-VimTeX will try to start Zathura with the `-x` argument to specify the inverse
-search options automatically. This means that, in most cases, inverse search
-should work as expected without any further configuration. One may still be
+  " For simple variant without xdotool
+  let g:vimtex_view_method = 'zathura_simple'
+
+VimTeX will start Zathura with the `-x` argument to specify the inverse search
+options automatically. This means that, in most cases, inverse search should
+work as expected without any further configuration. One may still be
 interested in learning how inverse-search configuration works, in which case
 one should read |vimtex-synctex-inverse-search|. The interpolation variables
 for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
+
+The main variant uses `xdotool` to help avoid duplicate Zathura instances.
+However, in some environments, `xdotool` is not available. Here the simple
+variant should work well.
 
 Associated settings:
 * |g:vimtex_callback_progpath|
 * |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
-
-Note: Forward search requires `xdotool` to work properly. That is, `xdotool`
-      is used to avoid duplicate Zathura instances when the
-      |:VimtexView| command is issued. This is a more severe restriction
-      if the |g:vimtex_view_forward_search_on_start| option is disabled.
 
 Note: Recent versions of Zathura no longer ensures synctex support. This has
       resulted in synctex support being dropped on some platforms, e.g. on
