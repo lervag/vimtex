@@ -45,12 +45,6 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'contains': 'TOP,@Spell'
         \})
 
-  " \operatorname
-  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
-  call vimtex#syntax#core#new_arg('texOpnameArg', {
-        \ 'contains': 'TOP,@Spell'
-        \})
-
   " DeclareMathOperator
   syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
   call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
@@ -63,8 +57,14 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
   call vimtex#syntax#core#new_arg('texMathTagArg', {'contains': 'TOP,@Spell'})
 
-  " Add conceal rules
-  if a:cfg.conceal
+  " Conditionally add conceal rules (or alternatives)
+  if !a:cfg.conceal
+    " \operatorname
+    syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
+    call vimtex#syntax#core#new_arg('texOpnameArg', {
+          \ 'contains': 'TOP,@Spell'
+          \})
+  else
     call s:add_conceals()
   endif
 
@@ -119,12 +119,16 @@ function! s:add_conceals() abort " {{{1
     syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\?\|right\)\\rVert\>"
   endif
 
-  syntax match texCmdEnvM "\\\%(begin\|end\){Vmatrix}"     contained conceal cchar=║
-  syntax match texCmdEnvM "\\\%(begin\|end\){vmatrix}"     contained conceal cchar=|
-  syntax match texCmdEnvM "\\\%(begin\|end\){Bmatrix}"     contained conceal cchar={
-  syntax match texCmdEnvM "\\\%(begin\|end\){bmatrix}"     contained conceal cchar=[
-  syntax match texCmdEnvM "\\\%(begin\|end\){pmatrix}"     contained conceal cchar=(
-  syntax match texCmdEnvM "\\\%(begin\|end\){smallmatrix}" contained conceal cchar=(
+  syntax match texCmdEnvM "\\\%(begin\|end\){Vmatrix}" contained conceal cchar=║
+  syntax match texCmdEnvM "\\\%(begin\|end\){vmatrix}" contained conceal cchar=|
+  syntax match texCmdEnvM "\\begin{Bmatrix}"           contained conceal cchar={
+  syntax match texCmdEnvM "\\end{Bmatrix}"             contained conceal cchar=}
+  syntax match texCmdEnvM "\\begin{bmatrix}"           contained conceal cchar=[
+  syntax match texCmdEnvM "\\end{bmatrix}"             contained conceal cchar=]
+  syntax match texCmdEnvM "\\begin{pmatrix}"           contained conceal cchar=(
+  syntax match texCmdEnvM "\\end{pmatrix}"             contained conceal cchar=)
+  syntax match texCmdEnvM "\\begin{smallmatrix}"       contained conceal cchar=(
+  syntax match texCmdEnvM "\\end{smallmatrix}"         contained conceal cchar=)
 endfunction
 
 " }}}1
