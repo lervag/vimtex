@@ -45,6 +45,12 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'contains': 'TOP,@Spell'
         \})
 
+  " \operatorname
+  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
+  call vimtex#syntax#core#new_arg('texOpnameArg', {
+        \ 'contains': 'TOP,@Spell'
+        \})
+
   " DeclareMathOperator
   syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
   call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
@@ -57,14 +63,8 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
   call vimtex#syntax#core#new_arg('texMathTagArg', {'contains': 'TOP,@Spell'})
 
-  " Conditionally add conceal rules (or alternatives)
-  if !a:cfg.conceal
-    " \operatorname
-    syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
-    call vimtex#syntax#core#new_arg('texOpnameArg', {
-          \ 'contains': 'TOP,@Spell'
-          \})
-  else
+  " Add conceal rules
+  if a:cfg.conceal
     call s:add_conceals()
   endif
 
