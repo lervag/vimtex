@@ -1910,7 +1910,7 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\?\|left\)|\s*"
   syntax match texMathDelim contained conceal cchar=| "\s*\\\%([bB]igg\?r\?\|right\)|"
   syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\?\|left\|\)\\|\s*"
-  syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\?\|left\|right\)\\|"
+  syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\?\|right\)\\|"
   syntax match texMathDelim contained conceal cchar=↓ "\\\%([bB]igg\?l\?\|left\)\\downarrow\>\s*"
   syntax match texMathDelim contained conceal cchar=↓ "\s*\\\%([bB]igg\?r\?\|right\)\\downarrow\>"
   syntax match texMathDelim contained conceal cchar=⇓ "\\\%([bB]igg\?l\?\|left\)\\Downarrow\>\s*"
