@@ -66,6 +66,7 @@ function! vimtex#syntax#core#init() abort " {{{1
   syntax match texTabularChar "\\\\"
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
+  syntax match texSpecialChar "\%(\\\@<!\)\@<=\~"
   syntax match texSpecialChar "\\[$&%#{}_]"
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
@@ -2047,21 +2048,21 @@ endfunction
 
 " }}}1
 function! s:match_conceal_spacing() abort " {{{1
-  syntax match texSpecialChar "\\[,;:!>]"      conceal
-  syntax match texCmd         '\\bigskip\>'    conceal
-  syntax match texCmd         '\\hfill\>'      conceal
-  syntax match texCmd         '\\medspace\>'   conceal
-  syntax match texCmd         '\\qquad\>'      conceal
-  syntax match texCmd         '\\quad\>'       conceal
-  syntax match texCmd         '\\thickspace\>' conceal
-  syntax match texCmd         '\\thinspace\>'  conceal
-  syntax match texCmd         '\\vfill\>'      conceal
-  syntax match texCmd         "\\[hv]space\>"  conceal
+  syntax match texSpecialChar "\%(\\\@<!\)\@<=\~" conceal cchar= 
+  syntax match texSpecialChar "\\[,;:!>]"         conceal
+  syntax match texCmd         '\\bigskip\>'       conceal
+  syntax match texCmd         '\\hfill\>'         conceal
+  syntax match texCmd         '\\medspace\>'      conceal
+  syntax match texCmd         '\\qquad\>'         conceal
+  syntax match texCmd         '\\quad\>'          conceal
+  syntax match texCmd         '\\thickspace\>'    conceal
+  syntax match texCmd         '\\thinspace\>'     conceal
+  syntax match texCmd         '\\vfill\>'         conceal
+  syntax match texCmd         "\\[hv]space\>"     conceal
         \ skipwhite nextgroup=texConcealedArg
-  syntax match texCmd         "\\h\?phantom\>" conceal
+  syntax match texCmd         "\\h\?phantom\>"    conceal
         \ skipwhite nextgroup=texConcealedArg
 
-  syntax match texMathCmd '\\[,:;!]'       contained conceal
   syntax match texMathCmd '\\bigskip\>'    contained conceal
   syntax match texMathCmd '\\hfill\>'      contained conceal
   syntax match texMathCmd '\\medspace\>'   contained conceal
