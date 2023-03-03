@@ -2170,7 +2170,7 @@ function! s:match_conceal_sections() abort " {{{1
   syntax match texPartConcealed "section\*\?" contained conceal cchar= 
 
   call vimtex#syntax#core#new_arg('texPartConcArgTitle', {
-        \ 'opts': 'contained keepend concealends'
+        \ 'opts': 'contained concealends'
         \})
 endfunction
 

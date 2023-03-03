@@ -1,5 +1,9 @@
 source common.vim
 
+let g:vimtex_syntax_conceal = {
+      \ 'sections' : 1,
+      \}
+
 EditConcealed! test-hyperref.tex
 
 if empty($INMAKE) | finish | endif
