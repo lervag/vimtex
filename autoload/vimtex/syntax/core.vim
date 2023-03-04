@@ -2142,10 +2142,12 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \ conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg
   call vimtex#syntax#core#new_opt('texRefConcealedOpt1', {
         \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
+        \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedOpt2,texRefConcealedArg',
         \})
   call vimtex#syntax#core#new_opt('texRefConcealedOpt2', {
         \ 'opts': 'conceal',
+        \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedArg',
         \})
   call vimtex#syntax#core#new_arg('texRefConcealedArg', {
