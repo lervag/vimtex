@@ -37,41 +37,33 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   highlight def link texRefArgs texRefArg
   highlight def link texRefOpts texRefOpt
 
-  if g:vimtex_syntax_conceal.cites
-    let s:re_concealed_cites = '\v\\%(' . join([
-          \ '%([Tt]ext|[Ss]mart|[Aa]uto)cite[s]?',
-          \ '(foot)?cite[tp]?',
-          \ '[Aa]utocite[s]?',
-          \ '[Cc]ite%(title|author|year%(par)?|date)[s]?',
-          \ '[Pp]arencite[s]?',
-          \ '[Ppf]?[Nn]otecite',
-          \ '[pPfFsStTaA]?[Vv]olcite[s]?',
-          \ '[Ss]upercite[s]?',
-          \ 'cite%(num|text|url|field|list|name)',
-          \ 'citeal[tp]',
-          \ 'foot%(full)?cite%(text)?',
-          \ 'footcite%(s|texts)',
-          \ 'fullcite[s]?',
-          \ ], '|') . ')>\*?'
-    call s:match_conceal_cites_{g:vimtex_syntax_conceal_cites.type}()
+  if !g:vimtex_syntax_conceal.cites | return | endif
+
+  let l:re_concealed_cites = '\v\\%(' . join([
+        \ '%([Tt]ext|[Ss]mart|[Aa]uto)cite[s]?',
+        \ '(foot)?cite[tp]?',
+        \ '[Aa]utocite[s]?',
+        \ '[Cc]ite%(title|author|year%(par)?|date)[s]?',
+        \ '[Pp]arencite[s]?',
+        \ '[Ppf]?[Nn]otecite',
+        \ '[pPfFsStTaA]?[Vv]olcite[s]?',
+        \ '[Ss]upercite[s]?',
+        \ 'cite%(num|text|url|field|list|name)',
+        \ 'citeal[tp]',
+        \ 'foot%(full)?cite%(text)?',
+        \ 'footcite%(s|texts)',
+        \ 'fullcite[s]?',
+        \ ], '|') . ')>\*?'
+
+  if g:vimtex_syntax_conceal_cites.type ==# 'brackets'
+    execute 'syntax match texCmdRefConcealed'
+          \ '"' . l:re_concealed_cites . '"'
+          \ 'conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg'
+  elseif !empty(g:vimtex_syntax_conceal_cites.icon)
+    execute 'syntax match texCmdRefConcealed'
+          \ '"' . l:re_concealed_cites . '%(\[[^]]*\]){,2}\{[^}]*\}"'
+          \ 'conceal cchar=' . g:vimtex_syntax_conceal_cites.icon
   endif
-endfunction
-
-" }}}1
-
-function! s:match_conceal_cites_brackets() abort " {{{1
-  execute 'syntax match texCmdRefConcealed'
-        \ '"' . s:re_concealed_cites . '"'
-        \ 'conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg'
-endfunction
-
-" }}}1
-function! s:match_conceal_cites_icon() abort " {{{1
-  if empty(g:vimtex_syntax_conceal_cites.icon) | return | endif
-
-  execute 'syntax match texCmdRefConcealed'
-        \ '"' . s:re_concealed_cites . '%(\[[^]]*\]){,2}\{[^}]*\}"'
-        \ 'conceal cchar=' . g:vimtex_syntax_conceal_cites.icon
 endfunction
 
 " }}}1

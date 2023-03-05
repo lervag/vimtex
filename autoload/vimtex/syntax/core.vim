@@ -874,6 +874,10 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texRefConcealedOpt2   texRefOpt
   highlight def link texRefConcealedArg    texRefArg
   highlight def link texRefConcealedDelim  texDelim
+  highlight def link texRefConcealedPOpt1  texRefOpt
+  highlight def link texRefConcealedPOpt2  texRefOpt
+  highlight def link texRefConcealedPArg   texRefArg
+  highlight def link texRefConcealedPDelim texDelim
   highlight def link texTabularArg         texOpt
   highlight def link texTabularAtSep       texMathDelim
   highlight def link texTabularChar        texSymbol
@@ -2137,9 +2141,8 @@ endfunction
 
 " }}}1
 function! s:match_conceal_cites_brackets() abort " {{{1
-  syntax match texCmdRefConcealed
-        \ "\\cite[tp]\?\>\*\?"
-        \ conceal skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg
+  syntax match texCmdRefConcealed "\\citet\?\>\*\?" conceal
+        \ skipwhite nextgroup=texRefConcealedOpt1,texRefConcealedArg
   call vimtex#syntax#core#new_opt('texRefConcealedOpt1', {
         \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
         \ 'contains': '@texClusterOpt,texSpecialChar',
@@ -2157,6 +2160,26 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \})
   syntax match texRefConcealedDelim contained "{" cchar=[ conceal
   syntax match texRefConcealedDelim contained "}" cchar=] conceal
+
+  syntax match texCmdRefConcealed "\\citep\>\*\?" conceal
+        \ skipwhite nextgroup=texRefConcealedPOpt1,texRefConcealedPArg
+  call vimtex#syntax#core#new_opt('texRefConcealedPOpt1', {
+        \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
+        \ 'contains': '@texClusterOpt,texSpecialChar',
+        \ 'next': 'texRefConcealedPOpt2,texRefConcealedPArg',
+        \})
+  call vimtex#syntax#core#new_opt('texRefConcealedPOpt2', {
+        \ 'opts': 'conceal',
+        \ 'contains': '@texClusterOpt,texSpecialChar',
+        \ 'next': 'texRefConcealedPArg',
+        \})
+  call vimtex#syntax#core#new_arg('texRefConcealedPArg', {
+        \ 'contains': 'texComment,@NoSpell,texRefConcealedPDelim',
+        \ 'opts': 'keepend contained',
+        \ 'matchgroup': '',
+        \})
+  syntax match texRefConcealedPDelim contained "{" cchar=( conceal
+  syntax match texRefConcealedPDelim contained "}" cchar=) conceal
 endfunction
 
 " }}}1
