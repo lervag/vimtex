@@ -2149,10 +2149,12 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \ 'next': 'texRefConcealedOpt2,texRefConcealedArg',
         \})
   call vimtex#syntax#core#new_opt('texRefConcealedOpt2', {
-        \ 'opts': 'conceal',
+        \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
         \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedArg',
         \})
+  syntax match texRefConcealedOpt2 "\[\s*\]" conceal
+        \ skipwhite nextgroup=texRefConcealedPArg
   call vimtex#syntax#core#new_arg('texRefConcealedArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedDelim',
         \ 'opts': 'keepend contained',
@@ -2169,10 +2171,12 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \ 'next': 'texRefConcealedPOpt2,texRefConcealedPArg',
         \})
   call vimtex#syntax#core#new_opt('texRefConcealedPOpt2', {
-        \ 'opts': 'conceal',
+        \ 'opts': g:vimtex_syntax_conceal_cites.verbose ? '' : 'conceal',
         \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedPArg',
         \})
+  syntax match texRefConcealedPOpt2 "\[\s*\]" conceal
+        \ skipwhite nextgroup=texRefConcealedPArg
   call vimtex#syntax#core#new_arg('texRefConcealedPArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedPDelim',
         \ 'opts': 'keepend contained',
