@@ -26,11 +26,12 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat=%+E%.%#\>\ ERROR%m
   setlocal errorformat+=%+W%.%#\>\ WARN\ -\ Duplicate\ entry%m
   setlocal errorformat+=%+W%.%#\>\ WARN\ -\ The\ entry%.%#cannot\ be\ encoded%m
+  setlocal errorformat+=%+I%.%#\>\ INFO\ -\ Found\ BibTeX\ data\ source\ %f
   setlocal errorformat+=%-G%.%#
 endfunction
 
 " }}}1
-function! s:qf.addqflist(blg) abort " {{{1
+function! s:qf.addqflist(blg) abort dict " {{{1
   let self.file = a:blg
   let self.root = fnamemodify(a:blg, ':h')
   if empty(self.file) | throw 'biblatex Aborted' | endif
@@ -46,7 +47,7 @@ function! s:qf.addqflist(blg) abort " {{{1
 endfunction
 
 " }}}1
-function! s:qf.fix_paths() abort " {{{1
+function! s:qf.fix_paths() abort dict " {{{1
   let l:qflist = getqflist()
   try
     let l:title = getqflist({'title': 1})
@@ -54,11 +55,17 @@ function! s:qf.fix_paths() abort " {{{1
     let l:title = 'VimTeX errors'
   endtry
 
+  if has_key(self, '__state_bibfile')
+    unlet self.__state_bibfile
+  endif
+
   for l:qf in l:qflist
     for l:type in self.types
       if l:type.fix(self, l:qf) | break | endif
     endfor
   endfor
+
+  call filter(l:qflist, { _, x -> !has_key(x, 'removeThis') })
 
   call setqflist(l:qflist, 'r')
 
@@ -70,7 +77,7 @@ function! s:qf.fix_paths() abort " {{{1
 endfunction
 
 " }}}1
-function! s:qf.get_db_files() abort " {{{1
+function! s:qf.get_db_files() abort dict " {{{1
   if empty(self.db_files)
     let l:preamble = vimtex#parser#preamble(b:vimtex.tex, {
           \ 'root' : b:vimtex.root,
@@ -97,7 +104,7 @@ function! s:qf.get_db_files() abort " {{{1
 endfunction
 
 " }}}1
-function! s:qf.get_filename(name) abort " {{{1
+function! s:qf.get_filename(name) abort dict " {{{1
   if !filereadable(a:name)
     for l:root in [self.root, b:vimtex.root]
       let l:candidate = fnamemodify(simplify(l:root . '/' . a:name), ':.')
@@ -107,11 +114,11 @@ function! s:qf.get_filename(name) abort " {{{1
     endfor
   endif
 
-  return a:name
+  return get(self, '__state_bibfile', '')
 endfunction
 
 " }}}1
-function! s:qf.get_key_pos(key) abort " {{{1
+function! s:qf.get_key_pos(key) abort dict " {{{1
   for l:file in self.get_db_files()
     let l:lnum = self.get_key_lnum(a:key, l:file)
     if l:lnum > 0
@@ -123,7 +130,7 @@ function! s:qf.get_key_pos(key) abort " {{{1
 endfunction
 
 " }}}1
-function! s:qf.get_key_lnum(key, filename) abort " {{{1
+function! s:qf.get_key_lnum(key, filename) abort dict " {{{1
   if !filereadable(a:filename) | return 0 | endif
 
   let l:lines = readfile(a:filename)
@@ -136,7 +143,7 @@ function! s:qf.get_key_lnum(key, filename) abort " {{{1
 endfunction
 
 " }}}1
-function! s:qf.get_entry_key(filename, lnum) abort " {{{1
+function! s:qf.get_entry_key(filename, lnum) abort dict " {{{1
   for l:file in self.get_db_files()
     if fnamemodify(l:file, ':t') !=# a:filename | continue | endif
 
@@ -155,18 +162,45 @@ endfunction
 " Parsers for the various warning types
 "
 
+let s:type_parse_data_source = {}
+function! s:type_parse_data_source.fix(ctx, entry) abort " {{{1
+  if a:entry.text =~# 'INFO - Found BibTeX data source'
+    let a:entry.removeThis = 1
+
+    let l:file = matchstr(a:entry.text, 'BibTeX data source ''\zs.*\ze''$')
+    let a:ctx.__state_bibfile = l:file
+
+    return 1
+  endif
+endfunction
+
+" }}}1
+
 let s:type_parse_error = {}
 function! s:type_parse_error.fix(ctx, entry) abort " {{{1
   if a:entry.text =~# 'ERROR - BibTeX subsystem.*expected end of entry'
-    let l:matches = matchlist(a:entry.text, '\v(\S*\.bib).*line (\d+)')
+    let l:matches = matchlist(a:entry.text, '\v(\S*\.%(bib|utf8)).*line (\d+)')
+    if empty(l:matches) | return 1 | endif
+
     let a:entry.filename = a:ctx.get_filename(fnamemodify(l:matches[1], ':t'))
     let a:entry.lnum = l:matches[2]
 
-    " Use filename and line number to get entry name
-    let l:key = a:ctx.get_entry_key(a:entry.filename, a:entry.lnum)
+    if empty(a:entry.filename)
+      unlet a:entry.filename
+      let l:key = ''
+    else
+      " Use filename and line number to get entry name
+      let l:key = a:ctx.get_entry_key(a:entry.filename, a:entry.lnum)
+    endif
+
     if !empty(l:key)
       let a:entry.text = 'biblatex: Error parsing entry with key "' . l:key . '"'
+    else
+      let a:entry.text = 'biblatex: Error parsing entry ('
+            \ . matchstr(a:entry.text, '\vsyntax error: \zs.*\ze \(skipping')
+            \ . ')'
     endif
+
     return 1
   endif
 endfunction
