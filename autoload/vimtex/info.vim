@@ -195,16 +195,14 @@ function! s:get_os_info() abort " {{{1
       return 'MacOS/i[Pad]OS'
     endif
   else
-    if !exists('s:win_info')
-      let s:win_info = vimtex#jobs#cached('systeminfo')
-    endif
+    let l:win_info = vimtex#jobs#cached('systeminfo')
 
     try
-      let l:name = vimtex#util#trim(matchstr(s:win_info[1], ':\s*\zs.*'))
-      let l:version = vimtex#util#trim(matchstr(s:win_info[2], ':\s*\zs.*'))
+      let l:name = vimtex#util#trim(matchstr(l:win_info[1], ':\s*\zs.*'))
+      let l:version = vimtex#util#trim(matchstr(l:win_info[2], ':\s*\zs.*'))
       return l:name . ' (' . l:version . ')'
     catch
-      return 'Windows (' . string(s:win_info) . ')'
+      return 'Windows (' . string(l:win_info) . ')'
     endtry
   endif
 endfunction
