@@ -141,7 +141,7 @@ filetype specific features. To prevent the unexpected behaviour where `.tex`
 files by default will be recognized as the filetype `plaintex`
 (|ft-plaintex-syntax|) for e.g. empty documents, VimTeX overrides the filetype
 detection for `.tex`. The user may prevent this overriding by specifying the
-|g:tex_flavor| option something different than `'latex'`.
+|g:tex_flavor| option something different than `"latex"`.
 
 -----------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
@@ -304,7 +304,7 @@ Clientserver ~
 <
   Alternatively, Vim can be started with the command line option
   `--servername`, e.g. `vim --servername VIM` . The simplest way to ensure
-  this is to add an alias to your `.bashrc` (or similar), that is, add: >
+  this is to add an alias to your `.bashrc` (or similar), that is, add: >bash
 
     alias vim='vim --servername VIM'
 <
@@ -379,7 +379,7 @@ TeX root directive ~
   It is also possible to specify the main TeX file with a comment in one of
   the first five lines of the current file. This is often referred to as a TeX
   directive, see |vimtex-tex-directives| for more info. The syntax is best
-  described by some examples: >tex
+  described by some examples: >latex
 
     %! TEX root = /path/to/my-main.tex
     % ! TeX root = ../*.tex
@@ -407,7 +407,7 @@ Subfiles package ~
   used to automatically start in the local mode when opening a subfile
   document.
 
-  With `subfiles`, included files will typically look like this: >tex
+  With `subfiles`, included files will typically look like this: >latex
 
     \documentclass[<main-path>]{subfiles}
     \begin{document}
@@ -488,7 +488,7 @@ The TeX program directive works by specifying the TeX compiler program in
 a comment in one of the first lines of the main project file. It is parsed
 only when it is required by a compiler backend.
 
-The syntax is best explained with an example: >tex
+The syntax is best explained with an example: >latex
 
   %! TeX program = lualatex
   %! TEX TS-program = xelatex
@@ -653,7 +653,7 @@ Enhanced matching and highlighting of delimiters ~
     - Adds motions, `g%`, `[%`, and `]%` and text objects, `a%` and `i%` which move
       between matching delimiters and operate on delimited text.
 
-  For example, with match-up enabled, >tex
+  For example, with match-up enabled, >latex
 
     \left( \frac{a}{b} \middle| q \right)
 <
@@ -951,7 +951,7 @@ OPTIONS                                                        *vimtex-options*
     `arara`      |vimtex-compiler-arara|      |g:vimtex_compiler_arara|
     `generic`    |vimtex-compiler-generic|    |g:vimtex_compiler_generic|
 
-  Default value: 'latexmk'
+  Default value: `'latexmk'`
 
 *g:vimtex_compiler_latexmk*
   This dictionary allows customization of the |vimtex-compiler-latexmk|
@@ -1280,7 +1280,7 @@ OPTIONS                                                        *vimtex-options*
   A pragmatic choice when we write a parser, therefore, is to rely on some
   heuristics and common practises. This will never be perfect, but it can be
   good enough for practical use. In VimTeX, the core heuristics are that
-  a command will look like this: >tex
+  a command will look like this: >latex
 
     \foo<overlay>[[opt]{arg}]...
     \begin{name}<overlay>[[opt]{arg}]...
@@ -1290,7 +1290,7 @@ OPTIONS                                                        *vimtex-options*
   the text between successive such groups.
 
   The default function will allow a line break and possibly white space on the
-  preceding line before a new group. E.g.: >tex
+  preceding line before a new group. E.g.: >latex
 
     % command                number of args
     % -------                --------------
@@ -1585,7 +1585,7 @@ OPTIONS                                                        *vimtex-options*
   With this option, one may specify a list of custom documentation handlers.
   The following pre-made handlers are available:
 
-    'vimtex#doc#handler#texdoc'  Open documentation with local `texdoc`.
+    `'vimtex#doc#handler#texdoc'`  Open documentation with local `texdoc`.
     Fallback                     Open documentation online through
                                  http://texdoc.net/pkg/packagename.
 
@@ -1706,7 +1706,7 @@ OPTIONS                                                        *vimtex-options*
 
   Use custom section symbol for folding.
 
-  Default value: '*'
+  Default value: `'*'`
 
 *g:vimtex_fold_types*
 *g:vimtex_fold_types_defaults*
@@ -2025,7 +2025,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_imaps_leader*
   The default leader key for insert mode mappings.
 
-  Default value: '`'
+  Default value: "`"
 
 *g:vimtex_imaps_disabled*
   A list of mappings to disable. That is, any left-hand side that matches
@@ -2050,7 +2050,7 @@ OPTIONS                                                        *vimtex-options*
   Note: This option is read during initialization of VimTeX, and so it must be
         set early. I.e., it can not be set in `after/ftplugin/tex.vim`.
 
-  Default value: ['input', 'include', 'includeonly']
+  Default value: `['input', 'include', 'includeonly']`
 
 *g:vimtex_include_search_enabled*
   VimTeX sets 'includeexpr' to recognize included files. If a file isn't found
@@ -2257,7 +2257,7 @@ OPTIONS                                                        *vimtex-options*
   methods, either through VimTeX (see |g:vimtex_compiler_method|) or
   externally, this requirement must be ensured by the user.
 
-  Default value: 'latexlog'
+  Default value: `'latexlog'`
 
 *g:vimtex_quickfix_blgparser*
   This option controls the parsing of `blg` log files (created by bibtex or
@@ -2698,7 +2698,7 @@ OPTIONS                                                        *vimtex-options*
   Option that makes it possible to add custom arguments to `texcount` for
   |:VimtexCountWords| and |:VimtexCountLetters|.
 
-  Default value: ''
+  Default value: `''`
 
 *g:vimtex_text_obj_enabled*
   Use this option to disable the text object mappings.
@@ -2710,7 +2710,7 @@ OPTIONS                                                        *vimtex-options*
   `ie/ae`, `i$/a$`, and `id/ad`). Note, for inline regions the operators will not
   act linewise, since that would lead to side effects.
 
-  Default value: ['d', 'y']
+  Default value: `['d', 'y']`
 
 *g:vimtex_text_obj_variant*
   Select text object variants for command and environment text objects. The
@@ -2838,7 +2838,7 @@ OPTIONS                                                        *vimtex-options*
 
     `split_pos` : `vert leftabove`
       Define where index windows should be opened. This is a string that
-      contains either the word 'full' to open in the current window, or
+      contains either the word "full" to open in the current window, or
       a position command. Use |:vert| if a vertical split is desired, and one
       of |:leftabove|, |:rightbelow|, |:topleft|, and |:botright| to specify
       the desired split position.
@@ -3035,7 +3035,7 @@ OPTIONS                                                        *vimtex-options*
         done by the user or by VimTeX, even if `latexmk` is chosen as the
         compiler.
 
-  Note: This works best with the 'mupdf' and 'zathura' viewers. In particular,
+  Note: This works best with the "mupdf" and "zathura" viewers. In particular,
         these viewers should update automatically after the pdf is updated.
         For general viewers, one has to create a callback function and connect
         it through the |VimtexEventCompileSuccess| event to update the viewer.
@@ -3090,7 +3090,7 @@ OPTIONS                                                        *vimtex-options*
     `@line`   Current line number
     `@col`    Current column number
 
-  Default value: '@pdf'
+  Default value: `'@pdf'`
 
 *g:vimtex_view_mupdf_options*
 *g:vimtex_view_zathura_options*
@@ -3099,7 +3099,7 @@ OPTIONS                                                        *vimtex-options*
     * |vimtex-view-zathura|
     * |vimtex-view-zathura-simple|
 
-  Default value: ''
+  Default value: `''`
 
 *g:vimtex_view_general_viewer*
   Use generic viewer application, see |vimtex-view-general|.
@@ -3113,7 +3113,7 @@ OPTIONS                                                        *vimtex-options*
   A string of keys that will be sent to MuPDF just after the PDF file has been
   opened.
 
-  Default value: ''
+  Default value: `''`
 
 *g:vimtex_view_sioyek_exe*
   The name or path of the Sioyek executable. The default should usually work,
@@ -3129,7 +3129,7 @@ OPTIONS                                                        *vimtex-options*
   can e.g. be used to add the `--reuse-instance` or `--reuse-window` option,
   which some users prefer.
 
-  Default value: ''
+  Default value: `''`
 
 *g:vimtex_view_skim_activate*
   Set this option to 1 to make Skim have focus after command |:VimtexView| in
@@ -3361,7 +3361,7 @@ COMMANDS                                                      *vimtex-commands*
                                              *:VimtexCountWords!*
 :VimtexCountLetters!      Similar to |:VimtexCountLetters|/|:VimtexCountWords|, but
 :VimtexCountWords!        show separate reports for included files.  I.e.
-                          presents the result of: >
+                          presents the result of: >bash
 
                             texcount -nosub -sum [-letter] -inc FILE
 <
@@ -3752,13 +3752,13 @@ further customization.
     open viewers (see Examples below).  With Vim defaults, this event is not
     triggered when using `:quit` or `:bdelete` since these commands merely hide
     the buffer.  In multi-file projects, the event may be triggered multiple
-    times.  The 'b:vimtex' variable contains context data for the quitting
-    file or project.  For example, 'b:vimtex.tex' identifies the tex file being
+    times.  The `b:vimtex` variable contains context data for the quitting
+    file or project.  For example, `b:vimtex.tex` identifies the tex file being
     wiped, or the main tex file of a multi-file project.
 
     Note: Commands such as |:VimtexClean| cannot be used in this autocommand
     because when quitting vim the current buffer does not necessarily have
-    filetype 'tex'.
+    filetype "tex".
 
   *VimtexEventInitPre*
   *VimtexEventInitPost*
@@ -3947,7 +3947,7 @@ names, title, and similar by matching against a match string defined by
 bibkeys directly. This should typically work better with autocomplete plugins.
 
 As an example of the smart completion, assume that a bibliography file is
-included with the following entry: >bib
+included with the following entry: >bibtex
 
   @book { knuth1981,
           author = "Donald E. Knuth",
@@ -4033,7 +4033,7 @@ File name completion is available for the following macros:
 COMPLETE INCLUDE GLOSSARY ENTRIES                    *vimtex-complete-glossary*
 
 Glossary entry completion from the `glossaries` package are triggered by the
-commands '\gls{', '\glspl{' and their variations.
+commands `\gls{`, `\glspl{` and their variations.
 
 ------------------------------------------------------------------------------
 COMPLETE PACKAGE FILES                               *vimtex-complete-packages*
@@ -4085,7 +4085,7 @@ https://github.com/neoclide/coc.nvim/wiki/Install-coc.nvim
 
 To configure for VimTeX, one should use the extension plugin |coc-vimtex|,
 which may be found here: https://github.com/neoclide/coc-vimtex. To use it,
-first make sure you have |coc-nvim| installed, then just run: >
+first make sure you have |coc-nvim| installed, then just run: >vim
 
   :CocInstall coc-vimtex
 
@@ -4473,7 +4473,7 @@ There will probably always be situations where the parser will fail, and in
 some cases it may be hard to "recover". It is therefore possible to manually
 activate a severely reduced syntax zone to handle such situations. The zone is
 activated with the directive `% VimTeX: SynIgnore on` and disabled with the
-similar directive `% VimTeX: SynIgnore off`, e.g.: >tex
+similar directive `% VimTeX: SynIgnore off`, e.g.: >latex
 
   % VimTeX: SynIgnore on
   \catcode`\$=11
@@ -4486,7 +4486,7 @@ is matched case insensitive, and the synonyms `enable` and `disable` may be
 used instead of `on` and `off`.
 
 Overleaf's magic comment [0] is also supported similarly as the `SynIgnore`
-method described above, i.e.: >tex
+method described above, i.e.: >latex
 
   %%begin novalidate
   \catcode`\$=11
@@ -4828,7 +4828,7 @@ INCLUDE EXPRESSION                                         *vimtex-includeexpr*
 VimTeX provides an advanced |includeexpr| that makes it possible to open
 source files for e.g. packages and documentclasses with the |gf| command. The
 implementation relies on `kpsewhich` to find the source files. Consider the
-following example: >tex
+following example: >latex
 
   \documentclass{article}
   \usepackage{MyLocalPackage}
@@ -4954,7 +4954,7 @@ table (see |vimtex-toc| for detailed explanation of the "layers"):
   `l`:  label
   `i`:  include
 
-The default behavior is to show all layers, i.e. 'ctli'. To only show
+The default behavior is to show all layers, i.e. `'ctli'`. To only show
 `content` and `label`s use: >vim
 
   :call vimtex#fzf#run('cl')
@@ -5690,14 +5690,14 @@ that will seamlessly handle multiple Vim or neovim instances and multiple
 VimTeX instances. The user doesn't need to worry about passing the correct
 servernames.
 
-To configure with `VimtexInverseSearch`, use: >
+To configure with `VimtexInverseSearch`, use: >bash
 
   vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
 
   nvim --headless -c "VimtexInverseSearch %l '%f'"
 
 On Windows, the above commands may lead to an annoying command window "popup".
-This may be avoided, or at least reduced, with the following variants: >
+This may be avoided, or at least reduced, with the following variants: >bash
 
   cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
 
@@ -6295,7 +6295,7 @@ Tips:
 Problem: Text objects on Windows ~
 
 In Windows, environment text object commands, like `vae` and `vie`, do not
-select the entire body of the environment. More specifically, given: >tex
+select the entire body of the environment. More specifically, given: >latex
 
   \begin{someenv}
     some content
@@ -6305,7 +6305,7 @@ The command `dae` results in: >
 
   }
 
-and `die` results in: >tex
+and `die` results in: >latex
 
   \begin{someenv}
     t
