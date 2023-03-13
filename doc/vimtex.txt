@@ -610,10 +610,10 @@ Manipulate surrounding commands/delimiters/environments ~
   Machakann, which may be considered a generalisation of `surround.vim` in
   that it can handle much more complex sets of delimiters.  `vim-sandwich`
   is relatively easy to expand with custom surroundings and has built in
-  support for LaTeX-specific surroundings such as quotations, ```text''`,
-  and math delimiters, `$\left(a+b\right)$`.  For a list of supported
-  delimiters, see |sandwich-filetype-recipes|.  `vim-sandwich` supports
-  `vim-repeat` [2] in addition to `visualrepeat.vim` [3].
+  support for LaTeX-specific surroundings such as quotations and math
+  delimiters.  For a list of supported delimiters, see
+  |sandwich-filetype-recipes|.  `vim-sandwich` supports `vim-repeat` [2] in
+  addition to `visualrepeat.vim` [3].
 
   Note: The default mappings of `vim-sandwich` differ from those of
     `surround.vim`, in that they use `s` as the prefix.  E.g., to add
@@ -1280,7 +1280,7 @@ OPTIONS                                                        *vimtex-options*
   A pragmatic choice when we write a parser, therefore, is to rely on some
   heuristics and common practises. This will never be perfect, but it can be
   good enough for practical use. In VimTeX, the core heuristics are that
-  a command will look like this: >latex
+  a command will look like this: >
 
     \foo<overlay>[[opt]{arg}]...
     \begin{name}<overlay>[[opt]{arg}]...
@@ -1463,11 +1463,12 @@ OPTIONS                                                        *vimtex-options*
   `re` entry is a corresponding list of regexes that matches the delimiters.
 
   The default value should generally suffice for most people. If one wants to
-  overwrite one of the main entries, e.g. the `mods` entry, one can do: >vim
+  overwrite one of the main entries, e.g. the `mods` entry, one can do
+  something like this: >vim
 
     let g:vimtex_delim_list = {
           \ 'mods' : {
-          \   'name' : [ ... ],
+          \   'name' : [ "..." ],
           \ }
           \}
 <
@@ -3949,11 +3950,12 @@ bibkeys directly. This should typically work better with autocomplete plugins.
 As an example of the smart completion, assume that a bibliography file is
 included with the following entry: >bibtex
 
-  @book { knuth1981,
-          author = "Donald E. Knuth",
-          title = "Seminumerical Algorithms",
-          publisher = "Addison-Wesley",
-          year = "1981" }
+  @book{knuth1981,
+    author = "Donald E. Knuth",
+    title = "Seminumerical Algorithms",
+    publisher = "Addison-Wesley",
+    year = "1981"
+  }
 
 Then, with the default configuration, the bibliography key `knuth1981` will be
 completed with e.g.: >
