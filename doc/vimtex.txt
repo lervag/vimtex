@@ -141,7 +141,7 @@ filetype specific features. To prevent the unexpected behaviour where `.tex`
 files by default will be recognized as the filetype `plaintex`
 (|ft-plaintex-syntax|) for e.g. empty documents, VimTeX overrides the filetype
 detection for `.tex`. The user may prevent this overriding by specifying the
-|g:tex_flavor| option something different than `"latex"`.
+|g:tex_flavor| option something different than `'latex'`.
 
 -----------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
