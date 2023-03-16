@@ -35,10 +35,10 @@ endfunction
 " }}}1
 function! s:folder.level(line, lnum) abort dict " {{{1
   if a:line =~# self.re.start
-    let s:self.opened = 1
+    let self.opened = 1
     return 'a1'
   elseif a:line =~# self.re.end
-    let s:self.opened = 0
+    let self.opened = 0
     return 's1'
   endif
 endfunction
