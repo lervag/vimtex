@@ -10,7 +10,8 @@ endfunction
 
 " }}}1
 
-let s:viewer = vimtex#view#_template#new({'name' : 'TeXShop'})
+
+let s:viewer = vimtex#view#_template#new({'name': 'TeXShop'})
 
 function! s:viewer.compiler_callback(outfile) dict abort " {{{1
   let cmd = s:make_cmd_view(
@@ -22,11 +23,12 @@ function! s:viewer.compiler_callback(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
+
 function! s:viewer._check() dict abort " {{{1
   let l:output = vimtex#jobs#capture(
         \ 'osascript -l JavaScript -e ''Application("TeXShop").id()''')
 
-  if l:output[0] !~# 'TeXShop'
+  if join(l:output) !~# 'TeXShop'
     call vimtex#log#error('TeXShop is not installed!')
     return v:false
   endif
@@ -40,6 +42,8 @@ function! s:viewer._start(outfile) dict abort " {{{1
 endfunction
 
 " }}}1
+
+
 function! s:make_cmd_view(outfile, open, sync) abort " {{{1
   let l:scriptview = [
         \ 'osascript',
@@ -62,10 +66,8 @@ function! s:make_cmd_view(outfile, open, sync) abort " {{{1
   let l:linenr = line('.')
   let l:colnr = col('.')
 
-  " The applescript described in
+  " The following applescript is based on the release notes for TeXShop 4.25:
   " https://pages.uoregon.edu/koch/texshop/changes_3.html
-  " (Release notes for TeXShop 4.25) is directly integrated
-  " below:
   let l:scriptsync = [
         \ 'osascript',
         \ '-e ''set currentLine to ' . l:linenr . ' as integer''',
