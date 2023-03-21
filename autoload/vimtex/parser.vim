@@ -131,22 +131,22 @@ function! vimtex#parser#selection_to_texfile(opts) range abort " {{{1
           \ + ['\end{document}']
   endif
 
-  " Respect the compiler build_dir option
-  if empty(b:vimtex.compiler.build_dir)
-    let l:build_dir = b:vimtex.root
+  " Respect the compiler out_dir option
+  if empty(b:vimtex.compiler.out_dir)
+    let l:out_dir = b:vimtex.root
   else
-    let l:build_dir = vimtex#paths#is_abs(b:vimtex.compiler.build_dir)
-          \ ? b:vimtex.compiler.build_dir
-          \ : b:vimtex.root . '/' . b:vimtex.compiler.build_dir
+    let l:out_dir = vimtex#paths#is_abs(b:vimtex.compiler.out_dir)
+          \ ? b:vimtex.compiler.out_dir
+          \ : b:vimtex.root . '/' . b:vimtex.compiler.out_dir
   endif
 
   " Write content to temporary file
   let l:file = {}
   let l:file.base = l:opts.name
-  let l:file.root = l:build_dir
-  let l:file.tex = l:build_dir . '/' . l:file.base . '.tex'
-  let l:file.pdf = l:build_dir . '/' . l:file.base . '.pdf'
-  let l:file.log = l:build_dir . '/' . l:file.base . '.log'
+  let l:file.root = l:out_dir
+  let l:file.tex = l:out_dir . '/' . l:file.base . '.tex'
+  let l:file.pdf = l:out_dir . '/' . l:file.base . '.pdf'
+  let l:file.log = l:out_dir . '/' . l:file.base . '.log'
   let l:file.base .= '.tex'
   call writefile(l:lines, l:file.tex)
 

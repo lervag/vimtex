@@ -102,17 +102,17 @@ endfunction
 
 " }}}1
 function! s:compiler.__init() abort dict " {{{1
-  " Check if .latexmkrc sets the build_dir - if so this should be respected
+  " Check if .latexmkrc sets the out_dir - if so this should be respected
   let l:out_dir =
         \ vimtex#compiler#latexmk#get_rc_opt(self.state.root, 'out_dir', 0, '')[0]
   if !empty(l:out_dir)
-    if !empty(self.build_dir) && (self.build_dir !=# l:out_dir)
+    if !empty(self.out_dir) && (self.out_dir !=# l:out_dir)
       call vimtex#log#warning(
-            \ 'Setting out_dir from latexmkrc overrides build_dir!',
-            \ 'Changed build_dir from: ' . self.build_dir,
-            \ 'Changed build_dir to: ' . l:out_dir)
+            \ 'Setting out_dir from latexmkrc overrides out_dir!',
+            \ 'Changed out_dir from: ' . self.out_dir,
+            \ 'Changed out_dir to: ' . l:out_dir)
     endif
-    let self.build_dir = l:out_dir
+    let self.out_dir = l:out_dir
   endif
 endfunction
 
@@ -125,8 +125,8 @@ function! s:compiler.__build_cmd() abort dict " {{{1
   let l:cmd .= ' ' . join(self.options)
   let l:cmd .= ' ' . self.get_engine()
 
-  if !empty(self.build_dir)
-    let l:cmd .= ' -outdir=' . fnameescape(self.build_dir)
+  if !empty(self.out_dir)
+    let l:cmd .= ' -outdir=' . fnameescape(self.out_dir)
   endif
 
   if self.continuous
@@ -159,8 +159,8 @@ endfunction
 
 function! s:compiler.clean(full) abort dict " {{{1
   let l:cmd = self.executable . ' ' . (a:full ? '-C ' : '-c ')
-  if !empty(self.build_dir)
-    let l:cmd .= printf(' -outdir=%s ', fnameescape(self.build_dir))
+  if !empty(self.out_dir)
+    let l:cmd .= printf(' -outdir=%s ', fnameescape(self.out_dir))
   endif
   let l:cmd .= vimtex#util#shellescape(self.state.base)
 

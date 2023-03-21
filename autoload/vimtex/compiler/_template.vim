@@ -14,7 +14,7 @@ endfunction
 let s:compiler = {
       \ 'name': '__template__',
       \ 'enabled': v:true,
-      \ 'build_dir': '',
+      \ 'out_dir': '',
       \ 'continuous': 0,
       \ 'hooks': [],
       \ 'output': tempname(),
@@ -30,9 +30,9 @@ function! s:compiler.new(options) abort dict " {{{1
 
   call l:compiler.__check_requirements()
 
-  call s:build_dir_materialize(l:compiler)
+  call s:out_dir_materialize(l:compiler)
   call l:compiler.__init()
-  call s:build_dir_respect_envvar(l:compiler)
+  call s:out_dir_respect_envvar(l:compiler)
 
   " Remove init methods
   unlet l:compiler.new
@@ -74,8 +74,8 @@ function! s:compiler.__pprint() abort dict " {{{1
     call add(l:list, ['options', self.options])
   endif
 
-  if !empty(self.build_dir)
-    call add(l:list, ['build_dir', self.build_dir])
+  if !empty(self.out_dir)
+    call add(l:list, ['out_dir', self.out_dir])
   endif
 
   if has_key(self, '__pprint_append')
@@ -99,15 +99,13 @@ endfunction
 " }}}1
 
 function! s:compiler.get_file(ext) abort dict " {{{1
-  " Check for various output directories
-  " * Environment variable VIMTEX_OUTPUT_DIRECTORY. Note that this overrides
-  "   any VimTeX settings like g:vimtex_compiler_latexmk.build_dir!
-  " * Compiler settings, such as g:vimtex_compiler_latexmk.build_dir, which is
-  "   available as b:vimtex.compiler.build_dir.
+  " Find file by considering possible output directories:
+  " * VIMTEX_OUTPUT_DIRECTORY
+  " * Compiler settings (e.g. g:vimtex_compiler_latexmk.out_dir)
   " * Fallback to the main root directory
   for l:root in [
         \ $VIMTEX_OUTPUT_DIRECTORY,
-        \ self.build_dir,
+        \ self.out_dir,
         \ self.state.root
         \]
     if empty(l:root) | continue | endif
@@ -143,7 +141,7 @@ endfunction
 function! s:compiler.start(...) abort dict " {{{1
   if self.is_running() | return | endif
 
-  call self.create_build_dir()
+  call self.create_out_dir()
 
   " Initialize output file
   call writefile([], self.output, 'a')
@@ -211,10 +209,10 @@ endfunction
 
 " }}}1
 
-function! s:compiler.create_build_dir() abort dict " {{{1
+function! s:compiler.create_out_dir() abort dict " {{{1
   " Create build dir if it does not exist
   " Note: This may need to create a hierarchical structure!
-  if empty(self.build_dir) | return | endif
+  if empty(self.out_dir) | return | endif
 
   if has_key(self.state, 'get_sources')
     let l:dirs = self.state.get_sources()
@@ -230,13 +228,13 @@ function! s:compiler.create_build_dir() abort dict " {{{1
   call uniq(sort(filter(l:dirs, '!empty(v:val)')))
 
   call map(l:dirs, {_, x ->
-        \ (vimtex#paths#is_abs(self.build_dir) ? '' : self.state.root . '/')
-        \ . self.build_dir . '/' . x})
+        \ (vimtex#paths#is_abs(self.out_dir) ? '' : self.state.root . '/')
+        \ . self.out_dir . '/' . x})
   call filter(l:dirs, '!isdirectory(v:val)')
   if empty(l:dirs) | return | endif
 
   " Create the non-existing directories
-  call vimtex#log#warning(["Creating build_dir directorie(s):"]
+  call vimtex#log#warning(["Creating out_dir directorie(s):"]
         \ + map(copy(l:dirs), {_, x -> '* ' . x}))
 
   for l:dir in l:dirs
@@ -245,21 +243,21 @@ function! s:compiler.create_build_dir() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.remove_build_dir() abort dict " {{{1
+function! s:compiler.remove_out_dir() abort dict " {{{1
   " Remove auxilliary output directories (only if they are empty)
-  if empty(self.build_dir) | return | endif
+  if empty(self.out_dir) | return | endif
 
-  if vimtex#paths#is_abs(self.build_dir)
-    let l:build_dir = self.build_dir
+  if vimtex#paths#is_abs(self.out_dir)
+    let l:out_dir = self.out_dir
   else
-    let l:build_dir = self.state.root . '/' . self.build_dir
+    let l:out_dir = self.state.root . '/' . self.out_dir
   endif
 
-  let l:tree = glob(l:build_dir . '/**/*', 0, 1)
+  let l:tree = glob(l:out_dir . '/**/*', 0, 1)
   let l:files = filter(copy(l:tree), 'filereadable(v:val)')
 
   if empty(l:files)
-    for l:dir in sort(l:tree) + [l:build_dir]
+    for l:dir in sort(l:tree) + [l:out_dir]
       call delete(l:dir, 'd')
     endfor
   endif
@@ -461,34 +459,34 @@ endfunction
 " }}}1
 
 
-function! s:build_dir_materialize(compiler) abort " {{{1
-  if type(a:compiler.build_dir) != v:t_func | return | endif
+function! s:out_dir_materialize(compiler) abort " {{{1
+  if type(a:compiler.out_dir) != v:t_func | return | endif
 
   try
-    let a:compiler.build_dir = a:compiler.build_dir()
+    let a:compiler.out_dir = a:compiler.out_dir()
   catch
     call vimtex#log#error(
-          \ 'Could not expand build_dir function!',
+          \ 'Could not expand out_dir function!',
           \ v:exception)
-    let a:compiler.build_dir = ''
+    let a:compiler.out_dir = ''
   endtry
 endfunction
 
 " }}}1
-function! s:build_dir_respect_envvar(compiler) abort " {{{1
-  " Specifying the build_dir by environment variable should override the
+function! s:out_dir_respect_envvar(compiler) abort " {{{1
+  " Specifying the out_dir by environment variable should override the
   " current value.
   if empty($VIMTEX_OUTPUT_DIRECTORY) | return | endif
 
-  if !empty(a:compiler.build_dir)
-        \ && (a:compiler.build_dir !=# $VIMTEX_OUTPUT_DIRECTORY)
+  if !empty(a:compiler.out_dir)
+        \ && (a:compiler.out_dir !=# $VIMTEX_OUTPUT_DIRECTORY)
     call vimtex#log#warning(
-          \ 'Setting VIMTEX_OUTPUT_DIRECTORY overrides build_dir!',
-          \ 'Changed build_dir from: ' . a:compiler.build_dir,
-          \ 'Changed build_dir to: ' . $VIMTEX_OUTPUT_DIRECTORY)
+          \ 'Setting VIMTEX_OUTPUT_DIRECTORY overrides out_dir!',
+          \ 'Changed out_dir from: ' . a:compiler.out_dir,
+          \ 'Changed out_dir to: ' . $VIMTEX_OUTPUT_DIRECTORY)
   endif
 
-  let a:compiler.build_dir = $VIMTEX_OUTPUT_DIRECTORY
+  let a:compiler.out_dir = $VIMTEX_OUTPUT_DIRECTORY
 endfunction
 
 " }}}1

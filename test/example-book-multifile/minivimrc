@@ -17,7 +17,7 @@ let g:vimtex_toc_todo_labels = {
       \ 'IMPORTANTE': 'IMPORTANT: ',
       \}
 
-" let g:vimtex_compiler_latexmk = {'build_dir': 'out'}
+" let g:vimtex_compiler_latexmk = {'out_dir': 'out'}
 let g:vimtex_view_automatic = 0
 let g:vimtex_quickfix_mode = 0
 
