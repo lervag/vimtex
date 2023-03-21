@@ -80,8 +80,8 @@ function! RunTests(comp, list_opts)
       cquit
     endif
 
-    if !empty(get(l:opts, 'build_dir', ''))
-      call delete(l:opts.build_dir, 'rf')
+    if !empty(get(l:opts, 'out_dir', ''))
+      call delete(l:opts.out_dir, 'rf')
     endif
 
     echo "\n"
@@ -92,14 +92,14 @@ endfunction
 for [s:comp, s:opts] in items({
       \ 'latexmk' : [
       \   {},
-      \   {'build_dir' : 'out'},
+      \   {'out_dir' : 'out'},
       \   {'callback' : 0},
       \   {'callback' : 0, 'continuous' : 0},
       \   {'continuous' : 0},
       \ ],
       \ 'latexrun' : [
       \   {},
-      \   {'build_dir' : 'out'},
+      \   {'out_dir' : 'out'},
       \ ],
       \})
   call RunTests(s:comp, s:opts)

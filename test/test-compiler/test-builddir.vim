@@ -5,7 +5,7 @@ filetype plugin on
 let g:status = 0
 nnoremap q :qall!<cr>
 
-let g:vimtex_compiler_latexmk = {'build_dir': 'build'}
+let g:vimtex_compiler_latexmk = {'out_dir': 'build'}
 
 call vimtex#log#set_silent()
 

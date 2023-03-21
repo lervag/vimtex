@@ -142,7 +142,7 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
   " Create and initialize temporary compiler
   let l:compiler = s:init_compiler({
         \ 'state': l:file,
-        \ 'build_dir': '',
+        \ 'out_dir': '',
         \ 'continuous': 0,
         \ 'callback': 0,
         \})
@@ -266,7 +266,7 @@ function! vimtex#compiler#clean(full) abort " {{{1
 
   call b:vimtex.compiler.clean(a:full)
   sleep 100m
-  call b:vimtex.compiler.remove_build_dir()
+  call b:vimtex.compiler.remove_out_dir()
   call vimtex#log#info('Compiler clean finished' . (a:full ? ' (full)' : ''))
 
 
