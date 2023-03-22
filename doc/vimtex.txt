@@ -98,6 +98,7 @@ CONTENTS                                                      *vimtex-contents*
       Sioyek                                    |vimtex-view-sioyek|
       Skim                                      |vimtex-view-skim|
       SumatraPDF                                |vimtex-view-sumatrapdf|
+      TeXShop                                   |vimtex-view-texshop|
       Zathura                                   |vimtex-view-zathura|
       Zathura (simple)                          |vimtex-view-zathura-simple|
     Synctex                                     |vimtex-synctex|
@@ -3150,6 +3151,19 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_view_texshop_activate*
+  Set this option to 1 to make TeXShop have focus after command |:VimtexView| in
+  addition to being moved to the foreground.
+
+  Default value: 0
+
+*g:vimtex_view_texshop_sync*
+  Set this option to 1 to make TeXShop perform a forward search after successful
+  compilation.
+
+  Default value: 0
+
+
 *g:vimtex_view_zathura_check_libsynctex*
   Check on startup if Zathura is compiled with libsynctex. This is done by
   default because Zathura on some systems is compiled without libsynctex
@@ -5593,6 +5607,52 @@ Note: There is a known issue with VimTeX + SumatraPDF when you use `xelatex`,
       A workaround was found and posted by @Whitebeard0 here:
       https://github.com/lervag/vimtex/issues/1410#issuecomment-506143020
 
+                                                         *vimtex-view-texshop*
+TeXShop~
+https://pages.uoregon.edu/koch/texshop/index.html
+TeXShop is a TeX front-end program for macOS. It provides an editor
+(which can be replaced by other external editors, such as vim),
+a front-end to call TeX-related programs that process source files,
+and a PDF viewer with support for syncing between source and PDF.
+VimTeX supports both forward and inverse searches with TeXShop.
+
+Configuration: >
+  let g:vimtex_view_method = 'texshop'
+
+To configure inverse search in TeXShop:
+
+1. In a terminal, adjust TeXShop's preferences:  >
+
+   defaults write TeXShop OtherEditorSync YES
+   defaults write TeXShop UseExternalEditor -bool true
+<
+Note: These commands only need to be run once as they modify TeXShop's
+      preference file in `~/Library/Preferences/TeXShop.plist`, which persists
+      through sessions. While the first preference is a hidden preference
+      and must be set via a terminal command, the second can be
+      toggled from within TeXShop's preferences pane.
+
+2. Create a shell script `/usr/local/bin/othereditor` that contains a call to
+vim following the general principles explained in
+|vimtex-synctex-inverse-search|. Note: The interpolation variables `%l` and `%f` 
+should be replaced by `$1` and `$2`, respectively, as TeXShop will pass the
+line and file as the first and second argument when calling the script.
+
+Note: the script must be executable: >
+   chmod +x /usr/local/bin/othereditor
+
+From TeXShop, inverse search is activated by `Command`-clicking in the viewer.
+Furthermore, if TeXShop's compiler front-end is used, clicking `Goto Error`
+in the console (keyboard shortcut `Command-Control-E`) will also activate
+inverse search and jump to the line containing the error in the source.
+
+MacVim users should read |vimtex-faq-texshopviewer| for additional
+setup instructions and limitations.
+
+Associated settings:
+* |g:vimtex_view_texshop_activate|
+* |g:vimtex_view_texshop_sync|
+
                                                           *vimtex-view-zathura*
                                                    *vimtex-view-zathura-simple*
 Zathura ~
@@ -5908,6 +5968,7 @@ Contents:
 * |vimtex-faq-wsl|
 * |vimtex-faq-sumatrapdf-wsl|
 * |vimtex-faq-zathura-macos|
+* |vimtex-faq-texshopviewer|
 * |vimtex-faq-treesitter|
 
 ------------------------------------------------------------------------------
@@ -6264,6 +6325,43 @@ A: Yes, it is possible by using the "additional_vim_regex_highlighting" option
    [0]: https://tree-sitter.github.io/tree-sitter/
    [1]: https://github.com/nvim-treesitter/nvim-treesitter
    [2]: https://github.com/nvim-treesitter/nvim-treesitter#available-modules
+
+------------------------------------------------------------------------------
+                                                     *vimtex-faq-texshopviewer*
+Q: How do I set up VimTeX to work with TeXShop and MacVim (macOS)?
+A: Start by reading the section on |vimtex-view-texshop|. The examples
+   below apply to MacVim [0].
+
+   Here is an example `/usr/local/bin/othereditor` script that uses the
+   VimTeX's convenience function `VimtexInverseSearch`: >
+
+   #!/bin/bash
+   /usr/local/bin/mvim -v --not-a-term -T dumb -c "VimtexInverseSearch $1 '$2'"
+<
+   The call with the convenience function `VimtexInverseSearch`
+   offers the advantage that the buffer will be found if it is open,
+   regardless of how it was opened. If the buffer is not active, in a hidden
+   tab or if the file is not open at all, inverse search will fail.
+
+   As alternative, to `VimtexInverseSearch`if the .tex document was
+   opened with the `--remote-silent` option, i.e.: >
+
+   /usr/local/bin/mvim --remote-silent foo.tex
+<
+   the following script `/usr/local/bin/othereditor` can be used instead: >
+
+   #!/bin/bash
+   /usr/local/bin/mvim --remote-silent +$1 "$2"
+<
+   It will activate the buffer even if it is hidden, or open the file if
+   it is not yet loaded in any buffer.
+
+   Related information
+   the TeXShop release notes for versions 4.24 and 4.25 [1] contain information
+   related to backward searches with external editors in general.
+
+   [0] https://macvim-dev.github.io/macvim/
+   [1] https://pages.uoregon.edu/koch/texshop/changes_3.html
 
 ==============================================================================
 TROUBLESHOOTING                                       *vimtex-troubleshooting*
