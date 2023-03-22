@@ -153,3 +153,18 @@ function! s:check_view_skim() abort " {{{1
 endfunction
 
 " }}}1
+function! s:check_view_texshop() abort " {{{1
+  let l:cmd = join([
+        \ 'osascript -e ',
+        \ '''tell application "Finder" to POSIX path of ',
+        \ '(get application file id (id of application "TeXShop") as alias)''',
+        \])
+
+  if system(l:cmd)
+    call health#report_error('TeXShop is not installed!')
+  else
+    call health#report_ok('TeXShop viewer should work!')
+  endif
+endfunction
+
+" }}}1
