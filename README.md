@@ -196,6 +196,7 @@ by default and must be manually enabled.
   - [qpdfview](https://launchpad.net/qpdfview)
   - [Skim](http://skim-app.sourceforge.net/)
   - [SumatraPDF](http://www.sumatrapdfreader.org/free-pdf-reader.html)
+  - [TeXShop](https://pages.uoregon.edu/koch/texshop/)
   - [Zathura](https://pwmt.org/projects/zathura/)
   - Other viewers are supported through a general interface
 - Completion of
