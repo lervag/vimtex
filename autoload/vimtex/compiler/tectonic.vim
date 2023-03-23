@@ -41,7 +41,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
         \ : fnamemodify(self.state.tex, ':p:h')
 
   return 'tectonic ' . join(self.options)
-        \ . ' --outdir=' . fnameescape(l:outdir)
+        \ . ' --outdir="' . l:outdir . '"'
         \ . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 
