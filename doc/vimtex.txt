@@ -2696,6 +2696,15 @@ OPTIONS                                                        *vimtex-options*
     hyperref ~
       `conceal`  whether to enable conceal; enabled by default
 
+  Default: >vim
+
+    let g:vimtex_syntax_packages = {
+          \ 'amsmath': {'conceal': 1, 'load': 2},
+          \ 'babel': {'conceal': 1},
+          \ 'hyperref': {'conceal': 1},
+          \ 'fontawesome5': {'conceal': 1},
+          \}
+
 *g:vimtex_texcount_custom_arg*
   Option that makes it possible to add custom arguments to `texcount` for
   |:VimtexCountWords| and |:VimtexCountLetters|.
