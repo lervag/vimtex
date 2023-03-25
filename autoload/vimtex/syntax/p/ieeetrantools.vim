@@ -4,8 +4,6 @@
 " Email:      karl.yngve@gmail.com
 "
 
-scriptencoding utf-8
-
 function! vimtex#syntax#p#ieeetrantools#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texMathEnvIEEEArg')
   call vimtex#syntax#core#new_opt('texMathEnvIEEEOpt',
