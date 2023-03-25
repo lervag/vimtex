@@ -202,7 +202,9 @@ let s:envs_ignored = '\v<%(' . join(g:vimtex_indent_ignored_envs, '|') . ')>'
 
 " }}}1
 function! s:indent_items(line, lnum, prev_line, prev_lnum) abort " {{{1
-  if a:prev_line =~# s:envs_item && a:line !~# s:envs_enditem
+  if a:prev_line =~# s:envs_item
+        \ && (a:line !~# s:envs_enditem
+        \     || (a:line =~# s:envs_item && a:prev_line =~# s:envs_beglist))
     return s:sw
   elseif a:line =~# s:envs_endlist && a:prev_line !~# s:envs_begitem
     return -s:sw
