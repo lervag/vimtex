@@ -116,6 +116,13 @@ function! s:job.get_pid() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:job.signal_hup() abort dict " {{{1
+  if self.is_running()
+    call job_stop(self.job, 'hup')
+  endif
+endfunction
+
+" }}}1
 function! s:job.output() abort dict " {{{1
   call self.wait()
   return self.capture_output ? readfile(self._output) : []

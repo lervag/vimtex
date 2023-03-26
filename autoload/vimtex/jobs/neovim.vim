@@ -112,6 +112,14 @@ function! s:job.get_pid() abort dict " {{{1
 endfunction
 
 " }}}1
+function! s:job.signal_hup() abort dict " {{{1
+  let l:pid = self.get_pid()
+  if l:pid > 0
+    call system(['kill', '-HUP', l:pid])
+  endif
+endfunction
+
+" }}}1
 function! s:job.output() abort dict " {{{1
   call self.wait()
 
