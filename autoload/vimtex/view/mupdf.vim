@@ -26,7 +26,9 @@ function! s:viewer.compiler_callback(outfile) dict abort " {{{1
     call self._start(a:outfile)
   endif
 
-  call self.xdo_send_keys('r')
+  if has_key(self, 'job') && self.job.get_pid() > 0
+    call self.job.signal_hup()
+  endif
 endfunction
 
 " }}}1
@@ -96,10 +98,9 @@ function! s:viewer._start(outfile) dict abort " {{{1
     let l:cmd .= ' ' . g:vimtex_view_mupdf_options
   endif
   let l:cmd .= ' ' . vimtex#util#shellescape(a:outfile)
-  let l:cmd .= '&'
   let self.cmd_start = l:cmd
 
-  call vimtex#jobs#run(self.cmd_start)
+  let self.job = vimtex#jobs#start(self.cmd_start, {'detached': v:true})
 
   call self.xdo_get_id()
   call self.xdo_send_keys(g:vimtex_view_mupdf_send_keys)
