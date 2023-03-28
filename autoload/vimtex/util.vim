@@ -126,6 +126,20 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#materialize_property(dict, name) abort " {{{1
+  if type(get(a:dict, a:name)) != v:t_func | return | endif
+
+  try
+    let a:dict[a:name] = a:dict[a:name]()
+  catch
+    call vimtex#log#error(
+          \ 'Could not materialize property: ' . a:name,
+          \ v:exception)
+    let a:dict[a:name] = ''
+  endtry
+endfunction
+
+" }}}1
 function! vimtex#util#shellescape(cmd) abort " {{{1
   "
   " Path used in "cmd" only needs to be enclosed by double quotes.
