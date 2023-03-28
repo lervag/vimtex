@@ -266,7 +266,7 @@ function! vimtex#compiler#clean(full) abort " {{{1
 
   call b:vimtex.compiler.clean(a:full)
   sleep 100m
-  call b:vimtex.compiler.remove_out_dir()
+  call b:vimtex.compiler.remove_dirs()
   call vimtex#log#info('Compiler clean finished' . (a:full ? ' (full)' : ''))
 
 
