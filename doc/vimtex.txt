@@ -993,7 +993,8 @@ OPTIONS                                                        *vimtex-options*
   Default value: >vim
 
     let g:vimtex_compiler_latexmk = {
-        \ 'build_dir' : '',
+        \ 'aux_dir' : '',
+        \ 'out_dir' : '',
         \ 'callback' : 1,
         \ 'continuous' : 1,
         \ 'executable' : 'latexmk',
@@ -1009,23 +1010,49 @@ OPTIONS                                                        *vimtex-options*
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
-  build_dir ~
-    This option sets the compilation build directory. It corresponds to the
-    `-output-directory` option in `latexmk`. If the path is a relative path,
-    then it will be considered relative to the main project file.
+  aux_dir ~
+    This option sets the directory for auxiliary output files. It corresponds
+    to the `$aux_dir` option of `latexmk`. If the path is a relative path,
+    then it is considered relative to the main project file.
 
-    Although the value of this option should be a string that represents
-    a path, it is also possible to make it a function. This makes it possible
-    to specify a dynamic `build_dir`. It may be easier to understand from an
-    example: >vim
+    The value of this option should be either:
+      1) a string that represents a path, or
+      2) a |Funcref|. The |Funcref| type makes it possible to specify
+         a dynamic `aux_dir`. It may be easier to understand from an example: >vim
 
-      let g:vimtex_compiler_latexmk = {'build_dir': {-> expand("%:t:r")}}
+           let g:vimtex_compiler_latexmk = {'aux_dir': {-> expand("%:t:r")}}
 <
-    With the above setting, the `build_dir` is set to the base name of the
-    current file. E.g., If you do `vim test.tex`, the value becomes `test`.
+         With the above setting, the `aux_dir` is set to the base name of the
+         current file. E.g., If you do `vim test.tex`, the value becomes
+         `test`.
 
-    If `build_dir` is specified, then the specified build directory is created
-    if it does not exist.
+    The specified auxiliary directory is created if it does not exist.
+
+    Note 1: This option only works with `latexmk` version 4.27 and later.
+    Note 2: If `$aux_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
+            will have priority.
+    Note 3: If |$VIMTEX_OUTPUT_DIRECTORY| is defined, it will have the highest
+            priority.
+    Note 4: The `-emulate_aux` option will be automatically passed to
+            `latexmk` if this option is not empty.
+
+  out_dir ~
+    This option sets the directory for the compilation output files. It
+    corresponds to the `$out_dir` option in `latexmk`. If the path is
+    a relative path, then it is considered relative to the main project file.
+
+    The value of this option should be either:
+      1) a string that represents a path, or
+      2) a |Funcref|. The |Funcref| type makes it possible to specify
+         a dynamic `out_dir`. It may be easier to understand from an example: >vim
+
+           let g:vimtex_compiler_latexmk = {'out_dir': {-> expand("%:t:r")}}
+<
+         With the above setting, the `out_dir` is set to the base name of the
+         current file. E.g., If you do `vim test.tex`, the value becomes
+         `test`.
+
+    The specified output directory is created if it does not exist.
 
     Note 1: This option only works with `latexmk` version 4.27 and later.
     Note 2: If `$out_dir` is added to `.latexmkrc`, then the `.latexmkrc` setting
@@ -1116,7 +1143,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: >vim
 
     let g:vimtex_compiler_latexrun = {
-        \ 'build_dir' : '',
+        \ 'out_dir' : '',
         \ 'options' : [
         \   '-verbose-cmds',
         \   '--latex-args="-synctex=1"',
@@ -1126,8 +1153,8 @@ OPTIONS                                                        *vimtex-options*
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
-  build_dir ~
-    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
+  out_dir ~
+    See `out_dir` key of |g:vimtex_compiler_latexmk|.
 
   options ~
     This is a list of options that are passed to `latexrun`. The default
@@ -1163,7 +1190,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: >vim
 
     let g:vimtex_compiler_tectonic = {
-        \ 'build_dir' : '',
+        \ 'out_dir' : '',
         \ 'hooks' : [],
         \ 'options' : [
         \   '--keep-logs',
@@ -1174,8 +1201,8 @@ OPTIONS                                                        *vimtex-options*
   The default value shows which entries may be changed. Here the different
   keys are explained in more detail:
 
-  build_dir ~
-    Same as |g:vimtex_compiler_latexmk| / `build_dir`.
+  out_dir ~
+    See `out_dir` key of |g:vimtex_compiler_latexmk|.
 
   hooks ~
     Same as |g:vimtex_compiler_latexmk| / `hooks`.
@@ -1184,7 +1211,7 @@ OPTIONS                                                        *vimtex-options*
     This is a list of options that are passed to `tectonic`. The default
     options should work well for most people. For anyone who wishes to modify
     these, please note:
-    - Don't use `--outdir` or `-o` here. Use the `build_dir` option instead.
+    - Don't use `--outdir` or `-o` here. Use the `out_dir` option instead.
     - Without `--keep-logs` (or `--keep-intermediates` or `-k)`, you won't see
       errors/warnings in the quickfix list when compilations finish.
     - By default, `tectonic` cleans all auxiliary files (such as `.aux`,
@@ -3256,16 +3283,17 @@ OPTIONS                                                        *vimtex-options*
 
 *$VIMTEX_OUTPUT_DIRECTORY*
   This environment variable allows to specify the output directory of
-  auxiliary LaTeX files. If it exists and is a valid path, this path will be
-  used as the output directory (aka build directory). That is, it overrides
-  options such as |g:vimtex_compiler_latexmk| / `build_dir`. This has two main
-  use cases:
+  generated LaTeX files. If it exists and is a valid path, this path will be
+  used as the output directory. This has two main use cases:
 
-  1. It allows to use a custom build directory for different projects.
+  1. It allows to use a custom output directory for different projects.
   2. It allows to specify an output directory for projects where one uses
      compiler backends such as |vimtex-compiler-arara|. This makes it possible
      to make e.g. the |vimtex-view| feature to work as expected if output
      directories are used with arara.
+
+  Note: This will override `out_dir` (and `aux_dir`) of options like
+        |g:vimtex_compiler_latexmk| and |g:vimtex_compiler_latexrun|.
 
 ------------------------------------------------------------------------------
 COMMANDS                                                      *vimtex-commands*
