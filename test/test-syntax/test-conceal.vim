@@ -9,6 +9,12 @@ let g:vimtex_syntax_custom_cmds_with_concealed_delims = [
       \  'mathmode': 1,
       \  'cchar_open': '|',
       \  'cchar_close': '>'},
+      \ {'name': 'binom',
+      \  'mathmode': 1,
+      \  'nargs': 2,
+      \  'cchar_open': '(',
+      \  'cchar_mid': '|',
+      \  'cchar_close': ')'},
       \]
 
 EditConcealed test-conceal.tex

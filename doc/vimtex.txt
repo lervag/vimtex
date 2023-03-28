@@ -2575,9 +2575,10 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_syntax_custom_cmds_with_concealed_delims*
   This option works exactly as |g:vimtex_syntax_custom_cmds|, except it is
   used specifically to add conceals with custom replacement characters for
-  single-argument commands, e.g. >
+  single- and double-argument commands, e.g. >
 
-    \cmdname{argument}
+    \cmd1{argument}
+    \cmd2 {argument1} {argument2}
 <
   Each element in the list must be a dictionary with the following keys. Most
   of these keys are documented here: |g:vimtex_syntax_custom_cmds|. Only
@@ -2586,13 +2587,25 @@ OPTIONS                                                        *vimtex-options*
     name ~
       Default: Undefined (REQUIRED)
 
+    nargs ~
+      Default: 1
+      Specify whether the command has 1 or 2 arguments.
+
     cchar_open ~
-      Default: Undefined (REQUIRED)
-      Specify single letter replacement for the head (`\cmdname{`).
+      Default: Undefined
+      Specify single letter replacement for the head (`\cmdname{`). If left
+      undefined, the head is fully concealed.
+
+    cchar_mid ~
+      Default: Undefined
+      Note: Only relevant if `nargs` = 2
+      Specify single letter replacement for the mid (`}{`). If left
+      undefined, the mid is fully concealed.
 
     cchar_close ~
-      Default: Undefined (REQUIRED)
-      Specify single letter replacement for the tail (`}`).
+      Default: Undefined
+      Specify single letter replacement for the tail (`}`). If left
+      undefined, the tail is fully concealed.
 
     cmdre ~
       Default: Undefined
@@ -2609,15 +2622,28 @@ OPTIONS                                                        *vimtex-options*
     hlgroup ~
       Default: Undefined
 
-  The following example will add a custom conceal rule to `\ket{x}` so that it
-  will render as `|x>`. >vim
+  An example may be elucidating. Given the following configuration: >vim
 
     let g:vimtex_syntax_custom_cmds_with_concealed_delims = [
           \ {'name': 'ket',
           \  'mathmode': 1,
           \  'cchar_open': '|',
           \  'cchar_close': '>'},
+          \ {'name': 'binom',
+          \  'nargs': 2,
+          \  'mathmode': 1,
+          \  'cchar_open': '(',
+          \  'cchar_mid': '|',
+          \  'cchar_close': ')'},
           \]
+<
+  We should now see the following effect in a document: >latex
+
+    $\ket{x}$ and $\binom{n}{k}$
+
+    % will now look like this:
+
+    |x> and (n|k)
 <
   Default value: []
 
