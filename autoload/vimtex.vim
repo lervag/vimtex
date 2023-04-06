@@ -33,10 +33,39 @@ function! s:init_state() abort " {{{1
 endfunction
 
 " }}}1
+
 function! s:init_buffer() abort " {{{1
-  " This function configures settings for the buffer, which may be either of
-  " filetype "tex" or "bib". A lot of settings are shared, but some are
-  " different.
+  try
+    let l:disabled_modules = s:init_buffer_{&filetype}()
+  catch /E117/
+    let l:disabled_modules = []
+  endtry
+
+  " Define autocommands
+  augroup vimtex_buffers
+    autocmd! * <buffer>
+    autocmd BufFilePre  <buffer> call s:filename_changed_pre()
+    autocmd BufFilePost <buffer> call s:filename_changed_post()
+    autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
+    autocmd BufWipeout  <buffer> call s:buffer_deleted('wipe')
+  augroup END
+
+  " Initialize buffer settings for sub modules
+  call extend(l:disabled_modules, get(b:vimtex, 'disabled_modules', []))
+  for l:mod in filter(copy(s:modules),
+        \ 'index(l:disabled_modules, v:val) < 0')
+    try
+      call vimtex#{l:mod}#init_buffer()
+    catch /E117.*#init_/
+    catch /E127.*vimtex#profile#/
+    endtry
+  endfor
+endfunction
+
+" }}}1
+function! s:init_buffer_tex() abort " {{{1
+  setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
+  setlocal commentstring=\%\ %s
 
   for l:suf in [
         \ '.sty',
@@ -61,63 +90,69 @@ function! s:init_buffer() abort " {{{1
         \ ]
     execute 'set suffixes+=' . l:suf
   endfor
-  setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
-  setlocal commentstring=\%\ %s
+  setlocal suffixesadd=.tex,.sty,.cls
+  setlocal iskeyword+=:
+  setlocal includeexpr=vimtex#include#expr()
 
-  " Define autocommands
-  augroup vimtex_buffers
-    autocmd! * <buffer>
-    autocmd BufFilePre  <buffer> call s:filename_changed_pre()
-    autocmd BufFilePost <buffer> call s:filename_changed_post()
-    autocmd BufUnload   <buffer> call s:buffer_deleted('unload')
-    autocmd BufWipeout  <buffer> call s:buffer_deleted('wipe')
-  augroup END
+  let &l:include = g:vimtex#re#tex_include
+  let &l:define  = '\v\\%('
+        \ . '([egx]|mathchar|count|dimen|muskip|skip|toks)?def'
+        \ . '|font'
+        \ . '|(future)?let'
+        \ . '|new(count|dimen|skip|muskip|box|toks|read|write|fam|insert)'
+        \ . '|(re)?new(boolean|command|counter|environment'
+        \ .   '|font|if|length|savebox|theorem(style)?)'
+        \ . '|DeclareMathOperator'
+        \ . '|bibitem%(\[[^]]*\])?'
+        \ . ')'
 
-  " Get list of disabled modules from state object
-  let l:disabled_modules = copy(get(b:vimtex, 'disabled_modules', []))
-
-  " Apply some filetype specific settings
-  if &filetype ==# 'tex'
-    setlocal suffixesadd=.tex,.sty,.cls
-    setlocal iskeyword+=:
-    setlocal includeexpr=vimtex#include#expr()
-    let &l:include = g:vimtex#re#tex_include
-    let &l:define  = '\v\\%('
-          \ . '([egx]|mathchar|count|dimen|muskip|skip|toks)?def'
-          \ . '|font'
-          \ . '|(future)?let'
-          \ . '|new(count|dimen|skip|muskip|box|toks|read|write|fam|insert)'
-          \ . '|(re)?new(boolean|command|counter|environment'
-          \ .   '|font|if|length|savebox|theorem(style)?)'
-          \ . '|DeclareMathOperator'
-          \ . '|bibitem%(\[[^]]*\])?'
-          \ . ')'
-  elseif &filetype ==# 'bib'
-    setlocal suffixesadd=.tex,.bib
-
-    " Several additional modules should be disabled in bib files
-    let l:disabled_modules += [
-          \ 'fold', 'matchparen', 'format', 'doc', 'imaps', 'delim',
-          \ 'env', 'motion', 'complete',
-          \]
-
-    if g:vimtex_fold_bib_enabled
-      call vimtex#fold#bib#init()
-    endif
-  endif
-
-  " Initialize buffer settings for sub modules
-  for l:mod in filter(copy(s:modules),
-        \ 'index(l:disabled_modules, v:val) < 0')
-    try
-      call vimtex#{l:mod}#init_buffer()
-    catch /E117.*#init_/
-    catch /E127.*vimtex#profile#/
-    endtry
-  endfor
+  " Specify list of modules to disable
+  return []
 endfunction
 
 " }}}1
+function! s:init_buffer_bib() abort " {{{1
+  setlocal comments=sO:%\ -,mO:%\ \ ,eO:%%,:%
+  setlocal commentstring=\%\ %s
+
+  for l:suf in [
+        \ '.sty',
+        \ '.cls',
+        \ '.log',
+        \ '.aux',
+        \ '.bbl',
+        \ '.out',
+        \ '.blg',
+        \ '.brf',
+        \ '.cb',
+        \ '.dvi',
+        \ '.fdb_latexmk',
+        \ '.fls',
+        \ '.idx',
+        \ '.ilg',
+        \ '.ind',
+        \ '.inx',
+        \ '.pdf',
+        \ '.synctex.gz',
+        \ '.toc',
+        \ ]
+    execute 'set suffixes+=' . l:suf
+  endfor
+  setlocal suffixesadd=.tex,.bib
+
+  if g:vimtex_fold_bib_enabled
+    call vimtex#fold#bib#init()
+  endif
+
+  " Specify list of modules to disable
+  return [
+        \ 'fold', 'matchparen', 'format', 'doc', 'imaps', 'delim',
+        \ 'env', 'motion', 'complete',
+        \]
+endfunction
+
+" }}}1
+
 function! s:init_default_mappings() abort " {{{1
   if !g:vimtex_mappings_enabled | return | endif
 
