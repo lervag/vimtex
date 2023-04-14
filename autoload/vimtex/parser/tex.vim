@@ -53,8 +53,8 @@ function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
         \})
   let l:current = l:cache.get(a:file)
 
-  let l:time = localtime()
-  if l:time > l:current.time + 60
+  let l:time = min([localtime() - 60, getftime(a:file)])
+  if l:time > l:current.time
     let l:current.time = l:time
     let l:current.lines = s:parse_preamble(a:file, l:opts, [])
   endif
