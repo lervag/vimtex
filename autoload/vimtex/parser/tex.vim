@@ -49,7 +49,7 @@ function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
 
   let l:cache = vimtex#cache#open('parser_preamble', {
         \ 'persistent': v:false,
-        \ 'default': {'time': -1},
+        \ 'default': {'time': -2},
         \})
   let l:current = l:cache.get(a:file)
 
