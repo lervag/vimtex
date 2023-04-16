@@ -12,6 +12,9 @@ mappings do and how you might use them. You may want to scroll through this page
 while simultaneously looking through `:help vimtex-features`—the animations
 should nicely complement the plain-text documentation.
 
+You can find a description of how the GIFs were made [at the bottom of this
+page](#how-these-gifs-were-made).
+
 #### This page is community-maintained
 
 * This page is made possible only with help from the community.
@@ -53,6 +56,7 @@ should nicely complement the plain-text documentation.
   * [Toggling between inline and display math](#toggling-between-inline-and-display-math)
   * [Toggling delimiter modifiers](#toggling-delimiter-modifiers)
   * [Toggling fractions](#toggling-fractions)
+* [How these GIFs were made](#how-these-gifs-were-made)
 
 <!-- vim-markdown-toc -->
 
@@ -220,3 +224,34 @@ Use `tsf` to toggle between inline and `\frac{}{}` versions of fractions.
 
 ![`tsf`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsf.gif)
 
+## How these GIFs were made
+
+(Based on interest and discussion in issue
+[#2685](https://github.com/lervag/vimtex/issues/2685).)
+
+The basic toolkit is [Menyoki](https://github.com/orhun/menyoki) for
+recording the GIFs and [screenkey](https://gitlab.com/screenkey/screenkey) to
+display the keys being typed, all running on a Linux system using the X11
+window system.
+
+On top of this are some aesthetic details to make the GIFs look nicer,
+including:
+
+- [Goyo](https://github.com/junegunn/goyo.vim) to remove Vim peripherals
+  (status bar, line numbers, etc.) for a cleaner look
+- [Limelight](https://github.com/junegunn/limelight.vim) to draw focus to the
+  currently selected paragraph (and gray out the rest of the document)
+- Screen recording region (crop, basically) set via Menyoki to exactly capture
+  the terminal window (and not e.g. the rest of my desktop)
+- Enlarged terminal font for the duration of the GIF recording for better
+  readability
+- Vim and screenkey color schemes and fonts aligned for visual consistency.
+
+The aesthetic details and cropping are wrapped in shell scripts for
+repeatability across multiple GIF recordings—the original scripts and auxiliary
+files can be found in the GitHub repo
+[ejmastnak/ejmastnak.github.io](https://github.com/ejmastnak/ejmastnak.github.io/tree/main/tutorials/vim-latex/gifs),
+although they might be difficult to parse without additional context.
+
+Feel free to contact [@ejmastnak](https://github.com/ejmastnak) if you're
+interested in the details or recording similar GIFs.
