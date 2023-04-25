@@ -19,7 +19,7 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal autoindent
-setlocal indentexpr=VimtexIndent(v:lnum)
+setlocal indentexpr=VimtexIndentExpr()
 setlocal indentkeys=!^F,o,O,0(,0),],},\&,0=\\item\ ,0=\\item[,0=\\else,0=\\fi
 
 " Add standard closing math delimiters to indentkeys
@@ -29,6 +29,16 @@ for s:delim in [
 endfor
 
 
+function! VimtexIndentExpr() abort " {{{1
+  " This wrapper function is used because of rnoweb[0] that "misuses" the
+  " indentexpr and assumes it takes no arguments.
+  "
+  " [0]: /usr/share/nvim/runtime/indent/rnoweb.vim:21
+
+  return VimtexIndent(v:lnum)
+endfunction
+
+"}}}
 function! VimtexIndent(lnum) abort " {{{1
   let s:sw = shiftwidth()
 
