@@ -148,7 +148,7 @@ endfunction
 function! s:fix_paths_hbox_warning(qf, log, root, cache) abort " {{{1
   if a:qf.text !~# 'Underfull\|Overfull' | return v:false | endif
 
-  let l:index = match(a:log, '\V' . escape(a:qf.text, '\'))
+  let l:index = index(a:log, a:qf.text)
   if l:index < 0 | return v:false | endif
 
   " Check index cache first
