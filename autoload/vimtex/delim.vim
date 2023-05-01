@@ -573,25 +573,18 @@ function! s:get_delim(opts) abort " {{{1
     let l:cnum = 0
   endif
 
-  let l:result = {
-        \ 'type' : '',
-        \ 'lnum' : l:lnum,
-        \ 'cnum' : l:cnum,
-        \ 'match' : l:match,
-        \ 'remove' : function('s:delim_remove'),
-        \}
-
-  for l:type in s:types
-    if l:match =~# '^' . l:type.re
-      let l:result = extend(
-            \ l:type.parser(l:match, l:lnum, l:cnum,
-            \               a:opts.side, a:opts.type, a:opts.direction),
-            \ l:result, 'keep')
-      break
+  for l:parser in s:parsers
+    if l:parser.detect(l:match)
+      return l:parser.parse({
+            \ 'lnum' : l:lnum,
+            \ 'cnum' : l:cnum,
+            \ 'match' : l:match,
+            \ 'remove' : function('s:delim_remove'),
+            \}, a:opts)
     endif
   endfor
 
-  return empty(l:result.type) ? {} : l:result
+  return {}
 endfunction
 
 " }}}1
@@ -619,15 +612,27 @@ endfunction
 
 " }}}1
 
-function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
-  let result = {}
+let s:parser_env = {
+      \ 'type': 'env',
+      \ 're': {
+      \   'open' : '\m\\begin\s*{[^}]*}',
+      \   'close' : '\m\\end\s*{[^}]*}',
+      \ },
+      \}
+function! s:parser_env.detect(match) dict abort " {{{1
+  return a:match =~# '^\\\%(begin\|end\)\>'
+endfunction
 
-  let result.type = 'env'
-  let result.name = matchstr(a:match, '{\zs[^}*]*\ze\*\?}')
-  let result.starred = match(a:match, '\*}$') > 0
-  let result.side = a:match =~# '\\begin' ? 'open' : 'close'
+" }}}1
+function! s:parser_env.parse(ctx, ...) dict abort " {{{1
+  let result = extend(deepcopy(self), a:ctx, 'keep')
+  unlet result.detect
+  unlet result.parse
+
+  let result.name = matchstr(a:ctx.match, '{\zs[^}*]*\ze\*\?}')
+  let result.starred = match(a:ctx.match, '\*}$') > 0
+  let result.side = a:ctx.match =~# '\\begin' ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
-  let result.get_matching = function('s:get_matching_env')
 
   let result.gms_flags = result.is_open ? 'nW' : 'bnW'
   let result.gms_stopline = result.is_open
@@ -635,17 +640,12 @@ function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
         \ : max([1, line('.') - g:vimtex_delim_stopline])
 
   if result.is_open
-    let result.env_cmd = vimtex#cmd#get_at(a:lnum, a:cnum)
+    let result.env_cmd = vimtex#cmd#get_at(a:ctx.lnum, a:ctx.cnum)
   endif
 
   let result.corr = result.is_open
-        \ ? substitute(a:match, 'begin', 'end', '')
-        \ : substitute(a:match, 'end', 'begin', '')
-
-  let result.re = {
-        \ 'open' : '\m\\begin\s*{[^}]*}',
-        \ 'close' : '\m\\end\s*{[^}]*}',
-        \}
+        \ ? substitute(a:ctx.match, 'begin', 'end', '')
+        \ : substitute(a:ctx.match, 'end', 'begin', '')
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
   let result.re.corr = result.is_open ? result.re.close : result.re.open
@@ -654,7 +654,7 @@ function! s:parser_env(match, lnum, cnum, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_env() dict abort " {{{1
+function! s:parser_env.get_matching() dict abort " {{{1
   try
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
           \ self.gms_flags, '', 0, s:get_timeout())
@@ -669,7 +669,15 @@ endfunction
 
 " }}}1
 
-function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
+let s:parser_tex = {
+      \ 'type': 'env',
+      \}
+function! s:parser_tex.detect(x) dict abort " {{{1
+  return a:x =~# '^\$\$\?'
+endfunction
+
+" }}}1
+function! s:parser_tex.parse(ctx, opts) dict abort " {{{1
   "
   " TeX shorthand are these
   "
@@ -680,27 +688,28 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
   " a slight problem. However, we can utilize the syntax information to parse
   " the side.
   "
-  let result = {}
-  let result.type = 'env'
-  let result.corr = a:match
+  let result = extend(deepcopy(self), a:ctx, 'keep')
+  unlet result.detect
+  unlet result.parse
+
+  let result.corr = a:ctx.match
   let result.re = {
-        \ 'this'  : '\m' . escape(a:match, '$'),
-        \ 'corr'  : '\m' . escape(a:match, '$'),
-        \ 'open'  : '\m' . escape(a:match, '$'),
-        \ 'close' : '\m' . escape(a:match, '$'),
+        \ 'this'  : '\m' . escape(a:ctx.match, '$'),
+        \ 'corr'  : '\m' . escape(a:ctx.match, '$'),
+        \ 'open'  : '\m' . escape(a:ctx.match, '$'),
+        \ 'close' : '\m' . escape(a:ctx.match, '$'),
         \}
   let result.side = vimtex#syntax#in(
-        \   (a:match ==# '$' ? 'texMathZoneTI' : 'texMathZoneTD'),
-        \   a:lnum, a:cnum+1)
+        \   (a:ctx.match ==# '$' ? 'texMathZoneTI' : 'texMathZoneTD'),
+        \   a:ctx.lnum, a:ctx.cnum+1)
         \ ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
-  let result.get_matching = function('s:get_matching_tex')
   let result.gms_flags = result.is_open ? 'nW' : 'bnW'
   let result.gms_stopline = result.is_open
         \ ? line('.') + g:vimtex_delim_stopline
         \ : max([1, line('.') - g:vimtex_delim_stopline])
 
-  if (a:side !=# 'both') && (a:side !=# result.side)
+  if (a:opts.side !=# 'both') && (a:opts.side !=# result.side)
     "
     " The current match ($ or $$) is not the correct side, so we must
     " continue the search recursively. We do this by changing the cursor
@@ -710,16 +719,12 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
     let l:save_pos = vimtex#pos#get_cursor()
 
     " Move the cursor
-    call vimtex#pos#set_cursor(a:direction ==# 'next'
-          \ ? vimtex#pos#next(a:lnum, a:cnum)
-          \ : vimtex#pos#prev(a:lnum, a:cnum))
+    call vimtex#pos#set_cursor(a:opts.direction ==# 'next'
+          \ ? vimtex#pos#next(a:ctx.lnum, a:ctx.cnum)
+          \ : vimtex#pos#prev(a:ctx.lnum, a:ctx.cnum))
 
     " Get new result
-    let result = s:get_delim({
-          \ 'direction' : a:direction,
-          \ 'type' : a:type,
-          \ 'side' : a:side,
-          \})
+    let result = s:get_delim(a:opts)
 
     " Restore the cursor
     call vimtex#pos#set_cursor(l:save_pos)
@@ -729,7 +734,7 @@ function! s:parser_tex(match, lnum, cnum, side, type, direction) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_tex() dict abort " {{{1
+function! s:parser_tex.get_matching() dict abort " {{{1
   let [lnum, cnum] = searchpos(self.re.corr, self.gms_flags, self.gms_stopline)
 
   let match = matchstr(getline(lnum), '^' . self.re.corr, cnum-1)
@@ -738,27 +743,35 @@ endfunction
 
 " }}}1
 
-function! s:parser_latex(match, lnum, cnum, ...) abort " {{{1
-  let result = {}
+let s:parser_latex = {
+      \ 'type': 'env',
+      \}
+function! s:parser_latex.detect(match) dict abort " {{{1
+  return a:match =~# '^\\\%((\|)\|\[\|\]\)'
+endfunction
 
-  let result.type = 'env'
-  let result.side = a:match =~# '\\(\|\\\[' ? 'open' : 'close'
+" }}}1
+function! s:parser_latex.parse(ctx, ...) dict abort " {{{1
+  let result = extend(deepcopy(self), a:ctx, 'keep')
+  unlet result.detect
+  unlet result.parse
+
+  let result.side = a:ctx.match =~# '\\(\|\\\[' ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
-  let result.get_matching = function('s:get_matching_latex')
   let result.gms_flags = result.is_open ? 'nW' : 'bnW'
   let result.gms_stopline = result.is_open
         \ ? line('.') + g:vimtex_delim_stopline
         \ : max([1, line('.') - g:vimtex_delim_stopline])
 
   let result.corr = result.is_open
-        \ ? substitute(substitute(a:match, '\[', ']', ''), '(', ')', '')
-        \ : substitute(substitute(a:match, '\]', '[', ''), ')', '(', '')
+        \ ? substitute(substitute(a:ctx.match, '\[', ']', ''), '(', ')', '')
+        \ : substitute(substitute(a:ctx.match, '\]', '[', ''), ')', '(', '')
 
   let result.re = {
         \ 'open'  : g:vimtex#re#not_bslash
-        \   . (a:match =~# '\\(\|\\)' ? '\m\\(' : '\m\\\['),
+        \   . (a:ctx.match =~# '\\(\|\\)' ? '\m\\(' : '\m\\\['),
         \ 'close' : g:vimtex#re#not_bslash
-        \   . (a:match =~# '\\(\|\\)' ? '\m\\)' : '\m\\\]'),
+        \   . (a:ctx.match =~# '\\(\|\\)' ? '\m\\)' : '\m\\\]'),
         \}
 
   let result.re.this = result.is_open ? result.re.open  : result.re.close
@@ -768,7 +781,7 @@ function! s:parser_latex(match, lnum, cnum, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_latex() dict abort " {{{1
+function! s:parser_latex.get_matching() dict abort " {{{1
   let [lnum, cnum] = searchpos(self.re.corr, self.gms_flags, self.gms_stopline)
 
   let match = matchstr(getline(lnum), '^' . self.re.corr, cnum-1)
@@ -777,13 +790,22 @@ endfunction
 
 " }}}1
 
-function! s:parser_delim_unmatched(match, lnum, cnum, ...) abort " {{{1
-  let result = {}
-  let result.type = 'delim'
+let s:parser_delim_unmatched = {
+      \ 'type': 'delim',
+      \}
+function! s:parser_delim_unmatched.detect(match) dict abort " {{{1
+  return a:match =~# '^\\\%(left\|right\)\s*\.'
+endfunction
+
+" }}}1
+function! s:parser_delim_unmatched.parse(ctx, ...) dict abort " {{{1
+  let result = extend(deepcopy(self), a:ctx, 'keep')
+  unlet result.detect
+  unlet result.parse
+
   let result.side =
-        \ a:match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
+        \ a:ctx.match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
-  let result.get_matching = function('s:get_matching_delim_unmatched')
   let result.gms_flags = result.is_open ? 'nW' : 'bnW'
   let result.gms_stopline = result.is_open
         \ ? line('.') + g:vimtex_delim_stopline
@@ -819,7 +841,7 @@ function! s:parser_delim_unmatched(match, lnum, cnum, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_delim_unmatched() dict abort " {{{1
+function! s:parser_delim_unmatched.get_matching() dict abort " {{{1
   let tries = 0
   let misses = []
   while 1
@@ -837,12 +859,11 @@ function! s:get_matching_delim_unmatched() dict abort " {{{1
     let match = matchstr(getline(lnum), '^' . self.re.corr, cnum-1)
     if lnum == 0 | break | endif
 
-    let cand = vimtex#delim#get_matching(extend({
-          \ 'type' : '',
+    let cand = vimtex#delim#get_matching(s:parser_delim.parse({
           \ 'lnum' : lnum,
           \ 'cnum' : cnum,
           \ 'match' : match,
-          \}, s:parser_delim(match, lnum, cnum)))
+          \}))
 
     if !empty(cand) && [self.lnum, self.cnum] == [cand.lnum, cand.cnum]
       return [match, lnum, cnum]
@@ -858,22 +879,31 @@ endfunction
 
 " }}}1
 
-function! s:parser_delim(match, lnum, cnum, ...) abort " {{{1
-  let result = {}
-  let result.type = 'delim'
+let s:parser_delim = {
+      \ 'type': 'delim',
+      \}
+function! s:parser_delim.detect(match) dict abort " {{{1
+  return a:match =~# '^' . g:vimtex#delim#re.delim_all.both
+endfunction
+
+" }}}1
+function! s:parser_delim.parse(ctx, ...) dict abort " {{{1
+  let result = extend(deepcopy(self), a:ctx, 'keep')
+  unlet result.detect
+  unlet result.parse
+
   let result.side =
-        \ a:match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
+        \ a:ctx.match =~# g:vimtex#delim#re.delim_all.open ? 'open' : 'close'
   let result.is_open = result.side ==# 'open'
-  let result.get_matching = function('s:get_matching_delim')
   let result.gms_flags = result.is_open ? 'nW' : 'bnW'
   let result.gms_stopline = result.is_open
         \ ? line('.') + g:vimtex_delim_stopline
         \ : max([1, line('.') - g:vimtex_delim_stopline])
 
   " Find corresponding delimiter and the regexps
-  if a:match =~# '^' . g:vimtex#delim#re.mods.both
-    let m1 = matchstr(a:match, '^' . g:vimtex#delim#re.mods.both)
-    let d1 = substitute(strpart(a:match, len(m1)), '^\s*', '', '')
+  if a:ctx.match =~# '^' . g:vimtex#delim#re.mods.both
+    let m1 = matchstr(a:ctx.match, '^' . g:vimtex#delim#re.mods.both)
+    let d1 = substitute(strpart(a:ctx.match, len(m1)), '^\s*', '', '')
     let s1 = !result.is_open
     let re1 = s:get_re_for_delim(m1, s1, 'mods')
           \  . '\s*' . s:get_re_for_delim(d1, s1, 'delim_math')
@@ -886,11 +916,11 @@ function! s:parser_delim(match, lnum, cnum, ...) abort " {{{1
           \   ? '\%(' . s:get_re_for_delim(d2, s2, 'delim_math') . '\|\.\)'
           \   : s:get_re_for_delim(d2, s2, 'delim_math'))
   else
-    let d1 = a:match
+    let d1 = a:ctx.match
     let m1 = ''
-    let re1 = s:get_re_for_delim(a:match, !result.is_open)
+    let re1 = s:get_re_for_delim(a:ctx.match, !result.is_open)
 
-    let d2 = s:get_corr_delimiter(a:match)
+    let d2 = s:get_corr_delimiter(a:ctx.match)
     let m2 = ''
     let re2 = s:get_re_for_delim(d2, result.is_open)
   endif
@@ -911,7 +941,7 @@ function! s:parser_delim(match, lnum, cnum, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! s:get_matching_delim() dict abort " {{{1
+function! s:parser_delim.get_matching() dict abort " {{{1
   try
     let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
           \ self.gms_flags,
@@ -969,6 +999,15 @@ function! s:get_corr_delimiter(delim, ...) abort " {{{1
 endfunction
 
 " }}}1
+
+" Initialize list of delim type parsers
+let s:parsers = [
+      \ s:parser_env,
+      \ s:parser_tex,
+      \ s:parser_latex,
+      \ s:parser_delim_unmatched,
+      \ s:parser_delim,
+      \]
 
 
 function! s:init_delim_lists() abort " {{{1
@@ -1139,31 +1178,6 @@ endfunction
 
   " }}}1
 
-
 " Initialize lists of delimiter pairs and regexes
 let g:vimtex#delim#lists = s:init_delim_lists()
 let g:vimtex#delim#re = s:init_delim_regexes()
-
-" Initialize list of delim types
-let s:types = [
-      \ {
-      \   're' : '\\\%(begin\|end\)\>',
-      \   'parser' : function('s:parser_env'),
-      \ },
-      \ {
-      \   're' : '\$\$\?',
-      \   'parser' : function('s:parser_tex'),
-      \ },
-      \ {
-      \   're' : '\\\%((\|)\|\[\|\]\)',
-      \   'parser' : function('s:parser_latex'),
-      \ },
-      \ {
-      \   're' : '\\\%(left\|right\)\s*\.',
-      \   'parser' : function('s:parser_delim_unmatched'),
-      \ },
-      \ {
-      \   're' : g:vimtex#delim#re.delim_all.both,
-      \   'parser' : function('s:parser_delim'),
-      \ },
-      \]
