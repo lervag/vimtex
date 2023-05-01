@@ -673,7 +673,7 @@ let s:parser_tex = {
       \ 'type': 'env',
       \}
 function! s:parser_tex.detect(x) dict abort " {{{1
-  return a:x =~# '^\$\$\?'
+  return a:x =~# '^\$\$\?' && !vimtex#syntax#in('texComment')
 endfunction
 
 " }}}1
