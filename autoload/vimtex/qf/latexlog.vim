@@ -117,6 +117,7 @@ endfunction
 function! s:qf.fix_paths(log) abort dict " {{{1
   let l:qflist = getqflist()
   let l:lines = readfile(a:log)
+  let l:nlines = len(l:lines)
   let l:hbox_cache = {'index': {}, 'paths': {}}
 
   for l:qf in l:qflist
@@ -131,8 +132,11 @@ function! s:qf.fix_paths(log) abort dict " {{{1
       let l:qf.bufnr = l:bufnr_main
     endif
 
-    " Try to parse the filename from logfile for certain errors
-    if s:fix_paths_hbox_warning(l:qf, l:lines, self.root, l:hbox_cache)
+    " Try to parse the filename from logfile for certain errors, except for
+    " large log files where this makes for bad UI because it locks Vim while
+    " waiting for this parsing to finish.
+    if l:nlines < 10000
+          \ && s:fix_paths_hbox_warning(l:qf, l:lines, self.root, l:hbox_cache)
       continue
     endif
 
