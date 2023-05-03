@@ -19,7 +19,8 @@ let s:is_loading = 1
 call vimtex#options#init()
 
 " Load core syntax and highlighting rules (does not depend on VimTeX state)
-call vimtex#syntax#core#init()
+call vimtex#syntax#core#init_options()
+call vimtex#syntax#core#init_rules()
 call vimtex#syntax#core#init_highlights()
 
 " Initialize buffer local syntax state

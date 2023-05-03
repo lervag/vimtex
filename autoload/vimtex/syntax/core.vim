@@ -7,13 +7,7 @@
 " This script has a lot of unicode characters (for conceals)
 scriptencoding utf-8
 
-function! vimtex#syntax#core#init() abort " {{{1
-  syntax spell toplevel
-
-  syntax sync maxlines=500
-  syntax sync minlines=50
-  syntax iskeyword 48-57,a-z,A-Z,192-255
-
+function! vimtex#syntax#core#init_rules() abort " {{{1
   " {{{2 Define main syntax clusters
 
   syntax cluster texClusterOpt contains=
@@ -707,6 +701,18 @@ function! vimtex#syntax#core#init_custom() abort " {{{1
   for l:item in g:vimtex_syntax_custom_cmds_with_concealed_delims
     call vimtex#syntax#core#new_cmd_with_concealed_delims(l:item)
   endfor
+endfunction
+
+" }}}1
+function! vimtex#syntax#core#init_options() abort " {{{1
+  " These options are enforced initially, but also after loading syntax
+  " packages that may have loaded nested syntaxes that change these options.
+
+  syntax foldlevel start
+  syntax spell toplevel
+  syntax iskeyword 48-57,a-z,A-Z,192-255
+  syntax sync maxlines=500
+  syntax sync minlines=50
 endfunction
 
 " }}}1

@@ -47,6 +47,9 @@ function! s:include(cluster, name) abort " {{{1
   catch /E117/
   endtry
 
+  " Reset syntax options to ensure options are not overridden by external 
+  call vimtex#syntax#core#init_options()
+
   return 1
 endfunction
 
