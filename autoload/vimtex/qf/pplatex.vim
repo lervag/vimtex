@@ -43,6 +43,11 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%W**\ Warning\ in\ %f\\,\ Line\ %l:%m
   setlocal errorformat+=%I**\ BadBox\ \ in\ %f\\,\ Line\ %l:%m
 
+  " Start of new items only line number, message on next line(s).
+  setlocal errorformat+=%E**\ Error\ \ \\,\ Line\ %l:%m
+  setlocal errorformat+=%W**\ Warning\\,\ Line\ %l:%m
+  setlocal errorformat+=%I**\ BadBox\ \\,\ Line\ %l:%m
+
   " Start of items with with file, line and message on the same line. There are
   " no BadBoxes reported this way.
   setlocal errorformat+=%E**\ Error\ \ \ in\ %f\\,\ Line\ %l:%m
@@ -60,7 +65,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   " Undefined reference warnings
   setlocal errorformat+=%W**\ Warning:\ %m\ on\ input\ line\ %#%l.
-  setlocal errorformat+=%W**\ Warning:\ 
+  setlocal errorformat+=%W**\ Warning:\ %m
 
   " Some errors are difficult even for pplatex
   setlocal errorformat+=%E**\ Error\ \ :%m
