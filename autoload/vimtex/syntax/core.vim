@@ -708,11 +708,17 @@ function! vimtex#syntax#core#init_options() abort " {{{1
   " These options are enforced initially, but also after loading syntax
   " packages that may have loaded nested syntaxes that change these options.
 
-  syntax foldlevel start
   syntax spell toplevel
   syntax iskeyword 48-57,a-z,A-Z,192-255
   syntax sync maxlines=500
   syntax sync minlines=50
+
+  " Enable syntax foldlevel, but since it was introduced in Vim patch 8.2.0865
+  " we must protect users with older Vim versions.
+  try
+    syntax xxfoldlevel start
+  catch /E410:/
+  endtry
 endfunction
 
 " }}}1
