@@ -362,6 +362,10 @@ function! vimtex#options#init() abort " {{{1
         \   'java' : [
         \     'javaError',
         \   ],
+        \   'lua' : [
+        \     'luaParen',
+        \     'luaParenError',
+        \   ],
         \   'markdown' : [
         \     'mkdNonListItemBlock',
         \   ],
