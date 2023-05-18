@@ -220,6 +220,10 @@ function! s:cache_persistent.write(...) dict abort " {{{1
   let l:modified = self.modified || a:0 > 0
   if !l:modified || empty(self.data) | return | endif
 
+  if !self.__validated
+    call self.validate()
+  endif
+
   call writefile([json_encode(self.data)], self.path)
   let self.ftime = getftime(self.path)
   let self.modified = 0
