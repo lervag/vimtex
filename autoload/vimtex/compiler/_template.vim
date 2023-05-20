@@ -128,7 +128,7 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
-  let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log']
+  let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log', 'xdv']
   if a:full
     call extend(l:files, ['pdf'])
   endif
