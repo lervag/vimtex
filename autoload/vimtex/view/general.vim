@@ -59,7 +59,9 @@ function! s:viewer._start(file) dict abort " {{{1
 
   " Start the view process
   " NB: Use vimtex#jobs#start to ensure it runs in the background
-  let self.job = vimtex#jobs#start(l:cmd, {'detached': v:true})
+  let self.job = vimtex#jobs#start(l:cmd, {
+        \ 'detached': vimtex#util#get_os() !=# 'win'
+        \})
 endfunction
 
 " }}}1
