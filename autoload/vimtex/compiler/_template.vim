@@ -128,15 +128,15 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
-  let l:files = ['synctex.gz', 'toc', 'out', 'aux', 'log', 'xdv']
+  let l:extensions = ['synctex.gz', 'toc', 'out', 'aux', 'log', 'xdv', 'fls']
   if a:full
-    call extend(l:files, ['pdf'])
+    call extend(l:extensions, ['pdf'])
   endif
 
-  call map(l:files, {_, x -> printf('%s/%s.%s',
-        \ self.build_dir, fnamemodify(self.state.tex, ':t:r:S'), x)})
-
-  call vimtex#jobs#run('rm -f ' . join(l:files), {'cwd': self.state.root})
+  call map(l:extensions, { _, x -> self.get_file(x) })
+  for l:file in filter(l:extensions, { _, x -> !empty(x) })
+    call delete(l:file)
+  endfor
 endfunction
 
 " }}}1
