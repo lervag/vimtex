@@ -943,7 +943,17 @@ OPTIONS                                                        *vimtex-options*
   Default: 0
 
 *g:vimtex_compiler_method*
-  Set the compiler method. Available choices are:
+  Set the compiler method. There are two variants of setting this option:
+
+    i)  explicity as a string, or
+    ii) dynamically through a function.
+
+  For the latter variant, the option must be specified as a |Funcref| (only
+  possibly with Lua in Neovim) or the name of a function. The function takes
+  a single string argument (the path to the main TeX file) and must return the
+  desired method as a string.
+
+  The available compiler method choices are:
 
     Value      Documentation              Configuration ~
     `latexmk`    |vimtex-compiler-latexmk|    |g:vimtex_compiler_latexmk|
@@ -952,6 +962,24 @@ OPTIONS                                                        *vimtex-options*
     `arara`      |vimtex-compiler-arara|      |g:vimtex_compiler_arara|
     `generic`    |vimtex-compiler-generic|    |g:vimtex_compiler_generic|
 
+  Using a function allows a lot of flexibility in the choice of compiler
+  method. For instance, one could use `arara` for files that have `arara`
+  specifications at the top and fall back to `latexmk` for other files: >vim
+
+    function! SetCompilerMethod(mainfile)
+      if filereadable(a:mainfile)
+        for line in readfile(a:mainfile, '', 5)
+          if line =~# '^%\s*arara'
+            return 'arara'
+          endif
+        endfor
+      endif
+
+      return 'latexmk'
+    endfunction
+
+    let g:vimtex_compiler_method = 'SetCompilerMethod'
+<
   Default value: `'latexmk'`
 
 *g:vimtex_compiler_latexmk*

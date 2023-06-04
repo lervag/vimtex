@@ -312,24 +312,29 @@ endfunction
 
 
 function! s:init_compiler(options) abort " {{{1
+  if type(g:vimtex_compiler_method) == v:t_func
+        \ || exists('*' . g:vimtex_compiler_method)
+    let l:method = call(g:vimtex_compiler_method, [a:options.state.tex])
+  else
+    let l:method = g:vimtex_compiler_method
+  endif
+
   if index([
         \ 'arara',
         \ 'generic',
         \ 'latexmk',
         \ 'latexrun',
         \ 'tectonic',
-        \], g:vimtex_compiler_method) < 0
-    call vimtex#log#error(
-          \ 'Error! Invalid g:vimtex_compiler_method: '
-          \ . g:vimtex_compiler_method)
-    let g:vimtex_compiler_method = 'latexmk'
+        \], l:method) < 0
+    call vimtex#log#error('Error! Invalid compiler method: ' . l:method)
+    let l:method = 'latexmk'
   endif
 
   let l:options =
-        \ get(g:, 'vimtex_compiler_' . g:vimtex_compiler_method, {})
+        \ get(g:, 'vimtex_compiler_' . l:method, {})
   let l:options = extend(deepcopy(l:options), a:options)
   let l:compiler
-        \ = vimtex#compiler#{g:vimtex_compiler_method}#init(l:options)
+        \ = vimtex#compiler#{l:method}#init(l:options)
   return l:compiler
 endfunction
 
