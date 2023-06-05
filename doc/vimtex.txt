@@ -943,17 +943,14 @@ OPTIONS                                                        *vimtex-options*
   Default: 0
 
 *g:vimtex_compiler_method*
-  Set the compiler method. There are two variants of setting this option:
+  This option sets the compiler method. There are two ways to configure this
+  option:
 
-    i)  explicity as a string, or
-    ii) dynamically through a function.
+    i)  Explicity as a string.
+    ii) Dynamically through a function.
 
-  For the latter variant, the option must be specified as a |Funcref| (only
-  possibly with Lua in Neovim) or the name of a function. The function takes
-  a single string argument (the path to the main TeX file) and must return the
-  desired method as a string.
-
-  The available compiler method choices are:
+  In the first variant, you can choose from the following list of compiler
+  methods:
 
     Value      Documentation              Configuration ~
     `latexmk`    |vimtex-compiler-latexmk|    |g:vimtex_compiler_latexmk|
@@ -961,6 +958,12 @@ OPTIONS                                                        *vimtex-options*
     `tectonic`   |vimtex-compiler-tectonic|   |g:vimtex_compiler_tectonic|
     `arara`      |vimtex-compiler-arara|      |g:vimtex_compiler_arara|
     `generic`    |vimtex-compiler-generic|    |g:vimtex_compiler_generic|
+
+  In the second variant, the option must be specified as the name of
+  a function or a |Funcref|. Using a |Funcref| is only possible with Lua in
+  Neovim. The function is passed the path to the main TeX file as a single
+  string argument and must return the desired method as a string. The method
+  must be one from the above list of available methods.
 
   Using a function allows a lot of flexibility in the choice of compiler
   method. For instance, one could use `arara` for files that have `arara`
