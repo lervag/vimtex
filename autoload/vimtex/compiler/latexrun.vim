@@ -30,7 +30,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
   return 'latexrun ' . join(self.options)
         \ . ' --latex-cmd ' . self.get_engine()
         \ . ' -O '
-        \ . (empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
+        \ . (empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
         \ . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 
@@ -38,7 +38,7 @@ endfunction
 
 function! s:compiler.clean(...) abort dict " {{{1
   let l:cmd = printf('latexrun --clean-all -O %s',
-        \ empty(self.build_dir) ? '.' : fnameescape(self.build_dir))
+        \ empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
   call vimtex#jobs#run(l:cmd, {'cwd': self.state.root})
 endfunction
 

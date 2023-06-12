@@ -27,7 +27,7 @@ function! s:compiler.__check_requirements() abort dict " {{{1
   for l:opt in self.options
     if l:opt =~# '^-\%(o\|-outdir\)'
       call vimtex#log#warning("Don't use --outdir or -o in compiler options,"
-            \ . ' use build_dir instead, see :help g:vimtex_compiler_tectonic'
+            \ . ' use out_dir instead, see :help g:vimtex_compiler_tectonic'
             \ . ' for more details')
       break
     endif
@@ -36,8 +36,8 @@ endfunction
 
 " }}}1
 function! s:compiler.__build_cmd() abort dict " {{{1
-  let l:outdir = !empty(self.build_dir)
-        \ ? self.build_dir
+  let l:outdir = !empty(self.out_dir)
+        \ ? self.out_dir
         \ : fnamemodify(self.state.tex, ':p:h')
 
   return 'tectonic ' . join(self.options)

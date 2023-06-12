@@ -73,15 +73,15 @@ endfunction
 " }}}1
 function! s:qf.get_db_files() abort " {{{1
   if empty(self.db_files)
-    let l:build_dir = fnamemodify(
+    let l:out_dir = fnamemodify(
           \ b:vimtex.compiler.get_file('log'), ':.:h') . '/'
     for l:file in map(
           \ filter(readfile(self.file), 'v:val =~# ''Database file #\d:'''),
           \ 'matchstr(v:val, '': \zs.*'')')
       if filereadable(l:file)
         call add(self.db_files, l:file)
-      elseif filereadable(l:build_dir . l:file)
-        call add(self.db_files, l:build_dir . l:file)
+      elseif filereadable(l:out_dir . l:file)
+        call add(self.db_files, l:out_dir . l:file)
       endif
     endfor
   endif
