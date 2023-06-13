@@ -21,22 +21,22 @@ call Test('fls', 'out/test.fls')
 call Test('log', 'out/test.log')
 call Test('blg', 'out/test.blg')
 
-let g:vimtex_compiler_latexmk = {'aux_dir': 'aux'}
+let g:vimtex_compiler_latexmk = {'aux_dir': 'auxfiles'}
 call Test('pdf', 'test.pdf')
 call Test('fls', 'test.fls')
-call Test('aux', 'aux/test.aux')
-call Test('log', 'aux/test.log')
-call Test('blg', 'aux/test.blg')
+call Test('aux', 'auxfiles/test.aux')
+call Test('log', 'auxfiles/test.log')
+call Test('blg', 'auxfiles/test.blg')
 
 let g:vimtex_compiler_latexmk = {
       \ 'out_dir': 'out',
-      \ 'aux_dir': 'aux'
+      \ 'aux_dir': 'auxfiles'
       \}
 call Test('pdf', 'out/test.pdf')
 call Test('fls', 'out/test.fls')
-call Test('aux', 'aux/test.aux')
-call Test('log', 'aux/test.log')
-call Test('blg', 'aux/test.blg')
+call Test('aux', 'auxfiles/test.aux')
+call Test('log', 'auxfiles/test.log')
+call Test('blg', 'auxfiles/test.blg')
 
 call vimtex#log#set_silent()
 let $VIMTEX_OUTPUT_DIRECTORY = 'out'
