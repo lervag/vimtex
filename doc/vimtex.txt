@@ -6082,10 +6082,20 @@ A: Yes. But there are some "gotchas":
    * VimTeX does not work well with the 'shell' setting set to Windows
      PowerShell. It is therefore recommended to use the default 'shell'
      settings. See [2] for more information.
+   * |:VimtexInfo| might fail on the first attempt to run because Windows
+     doesn't natively support UTF-8. This support can be enabled by [3]:
+     - navigating to `Control Panel/Clock and Region/Region`,
+     - going to the `Administrative` tab and clicking on the
+       `Change system locale` button,
+     - checking the box for `Use Unicode UTF-8 for worldwide language support`.
+     Note that this Windows feature is still in Beta and could cause side
+     effects on other programs. Use it with care and revert the process if you
+     encounter more trouble.
 
    [0]: https://strawberryperl.com/
    [1]: https://www.rapidee.com/en/path-variable
    [2]: https://github.com/lervag/vimtex/issues/1507
+   [3]: https://github.com/lervag/vimtex/issues/2671
 
 ------------------------------------------------------------------------------
                                                             *vimtex-faq-neovim*
