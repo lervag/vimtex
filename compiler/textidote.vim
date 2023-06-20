@@ -40,8 +40,7 @@ let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
       \ . ' --no-color --output singleline --check '
       \ . s:get_textidote_lang(s:language) . ' %:S'
 
-setlocal errorformat=
-setlocal errorformat+=%f(L%lC%c-L%\\d%\\+C%\\d%\\+):\ %m
+setlocal errorformat=%f(L%lC%c-L%\\d%\\+C%\\d%\\+):\ %m
 setlocal errorformat+=%-G%.%#
 
 silent CompilerSet makeprg
