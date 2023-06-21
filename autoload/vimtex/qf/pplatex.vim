@@ -65,7 +65,9 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   " Undefined reference warnings
   setlocal errorformat+=%W**\ Warning:\ %m\ on\ input\ line\ %#%l.
+  setlocal errorformat+=%W**\ Warning:\ \ %m
   setlocal errorformat+=%W**\ Warning:\ %m
+  setlocal errorformat+=%W**\ Warning:\ 
 
   " Some errors are difficult even for pplatex
   setlocal errorformat+=%E**\ Error\ \ :%m
