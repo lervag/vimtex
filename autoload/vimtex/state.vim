@@ -511,12 +511,17 @@ function! s:file_is_main(file) abort " {{{1
 endfunction
 
 " }}}1
-function! s:file_reaches_current(file) abort " {{{1
+function! s:file_reaches_current(file, ...) abort " {{{1
+  let l:visited = a:0 > 0 ? a:1 : []
+
   " Note: This function assumes that the input a:file is an absolute path
   if !filereadable(a:file) | return 0 | endif
 
+  if index(l:visited, a:file) >= 0 | return 0 | endif
+  call add(l:visited, a:file)
+
   for l:line in filter(readfile(a:file), 'v:val =~# g:vimtex#re#tex_input')
-    let l:file = matchstr(l:line, g:vimtex#re#tex_input . '\zs\f+')
+    let l:file = vimtex#parser#tex#input_parser(l:line, a:file, '')
     if empty(l:file) | continue | endif
 
     if !vimtex#paths#is_abs(l:file)
@@ -527,8 +532,7 @@ function! s:file_reaches_current(file) abort " {{{1
       let l:file .= '.tex'
     endif
 
-    if expand('%:p') ==# l:file
-          \ || s:file_reaches_current(l:file)
+    if expand('%:p') ==# l:file || s:file_reaches_current(l:file, l:visited)
       return 1
     endif
   endfor
