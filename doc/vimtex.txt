@@ -4299,7 +4299,7 @@ The following simple configuration should work well with VimTeX: >vim
   augroup END
 <
 For more lenient, omni-complete-like, filtering of completion candidates,
-use the following setup (in your init.vim or a personal ftplugin) instead: >vim
+use the following setup (in your `init.vim` or a personal |ftplugin|) instead: >vim
 
   augroup my_cm_setup
     autocmd!
