@@ -611,6 +611,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call s:match_math_delims()
   call s:match_math_symbols()
   call s:match_math_fracs()
+  call s:match_math_unicode()
 
   " }}}2
   " {{{2 Zone: SynIgnore
@@ -1983,6 +1984,19 @@ function! s:match_math_delims() abort " {{{1
     syntax match texMathDelim contained conceal cchar=⟨ "\\\%([bB]igg\?l\?\|left\)\\langle\>\s*"
     syntax match texMathDelim contained conceal cchar=⟩ "\s*\\\%([bB]igg\?r\?\|right\)\\rangle\>"
   endif
+endfunction
+
+" }}}1
+function! s:match_math_unicode() abort " {{{1
+  syntax match texCmdGreek
+        \ "[αβγδ𝝳𝛿𝛅𝞭ϵεζηθϑικλμνξπϖρϱσςτυϕφχψωΓΔΘΛΞΠΣΥΦΧΨΩ]" contained
+
+  if !exists('s:re_math_symbols')
+    let s:re_math_symbols = '"[' . join(
+          \   map(vimtex#util#uniq_unsorted(s:cmd_symbols), 'v:val[1]'),
+          \ '') . ']"'
+  endif
+  execute 'syntax match texMathSymbol' s:re_math_symbols 'contained'
 endfunction
 
 " }}}1
