@@ -465,7 +465,7 @@ endfunction
 
 " }}}1
 function! vimtex#util#uniq_unsorted(list) abort " {{{1
-  if len(a:list) <= 1 | return a:list | endif
+  if len(a:list) <= 1 | return deepcopy(a:list) | endif
 
   let l:visited = {}
   let l:result = []
