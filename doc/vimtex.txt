@@ -985,6 +985,27 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: `'latexmk'`
 
+*g:vimtex_compiler_clean_paths*
+  A list of additional path expressions for generated files that you want to
+  be cleaned by `:VimtexClean`. Note that this is NOT relevant for the
+  compiler backends |vimtex-compiler-latexmk| and |vimtex-compiler-latexrun|.
+  These backends provide their own clean implementations.
+
+  Each expression is a glob expression (see |glob()| and |wildcards|) and each
+  path is assumed rooted to the project root. For instance, to clean any
+  generated `_minted` paths (including directories), you could use something
+  like this: >vim
+
+    let g:vimtex_compiler_clean_paths = ['_minted*']
+<
+  Warning: Each resolved path will be deleted with |delete()| with the `"rf"`
+           flag!
+
+  Note: For `latexmk`, a similar feature is available with `$clean_ext`; see
+        the documentation https://texdoc.org/serve/latexmk/0.
+
+  Default value: `[]`
+
 *g:vimtex_compiler_latexmk*
   This dictionary allows customization of the |vimtex-compiler-latexmk|
   compiler. The values set by the user will take precedence over the default

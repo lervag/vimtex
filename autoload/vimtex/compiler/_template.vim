@@ -208,6 +208,12 @@ function! s:compiler.clean(full) abort dict " {{{1
   for l:file in filter(l:extensions, { _, x -> !empty(x) })
     call delete(l:file)
   endfor
+
+  for l:expr in g:vimtex_compiler_clean_paths
+    for l:path in glob(self.state.root . '/' . l:expr, v:false, v:true)
+      call delete(l:path, 'rf')
+    endfor
+  endfor
 endfunction
 
 " }}}1

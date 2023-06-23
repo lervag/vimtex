@@ -18,6 +18,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_compiler_enabled', 1)
   call s:init_option('vimtex_compiler_silent', 0)
   call s:init_option('vimtex_compiler_method', 'latexmk')
+  call s:init_option('vimtex_compiler_clean_paths', [])
   call s:init_option('vimtex_compiler_latexmk_engines', {
         \  '_'                : '-pdf',
         \  'pdfdvi'           : '-pdfdvi',

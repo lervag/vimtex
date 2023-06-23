@@ -8,7 +8,7 @@ TESTS := $(filter-out test-backend,$(TESTS:.vim=))
 
 .PHONY: test $(TESTS)
 
-test: test-backend $(TESTS)
+test: test-backend $(TESTS) prepare-test-clean
 
 $(TESTS):
 	@$(MYVIM) -u $@.vim
@@ -19,6 +19,16 @@ test-backend: latexrun
 	@rm -f pdflatex*.fls
 	@rm -f .latexrun.db.lock
 	@rm -rf out
+
+test-clean: prepare-test-clean
+
+prepare-test-clean:
+	@touch test-clean.log
+	@touch test-clean.aux
+	@touch test-clean.pdf
+	@touch generated-extra_files.out
+	@mkdir -p _minted-test-clean
+	@touch _minted-test-clean/stuffhere
 
 latexrun:
 	@wget \
