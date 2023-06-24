@@ -352,22 +352,21 @@ endfunction
 " }}}1
 function! s:filename_changed_post() abort " {{{1
   if s:filename_changed
-    let l:base_old = b:vimtex.base
-    let b:vimtex.tex = fnamemodify(expand('%'), ':p')
+    let l:old = b:vimtex.tex
+    let b:vimtex.tex = expand('%:p')
+    let b:vimtex.root = fnamemodify(b:vimtex.tex, ':h')
     let b:vimtex.base = fnamemodify(b:vimtex.tex, ':t')
     let b:vimtex.name = fnamemodify(b:vimtex.tex, ':t:r')
 
     call vimtex#log#warning('Filename change detected')
-    call vimtex#log#info('Old filename: ' . l:base_old)
-    call vimtex#log#info('New filename: ' . b:vimtex.base)
+    call vimtex#log#info('Old: ' . l:old)
+    call vimtex#log#info('New: ' . b:vimtex.tex)
 
     if has_key(b:vimtex, 'compiler')
       if b:vimtex.compiler.is_running()
         call vimtex#log#warning('Compilation stopped!')
         call vimtex#compiler#stop()
       endif
-      let b:vimtex.compiler.target = b:vimtex.base
-      let b:vimtex.compiler.target_path = b:vimtex.tex
     endif
   endif
 endfunction
