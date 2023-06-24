@@ -83,6 +83,10 @@ function! s:viewer.compiler_callback(outfile) dict abort " {{{1
 
   call self._start(a:outfile)
   let self.started_through_callback = 1
+
+  if exists('#User#VimtexEventView')
+    doautocmd <nomodeline> User VimtexEventView
+  endif
 endfunction
 
 " }}}1
