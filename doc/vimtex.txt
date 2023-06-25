@@ -1148,9 +1148,6 @@ OPTIONS                                                        *vimtex-options*
         \ 'luatex'           : '-lualatex',
         \ 'lualatex'         : '-lualatex',
         \ 'xelatex'          : '-xelatex',
-        \ 'pdftex'           : '-pdf -pdflatex=pdftex'
-        \ 'xetex'            : '-pdf -pdflatex=xetex'
-        \ 'luatex'           : '-pdf -pdflatex=luatex'
         \ 'context (pdftex)' : '-pdf -pdflatex=texexec',
         \ 'context (luatex)' : '-pdf -pdflatex=context',
         \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',
