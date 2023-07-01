@@ -218,7 +218,7 @@ function! s:compiler.clean(full) abort dict " {{{1
     let l:cmd .= ' -outdir=' . fnameescape(self.out_dir)
   endif
   if !empty(self.aux_dir)
-    let l:cmd .= ' -emulate-aux'
+    let l:cmd .= ' -emulate-aux-dir'
     let l:cmd .= ' -auxdir=' . fnameescape(self.aux_dir)
   endif
 
