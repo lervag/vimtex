@@ -262,7 +262,6 @@ function! s:viewer.xdo_focus_vim() dict abort " {{{1
 
     if !empty(l:xwinids)
       call vimtex#jobs#run('xdotool windowactivate ' . l:xwinids[0] . ' &')
-      call feedkeys("\<c-l>", 'tn')
       return l:xwinids[0]
       break
     endif
