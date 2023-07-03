@@ -438,7 +438,9 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   syntax region texCommentConditionals matchgroup=texComment
         \ start="\\if\w\+" end="\\fi\>"
-        \ contained transparent
+        \ contained transparent contains=NONE
+  syntax match texCommentConditionals "\\iff\>"
+        \ contained transparent contains=NONE
 
   " Highlight \iftrue ... \else ... \fi blocks as comments
   syntax region texConditionalTrueZone matchgroup=texCmdConditional
