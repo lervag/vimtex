@@ -81,7 +81,7 @@ function! s:packages_get_from_cursor() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return {} | endif
 
-  if l:cmd.name ==# '\usepackage'
+  if l:cmd.name ==# '\usepackage' || l:cmd.name ==# '\RequirePackage'
     return s:packages_from_usepackage(l:cmd)
   elseif l:cmd.name ==# '\documentclass'
     return s:packages_from_documentclass(l:cmd)
