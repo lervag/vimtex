@@ -6376,28 +6376,27 @@ A: Yes, it should work.  The following recipe has been reported to work [0],
 
 ------------------------------------------------------------------------------
                                                *vimtex-faq-zathura-windows-wsl*
-Q: Does Zathura + VimTeX work on WSL2 ?
-A: Yes, but `systemd` or `D-Bus` must be enabled in particular to make inverse
-   search work properly.
+Q: Does Zathura + VimTeX work on WSL2?
+A: Yes, but `systemd` or `D-Bus` must be enabled to make inverse search work
+   properly.
 
-   1. `systemd` is the default for Ubuntu 23.04 running on WSL 2.
-      In this case, there is nothing to do : Zathura and VimTeX should work
-      fine.
+   1. `systemd` is the default for Ubuntu 23.04 running on WSL 2. In this
+      case, there is nothing to do: Zathura and VimTeX should work fine.
 
    2. Otherwise, if WSL version is 0.67.6 or newer, enable `systemd` by adding
-      the following content to the config file `/etc/wsl.conf`
-      (create the file if it doesn't exist). >
+      the following content to the config file `/etc/wsl.conf` (create the
+      file if it doesn't exist). >conf
 
-      [boot]
-      systemd=true
-<   
+        [boot]
+        systemd=true
+<
       Then close WSL by using the command `wsl.exe --shutdown` in PowerShell to
       restart all WSL instances [0].
-   
+
    3. Another approach which also works with older version of WSL consists in
       setting up `D-Bus` daemons that can be shared in all your WSL consoles.
       These steps are described in [1].
-   
+
    [0]: https://learn.microsoft.com/en-us/windows/wsl/systemd
    [1]: https://x410.dev/cookbook/wsl/sharing-dbus-among-wsl2-consoles/
 
