@@ -5775,8 +5775,8 @@ https://pwmt.org/projects/zathura/
 Zathura is, like MuPDF, a very fast and minimalistic viewer. Compared to
 MuPDF, it allows more user configuration. Zathura has full support for both
 forward and inverse search. Zathura should be straightforward to install and
-use on Linux with Xorg. It should also work on macOS, but users may want to
-read |vimtex-faq-zathura-macos|.
+use on Linux with Xorg. It should also work on macOS and WSL, but users may
+want to read |vimtex-faq-zathura-macos| or |vimtex-faq-zathura-windows-wsl|.
 
 Configuration: >vim
   " Main variant with xdotool
@@ -6083,6 +6083,7 @@ Contents:
 * |vimtex-faq-wsl|
 * |vimtex-faq-sumatrapdf-wsl|
 * |vimtex-faq-zathura-macos|
+* |vimtex-faq-zathura-windows-wsl|
 * |vimtex-faq-texshopviewer|
 * |vimtex-faq-treesitter|
 
@@ -6372,6 +6373,32 @@ A: Yes, it should work.  The following recipe has been reported to work [0],
    [1]: https://brew.sh
    [2]: https://github.com/lervag/vimtex/issues/2391#issuecomment-1127678531
    [3]: https://github.com/zegervdv/homebrew-zathura/issues/99
+
+------------------------------------------------------------------------------
+                                               *vimtex-faq-zathura-windows-wsl*
+Q: Does Zathura + VimTeX work on WSL2?
+A: Yes, but `systemd` or `D-Bus` must be enabled to make inverse search work
+   properly.
+
+   1. `systemd` is the default for Ubuntu 23.04 running on WSL 2. In this
+      case, there is nothing to do: Zathura and VimTeX should work fine.
+
+   2. Otherwise, if WSL version is 0.67.6 or newer, enable `systemd` by adding
+      the following content to the config file `/etc/wsl.conf` (create the
+      file if it doesn't exist). >conf
+
+        [boot]
+        systemd=true
+<
+      Then close WSL by using the command `wsl.exe --shutdown` in PowerShell to
+      restart all WSL instances [0].
+
+   3. Another approach which also works with older version of WSL consists in
+      setting up `D-Bus` daemons that can be shared in all your WSL consoles.
+      These steps are described in [1].
+
+   [0]: https://learn.microsoft.com/en-us/windows/wsl/systemd
+   [1]: https://x410.dev/cookbook/wsl/sharing-dbus-among-wsl2-consoles/
 
 ------------------------------------------------------------------------------
                                                         *vimtex-faq-treesitter*
