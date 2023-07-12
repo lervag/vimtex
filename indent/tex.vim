@@ -192,12 +192,10 @@ let s:re_depth_end = g:vimtex#re#not_bslash . '\\end\s*\{\w+\*?}|^\s*%(}|\\])'
 function! s:indent_envs(line, prev_line) abort " {{{1
   let l:ind = 0
 
-  " First for general environments
   let l:ind += s:sw*(
         \    a:prev_line =~# s:envs_begin
         \ && a:prev_line !~# s:envs_end
         \ && a:prev_line !~# s:envs_ignored)
-  let l:xx = l:ind
   let l:ind -= s:sw*(
         \    a:line !~# s:envs_begin
         \ && a:line =~# s:envs_end
@@ -269,32 +267,21 @@ let s:re_delim_trivial = empty(s:re_open) || empty(s:re_close)
 
 " }}}1
 function! s:indent_conditionals(line, lnum, prev_line, prev_lnum) abort " {{{1
-  if !exists('s:re_cond')
-    let s:re_cond = g:vimtex_indent_conditionals
-  endif
+  if empty(s:conditionals) | return 0 | endif
 
-  if empty(s:re_cond) | return 0 | endif
+  let l:ind = s:sw*(
+        \    (a:prev_line =~# s:conditionals.open
+        \     || a:prev_line =~# s:conditionals.else)
+        \ && a:prev_line !~# s:conditionals.close)
+  let l:ind -= s:sw*(
+        \    a:line !~# s:conditionals.open
+        \ && (a:line =~# s:conditionals.close
+        \     || a:line =~# s:conditionals.else))
 
-  if get(s:, 'conditional_opened')
-    if a:line =~# s:re_cond.close
-      silent! unlet s:conditional_opened
-      return a:prev_line =~# s:re_cond.open ? 0 : -s:sw
-    elseif a:line =~# s:re_cond.else
-      return -s:sw
-    elseif a:prev_line =~# s:re_cond.else
-      return s:sw
-    elseif a:prev_line =~# s:re_cond.open
-      return s:sw
-    endif
-  endif
-
-  if a:line =~# s:re_cond.open
-        \ && a:line !~# s:re_cond.close
-    let s:conditional_opened = 1
-  endif
-
-  return 0
+  return l:ind
 endfunction
+
+let s:conditionals = g:vimtex_indent_conditionals
 
 " }}}1
 function! s:indent_tikz(lnum, prev) abort " {{{1
