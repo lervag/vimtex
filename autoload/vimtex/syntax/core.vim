@@ -723,6 +723,10 @@ function! vimtex#syntax#core#init_custom() abort " {{{1
   for l:item in g:vimtex_syntax_custom_cmds_with_concealed_delims
     call vimtex#syntax#core#new_cmd_with_concealed_delims(l:item)
   endfor
+
+  for l:item in g:vimtex_syntax_custom_envs
+    call vimtex#syntax#core#new_env(l:item)
+  endfor
 endfunction
 
 " }}}1
@@ -1180,7 +1184,18 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
         \ 'opts': '',
         \ 'contains': '',
         \ 'nested': '',
+        \ '__predicate': '',
         \}, a:cfg)
+
+  if type(l:cfg.nested) == v:t_dict && !empty(l:cfg.nested)
+    for [l:lang, l:predicate] in items(l:cfg.nested)
+      let l:nested_cfg = deepcopy(l:cfg)
+      let l:nested_cfg.nested = l:lang
+      let l:nested_cfg.__predicate = l:predicate
+      call vimtex#syntax#core#new_env(l:nested_cfg)
+    endfor
+    return
+  endif
 
   let l:env_name = l:cfg.name . (l:cfg.starred ? '\*\?' : '')
 
@@ -1200,21 +1215,6 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
           \ l:next
     execute 'syntax match texMathError "\\end{' . l:env_name . '}"'
   else
-    let l:contains = 'contains=texCmdEnv'
-    if !empty(l:cfg.contains)
-      let l:contains .= ',' . l:cfg.contains
-    endif
-
-    if !empty(l:cfg.nested)
-          \ && type(l:cfg.nested) == v:t_string
-      let l:nested = vimtex#syntax#nested#include(l:cfg.nested)
-      if !empty(l:nested)
-        let l:contains .= ',' . l:nested
-      else
-        execute 'highlight def link' l:cfg.region 'texZone'
-      endif
-    endif
-
     let l:options = 'keepend'
     if l:cfg.transparent
       let l:options .= ' transparent'
@@ -1222,10 +1222,29 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
     if !empty(l:cfg.opts)
       let l:options .= ' ' . l:cfg.opts
     endif
+
+    let l:contains = 'contains=texCmdEnv'
+    if !empty(l:cfg.contains)
+      let l:contains .= ',' . l:cfg.contains
+    endif
+
+    if !empty(l:cfg.nested)
+      let l:nested = vimtex#syntax#nested#include(l:cfg.nested)
+      if !empty(l:nested)
+        let l:contains .= ',' . l:nested
+      else
+        execute 'highlight def link' l:cfg.region 'texZone'
+      endif
+    endif
+  endif
+
+  let l:start = '\\begin{\z(' . l:env_name .'\)}'
+  if !empty(l:cfg.__predicate)
+    let l:start .= '\s*\[\_[^\]]\{-}' . l:cfg.__predicate . '\_[^\]]\{-}\]'
   endif
 
   execute 'syntax region' l:cfg.region
-        \ 'start="\\begin{\z(' . l:env_name .'\)}"'
+        \ 'start="' . l:start . '"'
         \ 'end="\\end{\z1}"'
         \ l:contains
         \ l:options

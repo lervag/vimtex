@@ -1,0 +1,35 @@
+\documentclass{minimal}
+
+\usepackage{listings}
+\lstnewenvironment{code}[1][]{\lstset{#1}}{}
+\lstnewenvironment{python_code}{\lstset{language=python}}{}
+
+\begin{document}
+
+\begin{MyMathEnv}
+  f(x) = 1
+\end{MyMathEnv}
+
+\begin{python_code}
+def test(argument: str) -> str:
+    """
+    Test function.
+    """
+    return argument
+\end{python_code}
+
+\begin{code}[language=rust]
+fn main() {
+    println!("Hello World!");
+}
+\end{code}
+
+\begin{code}[language=C]
+#include<stdio.h>
+main() {
+  int i = 0;
+  printf("Hello World");
+}
+\end{code}
+
+\end{document}
