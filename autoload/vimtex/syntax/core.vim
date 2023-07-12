@@ -461,7 +461,10 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " {{{2 Zone: Verbatim
 
   " Verbatim environment
-  call vimtex#syntax#core#new_region_env('texVerbZone', '[vV]erbatim')
+  call vimtex#syntax#core#new_env({
+        \ 'name': '[vV]erbatim',
+        \ 'region': 'texVerbZone',
+        \})
 
   " Verbatim inline
   syntax match texCmdVerb "\\verb\>\*\?" nextgroup=texVerbZoneInline
@@ -530,10 +533,26 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \})
 
   " Math regions: environments
-  call vimtex#syntax#core#new_region_math('displaymath')
-  call vimtex#syntax#core#new_region_math('eqnarray')
-  call vimtex#syntax#core#new_region_math('equation')
-  call vimtex#syntax#core#new_region_math('math')
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'displaymath',
+        \ 'starred': v:true,
+        \ 'math': v:true
+        \})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'eqnarray',
+        \ 'starred': v:true,
+        \ 'math': v:true
+        \})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'equation',
+        \ 'starred': v:true,
+        \ 'math': v:true
+        \})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'math',
+        \ 'starred': v:true,
+        \ 'math': v:true
+        \})
 
   " Math regions: Inline Math Zones
   let l:conceal = g:vimtex_syntax_conceal.math_bounds ? 'concealends' : ''
@@ -1150,52 +1169,66 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
 endfunction
 
 " }}}1
-
-function! vimtex#syntax#core#new_region_env(grp, envname, ...) abort " {{{1
+function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   let l:cfg = extend({
-        \ 'contains': '',
+        \ 'name': '',
+        \ 'region': '',
+        \ 'math': v:false,
+        \ 'math_nextgroup': '',
+        \ 'starred': v:false,
+        \ 'transparent': v:false,
         \ 'opts': '',
-        \ 'transparent': 0,
-        \}, a:0 > 0 ? a:1 : {})
+        \ 'contains': '',
+        \ 'nested': '',
+        \}, a:cfg)
 
-  let l:contains = 'contains=texCmdEnv'
-  if !empty(l:cfg.contains)
-    let l:contains .= ',' . l:cfg.contains
+  let l:env_name = l:cfg.name . (l:cfg.starred ? '\*\?' : '')
+
+  if l:cfg.math
+    let l:cfg.region = 'texMathZoneEnv'
+    let l:options = 'keepend'
+    let l:contains = 'contains=texMathEnvBgnEnd,@texClusterMath'
+
+    let l:next = ''
+    if !empty(l:cfg.math_nextgroup)
+      let l:next = 'nextgroup=' . l:cfg.math_nextgroup . ' skipwhite skipnl'
+    endif
+
+    execute 'syntax match texMathEnvBgnEnd'
+          \ '"\\\%(begin\|end\){' . l:env_name . '}"'
+          \ 'contained contains=texCmdMathEnv'
+          \ l:next
+    execute 'syntax match texMathError "\\end{' . l:env_name . '}"'
+  else
+    let l:contains = 'contains=texCmdEnv'
+    if !empty(l:cfg.contains)
+      let l:contains .= ',' . l:cfg.contains
+    endif
+
+    if !empty(l:cfg.nested)
+          \ && type(l:cfg.nested) == v:t_string
+      let l:nested = vimtex#syntax#nested#include(l:cfg.nested)
+      if !empty(l:nested)
+        let l:contains .= ',' . l:nested
+      else
+        execute 'highlight def link' l:cfg.region 'texZone'
+      endif
+    endif
+
+    let l:options = 'keepend'
+    if l:cfg.transparent
+      let l:options .= ' transparent'
+    endif
+    if !empty(l:cfg.opts)
+      let l:options .= ' ' . l:cfg.opts
+    endif
   endif
 
-  let l:options = 'keepend'
-  if l:cfg.transparent
-    let l:options .= ' transparent'
-  endif
-  if !empty(l:cfg.opts)
-    let l:options .= ' ' . l:cfg.opts
-  endif
-
-  execute 'syntax region' a:grp
-        \ 'start="\\begin{' . a:envname .'}"'
-        \ 'end="\\end{' . a:envname .'}"'
+  execute 'syntax region' l:cfg.region
+        \ 'start="\\begin{\z(' . l:env_name .'\)}"'
+        \ 'end="\\end{\z1}"'
         \ l:contains
         \ l:options
-endfunction
-
-" }}}1
-function! vimtex#syntax#core#new_region_math(mathzone, ...) abort " {{{1
-  let l:cfg = extend({
-        \ 'starred': 1,
-        \ 'next': '',
-        \}, a:0 > 0 ? a:1 : {})
-
-  let l:envname = a:mathzone . (l:cfg.starred ? '\*\?' : '')
-
-  execute 'syntax match texMathEnvBgnEnd "\\\%(begin\|end\)\>{' . l:envname . '}"'
-        \ 'contained contains=texCmdMathEnv'
-        \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
-  execute 'syntax match texMathError "\\end{' . l:envname . '}"'
-  execute 'syntax region texMathZoneEnv'
-        \ 'start="\\begin{\z(' . l:envname . '\)}"'
-        \ 'end="\\end{\z1}"'
-        \ 'contains=texMathEnvBgnEnd,@texClusterMath'
-        \ 'keepend'
 endfunction
 
 " }}}1

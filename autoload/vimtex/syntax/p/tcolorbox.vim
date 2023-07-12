@@ -15,8 +15,10 @@ function! vimtex#syntax#p#tcolorbox#load(cfg) abort " {{{1
 
   " Add listing support for detected environments
   for l:env in b:vimtex.syntax.tcolorbox.listing_envs
-    call vimtex#syntax#core#new_region_env('texTCBZone', l:env, {
-          \'contains': 'texCmdEnv,texCmdTCBEnv',
+    call vimtex#syntax#core#new_env({
+          \ 'name': l:env,
+          \ 'region': 'texTCBZone',
+          \ 'contains': 'texCmdEnv,texCmdTCBEnv',
           \})
   endfor
 

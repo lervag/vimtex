@@ -5,9 +5,11 @@
 "
 
 function! vimtex#syntax#p#dot2texi#load(cfg) abort " {{{1
-  call vimtex#syntax#nested#include('dot')
-  call vimtex#syntax#core#new_region_env('texDotZone', 'dot2tex',
-               \ {'contains': '@vimtex_nested_dot'})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'dot2tex',
+        \ 'region': 'texDotZone',
+        \ 'nested': 'dot'
+        \})
 endfunction
 
 " }}}1

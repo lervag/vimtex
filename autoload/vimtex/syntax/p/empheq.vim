@@ -5,8 +5,11 @@
 "
 
 function! vimtex#syntax#p#empheq#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_math('empheq', {
-        \ 'next': 'texEmpheqArg',
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'empheq',
+        \ 'starred': v:true,
+        \ 'math': v:true,
+        \ 'mtah_nextgroup': 'texEmpheqArg',
         \})
   call vimtex#syntax#core#new_arg('texEmpheqArg')
 

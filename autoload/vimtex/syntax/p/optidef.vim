@@ -5,10 +5,15 @@
 "
 
 function! vimtex#syntax#p#optidef#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_math('\(arg\)\?mini')
-  call vimtex#syntax#core#new_region_math('\(arg\)\?mini[e!]', {'starred': 0})
-  call vimtex#syntax#core#new_region_math('\(arg\)\?maxi')
-  call vimtex#syntax#core#new_region_math('\(arg\)\?maxi\!', {'starred': 0})
+  call vimtex#syntax#core#new_env({
+        \ 'name': '\(arg\)\?\(mini\|maxi\)',
+        \ 'starred': v:true,
+        \ 'math': v:true,
+        \})
+  call vimtex#syntax#core#new_env({
+        \ 'name': '\(arg\)\?\(mini[e!]\|maxi\!\)',
+        \ 'math': v:true,
+        \})
 endfunction
 
 " }}}1

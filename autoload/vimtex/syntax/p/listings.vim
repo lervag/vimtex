@@ -24,7 +24,9 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
   syntax match texLstEnvBgn "\\begin{lstlisting}"
         \ nextgroup=texLstOpt skipwhite skipnl contains=texCmdEnv
   call vimtex#syntax#core#new_opt('texLstOpt')
-  call vimtex#syntax#core#new_region_env('texLstZone', 'lstlisting', {
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'lstlisting',
+        \ 'region': 'texLstZone',
         \ 'contains': 'texLstEnvBgn',
         \})
 
@@ -46,14 +48,15 @@ function! vimtex#syntax#p#listings#load(cfg) abort " {{{1
     let l:name = toupper(l:nested[0]) . l:nested[1:]
     let l:grp = 'texLstZone' . l:name
     let l:grp_inline = 'texLstZoneInline' . l:name
-    let l:cluster = '@' . l:cluster
 
     execute 'syntax match texLstsetArg'
           \ '"\c{\_[^}]*language=' . l:nested . '\%(\s*,\|}\)"'
           \ 'nextgroup=' . l:grp 'skipwhite skipnl'
           \ 'contains=texLstsetArg'
 
-    call vimtex#syntax#core#new_region_env(l:grp, 'lstlisting', {
+    call vimtex#syntax#core#new_env({
+          \ 'name': 'lstlisting',
+          \ 'region': l:grp,
           \ 'contains': 'texLstEnvBgn,' . l:cluster,
           \ 'opts': 'contained',
           \})

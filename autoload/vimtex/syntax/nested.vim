@@ -11,7 +11,7 @@ function! vimtex#syntax#nested#include(name) abort " {{{1
     let s:included[l:inc_name] = s:include(l:inc_name, a:name)
   endif
 
-  return s:included[l:inc_name] ? l:inc_name : ''
+  return s:included[l:inc_name] ? '@' . l:inc_name : ''
 endfunction
 
 " }}}1

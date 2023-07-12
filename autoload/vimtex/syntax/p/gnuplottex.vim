@@ -5,9 +5,11 @@
 "
 
 function! vimtex#syntax#p#gnuplottex#load(cfg) abort " {{{1
-  call vimtex#syntax#nested#include('gnuplot')
-  call vimtex#syntax#core#new_region_env('texGnuplotZone', 'gnuplot',
-        \ {'contains': '@vimtex_nested_gnuplot'})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'gnuplot',
+        \ 'region': 'texGnuplotZone',
+        \ 'nested': 'gnuplot'
+        \})
 endfunction
 
 " }}}1
