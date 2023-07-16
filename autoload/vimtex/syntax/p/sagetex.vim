@@ -12,12 +12,17 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
   syntax match texCmdSagetex /\\sageplot\>/
         \ nextgroup=texSagetexOpt,texSagetexArg skipwhite skipnl
 
-  call vimtex#syntax#core#new_arg('texSagetexArg',
-        \ {'contains': '@vimtex_nested_python', 'opts': 'contained keepend'})
+  call vimtex#syntax#core#new_arg('texSagetexArg', {
+        \ 'contains': '@vimtex_nested_python',
+        \ 'opts': 'contained keepend'
+        \})
   call vimtex#syntax#core#new_opt('texSagetexOpt', {'next': 'texSagetexArg'})
 
-  call vimtex#syntax#core#new_region_env('texSagetexZone', 'sagesilent',
-        \ {'contains': '@vimtex_nested_python'})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'sagesilent',
+        \ 'region': 'texSagetexZone',
+        \ 'contains': '@vimtex_nested_python'
+        \})
 
   highlight def link texCmdSagetex texCmd
 endfunction

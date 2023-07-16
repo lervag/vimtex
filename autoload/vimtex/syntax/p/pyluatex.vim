@@ -5,12 +5,11 @@
 "
 
 function! vimtex#syntax#p#pyluatex#load(cfg) abort " {{{1
-  call vimtex#syntax#nested#include('python')
-
-  for l:env in ['python', 'pythonq', 'pythonrepl']
-    call vimtex#syntax#core#new_region_env(
-          \ 'texPyluatexZone', l:env, {'contains': '@vimtex_nested_python'})
-  endfor
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'python\(q\|repl\)\?',
+        \ 'region': 'texPyluatexZone',
+        \ 'nested': 'python',
+        \})
 
   highlight def link texCmdPyluatex texCmd
 endfunction

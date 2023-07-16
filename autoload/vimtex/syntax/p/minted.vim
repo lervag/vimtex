@@ -30,7 +30,9 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texMintedEnvArgOpt', {'contains': ''})
 
   " Match generic minted environment regions
-  call vimtex#syntax#core#new_region_env('texMintedZone', 'minted', {
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'minted',
+        \ 'region': 'texMintedZone',
         \ 'contains': 'texCmdEnv,texMintedEnvBgn',
         \})
 
@@ -56,8 +58,8 @@ function! vimtex#syntax#p#minted#load(cfg) abort " {{{1
     let l:contains_inline = ''
 
     if !empty(l:cluster)
-      let l:contains .= ',@' . l:cluster
-      let l:contains_inline = '@' . l:cluster
+      let l:contains .= ',' . l:cluster
+      let l:contains_inline = l:cluster
     else
       execute 'highlight def link' l:grp_env 'texMintedZone'
       execute 'highlight def link' l:grp_inline 'texMintedZoneInline'

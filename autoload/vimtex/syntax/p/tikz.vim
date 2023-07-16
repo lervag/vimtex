@@ -16,9 +16,11 @@ function! vimtex#syntax#p#tikz#load(cfg) abort " {{{1
   syntax match texTikzEnvBgn "\\begin{tikzpicture}"
         \ nextgroup=texTikzOpt skipwhite skipnl
         \ contains=texCmdEnv
-  call vimtex#syntax#core#new_region_env('texTikzZone', 'tikzpicture', {
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'tikzpicture',
+        \ 'region': 'texTikzZone',
         \ 'contains': '@texClusterTikz',
-        \ 'transparent': 1
+        \ 'transparent': v:true
         \})
   call vimtex#syntax#core#new_opt('texTikzOpt',
         \ {'contains': '@texClusterTikzset'})

@@ -4,13 +4,14 @@
 " Email:      karl.yngve@gmail.com
 "
 
-scriptencoding utf-8
-
 function! vimtex#syntax#p#breqn#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_math('dmath')
-  call vimtex#syntax#core#new_region_math('dseries')
-  call vimtex#syntax#core#new_region_math('dgroup')
-  call vimtex#syntax#core#new_region_math('darray')
+  for l:env in ['dmath', 'dseries', 'dgroup', 'darray']
+    call vimtex#syntax#core#new_env(#{
+          \ name: l:env,
+          \ starred: v:true,
+          \ math: v:true
+          \})
+  endfor
 endfunction
 
 " }}}1

@@ -9,8 +9,11 @@ function! vimtex#syntax#p#ieeetrantools#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_opt('texMathEnvIEEEOpt',
         \ {'next': 'texMathEnvIEEEArg'})
   for l:env in ['IEEEeqnarray', 'IEEEeqnarrayboxm']
-    call vimtex#syntax#core#new_region_math(l:env, {
-          \ 'next': 'texMathEnvIEEEOpt,texMathEnvIEEEArg',
+    call vimtex#syntax#core#new_env({
+          \ 'name': l:env,
+          \ 'starred': v:true,
+          \ 'math': v:true,
+          \ 'math_nextgroup': 'texMathEnvIEEEOpt,texMathEnvIEEEArg',
           \})
   endfor
 

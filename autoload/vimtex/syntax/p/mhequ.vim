@@ -5,8 +5,11 @@
 "
 
 function! vimtex#syntax#p#mhequ#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_math('equ')
-  call vimtex#syntax#core#new_region_math('equs')
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'equs\?',
+        \ 'starred': v:true,
+        \ 'math': v:true
+        \})
 endfunction
 
 " }}}1

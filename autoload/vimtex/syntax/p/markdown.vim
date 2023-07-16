@@ -5,11 +5,15 @@
 "
 
 function! vimtex#syntax#p#markdown#load(cfg) abort " {{{1
-  call vimtex#syntax#nested#include('markdown')
-  call vimtex#syntax#core#new_region_env('texMarkdownZone', 'markdown',
-        \ {'contains': 'texCmd,@vimtex_nested_markdown'})
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'markdown',
+        \ 'region': 'texMarkdownZone',
+        \ 'contains': 'texCmd',
+        \ 'nested': 'markdown',
+        \})
 
-  syntax match texCmdInput "\\markdownInput\>" nextgroup=texFileArg skipwhite skipnl
+  syntax match texCmdInput "\\markdownInput\>"
+        \ nextgroup=texFileArg skipwhite skipnl
 endfunction
 
 " }}}1

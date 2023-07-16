@@ -2726,6 +2726,101 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: []
 
+*g:vimtex_syntax_custom_envs*
+  A list of environments for which to apply custom styling. This allows to
+  define custom math environments or to specify custom environments for which
+  to load nested syntaxes. The latter is relevant e.g. if you use the
+  `\lstnewenvironment` from the `listings` package.
+
+  Each environment is expected to look like this: >latex
+
+    \begin{env_name}[optional argument]
+      …
+    \end{env_name}
+<
+  It is important to be aware that these customizations will be applied on top
+  of the existing syntax rules. They may therefore override both the core
+  syntax rules and extensions from syntax packages.
+
+  Each element in the list must be a dictionary with the following keys:
+
+    name ~
+      Default: Undefined (REQUIRED)
+      The name of the environment to highlight (`env_name`). The string is
+      used as a regular expression.
+
+    region ~
+      Default: `tex{Name}Zone`
+      The syntax group used to match the defined region.
+
+      Note: If `math` is |v:true|, then the region will always be set to
+      `texMathZoneEnv`.
+
+    math ~
+      Default: |v:false|
+      If true, then the environment is a math region.
+
+    starred ~
+      Default: |v:false|
+      Whether the corresponding starred environment should also be matched.
+
+    transparent ~
+      Default: |v:false|
+      If the matched syntax region should be transparent: |syn-transparent|.
+
+    opts ~
+      Default: Undefined
+      A string with additional options that will be passed to the `syntax
+      region` command (see |syn-region|).
+
+    contains ~
+      Default: Undefined
+      A comma-separated string of syntax groups that should be contained in
+      within the matched region (see |syn-contains|).
+
+    nested ~
+      Default: Undefined
+      This can be either a string or a dictionary:
+
+        |String|:     specify nested syntax to load inside the environment
+        |Dictionary|: specify "predicated" nested syntaxes (more flexible)
+
+      The dictionary uses the target syntax as the key and the "predicate" as
+      the value. This predicate is a string that must be contained within the
+      optional argument. See below for an example.
+
+      Notice that one should also be aware of |g:vimtex_syntax_nested|.
+
+  The following example creates three rules. The first creates the environment
+  `MyMathEnv` that opens a new math environment. The second creates
+  a `python_code` environment that applies nested Python syntax rules in the
+  environment region. The third rule creates a `code` environment that will
+  open nested syntax regions if the optional group contains the specified
+  predicate strings. >vim
+
+    let g:vimtex_syntax_custom_envs = [
+          \ {
+          \   'name': 'MyMathEnv',
+          \   'math': v:true
+          \ },
+          \ {
+          \   'name': 'python_code',
+          \   'region': 'texPythonCodeZone',
+          \   'nested': 'python',
+          \ },
+          \ {
+          \   'name': 'code',
+          \   'region': 'texCodeZone',
+          \   'nested': {
+          \     'python': 'language=python',
+          \     'c': 'language=C',
+          \     'rust': 'language=rust',
+          \   },
+          \ },
+          \]
+<
+  Default value: []
+
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
   available for configuration:

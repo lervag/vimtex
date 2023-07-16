@@ -7,14 +7,27 @@
 scriptencoding utf-8
 
 function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
-  call vimtex#syntax#core#new_region_math('align')
-  call vimtex#syntax#core#new_region_math('alignat')
-  call vimtex#syntax#core#new_region_math('flalign')
-  call vimtex#syntax#core#new_region_math('gather')
-  call vimtex#syntax#core#new_region_math('mathpar')
-  call vimtex#syntax#core#new_region_math('multline')
-  call vimtex#syntax#core#new_region_math('xalignat')
-  call vimtex#syntax#core#new_region_math('xxalignat', {'starred': 0})
+  for l:env in [
+        \ 'align',
+        \ 'alignat',
+        \ 'flalign',
+        \ 'gather',
+        \ 'mathpar',
+        \ 'multline',
+        \ 'xalignat',
+        \]
+    call vimtex#syntax#core#new_env(#{
+          \ name: l:env,
+          \ starred: v:true,
+          \ math: v:true
+          \})
+  endfor
+
+  " This does not accept starred variant
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'xxalignat',
+        \ 'math': v:true
+        \})
 
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{subarray}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{x\?alignat\*\?}"
