@@ -1215,6 +1215,12 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
           \ l:next
     execute 'syntax match texMathError "\\end{' . l:env_name . '}"'
   else
+    if empty(l:cfg.region)
+      let l:cfg.region = printf(
+            \ 'tex%sZone',
+            \ toupper(l:cfg.name[0]) . l:cfg.name[1:])
+    endif
+
     let l:options = 'keepend'
     if l:cfg.transparent
       let l:options .= ' transparent'

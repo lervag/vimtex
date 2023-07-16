@@ -2795,7 +2795,7 @@ OPTIONS                                                        *vimtex-options*
   open nested syntax regions if the optional group contains the specified
   predicate strings. >vim
 
-    let g:vimtex_syntax_custom_cmds = [
+    let g:vimtex_syntax_custom_envs = [
           \ {
           \   'name': 'MyMathEnv',
           \   'math': v:true
