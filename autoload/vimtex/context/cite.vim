@@ -164,7 +164,6 @@ function! s:actions.open_pdf() abort dict " {{{1
 
   let l:file = vimtex#ui#select(l:readable, {
         \ 'prompt': 'Open file:',
-        \ 'abort': v:false,
         \})
   if empty(l:file) | return | endif
 

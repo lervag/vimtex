@@ -33,7 +33,7 @@ endif
 
 let s:language = vimtex#ui#select(split(&spelllang, ','), {
       \ 'prompt': 'Multiple spelllang languages detected, please select one:',
-      \ 'abort': v:false,
+      \ 'force_choice': v:true,
       \})
 let &l:makeprg = 'java -jar ' . shellescape(fnamemodify(s:cfg.jar, ':p'))
       \ . (has_key(s:cfg, 'args') ? ' ' . s:cfg.args : '')

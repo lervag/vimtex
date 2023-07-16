@@ -75,7 +75,7 @@ let s:packages = join(keys(s:vimtex.packages), ',')
 if !exists('s:vlty.language')
   let s:vlty.language = vimtex#ui#select(split(&spelllang, ','), {
         \ 'prompt': 'Multiple spelllang languages detected, please select one:',
-        \ 'abort': v:false,
+        \ 'force_choice': v:true,
         \})
 endif
 

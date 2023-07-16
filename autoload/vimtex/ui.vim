@@ -20,51 +20,24 @@ function! vimtex#ui#echo(input, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#ui#input(opts) abort " {{{1
-  let l:opts = extend({'prompt': '> ', 'text': ''}, a:opts)
 
-  if g:vimtex_echo_verbose_input && has_key(l:opts, 'info')
-    redraw!
-    call vimtex#ui#echo(l:opts.info)
-  endif
-
-  echohl VimtexMsg
-  let l:reply = has_key(l:opts, 'completion')
-        \ ? input(l:opts.prompt, l:opts.text, l:opts.completion)
-        \ : input(l:opts.prompt, l:opts.text)
-  echohl None
-  return l:reply
-endfunction
-
-" }}}1
-function! vimtex#ui#input_quick_from(prompt, choices) abort " {{{1
-  while v:true
-    redraw!
-    call vimtex#ui#echo(a:prompt)
-    let l:input = nr2char(getchar())
-
-    if index(["\<C-c>", "\<Esc>"], l:input) >= 0
-      echon 'aborted!'
-      return ''
-    endif
-
-    if index(a:choices, l:input) >= 0
-      echon l:input
-      return l:input
-    endif
-  endwhile
-endfunction
-
-" }}}1
 function! vimtex#ui#confirm(prompt) abort " {{{1
-  if type(a:prompt) != v:t_list
-    let l:prompt = [a:prompt]
-  else
-    let l:prompt = a:prompt
-  endif
-  let l:prompt[-1] .= ' [y]es/[n]o: '
+  return has('nvim')
+        \ ? vimtex#ui#nvim#confirm(a:prompt)
+        \ : vimtex#ui#vim#confirm(a:prompt)
+endfunction
 
-  return vimtex#ui#input_quick_from(l:prompt, ['y', 'n']) ==# 'y'
+" }}}1
+function! vimtex#ui#input(options) abort " {{{1
+  let l:options = extend({
+        \ 'prompt': '> ',
+        \ 'text': '',
+        \ 'info': '',
+        \}, a:options)
+
+  return has('nvim')
+        \ ? vimtex#ui#nvim#input(l:options)
+        \ : vimtex#ui#vim#input(l:options)
 endfunction
 
 " }}}1
@@ -102,21 +75,24 @@ endfunction
 
 " }}}1
 function! vimtex#ui#select(container, ...) abort " {{{1
-  if empty(a:container) | return '' | endif
-
   let l:options = extend(
         \ {
-        \   'abort': v:true,
         \   'prompt': 'Please choose item:',
         \   'return': 'value',
+        \   'force_choice': v:false,
         \ },
         \ a:0 > 0 ? a:1 : {})
 
-  let [l:index, l:value] = s:choose_from(
-        \ type(a:container) == v:t_dict ? values(a:container) : a:container,
-        \ l:options)
-  sleep 75m
-  redraw!
+  let l:list = type(a:container) == v:t_dict
+        \ ? values(a:container)
+        \ : a:container
+  let [l:index, l:value] = empty(l:list)
+        \ ? [-1, '']
+        \ : (len(l:list) == 1
+        \   ? [0, l:list[0]]
+        \   : (has('nvim')
+        \     ? vimtex#ui#nvim#select(l:options, l:list)
+        \     : vimtex#ui#vim#select(l:options, l:list)))
 
   if l:options.return ==# 'value'
     return l:value
@@ -127,6 +103,46 @@ function! vimtex#ui#select(container, ...) abort " {{{1
   endif
 
   return l:index
+endfunction
+
+" }}}1
+
+function! vimtex#ui#get_number(max, digits, force_choice, do_echo) abort " {{{1
+  let l:choice = ''
+
+  if a:do_echo
+    echo '> '
+  endif
+
+  while len(l:choice) < a:digits
+    if len(l:choice) > 0 && (l:choice . '0') > a:max
+      return l:choice - 1
+    endif
+
+    let l:input = nr2char(getchar())
+
+    if !a:force_choice && index(["\<C-c>", "\<Esc>", 'x'], l:input) >= 0
+      if a:do_echo
+        echon 'aborted!'
+      endif
+      return -2
+    endif
+
+    if len(l:choice) > 0 && l:input ==# "\<cr>"
+      return l:choice - 1
+    endif
+
+    if l:input !~# '\d' | continue | endif
+
+    if (l:choice . l:input) > 0
+      let l:choice .= l:input
+      if a:do_echo
+        echon l:input
+      endif
+    endif
+  endwhile
+
+  return l:choice - 1
 endfunction
 
 " }}}1
@@ -196,90 +212,6 @@ function! s:echo_dict(dict, opts) abort " {{{1
   for [l:key, l:val] in items(a:dict)
     call s:echo_formatted([['Label', l:key . ': '], l:val], a:opts)
   endfor
-endfunction
-
-" }}}1
-
-function! s:choose_from(list, options) abort " {{{1
-  let l:length = len(a:list)
-  let l:digits = len(l:length)
-  if l:length == 1 | return [0, a:list[0]] | endif
-
-  " Create the menu
-  let l:menu = []
-  let l:format = printf('%%%dd', l:digits)
-  let l:i = 0
-  for l:x in a:list
-    let l:i += 1
-    call add(l:menu, [
-          \ ['VimtexWarning', printf(l:format, l:i) . ': '],
-          \ type(l:x) == v:t_dict ? l:x.name : l:x
-          \])
-  endfor
-  if a:options.abort
-    call add(l:menu, [
-          \ ['VimtexWarning', repeat(' ', l:digits - 1) . 'x: '],
-          \ 'Abort'
-          \])
-  endif
-
-  " Loop to get a valid choice
-  while 1
-    redraw!
-
-    call vimtex#ui#echo(a:options.prompt)
-    for l:line in l:menu
-      call vimtex#ui#echo(l:line)
-    endfor
-
-    try
-      let l:choice = s:get_number(l:length, l:digits, a:options.abort)
-      if a:options.abort && l:choice == -2
-        return [-1, '']
-      endif
-
-      if l:choice >= 0 && l:choice < len(a:list)
-        return [l:choice, a:list[l:choice]]
-      endif
-    endtry
-  endwhile
-endfunction
-
-" }}}1
-function! s:get_number(max, digits, abort) abort " {{{1
-  let l:choice = ''
-  echo '> '
-
-  while len(l:choice) < a:digits
-    if len(l:choice) > 0 && (l:choice . '0') > a:max
-      return l:choice - 1
-    endif
-
-    let l:input = nr2char(getchar())
-
-    if index(["\<C-c>", "\<Esc>"], l:input) >= 0
-      echon 'aborted!'
-      return -2
-    endif
-
-    if a:abort && l:input ==# 'x'
-      echon l:input
-      return -2
-    endif
-
-    if len(l:choice) > 0 && l:input ==# "\<cr>"
-      return l:choice - 1
-    endif
-
-    if l:input !~# '\d' | continue | endif
-
-    if (l:choice . l:input) > 0
-      let l:choice .= l:input
-      echon l:input
-    endif
-  endwhile
-
-  return l:choice - 1
 endfunction
 
 " }}}1
