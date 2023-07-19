@@ -450,6 +450,12 @@ function! vimtex#options#init() abort " {{{1
         \ 'dfrac': 'INLINE',
         \})
 
+  call s:init_option('vimtex_ui_method', {
+        \ 'confirm': has('nvim') ? 'nvim' : 'legacy',
+        \ 'input': has('nvim') ? 'nvim' : 'legacy',
+        \ 'select': has('nvim') ? 'nvim' : 'legacy',
+        \})
+
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
   call s:init_option('vimtex_view_method', 'general')

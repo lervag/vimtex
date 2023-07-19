@@ -3209,6 +3209,42 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_ui_method*
+  A dictionary that specifies the backend for various input methods. The
+  method names are the keys of the dictionary and the backend choices are the
+  values.
+
+  The available methods:
+
+    confirm:  Confirm dialogues (e.g. before opening documentation)
+    input:    Input dialogues (e.g. for |<plug>(vimtex-cmd-change)|)
+    select:   Selection dialogues (e.g. to select when there are multiple
+              choices for documentation)
+
+  The available backends:
+
+    nvim:     Popup menu created with neovim APIs.
+    vim:      Currently there is no Vim-specific implementation. Setting the
+              backend to "vim" will currently fallback to "legacy".
+    legacy:   Legacy backends that are created by |:echo|ing the menus and
+              using |input()| and similar for getting input.
+
+  Default: >vim
+
+    " On neovim
+    let g:vimtex_ui_method = {
+          \ 'confirm': 'nvim',
+          \ 'input': 'nvim',
+          \ 'select': 'nvim',
+          \}
+
+    " Otherwise
+    let g:vimtex_ui_method = {
+          \ 'confirm': 'legacy',
+          \ 'input': 'legacy',
+          \ 'select': 'legacy',
+          \}
+
 *g:vimtex_view_enabled*
   Use this option to disable/enable the VimTeX viewer interface.
 

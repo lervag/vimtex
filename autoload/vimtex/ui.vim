@@ -22,9 +22,7 @@ endfunction
 " }}}1
 
 function! vimtex#ui#confirm(prompt) abort " {{{1
-  return has('nvim')
-        \ ? vimtex#ui#nvim#confirm(a:prompt)
-        \ : vimtex#ui#vim#confirm(a:prompt)
+  return vimtex#ui#{g:vimtex_ui_method.confirm}#confirm(a:prompt)
 endfunction
 
 " }}}1
@@ -35,9 +33,7 @@ function! vimtex#ui#input(options) abort " {{{1
         \ 'info': '',
         \}, a:options)
 
-  return has('nvim')
-        \ ? vimtex#ui#nvim#input(l:options)
-        \ : vimtex#ui#vim#input(l:options)
+  return vimtex#ui#{g:vimtex_ui_method.input}#input(l:options)
 endfunction
 
 " }}}1
@@ -90,9 +86,7 @@ function! vimtex#ui#select(container, ...) abort " {{{1
         \ ? [-1, '']
         \ : (len(l:list) == 1
         \   ? [0, l:list[0]]
-        \   : (has('nvim')
-        \     ? vimtex#ui#nvim#select(l:options, l:list)
-        \     : vimtex#ui#vim#select(l:options, l:list)))
+        \   : vimtex#ui#{g:vimtex_ui_method.select}#select(l:options, l:list))
 
   if l:options.return ==# 'value'
     return l:value
