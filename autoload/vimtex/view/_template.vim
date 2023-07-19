@@ -261,6 +261,7 @@ function! s:viewer.xdo_focus_vim() dict abort " {{{1
     let l:xwinids = filter(reverse(l:output), '!empty(v:val)')
 
     if !empty(l:xwinids)
+      call vimtex#jobs#run('xdotool mousemove --window '. l:xwinids[0] . ' --polar 0 0')
       call vimtex#jobs#run('xdotool windowactivate ' . l:xwinids[0] . ' &')
       return l:xwinids[0]
       break
