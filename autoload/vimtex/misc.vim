@@ -118,6 +118,9 @@ if get(s:, 'reload_guard', 1)
   function! vimtex#misc#reload() abort
     let s:reload_guard = 0
 
+    " Stop all compiler processes
+    silent call vimtex#compiler#stop_all()
+
     for l:file in glob(s:file . '/**/*.vim', 0, 1)
       execute 'source' l:file
     endfor
