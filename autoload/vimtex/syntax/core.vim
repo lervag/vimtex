@@ -2052,9 +2052,9 @@ function! s:match_math_unicode() abort " {{{1
         \ "[αβγδ𝝳𝛿𝛅𝞭ϵεζηθϑικλμνξπϖρϱσςτυϕφχψωΓΔΘΛΞΠΣΥΦΧΨΩ]" contained
 
   if !exists('s:re_math_symbols')
-    let s:re_math_symbols = '"[' . join(
-          \   map(vimtex#util#uniq_unsorted(s:cmd_symbols), 'v:val[1]'),
-          \ '') . ']"'
+    let l:symbols = map(vimtex#util#uniq_unsorted(s:cmd_symbols), 'v:val[1]')
+    call filter(l:symbols, 'v:val =~# "[^A-Za-z]"')
+    let s:re_math_symbols = '"[' . join(l:symbols, '') . ']"'
   endif
   execute 'syntax match texMathSymbol' s:re_math_symbols 'contained'
 endfunction
