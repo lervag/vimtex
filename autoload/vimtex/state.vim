@@ -542,15 +542,17 @@ endfunction
 
 " }}}1
 function! s:globpath_upwards(expr, path) abort " {{{1
-  " Returns the list of files obtained by globpath(p, a:expr) with p going from
-  " a:path and upwards in the directory tree.
+  " Returns the list of files (NOT directories) obtained by globpath(p, a:expr)
+  " with p going from a:path and upwards in the directory tree.
   let l:path = a:path
   let l:dirs = l:path
   while l:path != fnamemodify(l:path, ':h')
     let l:path = fnamemodify(l:path, ':h')
     let l:dirs .= ',' . l:path
   endwhile
-  return split(globpath(fnameescape(l:dirs), a:expr), '\n')
+  return filter(
+        \ split(globpath(fnameescape(l:dirs), a:expr), '\n'),
+        \ 'filereadable(v:val)')
 endfunction
 
 " }}}1
