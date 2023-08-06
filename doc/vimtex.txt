@@ -3396,6 +3396,12 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 0
 
+*g:vimtex_view_skim_no_select*
+  Set this option to 1 to prevent Skim from selecting the text after command
+  |:VimtexView| or compiler callback.
+
+  Default value: 0
+
 *g:vimtex_view_texshop_activate*
   Set this option to 1 to make TeXShop have focus after command |:VimtexView| in
   addition to being moved to the foreground.
@@ -5822,6 +5828,7 @@ the text you want to search.
 Associated settings:
 * |g:vimtex_view_skim_activate|
 * |g:vimtex_view_skim_reading_bar|
+* |g:vimtex_view_skim_no_select|
 
                                                        *vimtex-view-sumatrapdf*
 SumatraPDF ~
