@@ -66,6 +66,7 @@ function! s:make_cmd_view(outfile, open, sync) abort " {{{1
           \ 'app.documents[0].go({ to: app.texLines[' . (line('.')-1) . '],',
           \ 'from: Path("'. expand('%:p') . '")',
           \ (g:vimtex_view_skim_reading_bar ? ', showingReadingBar: true' : ''),
+          \ (g:vimtex_view_skim_no_select ? ', selecting: false' : ''),
           \ '});'
           \])
   endif
