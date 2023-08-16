@@ -2821,6 +2821,13 @@ OPTIONS                                                        *vimtex-options*
 <
   Default value: []
 
+*g:vimtex_syntax_match_unicode*
+  Whether to highlight unicode characters. If enabled, it will match unicode
+  greek letters as `texCmdGreek` and a lot of other unicode symbols as
+  `texMathSymbol`.
+
+  Default value: |v:false|
+
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
   available for configuration:

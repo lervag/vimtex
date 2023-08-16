@@ -350,6 +350,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_syntax_custom_cmds', [])
   call s:init_option('vimtex_syntax_custom_cmds_with_concealed_delims', [])
   call s:init_option('vimtex_syntax_custom_envs', [])
+  call s:init_option('vimtex_syntax_match_unicode', v:true)
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
         \   'C' : 'c',

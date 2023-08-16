@@ -2048,6 +2048,7 @@ endfunction
 
 " }}}1
 function! s:match_math_unicode() abort " {{{1
+  if !g:vimtex_syntax_match_unicode | return | endif
   syntax match texCmdGreek
         \ "[αβγδ𝝳𝛿𝛅𝞭ϵεζηθϑικλμνξπϖρϱσςτυϕφχψωΓΔΘΛΞΠΣΥΦΧΨΩ]" contained
 
