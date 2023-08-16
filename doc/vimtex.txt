@@ -2826,7 +2826,7 @@ OPTIONS                                                        *vimtex-options*
   greek letters as `texCmdGreek` and a lot of other unicode symbols as
   `texMathSymbol`.
 
-  Default value: |v:false|
+  Default value: |v:true|
 
 *g:vimtex_syntax_nested*
   A dictionary for configuring nested syntaxes. The following keys are
