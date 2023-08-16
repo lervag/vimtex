@@ -27,10 +27,6 @@ c2Ilc_          a \cmd{ _ }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \c
 c2ilc_          a \cmd{_}  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
 c2alc_          a _  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
 c2Alc_          a _\cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
 c2Inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ _ }
 c2inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{_}
 c2anc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } _

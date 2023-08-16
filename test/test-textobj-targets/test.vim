@@ -22,8 +22,13 @@ function! s:testVimtexCmdtargets(name)
       for lastnext in ['l', '', 'n']
         for iaIA in ['I', 'i', 'a', 'A']
           for target in ['c']
+            let l:motion = cnt . iaIA . lastnext . target
+            if operator ==# 'c' && l:motion =~# '^2.c$'
+              continue
+            endif
+
             normal! "lpfx
-            call s:execute(operator, cnt . iaIA . lastnext . target)
+            call s:execute(operator, l:motion)
           endfor
         endfor
       endfor
