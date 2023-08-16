@@ -9,13 +9,12 @@ set noswapfile
 set softtabstop=16
 set expandtab
 
-silent edit test1.tex
+silent edit test.tex
 
 if empty($INMAKE) | finish | endif
 
-function! s:testVimtexCmdtargets()
+function! s:testVimtexCmdtargets(name)
   silent! edit!
-  call search('xxxxxx')
   normal! "lyy
 
   for operator in ['c', 'd', 'y', 'v']
@@ -34,12 +33,12 @@ function! s:testVimtexCmdtargets()
   normal! "lp2f}l
   call s:execute('v', 'ilc')
 
-  write! test1.out
+  execute 'silent write!' a:name
 endfunction
 
 function! s:execute(operation, motions)
-  execute 'normal' a:operation . a:motions
-        \ . (a:operation ==# 'c' ? '_' : '')
+  let l:cmd = a:operation . a:motions . (a:operation ==# 'c' ? '_' : '')
+  silent execute 'normal' l:cmd
 
   if a:operation ==# 'v'
     normal! r_
@@ -49,13 +48,13 @@ function! s:execute(operation, motions)
     execute "normal! A\<tab>'\<c-r>\"'"
   endif
 
-  execute 'normal! I' . a:operation . a:motions . "\<tab>"
+  execute 'normal! I' . l:cmd . "\<tab>"
 endfunction
 
-call s:testVimtexCmdtargets()
+call s:testVimtexCmdtargets('test1.out')
 
 " Tests should pass with this setting too
 set selection=exclusive
-call s:testVimtexCmdtargets()
+call s:testVimtexCmdtargets('test2.out')
 
 quit!

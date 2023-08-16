@@ -1,40 +1,40 @@
 a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-cIlc            a \cmd{ bbbbbbbb }  \cmd{ _ }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-cilc            a \cmd{ bbbbbbbb }  \cmd{_}  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-calc            a \cmd{ bbbbbbbb }  _  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-cAlc            a \cmd{ bbbbbbbb }  _\cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-cIc             a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _ }  \cmd{ eeeeeee } \cmd{ ffffffff }
-cic             a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{_}  \cmd{ eeeeeee } \cmd{ ffffffff }
-cac             a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _  \cmd{ eeeeeee } \cmd{ ffffffff }
-cAc             a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _\cmd{ eeeeeee } \cmd{ ffffffff }
-cInc            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ _ } \cmd{ ffffffff }
-cinc            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{_} \cmd{ ffffffff }
-canc            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _ \cmd{ ffffffff }
-cAnc            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _\cmd{ ffffffff }
-c1Ilc           a \cmd{ bbbbbbbb }  \cmd{ _ }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1ilc           a \cmd{ bbbbbbbb }  \cmd{_}  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1alc           a \cmd{ bbbbbbbb }  _  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1Alc           a \cmd{ bbbbbbbb }  _\cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1Ic            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _ }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1ic            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{_}  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1ac            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _  \cmd{ eeeeeee } \cmd{ ffffffff }
-c1Ac            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _\cmd{ eeeeeee } \cmd{ ffffffff }
-c1Inc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ _ } \cmd{ ffffffff }
-c1inc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{_} \cmd{ ffffffff }
-c1anc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _ \cmd{ ffffffff }
-c1Anc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _\cmd{ ffffffff }
-c2Ilc           a \cmd{ _ }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2ilc           a \cmd{_}  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2alc           a _  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Alc           a _\cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Ic            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2ic            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2ac            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Ac            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
-c2Inc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ _ }
-c2inc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{_}
-c2anc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } _
-c2Anc           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee }_
+cIlc_           a \cmd{ bbbbbbbb }  \cmd{ _ }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+cilc_           a \cmd{ bbbbbbbb }  \cmd{_}  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+calc_           a \cmd{ bbbbbbbb }  _  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+cAlc_           a \cmd{ bbbbbbbb }  _\cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+cIc_            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _ }  \cmd{ eeeeeee } \cmd{ ffffffff }
+cic_            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{_}  \cmd{ eeeeeee } \cmd{ ffffffff }
+cac_            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _  \cmd{ eeeeeee } \cmd{ ffffffff }
+cAc_            a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _\cmd{ eeeeeee } \cmd{ ffffffff }
+cInc_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ _ } \cmd{ ffffffff }
+cinc_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{_} \cmd{ ffffffff }
+canc_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _ \cmd{ ffffffff }
+cAnc_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _\cmd{ ffffffff }
+c1Ilc_          a \cmd{ bbbbbbbb }  \cmd{ _ }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1ilc_          a \cmd{ bbbbbbbb }  \cmd{_}  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1alc_          a \cmd{ bbbbbbbb }  _  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1Alc_          a \cmd{ bbbbbbbb }  _\cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1Ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ _ }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{_}  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _  \cmd{ eeeeeee } \cmd{ ffffffff }
+c1Ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  _\cmd{ eeeeeee } \cmd{ ffffffff }
+c1Inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ _ } \cmd{ ffffffff }
+c1inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{_} \cmd{ ffffffff }
+c1anc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _ \cmd{ ffffffff }
+c1Anc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  _\cmd{ ffffffff }
+c2Ilc_          a \cmd{ _ }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2ilc_          a \cmd{_}  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2alc_          a _  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2Alc_          a _\cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2Ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2ic_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2Ac_           a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
+c2Inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ _ }
+c2inc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{_}
+c2anc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee } _
+c2Anc_          a \cmd{ bbbbbbbb }  \cmd{ ccccccc }  \cmd{ xxxxxx }  \cmd{ eeeeeee }_
 dIlc            a \cmd{ bbbbbbbb }  \cmd{  }  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
 dilc            a \cmd{ bbbbbbbb }  \cmd{}  \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
 dalc            a \cmd{ bbbbbbbb }    \cmd{ xxxxxx }  \cmd{ eeeeeee } \cmd{ ffffffff }
