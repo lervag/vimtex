@@ -47,14 +47,23 @@ function! s:folder.level(line, lnum) dict abort " {{{1
           \ && l:next =~# self.re.end
       return 's2'
     endif
-  elseif a:line =~# self.re.start
-    if l:next !~# self.re.end
-      let self.state[-1].folded = v:true
-      return l:env_val is# 'a1' ? 'a2' : 'a1'
+  elseif a:line =~# '\v^\s*\\begin\{'
+    call add(self.state, {})
+  elseif len(self.state) > 0
+    let l:state = self.state[-1]
+    if a:line =~# '\v^\s*\\end\{' && empty(l:state)
+      call remove(self.state, -1)
+    elseif !empty(l:state)
+      if a:line =~# self.re.start
+        if l:next !~# self.re.end
+          let l:state.folded = v:true
+          return l:env_val is# 'a1' ? 'a2' : 'a1'
+        endif
+      elseif l:state.folded && l:next =~# self.re.end
+        let l:state.folded = v:false
+        return l:env_val is# 's1' ? 's2' : 's1'
+      endif
     endif
-  elseif self.state[-1].folded && l:next =~# self.re.end
-    let self.state[-1].folded = v:false
-    return l:env_val is# 's1' ? 's2' : 's1'
   endif
 endfunction
 
