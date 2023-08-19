@@ -39,7 +39,7 @@ on older versions of Vim or Neovim, then you should not use the most recent
 version of VimTeX, but instead remain at the v1.0 tag.
 
 Some features require external tools. For example, the default compiler backend
-relies on [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/).
+relies on [latexmk](https://www.cantab.net/users/johncollins/latexmk/index.html).
 Users are encouraged to read the requirements section in the
 [documentation](doc/vimtex.txt) (`:h vimtex-requirements`).
 
@@ -182,7 +182,7 @@ desired. The two exceptions are code folding and formating, which are disabled
 by default and must be manually enabled.
 
 - Document compilation with
-  [latexmk](http://users.phys.psu.edu/~collins/software/latexmk-jcc/),
+  [latexmk](https://www.cantab.net/users/johncollins/latexmk/index.html),
   [latexrun](https://github.com/aclements/latexrun),
   [tectonic](https://tectonic-typesetting.github.io), or
   [arara](https://github.com/cereda/arara)
