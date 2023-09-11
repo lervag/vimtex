@@ -11,6 +11,36 @@
   minted language=#1, #2
 }
 
+\newtcblisting{verilog}[2][]{%
+    listing engine=minted,
+    minted language=verilog,
+    listing only,
+    breakable,
+    enhanced,
+    colframe=gray!75,
+    title=#2,
+    coltitle=black,
+    colbacktitle=gray!50,
+    fonttitle=\bfseries,
+    top=0.5mm,
+    bottom=0.5mm,
+    % left=0mm,
+    right=0mm,
+    boxsep=0.5mm,
+    minted options = {
+        linenos,
+        breaklines=true,
+        breakbefore=.,
+        numbersep=2mm,
+    },
+    overlay={%
+        \begin{tcbclipinterior}
+            \fill[gray!25] (frame.south west) rectangle ([xshift=4mm]frame.north west);
+        \end{tcbclipinterior}
+    },
+    #1
+}
+
 \begin{document}
 
 This part of the document is in regular syntax highlighting.
@@ -20,5 +50,9 @@ $ This is a minted box that contains a single dollar sign.
 \end{mintedbox}
 
 Now this part of the document has math-mode syntax highlighting.
+
+\begin{verilog}{}
+    $strobe("Average period = %g measured from %d periods.", period, total);
+\end{verilog}
 
 \end{document}

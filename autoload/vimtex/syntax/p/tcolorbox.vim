@@ -31,11 +31,13 @@ endfunction
 function! s:parse_constructs() abort " {{{1
   if has_key(b:vimtex.syntax, 'tcolorbox') | return | endif
 
-  let b:vimtex.syntax.tcolorbox = {'listing_envs': []}
+  let l:re = '\c\\\%(declare\|new\)tcblisting'
+
+  let b:vimtex.syntax.tcolorbox = {}
   let b:vimtex.syntax.tcolorbox.listing_envs = map(filter(
         \   vimtex#parser#tex(b:vimtex.tex, {'detailed': 0}),
-        \   'v:val =~# ''\\DeclareTCBListing'''),
-        \ {_, x -> matchstr(x, '\\DeclareTCBListing\s*{\zs[a-zA-Z-]\+\ze}')})
+        \   { _, x -> x =~? l:re }),
+        \ {_, x -> matchstr(x, l:re . '\s*{\zs[a-zA-Z-]\+\ze}')})
 endfunction
 
 " }}}1
