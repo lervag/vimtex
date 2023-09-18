@@ -11,7 +11,7 @@ endfunction
 " }}}1
 
 let s:matcher = {
-      \ 'disabled' : !g:vimtex_toc_show_preamble,
+      \ 'disable' : !g:vimtex_toc_show_preamble,
       \ 'in_preamble' : 1,
       \ 'in_content' : 0,
       \ 'prefilter_cmds' : ['documentclass'],
