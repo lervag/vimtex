@@ -591,7 +591,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texMathError "\\end\s*{\s*\(array\|[bBpvV]matrix\|split\|smallmatrix\)\s*}"
 
   " Operators and similar
-  syntax match texMathOper "[/=<>+-]" contained
+  syntax match texMathOper "[-+=/<>|]" contained
   syntax match texMathSuperSub "[_^]" contained
 
   " Text Inside Math regions
@@ -1953,7 +1953,7 @@ endfunction
 function! s:match_math_delims() abort " {{{1
   syntax match texMathDelimMod contained "\\\(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
-  syntax match texMathDelim contained "[()[\]|/.]\|\\[{}|]"
+  syntax match texMathDelim contained "[()[\]]\|\\[{}]"
   syntax match texMathDelim contained "\\backslash\>"
   syntax match texMathDelim contained "\\downarrow\>"
   syntax match texMathDelim contained "\\Downarrow\>"
