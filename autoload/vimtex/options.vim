@@ -250,6 +250,7 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : 've', 'rhs' : '\varepsilon' },
         \ { 'lhs' : 'vf', 'rhs' : '\varphi' },
         \ { 'lhs' : 'vk', 'rhs' : '\varkappa' },
+        \ { 'lhs' : 'vp', 'rhs' : '\varpi' },
         \ { 'lhs' : 'vq', 'rhs' : '\vartheta' },
         \ { 'lhs' : 'vr', 'rhs' : '\varrho' },
         \ { 'lhs' : '/',  'rhs' : 'vimtex#imaps#style_math("slashed")', 'expr' : 1, 'leader' : '#'},
