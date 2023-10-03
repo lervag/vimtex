@@ -141,7 +141,7 @@ function! s:compiler.__build_cmd() abort dict " {{{1
   endif
 
   if self.continuous
-    let l:cmd .= ' -pvc -view=none'
+    let l:cmd .= ' -pvc -pvctimeout- -view=none'
 
     if self.callback
       for [l:opt, l:val] in [
@@ -164,7 +164,7 @@ function! s:compiler.__pprint_append() abort dict " {{{1
   if !empty(self.aux_dir)
     call add(l:list, ['aux_dir', self.aux_dir])
   endif
-  
+
   call add(l:list, ['callback', self.callback])
   call add(l:list, ['continuous', self.continuous])
   call add(l:list, ['executable', self.executable])
