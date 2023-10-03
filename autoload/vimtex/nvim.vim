@@ -4,16 +4,13 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#nvim#check_treesitter(...) abort " {{{1
-lua <<EOF
-  local highlighter = require "vim.treesitter.highlighter"
-  local bufnr = vim.api.nvim_get_current_buf()
-  if vim.bo[bufnr].syntax == "" and highlighter.active[bufnr] then
-    vim.fn['vimtex#log#error'](
-      'Syntax highlighting is controlled by Tree-sitter!'
-    )
-  end
-EOF
+function! vimtex#nvim#check_treesitter(bufnr, ...) abort " {{{1
+  if empty(getbufvar(a:bufnr, '&syntax')) && luaeval(
+        \ 'require("vim.treesitter.highlighter").active[_A] ~= nil',
+        \ a:bufnr
+        \)
+    call vimtex#log#error('Syntax highlighting is controlled by Treesitter!')
+  endif
 endfunction
 
 " }}}1

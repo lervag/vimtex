@@ -30,5 +30,5 @@ call vimtex#init()
 if has('nvim-0.5')
       \ && g:vimtex_syntax_enabled
       \ && !g:vimtex_syntax_conceal_disable
-  call timer_start(1000, 'vimtex#nvim#check_treesitter')
+  call timer_start(1000, function('vimtex#nvim#check_treesitter', [bufnr()]))
 endif
