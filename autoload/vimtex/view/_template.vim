@@ -30,6 +30,8 @@ endfunction
 
 " }}}1
 function! s:viewer.out() dict abort " {{{1
+  if !exists('b:vimtex') | return '' | endif
+
   let l:out = b:vimtex.compiler.get_file('pdf')
 
   " Copy pdf and synctex files if we use temporary files
@@ -137,9 +139,6 @@ function! s:viewer.xdo_get_id() dict abort " {{{1
   if !self.xdo_check() | return 0 | endif
 
   if self.xwin_id > 0 | return self.xwin_id | endif
-
-  " Allow some time for the viewer to start properly
-  sleep 500m
 
   " Try to find viewer's window ID by different methods:
   " * by PID (probably most reliable when it works)

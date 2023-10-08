@@ -87,7 +87,7 @@ function! s:viewer._start(outfile) dict abort " {{{1
 
   call vimtex#jobs#run(self.cmd_start)
 
-  call self.xdo_get_id()
+  call timer_start(500, { _ -> self.xdo_get_id() })
 endfunction
 
 " }}}1
