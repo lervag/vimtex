@@ -16,10 +16,10 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'multline',
         \ 'xalignat',
         \]
-    call vimtex#syntax#core#new_env(#{
-          \ name: l:env,
-          \ starred: v:true,
-          \ math: v:true
+    call vimtex#syntax#core#new_env({
+          \ 'name': l:env,
+          \ 'starred': v:true,
+          \ 'math': v:true
           \})
   endfor
 
