@@ -250,6 +250,18 @@ endfunction
 
 " }}}1
 
+function! s:parse_with_lua(file) abort " {{{1
+  if !has('nvim')
+    call vimtex#log#error(
+          \ 'bib parser backend "lua" only works with neovim!')
+    return []
+  endif
+
+  return luaeval('require("vimtex.bibparser").parse(_A)', a:file)
+endfunction
+
+" }}}1
+
 function! s:parse_with_vim(file) abort " {{{1
   " Adheres to the format description found here:
   " http://www.bibtex.org/Format/
@@ -297,8 +309,8 @@ function! s:parse_type(file, lnum, line, current, strings, entries) abort " {{{1
 
   let a:current.level = 1
   let a:current.body = ''
-  let a:current.vimtex_file = a:file
-  let a:current.vimtex_lnum = a:lnum
+  let a:current.source_file = a:file
+  let a:current.source_lnum = a:lnum
 
   if l:type ==# 'string'
     return s:parse_string(l:matches[2], a:current, a:strings)
@@ -420,7 +432,7 @@ function! s:get_value_string(body, head, strings) abort " {{{1
   elseif a:body[a:head] ==# '"'
     let l:index = match(a:body, '\\\@<!"', a:head+1)
     if l:index < 0
-      return ['s:get_value_string failed', '']
+      return ['s:get_value_string failed', -1]
     endif
 
     let l:value = a:body[a:head+1:l:index-1]

@@ -6,7 +6,6 @@ nnoremap q :qall!<cr>
 
 let g:vimtex_cache_root = '.'
 let g:vimtex_cache_persistent = 0
-
 if !empty($BACKEND)
   let g:vimtex_parser_bib_backend = $BACKEND
 endif
@@ -14,6 +13,10 @@ endif
 silent edit test_backend.tex
 
 if empty($INMAKE) | finish | endif
+
+if g:vimtex_parser_bib_backend ==# 'lua' && !has('nvim')
+  call vimtex#test#finished()
+endif
 
 " Simplify test on basic systems
 if empty(vimtex#kpsewhich#find('biblatex-examples.bib'))

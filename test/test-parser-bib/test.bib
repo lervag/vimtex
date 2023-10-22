@@ -1,5 +1,6 @@
 @string{ test= "something" }
 @string{ name1 = "Mr. Foo" }
+@string{anch-ie = {Angew.~Chem. Int.~Ed.}}
 
 @comment{
   blahrg
@@ -8,17 +9,11 @@
 @preamble{silly things
 }
 
-@SomeType{key,
+@SomeType{key1,
   title  = "Some title, with a comma in it",
   year   = {2017},
   author = "Author1 and Author2",
   other  = {Something else}
-}
-
-@article{knuth,
-  title  = "Other title",
-  year   = {1938},
-  author = "Donald Knuth",
 }
 
 @misc{key2,
@@ -39,9 +34,20 @@
   
 }
 
-@article{knuth-single-line, title  = "Other title", year   = {1938}, author = "Donald Knuth", }
+@misc{key5,
+  author = {text here } # test,
+  title = "title: " # anch-ie
+}
 
-@errorintags{key4,
+@errorintags{key6,
   title = {some title}
   author = "should not work",
 }
+
+@article{knuth,
+  title  = "Other title",
+  year   = {1938},
+  author = "Donald Knuth",
+}
+
+@article{knuth-single-line, title  = "Other title", year   = {1938}, author = "Donald Knuth", }

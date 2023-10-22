@@ -1310,8 +1310,14 @@ OPTIONS                                                        *vimtex-options*
   This option sets the desired default backend for parsing bibliographies.
   This is used e.g. for gathering completion candidates. Possible values:
 
-    `bibtex`:   The fastest, but most hacky solution. Should work well in most
-              cases.
+    `bibtex`:   The fastest, but most "hacky" solution. Still, time has proved
+              that this works well!
+
+    `vim`:      The slowest but perhaps most robust solution, as it does not
+              require any external utilities.
+
+    `lua`:      A Lua implementation of the Vim backend. About as fast as the
+              `bibtex` parser, but this only works on Neovim.
 
     `bibparse`: Also fast, but might be more robust.
 
@@ -1335,9 +1341,6 @@ OPTIONS                                                        *vimtex-options*
                     (see |if_pyth| and |py3|) and that the `bibtexparser`
                     Python module is installed and available.
 
-    `vim`:      The slowest but perhaps most robust solution, as it does not
-              require any external utilities.
-
   Some people may want to conditionally change this option if a backend is
   available. For example: >vim
 
@@ -1345,7 +1348,10 @@ OPTIONS                                                        *vimtex-options*
       let g:vimtex_parser_bib_backend = 'bibparse'
     endif
 <
-  Default value: `bibtex`
+  Default value:
+
+    Vim:    `bibtex`
+    Neovim: `lua`
 
 *g:vimtex_parser_cmd_separator_check*
   This option specifies the policy for deciding whether successive groups of

@@ -5,6 +5,7 @@ filetype plugin on
 nnoremap q :qall!<cr>
 
 let g:vimtex_cache_root = '.'
+let g:vimtex_parser_bib_backend = 'bibtex'
 
 silent edit test_cache.tex
 
