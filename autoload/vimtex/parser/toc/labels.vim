@@ -24,7 +24,8 @@ function! s:matcher.init() abort dict " {{{1
     let self.label_dict[l:x.word] = ' (' . l:x.menu . ')'
   endfor
 
-  let l:width = winwidth(0) - 2
+  let l:wininfo = getwininfo(win_getid())[0]
+  let l:width = l:wininfo.width - l:wininfo.textoff - 2
   if stridx(g:vimtex_toc_config.split_pos, 'vert') >= 0
     let l:width = g:vimtex_toc_config.split_width
   endif
