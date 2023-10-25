@@ -48,7 +48,10 @@ function! s:handler.get_actions() abort dict " {{{1
   call vimtex#paths#pushd(b:vimtex.root)
   let l:entries = []
   for l:file in vimtex#bib#files()
-    let l:entries += vimtex#parser#bib(l:file, {'backend': 'vim'})
+    let l:entries += vimtex#parser#bib(
+          \ l:file,
+          \ {'backend': has('nvim') ? 'lua' : 'vim'}
+          \)
   endfor
   call vimtex#paths#popd()
 
@@ -119,7 +122,7 @@ function! s:actions.show() abort dict " {{{1
         \ ['Normal', ','],
         \])
 
-  for l:x in ['key', 'type', 'vimtex_lnum', 'vimtex_file']
+  for l:x in ['key', 'type', 'source_lnum', 'source_file']
     if has_key(l:entry, l:x)
       call remove(l:entry, l:x)
     endif
@@ -144,10 +147,10 @@ endfunction
 
 " }}}1
 function! s:actions.edit() abort dict " {{{1
-  execute 'edit' self.entry.vimtex_file
+  execute 'edit' self.entry.source_file
   filetype detect
 
-  call vimtex#pos#set_cursor(self.entry.vimtex_lnum, 0)
+  call vimtex#pos#set_cursor(self.entry.source_lnum, 0)
   normal! zv
 endfunction
 

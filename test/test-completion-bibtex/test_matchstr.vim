@@ -6,6 +6,7 @@ nnoremap q :qall!<cr>
 
 let g:vimtex_cache_root = '.'
 let g:vimtex_cache_persistent = 0
+let g:vimtex_parser_bib_backend = 'bibtex'
 let g:vimtex_complete_bib = {'match_str_fmt':  '@key @author_all @year "@title"'}
 
 silent edit test_matchstr.tex
