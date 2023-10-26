@@ -4,6 +4,16 @@
 -- Email:      karl.yngve@gmail.com
 --
 
+---Get the index for an end of pattern match or -1
+---@param string string
+---@param pattern string
+---@param start integer
+---@return integer
+local function matchend(string, pattern, start)
+  local _, idx = string:find(pattern, start + 1)
+  return idx or -1
+end
+
 ---Parse input line as middle or tail part of an entry
 ---@param item table The current entry
 ---@param line string The new line to parse
@@ -15,7 +25,7 @@ local function parse_tail(item, line)
   if item.level > 0 then
     item.body = item.body .. line
   else
-    item.body = item.body .. vim.fn.matchstr(line, [[.*\ze}]])
+    item.body = item.body .. line:match(".*}"):sub(1, -2)
     item.parsed = true
   end
 
@@ -28,12 +38,12 @@ end
 ---@param line string The line content of the entry
 ---@return table item Current entry with updated body
 local function parse_head(file, lnum, line)
-  local matches = vim.fn.matchlist(line, [[\v^\@(\w+)\s*\{\s*(.*)]])
-  if #matches == 0 then
+  local type, body = line:match "^@(%w+)%s*{%s*(.*)"
+  if not type then
     return {}
   end
 
-  local type = string.lower(matches[2])
+  type = type:lower()
   if type == "preamble" or type == "comment" then
     return {}
   end
@@ -44,7 +54,7 @@ local function parse_head(file, lnum, line)
     source_file = file,
     source_lnum = lnum,
     type = type,
-  }, matches[3])
+  }, body)
 end
 
 ---Parse the value part of a bib entry tag until separating comma or end.
@@ -56,12 +66,13 @@ end
 ---@param strings table<string, string>
 ---@param pre_value string
 ---@return string value The parsed value
----@return integer head New head position
+---@return integer new_head New head position
 local function get_tag_value_concat(body, head, strings, pre_value)
   local value = ""
   local new_head = head
 
-  if body:sub(head + 1, head + 1) == "{" then
+  local first_char = body:sub(head + 1, head + 1)
+  if first_char == "{" then
     local sum = 1
     local i = head + 1
     local n = #body
@@ -78,27 +89,27 @@ local function get_tag_value_concat(body, head, strings, pre_value)
     end
 
     value = body:sub(head + 2, i - 1)
-    new_head = vim.fn.matchend(body, [[^\s*]], i)
-  elseif body:sub(head + 1, head + 1) == [["]] then
-    local index = vim.fn.match(body, [[\\\@<!"]], head + 1)
+    new_head = matchend(body, "^%s*", i)
+  elseif first_char == '"' then
+    local index = body:find('[^\\]"', head + 1)
     if index < 0 then
       return "bibparser.lua: get_tag_value_concat failed", -1
     end
 
-    value = body:sub(head + 1 + 1, index - 1 + 1)
-    new_head = vim.fn.matchend(body, [[^\s*]], index + 1)
-  elseif vim.fn.match(body, [[^\w]], head) >= 0 then
-    value = vim.fn.matchstr(body, [[^\w[0-9a-zA-Z_-]*]], head)
-    new_head = vim.fn.matchend(body, [[^\s*]], head + vim.fn.strlen(value))
-    value = vim.fn.get(strings, value, [[@(]] .. value .. [[)]])
+    value = body:sub(head + 2, index)
+    new_head = matchend(body, "^%s*", index + 1)
+  elseif first_char:match "%w" then
+    value = body:match("^%w[0-9a-zA-Z_-]*", head + 1)
+    new_head = matchend(body, "^%s*", head + #value)
+    value = strings[value] or ("@(" .. value .. ")")
   end
 
   if body:sub(new_head + 1, new_head + 1) == "#" then
-    new_head = vim.fn.matchend(body, [[^\s*]], new_head + 1)
+    new_head = matchend(body, "^%s*", new_head + 1)
     return get_tag_value_concat(body, new_head, strings, pre_value .. value)
   end
 
-  return pre_value .. value, vim.fn.matchend(body, [[^,\s*]], new_head)
+  return pre_value .. value, matchend(body, "^,%s*", new_head)
 end
 
 ---Parse the value part of a bib entry tag until separating comma or end.
@@ -106,13 +117,13 @@ end
 ---@param head integer
 ---@param strings table<string, string>
 ---@return string value The parsed value
----@return integer head New head position
+---@return integer new_head New head position
 local function get_tag_value(body, head, strings)
   -- First check if the value is simply a number
-  if vim.regex([[\d]]):match_str(body:sub(head + 1, head + 1)) then
-    local value = vim.fn.matchstr(body, [[^\d\+]], head)
-    local new_head =
-      vim.fn.matchend(body, [[^\s*,\s*]], head + vim.fn.len(value))
+  local value = body:match("^%d+", head + 1)
+  if value then
+    -- -1 here
+    local new_head = matchend(body, "^%s*,%s*", head + #value)
     return value, new_head
   end
 
@@ -123,14 +134,14 @@ end
 ---@param body string Raw text in which to find tag
 ---@param head integer Where to start search for tag
 ---@return string tag_name The parsed tag
----@return integer head New head position
+---@return integer new_head New head position
 local function get_tag_name(body, head)
-  local matches = vim.fn.matchlist(body, [[^\v([-_:0-9a-zA-Z]+)\s*\=\s*]], head)
-  if #matches == 0 then
+  local _, new_head, match = body:find("^([0-9a-zA-Z_:-]+)%s*=%s*", head + 1)
+  if not new_head then
     return "", -1
   end
 
-  return string.lower(matches[2]), head + vim.fn.strlen(matches[1])
+  return match:lower(), new_head
 end
 
 ---Parse an item
@@ -138,23 +149,21 @@ end
 ---@param strings table<string, string>
 ---@return nil
 local function parse_item(item, strings)
-  local parts = vim.fn.matchlist(item.body, [[\v^([^, ]*)\s*,\s*(.*)]])
-
-  item.key = parts[2]
-  if item.key == nil or item.key == "" then
+  local key, body = item.body:match("^([^,%s]+)%s*,%s*(.*)")
+  if not key then
     return nil
   end
 
+  item.key = key
   item.level = nil
   item.parsed = nil
   item.body = nil
 
-  local body = parts[3]
   local tag = ""
   local value
   local head = 0
   while head >= 0 do
-    if tag == "" then
+    if #tag == 0 then
       tag, head = get_tag_name(body, head)
     else
       value, head = get_tag_value(body, head, strings)
@@ -171,18 +180,28 @@ end
 ---@return string key
 ---@return string value
 local function parse_string(raw_string)
-  local matches =
-    vim.fn.matchlist(raw_string, [[\v^\s*(\S+)\s*\=\s*"(.*)"\s*$]])
-  if vim.fn.empty(matches[3]) == 0 then
-    return matches[2], matches[3]
+  local key, value = raw_string:match([[^%s*([^%s]+)%s*=%s*"(.*)"%s*$]])
+  if key then
+    return key, value
   end
 
-  matches = vim.fn.matchlist(raw_string, [[\v^\s*(\S+)\s*\=\s*\{(.*)\}\s*$]])
-  if vim.fn.empty(matches[3]) == 0 then
-    return matches[2], matches[3]
+  key, value = raw_string:match("^%s*([^%s]+)%s*=%s*{(.*)}%s*$")
+  if key then
+    return key, value
   end
 
   return "", ""
+end
+
+---Read content of file filename
+---@param filename string
+---@return string[]
+local function readfile(filename)
+  local f = assert(io.open(filename, "r"))
+  local lines = vim.split(f:read "*a", "\n")
+  f:close()
+
+  return lines
 end
 
 local M = {}
@@ -190,24 +209,20 @@ local M = {}
 ---Parse the specified bibtex file
 ---The parser adheres to the format description found here:
 ---http://www.bibtex.org/Format/
----@param file string
+---@param filename string
 ---@return table[]
-M.parse = function(file)
-  if file == nil or not vim.fn.filereadable(file) then
+M.parse = function(filename)
+  if not vim.fn.filereadable(filename) then
     return {}
   end
-
   local items = {}
   local strings = {}
 
   local item = {}
   local key, value
-  local lines = vim.fn.readfile(file)
-  for lnum = 1, #lines do
-    local line = lines[lnum]
-
+  for lnum, line in ipairs(readfile(filename)) do
     if vim.tbl_isempty(item) then
-      item = parse_head(file, lnum, line)
+      item = parse_head(filename, lnum, line)
     else
       item = parse_tail(item, line)
     end
@@ -219,7 +234,7 @@ M.parse = function(file)
           strings[key] = value
         end
       else
-        table.insert(items, item)
+        items[#items + 1] = item
       end
       item = {}
     end
