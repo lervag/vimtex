@@ -93,7 +93,7 @@ local function get_tag_value_concat(body, head, strings, pre_value)
   elseif first_char == '"' then
     local index = body:find('[^\\]"', head + 1)
     if index < 0 then
-      return "bibparser.lua: get_tag_value_concat failed", -1
+      return "bib.lua: get_tag_value_concat failed", -1
     end
 
     value = body:sub(head + 2, index)
@@ -149,7 +149,7 @@ end
 ---@param strings table<string, string>
 ---@return nil
 local function parse_item(item, strings)
-  local key, body = item.body:match("^([^,%s]+)%s*,%s*(.*)")
+  local key, body = item.body:match "^([^,%s]+)%s*,%s*(.*)"
   if not key then
     return nil
   end
@@ -180,12 +180,12 @@ end
 ---@return string key
 ---@return string value
 local function parse_string(raw_string)
-  local key, value = raw_string:match([[^%s*([^%s]+)%s*=%s*"(.*)"%s*$]])
+  local key, value = raw_string:match [[^%s*([^%s]+)%s*=%s*"(.*)"%s*$]]
   if key then
     return key, value
   end
 
-  key, value = raw_string:match("^%s*([^%s]+)%s*=%s*{(.*)}%s*$")
+  key, value = raw_string:match "^%s*([^%s]+)%s*=%s*{(.*)}%s*$"
   if key then
     return key, value
   end

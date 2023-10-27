@@ -257,7 +257,7 @@ function! s:parse_with_lua(file) abort " {{{1
     return []
   endif
 
-  return luaeval('require("vimtex.bibparser").parse(_A)', a:file)
+  return luaeval('require("vimtex.parser.bib").parse(_A)', a:file)
 endfunction
 
 " }}}1
