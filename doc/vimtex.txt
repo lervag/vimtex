@@ -4578,25 +4578,49 @@ for LaTeX documents with |VimCompletesMe| and VimTeX's omni completion function:
 nvim-cmp ~
                                                      *vimtex-complete-nvim-cmp*
 |nvim-cmp| [0] is the successor of |nvim-compe|. It provides completion for
-different sources, including omni-completion through the additional `cmp-omni`
-package [1]. It is relatively straightforward to configure with VimTeX. First,
-both |nvim-cmp| and `cmp-omni` has to be installed, then `cmp-omni` must be
-added to the list of sources in your config. For example, in Lua, it should
-look something like this: >lua
+a lot of different sources. VimTeX support is provided either by using the
+dedicated `cmp-vimtex` extension [1] or through the general omni-completion
+source, `cmp-omni` [2]. Both approaches are explained briefly below in the
+form of a Lua snippet for configuration. It is assumed that the reader already
+knows how to install and configure plugins, though!
 
+[0]: https://github.com/hrsh7th/nvim-cmp
+[1]: https://github.com/micangl/cmp-vimtex
+[2]: https://github.com/hrsh7th/cmp-omni
+
+nvim-cmp with cmp-vimtex ~
+>lua
   local cmp = require('cmp')
   cmp.setup {
-    sources = cmp.config.sources { { name = 'omni', }, }
+    -- global configuration goes here
+    sources = {
+      { name = 'buffer' },
+      -- other sources (GLOBAL)
+    },
+  }
+  cmp.setup.filetype("tex", {
+    sources = {
+      { name = 'vimtex' },
+      { name = 'buffer' },
+      -- other sources
+    },
   }
 
-One should note that |nvim-cmp| overrides the standard completion-menu
-formatting. To preserve the format as provided by VimTeX, one can supply
-a custom format function. One good solution is to put the |nvim-cmp|
-configuration for `.tex` files in your `after/ftplugin/tex.lua` with content
-similar to this:  >lua
-
-  require('cmp').setup.buffer {
+nvim-cmp with cmp-omni ~
+>lua
+  local cmp = require('cmp')
+  cmp.setup {
+    -- global configuration goes here
+    sources = {
+      { name = 'buffer' },
+      -- other sources (GLOBAL)
+    },
+  }
+  cmp.setup.filetype("tex", {
     formatting = {
+      -- nvim-cmp overrides the standard completion-menu formatting. We use
+      -- a custom format function to preserve the format as provided by
+      -- VimTeX's omni completion function:
       format = function(entry, vim_item)
           vim_item.menu = ({
             omni = (vim.inspect(vim_item.menu):gsub('%"', "")),
@@ -4607,14 +4631,11 @@ similar to this:  >lua
         end,
     },
     sources = {
-      { name = 'omni' },
+      { name = "omni", trigger_characters = { "{", "\\" } },
       { name = 'buffer' },
       -- other sources
     },
   }
-
-[0]: https://github.com/hrsh7th/nvim-cmp
-[1]: https://github.com/hrsh7th/cmp-omni
 
 nvim-compe ~
                                                    *vimtex-complete-nvim-compe*
