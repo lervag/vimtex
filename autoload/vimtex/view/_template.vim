@@ -30,26 +30,9 @@ endfunction
 
 " }}}1
 function! s:viewer.out() dict abort " {{{1
-  if !exists('b:vimtex') | return '' | endif
-
-  let l:out = b:vimtex.compiler.get_file('pdf')
-
-  " Copy pdf and synctex files if we use temporary files
-  if g:vimtex_view_use_temp_files
-    let l:temp = b:vimtex.root . '/' . b:vimtex.name . '_vimtex.pdf'
-    if getftime(l:out) > getftime(l:temp)
-      call writefile(readfile(l:out, 'b'), l:temp, 'b')
-    endif
-    let l:out = l:temp
-
-    let l:old = b:vimtex.compiler.get_file('synctex.gz')
-    let l:new = fnamemodify(l:out, ':r') . '.synctex.gz'
-    if getftime(l:old) > getftime(l:new)
-      call rename(l:old, l:new)
-    endif
-  endif
-
-  return filereadable(l:out) ? l:out : ''
+  return exists('*b:vimtex.compiler.get_file')
+        \ ? b:vimtex.compiler.get_file('pdf')
+        \ : ''
 endfunction
 
 " }}}1

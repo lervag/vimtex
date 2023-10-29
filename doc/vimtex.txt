@@ -3275,32 +3275,18 @@ OPTIONS                                                        *vimtex-options*
   Default value: 1
 
 *g:vimtex_view_use_temp_files*
-  If nonzero, this will copy output files to a corresponding set of files
-  with `_vimtex` prepended to the name. If one combines this with the callback
-  feature, this may provide a very convenient way to avoid that the pdf
-  becomes unavailable during compilation, as it will only update the viewer
-  output file after a successful compilation.
+  When enabled, this option specifies to copy the `.pdf` and `.synctex.gz`
+  files after successful compilation. The viewer will use the copies, which
+  helps to avoid issues such that as the pdf becoming unavailable during
+  compilation.
 
-  The behaviour depends on the value:
+  The copies are named similar to the original files with a `_` prefix.
 
-  1: Copy output files after successful compilations and then update.
-  2: Copy output files after all compilations and then update.
+  Note: This option is only relevant for the `latexmk` compiler backend.
+        `latexrun` already ensures that the output file is updated only after
+        the compilation is completed.
 
-  Note: This is only relevant for the `latexmk` compiler backend. `latexrun`
-        already ensures that the output file is updated only after the
-        compilation is completed.
-
-  Note: This will disable the viewer from the `latexmk` end. That is, if this
-        option is enabled, opening and updating the pdf viewer will have to be
-        done by the user or by VimTeX, even if `latexmk` is chosen as the
-        compiler.
-
-  Note: This works best with the "mupdf" and "zathura" viewers. In particular,
-        these viewers should update automatically after the pdf is updated.
-        For general viewers, one has to create a callback function and connect
-        it through the |VimtexEventCompileSuccess| event to update the viewer.
-
-  Default value: 0
+  Default value: |v:false|
 
 *g:vimtex_view_forward_search_on_start*
   If disabled, the first invocation of the viewer will not perform a forward
@@ -5324,8 +5310,8 @@ LATEXMK                                               *vimtex-compiler-latexmk*
 > on both UNIX and MS-WINDOWS (XP, etc).
 
 `latexmk` is a compiler backend that handles recompilation of LaTeX documents
-when source files have been changed.  VimTeX uses the continuous mode by
-default, but `latexmk` also allows single shot compilations.  The compiler may
+when source files have been changed. VimTeX uses the continuous mode by
+default, but `latexmk` also allows single shot compilations. The compiler may
 be configured through the |g:vimtex_compiler_latexmk| option.
 
 If the `callback` key is enabled (it is by default and there is really no

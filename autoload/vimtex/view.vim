@@ -51,10 +51,10 @@ function! vimtex#view#compiler_callback() abort " {{{1
   if exists('*b:vimtex.viewer.compiler_callback')
     if !b:vimtex.viewer.check() | return | endif
 
-    let l:outfile = b:vimtex.viewer.out()
-    if !filereadable(l:outfile) | return | endif
+    let l:pdf = b:vimtex.viewer.out()
+    if empty(l:pdf) | return | endif
 
-    call b:vimtex.viewer.compiler_callback(l:outfile)
+    call b:vimtex.viewer.compiler_callback(l:pdf)
   endif
 endfunction
 

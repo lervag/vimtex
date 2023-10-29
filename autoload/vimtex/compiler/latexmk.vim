@@ -78,6 +78,13 @@ function! vimtex#compiler#latexmk#get_rc_opt(root, opt, type, default) abort " {
 endfunction
 
 " }}}1
+function! vimtex#compiler#latexmk#copy_temp_files() abort " {{{1
+  if exists('*b:vimtex.compiler.__copy_temp_files')
+    call b:vimtex.compiler.__copy_temp_files()
+  endif
+endfunction
+
+" }}}1
 
 
 let s:compiler = vimtex#compiler#_template#new({
@@ -107,7 +114,7 @@ function! s:compiler.__init() abort dict " {{{1
 
   call s:compare_with_latexmkrc(self, 'out_dir')
   call s:compare_with_latexmkrc(self, 'aux_dir')
-  
+
   " $VIMTEX_OUTPUT_DIRECTORY overrides configured compiler.aux_dir
   if !empty($VIMTEX_OUTPUT_DIRECTORY)
     if !empty(self.aux_dir)
@@ -120,6 +127,8 @@ function! s:compiler.__init() abort dict " {{{1
 
     let self.aux_dir = $VIMTEX_OUTPUT_DIRECTORY
   endif
+
+  call self.__init_temp_files()
 endfunction
 
 " }}}1
@@ -175,6 +184,11 @@ endfunction
 " }}}1
 
 function! s:compiler.get_file(ext) abort dict " {{{1
+  if g:vimtex_view_use_temp_files
+        \ && index(['pdf', 'synctex.gz'], a:ext) >= 0
+    return self.__get_temp_file(a:ext)
+  endif
+
   for l:root in [
         \ $VIMTEX_OUTPUT_DIRECTORY,
         \ self.aux_dir,
@@ -211,6 +225,8 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
+  call self.__clean_temp_files(a:full)
+
   let l:cmd = self.executable
   let l:cmd .= a:full ? ' -C' : ' -c'
 
@@ -263,6 +279,57 @@ function! s:compiler.get_engine() abort dict " {{{1
   return get(g:vimtex_compiler_latexmk_engines,
         \ l:tex_program,
         \ g:vimtex_compiler_latexmk_engines._)
+endfunction
+
+" }}}1
+
+function! s:compiler.__init_temp_files() abort dict " {{{1
+  let self.__temp_files = {}
+  if !g:vimtex_view_use_temp_files | return | endif
+
+  let l:root = !empty(self.out_dir)
+        \ ? self.out_dir
+        \ : self.state.root
+  for l:ext in ['pdf', 'synctex.gz']
+    let l:source = printf('%s/%s.%s', l:root, self.state.name, l:ext)
+    let l:target = printf('%s/_%s.%s', l:root, self.state.name, l:ext)
+    let self.__temp_files[l:source] = l:target
+  endfor
+
+  augroup vimtex_compiler
+    autocmd!
+    autocmd User VimtexEventCompileSuccess
+          \ call vimtex#compiler#latexmk#copy_temp_files()
+  augroup END
+endfunction
+
+" }}}1
+function! s:compiler.__copy_temp_files() abort dict " {{{1
+  for [l:source, l:target] in items(self.__temp_files)
+    if getftime(l:source) > getftime(l:target)
+      call writefile(readfile(l:source, 'b'), l:target, 'b')
+    endif
+  endfor
+endfunction
+
+" }}}1
+function! s:compiler.__get_temp_file(ext) abort dict " {{{1
+  for l:file in values(self.__temp_files)
+    if filereadable(l:file) && l:file =~# a:ext . '$'
+      return l:file
+    endif
+  endfor
+
+  return ''
+endfunction
+
+" }}}1
+function! s:compiler.__clean_temp_files(full) abort dict " {{{1
+  for l:file in values(self.__temp_files)
+    if filereadable(l:file) && (a:full || l:file[-3:] !=# 'pdf')
+      call delete(l:file)
+    endif
+  endfor
 endfunction
 
 " }}}1

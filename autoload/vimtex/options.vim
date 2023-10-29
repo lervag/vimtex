@@ -463,7 +463,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
   call s:init_option('vimtex_view_method', 'general')
-  call s:init_option('vimtex_view_use_temp_files', 0)
+  call s:init_option('vimtex_view_use_temp_files', v:false)
   call s:init_option('vimtex_view_forward_search_on_start', 1)
   call s:init_option('vimtex_view_reverse_search_edit_cmd', 'edit')
 

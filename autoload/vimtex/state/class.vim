@@ -38,7 +38,7 @@ function! vimtex#state#class#new(opts) abort " {{{1
 
   " Initialize state in submodules
   for l:mod in filter(
-        \ ['view', 'compiler', 'qf', 'toc', 'fold', 'context'],
+        \ ['compiler', 'view', 'qf', 'toc', 'fold', 'context'],
         \ 'index(l:opts.unsupported_modules, v:val) < 0')
     call vimtex#{l:mod}#init_state(l:new)
   endfor
