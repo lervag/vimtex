@@ -4564,7 +4564,7 @@ VimCompletesMe ~
                                                           *vimtex-complete-vcm*
 A plugin that maps <tab> to trigger the built-in completion that is most
 suitable to the current context.  The plugin is available here:
-https://github.com/ajh17/VimCompletesMe.
+https://git.sr.ht/~ackyshake/VimCompletesMe.vim
 
 The following options may be used to enable completion with the <tab> trigger
 for LaTeX documents with |VimCompletesMe| and VimTeX's omni completion function: >vim
