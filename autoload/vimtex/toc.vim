@@ -105,6 +105,8 @@ endfunction
 
 " }}}1
 function! s:toc.close() abort dict " {{{1
+  if !has_key(self, 'bufnr_prev') | return | endif
+
   let self.fold_level = &l:foldlevel
 
   if self.resize
@@ -114,6 +116,7 @@ function! s:toc.close() abort dict " {{{1
   if self.split_pos ==# 'full'
     silent execute 'buffer' self.bufnr_prev
   else
+    call win_gotoid(self.winid_prev)
     silent execute 'bwipeout' bufnr(self.name)
   endif
 
