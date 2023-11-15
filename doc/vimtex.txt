@@ -5934,7 +5934,9 @@ Zathura is, like MuPDF, a very fast and minimalistic viewer. Compared to
 MuPDF, it allows more user configuration. Zathura has full support for both
 forward and inverse search. Zathura should be straightforward to install and
 use on Linux with Xorg. It should also work on macOS and WSL, but users may
-want to read |vimtex-faq-zathura-macos| or |vimtex-faq-zathura-windows-wsl|.
+want to consider to use either the native Skim viewer (|vimtex-view-skim|) or
+Sioyek (|vimtex-view-sioyek|). The macOS users who still want to use Zathura
+should read |vimtex-faq-zathura-macos| or |vimtex-faq-zathura-windows-wsl|.
 
 Configuration: >vim
   " Main variant with xdotool
