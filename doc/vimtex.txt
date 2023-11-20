@@ -374,6 +374,8 @@ Buffer variable ~
         * https://github.com/jenterkin/vim-autosource
         * https://github.com/ii14/exrc.vim
         * https://github.com/MunifTanjim/exrc.nvim (neovim only)
+        * See also:
+          https://superuser.com/questions/598947/setting-vim-options-only-for-files-in-a-certain-directory-tree/598970#598970
 
                                                               *vimtex-tex-root*
 TeX root directive ~
