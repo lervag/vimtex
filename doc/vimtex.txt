@@ -4592,6 +4592,21 @@ knows how to install and configure plugins, though!
 [2]: https://github.com/hrsh7th/cmp-omni
 
 nvim-cmp with cmp-vimtex ~
+
+`cmp-vimtex` is a dedicated `nvim-cmp` extension that gives some extra
+benefits compared to the more general `cmp-omni`:
+
+* Allows fuzzy matching against all info provided by Vimtex (including
+  bibliographic details, useful for citations).
+* Parses and display all details contained in bibtex files for cite
+  completions.
+* Trims long strings in the completion menu (to add space for the documenation
+  window).
+* Triggers the completion menu automatically after typing `\cite{`.
+* Allows more granular configuration of the menus, and more.
+
+To use `cmp-vimtex`, you should add something like the following to your
+configuration. For more info, check the README of the github repo ([1] above).
 >lua
   local cmp = require('cmp')
   cmp.setup {
