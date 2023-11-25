@@ -8,8 +8,9 @@ function! vimtex#compiler#init_buffer() abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
   " Define commands
-  command! -buffer        VimtexCompile                        call vimtex#compiler#compile()
-  command! -buffer -bang  VimtexCompileSS                      call vimtex#compiler#compile_ss()
+  command! -buffer        -nargs=* VimtexCompile               call vimtex#compiler#compile(<f-args>)
+  command! -buffer -bang  -nargs=* VimtexCompileSS             call vimtex#compiler#compile_ss(<f-args>)
+
   command! -buffer -range VimtexCompileSelected <line1>,<line2>call vimtex#compiler#compile_selected('command')
   command! -buffer        VimtexCompileOutput                  call vimtex#compiler#output()
   command! -buffer        VimtexStop                           call vimtex#compiler#stop()
@@ -98,18 +99,18 @@ endfunction
 
 " }}}1
 
-function! vimtex#compiler#compile() abort " {{{1
+function! vimtex#compiler#compile(...) abort " {{{1
   if !b:vimtex.compiler.enabled | return | endif
 
   if b:vimtex.compiler.is_running()
     call vimtex#compiler#stop()
   else
-    call vimtex#compiler#start()
+    call call('vimtex#compiler#start', a:000)
   endif
 endfunction
 
 " }}}1
-function! vimtex#compiler#compile_ss() abort " {{{1
+function! vimtex#compiler#compile_ss(...) abort " {{{1
   if !b:vimtex.compiler.enabled | return | endif
 
   if b:vimtex.compiler.is_running()
@@ -118,7 +119,7 @@ function! vimtex#compiler#compile_ss() abort " {{{1
     return
   endif
 
-  call b:vimtex.compiler.start_single()
+  call call(b:vimtex.compiler.start_single, a:000)
 
   if g:vimtex_compiler_silent | return | endif
   call vimtex#log#info('Compiler started in background!')
@@ -193,7 +194,7 @@ function! vimtex#compiler#output() abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#compiler#start() abort " {{{1
+function! vimtex#compiler#start(...) abort " {{{1
   if !b:vimtex.compiler.enabled | return | endif
 
   if !b:vimtex.is_compileable()
@@ -210,7 +211,7 @@ function! vimtex#compiler#start() abort " {{{1
     return
   endif
 
-  call b:vimtex.compiler.start()
+  call call(b:vimtex.compiler.start, a:000)
 
   if g:vimtex_compiler_silent | return | endif
 

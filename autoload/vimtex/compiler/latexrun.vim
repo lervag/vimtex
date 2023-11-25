@@ -26,11 +26,12 @@ function! s:compiler.__check_requirements() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.__build_cmd() abort dict " {{{1
+function! s:compiler.__build_cmd(opts) abort dict " {{{1
   return 'latexrun ' . join(self.options)
         \ . ' --latex-cmd ' . self.get_engine()
         \ . ' -O '
         \ . (empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
+        \ . ' ' . join(a:opts)
         \ . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 
