@@ -119,7 +119,7 @@ function! vimtex#compiler#compile_ss(...) abort " {{{1
     return
   endif
 
-  call call(b:vimtex.compiler.start_single, a:000)
+  call b:vimtex.compiler.start_single(expandcmd(join(a:000)))
 
   if g:vimtex_compiler_silent | return | endif
   call vimtex#log#info('Compiler started in background!')
@@ -211,7 +211,7 @@ function! vimtex#compiler#start(...) abort " {{{1
     return
   endif
 
-  call call(b:vimtex.compiler.start, a:000)
+  call b:vimtex.compiler.start(expandcmd(join(a:000)))
 
   if g:vimtex_compiler_silent | return | endif
 

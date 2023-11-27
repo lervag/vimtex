@@ -35,14 +35,14 @@ function! s:compiler.__check_requirements() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.__build_cmd(opts) abort dict " {{{1
+function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
   let l:outdir = !empty(self.out_dir)
         \ ? self.out_dir
         \ : fnamemodify(self.state.tex, ':p:h')
 
   return 'tectonic ' . join(self.options)
         \ . ' --outdir="' . l:outdir . '"'
-        \ . ' ' . join(a:opts)
+        \ . a:passed_options
         \ . ' ' . vimtex#util#shellescape(self.state.base)
 endfunction
 

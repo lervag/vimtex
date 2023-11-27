@@ -132,12 +132,12 @@ function! s:compiler.__init() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.__build_cmd(opts) abort dict " {{{1
+function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
   let l:cmd = (has('win32')
         \ ? 'set max_print_line=2000 & '
         \ : 'max_print_line=2000 ') . self.executable
 
-  let l:cmd .= ' ' . join(self.options) . ' ' . join(a:opts)
+  let l:cmd .= ' ' . join(self.options) . a:passed_options
   let l:cmd .= ' ' . self.get_engine()
 
   if !empty(self.out_dir)

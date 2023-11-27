@@ -226,7 +226,8 @@ function! s:compiler.start(...) abort dict " {{{1
   call writefile([], self.output, 'a')
 
   " Prepare compile command
-  let self.cmd = self.__build_cmd(a:000)
+  let l:passed_options = a:0 > 0 ? ' ' . a:1 : ''
+  let self.cmd = self.__build_cmd(l:passed_options)
   let l:cmd = has('win32')
         \ ? 'cmd /s /c "' . self.cmd . '"'
         \ : ['sh', '-c', self.cmd]
