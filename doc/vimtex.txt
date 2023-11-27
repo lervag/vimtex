@@ -3513,6 +3513,9 @@ COMMANDS                                                      *vimtex-commands*
                           is equivalent to adding them to the `'options'` key
                           of |g:vimtex_compiler_latexmk|.
 
+                          Note: Special items in the arguments will be
+                          expanded as explained in |expandcmd|.
+
                                              *:VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*
 :VimtexCompileSS [opts]   Start single shot compilation.
