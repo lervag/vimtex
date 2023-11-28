@@ -430,6 +430,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax keyword texCommentTodo combak fixme todo xxx
         \ containedin=texComment contained
   syntax case match
+  syntax keyword texCommentTodo ISSUE NOTE
+        \ containedin=texComment contained
 
   " Highlight \iffalse ... \fi blocks as comments
   syntax region texComment matchgroup=texCmdConditional
