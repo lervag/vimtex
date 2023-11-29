@@ -3500,14 +3500,25 @@ COMMANDS                                                      *vimtex-commands*
 
                                              *:VimtexCompile*
                                              *<plug>(vimtex-compile)*
-:VimtexCompile            If the compiler supports and is set to run in
+:VimtexCompile [opts]     If the compiler supports and is set to run in
                           continuous mode, then this command works as
                           a compiler toggle. If not, this command will run
                           a single shot compilation.
 
+                          Arguments to the command will be passed on as options
+                          when starting the compiler. This allows the user to
+                          start the compiler with different options without
+                          changing any configuration. That is, if the user uses
+                          the latexmk backend, then adding any option argument
+                          is equivalent to adding them to the `'options'` key
+                          of |g:vimtex_compiler_latexmk|.
+
+                          Note: Special items in the arguments will be
+                          expanded as explained in |expandcmd|.
+
                                              *:VimtexCompileSS*
                                              *<plug>(vimtex-compile-ss)*
-:VimtexCompileSS          Start single shot compilation.
+:VimtexCompileSS [opts]   Start single shot compilation.
 
                                              *:VimtexCompileSelected*
                                              *<plug>(vimtex-compile-selected)*

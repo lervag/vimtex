@@ -65,7 +65,7 @@ function! s:compiler.__init() abort dict " {{{1
 endfunction
 
 " }}}1
-function! s:compiler.__build_cmd() abort dict " {{{1
+function! s:compiler.__build_cmd(opts) abort dict " {{{1
   throw 'VimTeX: __build_cmd method must be defined!'
 endfunction
 
@@ -226,7 +226,8 @@ function! s:compiler.start(...) abort dict " {{{1
   call writefile([], self.output, 'a')
 
   " Prepare compile command
-  let self.cmd = self.__build_cmd()
+  let l:passed_options = a:0 > 0 ? ' ' . a:1 : ''
+  let self.cmd = self.__build_cmd(l:passed_options)
   let l:cmd = has('win32')
         \ ? 'cmd /s /c "' . self.cmd . '"'
         \ : ['sh', '-c', self.cmd]
@@ -266,10 +267,10 @@ endfunction
 " }}}2
 
 " }}}1
-function! s:compiler.start_single() abort dict " {{{1
+function! s:compiler.start_single(...) abort dict " {{{1
   let l:continuous = self.continuous
   let self.continuous = 0
-  call self.start()
+  call call(self.start, a:000)
   let self.continuous = l:continuous
 endfunction
 
