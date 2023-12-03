@@ -47,9 +47,11 @@ function! vimtex#compiler#callback(status) abort " {{{1
   if !exists('b:vimtex.compiler') | return | endif
   silent! call s:output.pause()
 
-  if b:vimtex.compiler.silence_next_callback
+  let l:__silent = b:vimtex.compiler.silence_next_callback
+  if l:__silent
+    let b:vimtex.compiler.silence_next_callback = v:false
     if g:vimtex_compiler_silent
-      let b:vimtex.compiler.silence_next_callback = 0
+      let l:__silent = v:false
     else
       call vimtex#log#set_silent()
     endif
@@ -88,9 +90,8 @@ function! vimtex#compiler#callback(status) abort " {{{1
     endif
   endif
 
-  if b:vimtex.compiler.silence_next_callback
+  if l:__silent
     call vimtex#log#set_silent_restore()
-    let b:vimtex.compiler.silence_next_callback = 0
   endif
 
   call vimtex#qf#open(0)
