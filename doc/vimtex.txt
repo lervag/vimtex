@@ -2213,10 +2213,16 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_indent_ignored_envs*
   List of environments that should not add/reduce indentation.
 
+  Note: Each item is interpreted as a regular expression that is combined into
+        very magic regexes like `\v<%(document|...)>`, see |/\v|.
+
   Default value: ['document']
 
 *g:vimtex_indent_lists*
   List of environments that act like lists with `\item` entries.
+
+  Note: Each item is interpreted as a regular expression that is combined into
+        regexes like `\\begin{\%(itemize|description|...\)`.
 
   Default value: [
       \ 'itemize',
