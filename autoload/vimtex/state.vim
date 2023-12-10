@@ -17,6 +17,15 @@ function! vimtex#state#init() abort " {{{1
   let [l:main, l:main_parser, l:unsupported_modules] = s:get_main()
   let l:id = s:get_main_id(l:main)
 
+  if exists('s:cand_fallback')
+    call vimtex#log#warning(
+          \ 'Ignored latexmain specifier which points to: ',
+          \ s:cand_fallback,
+          \ 'Reason: That main file did not include this file!',
+          \)
+    unlet s:cand_fallback
+  endif
+
   if l:id >= 0
     let b:vimtex_id = l:id
     let b:vimtex = s:vimtex_states[l:id]
