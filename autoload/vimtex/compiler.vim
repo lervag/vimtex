@@ -77,6 +77,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
       call vimtex#syntax#packages#init()
     endif
 
+    call vimtex#qf#open(0)
     if exists('#User#VimtexEventCompileSuccess')
       doautocmd <nomodeline> User VimtexEventCompileSuccess
     endif
@@ -85,6 +86,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
       call vimtex#log#warning('Compilation failed!')
     endif
 
+    call vimtex#qf#open(0)
     if exists('#User#VimtexEventCompileFailed')
       doautocmd <nomodeline> User VimtexEventCompileFailed
     endif
@@ -94,7 +96,6 @@ function! vimtex#compiler#callback(status) abort " {{{1
     call vimtex#log#set_silent_restore()
   endif
 
-  call vimtex#qf#open(0)
   silent! call s:output.resume()
 endfunction
 
