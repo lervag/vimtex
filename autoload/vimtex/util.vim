@@ -103,6 +103,16 @@ function! vimtex#util#is_win() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#win_clean_output(lines) abort " {{{1
+  let l:lines = map(a:lines, {_, x -> substitute(x, '\r$', '', '')})
+  return map(l:lines, {_, x ->
+        \ match(x, '[\x80-\x9F]') > 0
+        \  ? iconv(x, 'windows-1252', 'utf-8')
+        \  : x
+        \})
+endfunction
+
+" }}}1
 function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
   let l:option = a:0 > 0 ? a:1 : 'force'
   if index(['force', 'keep', 'error'], l:option) < 0

@@ -58,8 +58,8 @@ function! vimtex#jobs#capture(cmd, ...) abort " {{{1
   call vimtex#paths#popd()
 
   " On Windows there may be trailing CR characters
-  return has('win32')
-        \ ? map(l:output, {_, x -> substitute(x, '\r$', '', '')})
+  return vimtex#util#is_win()
+        \ ? vimtex#util#win_clean_output(l:output)
         \ : l:output
 endfunction
 
