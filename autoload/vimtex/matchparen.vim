@@ -64,10 +64,12 @@ endfunction
 
 " }}}1
 function! s:matchparen.clear() abort dict " {{{1
-  silent! call matchdelete(w:vimtex_match_id1)
-  silent! call matchdelete(w:vimtex_match_id2)
-  unlet! w:vimtex_match_id1
-  unlet! w:vimtex_match_id2
+  if exists('w:vimtex_match_id1')
+    call matchdelete(w:vimtex_match_id1)
+    call matchdelete(w:vimtex_match_id2)
+    unlet! w:vimtex_match_id1
+    unlet! w:vimtex_match_id2
+  endif
 endfunction
 function! s:matchparen.highlight() abort dict " {{{1
   call self.clear()
