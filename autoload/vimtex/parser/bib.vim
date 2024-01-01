@@ -362,6 +362,9 @@ function! s:parse_item(item, strings) abort " {{{1
   while l:head >= 0
     if empty(l:tag)
       let [l:tag, l:head] = s:get_tag_name(l:body, l:head)
+      if l:tag == 'key'
+        let l:tag = 'keyfield'
+      endif
     else
       let [l:value, l:head] = s:get_tag_value(l:body, l:head, a:strings)
       let a:item[l:tag] = l:value

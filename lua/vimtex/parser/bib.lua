@@ -165,6 +165,9 @@ local function parse_item(item, strings)
   while head >= 0 do
     if #tag == 0 then
       tag, head = get_tag_name(body, head)
+      if tag == "key" then
+        tag = "keyfield"
+      end
     else
       value, head = get_tag_value(body, head, strings)
       item[tag] = value
