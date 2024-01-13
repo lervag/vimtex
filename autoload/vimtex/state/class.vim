@@ -14,7 +14,7 @@ function! vimtex#state#class#new(opts) abort " {{{1
 
   let l:new = deepcopy(s:vimtex)
 
-  let l:new.root = fnamemodify(l:opts.main, ':h')
+  let l:new.root = resolve(fnamemodify(l:opts.main, ':h'))
   let l:new.base = fnamemodify(l:opts.main, ':t')
   let l:new.name = fnamemodify(l:opts.main, ':t:r')
   let l:new.main_parser = l:opts.main_parser
@@ -25,7 +25,9 @@ function! vimtex#state#class#new(opts) abort " {{{1
   endif
 
   let l:ext = fnamemodify(l:opts.main, ':e')
-  let l:new.tex = l:ext =~? '\v^%(%(la)?tex|dtx|tikz|ins)$' ? l:opts.main : ''
+  let l:new.tex = l:ext =~? '\v^%(%(la)?tex|dtx|tikz|ins)$'
+        \ ? l:new.root . '/' . l:new.base
+        \ : ''
 
   " Get preamble for some state parsing
   let l:preamble = !empty(l:new.tex)
