@@ -32,7 +32,7 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
         \ . ' -O '
         \ . (empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
         \ . a:passed_options
-        \ . ' ' . vimtex#util#shellescape(self.state.base)
+        \ . ' ' . vimtex#util#shellescape(self.file_info.base)
 endfunction
 
 " }}}1
@@ -40,13 +40,13 @@ endfunction
 function! s:compiler.clean(...) abort dict " {{{1
   let l:cmd = printf('latexrun --clean-all -O %s',
         \ empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
-  call vimtex#jobs#run(l:cmd, {'cwd': self.state.root})
+  call vimtex#jobs#run(l:cmd, {'cwd': self.file_info.root})
 endfunction
 
 " }}}1
 function! s:compiler.get_engine() abort dict " {{{1
   return get(g:vimtex_compiler_latexrun_engines,
-        \ self.state.get_tex_program(),
+        \ b:vimtex.get_tex_program(),
         \ g:vimtex_compiler_latexrun_engines._)
 endfunction
 

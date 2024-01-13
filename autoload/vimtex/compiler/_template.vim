@@ -19,7 +19,7 @@ let s:compiler = {
       \ 'hooks': [],
       \ 'output': tempname(),
       \ 'silence_next_callback': 0,
-      \ 'state': {},
+      \ 'file_info': {},
       \ 'status': -1,
       \}
 
@@ -73,9 +73,9 @@ endfunction
 function! s:compiler.__pprint() abort dict " {{{1
   let l:list = []
 
-  if self.state.tex !=# b:vimtex.tex
-    call add(l:list, ['root', self.state.root])
-    call add(l:list, ['target', self.state.tex])
+  if self.file_info.tex !=# b:vimtex.tex
+    call add(l:list, ['root', self.file_info.root])
+    call add(l:list, ['target', self.file_info.tex])
   endif
 
   if has_key(self, 'get_engine')
@@ -115,21 +115,21 @@ function! s:compiler._create_build_dir(path) abort dict " {{{1
   " Note: This may need to create a hierarchical structure!
   if empty(a:path) | return | endif
 
-  if has_key(self.state, 'get_sources')
-    let l:dirs = self.state.get_sources()
+  if has_key(b:vimtex, 'get_sources')
+    let l:dirs = b:vimtex.get_sources()
     call filter(map(
           \ l:dirs, "fnamemodify(v:val, ':h')"),
           \ {_, x -> x !=# '.'})
     call filter(l:dirs, {_, x -> stridx(x, '../') != 0})
   else
-    let l:dirs = glob(self.state.root . '/**/*.tex', v:false, v:true)
+    let l:dirs = glob(self.file_info.root . '/**/*.tex', v:false, v:true)
     call map(l:dirs, "fnamemodify(v:val, ':h')")
-    call map(l:dirs, 'strpart(v:val, strlen(self.state.root) + 1)')
+    call map(l:dirs, 'strpart(v:val, strlen(self.file_info.root) + 1)')
   endif
   call uniq(sort(filter(l:dirs, '!empty(v:val)')))
 
   call map(l:dirs, {_, x ->
-        \ (vimtex#paths#is_abs(a:path) ? '' : self.state.root . '/')
+        \ (vimtex#paths#is_abs(a:path) ? '' : self.file_info.root . '/')
         \ . a:path . '/' . x})
   call filter(l:dirs, '!isdirectory(v:val)')
   if empty(l:dirs) | return | endif
@@ -149,7 +149,7 @@ function! s:compiler._remove_dir(path) abort dict " {{{1
 
   let l:out_dir = vimtex#paths#is_abs(a:path)
         \ ? a:path
-        \ : self.state.root . '/' . a:path
+        \ : self.file_info.root . '/' . a:path
   if !isdirectory(l:out_dir) | return | endif
 
   let l:tree = glob(l:out_dir . '/**/*', 0, 1)
@@ -179,13 +179,13 @@ function! s:compiler.get_file(ext) abort dict " {{{1
   for l:root in [
         \ $VIMTEX_OUTPUT_DIRECTORY,
         \ self.out_dir,
-        \ self.state.root
+        \ self.file_info.root
         \]
     if empty(l:root) | continue | endif
 
-    let l:cand = printf('%s/%s.%s', l:root, self.state.name, a:ext)
+    let l:cand = printf('%s/%s.%s', l:root, self.file_info.name, a:ext)
     if !vimtex#paths#is_abs(l:root)
-      let l:cand = self.state.root . '/' . l:cand
+      let l:cand = self.file_info.root . '/' . l:cand
     endif
 
     if filereadable(l:cand)
@@ -210,7 +210,7 @@ function! s:compiler.clean(full) abort dict " {{{1
   endfor
 
   for l:expr in g:vimtex_compiler_clean_paths
-    for l:path in glob(self.state.root . '/' . l:expr, v:false, v:true)
+    for l:path in glob(self.file_info.root . '/' . l:expr, v:false, v:true)
       call delete(l:path, 'rf')
     endfor
   endfor
@@ -298,7 +298,7 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
         \ 'err_io': 'file',
         \ 'out_name': self.output,
         \ 'err_name': self.output,
-        \ 'cwd': self.state.root,
+        \ 'cwd': self.file_info.root,
         \}
   if self.continuous
     let l:options.out_io = 'pipe'
@@ -306,7 +306,7 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
     let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.err_cb = function('s:callback_continuous_output')
   else
-    let s:cb_target = self.state.tex !=# b:vimtex.tex ? self.state.tex : ''
+    let s:cb_target = self.file_info.tex !=# b:vimtex.tex ? self.file_info.tex : ''
     let s:cb_output = self.output
     let l:options.exit_cb = function('s:callback')
   endif
@@ -401,8 +401,8 @@ function! s:compiler_nvim.exec(cmd) abort dict " {{{1
         \ 'stdin': 'null',
         \ 'on_stdout': function('s:callback_nvim_output'),
         \ 'on_stderr': function('s:callback_nvim_output'),
-        \ 'cwd': self.state.root,
-        \ 'tex': self.state.tex,
+        \ 'cwd': self.file_info.root,
+        \ 'tex': self.file_info.tex,
         \ 'output': self.output,
         \}
 

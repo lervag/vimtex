@@ -34,7 +34,14 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#init_state(state) abort " {{{1
-  let a:state.compiler = s:init_compiler({'state': a:state})
+  let a:state.compiler = s:init_compiler({
+        \ 'file_info': {
+        \   'root': a:state.root,
+        \   'base': a:state.base,
+        \   'name': a:state.name,
+        \   'tex': a:state.tex,
+        \ }
+        \})
 endfunction
 
 " }}}1
@@ -137,14 +144,12 @@ function! vimtex#compiler#compile_selected(type) abort range " {{{1
         \ ? {'type': 'range', 'range': [a:firstline, a:lastline]}
         \ : {'type':  a:type =~# 'line\|char\|block' ? 'operator' : a:type}
 
-  let l:file = vimtex#parser#selection_to_texfile(l:opts)
-  if empty(l:file) | return | endif
-  let l:tex_program = b:vimtex.get_tex_program()
-  let l:file.get_tex_program = {-> l:tex_program}
+  let l:file_info = vimtex#parser#selection_to_texfile(l:opts)
+  if empty(l:file_info) | return | endif
 
   " Create and initialize temporary compiler
   let l:compiler = s:init_compiler({
-        \ 'state': l:file,
+        \ 'file_info': l:file_info,
         \ 'out_dir': '',
         \ 'continuous': 0,
         \ 'callback': 0,
@@ -252,7 +257,7 @@ function! vimtex#compiler#stop_all() abort " {{{1
           \ && l:state.compiler.enabled
           \ && l:state.compiler.is_running()
       call l:state.compiler.stop()
-      call vimtex#log#info('Compiler stopped (' . l:state.compiler.state.base . ')')
+      call vimtex#log#info('Compiler stopped (' . l:state.compiler.file_info.base . ')')
     endif
   endfor
 endfunction
@@ -317,7 +322,7 @@ endfunction
 function! s:init_compiler(options) abort " {{{1
   if type(g:vimtex_compiler_method) == v:t_func
         \ || exists('*' . g:vimtex_compiler_method)
-    let l:method = call(g:vimtex_compiler_method, [a:options.state.tex])
+    let l:method = call(g:vimtex_compiler_method, [a:options.file_info.tex])
   else
     let l:method = g:vimtex_compiler_method
   endif
