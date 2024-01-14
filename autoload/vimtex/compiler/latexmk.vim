@@ -163,7 +163,7 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
     endif
   endif
 
-  return l:cmd . ' ' . vimtex#util#shellescape(self.file_info.base)
+  return l:cmd . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 
 " }}}1
@@ -197,7 +197,7 @@ function! s:compiler.get_file(ext) abort dict " {{{1
         \]
     if empty(l:root) | continue | endif
 
-    let l:cand = printf('%s/%s.%s', l:root, self.file_info.name, a:ext)
+    let l:cand = printf('%s/%s.%s', l:root, self.file_info.jobname, a:ext)
     if !vimtex#paths#is_abs(l:root)
       let l:cand = self.file_info.root . '/' . l:cand
     endif
@@ -238,7 +238,7 @@ function! s:compiler.clean(full) abort dict " {{{1
     let l:cmd .= ' -auxdir=' . fnameescape(self.aux_dir)
   endif
 
-  let l:cmd .= ' ' . vimtex#util#shellescape(self.file_info.base)
+  let l:cmd .= ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 
   call vimtex#jobs#run(l:cmd, {'cwd': self.file_info.root})
 endfunction
@@ -250,8 +250,8 @@ function! s:compiler.get_engine() abort dict " {{{1
   let l:tex_program = l:tex_program_directive
 
   " Parse tex_program from from pdf_mode option in .latexmkrc
-  let [l:pdf_mode, l:is_local] =
-        \ vimtex#compiler#latexmk#get_rc_opt(self.file_info.root, 'pdf_mode', 1, -1)
+  let [l:pdf_mode, l:is_local] = vimtex#compiler#latexmk#get_rc_opt(
+        \ self.file_info.root, 'pdf_mode', 1, -1)
 
   if l:pdf_mode >= 1 && l:pdf_mode <= 5
     let l:tex_program_pdfmode = [
@@ -291,8 +291,8 @@ function! s:compiler.__init_temp_files() abort dict " {{{1
         \ ? self.out_dir
         \ : self.file_info.root
   for l:ext in ['pdf', 'synctex.gz']
-    let l:source = printf('%s/%s.%s', l:root, self.file_info.name, l:ext)
-    let l:target = printf('%s/_%s.%s', l:root, self.file_info.name, l:ext)
+    let l:source = printf('%s/%s.%s', l:root, self.file_info.jobname, l:ext)
+    let l:target = printf('%s/_%s.%s', l:root, self.file_info.jobname, l:ext)
     let self.__temp_files[l:source] = l:target
   endfor
 

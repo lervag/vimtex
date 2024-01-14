@@ -73,9 +73,13 @@ endfunction
 function! s:compiler.__pprint() abort dict " {{{1
   let l:list = []
 
-  if self.file_info.tex !=# b:vimtex.tex
+  if self.file_info.target !=# b:vimtex.tex
     call add(l:list, ['root', self.file_info.root])
-    call add(l:list, ['target', self.file_info.tex])
+    call add(l:list, ['target', self.file_info.target_basename])
+  endif
+
+  if self.file_info.jobname !=# b:vimtex.name
+    call add(l:list, ['jobname', self.file_info.jobname])
   endif
 
   if has_key(self, 'get_engine')
@@ -183,7 +187,7 @@ function! s:compiler.get_file(ext) abort dict " {{{1
         \]
     if empty(l:root) | continue | endif
 
-    let l:cand = printf('%s/%s.%s', l:root, self.file_info.name, a:ext)
+    let l:cand = printf('%s/%s.%s', l:root, self.file_info.jobname, a:ext)
     if !vimtex#paths#is_abs(l:root)
       let l:cand = self.file_info.root . '/' . l:cand
     endif
@@ -231,6 +235,12 @@ function! s:compiler.start(...) abort dict " {{{1
   let l:cmd = has('win32')
         \ ? 'cmd /s /c "' . self.cmd . '"'
         \ : ['sh', '-c', self.cmd]
+
+  " Handle -jobname if it is passed as an option
+  let l:jobname = matchstr(self.cmd, '-jobname=\zs\S*')
+  let self.file_info.jobname = empty(l:jobname)
+        \ ? self.file_info.target_name
+        \ : l:jobname
 
   " Execute command and toggle status
   call self.exec(l:cmd)
@@ -306,7 +316,9 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
     let l:options.out_cb = function('s:callback_continuous_output')
     let l:options.err_cb = function('s:callback_continuous_output')
   else
-    let s:cb_target = self.file_info.tex !=# b:vimtex.tex ? self.file_info.tex : ''
+    let s:cb_target = self.file_info.target !=# b:vimtex.tex
+          \ ? self.file_info.target
+          \ : ''
     let s:cb_output = self.output
     let l:options.exit_cb = function('s:callback')
   endif
@@ -402,7 +414,7 @@ function! s:compiler_nvim.exec(cmd) abort dict " {{{1
         \ 'on_stdout': function('s:callback_nvim_output'),
         \ 'on_stderr': function('s:callback_nvim_output'),
         \ 'cwd': self.file_info.root,
-        \ 'tex': self.file_info.tex,
+        \ 'tex': self.file_info.target,
         \ 'output': self.output,
         \}
 

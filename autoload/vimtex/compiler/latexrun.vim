@@ -32,7 +32,7 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
         \ . ' -O '
         \ . (empty(self.out_dir) ? '.' : fnameescape(self.out_dir))
         \ . a:passed_options
-        \ . ' ' . vimtex#util#shellescape(self.file_info.base)
+        \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 
 " }}}1
