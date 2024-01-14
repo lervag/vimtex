@@ -5827,10 +5827,11 @@ is enabled.
 qpdfview ~
 https://launchpad.net/qpdfview
 qpdfview is a tabbed document viewer. It supports both forward and inverse
-search. The latter must be set up from within the viewer. Use the viewer
-configuration as explained in |vimtex-synctex-inverse-search|, but note that
-the interpolation variables should be `%1` for the filename and `%2` for the
-line number.
+search. The latter must be set up from within the viewer (under "Edit ->
+Settings -> Source Editor"). Use the viewer configuration as explained in
+|vimtex-synctex-inverse-search|, but note that the interpolation variables
+should be `%1` for the filename and `%2` for the line number. Inverse search
+is triggered by right clicking in the document.
 
 Configuration: >vim
   let g:vimtex_view_general_viewer = 'qpdfview'
