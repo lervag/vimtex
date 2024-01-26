@@ -559,8 +559,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " Math regions: Inline Math Zones
   let l:conceal = g:vimtex_syntax_conceal.math_bounds ? 'concealends' : ''
   execute 'syntax region texMathZoneLI matchgroup=texMathDelimZoneLI'
-          \ 'start="\\\@<!\\("'
-          \ 'end="\\\@<!\\)"'
+          \ 'start="\\("'
+          \ 'end="\\)"'
           \ 'contains=@texClusterMath'
           \ l:conceal
   execute 'syntax region texMathZoneLD matchgroup=texMathDelimZoneLD'
