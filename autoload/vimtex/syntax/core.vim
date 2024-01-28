@@ -53,19 +53,19 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " {{{2 TeX symbols and special characters
 
-  syntax match texLigature "--"
-  syntax match texLigature "---"
-  syntax match texLigature "\([`',]\)\1"
+  syntax match texLigature "---\?"
+  syntax match texLigature "``"
+  syntax match texLigature "''"
+  syntax match texLigature ",,"
   syntax match texTabularChar "&"
   syntax match texTabularChar "\\\\"
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
   syntax match texSpecialChar "\~"
   syntax match texSpecialChar "\\ "
-  syntax match texSpecialChar "\\[$&%#{}_@]"
+  syntax match texSpecialChar "\\[$&%#{}_@,;:!>]"
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
-  syntax match texSpecialChar "\\[,;:!>]"
 
   " }}}2
   " {{{2 Commands: general
@@ -1955,7 +1955,9 @@ endfunction
 function! s:match_math_delims() abort " {{{1
   syntax match texMathDelimMod contained "\\\(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
-  syntax match texMathDelim contained "[()[\]]\|\\[{}]"
+  syntax match texMathDelim contained "[()[\]]"
+  syntax match texMathDelim contained "\\{"
+  syntax match texMathDelim contained "\\}"
   syntax match texMathDelim contained "\\backslash\>"
   syntax match texMathDelim contained "\\downarrow\>"
   syntax match texMathDelim contained "\\Downarrow\>"
