@@ -1,0 +1,46 @@
+\documentclass{article}
+\begin{document}
+
+\noindent Standard \LaTeX{} practice is to write inline math by enclosing it between \verb|\(...\)|:
+
+\begin{quote}
+  In physics, the mass-energy equivalence is stated
+  by the equation \(E=mc^2\), discovered in 1905 by Albert Einstein.
+\end{quote}
+
+\noindent Instead if writing (enclosing) inline math between \verb|\(...\)| you can use \texttt{\$...\$} to achieve the same result:
+
+\begin{quote}
+  In physics, the mass-energy equivalence is stated
+  by the equation $E=mc^2$, discovered in 1905 by Albert Einstein.
+\end{quote}
+
+\noindent Or, you can use \verb|\begin{math}...\end{math}|:
+
+\begin{quote}
+  In physics, the mass-energy equivalence is stated
+  by the equation \begin{math}E=mc^2\end{math}, discovered in 1905 by Albert Einstein.
+\end{quote}
+
+This is a simple math expression \(\sqrt{x^2+1}\) inside text. 
+And this is also the same: 
+\begin{math}
+\sqrt{x^2+1}
+\end{math}
+but by using another command.
+
+This is a simple math expression without numbering
+\[\sqrt{x^2+1}\] 
+separated from text.
+
+This is also the same:
+\begin{displaymath}
+\sqrt{x^2+1}
+\end{displaymath}
+
+\ldots and this:
+\begin{equation*}
+\sqrt{x^2+1}
+\end{equation*}
+
+\end{document}
