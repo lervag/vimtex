@@ -55,12 +55,12 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   syntax match texLigature "--"
   syntax match texLigature "---"
-  syntax match texLigature "``\|''\|,,"
+  syntax match texLigature "\([`',]\)\1"
   syntax match texTabularChar "&"
   syntax match texTabularChar "\\\\"
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
-  syntax match texSpecialChar "\\\@<!\~"
+  syntax match texSpecialChar "\~"
   syntax match texSpecialChar "\\ "
   syntax match texSpecialChar "\\[$&%#{}_@]"
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
@@ -2174,7 +2174,7 @@ endfunction
 
 " }}}1
 function! s:match_conceal_spacing() abort " {{{1
-  syntax match texSpecialChar "\\\@<!\~"          conceal cchar= 
+  syntax match texSpecialChar "\~"                conceal cchar= 
   syntax match texSpecialChar "\\ "               conceal cchar= 
   syntax match texSpecialChar "\\[,;:!>]"         conceal
   syntax match texSpecialChar "\\@\ze\s\+"        conceal
