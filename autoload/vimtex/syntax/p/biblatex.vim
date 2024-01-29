@@ -47,7 +47,6 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
         \ '[Cc]ite%(title|author|year%(par)?|date)[s]?',
         \ '[Pp]arencite[s]?',
         \ '[Ppf]?[Nn]otecite',
-        \ '[pPfFsStTaA]?[Vv]olcite[s]?',
         \ '[Ss]upercite[s]?',
         \ 'Cite',
         \ 'cite%(num|text|url|field|list|name)',
