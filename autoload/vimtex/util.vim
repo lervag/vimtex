@@ -104,12 +104,7 @@ endfunction
 
 " }}}1
 function! vimtex#util#win_clean_output(lines) abort " {{{1
-  let l:lines = map(a:lines, {_, x -> substitute(x, '\r$', '', '')})
-  return map(l:lines, {_, x ->
-        \ match(x, '[\x80-\x9F,\xE1]') > 0
-        \  ? iconv(x, 'windows-1252', 'utf-8')
-        \  : x
-        \})
+  return map(a:lines, {_, x -> substitute(x, '\r$', '', '')})
 endfunction
 
 " }}}1
