@@ -8,6 +8,7 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
   syntax match texCmdBib nextgroup=texFilesArg "\\addbibresource\>"
 
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\bibentry\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\Cite\>\*\?"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[pt]\?\>\*\?"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\citeal[tp]\>\*\?"
   syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\%(num\|text\|url\)\>"
@@ -48,6 +49,7 @@ function! vimtex#syntax#p#biblatex#load(cfg) abort " {{{1
         \ '[Ppf]?[Nn]otecite',
         \ '[pPfFsStTaA]?[Vv]olcite[s]?',
         \ '[Ss]upercite[s]?',
+        \ 'Cite',
         \ 'cite%(num|text|url|field|list|name)',
         \ 'citeal[tp]',
         \ 'foot%(full)?cite%(text)?',

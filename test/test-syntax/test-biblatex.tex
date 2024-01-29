@@ -2,6 +2,7 @@
 \usepackage{biblatex}
 \usepackage{csquotes}
 
+% \addbibresource{biblatex-examples.bib}
 \addbibresource{../common/local1.bib}
 
 \begin{document}
@@ -17,7 +18,8 @@ Bla bla bla, see Ref.~\cite{Local1,Local1}. For more info, see also \cite{Local1
 \smartcite{}
 \Textcite[e.g.][]{}
 
-\cite{}
+\cite{fooBar}
+\Cite{fooBar}
 \citealp*{}
 \citealp{}
 \citealt*{}
@@ -31,5 +33,8 @@ Bla bla bla, see Ref.~\cite{Local1,Local1}. For more info, see also \cite{Local1
 \citetext{}
 \citeyear{}
 \citeyearpar{}
+
+\volcite{1}[23]{worman}
+\volcite[23]{worman}
 
 \end{document}
