@@ -36,7 +36,7 @@ table of contents and click on it.
     - [parser.vim](#parservim)
     - [qf.vim](#qfvim)
     - [syntax](#syntax-1)
-    - [text\_obj.vim](#text%5C_objvim)
+    - [text\_obj.vim](#text_objvim)
     - [view.vim](#viewvim)
   - [health/vimtex.vim](#healthvimtexvim)
   - [unite/sources/vimtex.vim](#unitesourcesvimtexvim)
