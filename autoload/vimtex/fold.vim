@@ -55,6 +55,7 @@ function! vimtex#fold#init_state(state) abort " {{{1
         \ . '|^\s*}'
   let a:state.fold_re_next = ''
   for l:name in [
+        \ 'comment_pkg',
         \ 'preamble',
         \ 'cmd_single',
         \ 'cmd_single_opt',
