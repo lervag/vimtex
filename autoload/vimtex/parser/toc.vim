@@ -204,6 +204,7 @@ function! vimtex#parser#toc#get_matchers() abort " {{{1
       let l:re .= '|' . l:matcher.prefilter_re
     endif
   endfor
+  let l:cmds = vimtex#util#uniq_unsorted(l:cmds)
   let l:matchers.prefilter = '\v\\%(' . join(l:cmds, '|') . ')' . l:re
 
   return l:matchers
