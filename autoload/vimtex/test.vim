@@ -12,27 +12,9 @@ function! vimtex#test#finished() abort " {{{1
     let l:msg = l:match[3]
 
     if l:msg =~# 'Expected .*but got'
-      echo printf("%s:%d\n", l:file, l:lnum)
-
-      let l:intro = matchstr(l:msg, '.\{-}\ze\s*\(: \)\?Expected ')
-      if !empty(l:intro)
-        echo printf("  %s\n", l:intro)
-      endif
-
-      let l:expect = matchstr(l:msg, 'Expected \zs.*\zebut got')
-      let l:observe = matchstr(l:msg, 'Expected .*but got \zs.*')
-      echo printf("  Expected: %s\n", l:expect)
-      echo printf("  Observed: %s\n\n", l:observe)
+      call s:print_expected_but_got(l:file, l:lnum, l:msg)
     elseif l:msg =~# 'Pattern.*does\( not\)\? match'
-      echo printf("%s:%d\n", l:file, l:lnum)
-
-      let l:intro = matchstr(l:msg, '.\{-}\ze\s*\(: \)\?Pattern ')
-      if !empty(l:intro)
-        echo printf("  %s\n", l:intro)
-      endif
-
-      let l:expect = matchstr(l:msg, 'Pattern.*does\( not\)\? match.*')
-      echo printf("  %s\n", l:expect)
+      call s:print_pattern_does_not_match(l:file, l:lnum, l:msg)
     else
       echo printf("%s:%d: %s\n", l:file, l:lnum, l:msg)
     endif
@@ -46,7 +28,6 @@ function! vimtex#test#finished() abort " {{{1
 endfunction
 
 " }}}1
-
 function! vimtex#test#completion(context, ...) abort " {{{1
   let l:base = a:0 > 0 ? a:1 : ''
 
@@ -108,6 +89,49 @@ function! vimtex#test#main(file, expected, ...) abort " {{{1
   call assert_equal(fnamemodify(l:expected, ':.'), fnamemodify(b:vimtex.tex, ':.'))
 
   bwipeout!
+endfunction
+
+" }}}1
+
+function! s:print_expected_but_got(file, lnum, msg) abort " {{{1
+  echo printf("%s:%d\n", a:file, a:lnum)
+
+  let l:intro = matchstr(a:msg, '.\{-}\ze\s*\(: \)\?Expected ')
+  if !empty(l:intro)
+    echo printf("  %s\n", l:intro)
+  endif
+
+  call s:print_msg_with_title(
+        \ 'Expected', matchstr(a:msg, 'Expected \zs.*\zebut got'))
+  call s:print_msg_with_title(
+        \ 'Observed', matchstr(a:msg, 'Expected .*but got \zs.*'))
+
+  echo ''
+endfunction
+
+" }}}1
+function! s:print_pattern_does_not_match(file, lnum, msg) abort " {{{1
+  echo printf("%s:%d\n", a:file, a:lnum)
+
+  let l:intro = matchstr(a:msg, '.\{-}\ze\s*\(: \)\?Pattern ')
+  if !empty(l:intro)
+    echo printf("  %s\n", l:intro)
+  endif
+
+  let l:expect = matchstr(a:msg, 'Pattern.*does\( not\)\? match.*')
+  echo printf("  %s\n", l:expect)
+endfunction
+
+" }}}1
+function! s:print_msg_with_title(title, msg) abort " {{{1
+  if a:msg[0] ==# '['
+    echo printf("  %s:", a:title)
+    for l:line in json_decode(substitute(escape(a:msg, '"'), "'", '"', 'g'))
+      echo '   |' .. l:line
+    endfor
+  else
+    echo printf("  %s: %s\n", a:title, a:msg)
+  endif
 endfunction
 
 " }}}1
