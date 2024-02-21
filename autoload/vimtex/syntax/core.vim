@@ -1396,16 +1396,20 @@ endfunction
 
 let s:re_sub =
       \ '[-+=()0-9aehijklmnoprstuvx]\|\\\%('
-      \ . join([
-      \     'beta', 'rho', 'phi', 'gamma', 'chi'
+      \ .. join([
+      \     'beta', 'gamma', 'rho', 'phi', 'chi'
       \ ], '\|') . '\)\>'
-let s:re_super = '[-+=()<>:;0-9a-pr-zABDEG-PRTUVW]'
+let s:re_super =
+      \ '[-+=()<>:;0-9a-qr-zA-FG-QRTUVW]\|\\\%('
+      \ .. join([
+      \     'beta', 'gamma', 'delta', 'epsilon', 'theta', 'iota', 'phi', 'chi'
+      \ ], '\|') . '\)\>'
 
 let s:map_sub = [
       \ ['\\beta\>',  'ᵦ'],
-      \ ['\\rho\>', 'ᵨ'],
-      \ ['\\phi\>',   'ᵩ'],
       \ ['\\gamma\>', 'ᵧ'],
+      \ ['\\rho\>',   'ᵨ'],
+      \ ['\\phi\>',   'ᵩ'],
       \ ['\\chi\>',   'ᵪ'],
       \ ['(',         '₍'],
       \ [')',         '₎'],
