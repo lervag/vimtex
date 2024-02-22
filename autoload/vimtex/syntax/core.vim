@@ -280,7 +280,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
-  syntax match texCmdItem "\\item\>"
+  syntax match texCmdItem "\\item\>" nextgroup=texItemLabel
+  call vimtex#syntax#core#new_opt('texItemLabel')
 
   " \begin \end environments
   syntax match texCmdEnv "\v\\%(begin|end)>" nextgroup=texEnvArgName
@@ -860,6 +861,8 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texFilesArg           texFileArg
   highlight def link texFilesOpt           texFileOpt
   highlight def link texGroupError         texError
+  highlight def link texItemLabel          texOpt
+  highlight def link texItemLabelConcealed texItemLabel
   highlight def link texLetArgEqual        texSymbol
   highlight def link texLetArgName         texArgNew
   highlight def link texLigature           texSymbol
@@ -2186,8 +2189,14 @@ function! s:match_conceal_fancy() abort " {{{1
   syntax match texCmd         '\\dots\>'  conceal cchar=…
   syntax match texCmd         '\\slash\>' conceal cchar=/
   syntax match texCmd         '\\ldots\>' conceal cchar=…
-  syntax match texCmdItem     '\\item\>'  conceal cchar=○
   syntax match texTabularChar '\\\\'      conceal cchar=⏎
+
+  syntax match texCmdItem     '\\item\>'  conceal cchar=○
+        \ nextgroup=texItemLabelConcealed
+  syntax match texItemLabelConcealed "\s*\[[^]]*\]"
+        \ contained contains=texItemLabelDelim
+  syntax match texItemLabelDelim "\]"    contained conceal
+  syntax match texItemLabelDelim "\s*\[" contained conceal cchar= 
 endfunction
 
 " }}}1
