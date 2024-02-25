@@ -110,7 +110,7 @@ endfunction
 
 " }}}1
 function! s:compiler.__init() abort dict " {{{1
-  call vimtex#util#materialize_property(self, 'aux_dir')
+  call vimtex#util#materialize_property(self, 'aux_dir', self.file_info)
 
   call s:compare_with_latexmkrc(self, 'out_dir')
   call s:compare_with_latexmkrc(self, 'aux_dir')

@@ -346,12 +346,10 @@ function! s:init_compiler(options) abort " {{{1
     let l:method = 'latexmk'
   endif
 
-  let l:options =
-        \ get(g:, 'vimtex_compiler_' . l:method, {})
-  let l:options = extend(deepcopy(l:options), a:options)
-  let l:compiler
-        \ = vimtex#compiler#{l:method}#init(l:options)
-  return l:compiler
+  let l:options = extend(
+        \ deepcopy(get(g:, 'vimtex_compiler_' . l:method, {})),
+        \ a:options)
+  return vimtex#compiler#{l:method}#init(l:options)
 endfunction
 
 " }}}1

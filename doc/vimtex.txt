@@ -1041,10 +1041,20 @@ OPTIONS                                                        *vimtex-options*
 
     The value of this option should be either:
       1) a string that represents a path, or
-      2) a |Funcref|. The |Funcref| type makes it possible to specify
-         a dynamic `aux_dir`. It may be easier to understand from an example: >vim
+      2) a |Funcref| with a single dictionary argument "file_info": >
 
-           let g:vimtex_compiler_latexmk = {'aux_dir': {-> expand("%:t:r")}}
+           file_info = {
+             root = …
+             target = …
+             target_basename = …
+             target_name = …
+             jobname = …
+           }
+<
+         This makes it possible to specify a dynamic `aux_dir`. It may be
+         easier to understand from an example: >vim
+
+           let g:vimtex_compiler_latexmk = {'aux_dir': {_ -> expand("%:t:r")}}
 <
          With the above setting, the `aux_dir` is set to the base name of the
          current file. E.g., If you do `vim test.tex`, the value becomes
@@ -1065,16 +1075,8 @@ OPTIONS                                                        *vimtex-options*
     corresponds to the `$out_dir` option in `latexmk`. If the path is
     a relative path, then it is considered relative to the main project file.
 
-    The value of this option should be either:
-      1) a string that represents a path, or
-      2) a |Funcref|. The |Funcref| type makes it possible to specify
-         a dynamic `out_dir`. It may be easier to understand from an example: >vim
-
-           let g:vimtex_compiler_latexmk = {'out_dir': {-> expand("%:t:r")}}
-<
-         With the above setting, the `out_dir` is set to the base name of the
-         current file. E.g., If you do `vim test.tex`, the value becomes
-         `test`.
+    The value is either a string or a |Funcref|, similar to the above
+    described `aux_dir` key.
 
     The specified output directory is created if it does not exist.
 

@@ -30,7 +30,8 @@ function! s:compiler.new(options) abort dict " {{{1
 
   call l:compiler.__check_requirements()
 
-  call vimtex#util#materialize_property(l:compiler, 'out_dir')
+  call vimtex#util#materialize_property(
+        \ l:compiler, 'out_dir', l:compiler.file_info)
   call l:compiler.__init()
 
   " $VIMTEX_OUTPUT_DIRECTORY overrides configured compiler.out_dir

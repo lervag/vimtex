@@ -131,11 +131,11 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#util#materialize_property(dict, name) abort " {{{1
+function! vimtex#util#materialize_property(dict, name, ...) abort " {{{1
   if type(get(a:dict, a:name)) != v:t_func | return | endif
 
   try
-    let a:dict[a:name] = a:dict[a:name]()
+    let a:dict[a:name] = call(a:dict[a:name], a:000)
   catch
     call vimtex#log#error(
           \ 'Could not materialize property: ' . a:name,
