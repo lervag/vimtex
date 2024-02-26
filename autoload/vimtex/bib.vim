@@ -5,36 +5,40 @@
 "
 
 function! vimtex#bib#files() abort " {{{1
-  if has_key(b:vimtex.packages, 'biblatex')
-    let l:file = b:vimtex.compiler.get_file('bcf')
+  if !exists('b:vimtex') | return [] | endif
+
+  if has_key(b:vimtex, 'compiler')
+    if has_key(b:vimtex.packages, 'biblatex')
+      let l:file = b:vimtex.compiler.get_file('bcf')
+      if filereadable(l:file)
+        let l:bibs = map(
+              \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
+              \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
+        for l:f in filter(copy(l:bibs), {_, x -> x =~# '[*?{[]' })
+          let l:bibs += glob(l:f, 0, 1)
+        endfor
+        if !empty(l:bibs) | return s:validate(l:bibs) | endif
+      endif
+    endif
+
+    let l:file = b:vimtex.compiler.get_file('blg')
     if filereadable(l:file)
       let l:bibs = map(
-            \ filter(readfile(l:file), "v:val =~# 'bcf:datasource'"),
-            \ {_, x -> matchstr(x, '<[^>]*>\zs[^<]*')})
-      for l:f in filter(copy(l:bibs), {_, x -> x =~# '[*?{[]' })
-        let l:bibs += glob(l:f, 0, 1)
-      endfor
+            \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
+            \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
+
+      " Ignore '{name}-blx.bib' file (created by biblatex)
+      if has_key(b:vimtex.packages, 'biblatex')
+        call filter(l:bibs, 'v:val !~# ''-blx$''')
+      endif
+
+      " Ignore '{name}Notes.bib' file (created by revtex4)
+      if b:vimtex.documentclass =~# '^revtex4'
+        call filter(l:bibs, 'v:val !~# ''.Notes$''')
+      endif
+
       if !empty(l:bibs) | return s:validate(l:bibs) | endif
     endif
-  endif
-
-  let l:file = b:vimtex.compiler.get_file('blg')
-  if filereadable(l:file)
-    let l:bibs = map(
-          \ filter(readfile(l:file), 'v:val =~# ''^Database file #\d'''),
-          \ {_, x -> matchstr(x, '#\d\+: \zs.*\ze\.bib$')})
-
-    " Ignore '{name}-blx.bib' file (created by biblatex)
-    if has_key(b:vimtex.packages, 'biblatex')
-      call filter(l:bibs, 'v:val !~# ''-blx$''')
-    endif
-
-    " Ignore '{name}Notes.bib' file (created by revtex4)
-    if b:vimtex.documentclass =~# '^revtex4'
-      call filter(l:bibs, 'v:val !~# ''.Notes$''')
-    endif
-
-    if !empty(l:bibs) | return s:validate(l:bibs) | endif
   endif
 
   return s:validate(s:files_manual())
