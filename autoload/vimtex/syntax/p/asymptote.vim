@@ -6,7 +6,7 @@
 
 function! vimtex#syntax#p#asymptote#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_env({
-        \ 'name': 'asy\(def\)?',
+        \ 'name': 'asy\(def\)\?',
         \ 'region': 'texAsymptoteZone',
         \ 'nested': 'asy',
         \})
