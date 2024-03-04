@@ -45,15 +45,25 @@ Users are encouraged to read the requirements section in the
 
 ## Installation
 
-If you use [vim-plug](https://github.com/junegunn/vim-plug) or [packer.nvim](https://github.com/wbthomason/packer.nvim), then add one of the
-following lines to your `vimrc` file, correspondingly:
+If you use [vim-plug](https://github.com/junegunn/vim-plug), [packer.nvim](https://github.com/wbthomason/packer.nvim), or [lazy.nvim](https://github.com/folke/lazy.nvim), then add one of the
+following lines to your configuration, correspondingly:
 
 ```vim
 " vim-plug
 Plug 'lervag/vimtex'
+```
 
-" packer.nvim
+```lua
+-- packer.nvim
 use 'lervag/vimtex'
+
+-- lazy.nvim
+{
+  "lervag/vimtex",
+  init = function()
+    -- Use init for configuration, don't use the more common "config".
+  end
+}
 ```
 
 Or use some other plugin manager:
