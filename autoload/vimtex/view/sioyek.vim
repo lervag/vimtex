@@ -13,6 +13,7 @@ endfunction
 
 let s:viewer = vimtex#view#_template#new({
       \ 'name': 'sioyek',
+      \ 'xwin_id': 0,
       \})
 
 function! s:viewer._check() dict abort " {{{1
