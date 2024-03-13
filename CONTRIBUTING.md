@@ -34,7 +34,7 @@ some pointers:
 
 VimTeX also has a high level code [documentation](./DOCUMENTATION.md) mainly
 for developers. It should provide an overview of the VimTeX code and APIs and
-may help developers (and users) to to understand the functionalities of the
+may help developers (and users) to understand the functionalities of the
 plugin a little bit faster.
 
 ## Code style

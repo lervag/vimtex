@@ -4922,7 +4922,7 @@ of the math mode regions.
 
 VimTeX's syntax script is implemented to support these basic structures as
 well as a large set of more specific commands and elements. The more specific
-rules define groups whose names are are more specific, and it is usually
+rules define groups whose names are more specific, and it is usually
 possible to define custom highlighting of specific commands and argument
 groups.
 

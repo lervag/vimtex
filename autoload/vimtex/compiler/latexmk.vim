@@ -249,7 +249,7 @@ function! s:compiler.get_engine() abort dict " {{{1
   let l:tex_program_directive = b:vimtex.get_tex_program()
   let l:tex_program = l:tex_program_directive
 
-  " Parse tex_program from from pdf_mode option in .latexmkrc
+  " Parse tex_program from pdf_mode option in .latexmkrc
   let [l:pdf_mode, l:is_local] = vimtex#compiler#latexmk#get_rc_opt(
         \ self.file_info.root, 'pdf_mode', 1, -1)
 
