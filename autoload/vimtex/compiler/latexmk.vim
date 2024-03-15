@@ -343,7 +343,7 @@ function! s:compare_with_latexmkrc(dict, option) abort " {{{1
   if !empty(l:value)
     if !empty(a:dict[a:option]) && (a:dict[a:option] !=# l:value)
       call vimtex#log#warning(
-            \ 'Option "' . a:option . '" is overriden by latexmkrc',
+            \ 'Option "' . a:option . '" is overridden by latexmkrc',
             \ 'Changed from: ' . a:dict[a:option],
             \ 'Changed to: ' . l:value)
     endif
