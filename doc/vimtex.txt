@@ -4623,7 +4623,7 @@ benefits compared to the more general `cmp-omni`:
   bibliographic details, useful for citations).
 * Parses and display all details contained in bibtex files for cite
   completions.
-* Trims long strings in the completion menu (to add space for the documenation
+* Trims long strings in the completion menu (to add space for the documentation
   window).
 * Triggers the completion menu automatically after typing `\cite{`.
 * Allows more granular configuration of the menus, and more.
@@ -5248,7 +5248,7 @@ DENITE AND UNITE SOURCES                                        *vimtex-denite*
 
                                         https://github.com/Shougo/denite.nvim
                                           https://github.com/Shougo/unite.vim
-|denite.nvim| is is a popular interface for many things, including outlines.
+|denite.nvim| is a popular interface for many things, including outlines.
 Although VimTeX includes a simple interface for a tables of contents, it also
 makes sense to provide these as a source to |denite.nvim|. The source name is
 simply `vimtex`.
