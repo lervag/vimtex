@@ -4047,6 +4047,10 @@ further customization.
     file or project.  For example, `b:vimtex.tex` identifies the tex file being
     wiped, or the main tex file of a multi-file project.
 
+    Note: Commands such as |:VimtexClean| does not always work as expected
+          with this event. This is because, when quitting vim, the current
+          buffer does not necessarily have filetype "tex".
+
   *VimtexEventInitPre*
 *VimtexEventInitPost*
     These events are triggered at the start/end of VimTeX initialization.  The
