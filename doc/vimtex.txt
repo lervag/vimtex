@@ -4047,13 +4047,9 @@ further customization.
     file or project.  For example, `b:vimtex.tex` identifies the tex file being
     wiped, or the main tex file of a multi-file project.
 
-    Note: Commands such as |:VimtexClean| cannot be used in this autocommand
-    because when quitting vim the current buffer does not necessarily have
-    filetype "tex".
-
   *VimtexEventInitPre*
-  *VimtexEventInitPost*
-    This event is triggered at the start/end of VimTeX initialization.  The
+*VimtexEventInitPost*
+    These events are triggered at the start/end of VimTeX initialization.  The
     post event may e.g. be used to automatically start compiling a document.
 
   *VimtexEventCompileStarted*
@@ -4067,7 +4063,7 @@ further customization.
     compilation. This is only supported by |vimtex-compiler-latexmk|.
 
   *VimtexEventCompileSuccess*
-  *VimtexEventCompileFailed*
+*VimtexEventCompileFailed*
     These events are triggered after successful/failed compilation and
     allows users to add custom callback functionality.
 
@@ -4088,7 +4084,7 @@ further customization.
     function, which can be used as the callback function for reverse goto from
     a PDF viewer.
 
-Examples: >vim
+Examples (Vimscript) - see below for a Lua example: >vim
 
   " Compile on initialization, cleanup on quit
   augroup vimtex_event_1
@@ -4133,6 +4129,17 @@ Examples: >vim
     au!
     au User VimtexEventViewReverse normal! zMzvzz
   augroup END
+
+Examples - Lua: >lua
+
+  local au_group = vim.api.nvim_create_augroup("vimtex_events", {}),
+
+  -- Cleanup on quit
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "VimtexEventQuit",
+    group = au_group,
+    command = "VimtexClean"
+  })
 
 ------------------------------------------------------------------------------
 TEXT OBJECTS                                              *vimtex-text-objects*
