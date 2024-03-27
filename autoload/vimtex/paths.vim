@@ -68,6 +68,14 @@ function! vimtex#paths#relative(path, current) abort " {{{1
 
   let l:target = simplify(substitute(a:path, '\\', '/', 'g'))
   let l:common = simplify(substitute(a:current, '\\', '/', 'g'))
+  if l:common[-1:] ==# '/'
+    let l:common = l:common[:-2]
+  endif
+
+  if has('win32') || v:true
+    let l:target = substitute(l:target, '^[A-Z]:', '', '')
+    let l:common = substitute(l:common, '^[A-Z]:', '', '')
+  endif
 
   " This only works on absolute paths
   if !vimtex#paths#is_abs(l:target)
