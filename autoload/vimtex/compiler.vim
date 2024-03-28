@@ -34,6 +34,8 @@ endfunction
 
 " }}}1
 function! vimtex#compiler#init_state(state) abort " {{{1
+  if !g:vimtex_compiler_enabled | return | endif
+
   let a:state.compiler = s:init_compiler({
         \ 'file_info': {
         \   'root': a:state.root,
