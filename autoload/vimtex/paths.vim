@@ -38,10 +38,12 @@ endfunction
 " }}}1
 
 function! vimtex#paths#s(path) abort " {{{1
-  " Use backslash on Windows
-  return simplify(vimtex#util#is_win()
+  " Handle shellescape issues and simplify path
+  let l:path = exists('+shellslash') && !&shellslash
         \ ? tr(a:path, '/', '\')
-        \ : a:path)
+        \ : a:path
+
+  return simplify(l:path)
 endfunction
 
 " }}}1
@@ -68,18 +70,19 @@ function! vimtex#paths#relative(path, current) abort " {{{1
 
   let l:target = simplify(substitute(a:path, '\\', '/', 'g'))
   let l:common = simplify(substitute(a:current, '\\', '/', 'g'))
-  if l:common[-1:] ==# '/'
-    let l:common = l:common[:-2]
-  endif
-
-  if has('win32') || v:true
-    let l:target = substitute(l:target, '^[A-Z]:', '', '')
-    let l:common = substitute(l:common, '^[A-Z]:', '', '')
-  endif
 
   " This only works on absolute paths
   if !vimtex#paths#is_abs(l:target)
     return substitute(a:path, '^\.\/', '', '')
+  endif
+
+  if has('win32')
+    let l:target = substitute(l:target, '^\a:', '', '')
+    let l:common = substitute(l:common, '^\a:', '', '')
+  endif
+
+  if l:common[-1:] ==# '/'
+    let l:common = l:common[:-2]
   endif
 
   let l:tries = 50
