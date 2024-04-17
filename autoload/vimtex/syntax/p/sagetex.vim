@@ -18,13 +18,18 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
         \})
   call vimtex#syntax#core#new_opt('texSagetexOpt', {'next': 'texSagetexArg'})
 
-  for sage_env in ['sageblock', 'sagesilent', 'sageverbatim', 'sageexample', 'sagecommandline']
-      let config = {
-      \ 'name': sage_env,
-      \ 'region': 'texSagetexZone',
-      \ 'contains': '@vimtex_nested_python'
-      \}
-      call vimtex#syntax#core#new_env(config)
+  for l:env in [
+        \ 'sageblock',
+        \ 'sagesilent',
+        \ 'sageverbatim',
+        \ 'sageexample',
+        \ 'sagecommandline'
+        \]
+    call vimtex#syntax#core#new_env({
+          \ 'name': l:env,
+          \ 'region': 'texSagetexZone',
+          \ 'contains': '@vimtex_nested_python'
+          \})
   endfor
 
   highlight def link texCmdSagetex texCmd
