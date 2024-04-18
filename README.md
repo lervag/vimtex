@@ -150,7 +150,7 @@ https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-
 
 Both new and experienced users are also encouraged to read the third-party
 article [Getting started with the VimTeX
-plugin](https://www.ejmastnak.com/tutorials/vim-latex/vimtex.html). The
+plugin](https://www.ejmastnak.com/tutorials/vim-latex/vimtex/). The
 article covers VimTeX's core features and contains plenty of examples and
 high-resolution animations intended to help new users ease into working with
 the plugin.
