@@ -32,6 +32,17 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
           \})
   endfor
 
+  for l:env in [
+        \ 'sage',
+        \ 'sagestr'
+        \]
+    call vimtex#syntax#core#new_cmd({
+          \ 'name': l:env,
+          \ 'mathmode': 1,
+          \ 'nextgroup': 'texSagetexArg'
+          \})
+  endfor
+
   highlight def link texCmdSagetex texCmd
 endfunction
 
