@@ -25,6 +25,11 @@ function! vimtex#syntax#in_comment(...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#syntax#in_sage(...) abort " {{{1
+  return call('vimtex#syntax#in', ['texSagetexArg'] + a:000) || call('vimtex#syntax#in', ['texSagetexZone'] + a:000)
+endfunction
+
+" }}}1
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
   let l:groups = reverse(call('vimtex#syntax#stack', a:000))
   let l:group = matchstr(l:groups, s:__mathzone_regex)
