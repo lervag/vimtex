@@ -7,8 +7,6 @@
 function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
   call vimtex#syntax#nested#include('python')
 
-  syntax match texCmdSagetex /\\sagestr\>/
-        \ nextgroup=texSagetexArg skipwhite skipnl
   syntax match texCmdSagetex /\\sageplot\>/
         \ nextgroup=texSagetexOpt,texSagetexArg skipwhite skipnl
 
@@ -36,6 +34,8 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
         \ 'sage',
         \ 'sagestr'
         \]
+    execute 'syntax match texCmdSagetex /\\' . l:env .
+          \ '\>/ nextgroup=texSagetexArg skipwhite skipnl'
     call vimtex#syntax#core#new_cmd({
           \ 'name': l:env,
           \ 'mathmode': 1,
