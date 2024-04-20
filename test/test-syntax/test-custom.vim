@@ -17,10 +17,21 @@ let g:vimtex_syntax_custom_cmds = [
       \ {'name': 'mygls', 'argspell': 0},
       \ {'name': 'slurp', 'argspell': 0, 'arggreedy': v:true},
       \ {'name': 'regex', 'cmdre': '[iI]?[aA]c[slaf]?p?\*?', 'conceal': 1},
+      \ {'name': 'mather', 'mathmode': 1,
+      \  'nextgroup': 'texMatherArg', 'hlgroup': 'texOpt'},
       \]
+
+call vimtex#syntax#add_to_mathzone_ignore('texMatherArg')
 
 EditConcealed test-custom.tex
 
+call vimtex#syntax#core#new_arg('texMatherArg', {
+      \ 'opts': 'contained keepend'
+      \})
+
 if empty($INMAKE) | finish | endif
+
+call assert_true(vimtex#syntax#in_mathzone(31, 5))
+call assert_false(vimtex#syntax#in_mathzone(31, 15))
 
 call vimtex#test#finished()
