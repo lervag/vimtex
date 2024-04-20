@@ -25,18 +25,13 @@ function! vimtex#syntax#in_comment(...) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#syntax#in_sage(...) abort " {{{1
-  return call('vimtex#syntax#in', ['texSagetexArg'] + a:000) || call('vimtex#syntax#in', ['texSagetexZone'] + a:000)
-endfunction
-
-" }}}1
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
   " The following checks if we are inside a texMathZone environment. The
-  " arguments to \label{...}, the texRefArg group, the texSagetexArg group,
-  " and \text{...} like commands, the texMathTextArg group, are actively
-  " ignored as these should not be considered to be math environments.
+  " arguments to \label{...}, the texRefArg group, and \text{...} like
+  " commands, the texMathTextArg group, are actively ignored as these should
+  " not be considered to be math environments.
   let l:groups = reverse(call('vimtex#syntax#stack', a:000))
-  let l:group = matchstr(l:groups, '\v^tex%(Math%(Zone|Text|Tag)|RefArg|SagetexArg)')
+  let l:group = matchstr(l:groups, '\v^tex%(Math%(Zone|Text|Tag)|RefArg)')
   return l:group =~# '^texMathZone'
 endfunction
 
