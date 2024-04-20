@@ -47,9 +47,6 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
   highlight def link texCmdSagetex texCmd
 endfunction
 
-" }}}1
-function! vimtex#syntax#p#sagetex#in_sage(...) abort " {{{1
-  return call('vimtex#syntax#in', ['texSagetex\(Arg\|Zone\)'] + a:000)
-endfunction
+call vimtex#syntax#add_to_mathzone_ignore('texSagetexArg')
 
 " }}}1
