@@ -6248,10 +6248,18 @@ Note: This API is currently a work in progress!
   the |VimtexEventCompiling|, |VimtexEventCompileFailed| and
   |VimtexEventCompileSuccess| events.
 
+*vimtex#syntax#in*
+    `vimtex#syntax#in(name)` -> |Boolean|
+    `vimtex#syntax#in(name, line, column)` -> |Boolean|
+  Returns |v:true| if the cursor position or the specified position is inside
+  the `name`d group. `name` is a regex that is used to matched against the
+  syntax group stack.
+
 *vimtex#syntax#in_mathzone*
-  Returns 1 if the position is inside a math zone. If called without
-  arguments, the position refers to the cursor position. Else must be called
-  with two arguments: the line number and column number.
+    `vimtex#syntax#in_mathzone()` -> |Boolean|
+    `vimtex#syntax#in_mathzone(line, column)` -> |Boolean|
+  Returns |v:true| if the cursor position or the specified position is inside
+  a math zone.
 
 *vimtex#view#inverse_search*
   Utility function for reverse search from pdf viewer. Takes two arguments:
