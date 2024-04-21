@@ -27,6 +27,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install \
+          moreutils \
           texlive texlive-latex-extra texlive-extra-utils \
           texlive-bibtex-extra libtext-bibtex-perl \
           texlive-publishers \
