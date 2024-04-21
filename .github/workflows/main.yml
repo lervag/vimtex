@@ -25,10 +25,9 @@ jobs:
     steps:
     - name: Install packages
       run: |
-        sudo add-apt-repository ppa:neovim-ppa/stable
         sudo apt update
         sudo apt install \
-          vim neovim moreutils gcc \
+          moreutils \
           texlive texlive-latex-extra texlive-extra-utils \
           texlive-bibtex-extra libtext-bibtex-perl \
           texlive-publishers \
@@ -36,12 +35,23 @@ jobs:
           libmodule-build-perl \
           libconfig-autoconf-perl \
           libextutils-libbuilder-perl
+    - uses: jdx/mise-action@v2
+      with:
+        tool_versions: |
+          neovim 0.9.5
+          vim 9.1.0
     - uses: actions/checkout@master
       with:
         fetch-depth: 1
     - name: Test with neovim
-      run: cd test && make -j1
+      working-directory: ./test
+      run: |
+        mise use neovim
+        make -j1
     - name: Test with vim
       env:
         MYVIM: vim -T dumb --not-a-term -n
-      run: cd test && make -j1
+      working-directory: ./test
+      run: |
+        mise use vim
+        make -j1
