@@ -221,7 +221,7 @@ of its key features. Windows users should also read |vimtex-faq-windows|.
 
 Vim version ~
                                                          *vimtex_version_check*
-  VimTeX requires Vim version 8.0.1453 or neovim version 0.4.3.  It will not
+  VimTeX requires Vim version 9.1 or neovim version 0.9.5.  It will not
   load for older versions, unless one adds >vim
 
     let g:vimtex_version_check = 0
@@ -295,9 +295,9 @@ Clientserver ~
   aware of some differences from regular Vim and should therefore read
   |macvim-clientserver| carefully.
 
-  Since Vim version 8.0.475, one can use |remote_startserver()| to start
-  a server from your `vimrc` file. The following vimrc configuration snippet
-  will ensure that Vim starts with a server, if possible: >vim
+  You can use |remote_startserver()| to start a server from your `vimrc` file.
+  The following vimrc configuration snippet will ensure that Vim starts with
+  a server, if possible: >vim
 
     if empty(v:servername) && exists('*remote_startserver')
       call remote_startserver('VIM')
