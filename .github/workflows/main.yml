@@ -22,9 +22,6 @@ jobs:
     name: Test on ubuntu-latest
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-    defaults:
-      run:
-        working-directory: ./test
     steps:
     - name: Install packages
       run: |
@@ -46,12 +43,14 @@ jobs:
       with:
         fetch-depth: 1
     - name: Test with neovim
+      working-directory: ./test
       run: |
         mise use neovim
         make -j1
     - name: Test with vim
       env:
         MYVIM: vim -T dumb --not-a-term -n
+      working-directory: ./test
       run: |
         mise use vim
         make -j1
