@@ -14,6 +14,7 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
         \ 'contains': '@vimtex_nested_python',
         \ 'opts': 'contained keepend'
         \})
+  call vimtex#syntax#add_to_mathzone_ignore('texSagetexArg')
   call vimtex#syntax#core#new_opt('texSagetexOpt', {'next': 'texSagetexArg'})
 
   for l:env_name in [
@@ -30,11 +31,8 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
           \})
   endfor
 
-  " Note: The following commands are supported both inside and outside math zones
-  for l:cmd_name in [
-        \ 'sage',
-        \ 'sagestr'
-        \]
+  " The following commands are supported inside and outside of math zones
+  for l:cmd_name in ['sage', 'sagestr']
     for l:in_mathmode in [v:true, v:false]
       call vimtex#syntax#core#new_cmd({
             \ 'name': l:cmd_name,
@@ -43,8 +41,6 @@ function! vimtex#syntax#p#sagetex#load(cfg) abort " {{{1
             \})
     endfor
   endfor
-
-  call vimtex#syntax#add_to_mathzone_ignore('texSagetexArg')
 
   highlight def link texCmdSagetex texCmd
 endfunction
