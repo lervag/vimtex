@@ -45,31 +45,8 @@ Users are encouraged to read the requirements section in the
 
 ## Installation
 
-If you use [vim-plug](https://github.com/junegunn/vim-plug), [packer.nvim](https://github.com/wbthomason/packer.nvim), or [lazy.nvim](https://github.com/folke/lazy.nvim), then add one of the
-following lines to your configuration, correspondingly:
-
-```vim
-" vim-plug
-Plug 'lervag/vimtex'
-```
-
-```lua
--- packer.nvim
-use 'lervag/vimtex'
-
--- lazy.nvim
-{
-  "lervag/vimtex",
-  init = function()
-    -- Use init for configuration, don't use the more common "config".
-  end
-}
-```
-
-Or use some other plugin manager:
-* [vundle](https://github.com/gmarik/vundle)
-* [neobundle](https://github.com/Shougo/neobundle.vim)
-* [pathogen](https://github.com/tpope/vim-pathogen)
+There are a lot of methods for installing plugins.
+The following explains the most common and popular approaches.
 
 **Note**: Many plugin managers provide mechanisms to lazy load plugins. Please
     don't use this for VimTeX! VimTeX is already lazy loaded by virtue of being
@@ -78,7 +55,37 @@ Or use some other plugin manager:
     manager. In fact, doing it will _break_ the inverse-search mechanism, which
     relies on a _global_ command (`:VimtexInverseSearch`).
 
-If you use the new package feature in Vim, please note the following:
+### lazy.nvim
+
+In Neovim, [lazy.nvim](https://github.com/folke/lazy.nvim) is probably the most popular plugin manger.
+To install VimTeX, add a plugin spec similar to this:
+```lua
+{
+  "lervag/vimtex",
+  lazy = false,     -- we don't want to lazy load VimTeX
+  -- tag = "v2.15", -- uncomment to pin to a specific release
+  init = function()
+    -- VimTeX configuration goes here
+  end
+}
+```
+
+### vim-plug
+
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then add *one* of the following lines to your configuration.
+The first will use the latest versions from the `master` branch, whereas the second will pin to a release tag.
+
+```vim
+Plug 'lervag/vimtex'
+Plug 'lervag/vimtex', { 'tag': 'v2.15' }
+```
+
+### Other
+
+There are many other plugin managers out there.
+They are typically well documented, and it should be straightforward to extrapolate the above snippets.
+
+**Note**: If you use the built-in package feature, then:
 * Make sure to read and understand the package feature: `:help package`!
 * Use the `/pack/foo/start` subdirectory to make sure the filetype plugin is
   automatically loaded for the `tex` filetypes.
@@ -99,6 +106,8 @@ After installing VimTeX, you should edit your `.vimrc` file or `init.vim` file
 to configure VimTeX to your liking. Users should read the documentation to
 learn the various configuration possibilities, but the below is a simple
 overview of some of the main aspects.
+
+**PLEASE don't just copy this without reading the comments!**
 
 ```vim
 " This is necessary for VimTeX to load properly. The "indent" is optional.
