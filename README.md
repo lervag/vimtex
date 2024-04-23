@@ -157,12 +157,12 @@ https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-
 
 ### Tutorial
 
-Both new and experienced users are also encouraged to read the third-party
-article [Getting started with the VimTeX
-plugin](https://www.ejmastnak.com/tutorials/vim-latex/vimtex/). The
-article covers VimTeX's core features and contains plenty of examples and
-high-resolution animations intended to help new users ease into working with
-the plugin.
+Both new and experienced users are encouraged to read the excellent guide by
+@ejmastnak: [Getting started with the VimTeX plugin](https://ejmastnak.com/tutorials/vim-latex/vimtex/).
+The guide covers all the fundamentals of setting up a VimTeX-based LaTeX
+workflow, including usage of the VimTeX plugin, compilation, setting up forward
+and inverse search with a PDF reader, and Vimscript tools for user-specific
+customization.
 
 ### Documentation
 
@@ -349,16 +349,3 @@ plugins for Vim, see:
 * [What are the differences between LaTeX plugins](http://vi.stackexchange.com/questions/2047/what-are-the-differences-between-latex-plugins)
 * [List of LaTeX editors (not only Vim)](https://tex.stackexchange.com/questions/339/latex-editors-ides)
 
-## VimTeX on the Web
-
-VimTeX users may be interested in reading
-[@ejmastnak](https://github.com/ejmastnak)'s series on [Efficient LaTeX Using
-(Neo)Vim](https://www.ejmastnak.com/tutorials/vim-latex/intro.html), which
-covers all the fundamentals of setting up a VimTeX-based LaTeX workflow,
-including usage of the VimTeX plugin, compilation, setting up forward and
-inverse search with a PDF reader, and Vimscript tools for user-specific
-customization.
-
-If you know of (or create) other up-to-date, high-quality guides to VimTeX's
-features on third-party websites, feel free to submit a pull request updating
-this section.
