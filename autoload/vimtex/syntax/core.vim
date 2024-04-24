@@ -2233,7 +2233,7 @@ function! s:match_conceal_spacing() abort " {{{1
 
   call vimtex#syntax#core#new_arg('texConcealedArg', {
         \ 'opts': 'contained conceal',
-        \ 'contains': 'texConcealedArgGroup',
+        \ 'contains': 'texSpecialChar,texConcealedArgGroup',
         \})
   call vimtex#syntax#core#new_arg('texConcealedArgGroup', {
         \ 'matchgroup': 'matchgroup=NONE',
