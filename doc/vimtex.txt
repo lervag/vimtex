@@ -221,12 +221,12 @@ of its key features. Windows users should also read |vimtex-faq-windows|.
 
 Vim version ~
                                                          *vimtex_version_check*
-  VimTeX requires Vim version 9.1 or neovim version 0.9.5.  It will not
+  VimTeX requires Vim version 8.2.3995 or neovim version 0.9.5. It will not
   load for older versions, unless one adds >vim
 
     let g:vimtex_version_check = 0
 <
-  to one's `vimrc` file.  This might work, but issues due to older versions
+  to one's `vimrc` file. This might work, but issues due to older versions
   than the mentioned here will be ignored.
 
 Vim configuration ~

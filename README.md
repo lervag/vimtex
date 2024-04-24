@@ -33,7 +33,7 @@ filetype and syntax plugin for LaTeX files.
 
 ## Requirements
 
-VimTeX requires Vim version 9.1 or Neovim version 0.9.5. The requirements
+VimTeX requires Vim version 8.2.3995 or Neovim version 0.9.5. The requirements
 were updated in April 2024 after the release of VimTeX 2.15. If you are stuck
 on older versions of Vim or Neovim, then you should not use the most recent
 version of VimTeX, but instead remain at the v2.15 tag.
