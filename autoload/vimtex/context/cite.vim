@@ -149,6 +149,7 @@ function! s:actions.show() abort dict " {{{1
             \ ['Normal', l:val]
             \])
   endfor
+  call vimtex#ui#echo([['Normal', '}']])
 endfunction
 
 " }}}1
