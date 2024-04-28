@@ -38,6 +38,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%+ERunaway\ argument?
   setlocal errorformat+=%+C{%m
   setlocal errorformat+=%C!\ %m
+  setlocal errorformat+=%EMissing\ character:\ %m
 
   " More info for undefined control sequences
   setlocal errorformat+=%Z<argument>\ %m

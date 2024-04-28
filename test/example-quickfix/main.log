@@ -51,6 +51,12 @@ I suspect you've forgotten a `}', causing me to apply this
 control sequence to too much text. How can we recover?
 My plan is to forget the whole thing and hope for the best.
 
+Missing character: There is no ^^A (U+0001) in font [lmroman10-regular]:+tlig;!
+.
+<argument> ...not:N \tex_shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.9 \end{document}
+                
 ./test.tex:11: Undefined control sequence.
 l.11 \cdashline
                {1-7}
