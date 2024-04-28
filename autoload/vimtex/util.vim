@@ -111,7 +111,7 @@ endfunction
 function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
   let l:option = a:0 > 0 ? a:1 : 'force'
   if index(['force', 'keep', 'error'], l:option) < 0
-    throw 'E475: Invalid argument: ' . l:option
+    throw 'E475: Invalid argument: ' .. l:option
   endif
 
   for [l:key, l:value] in items(a:dict2)
@@ -120,7 +120,7 @@ function! vimtex#util#extend_recursive(dict1, dict2, ...) abort " {{{1
     elseif type(l:value) == v:t_dict
       call vimtex#util#extend_recursive(a:dict1[l:key], l:value, l:option)
     elseif l:option ==# 'error'
-      throw 'E737: Key already exists: ' . l:key
+      throw 'E737: Key already exists: ' .. l:key
     elseif l:option ==# 'force'
       let a:dict1[l:key] = l:value
     endif
@@ -138,7 +138,7 @@ function! vimtex#util#materialize_property(dict, name, ...) abort " {{{1
     let a:dict[a:name] = call(a:dict[a:name], a:000)
   catch
     call vimtex#log#error(
-          \ 'Could not materialize property: ' . a:name,
+          \ 'Could not materialize property: ' .. a:name,
           \ v:exception)
     let a:dict[a:name] = ''
   endtry
@@ -392,7 +392,7 @@ let s:tex2unicode_list = map([
       \ ['\\¨i',                'ï'],
       \ ['\\¨o',                'ö'],
       \ ['\\¨u',                'ü'],
-      \], {_, x -> ['\C' . x[0], x[1]]})
+      \], {_, x -> ['\C' .. x[0], x[1]]})
 
 " }}}1
 function! vimtex#util#tex2tree(str) abort " {{{1
@@ -485,15 +485,13 @@ endfunction
 
 " }}}1
 function! vimtex#util#www(url) abort " {{{1
-  let l:os = vimtex#util#get_os()
+  let l:cmd = get(#{
+        \ linux: '!xdg-open %s &',
+        \ mac: '!open %s &',
+        \ win: '!start %s',
+        \}, vimtex#util#get_os())
 
-  silent execute (l:os ==# 'linux'
-        \         ? '!xdg-open'
-        \         : (l:os ==# 'mac'
-        \            ? '!open'
-        \            : '!start'))
-        \ . ' ' . a:url
-        \ . (l:os ==# 'win' ? '' : ' &')
+  silent execute printf(l:cmd, a:url)
 endfunction
 
 " }}}1
