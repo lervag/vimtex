@@ -32,10 +32,10 @@ function! s:matcher.get_entry(context) abort dict " {{{1
   " Handle subtitles, e.g. \begin{frame}{title}{subtitle}
   let l:parts = split(matchstr(a:context.line, self.re_match), '}\s*{')
   if len(l:parts) > 1
-    let self.title = vimtex#util#trim(l:parts[0])
-    let self.subtitle = vimtex#util#trim(l:parts[1])
+    let self.title = trim(l:parts[0])
+    let self.subtitle = trim(l:parts[1])
   elseif len(l:parts) > 0
-    let self.title = vimtex#util#trim(l:parts[0])
+    let self.title = trim(l:parts[0])
   endif
 
   if empty(self.title)
@@ -71,11 +71,11 @@ endfunction
 " }}}1
 function! s:matcher.continue(context) abort dict " {{{1
   if empty(self.title)
-    let self.title = vimtex#util#trim(
+    let self.title = trim(
           \ matchstr(a:context.line, '^\s*\\frametitle\s*{\zs[^}]*'))
   endif
   if empty(self.subtitle)
-    let self.subtitle = vimtex#util#trim(
+    let self.subtitle = trim(
           \ matchstr(a:context.line, '^\s*\\framesubtitle\s*{\zs[^}]*'))
   endif
 

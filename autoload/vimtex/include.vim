@@ -85,7 +85,7 @@ function! s:parse_package_documentclass(fname) abort " {{{1
     let l:result = l:args[0].text
   endif
 
-  return vimtex#util#trim(l:result)
+  return trim(l:result)
 endfunction
 
 let s:re_cmds = '\v\s*\\%(' . join([

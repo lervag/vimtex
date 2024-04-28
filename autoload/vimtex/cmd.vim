@@ -345,14 +345,14 @@ function! s:get_frac_cmd() abort " {{{1
 
     let l:blurp = matchstr(l:part, '^\s*{[^}]*}')
     if !empty(l:blurp)
-      let l:frac[l:key] = vimtex#util#trim(l:blurp)[1:-2]
+      let l:frac[l:key] = trim(l:blurp)[1:-2]
       let l:frac.col_end += len(l:blurp)
       continue
     endif
 
     let l:blurp = matchstr(l:part, '^\s*\w')
     if !empty(l:blurp)
-      let l:frac[l:key] = vimtex#util#trim(l:blurp)
+      let l:frac[l:key] = trim(l:blurp)
       let l:frac.col_end += len(l:blurp)
     endif
   endfor
@@ -529,7 +529,7 @@ endfunction
 
 " }}}1
 function! s:get_inline_trim(str) abort " {{{1
-  let l:str = vimtex#util#trim(a:str)
+  let l:str = trim(a:str)
   return substitute(l:str, '^(\(.*\))$', '\1', '')
 endfunction
 

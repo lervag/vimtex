@@ -177,7 +177,6 @@ function! vimtex#util#tex2unicode(line) abort " {{{1
   return l:line
 endfunction
 
-"
 " Define list for converting compositions like \"u to unicode ű
 let s:tex2unicode_list = map([
       \ ['\\"A',                'Ä'],
@@ -456,16 +455,6 @@ function! vimtex#util#texsplit(str) abort " {{{1
   endwhile
 
   return parts
-endfunction
-
-" }}}1
-function! vimtex#util#trim(str) abort " {{{1
-  if exists('*trim') | return trim(a:str) | endif
-
-  let l:str = substitute(a:str, '^\s*', '', '')
-  let l:str = substitute(l:str, '\s*$', '', '')
-
-  return l:str
 endfunction
 
 " }}}1
