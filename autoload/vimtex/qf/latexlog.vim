@@ -36,9 +36,9 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%E!\ LaTeX\ %trror:\ %m
   setlocal errorformat+=%E%f:%l:\ %m
   setlocal errorformat+=%+ERunaway\ argument?
+  setlocal errorformat+=%-G{/%m
   setlocal errorformat+=%+C{%m
   setlocal errorformat+=%C!\ %m
-  setlocal errorformat+=%EMissing\ character:\ %m
 
   " More info for undefined control sequences
   setlocal errorformat+=%Z<argument>\ %m
@@ -62,6 +62,8 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   setlocal errorformat+=%+WUnderfull\ %\\%\\vbox%.%#\ at\ line\ %l
+
+  setlocal errorformat+=%+WMissing\ character:\ %m
 
   "
   " Define package related warnings

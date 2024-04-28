@@ -30,7 +30,7 @@ for s:expect in [
       \ {'lnum': 0,   'type': 'E', 'text': "Runaway argument?\n{\\sqrt {{1}} \\end {equation} \\par \\end {document} \nFile ended while scanning use of \\frac ."},
       \ {'lnum': 0,   'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16,  'type': 'E', 'text': 'Paragraph ended before \date  was complete.'},
-      \ {'lnum': 0,   'type': 'E', 'text': 'There is no ^^A (U+0001) in font [lmroman10-regular]:+tlig;!'},
+      \ {'lnum': 0,   'type': 'W', 'text': 'Missing character: There is no ^^A (U+0001) in font [lmroman10-regular]:+tlig;!'},
       \ {'lnum': 11,  'type': 'E', 'text': "Undefined control sequence.\n\\cdashline"},
       \]
   call assert_equal(s:expect.lnum, s:qf[s:n].lnum, 'Failed at index ' . s:n)
