@@ -111,7 +111,13 @@ function! s:actions.create(entry) abort dict " {{{1
     call add(l:new.menu, {'name': 'Open in Zotero', 'func': 'open_zotero'})
   endif
 
-  call add(l:new.menu, {'name': 'Open in BibDesk', 'func': 'open_bdsk'})
+  if vimtex#util#get_os() ==# 'mac'
+    let l:output = vimtex#jobs#capture(
+          \ 'osascript -l JavaScript -e ''Application("BibDesk").id()''')
+    if join(l:output) =~# 'edu.ucsd.cs.mmccrack.bibdesk'
+      call add(l:new.menu, {'name': 'Open in BibDesk', 'func': 'open_bdsk'})
+    endif
+  endif
 
   return l:new
 endfunction
