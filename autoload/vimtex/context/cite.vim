@@ -212,7 +212,7 @@ endfunction
 
 " }}}1
 function! s:actions.open_bdsk() abort dict " {{{1
-  call vimtex#util#www('x-bdsk://' .. self.entry.key)
+  call vimtex#util#www('x-bdsk://' .. vimtex#util#url_encode(self.entry.key))
 endfunction
 
 " }}}1

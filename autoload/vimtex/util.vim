@@ -484,6 +484,18 @@ function! vimtex#util#undostore() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#util#url_encode(str) abort " {{{1
+  " This code is based on Tip Pope's vim-unimpaired:
+  " https://github.com/tpope/vim-unimpaired
+  return substitute(
+        \ iconv(a:str, 'latin1', 'utf-8'),
+        \ '[^A-Za-z0-9_.~-]',
+        \ '\="%".printf("%02X",char2nr(submatch(0)))',
+        \ 'g'
+        \)
+endfunction
+
+" }}}1
 function! vimtex#util#www(url) abort " {{{1
   let l:cmd = get(#{
         \ linux: 'xdg-open',
