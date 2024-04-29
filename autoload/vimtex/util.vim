@@ -486,12 +486,12 @@ endfunction
 " }}}1
 function! vimtex#util#www(url) abort " {{{1
   let l:cmd = get(#{
-        \ linux: '!xdg-open %s &',
-        \ mac: '!open %s &',
-        \ win: '!start %s',
+        \ linux: 'xdg-open',
+        \ mac: 'open',
+        \ win: 'start',
         \}, vimtex#util#get_os())
 
-  silent execute printf(l:cmd, a:url)
+  call vimtex#jobs#start(l:cmd .. ' ' .. a:url)
 endfunction
 
 " }}}1
