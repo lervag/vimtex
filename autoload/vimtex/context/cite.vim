@@ -12,34 +12,10 @@ endfunction
 
 let s:handler = {
       \ 'name': 'citation handler',
-      \ 're': '\v%(%(\a*cite|Cite)\a*|bibentry|%(text|block|%(for|hy)\w+)cquote)',
       \}
 function! s:handler.match(cmd, word) abort dict " {{{1
-  if a:cmd.name[1:] !~# self.re
-    return v:false
-  endif
-
-  if len(a:cmd.args) < 1 || len(a:cmd.args) > 2
-    return v:false
-  endif
-
-  let l:text = a:cmd.args[0].text
-  if len(a:cmd.args) == 2
-    let l:text .= ',' .. a:cmd.args[1].text
-  endif
-
-  let self.cites = split(l:text, ',\s*')
-  if index(self.cites, a:word) >= 0
-    let self.selected = a:word
-  else
-    let self.selected = self.cites[0]
-  endif
-
-  if empty(self.selected)
-    return v:false
-  endif
-
-  return v:true
+  let self.selected = vimtex#cite#get_key(a:cmd, a:word)
+  return !empty(self.selected)
 endfunction
 
 " }}}1

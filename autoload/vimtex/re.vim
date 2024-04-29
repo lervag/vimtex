@@ -33,6 +33,8 @@ let g:vimtex#re#tex_include = g:vimtex#re#tex_input_root
       \ . '|' . g:vimtex#re#tex_input . '\zs[^\}]*\ze\}?'
       \ . '|' . g:vimtex#re#tex_input_package
 
+let g:vimtex#re#cite_cmd = '\v%(%(\a*cite|Cite)\a*|bibentry|%(text|block|%(for|hy)\w+)cquote)'
+
 " {{{1 Completion regexes
 let g:vimtex#re#neocomplete =
       \ '\v\\%('
