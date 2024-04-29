@@ -6234,7 +6234,19 @@ API REFERENCE                                                 *vimtex-code-api*
 This is an API reference of the most useful VimTeX functions available to
 users for customization.
 
-Note: This API is currently a work in progress!
+Note: This reference is currently a work in progress!
+
+*vimtex#cite#get_key*
+  Returns the citation key under the cursor. Can be useful e.g. to create
+  a function to open a citation in another progrem such as BibDesk or Zotero.
+  For example: >vim
+
+    function! OpenInBibDesk() abort
+      let l:key = vimtex#cite#get_key()
+      if empty(l:key) | return | endif
+
+      call vimtex#util#www('x-bdsk://' .. vimtex#util#url_encode(l:key))
+    endfunction
 
 *vimtex#compiler#callback*
   Utility function to be used as a compiler callback function. Takes a single
@@ -6247,24 +6259,6 @@ Note: This API is currently a work in progress!
   The function does several useful things based on the status, such as running
   the |VimtexEventCompiling|, |VimtexEventCompileFailed| and
   |VimtexEventCompileSuccess| events.
-
-*vimtex#syntax#in*
-    `vimtex#syntax#in(name)` -> |Boolean|
-    `vimtex#syntax#in(name, line, column)` -> |Boolean|
-  Returns |v:true| if the cursor position or the specified position is inside
-  the `name`d group. `name` is a regex that is used to matched against the
-  syntax group stack.
-
-*vimtex#syntax#in_mathzone*
-    `vimtex#syntax#in_mathzone()` -> |Boolean|
-    `vimtex#syntax#in_mathzone(line, column)` -> |Boolean|
-  Returns |v:true| if the cursor position or the specified position is inside
-  a math zone.
-
-*vimtex#view#inverse_search*
-  Utility function for reverse search from pdf viewer. Takes two arguments:
-  the line number and a filename. The function runs the event
-  |VimtexEventViewReverse| at the end, which allows more user customization.
 
 *vimtex#env#get_inner*
 *vimtex#env#get_outer*
@@ -6285,6 +6279,24 @@ Note: This API is currently a work in progress!
   the environment name that was passed as the only mandatory argument. That
   is, the return value is a list of two numbers: The line number and the
   column number. These are both 0 if no surrounding environment was found.
+
+*vimtex#syntax#in*
+    `vimtex#syntax#in(name)` -> |Boolean|
+    `vimtex#syntax#in(name, line, column)` -> |Boolean|
+  Returns |v:true| if the cursor position or the specified position is inside
+  the `name`d group. `name` is a regex that is used to matched against the
+  syntax group stack.
+
+*vimtex#syntax#in_mathzone*
+    `vimtex#syntax#in_mathzone()` -> |Boolean|
+    `vimtex#syntax#in_mathzone(line, column)` -> |Boolean|
+  Returns |v:true| if the cursor position or the specified position is inside
+  a math zone.
+
+*vimtex#view#inverse_search*
+  Utility function for reverse search from pdf viewer. Takes two arguments:
+  the line number and a filename. The function runs the event
+  |VimtexEventViewReverse| at the end, which allows more user customization.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
