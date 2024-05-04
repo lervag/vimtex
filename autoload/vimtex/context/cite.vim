@@ -20,19 +20,7 @@ endfunction
 
 " }}}1
 function! s:handler.get_actions() abort dict " {{{1
-  " Ensure we're at the root directory when locating bib files
-  call vimtex#paths#pushd(b:vimtex.root)
-  let l:entries = []
-  for l:file in vimtex#bib#files()
-    let l:entries += vimtex#parser#bib(
-          \ l:file,
-          \ {'backend': has('nvim') ? 'lua' : 'vim'}
-          \)
-  endfor
-  call vimtex#paths#popd()
-
-  let l:entry = get(
-        \ filter(copy(l:entries), {_, x -> x.key ==# self.selected}), 0, {})
+  let l:entry = vimtex#cite#get_entry(self.selected)
 
   if empty(l:entry)
     call vimtex#log#warning('Cite key not found: ' .. self.selected)

@@ -6236,6 +6236,12 @@ users for customization.
 
 Note: This reference is currently a work in progress!
 
+*vimtex#cite#get_entry*
+  Returns a citation entry. It takes an option `key` argument. If a `key` is
+  supplied, then the corresponding bib entry for that key is returned (a
+  |Dict|). Else it returns the entry for the key under the cursor. If no key
+  is found, an empty |Dict| is returned.
+
 *vimtex#cite#get_key*
   Returns the citation key under the cursor. Can be useful e.g. to create
   a function to open a citation in another progrem such as BibDesk or Zotero.
