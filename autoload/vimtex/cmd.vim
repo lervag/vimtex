@@ -28,6 +28,9 @@ function! vimtex#cmd#init_buffer() abort " {{{1
 
   xnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-frac)
         \ :<c-u>call vimtex#cmd#toggle_frac_visual()<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-break)
+        \ :<c-u>call <sid>operator_setup('toggle_break')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
@@ -265,6 +268,25 @@ function! vimtex#cmd#toggle_frac_visual() abort " {{{1
   call setreg('a', l:frac.text_toggled)
   normal! gv"ap
   call setreg('a', l:save_reg)
+endfunction
+
+" }}}1
+function! vimtex#cmd#toggle_break() abort " {{{1
+  let l:lnum = line('.')
+  let l:line = getline(l:lnum)
+  let l:len = col('$') - 1
+
+  if l:len >= 3 && strpart(l:line, l:len - 3) == ' \\'
+    call setline(l:lnum, 
+          \ strpart(l:line, 0, l:len - 3))
+  elseif l:len >= 2 && strpart(l:line, l:len - 2) == '\\'
+    call setline(l:lnum, 
+          \ strpart(l:line, 0, l:len - 2))
+  else
+    call setline(l:lnum, 
+          \ l:line
+          \ . ' \\')
+  endif
 endfunction
 
 " }}}1
@@ -609,6 +631,7 @@ function! s:operator_function(_) abort " {{{1
         \   'delete': 'delete()',
         \   'toggle_star': 'toggle_star()',
         \   'toggle_frac': 'toggle_frac()',
+        \   'toggle_break': 'toggle_break()',
         \ }[s:operator]
 endfunction
 
