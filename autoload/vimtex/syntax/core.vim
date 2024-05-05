@@ -1669,7 +1669,7 @@ let s:cmd_symbols = [
       \ ['rmoustache', '╮'],
       \ ['S', '§'],
       \ ['searrow', '↘'],
-      \ ['setminus', '⧵'],
+      \ ['setminus', '∖'],
       \ ['sharp', '♯'],
       \ ['sim', '∼'],
       \ ['simeq', '⋍'],
