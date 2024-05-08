@@ -54,6 +54,8 @@ My plan is to forget the whole thing and hope for the best.
 Missing character: There is no ^^A (U+0001) in font [lmroman10-regular]:+tlig;!
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./test.aux)
 
+Class memoir Warning: As of 2018, \fixpdflayout\ is no longer used on input line 4.
+
 ./test.tex:11: Undefined control sequence.
 l.11 \cdashline
                {1-7}

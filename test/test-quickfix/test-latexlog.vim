@@ -15,11 +15,11 @@ let s:qf = getqflist()
 
 let s:n = 0
 for s:expect in [
-      \ {'lnum': 99,  'type': 'W', 'text': 'Package natbib Warning: Citation `Einstein:1905'' on page 1 undefined on input line 99.'},
-      \ {'lnum': 12,  'type': 'W', 'text': 'Package refcheck Warning: Unused label `eq:my_equation_label'' on input line 12.'},
+      \ {'lnum': 99,  'type': 'W', 'text': 'Package natbib Warning: Citation `Einstein:1905'' on page 1 undefined'},
+      \ {'lnum': 12,  'type': 'W', 'text': 'Package refcheck Warning: Unused label `eq:my_equation_label'''},
       \ {'lnum': 9,   'type': 'W', 'text': "Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):\n                removing `\\gamma'"},
       \ {'lnum': 5,   'type': 'W', 'text': "Package hyperref Warning: Composite letter `\\textdotbelow+u'\n                not defined in PD1 encoding,\n                removing `\\textdotbelow'"},
-      \ {'lnum': 477, 'type': 'W', 'text': 'LaTeX Warning: Reference `fig:my_picture'' on page 37 undefined on input line 477.'},
+      \ {'lnum': 477, 'type': 'W', 'text': 'LaTeX Warning: Reference `fig:my_picture'' on page 37 undefined'},
       \ {'lnum': 9,   'type': 'W', 'text': 'Overfull \hbox (22.0021pt too wide) in paragraph at lines 9--9'},
       \ {'lnum': 0,   'type': 'W', 'text': 'Package biblatex warning: No "backend" specified, using Biber backend. To use BibTex, load biblatex with the "backend=bibtex" option.'},
       \ {'lnum': 0,   'type': 'W', 'text': "Package biblatex Warning: Data encoding is 'utf8'.\n                Use backend=biber."},
@@ -31,6 +31,7 @@ for s:expect in [
       \ {'lnum': 0,   'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16,  'type': 'E', 'text': 'Paragraph ended before \date  was complete.'},
       \ {'lnum': 0,   'type': 'W', 'text': 'Missing character: There is no ^^A (U+0001) in font [lmroman10-regular]:+tlig;!'},
+      \ {'lnum': 4,   'type': 'W', 'text': 'Class memoir Warning: As of 2018, \fixpdflayout\ is no longer used'},
       \ {'lnum': 11,  'type': 'E', 'text': "Undefined control sequence.\n\\cdashline"},
       \]
   call assert_equal(s:expect.lnum, s:qf[s:n].lnum, 'Failed at index ' . s:n)
