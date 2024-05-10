@@ -23,10 +23,12 @@ let s:qf = {
       \}
 
 function! s:qf.set_errorformat() abort dict "{{{1
-  setlocal errorformat=%+E%.%#---line\ %l\ of\ file\ %f
+  setlocal errorformat=
+  setlocal errorformat+=%+EName%.%#has\ a\ comma\ at\ the\ end%.%#
   setlocal errorformat+=%+EI\ found\ %.%#---while\ reading\ file\ %f
   setlocal errorformat+=%+WWarning--empty\ %.%#\ in\ %.%m
   setlocal errorformat+=%+WWarning--entry\ type\ for%m
+  setlocal errorformat+=%-Cwhile\ executing---line\ %l\ of\ file\ %f
   setlocal errorformat+=%-C--line\ %l\ of\ file\ %f
   setlocal errorformat+=%-G%.%#
 endfunction
