@@ -210,7 +210,7 @@ function! vimtex#syntax#p#amssymb#load(cfg) abort " {{{1
   syntax match texMathSymbol '\\vartriangleright\>'    contained conceal cchar=⊳
   syntax match texMathSymbol '\\veebar\>'              contained conceal cchar=⊻
   syntax match texMathSymbol '\\ulcorner\>'            contained conceal cchar=⌜
-  syntax match texMathSymbol '\\ulcorner\>'            contained conceal cchar=⌝
+  syntax match texMathSymbol '\\urcorner\>'            contained conceal cchar=⌝
   syntax match texMathSymbol '\\llcorner\>'            contained conceal cchar=⌞
   syntax match texMathSymbol '\\lrcorner\>'            contained conceal cchar=⌟
 endfunction
