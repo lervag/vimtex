@@ -191,3 +191,21 @@ function! s:type_no_bibstyle.fix(ctx, entry) abort " {{{1
 endfunction
 
 " }}}1
+
+let s:type_fix_bst_path = {}
+function! s:type_fix_bst_path.fix(ctx, entry) abort " {{{1
+  let l:filename = has_key(a:entry, 'filename')
+        \ ? a:entry.filename
+        \ : has_key(a:entry, 'bufnr')
+        \   ? bufname(a:entry.bufnr)
+        \   : ''
+  if l:filename =~# '\.bst$' && !filereadable(l:filename)
+    let l:path = vimtex#kpsewhich#find(l:filename)
+    if filereadable(l:path)
+      let a:entry.filename = l:path
+      unlet! a:entry.bufnr
+    endif
+  endif
+endfunction
+
+" }}}1
