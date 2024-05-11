@@ -422,24 +422,20 @@ let s:completer_img = {
       \   . ')$',
       \}
 
-function! s:completer_img.complete(regex) dict abort " {{{2
-  return s:filter(self.gather_candidates(), a:regex)
-endfunction
-
-function! s:completer_img.gather_candidates() dict abort " {{{2
+function! s:completer_img.complete(regex) dict abort
   let l:added_files = []
   let l:generated_pdf = b:vimtex.compiler.get_file('pdf')
 
   let l:candidates = []
   for l:path in b:vimtex.graphicspath + [b:vimtex.root]
     let l:files = globpath(l:path, '**/*.*', 1, 1)
-
-    call filter(l:files,
-          \ {_, x ->    x =~? self.ext_re
-          \          && x !=# l:generated_pdf
-          \          && index(l:added_files, x) < 0})
-
+          \ ->filter({_, x ->
+          \      x =~? self.ext_re
+          \   && x !=# l:generated_pdf
+          \   && index(l:added_files, x) < 0
+          \})
     let l:added_files += l:files
+
     let l:candidates += map(l:files, {_, x -> {
             \ 'abbr': vimtex#paths#shorten_relative(x),
             \ 'word': vimtex#paths#relative(x, l:path),
@@ -447,7 +443,7 @@ function! s:completer_img.gather_candidates() dict abort " {{{2
             \}})
   endfor
 
-  return l:candidates
+  return s:filter(l:candidates, a:regex)
 endfunction
 
 " }}}1
@@ -460,32 +456,27 @@ let s:completer_inc = {
       \ ],
       \}
 
-function! s:completer_inc.complete(regex) dict abort " {{{2
-  let self.candidates = globpath(b:vimtex.root, '**/*.tex', 0, 1)
+function! s:completer_inc.complete(regex) dict abort
+  let l:candidates = globpath(b:vimtex.root, '**/*.tex', 0, 1)
 
   " Add .tikz files if appropriate
   if has_key(b:vimtex.packages, 'tikz') && self.context !~# '\\subfile'
-    call extend(self.candidates,
-          \ globpath(b:vimtex.root, '**/*.tikz', 0, 1))
+    call extend(l:candidates, globpath(b:vimtex.root, '**/*.tikz', 0, 1))
   endif
-
-  let self.candidates = map(self.candidates,
-        \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter(self.candidates, a:regex)
 
   if self.context =~# '\\include'
-    let self.candidates = map(self.candidates, {_, x -> {
-          \ 'word': fnamemodify(x, ':r'),
-          \ 'kind': '[include]',
+    let l:candidates = map(l:candidates, {_, x -> #{
+          \ word: vimtex#paths#relative(x, b:vimtex.root)->fnamemodify(':r'),
+          \ kind: '[include]',
           \}})
   else
-    let self.candidates = map(self.candidates, {_, x -> {
-          \ 'word': x,
-          \ 'kind': '[input]',
+    let l:candidates = map(l:candidates, {_, x -> #{
+          \ word: vimtex#paths#relative(x, b:vimtex.root),
+          \ kind: '[input]',
           \}})
   endif
 
-  return self.candidates
+  return s:filter(l:candidates, a:regex)
 endfunction
 
 " }}}1
@@ -495,16 +486,15 @@ let s:completer_pdf = {
       \ 'patterns' : ['\v\\includepdf%(\s*\[[^]]*\])?\s*\{[^}]*$'],
       \}
 
-function! s:completer_pdf.complete(regex) dict abort " {{{2
-  let self.candidates = globpath(b:vimtex.root, '**/*.pdf', 0, 1)
-  let self.candidates = map(self.candidates,
-        \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter(self.candidates, a:regex)
-  let self.candidates = map(self.candidates, {_, x -> {
-        \ 'word': x,
-        \ 'kind': '[includepdf]',
-        \}})
-  return self.candidates
+function! s:completer_pdf.complete(regex) dict abort
+  let l:candidates = globpath(b:vimtex.root, '**/*.pdf', 0, 1)
+        \ ->map({_, x -> #{
+        \   word: vimtex#paths#relative(x, b:vimtex.root),
+        \   kind: '[includepdf]',
+        \  }
+        \})
+
+  return s:filter(l:candidates, a:regex)
 endfunction
 
 " }}}1
@@ -514,18 +504,14 @@ let s:completer_sta = {
       \ 'patterns' : ['\v\\includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*$'],
       \}
 
-function! s:completer_sta.complete(regex) dict abort " {{{2
-  let self.candidates = substitute(
-        \ globpath(b:vimtex.root, '**/*.tex'), '\.tex', '', 'g')
-  let self.candidates = split(self.candidates, '\n')
-  let self.candidates = map(self.candidates,
-        \ 'strpart(v:val, len(b:vimtex.root)+1)')
-  call s:filter(self.candidates, a:regex)
-  let self.candidates = map(self.candidates, {_, x -> {
-        \ 'word': x,
-        \ 'kind': '[includestandalone]',
+function! s:completer_sta.complete(regex) dict abort
+  let l:candidates = globpath(b:vimtex.root, '**/*.tex', 0, 1)
+        \ ->map({_, x -> #{
+        \ word: vimtex#paths#relative(x, b:vimtex.root)->fnamemodify(':r'),
+        \ kind: '[includestandalone]',
         \}})
-  return self.candidates
+
+  return s:filter(l:candidates, a:regex)
 endfunction
 
 " }}}1
