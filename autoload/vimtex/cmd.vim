@@ -274,19 +274,12 @@ endfunction
 function! vimtex#cmd#toggle_break() abort " {{{1
   let l:lnum = line('.')
   let l:line = getline(l:lnum)
-  let l:len = col('$') - 1
 
-  if l:len >= 3 && strpart(l:line, l:len - 3) == ' \\'
-    call setline(l:lnum, 
-          \ strpart(l:line, 0, l:len - 3))
-  elseif l:len >= 2 && strpart(l:line, l:len - 2) == '\\'
-    call setline(l:lnum, 
-          \ strpart(l:line, 0, l:len - 2))
-  else
-    call setline(l:lnum, 
-          \ l:line
-          \ . ' \\')
-  endif
+  let l:replace = l:line =~# '\s*\\\\\s*$'
+        \ ? substitute(l:line, '\s*\\\\\s*$', '', '')
+        \ : substitute(l:line, '\s*$', ' \\\\', '')
+
+  call setline(l:lnum, l:replace)
 endfunction
 
 " }}}1
