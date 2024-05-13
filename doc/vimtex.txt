@@ -197,7 +197,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - Toggle inline and displaymath with `ts$`
   - Toggle between e.g. `()` and `\left(\right)` with `tsd`/`tsD`
   - Toggle (inline) fractions with `tsf`
-  - Toggle line end `\\` with `tsb`
+  - Toggle line-break macro `\\` with `tsb`
   - Close the current environment/delimiter in insert mode with `]]`
   - Add `\left ... \right)` modifiers to surrounding delimiters with `<F8>`
   - Insert new command with `<F7>`
@@ -3743,7 +3743,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
   One may change the toggle sequence with |g:vimtex_env_toggle_math_map|.
 
 *<plug>(vimtex-cmd-toggle-break)*
-  Toggle the line break command `\\` at the end of current line.
+  Toggle the line-break macro `\\` at the end of current line. This may
+  be convenient when working with array and math environments.
 
 *<plug>(vimtex-env-surround-line)*
 *<plug>(vimtex-env-surround-operator)*
