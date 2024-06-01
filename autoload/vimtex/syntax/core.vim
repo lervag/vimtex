@@ -67,6 +67,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
 
+  syntax match texError "[_^]"
+
   " }}}2
   " {{{2 Commands: general
 
