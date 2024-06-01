@@ -59,16 +59,23 @@ The following explains the most common and popular approaches.
 
 In Neovim, [lazy.nvim](https://github.com/folke/lazy.nvim) is probably the most popular plugin manger.
 To install VimTeX, add a plugin spec similar to this:
+
 ```lua
 {
   "lervag/vimtex",
   lazy = false,     -- we don't want to lazy load VimTeX
   -- tag = "v2.15", -- uncomment to pin to a specific release
   init = function()
-    -- VimTeX configuration goes here
+    -- VimTeX configuration goes here, e.g.
+    vim.g.vimtex_view_method = "zathura"
   end
 }
 ```
+
+VimTeX is mostly implemented with Vimscript and is configured with the
+classical vimscript variable convention like `g:vimtex_OPTION_NAME`. Nowadays,
+Neovim is often configured with Lua, thus some users may be interested in
+reading `:help lua-vimscript`.
 
 ### vim-plug
 
@@ -111,12 +118,13 @@ overview of some of the main aspects.
 
 ```vim
 " This is necessary for VimTeX to load properly. The "indent" is optional.
-" Note that most plugin managers will do this automatically.
+" Note: Most plugin managers will do this automatically!
 filetype plugin indent on
 
 " This enables Vim's and neovim's syntax-related features. Without this, some
 " VimTeX features will not work (see ":help vimtex-requirements" for more
 " info).
+" Note: Most plugin managers will do this automatically!
 syntax enable
 
 " Viewer options: One may configure the viewer either by specifying a built-in
