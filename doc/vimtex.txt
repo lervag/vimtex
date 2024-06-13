@@ -4135,13 +4135,13 @@ Examples (Vimscript) - see below for a Lua example: >vim
   augroup END
 
   " Specify extra behaviour after reverse goto
-  augroup vimtex_event_4
+  augroup vimtex_event_5
     au!
     au User VimtexEventViewReverse normal! zMzvzz
   augroup END
 
   " Focus the terminal after inverse search
-  augroup vimtex_event_4
+  augroup vimtex_event_6
     autocmd!
     autocmd User VimtexEventViewReverse call b:vimtex.viewer.xdo_focus_vim()
   augroup END
