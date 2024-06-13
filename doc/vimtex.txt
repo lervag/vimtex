@@ -4140,6 +4140,12 @@ Examples (Vimscript) - see below for a Lua example: >vim
     au User VimtexEventViewReverse normal! zMzvzz
   augroup END
 
+  " Focus the terminal after inverse search
+  augroup vimtex_event_4
+    autocmd!
+    autocmd User VimtexEventViewReverse call b:vimtex.viewer.xdo_focus_vim()
+  augroup END
+
 Examples - Lua: >lua
 
   local au_group = vim.api.nvim_create_augroup("vimtex_events", {}),
@@ -4149,6 +4155,13 @@ Examples - Lua: >lua
     pattern = "VimtexEventQuit",
     group = au_group,
     command = "VimtexClean"
+  })
+
+  -- Focus the terminal after inverse search
+  vim.api.nvim_create_autocmd('User', {
+    pattern = 'VimtexEventViewReverse',
+    group = au_group,
+    command = "call b:vimtex.viewer.xdo_focus_vim()"
   })
 
 ------------------------------------------------------------------------------
