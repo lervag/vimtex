@@ -24,8 +24,12 @@ function! vimtex#jobs#start(cmd, ...) abort " {{{1
   let l:job.wait_timeout = str2nr(get(l:opts, 'wait_timeout', 5000))
   let l:job.capture_output = get(l:opts, 'capture_output', v:false)
   let l:job.detached = get(l:opts, 'detached', v:false)
+  call l:job.start()
 
-  return l:job.start()
+  " Add some minor delay to ensure the job was properly started
+  sleep 100m
+
+  return l:job
 endfunction
 
 " }}}1
