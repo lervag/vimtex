@@ -35,6 +35,7 @@ function! s:compiler.__init() abort dict " {{{1
     autocmd CursorMoved call s:texpresso_synctex_forward_hook()
     autocmd ColorScheme call s:texpresso_theme()
   augroup END
+  call add(self.hooks, function('s:texpresso_process_message'))
 endfunction
 " }}}1
 
@@ -107,4 +108,8 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
         \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 
+function! s:texpresso_process_message(msg) abort " {{{1
+  echom a:msg
+endfunction
+" }}}1
 " }}}1
