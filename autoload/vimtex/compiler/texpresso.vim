@@ -10,6 +10,7 @@ endfunction
 
 " }}}1
 
+
 let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'texpresso',
       \ 'continuous': 1,
@@ -36,6 +37,12 @@ function! s:compiler.__init() abort dict " {{{1
     autocmd ColorScheme call s:texpresso_theme()
   augroup END
   call add(self.hooks, function('s:texpresso_process_message'))
+endfunction
+" }}}1
+
+function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
+  return 'texpresso ' . join(self.options)
+        \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 " }}}1
 
@@ -103,11 +110,6 @@ function! s:texpresso_send(...) abort " {{{1
 endfunction
 " }}}1
 
-function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
-  return 'texpresso ' . join(self.options)
-        \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
-endfunction
-
 function! s:texpresso_process_message(json) abort " {{{1
   try
     let l:msg = json_decode(a:json)
@@ -127,9 +129,10 @@ function! s:texpresso_process_message(json) abort " {{{1
     let l:path = l:msg[1]
     let l:lnum = l:msg[2]
     call vimtex#view#inverse_search(l:lnum, l:path)
+  elseif l:msg[0] ==# 'flush'
+  elseif l:msg[0] ==# 'flush'
   else
     " TODO: handle other types of messages
   endif
 endfunction
-" }}}1
 " }}}1
