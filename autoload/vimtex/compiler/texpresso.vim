@@ -108,8 +108,28 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
         \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 
-function! s:texpresso_process_message(msg) abort " {{{1
-  echom a:msg
+function! s:texpresso_process_message(json) abort " {{{1
+  try
+    let l:msg = json_decode(a:json)
+  catch /^Vim\%((\a\+)\)\=:E491:/
+    " FIXME: hooks receive messages from both stdout and stderr, so
+    " sometimes parsing can fail.
+    return
+  endtry
+
+  if type(l:msg) != v:t_list || empty(l:msg)
+    return
+  endif
+
+  echom l:msg
+
+  if l:msg[0] ==# 'synctex'
+    let l:path = l:msg[1]
+    let l:lnum = l:msg[2]
+    call vimtex#view#inverse_search(l:lnum, l:path)
+  else
+    " TODO: handle other types of messages
+  endif
 endfunction
 " }}}1
 " }}}1
