@@ -33,7 +33,7 @@ function! s:compiler.__init() abort dict " {{{1
     autocmd!
     autocmd User VimtexEventCompileStarted call s:start_listening()
     autocmd User VimtexEventCompileStopped call s:stop_listening()
-    autocmd CursorMoved call s:texpresso_synctex_forward_hook()
+    autocmd CursorMoved <buffer> call s:texpresso_synctex_forward_hook()
     autocmd ColorScheme call s:texpresso_theme()
   augroup END
   call add(self.hooks, function('s:texpresso_process_message'))
@@ -123,7 +123,7 @@ function! s:texpresso_process_message(json) abort " {{{1
     return
   endif
 
-  echom l:msg
+  " echom l:msg
 
   if l:msg[0] ==# 'synctex'
     let l:path = l:msg[1]
