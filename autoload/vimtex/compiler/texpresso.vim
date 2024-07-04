@@ -58,9 +58,22 @@ endfunction
 
 function! s:start_listening() abort " {{{1
   if has('nvim')
-    " call nvim_buf_attach(0, v:false, { 'on_lines': function('s:on_lines') })
+    lua << EOF
+    vim.api.nvim_buf_attach(0, false, {
+      on_lines = function(e, buf, _tick, first, oldlast, newlast)
+        local path = vim.api.nvim_buf_get_name(buf)
+        local count = oldlast - first
+        local lines = ""
+        if first < newlast then
+          lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
+        end
+        local msg = vim.json.encode({"change-lines", path, first, count, lines})
+        vim.fn.chansend(vim.b.vimtex.compiler.job, {msg, ""})
+      end
+    })
+EOF
   else
-    let s:listener_id = listener_add(function('s:listener'))
+    let b:vimtex.compiler.listener_id = listener_add(function(s:compiler.texpresso_listener, [], b:vimtex.compiler))
   endif
 
   call s:texpresso_theme()
@@ -69,14 +82,14 @@ endfunction
 " }}}1
 
 function! s:stop_listening() abort " {{{1
-  call job_stop(s:listener_id)
-  unlet s:listener_id
+  call job_stop(b:vimtex.compiler.listener_id)
+  unlet b:vimtex.compiler.listener_id
 endfunction
 " }}}1
 
-function! s:listener(bufnr, start, end, added, changes) abort " {{{1
+function! s:compiler.texpresso_listener(bufnr, start, end, added, changes) abort dict " {{{1
   let l:path = fnamemodify(bufname(a:bufnr), ":p")
-  call s:texpresso_send("change-lines", l:path, a:start - 1, a:end - a:start,  s:get_buffer_lines(a:bufnr, a:start, a:end - 1 + a:added))
+  call self.texpresso_send("change-lines", l:path, a:start - 1, a:end - a:start,  s:get_buffer_lines(a:bufnr, a:start, a:end - 1 + a:added))
 endfunction
 " }}}1
 
@@ -89,7 +102,7 @@ endfunction
 
 function! s:texpresso_reload() abort " {{{1
   let l:path = fnamemodify(bufname(), ":p")
-  call s:texpresso_send("open", l:path, s:get_buffer_lines("%", 1, '$'))
+  call b:vimtex.compiler.texpresso_send("open", l:path, s:get_buffer_lines("%", 1, '$'))
 endfunction
 " }}}1
 
@@ -97,16 +110,16 @@ function! s:texpresso_synctex_forward_hook() abort "{{{1
   if !b:vimtex.compiler.is_running() | return | endif
   let l:path = fnamemodify(bufname(), ":p")
   let l:lnum = getpos('.')[1]
-  call s:texpresso_send("synctex-forward", l:path, l:lnum - 1)
+  call b:vimtex.compiler.texpresso_send("synctex-forward", l:path, l:lnum - 1)
 endfunction
 " }}}1
 
-function! s:texpresso_send(...) abort " {{{1
-  " echom a:000
+function! s:compiler.texpresso_send(...) abort dict " {{{1
+  if !self.is_running() | return | endif
   if has('nvim')
-    call chansend(b:vimtex.compiler.job, json_encode(a:000) .. "\n\n")
+    call chansend(self.job, json_encode(a:000) .. "\n\n")
   else
-    call ch_sendraw(b:vimtex.compiler.job, json_encode(a:000) .. "\n\n")
+    call ch_sendraw(self.job, json_encode(a:000) .. "\n\n")
   endif
 endfunction
 " }}}1
@@ -114,7 +127,7 @@ endfunction
 function! s:texpresso_process_message(json) abort " {{{1
   try
     let l:msg = json_decode(a:json)
-  catch /^Vim\%((\a\+)\)\=:E491:/
+  catch
     " FIXME: hooks receive messages from both stdout and stderr, so
     " sometimes parsing can fail.
     return
