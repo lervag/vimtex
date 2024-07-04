@@ -10,7 +10,6 @@ endfunction
 
 " }}}1
 
-
 let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'texpresso',
       \ 'continuous': 1,
@@ -30,11 +29,11 @@ endfunction
 
 function! s:compiler.__init() abort dict " {{{1
   augroup vimtex_compiler
-    autocmd!
-    autocmd User VimtexEventCompileStarted call s:start_listening()
-    autocmd User VimtexEventCompileStopped call s:stop_listening()
+    autocmd! * <buffer>
+    autocmd User <buffer> VimtexEventCompileStarted call s:start_listening()
+    autocmd User <buffer> VimtexEventCompileStopped call s:stop_listening()
     autocmd CursorMoved <buffer> call s:texpresso_synctex_forward_hook()
-    autocmd ColorScheme call s:texpresso_theme()
+    autocmd ColorScheme <buffer> call s:texpresso_theme()
   augroup END
   call add(self.hooks, function('s:texpresso_process_message'))
 endfunction
@@ -58,20 +57,21 @@ endfunction
 
 function! s:start_listening() abort " {{{1
   if has('nvim')
-    lua << EOF
-    vim.api.nvim_buf_attach(0, false, {
-      on_lines = function(e, buf, _tick, first, oldlast, newlast)
-        local path = vim.api.nvim_buf_get_name(buf)
-        local count = oldlast - first
-        local lines = ""
-        if first < newlast then
-          lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
+    " TODO: return true to stop subscribing
+    lua << trim EOF
+      vim.api.nvim_buf_attach(0, false, {
+        on_lines = function(e, buf, _tick, first, oldlast, newlast)
+          local path = vim.api.nvim_buf_get_name(buf)
+          local count = oldlast - first
+          local lines = ""
+          if first < newlast then
+            lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
+          end
+          local msg = vim.json.encode({"change-lines", path, first, count, lines})
+          vim.fn.chansend(vim.b.vimtex.compiler.job, {msg, ""})
         end
-        local msg = vim.json.encode({"change-lines", path, first, count, lines})
-        vim.fn.chansend(vim.b.vimtex.compiler.job, {msg, ""})
-      end
-    })
-EOF
+      })
+    EOF
   else
     let b:vimtex.compiler.listener_id = listener_add(function(s:compiler.texpresso_listener, [], b:vimtex.compiler))
   endif
