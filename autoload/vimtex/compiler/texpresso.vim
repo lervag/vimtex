@@ -102,6 +102,7 @@ endfunction
 " }}}1
 
 function! s:texpresso_send(...) abort " {{{1
+  " echom a:000
   if has('nvim')
     call chansend(b:vimtex.compiler.job, json_encode(a:000) .. "\n\n")
   else
@@ -129,7 +130,21 @@ function! s:texpresso_process_message(json) abort " {{{1
     let l:path = l:msg[1]
     let l:lnum = l:msg[2]
     call vimtex#view#inverse_search(l:lnum, l:path)
-  elseif l:msg[0] ==# 'flush'
+  elseif l:msg[0] ==# 'truncate-lines'
+    let l:name = l:msg[1]
+    let l:count = l:msg[2]
+    if name ==# 'out'
+      " TODO: truncate qf list
+      call setqflist(getqflist()[:l:count], 'r')
+    endif
+  elseif l:msg[0] ==# 'append-lines'
+    let l:name = l:msg[1]
+    let l:lines = l:msg[2:]
+    if name ==# 'out'
+      " TODO: parse lines and append to qf list
+      echom l:lines
+      call setqflist([], 'a', { 'lines': l:lines, 'efm': '%t%*[^:]: %f:%l: %m' })
+    endif
   elseif l:msg[0] ==# 'flush'
   else
     " TODO: handle other types of messages
