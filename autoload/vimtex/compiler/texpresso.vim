@@ -28,15 +28,9 @@ endfunction
 " }}}1
 
 function! s:compiler.__init() abort dict " {{{1
-  let self.start = function('s:start', [self.start])
-  let self.stop = function('s:stop', [self.stop])
+  let self.start = function('s:compiler_start', [self.start])
+  let self.stop = function('s:compiler_stop', [self.stop])
   call add(self.hooks, function('s:texpresso_process_message'))
-
-  augroup vimtex_compiler
-    autocmd! * <buffer>
-    autocmd CursorMoved <buffer> call s:texpresso_synctex_forward_hook()
-    autocmd ColorScheme <buffer> call s:texpresso_theme()
-  augroup END
 endfunction
 " }}}1
 
@@ -56,8 +50,14 @@ function! s:get_buffer_lines(bufnr, start, end) abort " {{{1
 endfunction
 " }}}1
 
-function! s:start(super, ...) abort dict " {{{1
+function! s:compiler_start(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
+
+  augroup vimtex_compiler
+    autocmd! * <buffer>
+    autocmd CursorMoved <buffer> call b:vimtex.compiler.texpresso_synctex_forward()
+    autocmd ColorScheme <buffer> call b:vimtex.compiler.texpresso_theme()
+  augroup END
 
   if has('nvim')
     lua << trim EOF
@@ -82,17 +82,19 @@ function! s:start(super, ...) abort dict " {{{1
     let self.listener_id = listener_add(function(self.texpresso_listener, [], self))
   endif
 
-  call s:texpresso_theme()
-  call s:texpresso_reload()
+  call self.texpresso_theme()
+  call self.texpresso_reload()
 endfunction
 " }}}1
 
-function! s:stop(super, ...) abort dict " {{{1
+function! s:compiler_stop(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
   if !has('nvim')
     call listener_remove(self.listener_id)
     unlet self.listener_id
   endif
+
+  autocmd! vimtex_compiler * <buffer>
 endfunction
 " }}}1
 
@@ -102,24 +104,23 @@ function! s:compiler.texpresso_listener(bufnr, start, end, added, changes) abort
 endfunction
 " }}}1
 
-function! s:texpresso_theme() abort " {{{1
+function! s:compiler.texpresso_theme() abort dict " {{{1
   " let l:colors = hlget('Normal', v:true)
   " TODO: Convert colors to rgb tuples
-  " call s:texpresso_send("theme", [], [])
+  " call self.texpresso_send("theme", [], [])
 endfunction
 " }}}1
 
-function! s:texpresso_reload() abort " {{{1
+function! s:compiler.texpresso_reload() abort dict " {{{1
   let l:path = fnamemodify(bufname(), ":p")
-  call b:vimtex.compiler.texpresso_send("open", l:path, s:get_buffer_lines("%", 1, '$'))
+  call self.texpresso_send("open", l:path, s:get_buffer_lines("%", 1, '$'))
 endfunction
 " }}}1
 
-function! s:texpresso_synctex_forward_hook() abort "{{{1
-  if !b:vimtex.compiler.is_running() | return | endif
+function! s:compiler.texpresso_synctex_forward() abort dict "{{{1
   let l:path = fnamemodify(bufname(), ":p")
   let l:lnum = getpos('.')[1]
-  call b:vimtex.compiler.texpresso_send("synctex-forward", l:path, l:lnum - 1)
+  call self.texpresso_send("synctex-forward", l:path, l:lnum - 1)
 endfunction
 " }}}1
 
