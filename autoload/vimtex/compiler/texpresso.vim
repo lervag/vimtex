@@ -117,9 +117,9 @@ endfunction
 function! s:compiler.texpresso_send(...) abort dict " {{{1
   if !self.is_running() | return | endif
   if has('nvim')
-    call chansend(self.job, json_encode(a:000) .. "\n\n")
+    call chansend(self.job, json_encode(a:000) .. "\n")
   else
-    call ch_sendraw(self.job, json_encode(a:000) .. "\n\n")
+    call ch_sendraw(self.job, json_encode(a:000) .. "\n")
   endif
 endfunction
 " }}}1
