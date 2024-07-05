@@ -53,7 +53,7 @@ endfunction
 function! s:compiler_start(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
 
-  augroup vimtex_compiler
+  augroup vimtex_compiler_texpresso
     autocmd! * <buffer>
     autocmd CursorMoved <buffer> call b:vimtex.compiler.texpresso_synctex_forward()
     autocmd ColorScheme <buffer> call b:vimtex.compiler.texpresso_theme()
@@ -94,7 +94,7 @@ function! s:compiler_stop(super, ...) abort dict " {{{1
     unlet self.listener_id
   endif
 
-  autocmd! vimtex_compiler * <buffer>
+  autocmd! vimtex_compiler_texpresso * <buffer>
 endfunction
 " }}}1
 
