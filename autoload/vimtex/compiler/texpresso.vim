@@ -60,10 +60,13 @@ function! s:start(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
 
   if has('nvim')
-    " TODO: return true to stop subscribing
     lua << trim EOF
       vim.api.nvim_buf_attach(0, false, {
         on_lines = function(e, buf, _tick, first, oldlast, newlast)
+          local job = vim.b[buf].vimtex.compiler.job
+          if vim.fn.jobwait({job}, 0)[1] ~= -1 then
+            return true
+          end
           local path = vim.api.nvim_buf_get_name(buf)
           local count = oldlast - first
           local lines = ""
@@ -71,7 +74,7 @@ function! s:start(super, ...) abort dict " {{{1
             lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
           end
           local msg = vim.json.encode({"change-lines", path, first, count, lines})
-          vim.fn.chansend(vim.b.vimtex.compiler.job, {msg, ""})
+          vim.fn.chansend(job, {msg, ""})
         end
       })
     EOF
