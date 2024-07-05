@@ -28,14 +28,15 @@ endfunction
 " }}}1
 
 function! s:compiler.__init() abort dict " {{{1
+  let self.start = function('s:start', [self.start])
+  let self.stop = function('s:stop', [self.stop])
+  call add(self.hooks, function('s:texpresso_process_message'))
+
   augroup vimtex_compiler
     autocmd! * <buffer>
-    autocmd User <buffer> VimtexEventCompileStarted call s:start_listening()
-    autocmd User <buffer> VimtexEventCompileStopped call s:stop_listening()
     autocmd CursorMoved <buffer> call s:texpresso_synctex_forward_hook()
     autocmd ColorScheme <buffer> call s:texpresso_theme()
   augroup END
-  call add(self.hooks, function('s:texpresso_process_message'))
 endfunction
 " }}}1
 
@@ -55,7 +56,9 @@ function! s:get_buffer_lines(bufnr, start, end) abort " {{{1
 endfunction
 " }}}1
 
-function! s:start_listening() abort " {{{1
+function! s:start(super, ...) abort dict " {{{1
+  call call(a:super, a:000, self)
+
   if has('nvim')
     " TODO: return true to stop subscribing
     lua << trim EOF
@@ -73,7 +76,7 @@ function! s:start_listening() abort " {{{1
       })
     EOF
   else
-    let b:vimtex.compiler.listener_id = listener_add(function(s:compiler.texpresso_listener, [], b:vimtex.compiler))
+    let self.listener_id = listener_add(function(self.texpresso_listener, [], self))
   endif
 
   call s:texpresso_theme()
@@ -81,9 +84,12 @@ function! s:start_listening() abort " {{{1
 endfunction
 " }}}1
 
-function! s:stop_listening() abort " {{{1
-  call job_stop(b:vimtex.compiler.listener_id)
-  unlet b:vimtex.compiler.listener_id
+function! s:stop(super, ...) abort dict " {{{1
+  call call(a:super, a:000, self)
+  if !has('nvim')
+    call listener_remove(self.listener_id)
+    unlet self.listener_id
+  endif
 endfunction
 " }}}1
 
