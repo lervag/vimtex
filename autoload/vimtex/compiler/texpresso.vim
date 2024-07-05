@@ -50,6 +50,30 @@ function! s:get_buffer_lines(bufnr, start, end) abort " {{{1
 endfunction
 " }}}1
 
+
+if has('nvim')
+  let s:nvim_attach = luaeval('
+    \ function()
+    \   local stopped = false
+    \   vim.api.nvim_buf_attach(0, false, {
+    \     on_lines = function(e, buf, _tick, first, oldlast, newlast)
+    \       if stopped then
+    \         return true
+    \       end
+    \       local path = vim.api.nvim_buf_get_name(buf)
+    \       local count = oldlast - first
+    \       local lines = ""
+    \       if first < newlast then
+    \         lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
+    \       end
+    \       local msg = vim.json.encode({"change-lines", path, first, count, lines})
+    \       vim.fn.chansend(vim.b[buf].vimtex.compiler.job, {msg, ""})
+    \     end
+    \   })
+    \  return function() stopped = true end
+    \ end')
+endif
+
 function! s:compiler_start(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
 
@@ -60,24 +84,7 @@ function! s:compiler_start(super, ...) abort dict " {{{1
   augroup END
 
   if has('nvim')
-    lua << trim EOF
-      vim.api.nvim_buf_attach(0, false, {
-        on_lines = function(e, buf, _tick, first, oldlast, newlast)
-          local job = vim.b[buf].vimtex.compiler.job
-          if vim.fn.jobwait({job}, 0)[1] ~= -1 then
-            return true
-          end
-          local path = vim.api.nvim_buf_get_name(buf)
-          local count = oldlast - first
-          local lines = ""
-          if first < newlast then
-            lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
-          end
-          local msg = vim.json.encode({"change-lines", path, first, count, lines})
-          vim.fn.chansend(job, {msg, ""})
-        end
-      })
-    EOF
+    let self.nvim_detach = s:nvim_attach()
   else
     let self.listener_id = listener_add(function(self.texpresso_listener, [], self))
   endif
@@ -89,7 +96,10 @@ endfunction
 
 function! s:compiler_stop(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
-  if !has('nvim')
+  if has('nvim')
+    call self.nvim_detach()
+    unlet self.nvim_detach()
+  else
     call listener_remove(self.listener_id)
     unlet self.listener_id
   endif
