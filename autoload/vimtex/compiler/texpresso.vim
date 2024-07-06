@@ -163,7 +163,7 @@ function! s:texpresso_process_message(json) abort " {{{1
     let l:name = l:msg[1]
     let l:count = l:msg[2]
     if name ==# 'out'
-      call setqflist(getqflist()[:l:count], 'r')
+      call setqflist(slice(getqflist(), 0, l:count), 'r')
     endif
   elseif l:msg[0] ==# 'append-lines'
     let l:name = l:msg[1]
