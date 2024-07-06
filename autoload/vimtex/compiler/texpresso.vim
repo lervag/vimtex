@@ -40,17 +40,6 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
 endfunction
 " }}}1
 
-function! s:get_buffer_lines(bufnr, start, end) abort " {{{1
-  let l:lines = getbufline(a:bufnr, a:start, a:end)
-  if empty(l:lines)
-    return ''
-  else
-    return join(l:lines, "\n") .. "\n"
-  endif
-endfunction
-" }}}1
-
-
 if has('nvim')
   let s:nvim_attach = luaeval('
     \ function()
@@ -110,7 +99,8 @@ endfunction
 
 function! s:compiler.texpresso_listener(bufnr, start, end, added, changes) abort dict " {{{1
   let l:path = fnamemodify(bufname(a:bufnr), ":p")
-  call self.texpresso_send("change-lines", l:path, a:start - 1, a:end - a:start,  s:get_buffer_lines(a:bufnr, a:start, a:end - 1 + a:added))
+  let l:lines = getbufline(a:bufnr, a:start, a:end - 1 + a:added)
+  call self.texpresso_send("change-lines", l:path, a:start - 1, a:end - a:start,  s:join_lines(l:lines))
 endfunction
 " }}}1
 
@@ -129,7 +119,7 @@ endfunction
 
 function! s:compiler.texpresso_reload() abort dict " {{{1
   let l:path = fnamemodify(bufname(), ":p")
-  call self.texpresso_send("open", l:path, s:get_buffer_lines("%", 1, '$'))
+  call self.texpresso_send("open", l:path, s:join_lines(getline(1, '$')))
 endfunction
 " }}}1
 
@@ -189,15 +179,25 @@ function! s:texpresso_process_message(json) abort " {{{1
     " TODO: handle other types of messages
   endif
 endfunction
+
 " }}}1
 
-function s:convert_color(color)
+function s:join_lines(lines) " {{{1
+  return a:lines == [] ? '' : join(a:lines, "\n") .. "\n"
+endfunction
+
+" }}}1
+
+function s:convert_color(color) abort " {{{1
   let l:color = get(s:to_HEX, a:color, a:color)
   let l:r = str2nr(l:color[1:2], 16) 
   let l:g = str2nr(l:color[3:4], 16)
   let l:b = str2nr(l:color[5:6], 16)
   return [l:r / 255.0, l:g / 255.0, l:b / 255.0]
 endfunction
+
+" }}}1
+
 
 let s:to_HEX = {
       \ '00':  '#000000',  '01':  '#800000',  '02':  '#008000',  '03':  '#808000',  '04':  '#000080',
