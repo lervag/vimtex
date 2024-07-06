@@ -163,15 +163,12 @@ function! s:texpresso_process_message(json) abort " {{{1
     let l:name = l:msg[1]
     let l:count = l:msg[2]
     if name ==# 'out'
-      " TODO: truncate qf list
       call setqflist(getqflist()[:l:count], 'r')
     endif
   elseif l:msg[0] ==# 'append-lines'
     let l:name = l:msg[1]
     let l:lines = l:msg[2:]
     if name ==# 'out'
-      " TODO: parse lines and append to qf list
-      echom l:lines
       call setqflist([], 'a', { 'lines': l:lines, 'efm': '%t%*[^:]: %f:%l: %m' })
     endif
   elseif l:msg[0] ==# 'flush'
