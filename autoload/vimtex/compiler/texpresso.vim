@@ -134,6 +134,16 @@ function! s:compiler.texpresso_synctex_forward() abort dict "{{{1
 endfunction
 " }}}1
 
+function! s:compiler.texpresso_previous_page() abort dict "{{{1
+  call self.texpresso_send("previous-page")
+endfunction
+"}}}1
+
+function! s:compiler.texpresso_next_page() abort dict "{{{1
+  call self.texpresso_send("next-page")
+endfunction
+"}}}1
+
 function! s:compiler.texpresso_send(...) abort dict " {{{1
   if !self.is_running() | return | endif
   if has('nvim')
