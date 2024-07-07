@@ -126,6 +126,10 @@ endfunction
 function! s:compiler.texpresso_synctex_forward() abort dict "{{{1
   let l:path = fnamemodify(bufname(), ":p")
   let l:lnum = getpos('.')[1]
+  if get(self, 'texpresso_synctex_forward_previous', v:null) == [l:path, l:lnum]
+    return
+  endif
+  let self.texpresso_synctex_forward_previous = [l:path, l:lnum]
   call self.texpresso_send("synctex-forward", l:path, l:lnum - 1)
 endfunction
 " }}}1
