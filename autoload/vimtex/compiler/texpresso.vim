@@ -126,7 +126,8 @@ endfunction
 function! s:compiler.texpresso_synctex_forward() abort dict "{{{1
   let l:path = fnamemodify(bufname(), ":p")
   let l:lnum = getpos('.')[1]
-  if get(self, 'texpresso_synctex_forward_previous', v:null) == [l:path, l:lnum]
+  let l:prev_key = 'texpresso_synctex_forward_previous'
+  if has_key(self, l:prev_key) && self[l:prev_key] == [l:path, l:lnum]
     return
   endif
   let self.texpresso_synctex_forward_previous = [l:path, l:lnum]
