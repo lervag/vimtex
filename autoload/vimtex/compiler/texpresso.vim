@@ -130,7 +130,7 @@ function! s:compiler.texpresso_synctex_forward() abort dict "{{{1
     return
   endif
   let self.texpresso_synctex_forward_previous = [l:path, l:lnum]
-  call self.texpresso_send("synctex-forward", l:path, l:lnum - 1)
+  call self.texpresso_send("synctex-forward", l:path, l:lnum)
 endfunction
 " }}}1
 
