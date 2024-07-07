@@ -183,7 +183,7 @@ endfunction
 
 " }}}1
 
-function s:join_lines(lines) " {{{1
+function s:join_lines(lines) abort " {{{1
   return a:lines == [] ? '' : join(a:lines, "\n") .. "\n"
 endfunction
 
