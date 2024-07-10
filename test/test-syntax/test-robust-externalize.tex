@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage{robust-externalize}
+
+\begin{document}
+
+\begin{CacheMeCode}{c}
+  int main() {
+    return 1;
+  }
+\end{CacheMeCode}
+
+\begin{CacheMeCode}{bash, tikz terminal}
+  echo 'test.dat'
+  exit 0
+\end{CacheMeCode}
+\begin{figure}
+  \begin{CacheMeCode}{python matplotlib, add to preamble={\def\hello#1{Hello #1!}}}
+    def f(p: string):
+      return [x + p for x in ('a', 'b')]
+  \end{CacheMeCode}
+\end{figure}
+
+\begin{RobExtCacheMeCode}{my python matplotlib, 
+    add to preamble={\def\hello#1{Hello #1!}}
+  }
+  def f(p: string):
+    return [x + p for x in ('a', 'b')]
+\end{RobExtCacheMeCode}
+
+\begin{CacheMe}{tikzpicture}[scale=0.6]
+  \draw[gray, thick] (-1,2) -- (2,-4);
+  \draw[gray, thick] (-1,-1) -- (2,2);
+  \filldraw[black] (0,0) circle (2pt) node[anchor=west]{Intersection point};
+\end{CacheMe}
+
+\begin{SetPlaceholderCode*}{__PYTHON_TEMP}
+def f(p: string):
+  return [x + p for x in ('a', 'b')]
+\end{SetPlaceholderCode*}
+
+\begin{PlaceholderPathFromCode}[.py]{__PYTHON_TEMP}
+  def f(p: string):
+    return [x + p for x in ('a', 'b')]
+\end{PlaceholderPathFromCode}
+
+\end{document}
