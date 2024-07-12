@@ -13,7 +13,7 @@ function! vimtex#syntax#p#cleveref#load(cfg) abort " {{{1
 
   " \crefrange, \cpagerefrange (these commands expect two arguments)
   syntax match texCmdCRef nextgroup=texCRefRangeArg skipwhite skipnl
-        \ "\\c\(page\)\?refrange\>"
+        \ "\\c\%(page\)\?refrange\>"
 
   " \label[xxx]{asd}
   syntax match texCmdCRef nextgroup=texCRefOpt,texRefArg skipwhite skipnl

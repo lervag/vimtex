@@ -63,8 +63,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " E.g.:  \$ \& \% \# \{ \} \_ \S \P
   syntax match texSpecialChar "\~"
-  syntax match texSpecialChar "\\ "
-  syntax match texSpecialChar "\\[$&%#{}_@,;:!>]"
+  syntax match texSpecialChar "\\[ $&%#{}_@,;:!>]"
   syntax match texSpecialChar "\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\^\^\%(\S\|[0-9a-f]\{2}\)"
 
@@ -151,61 +150,37 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texCmdBib     nextgroup=texFilesArg             skipwhite skipnl "\\bibliography\>"
   syntax match texCmdBib     nextgroup=texFileArg              skipwhite skipnl "\\bibliographystyle\>"
   syntax match texCmdClass   nextgroup=texFileOpt,texFileArg   skipwhite skipnl "\\document\%(class\|style\)\>"
-  syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\usepackage\>"
-  syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\RequirePackage\>"
-  syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\\ProvidesPackage\>"
+  syntax match texCmdPackage nextgroup=texFilesOpt,texFilesArg skipwhite skipnl "\v\\(usepackage|RequirePackage|ProvidesPackage)>"
   call vimtex#syntax#core#new_arg('texFileArg', {'contains': '@NoSpell,texCmd,texComment'})
   call vimtex#syntax#core#new_arg('texFilesArg', {'contains': '@NoSpell,texCmd,texComment,texOptSep'})
   call vimtex#syntax#core#new_opt('texFileOpt', {'next': 'texFileArg'})
   call vimtex#syntax#core#new_opt('texFilesOpt', {'next': 'texFilesArg'})
 
   " LaTeX 2.09 type styles
-  syntax match texCmdStyle "\\rm\>"
-  syntax match texCmdStyle "\\em\>"
-  syntax match texCmdStyle "\\bf\>"
-  syntax match texCmdStyle "\\it\>"
-  syntax match texCmdStyle "\\sl\>"
-  syntax match texCmdStyle "\\sf\>"
-  syntax match texCmdStyle "\\sc\>"
-  syntax match texCmdStyle "\\tt\>"
+
+  syntax match texCmdStyle "\v\\%(rm|em|bf|it|s[cfl]|tt)>"
 
   " LaTeX2E type styles
-  syntax match texCmdStyle "\\textbf\>"
-  syntax match texCmdStyle "\\textit\>"
-  syntax match texCmdStyle "\\textmd\>"
-  syntax match texCmdStyle "\\textrm\>"
-  syntax match texCmdStyle "\\texts[cfl]\>"
-  syntax match texCmdStyle "\\texttt\>"
-  syntax match texCmdStyle "\\textup\>"
-  syntax match texCmdStyle "\\textnormal\>"
-  syntax match texCmdStyle "\\emph\>"
 
-  syntax match texCmdStyle "\\rmfamily\>"
-  syntax match texCmdStyle "\\sffamily\>"
-  syntax match texCmdStyle "\\ttfamily\>"
-
-  syntax match texCmdStyle "\\itshape\>"
-  syntax match texCmdStyle "\\scshape\>"
-  syntax match texCmdStyle "\\slshape\>"
-  syntax match texCmdStyle "\\upshape\>"
-
-  syntax match texCmdStyle "\\bfseries\>"
-  syntax match texCmdStyle "\\mdseries\>"
+  syntax match texCmdStyle "\v\\%(
+              \text%(bf|it|md|rm|s[cfl]|tt|up|normal)
+              \|emph
+              \|%(rm|sf|tt)family
+              \|%(it|sc|sl|up)shape
+              \|%(bf|md)series
+              \)>"
 
   " Bold and italic commands
   call s:match_bold_italic()
 
   " Type sizes
-  syntax match texCmdSize "\\tiny\>"
-  syntax match texCmdSize "\\scriptsize\>"
-  syntax match texCmdSize "\\footnotesize\>"
-  syntax match texCmdSize "\\small\>"
-  syntax match texCmdSize "\\normalsize\>"
-  syntax match texCmdSize "\\large\>"
-  syntax match texCmdSize "\\Large\>"
-  syntax match texCmdSize "\\LARGE\>"
-  syntax match texCmdSize "\\huge\>"
-  syntax match texCmdSize "\\Huge\>"
+  syntax match texCmdSize "\v\\%(
+              \tiny
+              \|%(script|footnote|normal)size
+              \|small
+              \|[lL]arge|LARGE
+              \|[hH]uge
+              \)>"
 
   " \newcommand
   syntax match texCmdNewcmd "\\\%(re\)\?newcommand\>\*\?"
@@ -255,12 +230,13 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texLetArgEqual contained nextgroup=texLetArgBody skipwhite skipnl "="
 
   " Reference and cite commands
-  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\nocite\>"
-  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\label\>"
-  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\\(page\|eq\)ref\>"
-  syntax match texCmdRef nextgroup=texRefArg           skipwhite skipnl "\\v\?ref\>"
-  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\>"
-  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[tp]\>\*\?"
+  syntax match texCmdRef nextgroup=texRefArg skipwhite skipnl "\v\\%(
+        \nocite
+        \|label
+        \|%(page|eq|v)?ref
+        \)>"
+
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\v\\cite%(>|[tp]>\*?)"
   call vimtex#syntax#core#new_opt('texRefOpt', {'next': 'texRefOpt,texRefArg'})
   call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
@@ -275,11 +251,11 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " Sections and parts
   syntax match texCmdPart "\\\(front\|main\|back\)matter\>"
-  syntax match texCmdPart "\\part\>"                    nextgroup=texPartArgTitle
-  syntax match texCmdPart "\\chapter\>\*\?"             nextgroup=texPartArgTitle
-  syntax match texCmdPart "\v\\%(sub)*section>\*?"      nextgroup=texPartArgTitle
-  syntax match texCmdPart "\v\\%(sub)?paragraph>"       nextgroup=texPartArgTitle
-  syntax match texCmdPart "\v\\add%(part|chap|sec)>\*?" nextgroup=texPartArgTitle
+  syntax match texCmdPart "\v\\%(
+              \%(part|%(sub)?paragraph)>
+              \|%(%(sub)*section|chapter)>\*?
+              \)"
+              \ nextgroup=texPartArgTitle
   call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
@@ -613,17 +589,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Math style commands
-  syntax match texMathCmdStyle contained "\\mathbb\>"
-  syntax match texMathCmdStyle contained "\\mathbf\>"
-  syntax match texMathCmdStyle contained "\\mathcal\>"
-  syntax match texMathCmdStyle contained "\\mathfrak\>"
-  syntax match texMathCmdStyle contained "\\mathit\>"
-  syntax match texMathCmdStyle contained "\\mathbfit\>"
-  syntax match texMathCmdStyle contained "\\mathnormal\>"
-  syntax match texMathCmdStyle contained "\\mathrm\>"
-  syntax match texMathCmdStyle contained "\\mathsf\>"
-  syntax match texMathCmdStyle contained "\\mathtt\>"
-  syntax match texMathCmdStyle contained "\\mathscr\>"
+  syntax match texMathCmdStyle contained "\v\\math(bb|bf(it)?|cal|frak|it|normal|rm|sf|tt|scr)>"
 
   " Bold and italic commands
   call s:match_bold_italic_math()
@@ -2134,32 +2100,17 @@ endfunction
 
 " }}}1
 function! s:match_math_delims() abort " {{{1
-  syntax match texMathDelimMod contained "\\\(left\|right\)\>"
+  syntax match texMathDelimMod contained "\\\%(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
   syntax match texMathDelim contained "[()[\]]"
-  syntax match texMathDelim contained "\\{"
-  syntax match texMathDelim contained "\\}"
-  syntax match texMathDelim contained "\\backslash\>"
-  syntax match texMathDelim contained "\\downarrow\>"
-  syntax match texMathDelim contained "\\Downarrow\>"
-  syntax match texMathDelim contained "\\[lr]vert\>"
-  syntax match texMathDelim contained "\\[lr]Vert\>"
-  syntax match texMathDelim contained "\\langle\>"
-  syntax match texMathDelim contained "\\lbrace\>"
-  syntax match texMathDelim contained "\\lceil\>"
-  syntax match texMathDelim contained "\\lfloor\>"
-  syntax match texMathDelim contained "\\lgroup\>"
-  syntax match texMathDelim contained "\\lmoustache\>"
-  syntax match texMathDelim contained "\\rangle\>"
-  syntax match texMathDelim contained "\\rbrace\>"
-  syntax match texMathDelim contained "\\rceil\>"
-  syntax match texMathDelim contained "\\rfloor\>"
-  syntax match texMathDelim contained "\\rgroup\>"
-  syntax match texMathDelim contained "\\rmoustache\>"
-  syntax match texMathDelim contained "\\uparrow\>"
-  syntax match texMathDelim contained "\\Uparrow\>"
-  syntax match texMathDelim contained "\\updownarrow\>"
-  syntax match texMathDelim contained "\\Updownarrow\>"
+  syntax match texMathDelim contained "\\[{}]"
+
+  syntax match texMathDelim contained "\v\\%(
+        \[lr]%(vert|angle|brace|ceil|floor|group|moustache)
+        \|backslash
+        \|[uU]%(down)?parrow
+        \|[dD]ownarrow
+        \)>"
 
   if !g:vimtex_syntax_conceal.math_delimiters || &encoding !=# 'utf-8'
     return
