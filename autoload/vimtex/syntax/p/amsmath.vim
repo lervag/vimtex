@@ -29,12 +29,16 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'math': v:true
         \})
 
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{subarray}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{x\?alignat\*\?}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\\begin{xxalignat}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{subarray}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{x\?alignat\*\?}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\\end{xxalignat}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\v\\begin\{%(
+        \subarray
+        \|x?alignat\*?
+        \|xxalignat
+        \)\}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\v\\end\{%(
+        \subarray
+        \|x?alignat\*?
+        \|xxalignat
+        \)\}"
 
   " \numberwithin
   syntax match texCmdNumberWithin "\\numberwithin\>"
