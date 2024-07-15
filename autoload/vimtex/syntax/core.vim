@@ -1988,13 +1988,13 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelim contained "[()[\]]"
   syntax match texMathDelim contained "\\{"
   syntax match texMathDelim contained "\\}"
-  syntax match texMathDelim contained "\\backslash\>"
-  syntax match texMathDelim contained "\\[dD]ownarrow\>"
-  syntax match texMathDelim contained "\v\\[lr]%(vert|angle|brace|ceil|floor|group|moustache)>"
-  syntax match texMathDelim contained "\\uparrow\>"
-  syntax match texMathDelim contained "\\Uparrow\>"
-  syntax match texMathDelim contained "\\updownarrow\>"
-  syntax match texMathDelim contained "\\Updownarrow\>"
+
+  syntax match texMathDelim contained "\v\\%(
+        \[lr]%(vert|angle|brace|ceil|floor|group|moustache)
+        \|backslash
+        \|[uU](down)?parrow
+        \|[dD]ownarrow
+        \)>"
 
   if !g:vimtex_syntax_conceal.math_delimiters || &encoding !=# 'utf-8'
     return
