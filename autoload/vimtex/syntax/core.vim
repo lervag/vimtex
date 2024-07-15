@@ -1154,8 +1154,8 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
 endfunction
 
 " }}}1
-let s:custom_math_envs_nonext = []
 let s:custom_math_envs = []
+let s:custom_math_envs_by_next = {}
 function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   let l:cfg = extend({
         \ 'name': '',
@@ -1183,37 +1183,54 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   let l:env_name = l:cfg.name . (l:cfg.starred ? '\*\?' : '')
 
   if l:cfg.math
+    if ! empty(cfg.__predicate)
+      throw 'predicates are not supported for math environments'
+    endif
+
     let l:cfg.region = 'texMathZoneEnv'
     let l:options = 'keepend'
 
     let l:next = ''
     if !empty(l:cfg.math_nextgroup)
       let l:next = 'nextgroup=' . l:cfg.math_nextgroup . ' skipwhite skipnl'
-      execute 'syntax match texMathEnvBgnEnd2'
+    endif
+
+    if has_key(s:custom_math_envs_by_next, l:next)
+      let s:custom_math_envs_by_next[l:next] += [l:env_name]
+      syntax clear texMathEnvBgnEnd
+      for [l:i_next, l:envs] in items(s:custom_math_envs_by_next)
+        execute 'syntax match texMathEnvBgnEnd'
+              \ '"\\\%(begin\|end\){\%(' . join(l:envs) . '\)}"'
+              \ 'contained contains=texCmdMathEnv'
+              \ l:i_next
+      endfor
+    else
+      let s:custom_math_envs_by_next[l:next] = [l:env_name]
+      execute 'syntax match texMathEnvBgnEnd'
             \ '"\\\%(begin\|end\){' . l:env_name . '}"'
             \ 'contained contains=texCmdMathEnv'
             \ l:next
-      let l:contains = 'contains=texMathEnvBgnEnd2,@texClusterMath'
-    else
-      let s:custom_math_envs_nonext += [l:env_name]
-      try
-        syntax clear texMathEnvBgnEnd
-      catch /^Vim\%((\a\+)\)\=:E28:/ " No such highlight group name
-      endtry
-      execute 'syntax match texMathEnvBgnEnd'
-            \ '"\\\%(begin\|end\){\(' . join(s:custom_math_envs_nonext, '\|') . '\)}"'
-            \ 'contained contains=texCmdMathEnv'
-      let l:contains = 'contains=texMathEnvBgnEnd,@texClusterMath'
     endif
+    let l:contains = 'contains=texMathEnvBgnEnd,@texClusterMath'
 
-    let s:custom_math_envs += [l:env_name]
-    try
+    if ! empty(s:custom_math_envs)
       syntax clear texMathError
-    catch /^Vim\%((\a\+)\)\=:E28:/ " No such highlight group name
-    endtry
-    execute 'syntax match texMathError "\\end{\(' . join(s:custom_math_envs, '\|') . '\)}"'
+      syntax clear texMathZoneEnv
+    endif
+    let s:custom_math_envs += [l:env_name]
+    execute 'syntax match texMathError "\\end{\%(' . join(s:custom_math_envs, '\|') . '\)}"'
+
+    execute 'syntax region texMathZoneEnv'
+          \ 'start="\\begin{\z(' . join(s:custom_math_envs, '\|') . '\)}"'
+          \ 'end="\\end{\z1}"'
+          \ 'contains=texMathEnvBgnEnd,@texClusterMath'
+          \ 'keepend'
 
   else
+    if l:cfg.region == 'texMathZoneEnv'
+      throw "use {'math': 1} to define new texMathZoneEnv regions"
+    endif
+
     if empty(l:cfg.region)
       let l:cfg.region = printf(
             \ 'tex%sZone',
@@ -1241,18 +1258,18 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
         execute 'highlight def link' l:cfg.region 'texZone'
       endif
     endif
-  endif
 
-  let l:start = '\\begin{\z(' . l:env_name .'\)}'
-  if !empty(l:cfg.__predicate)
-    let l:start .= '\s*\[\_[^\]]\{-}' . l:cfg.__predicate . '\_[^\]]\{-}\]'
-  endif
+    let l:start = '\\begin{\z(' . l:env_name .'\)}'
+    if !empty(l:cfg.__predicate)
+      let l:start .= '\s*\[\_[^\]]\{-}' . l:cfg.__predicate . '\_[^\]]\{-}\]'
+    endif
 
-  execute 'syntax region' l:cfg.region
-        \ 'start="' . l:start . '"'
-        \ 'end="\\end{\z1}"'
-        \ l:contains
-        \ l:options
+    execute 'syntax region' l:cfg.region
+          \ 'start="' . l:start . '"'
+          \ 'end="\\end{\z1}"'
+          \ l:contains
+          \ l:options
+  endif
 endfunction
 
 " }}}1
