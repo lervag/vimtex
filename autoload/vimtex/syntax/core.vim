@@ -159,52 +159,33 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_opt('texFilesOpt', {'next': 'texFilesArg'})
 
   " LaTeX 2.09 type styles
-  syntax match texCmdStyle "\\rm\>"
-  syntax match texCmdStyle "\\em\>"
-  syntax match texCmdStyle "\\bf\>"
-  syntax match texCmdStyle "\\it\>"
-  syntax match texCmdStyle "\\sl\>"
-  syntax match texCmdStyle "\\sf\>"
-  syntax match texCmdStyle "\\sc\>"
-  syntax match texCmdStyle "\\tt\>"
+
+  syntax match texCmdStyle "\v\\%(rm|em|bf|it|s[cfl]|tt)>"
 
   " LaTeX2E type styles
-  syntax match texCmdStyle "\\textbf\>"
-  syntax match texCmdStyle "\\textit\>"
-  syntax match texCmdStyle "\\textmd\>"
-  syntax match texCmdStyle "\\textrm\>"
-  syntax match texCmdStyle "\\texts[cfl]\>"
-  syntax match texCmdStyle "\\texttt\>"
-  syntax match texCmdStyle "\\textup\>"
-  syntax match texCmdStyle "\\textnormal\>"
-  syntax match texCmdStyle "\\emph\>"
 
-  syntax match texCmdStyle "\\rmfamily\>"
-  syntax match texCmdStyle "\\sffamily\>"
-  syntax match texCmdStyle "\\ttfamily\>"
+  syntax match texCmdStyle "\v\\%(
+              \text%(bf|it|md|rm|s[cfl]|tt|up|normal)
+              \|emph
+              \|%(rm|sf|tt)family
+              \|%(it|sc|sl|up)shape
+              \|%(bf|md)series
+              \)>"
 
-  syntax match texCmdStyle "\\itshape\>"
-  syntax match texCmdStyle "\\scshape\>"
-  syntax match texCmdStyle "\\slshape\>"
-  syntax match texCmdStyle "\\upshape\>"
 
-  syntax match texCmdStyle "\\bfseries\>"
-  syntax match texCmdStyle "\\mdseries\>"
+  "syntax match texCmdStyle "\v\\%(%(rm|sf|tt)%(family)?|%(it|sc|sl)%(shape)?|upshape|em|bf%(series)?|mdseries|emph|text%(bf|it|md|rm|s[cfl]|tt|up|normal))>"
 
   " Bold and italic commands
   call s:match_bold_italic()
 
   " Type sizes
-  syntax match texCmdSize "\\tiny\>"
-  syntax match texCmdSize "\\scriptsize\>"
-  syntax match texCmdSize "\\footnotesize\>"
-  syntax match texCmdSize "\\small\>"
-  syntax match texCmdSize "\\normalsize\>"
-  syntax match texCmdSize "\\large\>"
-  syntax match texCmdSize "\\Large\>"
-  syntax match texCmdSize "\\LARGE\>"
-  syntax match texCmdSize "\\huge\>"
-  syntax match texCmdSize "\\Huge\>"
+  syntax match texCmdSize "\v\\%(
+              \tiny
+              \|%(script|footnote|normal)size
+              \|small
+              \|[lL]arge|LARGE
+              \|[hH]uge
+              \)>"
 
   " \newcommand
   syntax match texCmdNewcmd "\\\%(re\)\?newcommand\>\*\?"
