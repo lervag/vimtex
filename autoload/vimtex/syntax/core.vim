@@ -612,15 +612,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Math style commands
-  syntax match texMathCmdStyle contained "\\mathbb\>"
-  syntax match texMathCmdStyle contained "\\mathbf\>"
-  syntax match texMathCmdStyle contained "\\mathcal\>"
-  syntax match texMathCmdStyle contained "\\mathfrak\>"
-  syntax match texMathCmdStyle contained "\\mathit\>"
-  syntax match texMathCmdStyle contained "\\mathnormal\>"
-  syntax match texMathCmdStyle contained "\\mathrm\>"
-  syntax match texMathCmdStyle contained "\\mathsf\>"
-  syntax match texMathCmdStyle contained "\\mathtt\>"
+  syntax match texMathCmdStyle contained "\v\\math(bb|bf|cal|frak|it|normal|rm|sf|tt)>"
+
 
   " Bold and italic commands
   call s:match_bold_italic_math()
