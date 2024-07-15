@@ -1986,14 +1986,13 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelimMod contained "\\\%(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
   syntax match texMathDelim contained "[()[\]]"
-  syntax match texMathDelim contained "\\{"
-  syntax match texMathDelim contained "\\}"
 
   syntax match texMathDelim contained "\v\\%(
         \[lr]%(vert|angle|brace|ceil|floor|group|moustache)
         \|backslash
-        \|[uU](down)?parrow
+        \|[uU]%(down)?parrow
         \|[dD]ownarrow
+        \|[{}]
         \)>"
 
   if !g:vimtex_syntax_conceal.math_delimiters || &encoding !=# 'utf-8'
