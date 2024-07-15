@@ -1154,6 +1154,8 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
 endfunction
 
 " }}}1
+let s:custom_math_envs_nonext = []
+let s:custom_math_envs = []
 function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   let l:cfg = extend({
         \ 'name': '',
@@ -1183,18 +1185,34 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   if l:cfg.math
     let l:cfg.region = 'texMathZoneEnv'
     let l:options = 'keepend'
-    let l:contains = 'contains=texMathEnvBgnEnd,@texClusterMath'
 
     let l:next = ''
     if !empty(l:cfg.math_nextgroup)
       let l:next = 'nextgroup=' . l:cfg.math_nextgroup . ' skipwhite skipnl'
+      execute 'syntax match texMathEnvBgnEnd2'
+            \ '"\\\%(begin\|end\){' . l:env_name . '}"'
+            \ 'contained contains=texCmdMathEnv'
+            \ l:next
+      let l:contains = 'contains=texMathEnvBgnEnd2,@texClusterMath'
+    else
+      let s:custom_math_envs_nonext += [l:env_name]
+      try
+        syntax clear texMathEnvBgnEnd
+      catch /^Vim\%((\a\+)\)\=:E28:/ " No such highlight group name
+      endtry
+      execute 'syntax match texMathEnvBgnEnd'
+            \ '"\\\%(begin\|end\){\(' . join(s:custom_math_envs_nonext, '\|') . '\)}"'
+            \ 'contained contains=texCmdMathEnv'
+      let l:contains = 'contains=texMathEnvBgnEnd,@texClusterMath'
     endif
 
-    execute 'syntax match texMathEnvBgnEnd'
-          \ '"\\\%(begin\|end\){' . l:env_name . '}"'
-          \ 'contained contains=texCmdMathEnv'
-          \ l:next
-    execute 'syntax match texMathError "\\end{' . l:env_name . '}"'
+    let s:custom_math_envs += [l:env_name]
+    try
+      syntax clear texMathError
+    catch /^Vim\%((\a\+)\)\=:E28:/ " No such highlight group name
+    endtry
+    execute 'syntax match texMathError "\\end{\(' . join(s:custom_math_envs, '\|') . '\)}"'
+
   else
     if empty(l:cfg.region)
       let l:cfg.region = printf(
