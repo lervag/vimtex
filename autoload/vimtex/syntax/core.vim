@@ -549,7 +549,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
           \ l:conceal
   execute 'syntax region texMathZoneTI matchgroup=texMathDelimZoneTI'
           \ 'start="\$"'
-          \ 'skip="\\\\\|\\\$"'
+          \ 'skip="\\[\\\$]"'
           \ 'end="\$"'
           \ 'contains=@texClusterMath'
           \ 'nextgroup=texMathTextAfter'
@@ -907,7 +907,7 @@ endfunction
 function! vimtex#syntax#core#new_arg(grp, ...) abort " {{{1
   let l:cfg = extend({
         \ 'contains': 'TOP,@NoSpell',
-        \ 'matcher': 'start="{" skip="\\\\\|\\}" end="}"',
+        \ 'matcher': 'start="{" skip="\\[\\\}]" end="}"',
         \ 'next': '',
         \ 'matchgroup': 'matchgroup=texDelim',
         \ 'opts': 'contained',
@@ -934,7 +934,7 @@ function! vimtex#syntax#core#new_opt(grp, ...) abort " {{{1
 
   execute 'syntax region' a:grp
         \ 'contained matchgroup=texDelim'
-        \ 'start="\[" skip="\\\\\|\\\]" end="\]"'
+        \ 'start="\[" skip="\\[\\\]]" end="\]"'
         \ l:cfg.opts
         \ (empty(l:cfg.contains) ? '' : 'contains=' . l:cfg.contains)
         \ (empty(l:cfg.next) ? '' : 'nextgroup=' . l:cfg.next . ' skipwhite skipnl')
@@ -1101,7 +1101,7 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
           \ empty(l:cfg.cchar_close)
           \   ? 'concealends'
           \   : 'concealends cchar=' . l:cfg.cchar_close
-          \ 'start="{" skip="\\\\\|\\}" end="}"'
+          \ 'start="{" skip="\\[\\\}]" end="}"'
           \ 'contained contains=' . l:contains
   else
     execute 'syntax region' l:group_arg1
@@ -1109,7 +1109,7 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
           \ empty(l:cfg.cchar_mid)
           \   ? 'concealends'
           \   : 'concealends cchar=' . l:cfg.cchar_mid
-          \ 'start="{" skip="\\\\\|\\}" end="}"'
+          \ 'start="{" skip="\\[\\\}]" end="}"'
           \ 'contained contains=' . l:contains
           \ 'skipwhite nextgroup=' . l:group_arg2
 
@@ -1118,7 +1118,7 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
           \ empty(l:cfg.cchar_close)
           \   ? 'concealends'
           \   : 'concealends cchar=' . l:cfg.cchar_close
-          \ 'start="{" skip="\\\\\|\\}" end="}"'
+          \ 'start="{" skip="\\[\\\}]" end="}"'
           \ 'contained contains=' . l:contains
   endif
 
