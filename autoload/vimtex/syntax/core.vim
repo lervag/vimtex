@@ -8,6 +8,10 @@
 scriptencoding utf-8
 
 function! vimtex#syntax#core#init_rules() abort " {{{1
+  " Operators and similar
+  syntax match texMathOper "[-+=/<>|]" contained
+  syntax match texMathSuperSub "[_^]" contained
+  syntax match texMathDelim contained "[()[\]]"
   " {{{2 Define main syntax clusters
 
   syntax cluster texClusterOpt contains=
@@ -20,34 +24,21 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \texOptSep,
         \@NoSpell
 
+  " texSpecialChar needs to be included because of "~"
+  " texTabularChar needs to be included because of "&"
+  " texCmdGreek and texMathSymbol need to be included because of unicode
   syntax cluster texClusterMath contains=
-        \texCmdEnvM,
-        \texCmdFootnote,
-        \texCmdGreek,
-        \texCmdMinipage,
-        \texCmdParbox,
-        \texCmdRef,
-        \texCmdSize,
-        \texCmdStyle,
-        \texCmdTodo,
-        \texCmdVerb,
         \texComment,
         \texGroupError,
-        \texMathCmd,
-        \texMathCmdEnv,
-        \texMathCmdStyle,
-        \texMathCmdStyleBold,
-        \texMathCmdStyleItal,
-        \texMathCmdStyleBoth,
-        \texMathCmdText,
         \texMathDelim,
-        \texMathDelimMod,
         \texMathGroup,
         \texMathOper,
         \texMathSuperSub,
-        \texMathSymbol,
         \texSpecialChar,
+        \texCmdGreek,
+        \texMathSymbol,
         \texTabularChar,
+        \_texMathBackslash,
         \@NoSpell
 
   " }}}2
@@ -236,7 +227,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \|%(page|eq|v)?ref
         \)>"
 
-  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\v\\cite%(>|[tp]>\*?)"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite\>"
+  syntax match texCmdRef nextgroup=texRefOpt,texRefArg skipwhite skipnl "\\cite[tp]\>\*\?"
   call vimtex#syntax#core#new_opt('texRefOpt', {'next': 'texRefOpt,texRefArg'})
   call vimtex#syntax#core#new_arg('texRefArg', {'contains': 'texComment,@NoSpell'})
 
@@ -569,11 +561,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathZoneEnsured', {'contains': '@texClusterMath'})
 
   " Bad/Mismatched math
-  syntax match texMathError "\%#=1\\[\])]"
+  syntax match texMathError "\\[\])]"
 
-  " Operators and similar
-  syntax match texMathOper "[-+=/<>|]" contained
-  syntax match texMathSuperSub "[_^]" contained
 
   " Text Inside Math regions
   for l:re_cmd in [
@@ -667,6 +656,36 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " }}}2
 
   let b:current_syntax = 'tex'
+
+  " note: texCmdGreek and texMathSymbol also need to be included again
+  " in texClusterMath because of unicode
+  " texComment needs to be included here because of \iffalse
+  " texSpecialChar, texTabularChar and texMathDelim also appear in both lists
+  syntax match _texMathBackslash "\\"me=e-1 contained nextgroup=
+        \texComment,
+        \texSpecialChar,
+        \texCmdGreek,
+        \texMathSymbol,
+        \texTabularChar,
+        \texCmdEnvM,
+        \texCmdFootnote,
+        \texCmdMinipage,
+        \texCmdParbox,
+        \texCmdRef,
+        \texCmdSize,
+        \texCmdStyle,
+        \texCmdTodo,
+        \texCmdVerb,
+        \texMathCmd,
+        \texMathCmdEnv,
+        \texMathCmdStyle,
+        \texMathCmdStyleBold,
+        \texMathCmdStyleItal,
+        \texMathCmdText,
+        \texMathDelimMod,
+        \texMathDelim,
+        \@NoSpell
+
 endfunction
 
 " }}}1
@@ -2140,7 +2159,6 @@ endfunction
 function! s:match_math_delims() abort " {{{1
   syntax match texMathDelimMod contained "\\\%(left\|right\)\>"
   syntax match texMathDelimMod contained "\\[bB]igg\?[lr]\?\>"
-  syntax match texMathDelim contained "[()[\]]"
   syntax match texMathDelim contained "\\[{}]"
 
   syntax match texMathDelim contained "\v\\%(
