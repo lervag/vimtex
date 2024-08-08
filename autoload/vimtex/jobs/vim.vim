@@ -8,7 +8,7 @@ function! vimtex#jobs#vim#new(cmd) abort " {{{1
   let l:job = deepcopy(s:job)
   let l:job.cmd = has('win32')
         \ ? 'cmd /s /c "' . a:cmd . '"'
-        \ : ['/bin/sh', '-c', a:cmd]
+        \ : ['sh', '-c', a:cmd]
   return l:job
 endfunction
 
