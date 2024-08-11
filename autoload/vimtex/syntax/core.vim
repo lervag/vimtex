@@ -2303,7 +2303,7 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedArg',
         \})
-  syntax match texRefConcealedOpt2 "\[\s*\]" conceal
+  syntax match texRefConcealedOpt2 "\[\s*\]" contained conceal
         \ skipwhite nextgroup=texRefConcealedPArg
   call vimtex#syntax#core#new_arg('texRefConcealedArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedDelim',
@@ -2325,7 +2325,7 @@ function! s:match_conceal_cites_brackets() abort " {{{1
         \ 'contains': '@texClusterOpt,texSpecialChar',
         \ 'next': 'texRefConcealedPArg',
         \})
-  syntax match texRefConcealedPOpt2 "\[\s*\]" conceal
+  syntax match texRefConcealedPOpt2 "\[\s*\]" contained conceal
         \ skipwhite nextgroup=texRefConcealedPArg
   call vimtex#syntax#core#new_arg('texRefConcealedPArg', {
         \ 'contains': 'texComment,@NoSpell,texRefConcealedPDelim',
