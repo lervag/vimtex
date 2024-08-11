@@ -27,6 +27,7 @@ for s:expect in [
       \ {'lnum': 18,  'type': 'W', 'text': "Package onlyamsmath Warning: Environment eqnarray or eqnarray* used, please use\nonly the environments provided by the amsmath\npackage"},
       \ {'lnum': 21,  'type': 'W', 'text': "Package typearea Warning: \\typearea used at group level 2.\n               Using \\typearea inside any group, e.g.\n               environments, math mode, boxes, etc. may result in\n               many type setting problems.\n               You should move the command \\typearea\n               outside all groups"},
       \ {'lnum': 0,   'type': 'W', 'text': "Package caption Warning: Unsupported document class (or package) detected,\nusage of the caption package is not recommended."},
+      \ {'lnum': 0,   'type': 'W', 'text': "Overfull \\vbox (303.66812pt too high) has occurred while \\output is active []"},
       \ {'lnum': 0,   'type': 'E', 'text': "Runaway argument?\n{\\sqrt {{1}} \\end {equation} \\par \\end {document} \nFile ended while scanning use of \\frac ."},
       \ {'lnum': 0,   'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16,  'type': 'E', 'text': 'Paragraph ended before \date  was complete.'},

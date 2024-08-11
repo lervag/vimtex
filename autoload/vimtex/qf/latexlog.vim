@@ -59,6 +59,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ line\ %l
   setlocal errorformat+=%+WOverfull\ %\\%\\vbox%.%#\ at\ line\ %l
+  setlocal errorformat+=%+WOverfull\ %\\%\\vbox%.%#\ %m
 
   setlocal errorformat+=%+WUnderfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   setlocal errorformat+=%+WUnderfull\ %\\%\\vbox%.%#\ at\ line\ %l

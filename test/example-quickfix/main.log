@@ -25,6 +25,8 @@ Package typearea Warning: \typearea used at group level 2.
 Package caption Warning: Unsupported document class (or package) detected,
 (caption) usage of the caption package is not recommended.
 
+Overfull \vbox (303.66812pt too high) has occurred while \output is active []
+
 Runaway argument?
 {\sqrt {{1}} \end {equation} \par \end {document} 
 ! File ended while scanning use of \frac .
