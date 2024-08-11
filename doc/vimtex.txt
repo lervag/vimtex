@@ -2926,6 +2926,10 @@ OPTIONS                                                        *vimtex-options*
     hyperref ~
       `conceal`  whether to enable conceal; enabled by default
 
+    robust_externalize ~
+      `presets`  list of presets and target syntaxes for things like
+                 `\begin{CacheMeCode}{bash} ... \end{CacheMeCode}.
+
   Default: >vim
 
     let g:vimtex_syntax_packages = {
@@ -2933,6 +2937,15 @@ OPTIONS                                                        *vimtex-options*
           \ 'babel': {'conceal': 1},
           \ 'hyperref': {'conceal': 1},
           \ 'fontawesome5': {'conceal': 1},
+          \ 'robust_externalize': {
+          \   'presets': [
+          \     ['bash', 'bash'],
+          \     ['python', 'python'],
+          \     ['gnuplot', 'gnuplot'],
+          \     ['tikz', '@texClusterTikz'],
+          \     ['latex', 'TOP'],
+          \   ],
+          \ },
           \}
 
 *g:vimtex_texcount_custom_arg*
