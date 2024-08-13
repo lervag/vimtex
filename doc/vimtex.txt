@@ -6132,9 +6132,8 @@ Note: Many plugin managers provide mechanisms to lazy load plugins. There is
       no need to use such a mechanism for VimTeX, and in fact, doing it will
       prevent Vim/neovim from loading the `:VimtexInverseSearch` command.
 
-Note: You may need to add the installation prefix for vim/neovim (ie
-      /opt/homebrew/bin) in your chosen PDF viewer if inverse search does not
-      work.
+Note: You may need to add the installation prefix for Vim/Neovim, for example
+      `/opt/homebrew/bin`, in your PDF viewer if inverse search does not work.
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*
