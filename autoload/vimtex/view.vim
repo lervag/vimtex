@@ -106,7 +106,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   " * If tab/window exists, switch to it/them
   let l:bufnr = bufnr(l:file)
   try
-    let [l:winid] = win_findbuf(l:bufnr)
+    let [l:winid; _] = win_findbuf(l:bufnr)
     let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
     execute l:tabnr . 'tabnext'
     execute l:winnr . 'wincmd w'
