@@ -34,6 +34,8 @@ function! s:qf.set_errorformat() abort dict "{{{1
 
   " Match errors
   setlocal errorformat+=%E!\ LaTeX\ %trror:\ %m
+  setlocal errorformat+=%E!pdfTeX\ error:\ %m
+  setlocal errorformat+=%E%f:%l:\ \ ==>\ %m
   setlocal errorformat+=%E%f:%l:\ %m
   setlocal errorformat+=%+ERunaway\ argument?
   setlocal errorformat+=%-G{/%m

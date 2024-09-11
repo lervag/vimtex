@@ -66,3 +66,7 @@ of your error message was never \def'ed. If you have
 misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
+
+!pdfTeX error: pdflatex (file ./a.pdf): PDF inclusion: required page does not exist <1>
+
+./b.tex:5:  ==> Fatal error occurred, no output PDF file produced!
