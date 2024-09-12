@@ -236,7 +236,7 @@ by default and must be manually enabled.
 - Document navigation through
   - table of contents
   - table of labels
-  - proper settings for `'include'`, `'includexpr'`, `'suffixesadd'` and
+  - proper settings for `'include'`, `'includeexpr'`, `'suffixesadd'` and
     `'define'`, which among other things
     - allow `:h include-search` and `:h definition-search`
     - give enhanced `gf` command
