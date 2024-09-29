@@ -2003,7 +2003,7 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelim contained "\%#=1\\[{}]"
 
   syntax match texMathDelim contained "\%#=1\v\\%(
-        \[lr]%(vert|angle|brace|ceil|floor|group|moustache)
+        \[lr]%([vV]ert|angle|brace|ceil|floor|group|moustache)
         \|backslash
         \|[uU]%(down)?parrow
         \|[dD]ownarrow
