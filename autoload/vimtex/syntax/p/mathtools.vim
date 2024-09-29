@@ -15,13 +15,13 @@ function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
   endif
 
   " Support for various environments with option groups
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\v\\begin\{%(
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\%#=1\v\\begin\{%(
         \aligned
         \|[lr]gathered
         \|[pbBvV]?%(small)?matrix\*
         \)\}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos2 "\\begin{multlined}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\v\\end\{%(
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\%#=1\v\\end\{%(
         \aligned
         \|[lr]gathered
         \|[pbBvV]?%(small)?matrix\*

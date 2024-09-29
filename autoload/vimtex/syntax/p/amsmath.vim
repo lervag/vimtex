@@ -29,19 +29,19 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'math': v:true
         \})
 
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\v\\begin\{%(
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathArrayArg skipwhite skipnl "\%#=1\v\\begin\{%(
         \subarray
         \|x?alignat\*?
         \|xxalignat
         \)\}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\v\\end\{%(
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                                            "\%#=1\v\\end\{%(
         \subarray
         \|x?alignat\*?
         \|xxalignat
         \)\}"
 
   " \numberwithin
-  syntax match texCmdNumberWithin "\\numberwithin\>"
+  syntax match texCmdNumberWithin "\%#=1\\numberwithin\>"
         \ nextgroup=texNumberWithinArg1 skipwhite skipnl
   call vimtex#syntax#core#new_arg('texNumberWithinArg1', {
         \ 'next': 'texNumberWithinArg2',
@@ -52,7 +52,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
 
   " \subjclass
-  syntax match texCmdSubjClass "\\subjclass\>"
+  syntax match texCmdSubjClass "\%#=1\\subjclass\>"
         \ nextgroup=texSubjClassOpt,texSubjClassArg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texSubjClassOpt', {
         \ 'next': 'texSubjClassArg',
@@ -63,13 +63,13 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \})
 
   " \operatorname
-  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\\operatorname\>"
+  syntax match texCmdOpname nextgroup=texOpnameArg skipwhite skipnl "\%#=1\\operatorname\>"
   call vimtex#syntax#core#new_arg('texOpnameArg', {
         \ 'contains': 'TOP,@Spell'
         \})
 
   " DeclareMathOperator
-  syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\\DeclareMathOperator\>\*\?"
+  syntax match texCmdDeclmathoper nextgroup=texDeclmathoperArgName skipwhite skipnl "\%#=1\\DeclareMathOperator\>\*\?"
   call vimtex#syntax#core#new_arg('texDeclmathoperArgName', {
         \ 'next': 'texDeclmathoperArgBody',
         \ 'contains': ''
@@ -77,7 +77,7 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
   call vimtex#syntax#core#new_arg('texDeclmathoperArgBody', {'contains': 'TOP,@Spell'})
 
   " \tag{label} or \tag*{label}
-  syntax match texMathCmd "\\tag\>\*\?" contained nextgroup=texMathTagArg
+  syntax match texMathCmd "\%#=1\\tag\>\*\?" contained nextgroup=texMathTagArg
   call vimtex#syntax#core#new_arg('texMathTagArg', {'contains': 'TOP,@Spell'})
 
   " Add conceal rules
@@ -120,7 +120,7 @@ function! s:add_conceals() abort " {{{1
   "   conceal the command and delims
   "   \operatorname{ … }  ⇒  …
   syntax region texMathConcealedArg contained matchgroup=texMathCmd
-        \ start="\\operatorname\*\?\s*{\s*" end="\s*}"
+        \ start="\%#=1\\operatorname\*\?\s*{\s*" end="\s*}"
         \ concealends
   syntax cluster texClusterMath add=texMathConcealedArg
 
