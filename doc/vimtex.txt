@@ -6053,15 +6053,20 @@ Configuration: >vim
   " For simple variant without xdotool
   let g:vimtex_view_method = 'zathura_simple'
 
+The main variant uses `xdotool` to help avoid duplicate Zathura instances.
+However, in some environments, `xdotool` is not available. Here the simple
+variant should work well.
+
 VimTeX will start Zathura with the `-x` argument to specify the inverse search
 options automatically. This means that, in most cases, inverse search should
 work as expected without any further configuration. One may still be
 interested in learning how inverse-search configuration works, in which case
 one should read |vimtex-synctex-inverse-search|.
 
-The main variant uses `xdotool` to help avoid duplicate Zathura instances.
-However, in some environments, `xdotool` is not available. Here the simple
-variant should work well.
+Zathura also supports `%{column}`, so if your synctex implementation supports
+getting the column, then you can put the following in your `zathurarc`: >conf
+
+  set synctex-editor-command "vim -v --not-a-term -T dumb -c \"VimtexInverseSearch %{line}:%{column} '%{input}'\""
 
 Associated settings:
 * |g:vimtex_callback_progpath|
@@ -6140,6 +6145,9 @@ To configure with `VimtexInverseSearch`, use: >bash
   vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
 
   nvim --headless -c "VimtexInverseSearch %l '%f'"
+
+  # Or, if you also have the column number in %c
+  nvim --headless -c "VimtexInverseSearch %l:%c '%f'"
 
 On Windows, the above commands may lead to an annoying command window "popup".
 This may be avoided, or at least reduced, with the following variants: >bash

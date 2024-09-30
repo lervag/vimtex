@@ -14,12 +14,19 @@ command! -nargs=* VimtexInverseSearch
 
 
 function! s:parse_args(args) abort
-  let l:line = matchstr(a:args, '^\s*\zs\d\+')
-  if empty(l:line) | return [-1, ''] | endif
+  " Examples:
+  "   parse_args("foobar")    = [-1, '', 0]
+  "   parse_args("5 a.tex")   = [5, 'a.tex', 0]
+  "   parse_args("5 'a.tex'") = [5, 'a.tex', 0]
+  "   parse_args("5:3 a.tex") = [5, 'a.tex', 3]
+  let l:matchlist = matchlist(a:args, '^\s*\(\d\+\)\%(:\(\d\+\)\)\?\s\+\(.*\)')
+  if empty(l:matchlist) | return [-1, ''] | endif
+  let l:lnum = str2nr(l:matchlist[1])
+  let l:cnum = str2nr(l:matchlist[2])
+  let l:file = l:matchlist[3]
 
-  let l:file = matchstr(a:args, '^\s*\d\+\s*\zs.*')
   let l:file = substitute(l:file, '\v^([''"])(.*)\1\s*', '\2', '')
   if empty(l:file) | return [-1, ''] | endif
 
-  return [str2nr(l:line), l:file]
+  return [l:lnum, l:file, l:cnum]
 endfunction
