@@ -1,5 +1,37 @@
 scriptencoding utf-8
 
+" ============================= performance tips =============================
+"
+" Due to the way (neo)vim implements syntax highlighting, having hundreds of
+" different `syntax match ...` (like this file does) results in poor
+" performance. To minimize the performance impact, it is better to prefer few
+" syntax rules (called syntax items in the vim docs) with complicated regexes
+" over many rules with simple regexes. E.g.
+"
+"     syntax match texMathCmdStyle "\\math\%(rm\|tt\|normal\|sf\)\>"
+"
+" is faster than
+"
+"     syntax match texMathCmdStyle "\\mathrm\>"
+"     syntax match texMathCmdStyle "\\mathtt\>"
+"     syntax match texMathCmdStyle "\\mathnormal\>"
+"     syntax match texMathCmdStyle "\\mathsf\>"
+"
+" In addition, as of the time of writing (Summer 2024), it seems like
+" (neo)vim's backtracking regex engine is faster than the NFA engine for all
+" regexes that aren't just literal strings (contrary to the advertising in
+" :h two-engines). This is why this syntax file manually sets the old engine
+" for most complicated regexes.
+"
+" Finally, syntax rules that don't "interact" with other rules should be
+" marked as "display". See :h :syn-display for details.
+"
+" IF YOU WANT TO ADD NEW SYNTAX GROUP FOR A MATH-MODE COMMAND:
+" Don't add it to the texClusterMath cluster, but to _texMathBackslash.
+" Read the comment before the definition of texClusterMath for details.
+
+
+
 function! vimtex#syntax#core#init_rules() abort " {{{1
   " Operators and similar
   syntax match texMathOper "\%#=1[-+=/<>|]" contained display
@@ -17,9 +49,19 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \texOptSep,
         \@NoSpell
 
-  " texSpecialChar needs to be included because of "~"
-  " texTabularChar needs to be included because of "&"
-  " texCmdGreek and texMathSymbol need to be included because of unicode
+  " The following syntax cluster defines which syntax patterns are allowed to
+  " appear in math mode. Syntax patterns that always start with a backslash
+  " (e.g. texMathCmd) should be put in the cluster _texMathBackslash instead.
+  " This speeds up syntax highlighting, because vim won't try to match other
+  " patterns at positions where it encounters a backslash in math mode.
+
+  " The following patterns sometimes start with a backslash and sometimes
+  " don't, so they appear in texClusterMath and in _texMathBackslash:
+  " texSpecialChar (can match "~")
+  " texTabularChar (can match "&")
+  " texComment (can be started by \ifffalse)
+  " texCmdGreek, texMathSymbol (can match unicode symbols)
+  " texMathDelim (can e.g. match "(" or "\lvert")
   syntax cluster texClusterMath contains=
         \texComment,
         \texGroupError,
@@ -649,10 +691,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   let b:current_syntax = 'tex'
 
-  " note: texCmdGreek and texMathSymbol also need to be included again
-  " in texClusterMath because of unicode
-  " texComment needs to be included here because of \iffalse
-  " texSpecialChar, texTabularChar and texMathDelim also appear in both lists
+  " see the definition of texClusterMath for an explanation of what this does
   syntax match _texMathBackslash "\\"me=e-1 contained nextgroup=
         \texComment,
         \texSpecialChar,
@@ -686,6 +725,8 @@ function! vimtex#syntax#core#init_post() abort " {{{1
   let b:vimtex_syntax_did_postinit = 1
 
   " Add texTheoremEnvBgn for custom theorems
+  " creating a single big syntax rule instead of separate rules for every
+  " custom theorem results in faster syntax highlighting.
   execute 'syntax match texTheoremEnvBgn'
         \ '"\%#=1\\begin{\%(' .. join(s:gather_newtheorems(), '\|') ..'\)}"'
         \ 'nextgroup=texTheoremEnvOpt skipwhite skipnl'
