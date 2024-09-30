@@ -2,9 +2,9 @@ scriptencoding utf-8
 
 function! vimtex#syntax#core#init_rules() abort " {{{1
   " Operators and similar
-  syntax match texMathOper "\%#=1[-+=/<>|]" contained
-  syntax match texMathSuperSub "\%#=1[_^]" contained
-  syntax match texMathDelim contained "\%#=1[()[\]]"
+  syntax match texMathOper "\%#=1[-+=/<>|]" contained display
+  syntax match texMathSuperSub "\%#=1[_^]" contained display
+  syntax match texMathDelim contained "\%#=1[()[\]]" display
   " {{{2 Define main syntax clusters
 
   syntax cluster texClusterOpt contains=
@@ -38,10 +38,10 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " {{{2 TeX symbols and special characters
 
-  syntax match texLigature "---\?"
-  syntax match texLigature "``"
-  syntax match texLigature "''"
-  syntax match texLigature ",,"
+  syntax match texLigature "---\?" display
+  syntax match texLigature "``" display
+  syntax match texLigature "''" display
+  syntax match texLigature ",," display
   syntax match texTabularChar "&"
   syntax match texTabularChar "\\\\"
 
@@ -51,7 +51,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texSpecialChar "\%#=1\\[SP@]\ze[^a-zA-Z@]"
   syntax match texSpecialChar "\%#=1\^\^\%(\S\|[0-9a-f]\{2}\)"
 
-  syntax match texError "\%#=1[_^]"
+  syntax match texError "\%#=1[_^]" display
 
   " }}}2
   " {{{2 Commands: general
@@ -61,7 +61,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texGroup', {'opts': ''})
 
   " Flag mismatching ending brace delimiter
-  syntax match texGroupError "}"
+  syntax match texGroupError "}" display
 
   " Add generic option elements contained in common option groups
   syntax match texOptEqual contained "="
@@ -142,7 +142,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " LaTeX 2.09 type styles
 
-  syntax match texCmdStyle "\%#=1\v\\%(rm|em|bf|it|s[cfl]|tt)>"
+  syntax match texCmdStyle "\%#=1\v\\%(rm|em|bf|it|s[cfl]|tt)>" display
 
   " LaTeX2E type styles
 
@@ -152,7 +152,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
               \|%(rm|sf|tt)family
               \|%(it|sc|sl|up)shape
               \|%(bf|md)series
-              \)>"
+              \)>" display
 
   " Bold and italic commands
   call s:match_bold_italic()
@@ -164,7 +164,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
               \|small
               \|[lL]arge|LARGE
               \|[hH]uge
-              \)>"
+              \)>" display
 
   " \newcommand
   syntax match texCmdNewcmd "\%#=1\\\%(re\)\?newcommand\>\*\?"
@@ -234,7 +234,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ {'contains': 'texComment,@NoSpell'})
 
   " Sections and parts
-  syntax match texCmdPart "\%#=1\\\(front\|main\|back\)matter\>"
+  syntax match texCmdPart "\%#=1\\\(front\|main\|back\)matter\>" display
   syntax match texCmdPart "\%#=1\v\\%(
               \%(part|%(sub)?paragraph)>
               \|%(%(sub)*section|chapter)>\*?
@@ -380,14 +380,14 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   endif
 
   " Don't spell check magic comments/directives
-  syntax match texComment "\%#=1^\s*%\s*!.*" contains=@NoSpell
+  syntax match texComment "\%#=1^\s*%\s*!.*" contains=@NoSpell display
 
   " Do not check URLs and acronyms in comments
   " Source: https://github.com/lervag/vimtex/issues/562
   syntax match texCommentURL "\%#=1\w\+:\/\/[^[:space:]]\+"
-        \ containedin=texComment contained contains=@NoSpell
+        \ containedin=texComment contained contains=@NoSpell display
   syntax match texCommentAcronym "\%#=1\v<(\u|\d){3,}s?>"
-        \ containedin=texComment contained contains=@NoSpell
+        \ containedin=texComment contained contains=@NoSpell display
 
   " Todo and similar within comments
   syntax case ignore
@@ -553,7 +553,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathZoneEnsured', {'contains': '@texClusterMath'})
 
   " Bad/Mismatched math
-  syntax match texMathError "\%#=1\\[\])]"
+  syntax match texMathError "\%#=1\\[\])]" display
 
 
   " Text Inside Math regions
@@ -1227,7 +1227,7 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
     execute 'syntax match texMathError "\%#=1\\\%()\|]\|end{\%('
         \ . join(s:custom_math_envs, '\|')
         \ . '\|' . s:std_math_envs
-        \ . '\)}\)"'
+        \ . '\)}\)" display'
 
     execute 'syntax region texMathZoneEnv'
           \ 'start="\%#=1\\begin{\z(' . join(s:custom_math_envs, '\|') . '\)}"'
@@ -2147,16 +2147,16 @@ endfunction
 
 " }}}1
 function! s:match_math_delims() abort " {{{1
-  syntax match texMathDelimMod contained "\%#=1\\\%(left\|right\)\>"
-  syntax match texMathDelimMod contained "\%#=1\\[bB]igg\?[lr]\?\>"
-  syntax match texMathDelim contained "\%#=1\\[{}]"
+  syntax match texMathDelimMod contained "\%#=1\\\%(left\|right\)\>" display
+  syntax match texMathDelimMod contained "\%#=1\\[bB]igg\?[lr]\?\>" display
+  syntax match texMathDelim contained "\%#=1\\[{}]" display
 
   syntax match texMathDelim contained "\%#=1\v\\%(
         \[lr]%([vV]ert|angle|brace|ceil|floor|group|moustache)
         \|backslash
         \|[uU]%(down)?parrow
         \|[dD]ownarrow
-        \)>"
+        \)>" display
 
   if !g:vimtex_syntax_conceal.math_delimiters || &encoding !=# 'utf-8'
     return
