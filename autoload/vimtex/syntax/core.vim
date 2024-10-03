@@ -617,6 +617,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texMathCmdStyle contained "\\mathcal\>"
   syntax match texMathCmdStyle contained "\\mathfrak\>"
   syntax match texMathCmdStyle contained "\\mathit\>"
+  syntax match texMathCmdStyle contained "\\mathbfit\>"
   syntax match texMathCmdStyle contained "\\mathnormal\>"
   syntax match texMathCmdStyle contained "\\mathrm\>"
   syntax match texMathCmdStyle contained "\\mathsf\>"
@@ -794,6 +795,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def texStyleBoldItalUnder gui=bold,italic,underline cterm=bold,italic,underline
   highlight def texMathStyleBold      gui=bold        cterm=bold
   highlight def texMathStyleItal      gui=italic      cterm=italic
+  highlight def texMathStyleBoth      gui=bold,italic cterm=bold,italic
 
   " Inherited groups
   highlight def link texArgNew             texCmd
@@ -877,6 +879,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   highlight def link texMathCmdStyle       texMathCmd
   highlight def link texMathCmdStyleBold   texMathCmd
   highlight def link texMathCmdStyleItal   texMathCmd
+  highlight def link texMathCmdStyleBoth   texMathCmd
   highlight def link texMathCmdText        texCmd
   highlight def link texMathDelimMod       texMathDelim
   highlight def link texMathDelimZone      texDelim
@@ -1326,12 +1329,14 @@ function! s:match_bold_italic_math() abort " {{{1
   let l:map = {
         \ 'texMathCmdStyleBold': 'texMathStyleBold',
         \ 'texMathCmdStyleItal': 'texMathStyleItal',
+        \ 'texMathCmdStyleBoth': 'texMathStyleBoth',
         \}
 
   for [l:group, l:pattern] in [
         \ ['texMathCmdStyleBold', 'bm'],
         \ ['texMathCmdStyleBold', 'mathbf'],
         \ ['texMathCmdStyleItal', 'mathit'],
+        \ ['texMathCmdStyleBoth', 'mathbfit'],
         \]
     execute 'syntax match' l:group '"\\' . l:pattern . '\>"'
           \ 'contained skipwhite nextgroup=' . l:map[l:group]
@@ -1340,6 +1345,7 @@ function! s:match_bold_italic_math() abort " {{{1
 
   execute 'syntax region texMathStyleBold matchgroup=texDelim start="{" end="}" contained contains=@texClusterMath' l:concealends
   execute 'syntax region texMathStyleItal matchgroup=texDelim start="{" end="}" contained contains=@texClusterMath' l:concealends
+  execute 'syntax region texMathStyleBoth matchgroup=texDelim start="{" end="}" contained contains=@texClusterMath' l:concealends
 
   if g:vimtex_syntax_conceal.styles
     syntax match texMathCmdStyle "\v\\math%(rm|tt|normal|sf)>"
