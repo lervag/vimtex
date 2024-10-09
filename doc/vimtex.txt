@@ -2591,7 +2591,8 @@ OPTIONS                                                        *vimtex-options*
       Default: Undefined
       If this is defined, then it is used instead of `name` for matching the
       `cmdname` part. It is interpreted as a regular expression with "very
-      magic" mode activated (see |/\v|).
+      magic" mode activated (see |/\v|). For example, you need to use `>`
+      instead of `\>` for end-of-word atom (|\>|).
 
     mathmode ~
       Default: |v:false|
@@ -2661,13 +2662,14 @@ OPTIONS                                                        *vimtex-options*
 
   A couple of examples may be helpful: The first in the following list shows
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
-  second example shows how to conceal `\R` with `ℝ`. The third example shows
-  how one may use the `nextgroup` key, and the fourth shows how to define
-  a command whose argument should not be spell checked. >vim
+  second example shows how to conceal `\R` with `ℝ`; notice the use of `cmdre`
+  and the end-of-word atom `>` to ensure it does not also match e.g. `\Re`.
+  The third example shows how one may use the `nextgroup` key, and the fourth
+  shows how to define a command whose argument should not be spell checked. >vim
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
-          \ {'name': 'R', 'mathmode': 1, 'concealchar': 'ℝ'},
+          \ {'name': 'R', 'cmdre': 'R>', 'mathmode': 1, 'concealchar': 'ℝ'},
           \ {'name': 'mathnote', 'mathmode': 1, 'nextgroup': 'texMathTextArg'},
           \ {'name': 'nospell', 'argspell': 0},
           \]
