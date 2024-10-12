@@ -371,12 +371,30 @@ function! vimtex#delim#get_next(type, side, ...) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#delim#get_next_after(pos, type, side, ...) abort " {{{1
+  let l:save_pos = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(a:pos)
+  let l:env = vimtex#delim#get_next(a:type, a:side, get(a:, '1', {}))
+  call vimtex#pos#set_cursor(l:save_pos)
+  return l:env
+endfunction
+
+" }}}1
 function! vimtex#delim#get_prev(type, side, ...) abort " {{{1
   return s:get_delim(extend({
         \ 'direction' : 'prev',
         \ 'type' : a:type,
         \ 'side' : a:side,
         \}, get(a:, '1', {})))
+endfunction
+
+" }}}1
+function! vimtex#delim#get_prev_before(pos, type, side, ...) abort " {{{1
+  let l:save_pos = vimtex#pos#get_cursor()
+  call vimtex#pos#set_cursor(a:pos)
+  let l:env = vimtex#delim#get_prev(a:type, a:side, get(a:, '1', {}))
+  call vimtex#pos#set_cursor(l:save_pos)
+  return l:env
 endfunction
 
 " }}}1
@@ -428,6 +446,16 @@ endfunction
 
 " }}}1
 function! vimtex#delim#get_surrounding(type) abort " {{{1
+  " This is split, because we need some extra conditions to ensure that
+  " delimiters are matched properly.
+  return a:type =~# '^env'
+        \ ? s:get_surrounding_env(a:type)
+        \ : s:get_surrounding_delim(a:type)
+endfunction
+
+" }}}1
+
+function! s:get_surrounding_env(type) abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
   let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
   let l:pos_val_last = l:pos_val_cursor
@@ -435,11 +463,7 @@ function! vimtex#delim#get_surrounding(type) abort " {{{1
 
   " Avoid long iterations
   let l:count = 0
-  let l:max_tries = get({
-        \ 'env_tex': 100,
-        \ 'env_math': 3,
-        \ 'env_all': 100,
-        \} , a:type, 100)
+  let l:max_tries = a:type ==# 'env_math' ? 3 : 100
 
   while l:pos_val_open < l:pos_val_last && l:count < l:max_tries
     let l:count += 1
@@ -451,6 +475,48 @@ function! vimtex#delim#get_surrounding(type) abort " {{{1
     if l:pos_val_try >= l:pos_val_cursor
       call vimtex#pos#set_cursor(l:save_pos)
       return [l:open, l:close]
+    endif
+
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+    let l:pos_val_last = l:pos_val_open
+    let l:pos_val_open = vimtex#pos#val(l:open)
+  endwhile
+
+  call vimtex#pos#set_cursor(l:save_pos)
+  return [{}, {}]
+endfunction
+
+" }}}1
+function! s:get_surrounding_delim(type) abort " {{{1
+  let l:save_pos = vimtex#pos#get_cursor()
+  let l:pos_val_cursor = vimtex#pos#val(l:save_pos)
+  let l:pos_val_last = l:pos_val_cursor
+  let l:pos_val_open = l:pos_val_cursor - 1
+
+  let l:count = 0
+  while l:pos_val_open < l:pos_val_last && l:count < 100
+    let l:count += 1
+    let l:open = vimtex#delim#get_prev(a:type, 'open')
+    if empty(l:open) | break | endif
+
+    let l:env_close = vimtex#delim#get_next_after(l:open, 'env_all', 'close')
+    let l:pos_val_env_close = empty(l:env_close)
+          \ ? l:pos_val_cursor + 1
+          \ : vimtex#pos#val(l:env_close) + strlen(l:env_close.match) - 1
+    if l:pos_val_env_close > l:pos_val_cursor
+      let l:close = vimtex#delim#get_matching(l:open)
+
+      let l:env_open = vimtex#delim#get_prev_before(l:close, 'env_all', 'open')
+      let l:pos_val_env_open = empty(l:env_open)
+            \ ? 0
+            \ : vimtex#pos#val(l:env_open)
+      if l:pos_val_env_open < l:pos_val_cursor
+        let l:pos_val_try = vimtex#pos#val(l:close) + strlen(l:close.match) - 1
+        if l:pos_val_try >= l:pos_val_cursor
+          call vimtex#pos#set_cursor(l:save_pos)
+          return [l:open, l:close]
+        endif
+      endif
     endif
 
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
