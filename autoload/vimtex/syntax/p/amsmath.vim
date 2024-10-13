@@ -126,10 +126,10 @@ function! s:add_conceals() abort " {{{1
 
   " Amsmath [lr][vV]ert
   if &encoding ==# 'utf-8'
-    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\?\|left\)\\lvert\>\s*"
-    syntax match texMathDelim contained conceal cchar=| "\s*\\\%([bB]igg\?r\?\|right\)\\rvert\>"
-    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\?\|left\)\\lVert\>\s*"
-    syntax match texMathDelim contained conceal cchar=‖ "\s*\\\%([bB]igg\?r\?\|right\)\\rVert\>"
+    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?l\?\|left\)\\lvert\>\s\?"
+    syntax match texMathDelim contained conceal cchar=| "\\\%([bB]igg\?r\?\|right\)\\rvert\>"
+    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?l\?\|left\)\\lVert\>\s\?"
+    syntax match texMathDelim contained conceal cchar=‖ "\\\%([bB]igg\?r\?\|right\)\\rVert\>"
   endif
 
   syntax match texCmdEnvM "\\\%(begin\|end\){Vmatrix}" contained conceal cchar=║
