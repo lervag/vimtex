@@ -2591,7 +2591,8 @@ OPTIONS                                                        *vimtex-options*
       Default: Undefined
       If this is defined, then it is used instead of `name` for matching the
       `cmdname` part. It is interpreted as a regular expression with "very
-      magic" mode activated (see |/\v|).
+      magic" mode activated (see |/\v|). For example, you need to use `>`
+      instead of `\>` for end-of-word atom (|\>|).
 
     mathmode ~
       Default: |v:false|
@@ -2661,13 +2662,14 @@ OPTIONS                                                        *vimtex-options*
 
   A couple of examples may be helpful: The first in the following list shows
   how to use bolded style on a custom vector macro such as `\vct{v}`. The
-  second example shows how to conceal `\R` with `ℝ`. The third example shows
-  how one may use the `nextgroup` key, and the fourth shows how to define
-  a command whose argument should not be spell checked. >vim
+  second example shows how to conceal `\R` with `ℝ`; notice the use of `cmdre`
+  and the end-of-word atom `>` to ensure it does not also match e.g. `\Re`.
+  The third example shows how one may use the `nextgroup` key, and the fourth
+  shows how to define a command whose argument should not be spell checked. >vim
 
     let g:vimtex_syntax_custom_cmds = [
           \ {'name': 'vct', 'mathmode': 1, 'argstyle': 'bold'},
-          \ {'name': 'R', 'mathmode': 1, 'concealchar': 'ℝ'},
+          \ {'name': 'R', 'cmdre': 'R>', 'mathmode': 1, 'concealchar': 'ℝ'},
           \ {'name': 'mathnote', 'mathmode': 1, 'nextgroup': 'texMathTextArg'},
           \ {'name': 'nospell', 'argspell': 0},
           \]
@@ -2926,6 +2928,10 @@ OPTIONS                                                        *vimtex-options*
     hyperref ~
       `conceal`  whether to enable conceal; enabled by default
 
+    robust_externalize ~
+      `presets`  list of presets and target syntaxes for things like
+                 `\begin{CacheMeCode}{bash} ... \end{CacheMeCode}.
+
   Default: >vim
 
     let g:vimtex_syntax_packages = {
@@ -2933,6 +2939,15 @@ OPTIONS                                                        *vimtex-options*
           \ 'babel': {'conceal': 1},
           \ 'hyperref': {'conceal': 1},
           \ 'fontawesome5': {'conceal': 1},
+          \ 'robust_externalize': {
+          \   'presets': [
+          \     ['bash', 'bash'],
+          \     ['python', 'python'],
+          \     ['gnuplot', 'gnuplot'],
+          \     ['tikz', '@texClusterTikz'],
+          \     ['latex', 'TOP'],
+          \   ],
+          \ },
           \}
 
 *g:vimtex_texcount_custom_arg*
@@ -4776,7 +4791,7 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option to a single space for folds: >vim
 
-  set fillchars=fold:\
+  set fillchars=fold:\ 
 
 Note: Remember to include the whitespace after backslash!
 
@@ -5851,11 +5866,15 @@ Configuration: >vim
   let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
 
 Inverse search can be set up within Okular in the settings pane under
-"Settings > Editor > Custom Text Editor" [0]. Use the viewer configuration as
-explained in |vimtex-synctex-inverse-search|.
+"Settings > Editor > Custom Text Editor" [0]. The following is the recommended
+settings for Vim and neovim, respectively: >bash
+
+  vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+
+  nvim --headless -c "VimtexInverseSearch %l '%f'"
 
 To perform an inverse search in Okular, do `shift + click` while browse mode
-is enabled.
+is enabled. For more info, see |vimtex-synctex-inverse-search|.
 
 [0]: https://docs.kde.org/stable5/en/okular/okular/inverse_search.html
 
@@ -5863,17 +5882,24 @@ is enabled.
 qpdfview ~
 https://launchpad.net/qpdfview
 qpdfview is a tabbed document viewer. It supports both forward and inverse
-search. The latter must be set up from within the viewer (under "Edit ->
-Settings -> Source Editor"). Use the viewer configuration as explained in
-|vimtex-synctex-inverse-search|, but note that the interpolation variables
-should be `%1` for the filename and `%2` for the line number. Inverse search
-is triggered by right clicking in the document.
+search.
 
 Configuration: >vim
   let g:vimtex_view_general_viewer = 'qpdfview'
   let g:vimtex_view_general_options
     \ = '--unique @pdf\#src:@tex:@line:@col'
-<
+
+Inverse search must be set up from within qpdfview under "Edit -> Settings ->
+Source Editor". The following is the recommended settings for Vim and neovim,
+respectively: >bash
+
+  vim -v --not-a-term -T dumb -c "VimtexInverseSearch %2 '%1'"
+
+  nvim --headless -c "VimtexInverseSearch %2 '%1'"
+
+Use right click to perform an inverse search. For more info, see
+|vimtex-synctex-inverse-search|.
+
                                                            *vimtex-view-sioyek*
 Sioyek ~
 https://sioyek.info/
@@ -5888,8 +5914,10 @@ VimTeX will try to pass options to Sioyek to automatically configure inverse
 search. This means that, in most cases, inverse search should work as expected
 without any further configuration. One may still be interested in learning how
 inverse-search configuration works, in which case one should read
-|vimtex-synctex-inverse-search|. The interpolation variables for Sioyek
-configuration are `%2` and `%1`, not `%l` and `%f`.
+|vimtex-synctex-inverse-search|.
+
+Note: The interpolation variables for Sioyek inverse search configuration are
+      `%2` and `%1`, not `%l` and `%f`.
 
 Associated settings:
 * |g:vimtex_callback_progpath|
@@ -5910,12 +5938,15 @@ Configuration: >vim
 To configure inverse search: Open the `Sync` tab in the settings panel in Skim
 and set the options according to your desired version of Vim. With MacVim, one
 may use the `MacVim` preset. However, it may be more convenient to use a
-`Custom` setting and configure the inverse search option as explained in
-|vimtex-synctex-inverse-search|. Note that the interpolation variables should
-be `%line` and `%file`, not `%l` and `%f`.
+`Custom` setting and configure the inverse search option to >bash
+
+  vim -v --not-a-term -T dumb -c "VimtexInverseSearch %line '%file'"
+
+  nvim --headless -c "VimtexInverseSearch %line '%file'"
 
 Inverse search is activated by pressing `Shift` and `Command`, then clicking
-the text you want to search.
+the text you want to search. For more info on inverse search, see
+|vimtex-synctex-inverse-search|.
 
 Associated settings:
 * |g:vimtex_view_skim_activate|
@@ -5938,10 +5969,14 @@ For convenience, the above configuration is used by default on Windows if
 
 Inverse search must be configured under `Settings --> Options` from within
 SumatraPDF. Find the section `Set inverse search command-line` in the bottom
-and use the viewer configuration as explained in
-|vimtex-synctex-inverse-search|.
+and use the following viewer configuration: >bash
 
-Inverse search is activated with a double click in the PDF file.
+  cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+
+  cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+
+Inverse search is activated with a double click in the PDF file. See
+|vimtex-synctex-inverse-search| for more info on inverse search.
 
 Note: If you want to use SumatraPDF with VimTeX from within WSL, please read
       |vimtex-faq-sumatrapdf-wsl|.
@@ -5982,17 +6017,20 @@ To configure inverse search:
    preferences pane.
 
 2. Create a shell script `/usr/local/bin/othereditor` that contains a call to
-   vim as explained in |vimtex-synctex-inverse-search|. Note that the
-   interpolation variables `%l` and `%f` should be replaced by `$1` and `$2`,
-   respectively, as TeXShop will pass the line and file as the first and
-   second argument when calling the script.
+   either Vim or neovim, i.e. one of the following lines, respectively: >bash
 
+     vim -v --not-a-term -T dumb -c "VimtexInverseSearch $1 '$2'"
+
+     nvim --headless -c "VimtexInverseSearch $1 '$2'"
+<
    The script must be executable: >bash
 
-      chmod +x /usr/local/bin/othereditor
+     chmod +x /usr/local/bin/othereditor
 <
    MacVim users should read |vimtex-faq-texshopviewer| for additional setup
    instructions and limitations.
+
+For more info on inverse search, please see |vimtex-synctex-inverse-search|.
 
 Associated settings:
 * |g:vimtex_view_texshop_activate|
@@ -6017,21 +6055,28 @@ Configuration: >vim
   " For simple variant without xdotool
   let g:vimtex_view_method = 'zathura_simple'
 
+The main variant uses `xdotool` to help avoid duplicate Zathura instances.
+However, in some environments, `xdotool` is not available. Here the simple
+variant should work well.
+
 VimTeX will start Zathura with the `-x` argument to specify the inverse search
 options automatically. This means that, in most cases, inverse search should
 work as expected without any further configuration. One may still be
 interested in learning how inverse-search configuration works, in which case
-one should read |vimtex-synctex-inverse-search|. The interpolation variables
-for Zathura configuration are `%{line}` and `%{input}`, not `%l` and `%f`.
+one should read |vimtex-synctex-inverse-search|.
 
-The main variant uses `xdotool` to help avoid duplicate Zathura instances.
-However, in some environments, `xdotool` is not available. Here the simple
-variant should work well.
+Zathura also supports `%{column}`, so if your synctex implementation supports
+getting the column, then you can put the following in your `zathurarc`: >conf
+
+  set synctex-editor-command "vim -v --not-a-term -T dumb -c \"VimtexInverseSearch %{line}:%{column} '%{input}'\""
 
 Associated settings:
 * |g:vimtex_callback_progpath|
 * |g:vimtex_view_zathura_check_libsynctex|
 * |g:vimtex_view_zathura_options|
+
+Note: The interpolation variables for Zathura configuration of inverse search
+      are `%{line}` and `%{input}`, not `%l` and `%f`.
 
 Note: Recent versions of Zathura no longer ensures synctex support. This has
       resulted in synctex support being dropped on some platforms, e.g. on
@@ -6084,9 +6129,7 @@ of shell commands executed by the viewer. It is usually configured within the
 specific viewer through an option named something like "inverse search
 command-line". The option specifies the necessary shell command to perform the
 inverse search. The target line and file are provided as interpolation
-variables. In the following, we use `%l` and `%f`, but the interpolation
-variables may be named different in some viewers (e.g. |vimtex-view-skim|).
-A typical shell command looks like this: >
+variables. A typical shell command looks like this: >bash
 
   vim --remote-silent +%l %f
 
@@ -6105,6 +6148,9 @@ To configure with `VimtexInverseSearch`, use: >bash
 
   nvim --headless -c "VimtexInverseSearch %l '%f'"
 
+  # Or, if you also have the column number in %c
+  nvim --headless -c "VimtexInverseSearch %l:%c '%f'"
+
 On Windows, the above commands may lead to an annoying command window "popup".
 This may be avoided, or at least reduced, with the following variants: >bash
 
@@ -6112,12 +6158,19 @@ This may be avoided, or at least reduced, with the following variants: >bash
 
   cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
 
+Note: In the above, we used `%l` and `%f`. However, the interpolation
+      variables may be named different in some viewers. The correct names are
+      given for each supported viewer (see e.g. |vimtex-view-skim|).
+
 Note: Vim users should be aware that one may need to ensure that the server is
       really running, see |vimtex-clientserver|.
 
 Note: Many plugin managers provide mechanisms to lazy load plugins. There is
       no need to use such a mechanism for VimTeX, and in fact, doing it will
       prevent Vim/neovim from loading the `:VimtexInverseSearch` command.
+
+Note: You may need to add the installation prefix for Vim/Neovim, for example
+      `/opt/homebrew/bin`, in your PDF viewer if inverse search does not work.
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*

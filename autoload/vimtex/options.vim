@@ -392,6 +392,15 @@ function! vimtex#options#init() abort " {{{1
         \ 'babel': {'conceal': 1},
         \ 'hyperref': {'conceal': 1},
         \ 'fontawesome5': {'conceal': 1},
+        \ 'robust_externalize': {
+        \   'presets': [
+        \     ['bash', 'bash'],
+        \     ['python', 'python'],
+        \     ['gnuplot', 'gnuplot'],
+        \     ['tikz', '@texClusterTikz'],
+        \     ['latex', 'TOP'],
+        \   ],
+        \ },
         \})
 
   " Disable conceals if chosen

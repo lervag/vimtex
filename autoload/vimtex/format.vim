@@ -138,7 +138,7 @@ function! s:format_build_lines(start, end) abort " {{{1
     if strdisplaywidth(l:word) + strdisplaywidth(l:current) > s:textwidth
       call append(l:lnum, substitute(l:current, '\s$', '', ''))
       let l:lnum += 1
-      let l:current = s:get_indents(VimtexIndent(a:start))
+      let l:current = s:get_indents(indent(a:start))
     endif
     let l:current .= l:word . ' '
   endfor

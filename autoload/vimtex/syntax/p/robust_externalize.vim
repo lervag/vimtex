@@ -5,6 +5,8 @@
 "
 
 function! vimtex#syntax#p#robust_externalize#load(cfg) abort " {{{1
+  call vimtex#syntax#packages#load("tikz")
+
   " Match environment boundaries
   syntax match texRobExtEnvBgn contained '\\begin{\%(RobExt\)\?CacheMeCode\|CacheMe}'
         \ nextgroup=texRobExtEnvOpt,texRobExtEnvArg skipwhite skipnl
@@ -30,30 +32,31 @@ function! vimtex#syntax#p#robust_externalize#load(cfg) abort " {{{1
         \})
 
   " Add nested syntax support for supported languages
-  for [l:preset, l:target] in [
-        \ ['c', 'c'],
-        \ ['bash', 'bash'],
-        \ ['python', 'python'],
-        \ ['my python', 'python'],
-        \]
-    let l:cluster = vimtex#syntax#nested#include(l:target)
-
-    let l:name = toupper(l:target[0]) . l:target[1:]
-    let l:grp_env = 'texRobExtZone' . l:name
-    let l:options = 'keepend'
-    let l:contains = 'contains=texCmdEnv,texRobExtEnvBgn'
-
-    if empty(l:cluster)
+  for [l:preset, l:target] in get(a:cfg, "presets", [])
+    if empty(l:target)
+      let l:name = 'Verb'
+      let l:contains = 'contains=texCmdEnv,texRobExtEnvBgn'
       execute 'highlight def link' l:grp_env 'texRobExtZone'
+    elseif l:target ==# "TOP"
+      let l:name = 'LaTeX'
+      let l:contains = 'contains=TOP,texRobExtZone'
     else
+      let l:name = toupper(l:target[0]) . l:target[1:]
+      let l:cluster = l:target[0] == "@"
+            \ ? l:target
+            \ : vimtex#syntax#nested#include(l:target)
+
+      let l:contains = 'contains=texCmdEnv,texRobExtEnvBgn'
       let l:contains .= ',' . l:cluster
     endif
+
+    let l:grp_env = 'texRobExtZone' . l:name
 
     " Match normal robext environments
     execute 'syntax region' l:grp_env
           \ 'start="\\begin{\z(\%(RobExt\)\?CacheMeCode\|CacheMe\)}\_s*{' . l:preset . '[ ,}]"'
           \ 'end="\\end{\z1}"'
-          \ l:options
+          \ 'keepend'
           \ l:contains
   endfor
 

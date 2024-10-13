@@ -27,6 +27,12 @@
     return [x + p for x in ('a', 'b')]
 \end{RobExtCacheMeCode}
 
+\begin{CacheMe}{tikz}[scale=0.6]
+  \draw[gray, thick] (-1,2) -- (2,-4);
+  \draw[gray, thick] (-1,-1) -- (2,2);
+  \filldraw[black] (0,0) circle (2pt) node[anchor=west]{Intersection point};
+\end{CacheMe}
+
 \begin{CacheMe}{tikzpicture}[scale=0.6]
   \draw[gray, thick] (-1,2) -- (2,-4);
   \draw[gray, thick] (-1,-1) -- (2,2);
@@ -42,5 +48,9 @@ def f(p: string):
   def f(p: string):
     return [x + p for x in ('a', 'b')]
 \end{PlaceholderPathFromCode}
+
+\begin{CacheMe}{latex}
+  This is regular \LaTeX commands.
+\end{CacheMe}
 
 \end{document}

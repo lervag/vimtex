@@ -67,7 +67,7 @@ endfunction
 
 " }}}1
 
-function! vimtex#view#inverse_search(line, filename) abort " {{{1
+function! vimtex#view#inverse_search(line, filename, column = 0) abort " {{{1
   " Only activate in VimTeX buffers
   if !exists('b:vimtex') | return -1 | endif
 
@@ -106,7 +106,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   " * If tab/window exists, switch to it/them
   let l:bufnr = bufnr(l:file)
   try
-    let [l:winid] = win_findbuf(l:bufnr)
+    let [l:winid; _] = win_findbuf(l:bufnr)
     let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
     execute l:tabnr . 'tabnext'
     execute l:winnr . 'wincmd w'
@@ -115,6 +115,9 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
   endtry
 
   execute 'normal!' a:line . 'G'
+  if a:column > 0
+    execute 'normal!' a:column . '|'
+  endif
   if b:vimtex.viewer.xdo_check()
     call b:vimtex.viewer.xdo_focus_vim()
   endif
@@ -126,7 +129,7 @@ function! vimtex#view#inverse_search(line, filename) abort " {{{1
 endfunction
 
 " }}}1
-function! vimtex#view#inverse_search_cmd(line, filename) abort " {{{1
+function! vimtex#view#inverse_search_cmd(line, filename, column) abort " {{{1
   " One may call this function manually, but the main usage is to through the
   " command "VimtexInverseSearch". See ":help vimtex-synctex-inverse-search"
   " for more info.
@@ -134,9 +137,9 @@ function! vimtex#view#inverse_search_cmd(line, filename) abort " {{{1
   if a:line > 0 && !empty(a:filename)
     try
       if has('nvim')
-        call s:inverse_search_cmd_nvim(a:line, a:filename)
+        call s:inverse_search_cmd_nvim(a:line, a:filename, a:column)
       else
-        call s:inverse_search_cmd_vim(a:line, a:filename)
+        call s:inverse_search_cmd_vim(a:line, a:filename, a:column)
       endif
     catch
     endtry
@@ -147,7 +150,7 @@ endfunction
 
 " }}}1
 
-function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
+function! s:inverse_search_cmd_nvim(line, filename, column) abort " {{{1
   if !filereadable(s:nvim_servernames) | return | endif
 
   for l:server in readfile(s:nvim_servernames)
@@ -159,15 +162,16 @@ function! s:inverse_search_cmd_nvim(line, filename) abort " {{{1
     call rpcnotify(l:socket,
           \ 'nvim_call_function',
           \ 'vimtex#view#inverse_search',
-          \ [a:line, a:filename])
+          \ [a:line, a:filename, a:column])
     call chanclose(l:socket)
   endfor
 endfunction
 
-function! s:inverse_search_cmd_vim(line, filename) abort " {{{1
+function! s:inverse_search_cmd_vim(line, filename, column) abort " {{{1
   for l:server in split(serverlist(), "\n")
     call remote_expr(l:server,
-          \ printf("vimtex#view#inverse_search(%d, '%s')", a:line, a:filename))
+          \ printf("vimtex#view#inverse_search(%d, '%s', %d)",
+          \        a:line, a:filename, a:column))
   endfor
 endfunction
 

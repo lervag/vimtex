@@ -15,6 +15,11 @@ function! vimtex#syntax#p#beamer#load(cfg) abort " {{{1
         \ contains=texBeamerOpt
         \ nextgroup=texFileOpt,texFileArg
 
+  call vimtex#syntax#core#new_env({
+        \ 'name': 'semiverbatim',
+        \ 'region': 'texVerbZone'
+        \})
+
   highlight link texCmdBeamer texCmd
   highlight link texBeamerOpt texOpt
   highlight link texBeamerDelim texDelim
