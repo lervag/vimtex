@@ -15,14 +15,18 @@ function! vimtex#syntax#p#mathtools#load(cfg) abort " {{{1
   endif
 
   " Support for various environments with option groups
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{aligned}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[lr]gathered}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\\begin{[pbBvV]\?\%(small\)\?matrix\*}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos1 "\%#=1\v\\begin\{%(
+        \aligned
+        \|[lr]gathered
+        \|[pbBvV]?%(small)?matrix\*
+        \)\}"
   syntax match texMathCmdEnv contained contains=texCmdMathEnv nextgroup=texMathToolsOptPos2 "\\begin{multlined}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{aligned}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{[lr]gathered}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{[pbBvV]\?\%(small\)\?matrix\*}"
-  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\\end{multlined}"
+  syntax match texMathCmdEnv contained contains=texCmdMathEnv                               "\%#=1\v\\end\{%(
+        \aligned
+        \|[lr]gathered
+        \|[pbBvV]?%(small)?matrix\*
+        \|multlined
+        \)\}"
   call vimtex#syntax#core#new_opt('texMathToolsOptPos1', {'contains': ''})
   call vimtex#syntax#core#new_opt('texMathToolsOptPos2', {'contains': '', 'next': 'texMathToolsOptWidth'})
   call vimtex#syntax#core#new_opt('texMathToolsOptWidth', {'contains': 'texLength'})
