@@ -1285,7 +1285,8 @@ OPTIONS                                                        *vimtex-options*
 
   command ~
     This is the command to run to start compilation. This can be any command,
-    and the command is run from the project root.
+    and the command is run from the project root. The command string will
+    substitute `@tex` with the path to the current project's main tex file.
 
   hooks ~
     Same as |g:vimtex_compiler_latexmk| / `hooks`.
