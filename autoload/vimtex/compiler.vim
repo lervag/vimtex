@@ -73,11 +73,7 @@ function! vimtex#compiler#callback(status) abort " {{{1
     if exists('#User#VimtexEventCompiling')
       doautocmd <nomodeline> User VimtexEventCompiling
     endif
-    silent! call s:output.resume()
-    return
-  endif
-
-  if a:status == 2
+  elseif a:status == 2
     if !g:vimtex_compiler_silent
       call vimtex#log#info('Compilation completed')
     endif
