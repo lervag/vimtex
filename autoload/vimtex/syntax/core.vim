@@ -1,6 +1,13 @@
+" VimTeX - LaTeX plugin for Vim
+"
+" Maintainer: Karl Yngve Lervåg
+" Email:      karl.yngve@gmail.com
+"
+
+" This script has a lot of unicode characters (for conceals)
 scriptencoding utf-8
 
-" ============================= performance tips =============================
+" ## Performance tips
 "
 " Due to the way (neo)vim implements syntax highlighting, having hundreds of
 " different `syntax match ...` (like this file does) results in poor
@@ -29,7 +36,8 @@ scriptencoding utf-8
 " IF YOU WANT TO ADD NEW SYNTAX GROUP FOR A MATH-MODE COMMAND:
 " Don't add it to the texClusterMath cluster, but to _texMathBackslash.
 " Read the comment before the definition of texClusterMath for details.
-
+"
+" For reference: https://github.com/lervag/vimtex/pull/3006
 
 
 function! vimtex#syntax#core#init_rules() abort " {{{1
@@ -37,6 +45,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texMathOper "\%#=1[-+=/<>|]" contained display
   syntax match texMathSuperSub "\%#=1[_^]" contained display
   syntax match texMathDelim contained "\%#=1[()[\]]" display
+
   " {{{2 Define main syntax clusters
 
   syntax cluster texClusterOpt contains=
@@ -189,24 +198,24 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " LaTeX2E type styles
 
   syntax match texCmdStyle "\%#=1\v\\%(
-              \text%(bf|it|md|rm|s[cfl]|tt|up|normal)
-              \|emph
-              \|%(rm|sf|tt)family
-              \|%(it|sc|sl|up)shape
-              \|%(bf|md)series
-              \)>" display
+        \text%(bf|it|md|rm|s[cfl]|tt|up|normal)
+        \|emph
+        \|%(rm|sf|tt)family
+        \|%(it|sc|sl|up)shape
+        \|%(bf|md)series
+        \)>" display
 
   " Bold and italic commands
   call s:match_bold_italic()
 
   " Type sizes
   syntax match texCmdSize "\%#=1\v\\%(
-              \tiny
-              \|%(script|footnote|normal)size
-              \|small
-              \|[lL]arge|LARGE
-              \|[hH]uge
-              \)>" display
+        \tiny
+        \|%(script|footnote|normal)size
+        \|small
+        \|[lL]arge|LARGE
+        \|[hH]uge
+        \)>" display
 
   " \newcommand
   syntax match texCmdNewcmd "\%#=1\\\%(re\)\?newcommand\>\*\?"
@@ -223,7 +232,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ 'opts': 'oneline',
         \})
   call vimtex#syntax#core#new_arg('texNewcmdArgBody')
-  syntax match texNewcmdParm contained "#\+\d" containedin=texNewcmdArgBody " regexp=2 seems to be faster
+  " The default regexp v2 seems to be faster here:
+  syntax match texNewcmdParm contained "#\+\d" containedin=texNewcmdArgBody
 
   " \newenvironment
   syntax match texCmdNewenv nextgroup=texNewenvArgName skipwhite skipnl "\%#=1\\\%(re\)\?newenvironment\>"
@@ -278,10 +288,10 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " Sections and parts
   syntax match texCmdPart "\%#=1\\\(front\|main\|back\)matter\>" display
   syntax match texCmdPart "\%#=1\v\\%(
-              \%(part|%(sub)?paragraph)>
-              \|%(%(sub)*section|chapter)>\*?
-              \)"
-              \ nextgroup=texPartArgTitle
+        \%(part|%(sub)?paragraph)>
+        \|%(%(sub)*section|chapter)>\*?
+        \)"
+        \ nextgroup=texPartArgTitle
   call vimtex#syntax#core#new_arg('texPartArgTitle')
 
   " Item elements in lists
@@ -611,7 +621,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathTextArg')
 
   " Math style commands
-  syntax match texMathCmdStyle contained "\%#=1\v\\math(bb|bf(it)?|cal|frak|it|normal|rm|sf|tt|scr)>"
+  syntax match texMathCmdStyle contained "\%#=1\v\\math%(bb|bf%(it)?|cal|frak|it|normal|rm|sf|tt|scr)>"
 
   " Bold and italic commands
   call s:match_bold_italic_math()
@@ -1200,9 +1210,6 @@ function! vimtex#syntax#core#new_cmd_with_concealed_delims(cfg) abort " {{{1
 endfunction
 
 " }}}1
-let s:custom_math_envs = []
-let s:std_math_envs = 'array\|[bBpvV]matrix\|split\|smallmatrix'
-let s:custom_math_envs_by_next = {}
 function! vimtex#syntax#core#new_env(cfg) abort " {{{1
   let l:cfg = extend({
         \ 'name': '',
@@ -1267,7 +1274,7 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
     let s:custom_math_envs += [l:env_name]
     execute 'syntax match texMathError "\%#=1\\\%()\|]\|end{\%('
         \ . join(s:custom_math_envs, '\|')
-        \ . '\|' . s:std_math_envs
+        \ . '\|array\|[bBpvV]matrix\|split\|smallmatrix'
         \ . '\)}\)" display'
 
     execute 'syntax region texMathZoneEnv'
@@ -1321,6 +1328,9 @@ function! vimtex#syntax#core#new_env(cfg) abort " {{{1
           \ l:options
   endif
 endfunction
+
+let s:custom_math_envs = []
+let s:custom_math_envs_by_next = {}
 
 " }}}1
 
@@ -1961,9 +1971,9 @@ function! s:match_math_symbols() abort " {{{1
   " Many of these symbols were contributed by Björn Winckler
   if !g:vimtex_syntax_conceal.math_symbols | return | endif
 
-  syntax match texMathSymbol "\\|"                   contained conceal cchar=‖
-  syntax match texMathSymbol "\\sqrt\[3]"            contained conceal cchar=∛
-  syntax match texMathSymbol "\\sqrt\[4]"            contained conceal cchar=∜
+  syntax match texMathSymbol "\\|"        contained conceal cchar=‖
+  syntax match texMathSymbol "\\sqrt\[3]" contained conceal cchar=∛
+  syntax match texMathSymbol "\\sqrt\[4]" contained conceal cchar=∜
 
   for [l:cmd, l:symbol] in s:cmd_symbols
     execute 'syntax match texMathSymbol'
@@ -2403,7 +2413,7 @@ endfunction
 
 " }}}1
 function! s:match_conceal_spacing() abort " {{{1
-  syntax match texSpecialChar "\~"                conceal cchar= 
+  syntax match texSpecialChar "\~"                     conceal cchar= 
   syntax match texSpecialChar "\%#=1\\ "               conceal cchar= 
   syntax match texSpecialChar "\%#=1\\[,;:!>]"         conceal
   syntax match texSpecialChar "\%#=1\\@\ze\s\+"        conceal
