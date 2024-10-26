@@ -158,7 +158,7 @@ function! s:parse_number(num_tree) abort " {{{1
       return s:parse_number(a:num_tree[l:index])
     endif
   else
-    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*\l?)($|\s.*)')
+    let l:matches = matchlist(a:num_tree, '\v(^|.*\s)((\u|\d+)(\.\d+)*\S?)($|\s.*)')
     return len(l:matches) > 3 ? l:matches[2] : '-'
   endif
 endfunction
