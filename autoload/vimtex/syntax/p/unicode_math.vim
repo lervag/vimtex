@@ -52,6 +52,27 @@ function! vimtex#syntax#p#unicode_math#load(cfg) abort " {{{1
       let l:pairs = vimtex#syntax#core#get_alphabet_map(l:alphabet_map)
       call vimtex#syntax#core#conceal_cmd_pairs(l:cmd, l:pairs)
     endfor
+
+    syntax match texMathSymbol '\%#=1\\mathhyphen\>'        contained conceal cchar=‐
+    syntax match texMathSymbol '\%#=1\\mathstraightquote\>' contained conceal cchar='
+    syntax match texMathSymbol '\%#=1\\mathbacktick\>'      contained conceal cchar=`
+    syntax match texMathSymbol '\%#=1\\slash\>'             contained conceal cchar=/
+    syntax match texMathSymbol '\%#=1\\fracslash\>'         contained conceal cchar=⁄
+    syntax match texMathSymbol '\%#=1\\divslash\>'          contained conceal cchar=∕
+    syntax match texMathSymbol '\%#=1\\reversesolidus\>'    contained conceal cchar=⧵
+    syntax match texMathSymbol '\%#=1\\cdotp\>'             contained conceal cchar=·
+    syntax match texMathSymbol '\%#=1\\vysmblkcircle\>'     contained conceal cchar=∙
+    syntax match texMathSymbol '\%#=1\\smblkcircle\>'       contained conceal cchar=•
+    syntax match texMathSymbol '\%#=1\\mdsmblkcircle\>'     contained conceal cchar=⦁
+    syntax match texMathSymbol '\%#=1\\mdblkcircle\>'       contained conceal cchar=⚫
+    syntax match texMathSymbol '\%#=1\\mdlgblkcircle\>'     contained conceal cchar=●
+    syntax match texMathSymbol '\%#=1\\lgblkcircle\>'       contained conceal cchar=⬤
+    syntax match texMathSymbol '\%#=1\\vysmwhtcircle\>'     contained conceal cchar=∘
+    syntax match texMathSymbol '\%#=1\\smwhtcircle\>'       contained conceal cchar=◦
+    syntax match texMathSymbol '\%#=1\\mdsmwhtcircle\>'     contained conceal cchar=⚬
+    syntax match texMathSymbol '\%#=1\\mdwhtcircle\>'       contained conceal cchar=⚪
+    syntax match texMathSymbol '\%#=1\\mdlgwhtcircle\>'     contained conceal cchar=○
+    syntax match texMathSymbol '\%#=1\\lgwhtcircle\>'       contained conceal cchar=◯
   endif
 endfunction
 
