@@ -4074,7 +4074,7 @@ further customization.
           buffer does not necessarily have filetype "tex".
 
   *VimtexEventInitPre*
-*VimtexEventInitPost*
+  *VimtexEventInitPost*
     These events are triggered at the start/end of VimTeX initialization.  The
     post event may e.g. be used to automatically start compiling a document.
 
@@ -4089,7 +4089,7 @@ further customization.
     compilation. This is only supported by |vimtex-compiler-latexmk|.
 
   *VimtexEventCompileSuccess*
-*VimtexEventCompileFailed*
+  *VimtexEventCompileFailed*
     These events are triggered after successful/failed compilation and
     allows users to add custom callback functionality.
 
@@ -4114,9 +4114,9 @@ Examples (Vimscript) - see below for a Lua example: >vim
 
   " Compile on initialization, cleanup on quit
   augroup vimtex_event_1
-    au!
-    au User VimtexEventQuit     VimtexClean
-    au User VimtexEventInitPost VimtexCompile
+    autocmd!
+    autocmd User VimtexEventQuit     VimtexClean
+    autocmd User VimtexEventInitPost VimtexCompile
   augroup END
 
   " Close viewers when VimTeX buffers are closed
@@ -4129,8 +4129,8 @@ Examples (Vimscript) - see below for a Lua example: >vim
   endfunction
 
   augroup vimtex_event_2
-    au!
-    au User VimtexEventQuit call CloseViewers()
+    autocmd!
+    autocmd User VimtexEventQuit call CloseViewers()
   augroup END
 
   " Add custom mappings in ToC buffer
@@ -4140,20 +4140,42 @@ Examples (Vimscript) - see below for a Lua example: >vim
   endfunction
 
   augroup vimtex_event_3
-    au!
-    au User VimtexEventTocCreated call TocMappings()
+    autocmd!
+    autocmd User VimtexEventTocCreated call TocMappings()
   augroup END
 
   " Specify window position when opening ToC entries
   augroup vimtex_event_4
-    au!
-    au User VimtexEventTocActivated normal! zt
+    autocmd!
+    autocmd User VimtexEventTocActivated normal! zt
   augroup END
 
-  " Specify extra behaviour after reverse goto
+  function! CenterAndFlash() abort
+    " Close all folds, then open only the folds at cursor position, then
+    " center the cursor in window.
+    normal! zMzvzz
+
+    let save_cursorline_state = &cursorline
+
+    " Add simple flashing effect, see
+    " * https://vi.stackexchange.com/a/3481/29697
+    " * https://stackoverflow.com/a/33775128/38281
+    for i in range(1, 3)
+      set cursorline
+      redraw
+      sleep 200m
+      set nocursorline
+      redraw
+      sleep 200m
+    endfor
+
+    let &cursorline = save_cursorline_state
+  endfunction
+
+  " Specify additional behaviour after inverse search
   augroup vimtex_event_5
-    au!
-    au User VimtexEventViewReverse normal! zMzvzz
+    autocmd!
+    autocmd User VimtexEventViewReverse call CenterAndFlash()
   augroup END
 
   " Focus the terminal after inverse search
