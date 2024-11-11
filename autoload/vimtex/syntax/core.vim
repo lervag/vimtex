@@ -722,6 +722,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \texMathCmdStyle,
         \texMathCmdStyleBold,
         \texMathCmdStyleItal,
+        \texMathCmdStyleBoth,
         \texMathCmdText,
         \texMathDelimMod,
         \texMathDelim,
