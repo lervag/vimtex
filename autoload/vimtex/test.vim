@@ -6,10 +6,10 @@
 
 function! vimtex#test#finished() abort " {{{1
   for l:error in v:errors
-    let l:match = matchlist(l:error, '\(.*\) line \(\d\+\): \(.*\)')
+    let l:match = matchlist(l:error, '\v(.{-})( line (\d+))?: (.*)')
     let l:file = fnamemodify(l:match[1], ':.')
-    let l:lnum = l:match[2]
-    let l:msg = l:match[3]
+    let l:lnum = l:match[3]
+    let l:msg = l:match[4]
 
     if l:msg =~# 'Expected .*but got'
       call s:print_expected_but_got(l:file, l:lnum, l:msg)
@@ -94,7 +94,11 @@ endfunction
 " }}}1
 
 function! s:print_expected_but_got(file, lnum, msg) abort " {{{1
-  echo printf("%s:%d\n", a:file, a:lnum)
+  if !empty(a:lnum)
+    echo printf("%s:%d\n", a:file, a:lnum)
+  else
+    echo printf("%s:\n", a:file)
+  endif
 
   let l:intro = matchstr(a:msg, '.\{-}\ze\s*\(: \)\?Expected ')
   if !empty(l:intro)
