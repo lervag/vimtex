@@ -262,6 +262,18 @@ endfunction
 
 " }}}1
 
+function! s:parse_with_luanew(file) abort " {{{1
+  if !has('nvim')
+    call vimtex#log#error(
+          \ 'bib parser backend "lua" only works with neovim!')
+    return []
+  endif
+
+  return luaeval('require("vimtex.parser.newbib").parse_file(_A)', a:file)
+endfunction
+
+" }}}1
+
 function! s:parse_with_vim(file) abort " {{{1
   " Adheres to the format description found here:
   " http://www.bibtex.org/Format/
