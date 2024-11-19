@@ -11,7 +11,7 @@ let g:vimtex#re#tex_input_root =
       \ '\v^\c\s*\%\s*!?\s*tex\s+root\s*[=:]\s*\zs.*\ze\s*$'
 let g:vimtex#re#tex_input_latex = '\v\\%('
       \ . join(get(g:, 'vimtex_include_indicators',
-      \            ['input', 'include', 'includeonly']),
+      \            ['input', 'include']),
       \        '|')
       \ . ')\s*\{'
 let g:vimtex#re#tex_input_import = '\v\\%('
