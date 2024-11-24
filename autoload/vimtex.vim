@@ -365,9 +365,11 @@ function! s:filename_changed_post() abort " {{{1
 
     if has_key(b:vimtex, 'compiler')
       if b:vimtex.compiler.is_running()
-        call vimtex#log#warning('Compilation stopped!')
         call vimtex#compiler#stop()
+        call vimtex#log#warning('Compilation stopped!')
       endif
+
+      call vimtex#compiler#init_state(b:vimtex)
     endif
   endif
 endfunction
