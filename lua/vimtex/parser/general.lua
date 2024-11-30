@@ -21,7 +21,7 @@ end
 local function not_char(character)
   return pc.shift:filter(function(result)
     return result ~= character
-  end, "not_char: matched '" .. character .. "'")
+  end, "not char: matched '" .. character .. "'")
 end
 
 ---Create parser to match a specified string
@@ -33,7 +33,9 @@ local function str(input_string)
     parsers[#parsers + 1] = char(input_string:sub(i, i))
   end
 
-  return pc.sequence_flat(parsers)
+  return pc.sequence_flat(parsers):map_error(function(_, index)
+    return "str: unable to match '" .. input_string .. "' at index " .. index
+  end)
 end
 
 ---Parser to match a specified letter
@@ -41,14 +43,14 @@ local letter = pc.shift:filter(function(result)
   local b = string.byte(result)
 
   return (b >= 65 and b <= 90) or (b >= 97 and b <= 122)
-end, "letter: unable to match a letter")
+end, "letter: did not match")
 
 ---Parser to match a specified digit
 local digit = pc.shift:filter(function(result)
   local b = string.byte(result)
 
   return b >= 48 and b <= 57
-end, "digit: unable to match a digit")
+end, "digit: did not match")
 
 ---Parser to match white space
 local whitespace = pc.shift:filter(function(result)
@@ -60,7 +62,7 @@ local whitespace = pc.shift:filter(function(result)
     or result == " "
     or b == 0xb
     or b == 0xc
-end, "whitespace: unable to match a whitespace")
+end, "whitespace: did not match")
 
 local parsers = {}
 
@@ -72,7 +74,9 @@ parsers.str = str
 -- Text
 parsers.letter = letter
 parsers.letters = pc.many1_flat(letter)
-parsers.alnum = pc.choice { digit, letter }
+parsers.alnum = pc.choice({ digit, letter }):map_error(function()
+  return "alnum: did not match"
+end)
 parsers.alnums = pc.many1_flat(parsers.alnum)
 parsers.whitespace = whitespace
 parsers.whitespaces = pc.many1_flat(whitespace)

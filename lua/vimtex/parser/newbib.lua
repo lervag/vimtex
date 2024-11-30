@@ -7,27 +7,12 @@
 local pc = require "vimtex.parser.combinators"
 local g = require "vimtex.parser.general"
 
----@class BibString
----@field type "string"
----@field name string
----@field value string
-
----@class BibComment
----@field type "comment"
----@field comment string
-
----@class BibPreamble
----@field type "preamble"
----@field preamble string
-
 ---@class BibReference
 ---@field type string
 ---@field key string
 ---@field source_lnum integer
 ---@field source_file string
-
----@class BibReferenceFailed: BibReference
----@field unparsed_content string
+---@field unparsed_content string?
 
 ---@type string
 local FILE
@@ -41,14 +26,13 @@ local value_quoted_single =
   pc.between(g.dq, g.dq)(pc.many_flat(pc.choice { g.dq_escaped, g.not_dq }))
 
 local value_quoted = pc.separated_by1(
-  g.whitespaces_maybe .. g.char "#" .. g.whitespaces_maybe
+  pc.sequence { g.whitespaces_maybe, g.char "#", g.whitespaces_maybe }
 )(pc.choice {
   identifier:map(function(result)
     return "##" .. result .. "##"
   end),
   value_quoted_single,
-})
-  :map(table.concat)
+}):map(table.concat)
 
 local value_braced_inc
 value_braced_inc = pc.sequence_flat {
@@ -65,162 +49,96 @@ local value_braced_content =
   pc.many_flat(pc.choice { value_braced_inc, g.not_rb })
 local value_braced = pc.between(g.lb, g.rb)(value_braced_content)
 
-local value_parser = pc.right(
-  g.whitespaces_maybe,
-  pc.choice { g.digits, value_quoted, value_braced }
-)
+local value_parser = pc.choice { value_braced, g.digits, value_quoted }
 
 local tag_pair = pc.sequence({
   g.whitespaces_maybe,
   identifier,
   g.whitespaces_maybe,
   g.eq,
+  g.whitespaces_maybe,
   value_parser,
 }):map(function(result)
-  return { result[2], result[5] }
+  return { result[2], result[6] }
 end)
 
----Parse an entry with the provided content parser
----@param content_parser Parser Content parser for the entry
----@param type_name string? Entry name filter
----@return Parser
-local function entry_parser(content_parser, type_name)
-  ---@type Parser
-  local header
-  if type_name then
-    header = pc.right(g.at, g.letters):filter(function(value)
-      return value:lower() == type_name:lower()
-    end)
-  else
-    header = pc.right(g.at, g.letters)
-  end
-  return pc.sequence {
-    header,
-    pc.between(g.whitespaces_maybe + g.lb, g.whitespaces_maybe + g.rb)(
-      content_parser
-    ),
-  }
-end
-
-local commentstring = (g.whitespaces_maybe .. g.char "%" .. pc.many_flat(
-  g.not_nl
-)):map(function()
-  return nil
-end)
-
-local bibstring = entry_parser(tag_pair, "string"):map(function(result)
-  ---@type BibString
-  return {
-    type = "string",
-    name = result[2][1],
-    value = result[2][2],
-  }
-end)
-
-local bibcomment = entry_parser(value_braced_content, "comment"):map(
-  function(result)
-    ---@type BibComment
-    return {
-      type = "comment",
-      comment = result[2],
+local entry = pc.sequence({
+  pc.sequence({
+    g.whitespaces_maybe,
+    g.at,
+    g.letters,
+  }):map(function(result)
+    return result[3]
+  end),
+  pc.between(g.whitespaces_maybe + g.lb, g.whitespaces_maybe + g.rb)(
+    pc.sequence {
+      pc.right(g.whitespaces_maybe, pc.line_number),
+      pc.left(identifier, g.whitespaces_maybe .. g.comma):maybe "",
+      pc.separated_by(g.whitespaces_maybe .. g.comma)(tag_pair),
+      pc.right(g.whitespaces_maybe, value_braced_content),
     }
-  end
-)
+  ),
+}):map(function(results)
+  local type = results[1]
+  local lnum = results[2][1]
+  local key = results[2][2]
+  local tag_pairs = results[2][3]
+  local unparsed_content = results[2][4]:gsub("^%s*", ""):gsub("%s*$", "")
 
-local bibpreamble = entry_parser(value_braced_content, "preamble"):map(
-  function(result)
-    ---@type BibPreamble
-    return {
-      type = "preamble",
-      preamble = result[2],
-    }
-  end
-)
-
-local bibreference = entry_parser(pc.sequence {
-  g.whitespaces_maybe,
-  pc.line_number,
-  identifier,
-  pc.separated_by_preceeding(g.whitespaces_maybe .. g.comma)(tag_pair),
-}):map(function(result)
-  local pairs = {}
-  for _, pair in ipairs(result[2][4]) do
-    pairs[pair[1]] = pair[2]
+  local tag_pairs_parsed = {}
+  for _, pair in ipairs(tag_pairs) do
+    tag_pairs_parsed[pair[1]] = pair[2]
   end
 
-  ---@type BibReference
   local bibref = {
-    type = result[1],
-    key = result[2][3],
-    source_lnum = result[2][2],
+    type = type,
     source_file = FILE,
+    source_lnum = lnum,
+    key = #key > 0 and key or nil,
+    unparsed_content = #unparsed_content > 0 and unparsed_content or nil,
   }
 
-  return vim.tbl_extend("keep", bibref, pairs)
+  return vim.tbl_extend("keep", bibref, tag_pairs_parsed)
 end)
 
-local bibreference_failed = entry_parser(pc.sequence {
+local comment = pc.sequence({
   g.whitespaces_maybe,
-  pc.line_number,
-  identifier,
-  pc.separated_by_preceeding(g.whitespaces_maybe .. g.comma)(tag_pair),
-  value_braced_content,
-}):map(function(result)
-  local pairs = {}
-  for _, pair in ipairs(result[2][4]) do
-    pairs[pair[1]] = pair[2]
-  end
+  g.char "%",
+  pc.many_flat(g.not_nl),
+}):ignore()
 
-  ---@type BibReferenceFailed
-  local bibref = {
-    type = result[1],
-    key = result[2][3],
-    source_lnum = result[2][2],
-    source_file = FILE,
-    unparsed_content = result[2][5]:gsub("^%s*", ""):gsub("%s*$", ""),
-  }
-
-  return vim.tbl_extend("keep", bibref, pairs)
-end)
-
-local entry = pc.choice {
-  commentstring,
-  bibstring,
-  bibcomment,
-  bibpreamble,
-  bibreference,
-  bibreference_failed,
-}
-
-local parse_string = pc.many1(pc.right(g.whitespaces_maybe, entry))
-  :map(function(results)
-    local string_map = {}
-    for _, bibstr in
-      ipairs(vim.tbl_filter(function(e)
-        return e.type == "string"
-      end, results))
-    do
-      string_map[bibstr.name] = bibstr.value
+local parser = pc.many1(pc.choice { entry, comment }):map(function(results)
+  local string_map = {}
+  for _, bibstr in
+    ipairs(vim.tbl_filter(function(e)
+      return e.type == "string"
+    end, results))
+  do
+    for key, value in pairs(bibstr) do
+      if key ~= "type" then
+        string_map[key] = value
+      end
     end
+  end
 
-    ---@type BibReference[]
-    local references = vim.tbl_filter(function(e)
-      return e.type ~= "string" and e.type ~= "comment" and e.type ~= "preamble"
-    end, results)
+  ---@type BibReference[]
+  local references = vim.tbl_filter(function(e)
+    return e.type ~= "string" and e.type ~= "comment" and e.type ~= "preamble"
+  end, results)
 
-    for string_name, string_value in pairs(string_map) do
-      for _, reference in ipairs(references) do
-        for name, value in pairs(reference) do
-          if type(value) == "string" then
-            reference[name] =
-              value:gsub("##" .. vim.pesc(string_name) .. "##", string_value)
-          end
+  for string_name, string_value in pairs(string_map) do
+    for _, reference in ipairs(references) do
+      for name, value in pairs(reference) do
+        if type(value) == "string" then
+          reference[name] =
+            value:gsub("##" .. vim.pesc(string_name) .. "##", string_value)
         end
       end
     end
+  end
 
-    return references
-  end)
+  return references
+end)
 
 local M = {}
 
@@ -229,7 +147,7 @@ local M = {}
 ---@return BibReference[]
 function M.parse(input_string)
   FILE = "__string__"
-  local parsed = parse_string:run(input_string)
+  local parsed = parser:run(input_string)
   if parsed.error then
     return {}
   else
@@ -245,7 +163,7 @@ function M.parse_file(filename)
   -- profiler.start()
   FILE = filename
   local file = assert(io.open(filename, "r"), "Could not read file")
-  local parsed = parse_string:run(file:read "*a")
+  local parsed = parser:run(file:read "*a")
   file:close()
   -- profiler.stop()
   -- local log = assert(io.open("trace-new.log", "w"), "Could not read file")

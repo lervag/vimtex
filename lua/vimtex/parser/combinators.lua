@@ -10,6 +10,9 @@
 ---@type string
 local TARGET
 
+---@type table
+local ERRORS
+
 ---@class ParserState
 ---@field index integer
 ---@field result any?
@@ -23,15 +26,15 @@ ParserState.__index = ParserState
 ---@param error string?
 ---@return ParserState
 function ParserState.new(index, result, error)
-  ---@type ParserState
   local state = {
     index = index,
     result = result,
     error = error or nil,
   }
-  setmetatable(state, ParserState)
-
-  return state
+  if error then
+    ERRORS[#ERRORS+1] = { error, state.index }
+  end
+  return setmetatable(state, ParserState)
 end
 
 ---Create new next state with specified result
@@ -59,23 +62,25 @@ end
 ---@return string
 function ParserState:__tostring()
   if self.error then
-    if type(TARGET) == "string" and not TARGET:match "\n" then
-      return table.concat({
-        "Error while parsing: " .. TARGET,
-        (" "):rep(20 + self.index) .. "^",
-        "At index: " .. self.index,
-        self.error,
-        "Current result: " .. vim.inspect(self.result),
-      }, "\n")
-    else
-      return table.concat({
-        "Error while parsing: " .. TARGET,
-        "At index: " .. self.index,
-        self.error,
-        "Current result: " .. vim.inspect(self.result),
-      }, "\n")
+    local index = self.index
+    local length = 40
+    local start = 1
+    local indicator = ("━"):rep(self.index - 1) .. "┑"
+    if self.index > length / 2 then
+      index = length / 2
+      start = self.index - index + 1
+      indicator = "┉" .. ("━"):rep(index - 2) .. "┑"
     end
-  elseif type(self.result) == "string" then
+    local sub_target = TARGET:sub(start, start + length):gsub("\n", "↵")
+
+    return table.concat({
+      "Error at index " .. self.index .. " — " .. self.error,
+      indicator,
+      sub_target,
+    }, "\n")
+  end
+
+  if type(self.result) == "string" then
     return self.result
   end
 
@@ -91,11 +96,8 @@ Parser.__index = Parser
 ---@param parser_fn fun(input: ParserState): ParserState
 ---@return Parser
 function Parser:new(parser_fn)
-  ---@type Parser
   local parser = { parser_fn = parser_fn }
-  setmetatable(parser, Parser)
-
-  return parser
+  return setmetatable(parser, Parser)
 end
 
 ---Run parser on specified input
@@ -104,6 +106,7 @@ end
 ---@param input any
 ---@return any
 function Parser:run(input)
+  ERRORS = {}
   TARGET = input
   local initial_state = ParserState.new(1, nil)
   return self(initial_state)
@@ -184,6 +187,14 @@ function Parser:chain(fn)
   return Parser:new(parser_fn)
 end
 
+---Ignore result of parser
+---@return Parser
+function Parser:ignore()
+  return self:map(function()
+    return nil
+  end)
+end
+
 ---Combine a sequence of parsers
 ---@param parsers Parser[]
 ---@return Parser
@@ -258,7 +269,7 @@ local function choice(parsers)
       end
     end
 
-    return initial_state:copy_with_error "choice: unable to match with any parser."
+    return initial_state:copy_with_error "choice: unable to match with any parser"
   end
 
   return Parser:new(parser_fn)
@@ -516,6 +527,22 @@ local function succeed(result)
   end)
 end
 
+---Parser short circuit for success
+---@param result_if_failed any
+---@return Parser
+function Parser:maybe(result_if_failed)
+  local parser_fn = function(initial_state)
+    local next_state = self(initial_state)
+    if next_state.error then
+      return initial_state:copy_with_result(result_if_failed)
+    end
+
+    return next_state
+  end
+
+  return Parser:new(parser_fn)
+end
+
 ---Parser short circuit for fail with error
 ---@param error string
 ---@return Parser
@@ -531,13 +558,13 @@ local eof = Parser:new(function(initial_state)
     return ParserState.new(initial_state.index, initial_state.result)
   end
 
-  return initial_state:copy_with_error "eof: not end of file."
+  return initial_state:copy_with_error "eof: not end of file"
 end)
 
 ---Parser that puts current state to value and nothing more
 local peek = Parser:new(function(initial_state)
   if #TARGET < initial_state.index then
-    return initial_state:copy_with_error "peek: unexpected end of input."
+    return initial_state:copy_with_error "peek: unexpected end of input"
   end
 
   return initial_state:copy_with_result(
@@ -548,7 +575,7 @@ end)
 ---Parser that accepts next input
 local shift = Parser:new(function(initial_state)
   if #TARGET < initial_state.index then
-    return initial_state:copy_with_error "shift: unexpected end of input."
+    return initial_state:copy_with_error "shift: unexpected end of input"
   end
 
   local c = TARGET:sub(initial_state.index, initial_state.index)
@@ -558,7 +585,7 @@ end)
 ---Parser to insert current line number
 local line_number = Parser:new(function(initial_state)
   if #TARGET < initial_state.index then
-    return initial_state:copy_with_error "letter: unexpected end of input."
+    return initial_state:copy_with_error "letter: unexpected end of input"
   end
 
   return initial_state:copy_with_result(
@@ -568,9 +595,9 @@ end)
 
 ---Apply a result predicate on a parser
 ---@param predicate fun(result): boolean
----@param fail_msg string?
+---@param error string? The error message if the predicate fails
 ---@return fun(parser: Parser): Parser
-local function filter(predicate, fail_msg)
+local function filter(predicate, error)
   return function(parser)
     local parser_fn = function(initial_state)
       local next_state = parser(initial_state)
@@ -583,7 +610,7 @@ local function filter(predicate, fail_msg)
       end
 
       return initial_state:copy_with_error(
-        fail_msg or "filter: predicate returned false"
+        error or "filter: predicate returned false"
       )
     end
 
@@ -593,10 +620,10 @@ end
 
 ---Filter on parser with predicate
 ---@param predicate fun(result): boolean
----@param fail_msg string?
+---@param error string? The error message if the predicate fails
 ---@return Parser
-function Parser:filter(predicate, fail_msg)
-  return filter(predicate, fail_msg)(self)
+function Parser:filter(predicate, error)
+  return filter(predicate, error)(self)
 end
 
 ---Create a lazy parser
@@ -680,5 +707,13 @@ pc.sequence_flat = sequence_flat
 
 pc.lazy = lazy
 pc.contextual = contextual
+
+pc.show_errors = function()
+  for i, err in ipairs(ERRORS) do
+    print(vim.fn.printf("%5d %5d %s", i, err[2], err[1]))
+  end
+  print(vim.fn.printf("There were %d errors while parsing.", #ERRORS))
+  print(vim.fn.printf("The target length was %d", #TARGET))
+end
 
 return pc
