@@ -28,25 +28,24 @@ local value_quoted_single =
 local value_quoted = pc.separated_by1(
   pc.sequence { g.whitespaces_maybe, g.char "#", g.whitespaces_maybe }
 )(pc.choice {
+  value_quoted_single,
   identifier:map(function(result)
     return "##" .. result .. "##"
   end),
-  value_quoted_single,
 }):map(table.concat)
 
 local value_braced_inc
 value_braced_inc = pc.sequence_flat {
   g.lb,
   pc.many_flat(pc.choice {
+    g.nb,
     pc.lazy(function()
       return value_braced_inc
     end),
-    g.not_rb,
   }),
   g.rb,
 }
-local value_braced_content =
-  pc.many_flat(pc.choice { value_braced_inc, g.not_rb })
+local value_braced_content = pc.many_flat(pc.choice { g.nb, value_braced_inc })
 local value_braced = pc.between(g.lb, g.rb)(value_braced_content)
 
 local value_parser = pc.choice { value_braced, g.digits, value_quoted }
@@ -72,10 +71,10 @@ local entry = pc.sequence({
   end),
   pc.between(g.whitespaces_maybe + g.lb, g.whitespaces_maybe + g.rb)(
     pc.sequence {
-      pc.right(g.whitespaces_maybe, pc.line_number),
-      pc.left(identifier, g.whitespaces_maybe .. g.comma):maybe "",
-      pc.separated_by(g.whitespaces_maybe .. g.comma)(tag_pair),
-      pc.right(g.whitespaces_maybe, value_braced_content),
+      pc.right { g.whitespaces_maybe, pc.line_number },
+      pc.left({ identifier, g.whitespaces_maybe, g.comma }):maybe "",
+      pc.separated_by(g.whitespaces_maybe + g.comma)(tag_pair),
+      pc.right { g.whitespaces_maybe, value_braced_content },
     }
   ),
 }):map(function(results)
@@ -159,16 +158,10 @@ end
 ---@param filename string
 ---@return BibReference[]
 function M.parse_file(filename)
-  -- local profiler = require "vimtex.parser.profiler"
-  -- profiler.start()
   FILE = filename
   local file = assert(io.open(filename, "r"), "Could not read file")
   local parsed = parser:run(file:read "*a")
   file:close()
-  -- profiler.stop()
-  -- local log = assert(io.open("trace-new.log", "w"), "Could not read file")
-  -- log:write(profiler.report(40))
-  -- log:close()
 
   if parsed.error then
     return {}

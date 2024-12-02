@@ -24,6 +24,21 @@ local function not_char(character)
   end, "not char: matched '" .. character .. "'")
 end
 
+---Create parser to match anything that is not a specified character
+---@param characters string[]
+---@return Parser
+local function not_chars(characters)
+  return pc.shift:filter(function(result)
+    for _, c in ipairs(characters) do
+      if result == c then
+        return false
+      end
+    end
+
+    return true
+  end, "not chars: matched one of '" .. table.concat(characters) .. "'")
+end
+
 ---Create parser to match a specified string
 ---@param input_string string
 ---@return Parser
@@ -68,13 +83,14 @@ local parsers = {}
 
 -- General
 parsers.char = char
-parsers.not_char = char
+parsers.not_char = not_char
+parsers.not_chars = not_chars
 parsers.str = str
 
 -- Text
 parsers.letter = letter
 parsers.letters = pc.many1_flat(letter)
-parsers.alnum = pc.choice({ digit, letter }):map_error(function()
+parsers.alnum = pc.choice({ letter, digit }):map_error(function()
   return "alnum: did not match"
 end)
 parsers.alnums = pc.many1_flat(parsers.alnum)
@@ -94,9 +110,10 @@ parsers.not_dq = not_char '"'
 parsers.sq = char "'"
 parsers.lb = char "{"
 parsers.rb = char "}"
-parsers.not_rb = not_char "}"
+parsers.nb = not_chars { "{", "}" }
 parsers.lp = char "("
 parsers.rp = char ")"
+parsers.np = not_chars { "(", ")" }
 
 -- Numbers
 parsers.digit = digit

@@ -16,8 +16,8 @@ vim.fn.assert_equal("x", letter1.result)
 vim.fn.assert_equal("letter: did not match", letter2.error)
 vim.fn.assert_equal("foo", letters.result)
 
-local str = pc.left(g.letters, g.whitespaces) + g.float
+local str = pc.left { g.letters, g.whitespaces } + g.float
 local parsed = str:run "foobar   142.32"
-vim.fn.assert_equal( { "foobar", 142.32 }, parsed.result)
+vim.fn.assert_equal({ "foobar", 142.32 }, parsed.result)
 
 vim.fn["vimtex#test#finished"]()

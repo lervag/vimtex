@@ -15,10 +15,10 @@ local group_exc
 group_exc = pc.sequence_flat {
   g.lb,
   pc.many_flat(pc.choice {
+    g.letters,
     pc.lazy(function()
       return group_exc
     end),
-    g.letters,
   }),
   g.rb,
 }

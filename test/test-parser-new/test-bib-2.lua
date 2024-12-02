@@ -4,8 +4,8 @@ vim.cmd [[filetype plugin on]]
 local bib = require "vimtex.parser.newbib"
 local pc = require "vimtex.parser.combinators"
 
--- local parsed = bib.parse_file "../common/huge.bib"
-local parsed = bib.parse_file "../common/local1.bib"
+local parsed = bib.parse_file "../common/huge.bib"
+-- local parsed = bib.parse_file "../common/local1.bib"
 -- local parsed = bib.parse_file "../common/local2.bib"
 -- local parsed = bib.parse_file "/usr/share/texmf-dist/bibtex/bib/biblatex/biblatex/biblatex-examples.bib"
 
