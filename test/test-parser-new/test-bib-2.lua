@@ -1,5 +1,6 @@
 vim.opt.runtimepath:prepend "../.."
 vim.cmd [[filetype plugin on]]
+vim.o.more = false
 
 local bib = require "vimtex.parser.newbib"
 local pc = require "vimtex.parser.combinators"

@@ -7,7 +7,7 @@ vim.fn.assert_equal(
   {
     type = "misc",
     key = "key2",
-    source_lnum = 1,
+    source_lnum = 0,
     source_file = "__string__",
     title = "A new title",
     year = "1960",
@@ -26,7 +26,7 @@ vim.fn.assert_equal(
   {
     type = "misc",
     key = "key2",
-    source_lnum = 2,
+    source_lnum = 1,
     source_file = "__string__",
     title = "A new title",
     year = "1960",

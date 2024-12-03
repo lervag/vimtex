@@ -13,8 +13,13 @@ local TARGET
 ---@type table
 local ERRORS
 
+---@class ParserStateNewlines
+---@field index integer
+---@field count integer
+
 ---@class ParserState
 ---@field index integer
+---@field prev_newlines ParserStateNewlines
 ---@field result any?
 ---@field error string?
 local ParserState = {}
@@ -22,13 +27,15 @@ ParserState.__index = ParserState
 
 ---Create new parser state
 ---@param index integer
+---@param prev_newlines ParserStateNewlines
 ---@param result any?
 ---@param error string?
 ---@return ParserState
-function ParserState.new(index, result, error)
+function ParserState.new(index, prev_newlines, result, error)
   ---@type ParserState
   local state = {
     index = index,
+    prev_newlines = prev_newlines,
     result = result,
     error = error,
   }
@@ -40,23 +47,24 @@ end
 
 ---Create new next state with specified result
 ---@param result any
+---@param prev_newlines ParserStateNewlines?
 ---@return ParserState
-function ParserState:with_result(result)
-  return ParserState.new(self.index, result, self.error)
+function ParserState:with_result(result, prev_newlines)
+  return ParserState.new(self.index, prev_newlines or self.prev_newlines, result, self.error)
 end
 
 ---Create new next state with specified error
 ---@param error string
 ---@return ParserState
 function ParserState:with_error(error)
-  return ParserState.new(self.index, self.result, error)
+  return ParserState.new(self.index, self.prev_newlines, self.result, error)
 end
 
 ---Create new next state with specified result that drops error
 ---@param result any
 ---@return ParserState
 function ParserState:succeed(result)
-  return ParserState.new(self.index, result)
+  return ParserState.new(self.index, self.prev_newlines, result)
 end
 
 ---Pretty print the parser state
@@ -109,7 +117,7 @@ end
 function Parser:run(input)
   ERRORS = {}
   TARGET = input
-  local initial_state = ParserState.new(1, nil)
+  local initial_state = ParserState.new(1, { index = 1, count = 0 }, nil)
   return self(initial_state)
 end
 
@@ -466,16 +474,20 @@ local shift = Parser:new(function(state)
   end
 
   local c = TARGET:sub(state.index, state.index)
-  return ParserState.new(state.index + 1, c)
+  return ParserState.new(state.index + 1, state.prev_newlines, c)
 end)
 
 ---Parser to insert current line number
 local line_number = Parser:new(function(state)
-  if #TARGET < state.index then
-    return state:with_error "letter: unexpected end of input"
+  local count = state.prev_newlines.count
+
+  for i = state.prev_newlines.index, state.index do
+    if TARGET:sub(i, i) == "\n" then
+      count = count + 1
+    end
   end
 
-  return state:with_result(vim.fn.count(TARGET:sub(1, state.index), "\n") + 1)
+  return state:with_result(count, { index = state.index, count = count } )
 end)
 
 ---Apply a result predicate on a parser

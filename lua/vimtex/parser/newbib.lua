@@ -62,16 +62,11 @@ local tag_pair = pc.sequence({
 end)
 
 local entry = pc.sequence({
-  pc.sequence({
-    g.whitespaces_maybe,
-    g.at,
-    g.letters,
-  }):map(function(result)
-    return result[3]
-  end),
-  pc.between(g.whitespaces_maybe + g.lb, g.whitespaces_maybe + g.rb)(
+  pc.between(g.at, g.whitespaces_maybe)(g.letters),
+  pc.between(g.lb, g.rb)(
     pc.sequence {
-      pc.right { g.whitespaces_maybe, pc.line_number },
+      pc.line_number,
+      g.whitespaces_maybe,
       pc.left({ identifier, g.whitespaces_maybe, g.comma }):maybe "",
       pc.separated_by(g.whitespaces_maybe + g.comma)(tag_pair),
       pc.right { g.whitespaces_maybe, value_braced_content },
@@ -80,9 +75,9 @@ local entry = pc.sequence({
 }):map(function(results)
   local type = results[1]
   local lnum = results[2][1]
-  local key = results[2][2]
-  local tag_pairs = results[2][3]
-  local unparsed_content = results[2][4]:gsub("^%s*", ""):gsub("%s*$", "")
+  local key = results[2][3]
+  local tag_pairs = results[2][4]
+  local unparsed_content = results[2][5]:gsub("^%s*", ""):gsub("%s*$", "")
 
   local tag_pairs_parsed = {}
   for _, pair in ipairs(tag_pairs) do
@@ -101,12 +96,14 @@ local entry = pc.sequence({
 end)
 
 local comment = pc.sequence({
-  g.whitespaces_maybe,
   g.char "%",
   pc.many_flat(g.not_nl),
 }):ignore()
 
-local parser = pc.many1(pc.choice { entry, comment }):map(function(results)
+local parser = pc.many1(pc.right {
+  g.whitespaces_maybe,
+  pc.choice { entry, comment },
+}):map(function(results)
   local string_map = {}
   for _, bibstr in
     ipairs(vim.tbl_filter(function(e)
