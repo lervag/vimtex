@@ -639,6 +639,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call s:match_math_symbols()
   call s:match_math_fracs()
   call s:match_math_unicode()
+  call s:match_math_conceal_accents()
 
   " }}}2
   " {{{2 Zone: SynIgnore
@@ -2294,6 +2295,24 @@ function! s:match_math_unicode() abort " {{{1
     let s:re_math_symbols = '"[' . join(l:symbols, '') . ']"'
   endif
   execute 'syntax match texMathSymbol' s:re_math_symbols 'contained'
+endfunction
+
+" }}}1
+function! s:match_math_conceal_accents() abort " {{{1
+  if !g:vimtex_syntax_conceal.accents | return | endif
+
+  for [l:chr; l:targets] in s:map_accents
+    for i in range(13)
+      let l:target = l:targets[i]
+      if empty(l:target) | continue | endif
+
+      let l:accent = s:key_accents[i]
+      let l:re_ws = l:accent =~# '^\\\\\a$' ? '\s\+' : '\s*'
+      let l:re = l:accent . '\%(\s*{' . l:chr . '}\|' . l:re_ws . l:chr . '\)'
+      execute 'syntax match texMathSymbol /\%#=1' . l:re . '/'
+            \ 'conceal cchar=' . l:target
+    endfor
+  endfor
 endfunction
 
 " }}}1
