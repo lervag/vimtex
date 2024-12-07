@@ -2299,6 +2299,8 @@ endfunction
 
 " }}}1
 function! s:match_math_conceal_accents() abort " {{{1
+  if !g:vimtex_syntax_conceal.accents | return | endif
+
   for [l:chr; l:targets] in s:map_accents
     for i in range(13)
       let l:target = l:targets[i]
