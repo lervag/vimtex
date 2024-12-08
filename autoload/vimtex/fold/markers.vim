@@ -37,15 +37,15 @@ function! s:folder.level(line, lnum) abort dict " {{{1
   let l:start = matchlist(a:line, self.re.start .. '\(\d\?\)')
   let l:end = matchlist(a:line, self.re.end .. '\(\d\?\)')
   if !empty(l:start)
+    let self.opened = 1
     return empty(l:start[1])
           \ ? 'a1'
           \ : '>' .. l:start[1]
-    let self.opened = 1
   elseif !empty(l:end)
+    let self.opened = 0
     return empty(l:end[1])
           \ ? 's1'
           \ : '<' .. l:end[1]
-    let self.opened = 0
   endif
 endfunction
 
