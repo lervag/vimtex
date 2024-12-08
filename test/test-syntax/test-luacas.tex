@@ -1,0 +1,13 @@
+\documentclass{article}
+\usepackage{luacas}
+
+\begin{document}
+
+\begin{CAS}
+  vars('x','h')
+  f = x^2
+  subs = {[x]=x+h}
+  q = (substitute(subs,f) - f)/h
+\end{CAS}
+
+\end{document}
