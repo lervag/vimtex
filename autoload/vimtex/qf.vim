@@ -142,6 +142,12 @@ function! vimtex#qf#setqflist(...) abort " {{{1
       call setqflist(l:qflist, 'r')
     endif
 
+    " Put errors on top
+    let l:qflist = getqflist()
+    call setqflist(l:qflist->sort({ q1, q2 ->
+          \ (q2.type ==? 'e' ? 1 : 0) - (q1.type ==? 'e' ? 1 : 0)
+          \}), 'r')
+
     " Set title if supported
     try
       call setqflist([], 'r', {'title': 'VimTeX errors (' . b:vimtex.qf.name . ')'})

@@ -21,11 +21,11 @@ let s:n = 0
 for s:expect in [
       \ {'lnum': 0,  'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16, 'type': 'E', 'text': "Paragraph ended before \\date  was complete."},
-      \ {'lnum': 17, 'type': 'W', 'text': "LaTeX Warning: Reference `blabla' on page 1 undefined"},
       \ {'lnum': 19, 'type': 'E', 'text': "Undefined control sequence.\n\\test"},
       \ {'lnum': 21, 'type': 'E', 'text': "Too many }'s.\n{Hello world!}}"},
       \ {'lnum': 23, 'type': 'E', 'text': "Missing $ inserted."},
       \ {'lnum': 24, 'type': 'E', 'text': "Missing $ inserted."},
+      \ {'lnum': 17, 'type': 'W', 'text': "LaTeX Warning: Reference `blabla' on page 1 undefined"},
       \ {'lnum': 25, 'type': 'W', 'text': "Underfull \\hbox (badness 10000) in paragraph at lines 25--27"},
       \ {'lnum': 28, 'type': 'W', 'text': "Overfull \\hbox (160.81767pt too wide) in paragraph at lines 28--29"},
       \ {'lnum': 1,  'type': 'W', 'text': "Package hyperref Warning: Token not allowed in a PDF string (Unicode):\n                removing `math shift'"},
