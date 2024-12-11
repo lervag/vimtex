@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#fold#init_buffer() abort " {{{1
+function! vimtex#fold#init_buffer() abort
   if !g:vimtex_fold_enabled
         \ || s:foldmethod_in_modeline() | return | endif
 
@@ -12,6 +12,9 @@ function! vimtex#fold#init_buffer() abort " {{{1
   setlocal foldmethod=expr
   setlocal foldexpr=vimtex#fold#level(v:lnum)
   setlocal foldtext=vimtex#fold#text()
+
+  let b:__vimtex_fold_lasttick = -1
+  let b:__vimtex_fold_cache = []
 
   if g:vimtex_fold_manual
     " Remap zx to refresh fold levels
@@ -31,8 +34,7 @@ function! vimtex#fold#init_buffer() abort " {{{1
   endif
 endfunction
 
-" }}}1
-function! vimtex#fold#init_state(state) abort " {{{1
+function! vimtex#fold#init_state(state) abort
   "
   " Initialize the enabled fold types
   "
@@ -83,9 +85,8 @@ function! vimtex#fold#init_state(state) abort " {{{1
   endfor
 endfunction
 
-" }}}1
 
-function! vimtex#fold#refresh(map) abort " {{{1
+function! vimtex#fold#refresh(map) abort
   if &diff
     setlocal foldmethod=diff
   else
@@ -95,8 +96,20 @@ function! vimtex#fold#refresh(map) abort " {{{1
   endif
 endfunction
 
-" }}}1
-function! vimtex#fold#level(lnum) abort " {{{1
+function! vimtex#fold#level(lnum) abort
+  if b:__vimtex_fold_lasttick != b:changedtick
+    let b:__vimtex_fold_lasttick = b:changedtick
+    let b:__vimtex_fold_cache = []
+
+    for l:lnum in range(1, line('$'))
+      call add(b:__vimtex_fold_cache, s:calculate_fold_level(l:lnum))
+    endfor
+  endif
+
+  return b:__vimtex_fold_cache[a:lnum - 1]
+endfunction
+
+function! s:calculate_fold_level(lnum) abort
   let l:line = getline(a:lnum)
   let l:next = getline(a:lnum + 1)
 
@@ -118,8 +131,7 @@ function! vimtex#fold#level(lnum) abort " {{{1
   return '='
 endfunction
 
-" }}}1
-function! vimtex#fold#text() abort " {{{1
+function! vimtex#fold#text() abort
   let l:line = getline(v:foldstart)
   let l:level = v:foldlevel > 1
         \ ? repeat('-', v:foldlevel-2) . g:vimtex_fold_levelmarker
@@ -133,10 +145,8 @@ function! vimtex#fold#text() abort " {{{1
   endfor
 endfunction
 
-" }}}1
 
-
-function! s:foldmethod_in_modeline() abort " {{{1
+function! s:foldmethod_in_modeline() abort
   let l:cursor_pos = vimtex#pos#get_cursor()
   let l:fdm_modeline = 'vim:.*\%(foldmethod\|fdm\)'
 
@@ -149,5 +159,3 @@ function! s:foldmethod_in_modeline() abort " {{{1
   call vimtex#pos#set_cursor(l:cursor_pos)
   return l:check_top || l:check_btm
 endfunction
-
-" }}}1
