@@ -1810,6 +1810,32 @@ OPTIONS                                                        *vimtex-options*
   can be configured with a list of patterns or similar, the patterns assume
   that one uses very magic regexes (see |\v|).
 
+  One may also customize the text that is displayed in a closed fold of a
+  given type by setting the `text` key to a |Funcref| (see |fold-foldtext| and
+  |Dictionary-function|). The function that the |Funcref| refers to takes two
+  arguments, the text of the current line and the fold level of the current
+  line, and it returns the text that will be displayed in a closed fold. For
+  example, the following configuration will set the text for a closed marker
+  fold to Vim's default: >vim
+
+    let g:vimtex_fold_types = {
+          \ 'markers' : {},
+          \}
+
+    function! g:vimtex_fold_types.markers.text(line, level) abort dict
+      return foldtext()
+    endfunction
+<
+  (Note that the |g:vimtex_fold_types| `marker` dictionary must be
+  initialized, even if you are not setting custom markers!)
+
+  Using a |literal-Dict| and a |lambda|, one could specify the same
+  configuration more concisely: >vim
+
+    let g:vimtex_fold_types = #{
+          \ markers : #{text : {line, level -> foldtext()}}
+          \}
+<
   Each entry in |g:vimtex_fold_types| is combined with the corresponding entry
   of |g:vimtex_fold_types_defaults|. If there are conflicting entries, then
   |g:vimtex_fold_types| take precedence. This way, it is easy to customize
