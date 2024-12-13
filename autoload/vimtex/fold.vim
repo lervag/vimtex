@@ -5,6 +5,9 @@
 "
 
 function! vimtex#fold#init_buffer() abort
+  let b:__vimtex_fold_lasttick = -1
+  let b:__vimtex_fold_cache = []
+
   if !g:vimtex_fold_enabled
         \ || s:foldmethod_in_modeline() | return | endif
 
@@ -12,9 +15,6 @@ function! vimtex#fold#init_buffer() abort
   setlocal foldmethod=expr
   setlocal foldexpr=vimtex#fold#level(v:lnum)
   setlocal foldtext=vimtex#fold#text()
-
-  let b:__vimtex_fold_lasttick = -1
-  let b:__vimtex_fold_cache = []
 
   if g:vimtex_fold_manual
     " Remap zx to refresh fold levels
