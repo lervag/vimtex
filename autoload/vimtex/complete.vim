@@ -535,6 +535,7 @@ function! s:completer_gls.init() dict abort " {{{2
   if !has_key(b:vimtex.packages, 'glossaries-extra') | return | endif
 
   " Detect stuff like this:
+  "  \GlsXtrLoadResources[src={glossary}]
   "  \GlsXtrLoadResources[src=glossary.bib]
   "  \GlsXtrLoadResources[src={glossary.bib}, selection={all}]
   "  \GlsXtrLoadResources[selection={all},src={glossary.bib}]
@@ -544,6 +545,7 @@ function! s:completer_gls.init() dict abort " {{{2
   "  ]
 
   let l:do_search = 0
+  let b:vimtex.complete.glsbib = []
   for l:line in vimtex#parser#preamble(b:vimtex.tex)
     if line =~# '^\s*\\GlsXtrLoadResources\s*\['
       let l:do_search = 1
@@ -560,7 +562,13 @@ function! s:completer_gls.init() dict abort " {{{2
         let l:value = trim(remove(l:matches, 0))
         let l:value = substitute(l:value, '^{', '', '')
         let l:value = substitute(l:value, '[]}]\s*', '', 'g')
-        let b:vimtex.complete.glsbib = l:value
+        if !vimtex#paths#is_abs(l:value)
+          let l:value = vimtex#paths#join(b:vimtex.root, l:value)
+        endif
+        if !filereadable(l:value)
+          let l:value .= '.bib'
+        endif
+        call add(b:vimtex.complete.glsbib, l:value)
         break
       endif
     endwhile
@@ -592,15 +600,24 @@ function! s:completer_gls.parse_glsentries() dict abort " {{{2
 endfunction
 
 function! s:completer_gls.parse_glsbib() dict abort " {{{2
-  let l:filename = get(b:vimtex.complete, 'glsbib', '')
-  if empty(l:filename) | return [] | endif
-
   let l:candidates = []
-  for l:entry in vimtex#parser#bib(l:filename, {'backend': 'vim'})
-    call add(l:candidates, {
-          \ 'word': l:entry.key,
-          \ 'menu': get(l:entry, 'name', '--'),
-          \})
+
+  for l:filename in get(b:vimtex.complete, 'glsbib', [])
+    for l:entry in vimtex#parser#bib(l:filename, {'backend': 'vim'})
+      let l:menu = ''
+      for l:c in ['name', 'long', 'title']
+        if l:entry->has_key(l:c)
+          let l:menu = ' ' .. l:entry[l:c]
+          break
+        endif
+      endfor
+
+      call add(l:candidates, {
+            \ 'word': l:entry.key,
+            \ 'kind': '[gls]',
+            \ 'menu': l:menu
+            \})
+    endfor
   endfor
 
   return l:candidates
