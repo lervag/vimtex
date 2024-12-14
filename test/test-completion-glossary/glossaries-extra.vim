@@ -9,6 +9,6 @@ nnoremap q :qall!<cr>
 silent edit $TEXFILE
 
 let s:candidates = vimtex#test#completion('\gls{', '')
-call assert_equal(len(s:candidates), 10)
+call assert_equal(10, len(s:candidates))
 
 call vimtex#test#finished()

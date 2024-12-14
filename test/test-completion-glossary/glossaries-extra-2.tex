@@ -1,15 +1,17 @@
 \documentclass{minimal}
-\usepackage[german]{babel}
 \usepackage{csquotes}
 \usepackage[record,style=long]{glossaries-extra}
 
 \GlsXtrLoadResources[selection={all}, src={glossaries-extra.bib}]
+\GlsXtrLoadResources[src={glossary}]
 
 \begin{document}
 
 Hello World!
 
 \gls{isbn}
+
+\gls{API}
 
 \printunsrtglossaries
 
