@@ -1836,6 +1836,16 @@ OPTIONS                                                        *vimtex-options*
           \ markers : #{text : {line, level -> foldtext()}}
           \}
 <
+  And for completeness, the following would work with a Lua based config: >lua
+
+    vim.g.vimtex_fold_types = {
+      markers = {
+        text = function(line, level)
+          return vim.fn.foldtext()
+        end
+      }
+    }
+<
   Each entry in |g:vimtex_fold_types| is combined with the corresponding entry
   of |g:vimtex_fold_types_defaults|. If there are conflicting entries, then
   |g:vimtex_fold_types| take precedence. This way, it is easy to customize
