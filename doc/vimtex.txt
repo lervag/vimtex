@@ -1840,9 +1840,7 @@ OPTIONS                                                        *vimtex-options*
 
     vim.g.vimtex_fold_types = {
       markers = {
-        text = function(line, level)
-          return vim.fn.foldtext()
-        end
+        text = function(line, level) return vim.fn.foldtext() end
       }
     }
 <
