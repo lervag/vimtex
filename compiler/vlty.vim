@@ -4,7 +4,10 @@ let current_compiler = 'vlty'
 let s:cpo_save = &cpo
 set cpo&vim
 
-let s:python = executable('python3') ? 'python3' : 'python'
+let s:python = exists('g:python3_host_prog')
+      \ ? g:python3_host_prog
+      \ : executable('python3') ? 'python3' : 'python'
+
 let s:vlty = g:vimtex_grammar_vlty
 
 function! s:installation_error(msg) abort " {{{1
