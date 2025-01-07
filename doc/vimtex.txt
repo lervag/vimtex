@@ -3490,6 +3490,13 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_view_zathura_use_synctex*
+  Set to 0 or |v:false| to disable synctex for the Zathura viewer. This can be
+  useful e.g. for MacOS users who struggle with getting synctex to work
+  properly (see |vimtex-faq-zathura-macos|).
+
+  Default value: 1
+
 *g:vimtex_callback_progpath*
   The path to the Vim/neovim executable. This is currently passed to Zathura
   and Sioyek for use with synctex callbacks; see |vimtex-view-zathura| and
@@ -6130,6 +6137,7 @@ getting the column, then you can put the following in your `zathurarc`: >conf
 Associated settings:
 * |g:vimtex_callback_progpath|
 * |g:vimtex_view_zathura_check_libsynctex|
+* |g:vimtex_view_zathura_use_synctex|
 * |g:vimtex_view_zathura_options|
 
 Note: The interpolation variables for Zathura configuration of inverse search
@@ -6697,10 +6705,15 @@ A: SumatraPDF expects all path arguments to be in the regular Windows format,
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-zathura-macos*
 Q: Does Zathura + VimTeX work on macOS?
-A: Yes, it should work.  The following recipe has been reported to work [0],
-   although users with Apple Silicon CPUs have reported difficulties starting
-   `dbus`. These users may want to try the more involved recipe given in [3]
-   if the below procedure fails.
+A: Yes, it works. It is recommended to use the `'zathura_simple'` variant.
+   Running Zathura without synctex support should "just work". To do so, set
+   the |g:vimtex_view_zathura_use_synctex| to 0.
+
+   To have synctex support, one needs to have `dbus` working properly. This
+   seems to be quite hard, but the following recipe has been reported to work
+   for some people [0]. However, users with Apple Silicon CPUs have reported
+   difficulties starting `dbus`. These users may want to try the more involved
+   recipe given in [3] if the below procedure fails.
 
    The steps assume the user has installed and knows how to use Homebrew [1].
 

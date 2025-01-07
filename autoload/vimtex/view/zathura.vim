@@ -17,7 +17,9 @@ function! vimtex#view#zathura#check(viewer) abort " {{{1
   endif
 
   " Check if Zathura has libsynctex
-  if g:vimtex_view_zathura_check_libsynctex && executable('ldd')
+  if a:viewer.has_synctex
+        \ && g:vimtex_view_zathura_check_libsynctex
+        \ && executable('ldd')
     let l:shared = vimtex#jobs#capture('ldd $(which zathura)')
     if v:shell_error == 0
           \ && empty(filter(l:shared, 'v:val =~# ''libsynctex'''))
@@ -67,7 +69,7 @@ let s:inverse_search_cmd = get(g:, 'vimtex_callback_progpath',
 
 let s:viewer = vimtex#view#_template#new({
       \ 'name': 'Zathura',
-      \ 'has_synctex': 1,
+      \ 'has_synctex': get(g:, 'vimtex_view_zathura_use_synctex', 1),
       \ 'xwin_id': 0,
       \})
 

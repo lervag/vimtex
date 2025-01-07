@@ -13,7 +13,7 @@ endfunction
 
 let s:viewer = vimtex#view#_template#new({
       \ 'name': 'Zathura',
-      \ 'has_synctex': 1,
+      \ 'has_synctex': get(g:, 'vimtex_view_zathura_use_synctex', 1),
       \})
 
 function! s:viewer._check() dict abort " {{{1
