@@ -28,8 +28,17 @@ if !executable(s:python)
   call s:installation_error('requires Python')
   finish
 endif
+" shellescape after the executable check
+" needed if s:python = g:python3_host_prog and contains spaces
+let s:python = vimtex#util#shellescape(s:python)
 
-if s:check_python('import sys; assert sys.version_info >= (3, 6)')
+if has('win32')
+  " escape > with ^ because cmd escape mechanism is weird
+  if s:check_python('import sys; assert sys.version_info ^>= (3, 6)')
+    call s:installation_error('requires at least Python version 3.6')
+    finish
+  endif
+elseif s:check_python('import sys; assert sys.version_info >= (3, 6)')
   call s:installation_error('requires at least Python version 3.6')
   finish
 endif
@@ -66,7 +75,7 @@ if s:vlty.server !=# 'lt'
       finish
     endif
 
-    let s:vlty_lt_command = 'java -jar ' . fnamemodify(s:jarfile, ':S')
+    let s:vlty_lt_command = 'java -jar ' . vimtex#util#shellescape(s:jarfile)
   endif
 endif
 
