@@ -4855,7 +4855,7 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option to a single space for folds: >vim
 
-  set fillchars=fold:\
+  set fillchars=fold:\ 
 
 Note: Remember to include the whitespace after backslash!
 
