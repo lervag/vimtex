@@ -264,7 +264,7 @@ function! s:packages_open(context) abort " {{{1
   call vimtex#doc#make_selection(a:context)
   if empty(a:context.selected) | return 0 | endif
 
-  call vimtex#util#www('http://texdoc.net/pkg/' . a:context.selected)
+  call vimtex#util#www('http://texdoc.org/pkg/' . a:context.selected)
   redraw!
 endfunction
 

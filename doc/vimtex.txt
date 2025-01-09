@@ -1682,7 +1682,7 @@ OPTIONS                                                        *vimtex-options*
 
     `'vimtex#doc#handler#texdoc'`  Open documentation with local `texdoc`.
     Fallback                     Open documentation online through
-                                 http://texdoc.net/pkg/packagename.
+                                 http://texdoc.org/pkg/packagename.
 
   To use the local `texdoc`, set: >vim
 
@@ -5526,7 +5526,7 @@ LATEXRUN                                             *vimtex-compiler-latexrun*
 
                                         https://github.com/aclements/latexrun
 > See LaTeX run. Run latexrun.
-> 
+>
 > latexrun fits LaTeX into a modern build environment. It hides LaTeX's
 > circular dependencies, surfaces errors in a standard and user-friendly
 > format, and generally enables other tools to do what they do best.
@@ -6244,7 +6244,7 @@ VimTeX provides the command |:VimtexDocPackage| to open documentation for
 packages and documentclasses. The command is mapped to `K` by default.
 
 For simplicity, the standard method provided by VimTeX is to look up
-documentation online through http://texdoc.net/. However, this can be
+documentation online through http://texdoc.org/. However, this can be
 customized with the option |g:vimtex_doc_handlers|. The option allows much
 flexibility for advanced users. For users that want to use a local `texdoc`
 installation as the main method, they may use the following config: >vim
