@@ -118,7 +118,7 @@ else
 endif
 
 let &l:makeprg =
-      \ vimtex#util#shellescape(s:python) .. ' -m yalafi.shell'
+      \ s:python .. ' -m yalafi.shell'
       \ .. (!empty(s:vlty.lt_command)
       \    ? ' --lt-command ' .. s:vlty.lt_command
       \    : ' --lt-directory ' .. s:vlty.lt_directory)
