@@ -4,7 +4,7 @@
 " Email:      karl.yngve@gmail.com
 "
 
-function! vimtex#env#init_buffer() abort " {{{1
+function! vimtex#env#init_buffer() abort
   nnoremap <silent><buffer> <plug>(vimtex-env-change)
         \ :<c-u>call <sid>operator_setup('change', 'normal')<bar>normal! g@l<cr>
 
@@ -31,9 +31,7 @@ function! vimtex#env#init_buffer() abort " {{{1
         \ :<c-u>call vimtex#env#surround_opfunc('visual')<cr>
 endfunction
 
-" }}}1
-
-function! vimtex#env#get_surrounding(type) abort " {{{1
+function! vimtex#env#get_surrounding(type) abort
   " Get surrounding environment delimiters.
   "
   " This works similar to vimtex#delim#get_surrounding, except specialized for
@@ -79,9 +77,8 @@ let s:math_envs = [
       \ 'xxalignat',
       \]
 
-" }}}1
 
-function! vimtex#env#get_inner() abort " {{{1
+function! vimtex#env#get_inner() abort
   let [l:open, l:close] = vimtex#env#get_surrounding('normal')
 
   return empty(l:open) || l:open.name ==# 'document'
@@ -89,8 +86,7 @@ function! vimtex#env#get_inner() abort " {{{1
         \ : {'name': l:open.name, 'open': l:open, 'close': l:close}
 endfunction
 
-" }}}1
-function! vimtex#env#get_outer() abort " {{{1
+function! vimtex#env#get_outer() abort
   let l:save_pos = vimtex#pos#get_cursor()
   let l:current = {}
 
@@ -106,8 +102,7 @@ function! vimtex#env#get_outer() abort " {{{1
   endwhile
 endfunction
 
-" }}}1
-function! vimtex#env#get_all() abort " {{{1
+function! vimtex#env#get_all() abort
   let l:save_pos = vimtex#pos#get_cursor()
   let l:stack = []
 
@@ -123,16 +118,15 @@ function! vimtex#env#get_all() abort " {{{1
   endwhile
 endfunction
 
-" }}}1
 
-function! vimtex#env#change_surrounding(type, new) abort " {{{1
+function! vimtex#env#change_surrounding(type, new) abort
   let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
   return vimtex#env#change(l:open, l:close, a:new)
 endfunction
 
-function! vimtex#env#change(open, close, new) abort " {{{1
+function! vimtex#env#change(open, close, new) abort
   let l:new = get({
         \ '$': ['$', '$'],
         \ '\(': ['\\(', '\\)'],
@@ -149,7 +143,7 @@ function! vimtex#env#change(open, close, new) abort " {{{1
         \ : vimtex#env#change_in_place(a:open, a:close, l:new)
 endfunction
 
-function! vimtex#env#change_to_inline_math(open, close, new) abort " {{{1
+function! vimtex#env#change_to_inline_math(open, close, new) abort
   let [l:before, l:after] = s:get_line_split(a:close)
   if l:before . l:after =~# '^\s*$'
     let l:line = substitute(getline(a:close.lnum - 1), '\s*$', a:new[1], '')
@@ -199,7 +193,7 @@ function! vimtex#env#change_to_inline_math(open, close, new) abort " {{{1
   endif
 endfunction
 
-function! vimtex#env#change_to_indented(open, close, new) abort " {{{1
+function! vimtex#env#change_to_indented(open, close, new) abort
   let l:cursor = vimtex#pos#get_cursor()
   let l:nlines = a:close.lnum - a:open.lnum - 1 + 3
 
@@ -253,8 +247,7 @@ function! vimtex#env#change_to_indented(open, close, new) abort " {{{1
   call vimtex#pos#set_cursor(l:cursor)
 endfunction
 
-" }}}1
-function! vimtex#env#change_in_place(open, close, new) abort " {{{1
+function! vimtex#env#change_in_place(open, close, new) abort
   let [l:before, l:after] = s:get_line_split(a:close)
   call setline(a:close.lnum, l:before . a:new[1] . l:after)
 
@@ -270,9 +263,8 @@ function! vimtex#env#change_in_place(open, close, new) abort " {{{1
   endif
 endfunction
 
-" }}}1
 
-function! vimtex#env#surround(l1, l2, name) abort " {{{1
+function! vimtex#env#surround(l1, l2, name) abort
   if a:l1 < 1 || a:l2 < a:l1 || empty(a:name)
     return
   endif
@@ -289,8 +281,7 @@ function! vimtex#env#surround(l1, l2, name) abort " {{{1
   call vimtex#pos#set_cursor(l:pos)
 endfunction
 
-" }}}1
-function! vimtex#env#surround_opfunc(type) abort " {{{1
+function! vimtex#env#surround_opfunc(type) abort
   if a:type ==# 'operator'
     set opfunc=vimtex#env#surround_opfunc
     return 'g@'
@@ -310,9 +301,8 @@ function! vimtex#env#surround_opfunc(type) abort " {{{1
   normal! zv
 endfunction
 
-" }}}1
 
-function! vimtex#env#delete(type) abort " {{{1
+function! vimtex#env#delete(type) abort
   let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
@@ -333,7 +323,7 @@ function! vimtex#env#delete(type) abort " {{{1
   endif
 endfunction
 
-function! vimtex#env#toggle_star() abort " {{{1
+function! vimtex#env#toggle_star() abort
   let [l:open, l:close] = vimtex#env#get_surrounding('normal')
   if empty(l:open)
         \ || l:open.name ==# 'document' | return | endif
@@ -342,8 +332,7 @@ function! vimtex#env#toggle_star() abort " {{{1
         \ l:open.starred ? l:open.name : l:open.name . '*')
 endfunction
 
-" }}}1
-function! vimtex#env#toggle_math() abort " {{{1
+function! vimtex#env#toggle_math() abort
   let [l:open, l:close] = vimtex#env#get_surrounding('math')
   if empty(l:open) | return | endif
 
@@ -353,9 +342,8 @@ function! vimtex#env#toggle_math() abort " {{{1
   call vimtex#env#change(l:open, l:close, l:target)
 endfunction
 
-" }}}1
 
-function! vimtex#env#is_inside(env) abort " {{{1
+function! vimtex#env#is_inside(env) abort
   let l:re_start = '\\begin\s*{' . a:env . '\*\?}'
   let l:re_end = '\\end\s*{' . a:env . '\*\?}'
   try
@@ -366,8 +354,7 @@ function! vimtex#env#is_inside(env) abort " {{{1
   endtry
 endfunction
 
-" }}}1
-function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
+function! vimtex#env#input_complete(lead, cmdline, pos) abort
   let l:cands = map(vimtex#complete#complete('env', '', '\begin'), 'v:val.word')
 
   " Never include document and remove current env (place it first)
@@ -379,9 +366,8 @@ function! vimtex#env#input_complete(lead, cmdline, pos) abort " {{{1
   return filter(l:cands, {_, x -> x =~# '^' . a:lead})
 endfunction
 
-" }}}1
 
-function! s:get_line_split(delim) abort " {{{1
+function! s:get_line_split(delim) abort
   let l:line = getline(a:delim.lnum)
 
   let l:before = strpart(l:line, 0, a:delim.cnum - 1)
@@ -390,9 +376,7 @@ function! s:get_line_split(delim) abort " {{{1
   return [l:before, l:after]
 endfunction
 
-" }}}1
-
-function! s:operator_setup(operator, type) abort " {{{1
+function! s:operator_setup(operator, type) abort
   let &opfunc = s:snr() . 'operator_function'
 
   let s:operator_abort = 0
@@ -411,8 +395,7 @@ function! s:operator_setup(operator, type) abort " {{{1
   endif
 endfunction
 
-" }}}1
-function! s:operator_function(_) abort " {{{1
+function! s:operator_function(_) abort
   if get(s:, 'operator_abort', 0) | return | endif
 
   let l:type = get(s:, 'operator_type', '')
@@ -426,9 +409,7 @@ function! s:operator_function(_) abort " {{{1
         \ }[s:operator]
 endfunction
 
-" }}}1
-
-function! s:change_prompt(type) abort " {{{1
+function! s:change_prompt(type) abort
   let [l:open, l:close] = vimtex#env#get_surrounding(a:type)
   if empty(l:open) | return | endif
 
@@ -453,10 +434,6 @@ function! s:change_prompt(type) abort " {{{1
   endif
 endfunction
 
-" }}}1
-
-function! s:snr() abort " {{{1
+function! s:snr() abort
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
-
-" }}}1
