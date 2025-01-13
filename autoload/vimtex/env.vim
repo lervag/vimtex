@@ -155,7 +155,10 @@ function! vimtex#env#change_to_inline_math(open, close, new) abort " {{{1
     let l:line = substitute(getline(a:close.lnum - 1), '\s*$', a:new[1], '')
     call setline(a:close.lnum - 1, l:line)
     execute a:close.lnum . 'delete _'
-    if !empty(trim(getline(a:close.lnum)))
+
+    " Join with next line if it seems to be part of the same paragraph
+    let l:next_line = trim(getline(a:close.lnum))
+    if !empty(l:next_line) && l:next_line !~# '^\\end{'
       execute (a:close.lnum - 1) . 'join'
     endif
   elseif l:before =~# '^\s*$'
