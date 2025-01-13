@@ -17,6 +17,9 @@ function! vimtex#env#init_buffer() abort
   nnoremap <silent><buffer> <plug>(vimtex-env-delete-math)
         \ :<c-u>call <sid>operator_setup('delete', 'math')<bar>normal! g@l<cr>
 
+  nnoremap <silent><buffer> <plug>(vimtex-env-toggle)
+        \ :<c-u>call <sid>operator_setup('toggle', '')<bar>normal! g@l<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-env-toggle-star)
         \ :<c-u>call <sid>operator_setup('toggle_star', '')<bar>normal! g@l<cr>
 
@@ -323,6 +326,16 @@ function! vimtex#env#delete(type) abort
   endif
 endfunction
 
+function! vimtex#env#toggle() abort
+  let [l:open, l:close] = vimtex#env#get_surrounding('normal')
+  if empty(l:open) | return | endif
+
+  let l:target = get(g:vimtex_env_toggle_map, l:open.name, '')
+  if empty(l:target) | return | endif
+
+  call vimtex#env#change(l:open, l:close, l:target)
+endfunction
+
 function! vimtex#env#toggle_star() abort
   let [l:open, l:close] = vimtex#env#get_surrounding('normal')
   if empty(l:open)
@@ -404,6 +417,7 @@ function! s:operator_function(_) abort
   execute 'call vimtex#env#' . {
         \   'change': 'change_surrounding(l:type, l:name)',
         \   'delete': 'delete(l:type)',
+        \   'toggle': 'toggle()',
         \   'toggle_star': 'toggle_star()',
         \   'toggle_math': 'toggle_math()',
         \ }[s:operator]

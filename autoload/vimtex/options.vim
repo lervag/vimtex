@@ -74,6 +74,10 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_echo_verbose_input', 1)
 
   call s:init_option('vimtex_env_change_autofill', 0)
+  call s:init_option('vimtex_env_toggle_map', {
+        \ 'itemize': 'enumerate',
+        \ 'enumerate': 'itemize',
+        \})
   call s:init_option('vimtex_env_toggle_math_map', {
         \ '$': '\[',
         \ '\[': 'equation',
