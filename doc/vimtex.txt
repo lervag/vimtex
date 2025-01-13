@@ -869,7 +869,8 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    csd              |<plug>(vimtex-delim-change-math)|              `n`
    tsf              |<plug>(vimtex-cmd-toggle-frac)|                `nx`
    tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
-   tse              |<plug>(vimtex-env-toggle-star)|                `n`
+   tss              |<plug>(vimtex-env-toggle-star)|                `n`
+   tse              |<plug>(vimtex-env-toggle)|                     `n`
    ts$              |<plug>(vimtex-env-toggle-math)|                `n`
    tsb              |<plug>(vimtex-env-toggle-break)|               `n`
    <F6>             |<plug>(vimtex-env-surround-line)|              `n`
@@ -1755,6 +1756,17 @@ OPTIONS                                                        *vimtex-options*
         `<c-u>`).
 
   Default: 0
+
+*g:vimtex_env_toggle_map*
+  Specify the toggle map for |<plug>(vimtex-env-toggle)|. You can use this to
+  change the desired toggle sequence.
+
+  Default value: >vim
+
+    let g:vimtex_env_toggle_map = {
+          \ 'itemize': 'enumerate',
+          \ 'enumerate': 'itemize',
+          \}
 
 *g:vimtex_env_toggle_math_map*
   Specify toggle map for |<plug>(vimtex-env-toggle-math)|. You can use this to
@@ -3785,6 +3797,10 @@ MAP DEFINITIONS                                               *vimtex-mappings*
   a `\frac{}{}` command or a `numerator / denominator` string. In normal mode,
   we try to detect the surrounding fraction command or inline fraction
   expression. If successful, the detected fraction is toggled.
+
+*<plug>(vimtex-env-toggle)*
+  Toggle environment, e.g. between `enumerate` and `itemize`. The toggle
+  sequence/map can be customized with |g:vimtex_env_toggle_map|.
 
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
