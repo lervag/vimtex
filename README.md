@@ -48,12 +48,14 @@ Users are encouraged to read the requirements section in the
 There are a lot of methods for installing plugins.
 The following explains the most common and popular approaches.
 
-**Note**: Many plugin managers provide mechanisms to lazy load plugins. Please
-    don't use this for VimTeX! VimTeX is already lazy loaded by virtue of being
-    a filetype plugin and by using the autoload mechanisms. There is therefore
-    nothing to gain by forcing VimTeX to lazily load through the plugin
-    manager. In fact, doing it will _break_ the inverse-search mechanism, which
-    relies on a _global_ command (`:VimtexInverseSearch`).
+> [!WARNING]
+>
+> Many plugin managers provide mechanisms to lazy load plugins. Please don't
+> use this for VimTeX! VimTeX is already lazy loaded by virtue of being
+> a filetype plugin and by using the autoload mechanisms. There is therefore
+> nothing to gain by forcing VimTeX to lazily load through the plugin manager.
+> In fact, doing it will _break_ the inverse-search mechanism, which relies on
+> a _global_ command (`:VimtexInverseSearch`).
 
 ### lazy.nvim
 
@@ -92,20 +94,23 @@ Plug 'lervag/vimtex', { 'tag': 'v2.15' }
 There are many other plugin managers out there.
 They are typically well documented, and it should be straightforward to extrapolate the above snippets.
 
-**Note**: If you use the built-in package feature, then:
-* Make sure to read and understand the package feature: `:help package`!
-* Use the `/pack/foo/start` subdirectory to make sure the filetype plugin is
-  automatically loaded for the `tex` filetypes.
-* Helptags are not generated automatically. Run `:helptags` to generate them.
-* Please note that by default Vim puts custom `/start/` plugin directories at
-  the end of the `&runtimepath`. This means the built in filetype plugin is
-  loaded, which prevents VimTeX from loading. See
-  [#1413](https://github.com/lervag/vimtex/issues/1413) for two suggested
-  solutions to this. To see which scripts are loaded and in which order, use
-  `:scriptnames`.
-* For more information on how to use the Vim native package solution, see
-  [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it)
-  and [here](https://shapeshed.com/vim-packages/).
+> [!NOTE]
+>
+> If you use the built-in package feature, then:
+>
+> - Make sure to read and understand the package feature: `:help package`!
+> - Use the `/pack/foo/start` subdirectory to make sure the filetype plugin is
+>   automatically loaded for the `tex` filetypes.
+> - Helptags are not generated automatically. Run `:helptags` to generate them.
+> - Please note that by default Vim puts custom `/start/` plugin directories at
+>   the end of the `&runtimepath`. This means the built in filetype plugin is
+>   loaded, which prevents VimTeX from loading. See
+>   [#1413](https://github.com/lervag/vimtex/issues/1413) for two suggested
+>   solutions to this. To see which scripts are loaded and in which order, use
+>   `:scriptnames`.
+> - For more information on how to use the Vim native package solution, see
+>   [here](https://vi.stackexchange.com/questions/9522/what-is-the-vim8-package-feature-and-how-should-i-use-it)
+>   and [here](https://shapeshed.com/vim-packages/).
 
 ## Configuration
 
@@ -114,7 +119,9 @@ to configure VimTeX to your liking. Users should read the documentation to
 learn the various configuration possibilities, but the below is a simple
 overview of some of the main aspects.
 
-**PLEASE don't just copy this without reading the comments!**
+> [!CAUTION]
+>
+> **PLEASE** don't just copy this without reading the comments!
 
 ```vim
 " This is necessary for VimTeX to load properly. The "indent" is optional.
@@ -147,10 +154,6 @@ let g:vimtex_compiler_method = 'latexrun'
 let maplocalleader = ","
 ```
 
-**Note**: If the compiler or the viewer doesn't start properly, one may
-  type `<localleader>li` to view the system commands that were executed to
-  start them. To inspect the compiler output, use `<localleader>lo`.
-
 ## Quick Start
 
 The following video shows how to use VimTeX's main features (credits:
@@ -162,6 +165,12 @@ may be instructive to copy the file and play with it to learn some of these
 basic functions.
 
 https://user-images.githubusercontent.com/66584581/119213849-1b7d4080-ba77-11eb-8a31-7ff7b9a4a020.mp4
+
+> [!TIP]
+>
+> If the compiler or the viewer doesn't start properly, one may type
+> `<localleader>li` to view the system commands that were executed to start
+> them. To inspect the compiler output, use `<localleader>lo`.
 
 ### Tutorial
 
