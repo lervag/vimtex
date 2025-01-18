@@ -14,10 +14,10 @@ endif
 let b:did_ftplugin = 1
 
 if !(!get(g:, 'vimtex_version_check', 1)
-      \ || has('nvim-0.9.5')
-      \ || has('patch-8.2.3995'))
+      \ || has('nvim-0.10')
+      \ || has('patch-9.1.16'))
   echoerr 'Error: VimTeX does not support your version of Vim'
-  echom 'Please update to Vim 8.2.3995 or neovim 0.9.5 or later!'
+  echom 'Please update to Vim 9.1 or neovim 0.10 or later!'
   echom 'For more info, please see :h vimtex_version_check'
   finish
 endif

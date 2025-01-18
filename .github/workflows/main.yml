@@ -38,8 +38,8 @@ jobs:
     - uses: jdx/mise-action@v2
       with:
         tool_versions: |
-          neovim 0.9.5
-          vim 9.1.0
+          neovim 0.10
+          vim 9.1.16
     - uses: actions/checkout@master
       with:
         fetch-depth: 1
