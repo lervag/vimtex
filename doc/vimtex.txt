@@ -6743,7 +6743,7 @@ A: Yes, it works. It is recommended to use the `'zathura_simple'` variant.
 
       export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
 <
-   3. Changed the value of `<auth><\auth>` in
+   3. Change the value of `<auth><\auth>` in
       `/usr/local/opt/dbus/share/dbus-1/session.conf` from `EXTERNAL` to
       `DBUS_COOKIE_SHA1`.
 
@@ -6753,7 +6753,15 @@ A: Yes, it works. It is recommended to use the `'zathura_simple'` variant.
       encounter problems with running `dbus` with `brew services start`, they
       could try to start it manually as explained in [4].
 
-   5. Now install Zathura (most recent version, aka HEAD): >
+      If `brew services start dbus` does not work, which seems to be
+      a relatively common problem, then the user may be more lucky if they try
+      to start `dbus` with `launchctl`: >sh
+
+      launchctl start org.freedesktop.dbus-session
+<
+      NB: This may need to be done after each restart of your system.
+
+   5. Now install Zathura (most recent version, aka HEAD): >sh
 
       brew tap zegervdv/zathura
       brew install girara --HEAD
