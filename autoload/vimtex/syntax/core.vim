@@ -575,27 +575,33 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " Math regions: Inline Math Zones
   let l:conceal = g:vimtex_syntax_conceal.math_bounds ? 'concealends' : ''
   execute 'syntax region texMathZoneLI matchgroup=texMathDelimZoneLI'
-          \ 'start="\\("'
-          \ 'end="\\)"'
-          \ 'contains=@texClusterMath'
-          \ l:conceal
+        \ 'start="\\("'
+        \ 'end="\\)"'
+        \ 'contains=@texClusterMath'
+        \ l:conceal
   execute 'syntax region texMathZoneLD matchgroup=texMathDelimZoneLD'
-          \ 'start="\\\["'
-          \ 'end="\\]"'
-          \ 'contains=@texClusterMath'
-          \ l:conceal
+        \ 'start="\\\["'
+        \ 'end="\\]"'
+        \ 'contains=@texClusterMath'
+        \ l:conceal
   execute 'syntax region texMathZoneTI matchgroup=texMathDelimZoneTI'
-          \ 'start="\$"'
-          \ 'skip="\%#=1\\[\\\$]"'
-          \ 'end="\$"'
-          \ 'contains=@texClusterMath'
-          \ 'nextgroup=texMathTextAfter'
-          \ l:conceal
+        \ 'start="\$"'
+        \ 'skip="\%#=1\\[\\\$]"'
+        \ 'end="\$"'
+        \ 'contains=@texClusterMath'
+        \ 'nextgroup=texMathTextAfter'
+        \ l:conceal
   execute 'syntax region texMathZoneTD matchgroup=texMathDelimZoneTD'
-          \ 'start="\$\$"'
-          \ 'end="\$\$"'
-          \ 'contains=@texClusterMath keepend'
-          \ l:conceal
+        \ 'start="\$\$"'
+        \ 'end="\$\$"'
+        \ 'contains=@texClusterMath keepend'
+        \ l:conceal
+
+  " Math regions: special comment region
+  syntax region texMathZoneSC matchgroup=texComment
+        \ start="\%#=1^\s*%mathzone start"
+        \ end="\%#=1^\s*%mathzone end"
+        \ contains=@texClusterMath
 
   " This is to disable spell check for text just after "$" (e.g. "$n$th")
   syntax match texMathTextAfter "\%#=1\w\+" contained contains=@NoSpell
@@ -2599,3 +2605,5 @@ function! s:gather_newtheorems() abort " {{{1
 endfunction
 
 " }}}1
+
+" vim: fdm=marker
