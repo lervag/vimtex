@@ -599,7 +599,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
 
   " Math regions: special comment region
   syntax region texMathZoneSC matchgroup=texComment
-        \ start="\%#=1^\s*%mathzone start"
+        \ start="\%#=1^\s*%mathzone begin"
         \ end="\%#=1^\s*%mathzone end"
         \ contains=@texClusterMath
 

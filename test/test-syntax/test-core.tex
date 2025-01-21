@@ -136,7 +136,7 @@ Foo \phantom{\{} bar
 
 % See https://github.com/lervag/vimtex/discussions/3080
 \NewDocumentCommand{\varappend}{m o m}{%
-  %mathzone start
+  %mathzone begin
   \IfNoValueTF{#2}{#1_{\textup{#3}}}{#1_{#2_{\scriptstyle\textup{#3}}}}%
   %mathzone end
 }
