@@ -155,8 +155,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
 
   " Define basic simplified variants
-  syntax match texBasicCmd "\%#=1\\[a-zA-Z@]\+"
-  syntax match texBasicDelimiter "\%#=1[{}]"
+  syntax match texBasicCmd "\%#=1\\[a-zA-Z@]\+" contained
+  syntax match texBasicDelimiter "\%#=1[{}]" contained
   call vimtex#syntax#core#new_opt('texBasicOpt', #{contains: '@texClusterBasicOpt'})
 
   " {{{2 Commands: core set
