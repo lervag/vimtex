@@ -58,6 +58,29 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \texOptSep,
         \@NoSpell
 
+  " These are clusters of simple rules that can be used inside synignore
+  " regions, see :help vimtex-synignore.
+  syntax cluster texClusterBasic contains=
+        \texBasicCmd,
+        \texBasicDelimiter,
+        \texBasicOpt,
+        \texCmdAccent,
+        \texCmdLigature,
+        \texComment,
+        \texLength,
+        \texNewcmdParm,
+        \@NoSpell
+
+  syntax cluster texClusterBasicOpt contains=
+        \texBasicCmd,
+        \texBasicDelimiter,
+        \texBasicOpt,
+        \texComment,
+        \texLength,
+        \texOptEqual,
+        \texOptSep,
+        \@NoSpell
+
   " The following syntax cluster defines which syntax patterns are allowed to
   " appear in math mode. Syntax patterns that always start with a backslash
   " (e.g. texMathCmd) should be put in the cluster _texMathBackslash instead.
@@ -131,6 +154,11 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texMathCmd contained nextgroup=texMathArg skipwhite skipnl "\%#=1\\\a\+"
   call vimtex#syntax#core#new_arg('texMathArg', {'contains': '@texClusterMath'})
 
+  " Define basic simplified variants
+  syntax match texBasicCmd "\%#=1\\[a-zA-Z@]\+"
+  syntax match texBasicDelimiter "\%#=1[{}]"
+  call vimtex#syntax#core#new_opt('texBasicOpt', #{contains: '@texClusterBasicOpt'})
+
   " {{{2 Commands: core set
 
   " Accents and ligatures
@@ -148,9 +176,9 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   " * \sfcode`\) = 0
   " * \uccode`X = `X
   " * \lccode`x = `x
-  syntax match texCmdSpaceCode "\%#=1\v\\%(math|cat|del|lc|sf|uc)code`"me=e-1
+  syntax match texCmdSpaceCode "\v\\%(math|cat|del|lc|sf|uc)code`"me=e-1
         \ nextgroup=texCmdSpaceCodeChar
-  syntax match texCmdSpaceCodeChar "\%#=1\v`\\?.%(\^.)?\?%(\d|\"\x{1,6}|`.)" contained
+  syntax match texCmdSpaceCodeChar "\v`\\?.%(\^.)?\?%(\d|\"\x{1,6}|`.)" contained
 
   " Todo commands
   syntax match texCmdTodo "\%#=1\\todo\w*"
@@ -653,14 +681,14 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax region texSynIgnoreZone matchgroup=texComment
         \ start="\%#=1^\c\s*% VimTeX: SynIgnore\%( on\| enable\)\?\s*$"
         \ end="\%#=1^\c\s*% VimTeX: SynIgnore\%( off\| disable\).*"
-        \ contains=texComment,texCmd
+        \ contains=@texClusterBasic
 
   " Also support Overleafs magic comment
   " https://www.overleaf.com/learn/how-to/Code_Check
   syntax region texSynIgnoreZone matchgroup=texComment
         \ start="\%#=1^%%begin novalidate\s*$"
         \ end="\%#=1^%%end novalidate\s*$"
-        \ contains=texComment,texCmd
+        \ contains=@texClusterBasic
 
   " }}}2
   " {{{2 Conceal mode support
@@ -835,6 +863,9 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   " Inherited groups
   highlight def link texArgNew             texCmd
   highlight def link texAuthorOpt          texOpt
+  highlight def link texBasicCmd           texCmd
+  highlight def link texBasicOpt           texOpt
+  highlight def link texBasicDelimiter     texDelim
   highlight def link texBibitemArg         texArg
   highlight def link texBibitemOpt         texOpt
   highlight def link texBoxOptPosVal       texSymbol

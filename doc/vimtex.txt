@@ -4922,6 +4922,7 @@ correct syntax parser without running the `tex` compiler itself. VimTeX aims
 to be pragmatic and provide a best-effort syntax highlighting - a decent trade
 off between simplicity and completeness.
 
+                                                              *vimtex-synignore
 There will probably always be situations where the parser will fail, and in
 some cases it may be hard to "recover". It is therefore possible to manually
 activate a severely reduced syntax zone to handle such situations. The zone is
