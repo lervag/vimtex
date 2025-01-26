@@ -13,6 +13,7 @@ endtry
 
 let s:expected_list = [
       \ {'lnum': 0,   'type': 'E', 'text': "Runaway argument?\n{\\sqrt {{1}} \\end {equation} \\par \\end {document} \nFile ended while scanning use of \\frac ."},
+      \ {'lnum': 0,   'type': 'E', 'text': "Emergency stop (fatal error)!"},
       \ {'lnum': 0,   'type': 'E', 'text': 'Runaway argument?'},
       \ {'lnum': 16,  'type': 'E', 'text': 'Paragraph ended before \date  was complete.'},
       \ {'lnum': 11,  'type': 'E', 'text': "Undefined control sequence.\n\\cdashline"},

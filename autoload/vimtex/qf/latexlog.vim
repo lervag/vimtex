@@ -33,6 +33,7 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%-P**\"%f\"
 
   " Match errors
+  setlocal errorformat+=%+E!\ Emergency\ stop.
   setlocal errorformat+=%E!\ LaTeX\ %trror:\ %m
   setlocal errorformat+=%E!pdfTeX\ error:\ %m
   setlocal errorformat+=%E%f:%l:\ \ ==>\ %m
@@ -132,6 +133,10 @@ function! s:qf.fix_paths(log) abort dict " {{{1
     " Clean up some messages
     if l:qf.lnum > 0 && l:qf.text =~# 'on input line \d\+.$'
       let l:qf.text = substitute(l:qf.text, '\s*on input line \d\+.$', '', '')
+    endif
+
+    if l:qf.text ==# '! Emergency stop.'
+      let l:qf.text = 'Emergency stop (fatal error)!'
     endif
 
     " Handle missing buffer/filename: Fallback to the main file (this is always
