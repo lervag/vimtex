@@ -44,7 +44,7 @@ function! VimtexIndent(lnum) abort " {{{1
 
   let [l:prev_lnum, l:prev_line] = s:get_prev_lnum(prevnonblank(a:lnum - 1))
   if l:prev_lnum == 0 | return indent(a:lnum) | endif
-  let l:line = s:clean_line(getline(a:lnum))
+  let l:line = getline(a:lnum)
 
   " Check for verbatim modes
   if s:in_verbatim(a:lnum)
@@ -55,6 +55,9 @@ function! VimtexIndent(lnum) abort " {{{1
   if l:line =~# '^\s*%'
     return indent(a:lnum)
   endif
+
+  " Remove comments before subsequent checks
+  let l:line = s:clean_line(l:line)
 
   " Align on ampersands
   let l:ind = s:indent_amps.check(a:lnum, l:line, l:prev_lnum, l:prev_line)
