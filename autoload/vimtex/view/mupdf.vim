@@ -93,7 +93,7 @@ endfunction
 
 " }}}1
 function! s:viewer._start(outfile) dict abort " {{{1
-  let l:cmd = 'mupdf'
+  let l:cmd = 'exec mupdf'
   if !empty(g:vimtex_view_mupdf_options)
     let l:cmd .= ' ' . g:vimtex_view_mupdf_options
   endif
