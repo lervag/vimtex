@@ -3897,19 +3897,19 @@ MAP DEFINITIONS                                               *vimtex-mappings*
   Find matching pair.
 
 *<plug>(vimtex-]])*
-  go to [count] next end of a section.
-  |exclusive| motion.
-
-*<plug>(vimtex-][)*
   go to [count] next beginning of a section.
   |exclusive| motion.
 
-*<plug>(vimtex-[])*
-  go to [count] previous end of a section.
+*<plug>(vimtex-][)*
+  go to [count] next end of a section.
   |exclusive| motion.
 
 *<plug>(vimtex-[[)*
   go to [count] previous beginning of a section.
+  |exclusive| motion.
+
+*<plug>(vimtex-[])*
+  go to [count] previous end of a section.
   |exclusive| motion.
 
 *<plug>(vimtex-]m)*
