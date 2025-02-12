@@ -53,11 +53,13 @@ function! s:qf.set_errorformat() abort dict "{{{1
   " Define general warnings
   "
   setlocal errorformat+=%+WLaTeX\ Font\ Warning:\ %.%#line\ %l%.%#
-  setlocal errorformat+=%-CLaTeX\ Font\ Warning:\ %m
+  setlocal errorformat+=%+WLaTeX\ Font\ Warning:\ %m
+  setlocal errorformat+=%-C(Font)\ %#%m\ on\ input\ line\ %l%.
   setlocal errorformat+=%-C(Font)%m
 
   setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
   setlocal errorformat+=%+WLaTeX\ %.%#Warning:\ %m
+  setlocal errorformat+=%-C\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ %m\ on\ input\ line\ %l%.
 
   setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ lines\ %l--%*\\d
   setlocal errorformat+=%+WOverfull\ %\\%\\hbox%.%#\ at\ line\ %l

@@ -70,3 +70,9 @@ and I'll forget about whatever was undefined.
 !pdfTeX error: pdflatex (file ./a.pdf): PDF inclusion: required page does not exist <1>
 
 ./b.tex:5:  ==> Fatal error occurred, no output PDF file produced!
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <8.43146> not available
+(Font)              size <8> substituted on input line 5.
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 6.
