@@ -9,8 +9,11 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
 
   syntax match texCmdHyperref '\\autoref\>'
         \ skipwhite nextgroup=texRefOpt,texRefArg
+
   syntax match texCmdHyperref '\\hyperref\>'
-        \ skipwhite nextgroup=texRefOpt,texRefArg
+        \ skipwhite nextgroup=texHyperrefLink,texHyperrefText
+  call vimtex#syntax#core#new_opt('texHyperrefLink', {'next': 'texHyperrefText'})
+  call vimtex#syntax#core#new_arg('texHyperrefText')
 
   syntax match texCmdHyperref "\\url\>"
         \ skipwhite nextgroup=texUrlArg
@@ -18,9 +21,9 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
 
   if a:cfg.conceal
     syntax match texCmdHyperref '\\href\>'
-          \ skipwhite nextgroup=texHrefArgLink
+          \ skipwhite nextgroup=texHrefArgLinkC
           \ conceal
-    call vimtex#syntax#core#new_arg('texHrefArgLink', {
+    call vimtex#syntax#core#new_arg('texHrefArgLinkC', {
           \ 'opts': 'contained conceal',
           \ 'next': 'texHrefArgTextC',
           \ 'contains': 'texHrefLinkGroup,@NoSpell',
@@ -70,8 +73,12 @@ function! vimtex#syntax#p#hyperref#load(cfg) abort " {{{1
   endif
 
   highlight def link texCmdHyperref   texCmd
+  highlight def link texHyperrefLink  texOpt
+  highlight def link texHyperrefText  texArg
   highlight def link texHrefArgLink   texOpt
-  highlight def link texHrefArgTextC  texArg
+  highlight def link texHrefArgLinkC  texHrefArgLink
+  highlight def link texHrefArgText   texArg
+  highlight def link texHrefArgTextC  texHrefArgText
   highlight def link texHrefLinkGroup texHrefArgLink
   highlight def link texUrlArg        texOpt
   highlight def link texTOPSArgPdf    texOpt
