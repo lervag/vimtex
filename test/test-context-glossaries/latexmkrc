@@ -1,0 +1,58 @@
+push @generated_exts, "glo";
+push @generated_exts, "ist";
+push @generated_exts, "gloss-glo";
+push @generated_exts, "gloss-gls";
+push @generated_exts, "gloss-glg";
+push @generated_exts, "symbols-glo";
+push @generated_exts, "symbols-gls";
+push @generated_exts, "symbols-glg";
+push @generated_exts, 'glo', 'gls', 'glg';
+push @generated_exts, 'acn', 'acr', 'alg';
+$clean_ext .= ' %R.ist %R.xdy';
+$clean_ext .= ' bbl run.xml';
+
+push @file_not_found, '^Package .* No file `([^\\\']*)\\\'';
+
+add_cus_dep('gloss-glo', 'gloss-gls', 0, 'makegloss');
+add_cus_dep('symbols-glo', 'symbols-gls', 0, 'makesymbols');
+add_cus_dep('glo', 'gls', 0, 'run_makeglossaries');
+add_cus_dep('acn', 'acr', 0, 'run_makeglossaries');
+add_cus_dep('aux', 'glstex', 0, 'run_bib2gls');
+
+sub makegloss {
+        system( "makeindex -t \"$_[0].gloss-glg\" -s \"$_[0].ist\" -o \"$_[0].gloss-gls\" \"$_[0].gloss-glo\"" );
+}
+sub makesymbols {
+        system( "makeindex -t \"$_[0].symbols-glg\" -s \"$_[0].ist\" -o \"$_[0].symbols-gls\" \"$_[0].symbols-glo\"" );
+}
+
+sub run_makeglossaries {
+  if ( $silent ) {
+    system "makeglossaries -q '$_[0]'";
+  } else {
+    system "makeglossaries '$_[0]'";
+  };
+}
+
+sub run_bib2gls {
+  my ($base, $path) = fileparse( $_[0] );
+  my $silent_command = $silent ? "--silent" : "";
+  if ( $path ) {
+    my $ret = system("bib2gls $silent_command -d '$path' --group '$base'");
+  } else {
+    my $ret = system("bib2gls $silent_command --group '$_[0]'");
+  };
+  # Analyze log file.
+  local *LOG;
+  $LOG = "$_[0].glg";
+  if (!$ret && -e $LOG) {
+    open LOG, "<$LOG";
+    while (<LOG>) {
+      if (/^Reading (.*\.bib)\s$/) {
+        rdb_ensure_file( $rule, $1 );
+      }
+    }
+    close LOG;
+  }
+  return $ret;
+}

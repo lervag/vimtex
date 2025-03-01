@@ -1,0 +1,30 @@
+\documentclass{minimal}
+\usepackage{csquotes}
+\usepackage{glossaries-extra}
+
+\GlsXtrLoadResources[
+  src={glossaries-1},
+  selection={all},
+]
+\loadglsentries{glossaries-2}
+
+\begin{document}
+
+Hello World!
+
+\gls{isbn}
+
+\gls{API}
+
+\gls{kv}
+
+\glsaddall
+
+\printglossary[
+  type=gloss,
+  style=long,
+  title={Glossary},
+  toctitle={Glossary}
+]
+
+\end{document}
