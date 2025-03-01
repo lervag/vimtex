@@ -7,7 +7,8 @@
 scriptencoding utf-8
 
 function! vimtex#syntax#p#glossaries#load(cfg) abort " {{{1
-  syntax match texCmd nextgroup=texGlsArg skipwhite skipnl "\\gls\>"
+  syntax match texCmdGls "\v\c\\gls%(desc|link)?>"
+        \ nextgroup=texGlsArg skipwhite skipnl
   call vimtex#syntax#core#new_arg('texGlsArg', {'contains': '@NoSpell'})
 
   " \newacronym -> opt -> arg1 -> arg2 -> arg3
@@ -34,6 +35,8 @@ function! vimtex#syntax#p#glossaries#load(cfg) abort " {{{1
         \ nextgroup=texAcrArgLabel skipwhite skipnl
   call vimtex#syntax#core#new_arg('texAcrArgLabel', {'contains': '@NoSpell'})
 
+  highlight def link texCmdGls         texCmd
+  highlight def link texGlsArg         texRefArg
   highlight def link texCmdAcr         texCmd
   highlight def link texCmdNewAcr      texCmdNew
   highlight def link texNewAcrOpt      texOpt
