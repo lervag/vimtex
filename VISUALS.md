@@ -199,10 +199,15 @@ modifiers.
 
 ### Toggling starred commands and environments
 
-Use `tsc` and `tse` to toggle between starred and un-starred versions of
+Use `tsc` and `tss` to toggle between starred and un-starred versions of
 commands and environments, respectively.
 
-![`tsc` and `tse`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsc-tse.gif)
+![`tsc` and `tss`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsc-tse.gif)
+
+> [!NOTE]
+>
+> `tss` used to be `tse` before v2.16.
+> See [the release notes](https://github.com/lervag/vimtex/releases/tag/v2.16) for more info.
 
 ### Toggling between inline and display math
 
