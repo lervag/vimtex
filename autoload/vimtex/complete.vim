@@ -531,50 +531,6 @@ let s:completer_gls = {
       \ },
       \}
 
-function! s:completer_gls.init() dict abort " {{{2
-  if !has_key(b:vimtex.packages, 'glossaries-extra') | return | endif
-
-  " Detect stuff like this:
-  "  \GlsXtrLoadResources[src={glossary}]
-  "  \GlsXtrLoadResources[src=glossary.bib]
-  "  \GlsXtrLoadResources[src={glossary.bib}, selection={all}]
-  "  \GlsXtrLoadResources[selection={all},src={glossary.bib}]
-  "  \GlsXtrLoadResources[
-  "    src={glossary.bib},
-  "    selection={all},
-  "  ]
-
-  let l:do_search = 0
-  let b:vimtex.complete.glsbib = []
-  for l:line in vimtex#parser#preamble(b:vimtex.tex)
-    if line =~# '^\s*\\GlsXtrLoadResources\s*\['
-      let l:do_search = 1
-      let l:line = matchstr(l:line, '^\s*\\GlsXtrLoadResources\s*\[\zs.*')
-    endif
-    if !l:do_search | continue | endif
-
-    let l:matches = split(l:line, '[=,]')
-    if empty(l:matches) | continue | endif
-
-    while !empty(l:matches)
-      let l:key = trim(remove(l:matches, 0))
-      if l:key ==# 'src'
-        let l:value = trim(remove(l:matches, 0))
-        let l:value = substitute(l:value, '^{', '', '')
-        let l:value = substitute(l:value, '[]}]\s*', '', 'g')
-        if !vimtex#paths#is_abs(l:value)
-          let l:value = vimtex#paths#join(b:vimtex.root, l:value)
-        endif
-        if !filereadable(l:value)
-          let l:value .= '.bib'
-        endif
-        call add(b:vimtex.complete.glsbib, l:value)
-        break
-      endif
-    endwhile
-  endfor
-endfunction
-
 function! s:completer_gls.complete(regex) dict abort " {{{2
   return s:filter(
         \ self.parse_glsentries() + self.parse_glsbib(), a:regex)
@@ -602,7 +558,7 @@ endfunction
 function! s:completer_gls.parse_glsbib() dict abort " {{{2
   let l:candidates = []
 
-  for l:filename in get(b:vimtex.complete, 'glsbib', [])
+  for l:filename in b:vimtex.glossaries
     for l:entry in vimtex#parser#bib(l:filename, {'backend': 'vim'})
       let l:menu = ''
       for l:c in ['name', 'long', 'title']

@@ -37,6 +37,11 @@ function! vimtex#state#class#new(opts) abort " {{{1
   let l:new.documentclass = s:parse_documentclass(l:preamble)
   let l:new.packages = s:parse_packages(l:preamble)
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
+  let l:new.glossaries = s:parse_glossaries(
+        \ l:preamble,
+        \ l:new.root,
+        \ l:new.packages
+        \)
 
   " Initialize state in submodules
   for l:mod in filter(
@@ -227,6 +232,53 @@ function! s:parse_graphicspath(preamble, root) abort " {{{1
   endfor
 
   return l:paths
+endfunction
+
+" }}}1
+function! s:parse_glossaries(preamble, root, packages) abort " {{{1
+  if !has_key(a:packages, 'glossaries-extra') | return [] | endif
+
+  " Detect glossary.bib from lines like this:
+  "  \GlsXtrLoadResources[src={glossary}]
+  "  \GlsXtrLoadResources[src=glossary.bib]
+  "  \GlsXtrLoadResources[src={glossary.bib}, selection={all}]
+  "  \GlsXtrLoadResources[selection={all},src={glossary.bib}]
+  "  \GlsXtrLoadResources[
+  "    src={glossary.bib},
+  "    selection={all},
+  "  ]
+
+  let l:start_search = v:false
+  let l:glossaries = []
+  for l:line in a:preamble
+    if l:line =~# '^\s*\\GlsXtrLoadResources\s*\['
+      let l:start_search = v:true
+      let l:line = matchstr(l:line, '^\s*\\GlsXtrLoadResources\s*\[\zs.*')
+    endif
+    if !l:start_search | continue | endif
+
+    let l:matches = split(l:line, '[=,]')
+    if empty(l:matches) | continue | endif
+
+    while !empty(l:matches)
+      let l:key = trim(remove(l:matches, 0))
+      if l:key ==# 'src'
+        let l:value = trim(remove(l:matches, 0))
+        let l:value = substitute(l:value, '^{', '', '')
+        let l:value = substitute(l:value, '[]}]\s*', '', 'g')
+        if !vimtex#paths#is_abs(l:value)
+          let l:value = vimtex#paths#join(a:root, l:value)
+        endif
+        if !filereadable(l:value)
+          let l:value .= '.bib'
+        endif
+        call add(l:glossaries, l:value)
+        break
+      endif
+    endwhile
+  endfor
+
+  return l:glossaries
 endfunction
 
 " }}}1
