@@ -44,6 +44,8 @@ let s:actions = {
       \ 'menu': [
       \   {'name': 'Go to entry',
       \    'func': 'goto'},
+      \   {'name': 'Go to entry in split',
+      \    'func': 'goto_split'},
       \   {'name': 'Show entry',
       \    'func': 'show'},
       \ ],
@@ -97,6 +99,15 @@ endfunction
 " }}}1
 function! s:actions.goto() abort dict " {{{1
   execute 'edit' self.entry.source_file
+  filetype detect
+
+  call vimtex#pos#set_cursor(self.entry.source_lnum, 0)
+  normal! zv
+endfunction
+
+" }}}1
+function! s:actions.goto_split() abort dict " {{{1
+  execute 'split' self.entry.source_file
   filetype detect
 
   call vimtex#pos#set_cursor(self.entry.source_lnum, 0)
