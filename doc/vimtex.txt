@@ -911,10 +911,10 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    ]R               |<plug>(vimtex-]R)|                             `nxo`
    [r               |<plug>(vimtex-[r)|                             `nxo`
    [R               |<plug>(vimtex-[R)|                             `nxo`
-   ]/               |<plug>(vimtex-]/|                              `nxo`
-   ]*               |<plug>(vimtex-]star|                           `nxo`
-   [/               |<plug>(vimtex-[/|                              `nxo`
-   [*               |<plug>(vimtex-[star|                           `nxo`
+   ]/               |<plug>(vimtex-]/)|                             `nxo`
+   ]*               |<plug>(vimtex-]star)|                          `nxo`
+   [/               |<plug>(vimtex-[/)|                             `nxo`
+   [*               |<plug>(vimtex-[star)|                          `nxo`
    K                |<plug>(vimtex-doc-package)|                    `n`
   --------------------------------------------------------------------- ~
 
