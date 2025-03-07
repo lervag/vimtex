@@ -6766,8 +6766,8 @@ A: Yes, it works. It is recommended to use the `'zathura_simple'` variant.
    5. Now install Zathura (most recent version, aka HEAD): >sh
 
       brew tap zegervdv/zathura
-      brew install girara --HEAD
-      brew install zathura --HEAD --with-synctex
+      brew install girara
+      brew install zathura --with-synctex
       brew install zathura-pdf-poppler
       mkdir -p $(brew --prefix zathura)/lib/zathura
       ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
