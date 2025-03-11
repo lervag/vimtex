@@ -175,8 +175,15 @@ endfunction
 
 " }}}1
 
-function! s:vimtex.get_sources() abort dict " {{{1
-  if !has_key(self, '__sources')
+function! s:vimtex.get_sources(...) abort dict " {{{1
+  let l:opts = extend(
+        \ #{
+        \   refresh: v:false
+        \ },
+        \ a:0 > 0 ? a:1 : {}
+        \)
+
+  if !has_key(self, '__sources') || l:opts.refresh
     let self.__sources = s:gather_sources(self.tex, self.root)
   endif
 

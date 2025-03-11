@@ -73,7 +73,7 @@ function! vimtex#view#inverse_search(line, filename, column = 0) abort " {{{1
 
   " Only activate in relevant VimTeX projects
   let l:file = resolve(a:filename)
-  let l:sources = b:vimtex.get_sources()
+  let l:sources = b:vimtex.get_sources(#{ refresh: v:true })
   if vimtex#paths#is_abs(l:file)
     call map(l:sources, {_, x -> vimtex#paths#join(b:vimtex.root, x)})
   endif
