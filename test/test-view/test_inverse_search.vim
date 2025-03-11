@@ -26,8 +26,9 @@ call assert_equal('Command error: splitview included.tex', s:log[0].msg[1])
 bwipeout!
 let g:vimtex_view_reverse_search_edit_cmd = 'edit'
 silent edit main.tex
-call b:vimtex.get_sources()
-call add(b:vimtex.__sources, 'new.tex')
+function! b:vimtex.get_sources(...) abort
+  return ['main.tex', 'new.tex']
+endfunction
 let s:result = vimtex#view#inverse_search(2, 'new.tex')
 let s:log = vimtex#log#get()
 call assert_equal(-4, s:result)
