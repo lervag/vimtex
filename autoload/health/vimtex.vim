@@ -32,11 +32,17 @@ endfunction
 function! s:check_compiler() abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
-  if !executable(g:vimtex_compiler_method)
-    let l:ind = '        '
+  if type(g:vimtex_compiler_method) == v:t_func
+        \ || exists('*' . g:vimtex_compiler_method)
+    let l:method = call(g:vimtex_compiler_method, ['[nofile]'])
+  else
+    let l:method = g:vimtex_compiler_method
+  endif
+
+  if !executable(l:method)
     call v:lua.vim.health.error(printf(
           \ '|g:vimtex_compiler_method| (`%s`) is not executable!',
-          \ g:vimtex_compiler_method))
+          \ l:method))
     return
   endif
 
