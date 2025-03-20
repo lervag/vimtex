@@ -145,15 +145,14 @@ function! vimtex#motion#section(type, backwards, visual) abort " {{{1
 
   " Check trivial cases
   let l:top = search(s:re_sec, 'nbW') == 0
-  let l:bottom = search(a:type == 1 ? s:re_sec_t2 : s:re_sec, 'nW') == 0
+  let l:bottom = search(s:re_sec, 'nW') == 0
   if a:backwards && l:top
     return vimtex#pos#set_cursor([1, 1])
   elseif !a:backwards && l:bottom
     return vimtex#pos#set_cursor([line('$'), 1])
   endif
 
-  " Define search pattern and search flag
-  let l:re = a:type == 0 ? s:re_sec : s:re_sec_t1
+  " Define search flags
   let l:flags = 'W'
   if a:backwards
     let l:flags .= 'b'
@@ -166,16 +165,16 @@ function! vimtex#motion#section(type, backwards, visual) abort " {{{1
       call search('\S', 'W')
     endif
 
-    let l:bottom = search(s:re_sec_t2, 'nW') == 0
+    let l:bottom = search(s:re_sec, 'nW') == 0
     if a:type == 1 && !a:backwards && l:bottom
       return vimtex#pos#set_cursor([line('$'), 1])
     endif
 
     let l:top = search(s:re_sec, 'ncbW') == 0
-    let l:lnum = search(l:re, l:flags)
+    let l:lnum = search(s:re_sec, l:flags)
 
     if l:top && l:lnum > 0 && a:type == 1 && !a:backwards
-      let l:lnum = search(l:re, l:flags)
+      let l:lnum = search(s:re_sec, l:flags)
     endif
 
     if a:type == 1
@@ -198,9 +197,7 @@ let s:re_sec = '\v^\s*\\%(' . join([
       \   'appendi%(x|ces)',
       \   '%(front|back|main)matter',
       \   'add%(sec|chap|part)',
-      \ ], '|') . ')>'
-let s:re_sec_t1 = '\v%(' . s:re_sec . '|^\s*%(\\end\{document\}|%$))'
-let s:re_sec_t2 = '\v%(' . s:re_sec . '|^\s*\\end\{document\})'
+      \ ], '|') . ')>|^\s*\\%(begin|end)\{document\}'
 
 " }}}1
 function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1
