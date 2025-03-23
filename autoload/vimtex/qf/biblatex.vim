@@ -131,7 +131,9 @@ endfunction
 
 " }}}1
 function! s:qf.get_key_lnum(key, filename) abort dict " {{{1
-  if !filereadable(a:filename) | return 0 | endif
+  if !filereadable(a:filename) || getfsize(a:filename) > 200000
+    return 0
+  endif
 
   let l:lines = readfile(a:filename)
   let l:lnums = range(len(l:lines))
