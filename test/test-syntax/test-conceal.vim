@@ -15,6 +15,12 @@ let g:vimtex_syntax_custom_cmds_with_concealed_delims = [
       \  'cchar_open': '(',
       \  'cchar_mid': '|',
       \  'cchar_close': ')'},
+      \ {'name': 'trinom',
+      \  'mathmode': 1,
+      \  'nargs': 3,
+      \  'cchar_open': '(',
+      \  'cchar_mid': '§',
+      \  'cchar_close': ')'},
       \]
 
 EditConcealed test-conceal.tex

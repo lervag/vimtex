@@ -2727,7 +2727,7 @@ OPTIONS                                                        *vimtex-options*
 *g:vimtex_syntax_custom_cmds_with_concealed_delims*
   This option works exactly as |g:vimtex_syntax_custom_cmds|, except it is
   used specifically to add conceals with custom replacement characters for
-  single- and double-argument commands, e.g. >
+  single- and multi commands, e.g. >
 
     \cmd1{argument}
     \cmd2 {argument1} {argument2}
@@ -2741,7 +2741,7 @@ OPTIONS                                                        *vimtex-options*
 
     nargs ~
       Default: 1
-      Specify whether the command has 1 or 2 arguments.
+      Specify whether the command has 1 or more arguments.
 
     cchar_open ~
       Default: Undefined
@@ -2750,7 +2750,7 @@ OPTIONS                                                        *vimtex-options*
 
     cchar_mid ~
       Default: Undefined
-      Note: Only relevant if `nargs` = 2
+      Note: Only relevant if `nargs` > 1
       Specify single letter replacement for the mid (`}{`). If left
       undefined, the mid is fully concealed.
 
