@@ -2121,7 +2121,6 @@ let s:cmd_symbols = [
       \ ['jmath', '𝚥'],
       \ ['land', '∧'],
       \ ['lnot', '¬'],
-      \ ['lceil', '⌈'],
       \ ['ldots', '…'],
       \ ['le', '≤'],
       \ ['leftarrow', '←'],
@@ -2167,7 +2166,6 @@ let s:cmd_symbols = [
       \ ['prime', '′'],
       \ ['prod', '∏'],
       \ ['propto', '∝'],
-      \ ['rceil', '⌉'],
       \ ['Re', 'ℜ'],
       \ ['rightarrow', '→'],
       \ ['Rightarrow', '⇒'],
@@ -2293,6 +2291,8 @@ function! s:match_math_delims() abort " {{{1
   syntax match texMathDelim contained conceal cchar=⟩ "\%#=1\\rangle\>"
   syntax match texMathDelim contained conceal cchar=⌊ "\%#=1\\lfloor\>\s\?"
   syntax match texMathDelim contained conceal cchar=⌋ "\%#=1\\rfloor\>"
+  syntax match texMathDelim contained conceal cchar=⌈ "\%#=1\\lceil\>\s\?"
+  syntax match texMathDelim contained conceal cchar=⌉ "\%#=1\\rceil\>"
   syntax match texMathDelim contained conceal cchar=< "\%#=1\\\%([bB]igg\?l\|left\)<\s\?"
   syntax match texMathDelim contained conceal cchar=> "\%#=1\\\%([bB]igg\?r\|right\)>"
   syntax match texMathDelim contained conceal cchar=( "\%#=1\\\%([bB]igg\?l\|left\)(\s\?"
