@@ -15,23 +15,22 @@ local color_map = {
 ---@return string number
 local function format_number(n)
   local num = {
-    n["chapter"] ~= 0 and n["chapter"] or nil,
-    n["section"] ~= 0 and n["section"] or nil,
-    n["subsection"] ~= 0 and n["subsection"] or nil,
-    n["subsubsection"] ~= 0 and n["subsubsection"] or nil,
-    n["subsubsubsection"] ~= 0 and n["subsubsubsection"] or nil,
+    n.chapter ~= 0 and n.chapter or nil,
+    n.section ~= 0 and n.section or nil,
+    n.subsection ~= 0 and n.subsection or nil,
+    n.subsubsection ~= 0 and n.subsubsection or nil,
+    n.subsubsubsection ~= 0 and n.subsubsubsection or nil,
   }
-  if vim.tbl_isempty(num) then
-    return ""
-  end
   num = vim.tbl_filter(function(t)
     return t ~= nil
   end, num)
+  if vim.tbl_isempty(num) then
+    return ""
+  end
 
   -- Convert appendix items numbers to letters (e.g. 1 -> A, 2 -> B)
   if n.appendix ~= 0 then
-    local ind = table.sort(vim.tbl_keys(num))[1]
-    num[ind] = string.char(num[ind] + 64)
+    num[1] = string.char(num[1] + 64)
   end
 
   num = vim.tbl_map(function(t)
@@ -75,7 +74,7 @@ M.run = function(layers)
       ["--with-nth"] = "{2} {3}",
     },
     actions = {
-      ["default"] = function(selection, o)
+      default = function(selection, o)
         local s = vim.tbl_map(function(t)
           return vim.split(t, "####")[1]
         end, selection)
