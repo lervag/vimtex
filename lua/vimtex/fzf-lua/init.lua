@@ -1,7 +1,7 @@
 local M = {}
 
--- the mapping of item types to ansi color codes
--- Can be any of the keys in
+-- A mapping of item types to Ansi color codes.
+-- The values must correspond to the keys in `M.ansi_escseq`, cf.:
 -- https://github.com/ibhagwan/fzf-lua/blob/caee13203d6143d691710c34f85ad6441fe3f535/lua/fzf-lua/utils.lua#L555C1-L574C1
 local color_map = {
   content = "clear",
@@ -28,7 +28,7 @@ local function format_number(n)
     return t ~= nil
   end, num)
 
-  -- for appendix items, we convert them into a letter 1 -> A, 2 -> B, etc.
+  -- Convert appendix items numbers to letters (e.g. 1 -> A, 2 -> B)
   if n.appendix ~= 0 then
     local ind = table.sort(vim.tbl_keys(num))[1]
     num[ind] = string.char(num[ind] + 64)
@@ -41,10 +41,10 @@ local function format_number(n)
   return table.concat(num, ".")
 end
 
-
----Runs Fzf-Lua for getting a list of TOC items. Upon selection, opens the file(s) at the correct lines.
----@param layers string? the layers to filter. Can be a substring of `ctli` corresponding to
----                     content, todos, labels, and includes.
+---Runs fzf-lua to select and navigate to from a list of TOC items.
+---
+---@param layers string? The layers to filter. Can be a substring of `ctli`
+---                      corresponding to content, todos, labels, and includes.
 ---@return nil
 M.run = function(layers)
   if layers == nil then
@@ -56,7 +56,7 @@ M.run = function(layers)
 
   local entries = vim.fn["vimtex#parser#toc"]()
   entries = vim.tbl_filter(function(t)
-    return string.find(layers, t.type:sub(1,1)) ~= nil
+    return string.find(layers, t.type:sub(1, 1)) ~= nil
   end, entries)
 
   local fzf_entries = vim.tbl_map(function(v)

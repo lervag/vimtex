@@ -5424,6 +5424,23 @@ example, if you've defined `g:fzf_layout`, then those options can be passed to
 
   :call vimtex#fzf#run('ctli', g:fzf_layout)
 
+------------------------------------------------------------------------------
+FZF-LUA INTEGRATION                                           *vimtex-fzf-lua*
+
+                                           https://github.com/ibhagwan/fzf-lua/
+|fzf-lua| integrates the general-purpose command-line fuzzy finder |fzf| into
+neovim through Lua. It may be used to quickly navigate VimTeX's built-in ToC
+feature. To use it, define a mapping to `require("vimtex.fzf-lua").run()`,
+e.g. >lua
+
+  vim.keymap.set("n", "<localleader>lt", function()
+    return require("vimtex.fzf-lua").run()
+  end)
+
+You can also choose to only show certain entry "layers" by passing a layer
+string. By default, all layers are displayed. To only show `content` and
+`label`s use `require("vimtex.fzf-lua").run("cl").
+
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
 
