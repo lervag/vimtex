@@ -43,7 +43,7 @@ end
 
 
 ---Runs Fzf-Lua for getting a list of TOC items. Upon selection, opens the file(s) at the correct lines.
----@param layers string the layers to filter. Can be a substring of `ctli` corresponding to
+---@param layers string? the layers to filter. Can be a substring of `ctli` corresponding to
 ---                     content, todos, labels, and includes.
 ---@return nil
 M.run = function(layers)
