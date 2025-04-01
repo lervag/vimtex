@@ -5431,16 +5431,18 @@ FZF-LUA INTEGRATION                                           *vimtex-fzf-lua*
                                            https://github.com/ibhagwan/fzf-lua/
 |fzf-lua| integrates the general-purpose command-line fuzzy finder |fzf| into
 neovim through Lua. It may be used to quickly navigate VimTeX's built-in ToC
-feature. To use it, define a mapping to `require("vimtex.fzf-lua").run()`,
+feature. To use it, define a mapping to `require("vimtex.fzf-lua").run(options)`,
 e.g. >lua
 
   vim.keymap.set("n", "<localleader>lt", function()
     return require("vimtex.fzf-lua").run()
   end)
 
+Currently two options are supported: "layers" and "fzf_opts". You pass 
+custom options to fzf-lua. 
 You can also choose to only show certain entry "layers" by passing a layer
 string. By default, all layers are displayed. To only show `content` and
-`label`s use `require("vimtex.fzf-lua").run("cl")`.
+`label`s use `require("vimtex.fzf-lua").run({layers ="cl"})`.
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
