@@ -5438,8 +5438,8 @@ e.g. >lua
     return require("vimtex.fzf-lua").run()
   end)
 
-Currently two options are supported: "layers" and "fzf_opts". You pass 
-custom options to fzf-lua. 
+Currently two options are supported: "layers" and "fzf_opts". You can pass 
+custom options to fzf-lua via "fzf_opts". 
 You can also choose to only show certain entry "layers" by passing a layer
 string. By default, all layers are displayed. To only show `content` and
 `label`s use `require("vimtex.fzf-lua").run({layers ="cl"})`.
