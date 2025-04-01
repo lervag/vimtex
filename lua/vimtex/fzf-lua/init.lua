@@ -42,12 +42,16 @@ end
 
 ---Runs fzf-lua to select and navigate to from a list of TOC items.
 ---
----@param layers string? The layers to filter. Can be a substring of `ctli`
----                      corresponding to content, todos, labels, and includes.
+---@param options table? Available options: 
+---                      - layers: The layers to filter. Can be a substring of `ctli`
+---                        corresponding to content, todos, labels, and includes.
+---                      - fzf_opts: list of options for fzf_exec
 ---@return nil
-M.run = function(layers)
-  if layers == nil then
-    layers = "ctli"
+M.run = function(options)
+  local layers = "ctli"
+  if options ~= nil and options["layers"] ~= nil then
+    layers = options["layers"]
+    options["layers"] = nil
   end
 
   local fzf = require "fzf-lua"
@@ -68,11 +72,16 @@ M.run = function(layers)
     )
   end, entries)
 
+  local fzfoptions = {
+    ["--delimiter"] = "####",
+    ["--with-nth"] = "{2} {3}",
+  }
+  if options ~= nil and options["fzf_opts"] ~= nil then
+    fzfoptions = vim.tbl_extend('force', fzfoptions, options["fzf_opts"])
+  end
+
   fzf.fzf_exec(fzf_entries, {
-    fzf_opts = {
-      ["--delimiter"] = "####",
-      ["--with-nth"] = "{2} {3}",
-    },
+    fzf_opts = fzfoptions,
     actions = {
       default = function(selection, o)
         local s = vim.tbl_map(function(t)
