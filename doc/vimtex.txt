@@ -79,6 +79,7 @@ CONTENTS                                                      *vimtex-contents*
       Custom mappings                           |vimtex-toc-custom-maps|
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
     fzf.vim integration                         |vimtex-fzf|
+    fzf-lua integration                         |vimtex-fzf-lua|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-compiler-latexmk|
     Latexrun                                    |vimtex-compiler-latexrun|
@@ -2843,7 +2844,7 @@ OPTIONS                                                        *vimtex-options*
 
     opts ~
       Default: Undefined
-      A string with additional options that will be passed to the `syntax
+      A string with additional options that will be passed to the `syntax`
       region` command (see |syn-region|).
 
     contains ~
@@ -2978,7 +2979,7 @@ OPTIONS                                                        *vimtex-options*
 
     robust_externalize ~
       `presets`  list of presets and target syntaxes for things like
-                 `\begin{CacheMeCode}{bash} ... \end{CacheMeCode}.
+                 `\begin{CacheMeCode}{bash} ... \end{CacheMeCode}`.
 
   Default: >vim
 
@@ -5439,7 +5440,7 @@ e.g. >lua
 
 You can also choose to only show certain entry "layers" by passing a layer
 string. By default, all layers are displayed. To only show `content` and
-`label`s use `require("vimtex.fzf-lua").run("cl").
+`label`s use `require("vimtex.fzf-lua").run("cl")`.
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
@@ -5561,7 +5562,7 @@ LATEXRUN                                             *vimtex-compiler-latexrun*
 
                                         https://github.com/aclements/latexrun
 > See LaTeX run. Run latexrun.
->
+
 > latexrun fits LaTeX into a modern build environment. It hides LaTeX's
 > circular dependencies, surfaces errors in a standard and user-friendly
 > format, and generally enables other tools to do what they do best.
@@ -6631,7 +6632,7 @@ A: If you change `TEXMFHOME` in your `.bashrc` or `.zshrc` or similar and use `g
    not know about the new value of `TEXMFHOME`. The reason for this is that
    `vim` invokes shells (e.g. with `!` or `system()`) as non-interactive and
    non-login shell, which means `.bashrc` or `.zshrc` are not read.  If you
-   start `gvim` from an interactive shell which has read `.bashrc` or `.zshrc,
+   start `gvim` from an interactive shell which has read `.bashrc` or `.zshrc`,
    `gvim` inherits these values and therefore they are consistent.
 
    One can make the invoked shells interactive by setting |shellcmdflag| to
@@ -7305,4 +7306,6 @@ named vim-latex, which conflicted with Vim LaTeX-Suite which is also known as
 vim-latex.
 
 ==============================================================================
+------------------------------------------------------------------------------
+
  vim:tw=78:ts=8:ft=help:norl:fdm=marker:
