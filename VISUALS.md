@@ -53,6 +53,7 @@ page](#how-these-gifs-were-made).
   * [Change surrounding delimiters](#change-surrounding-delimiters)
 * [Toggling commands](#toggling-commands)
   * [Toggling starred commands and environments](#toggling-starred-commands-and-environments)
+  * [Toggling between related environments](#toggling-between-related-environments)
   * [Toggling between inline and display math](#toggling-between-inline-and-display-math)
   * [Toggling delimiter modifiers](#toggling-delimiter-modifiers)
   * [Toggling fractions](#toggling-fractions)
@@ -202,12 +203,18 @@ modifiers.
 Use `tsc` and `tss` to toggle between starred and un-starred versions of
 commands and environments, respectively.
 
-![`tsc` and `tss`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsc-tse.gif)
+![`tsc` and `tss`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tsc-tss.gif)
 
 > [!NOTE]
 >
 > `tss` used to be `tse` before v2.16.
 > See [the release notes](https://github.com/lervag/vimtex/releases/tag/v2.16) for more info.
+
+### Toggling between related environments
+
+Use `tse` to toggle between related environments (e.g. between `itemize` and `enumerate`).
+
+![`tse`](https://github.com/lervag/vimtex-media/blob/main/gif/toggle/tse.gif)
 
 ### Toggling between inline and display math
 
