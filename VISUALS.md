@@ -25,8 +25,8 @@ page](#how-these-gifs-were-made).
 * If you notice mistakes or outdated content (following a VimTeX update, say),
   feel free to open a PR to fix it yourself. Alternatively, contact
   [@ejmastnak](https://github.com/ejmastnak) at
-  [ejmastnak@gmail.com](mailto:ejmastnak@gmail.com), who will be happy to help
-  fix it.
+  [elijan@ejmastnak.com](mailto:elijan@ejmastnak.com), who will be happy to
+  help fix it.
 
 ## Table of contents
 <!-- vim-markdown-toc GFM -->
