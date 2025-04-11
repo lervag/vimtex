@@ -870,6 +870,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    cs$              |<plug>(vimtex-env-change-math)|                `n`
    csd              |<plug>(vimtex-delim-change-math)|              `n`
    tsf              |<plug>(vimtex-cmd-toggle-frac)|                `nx`
+                    |<plug>(vimtex-toggle-star)|                    `n`
    tsc              |<plug>(vimtex-cmd-toggle-star)|                `n`
    tss              |<plug>(vimtex-env-toggle-star)|                `n`
    tse              |<plug>(vimtex-env-toggle)|                     `n`
@@ -3804,10 +3805,17 @@ MAP DEFINITIONS                                               *vimtex-mappings*
   Toggle environment, e.g. between `enumerate` and `itemize`. The toggle
   sequence/map can be customized with |g:vimtex_env_toggle_map|.
 
+*<plug>(vimtex-toggle-star)*
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
   Toggle starred command/environment.
 
+  Notice that `<plug>(vimtex-toggle-star)` is not mapped by default. Some
+  users may prefer the combined behaviour and may want to map it, e.g. like
+  this in their personal `ftplugin/tex.vim`: >vim
+
+    nmap tss <plug>(vimtex-toggle-star)
+<
 *<plug>(vimtex-env-toggle-math)*
   Toggle between inline math and displayed math, e.g.: >
 

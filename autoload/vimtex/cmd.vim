@@ -31,6 +31,9 @@ function! vimtex#cmd#init_buffer() abort " {{{1
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-break)
         \ :<c-u>call <sid>operator_setup('toggle_break')<bar>normal! g@l<cr>
+
+  nnoremap <silent><buffer> <plug>(vimtex-toggle-star)
+        \ :<c-u>call <sid>operator_setup('toggle_star_agnostic')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
@@ -232,6 +235,29 @@ function! vimtex#cmd#toggle_star() abort " {{{1
 
   " Restore cursor position
   cal vimtex#pos#set_cursor(l:save_pos)
+endfunction
+
+" }}}1
+function! vimtex#cmd#toggle_star_agnostic() abort " {{{1
+  let l:cmd = vimtex#cmd#get_current()
+  if empty(l:cmd) || l:cmd.name ==# '\begin'
+    call vimtex#env#toggle_star()
+    return
+  endif
+
+  let [l:open, l:close] = vimtex#env#get_surrounding('normal')
+  if empty(l:open) || l:open.name ==# 'document'
+    call vimtex#cmd#toggle_star()
+    return
+  endif
+
+  let l:pos_val_cmd = vimtex#pos#val(l:cmd.pos_start)
+  let l:pos_val_env = vimtex#pos#val(l:open)
+  if l:pos_val_cmd >= l:pos_val_env
+    call vimtex#cmd#toggle_star()
+  else
+    call vimtex#env#toggle_star()
+  endif
 endfunction
 
 " }}}1
@@ -623,6 +649,7 @@ function! s:operator_function(_) abort " {{{1
         \   'create': 'create(l:name, 0)',
         \   'delete': 'delete()',
         \   'toggle_star': 'toggle_star()',
+        \   'toggle_star_agnostic': 'toggle_star_agnostic()',
         \   'toggle_frac': 'toggle_frac()',
         \   'toggle_break': 'toggle_break()',
         \ }[s:operator]
