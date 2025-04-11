@@ -2471,6 +2471,7 @@ endfunction
 
 " }}}1
 function! s:match_conceal_fancy() abort " {{{1
+  syntax match texSpecialChar "\\_" conceal cchar=_
   syntax match texCmd         "\%#=1\\colon\>" conceal cchar=:
   syntax match texCmd         "\%#=1\\dots\>"  conceal cchar=…
   syntax match texCmd         "\%#=1\\slash\>" conceal cchar=/
