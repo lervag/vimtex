@@ -23,6 +23,9 @@ function! vimtex#cmd#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star)
         \ :<c-u>call <sid>operator_setup('toggle_star')<bar>normal! g@l<cr>
 
+  nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-star-agn)
+        \ :<c-u>call <sid>operator_setup('toggle_star_agnostic')<bar>normal! g@l<cr>
+
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-frac)
         \ :<c-u>call <sid>operator_setup('toggle_frac')<bar>normal! g@l<cr>
 
@@ -31,9 +34,6 @@ function! vimtex#cmd#init_buffer() abort " {{{1
 
   nnoremap <silent><buffer> <plug>(vimtex-cmd-toggle-break)
         \ :<c-u>call <sid>operator_setup('toggle_break')<bar>normal! g@l<cr>
-
-  nnoremap <silent><buffer> <plug>(vimtex-toggle-star)
-        \ :<c-u>call <sid>operator_setup('toggle_star_agnostic')<bar>normal! g@l<cr>
 endfunction
 
 " }}}1
