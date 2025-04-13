@@ -6324,10 +6324,15 @@ found online at [2].
 ------------------------------------------------------------------------------
 OFFLINE                                               *vimtex-latexdoc-offline*
 
-One may use a more dedicated offline documentation system. On macOS, Dash [0]
-is a non-free but high-quality system. On Linux, one may use Zeal [1] or dasht
-[2], both of which access the Dash documentation sets. Zeal should also work
-well on Windows.
+One may use offline documentation by using a different handler with the
+|g:vimtex_doc_handlers| option. An example: >vim
+
+  let g:vimtex_doc_handlers = ['vimtex#doc#handlers#texdoc']
+
+One may also use a more dedicated offline documentation system. On macOS, Dash
+[0] is a non-free but high-quality system. On Linux, one may use Zeal [1] or
+dasht [2], both of which access the Dash documentation sets. Zeal should also
+work well on Windows.
 
 The above systems may be accessed from vim through dash.vim [3], zeavim.vim
 [4] or vim-dasht [5], respectively. Other alternative vim plugins include
