@@ -12,7 +12,6 @@ function! vimtex#syntax#p#amsmath#load(cfg) abort " {{{1
         \ 'alignat',
         \ 'flalign',
         \ 'gather',
-        \ 'mathpar',
         \ 'multline',
         \ 'xalignat',
         \]
