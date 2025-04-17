@@ -32,9 +32,9 @@ function! vimtex#doc#package(word) abort " {{{1
   let l:context = vimtex#doc#get_context(a:word)
   if empty(l:context) | return | endif
 
-  for l:handler in g:vimtex_doc_handlers
+  for l:Handler in g:vimtex_doc_handlers
     try
-      if call(l:handler, [l:context]) | return | endif
+      if call(l:Handler, [l:context]) | return | endif
     catch /E117/
     endtry
   endfor
