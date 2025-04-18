@@ -88,11 +88,16 @@ function! vimtex#compiler#callback(status) abort " {{{1
       doautocmd <nomodeline> User VimtexEventCompileSuccess
     endif
   elseif a:status == 3
-    if !g:vimtex_compiler_silent
+    call vimtex#qf#open(0)
+
+    if empty(getqflist())
+      call vimtex#log#warning(
+            \ 'Compilation failed, but no detected errors!')
+      call vimtex#compiler#output()
+    elseif !g:vimtex_compiler_silent
       call vimtex#log#warning('Compilation failed!')
     endif
 
-    call vimtex#qf#open(0)
     if exists('#User#VimtexEventCompileFailed')
       doautocmd <nomodeline> User VimtexEventCompileFailed
     endif
@@ -194,6 +199,7 @@ function! vimtex#compiler#output() abort " {{{1
   if exists('s:output')
     if s:output.name ==# b:vimtex.compiler.output
       if bufwinnr(b:vimtex.compiler.output) == s:output.winnr
+        call s:output.update()
         execute s:output.winnr . 'wincmd w'
       endif
       return
@@ -376,19 +382,15 @@ function! s:output_factory.create(file) dict abort " {{{1
   let s:output.paused = v:false
   let s:output.bufnr = bufnr('%')
   let s:output.winnr = bufwinnr('%')
-  let s:output.timer = timer_start(100,
+  let s:output.timer = timer_start(250,
         \ {_ -> s:output.update()},
         \ {'repeat': -1})
+
+  normal! Gzb
 
   augroup vimtex_output_window
     autocmd!
     autocmd BufDelete <buffer> call s:output.destroy()
-    autocmd BufEnter     *     call s:output.update()
-    autocmd FocusGained  *     call s:output.update()
-    autocmd CursorHold   *     call s:output.update()
-    autocmd CursorHoldI  *     call s:output.update()
-    autocmd CursorMoved  *     call s:output.update()
-    autocmd CursorMovedI *     call s:output.update()
   augroup END
 endfunction
 
@@ -407,11 +409,16 @@ function! s:output_factory.update() dict abort " {{{1
   if self.paused | return | endif
 
   let l:ftime = getftime(self.name)
-  if self.ftime >= l:ftime
-        \ || mode() ==? 'v' || mode() ==# "\<c-v>"
+  if l:ftime > self.ftime
+    let self.ftime = l:ftime
+    let self.checks_since_updated = 0
+  else
+    let self.checks_since_updated += 1
+  endif
+
+  if self.checks_since_updated > 1 || mode() ==? 'v' || mode() ==# "\<c-v>"
     return
   endif
-  let self.ftime = getftime(self.name)
 
   if bufwinnr(self.name) != self.winnr
     let self.winnr = bufwinnr(self.name)
@@ -423,12 +430,11 @@ function! s:output_factory.update() dict abort " {{{1
     execute 'keepalt' self.winnr . 'wincmd w'
   endif
 
-  " Force reload file content
+  " Reload file content
   silent edit
+  normal! Gzb
 
   if l:swap
-    " Go to last line of file if it is not the current window
-    normal! Gzb
     execute 'keepalt' l:return . 'wincmd w'
     redraw
   endif
