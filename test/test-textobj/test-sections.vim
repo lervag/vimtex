@@ -70,4 +70,23 @@ call vimtex#test#keys('5jd2aP',
       \   '',
       \ ])
 
+call vimtex#test#keys('diP',
+      \ [
+      \   '\chapter{section 2}',
+      \   '  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod',
+      \   'tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At',
+      \   'vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,',
+      \   'no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+      \   '',
+      \   '% Fakechapter Section 3',
+      \   '  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod',
+      \   'tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
+      \ ], [
+      \   '\chapter{section 2}',
+      \   '',
+      \   '% Fakechapter Section 3',
+      \   '  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod',
+      \   'tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
+      \])
+
 call vimtex#test#finished()

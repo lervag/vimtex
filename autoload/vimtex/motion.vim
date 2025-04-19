@@ -189,7 +189,7 @@ function! vimtex#motion#section(type, backwards, visual) abort " {{{1
 endfunction
 
 " Patterns to match section/chapter/...
-let s:re_sec = '\v^\s*\\%(' . join([
+let s:re_sec = '\v^\s*\\%(' .. join([
       \   '%(sub)?paragraph',
       \   '%(sub)*section',
       \   'chapter',
@@ -197,7 +197,9 @@ let s:re_sec = '\v^\s*\\%(' . join([
       \   'appendi%(x|ces)',
       \   '%(front|back|main)matter',
       \   'add%(sec|chap|part)',
-      \ ], '|') . ')>|^\s*\\%(begin|end)\{document\}'
+      \ ], '|') .. ')>'
+      \ .. '|^\s*\\%(begin|end)\{document\}'
+      \ .. '|^\s*\% Fake%(part|chapter|%(sub)*section)'
 
 " }}}1
 function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1

@@ -478,7 +478,7 @@ endfunction
 
 " Pattern to match section/chapter/...
 let s:section_search = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
-      \ . join([
+      \ .. join([
       \   '%(sub)?paragraph>',
       \   '%(sub)*section>',
       \   'chapter>',
@@ -488,7 +488,8 @@ let s:section_search = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
       \   'add%(sec|chap|part)>',
       \   '%(begin|end)\{\zsdocument\ze\}'
       \  ], '|')
-      \ .')'
+      \ .. ')'
+      \ .. '|^\s*\% Fake\zs(part|chapter|%(sub)*section)'
 
 " Dictionary to give values to sections in order to compare them
 let s:section_to_val = {
