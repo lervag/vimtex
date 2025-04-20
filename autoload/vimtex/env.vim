@@ -132,16 +132,22 @@ endfunction
 function! vimtex#env#change(open, close, new) abort
   let l:new = get({
         \ '$': ['$', '$'],
-        \ '\(': ['\\(', '\\)'],
+        \ '\(': ['\(', '\)'],
         \ '$$': ['$$', '$$'],
         \ '\[': ['\[', '\]'],
         \}, a:new, ['\begin{' . a:new . '}', '\end{' . a:new . '}'])
 
-  if index(['$', '\('], a:new) >= 0
+  if a:new ==# '$'
     return vimtex#env#change_to_inline_math(a:open, a:close, l:new)
   endif
 
-  return index(['$', '\('], a:open.match) >= 0
+  let l:coming_from_inline = a:open.match ==# '$'
+        \ || (
+        \      trim(getline(a:open.lnum))  ==# '\('
+        \   && trim(getline(a:close.lnum))  ==# '\)'
+        \ )
+
+  return l:coming_from_inline
         \ ? vimtex#env#change_to_indented(a:open, a:close, l:new)
         \ : vimtex#env#change_in_place(a:open, a:close, l:new)
 endfunction
