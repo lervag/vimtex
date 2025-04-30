@@ -41,7 +41,9 @@ function! vimtex#syntax#p#pgfplots#load(cfg) abort " {{{1
 
 
   syntax match texPgfType "coordinates" contained nextgroup=texPgfCoordinates skipwhite skipnl
-  call vimtex#syntax#core#new_arg('texPgfCoordinates', {'contains': ''})
+  call vimtex#syntax#core#new_arg('texPgfCoordinates', {
+        \ 'contains': 'texComment'
+        \})
 
 
   syntax match texPgfNode "node" contained nextgroup=texTikzNodeOpt skipwhite skipnl

@@ -94,4 +94,15 @@
   \label{fig:instspill-t}
 \end{figure}
 
+\begin{tikzpicture}
+  % a comment with correct highlighting
+  \begin{axis}
+    \addplot coordinates {
+        % a comment with incorrect highlighting
+        (0,0)
+        (1,1)
+      };
+  \end{axis}
+\end{tikzpicture}
+
 \end{document}
