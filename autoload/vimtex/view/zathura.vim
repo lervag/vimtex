@@ -50,7 +50,7 @@ function! vimtex#view#zathura#cmdline(outfile, synctex, start) abort " {{{1
     let l:cmd .= printf(
           \ ' --synctex-forward %d:%d:%s',
           \ line('.'), col('.'),
-          \ vimtex#util#shellescape(expand('%:p')))
+          \ shellescape(expand('%:p')))
   endif
 
   return l:cmd . ' '
