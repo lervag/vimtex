@@ -526,10 +526,11 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ start="\%#=1\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)"
         \ end="\%#=1\\ExplSyntaxOff\|\%$"
         \ transparent
-        \ contains=TOP,@NoSpell
+        \ contains=TOP,@NoSpell,TexError
 
   call vimtex#syntax#core#new_arg('texE3Group', {
         \ 'opts': 'contained containedin=@texClusterE3',
+        \ 'contains': 'TOP,@NoSpell,TexError',
         \})
 
   syntax match texE3Cmd "\\\w\+"
