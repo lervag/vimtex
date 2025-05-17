@@ -36,6 +36,7 @@ let s:expected_list = [
       \ {'lnum': 4,   'type': 'W', 'text': 'Class memoir Warning: As of 2018, \fixpdflayout\ is no longer used'},
       \ {'lnum': 5,   'type': 'W', 'text': "LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <8.43146> not available\nsize <8> substituted"},
       \ {'lnum': 6,   'type': 'W', 'text': "LaTeX Warning: No positions in optional float specifier.\nDefault added (so using `tbp')"},
+      \ {'lnum': 0,   'type': 'W', 'text': "Package silence Warning: There were 6 warning(s) and 0 error(s).\n                I've killed 5 warning(s) and 0 error(s)."},
       \]
 let s:qf = getqflist()
 call assert_equal(

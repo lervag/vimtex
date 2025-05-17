@@ -99,6 +99,9 @@ function! s:qf.set_errorformat() abort dict "{{{1
   setlocal errorformat+=%+WPackage\ titlesec\ Warning:\ %m
   setlocal errorformat+=%-C(titlesec)%m
 
+  setlocal errorformat+=%+WPackage\ silence\ Warning:\ %m
+  setlocal errorformat+=%-C(silence)%m
+
   setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m\ on\ input\ line\ %l.
   setlocal errorformat+=%+WPackage\ %.%#\ Warning:\ %m
   setlocal errorformat+=%-Z(%.%#)\ %m\ on\ input\ line\ %l.

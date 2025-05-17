@@ -76,3 +76,6 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <8.43146> not available
 
 LaTeX Warning: No positions in optional float specifier.
                Default added (so using `tbp') on input line 6.
+
+Package silence Warning: There were 6 warning(s) and 0 error(s).
+(silence)                I've killed 5 warning(s) and 0 error(s).
