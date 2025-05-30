@@ -723,9 +723,9 @@ endfunction
 " }}}1
 function! s:get_cmd_name(next) abort " {{{1
   let [l:lnum, l:cnum] = searchpos(
-        \ '\v\\%(\a+\*?|[,:;!])',
+        \ '\v\\%([a-zA-Z@]+\*?|[,:;!])',
         \ a:next ? 'nW' : 'cbnW')
-  let l:match = matchstr(getline(l:lnum), '^\v\\%([,:;!]|\a*\*?)', l:cnum-1)
+  let l:match = matchstr(getline(l:lnum), '^\v\\%([,:;!]|[a-zA-Z@]*\*?)', l:cnum-1)
   return [l:lnum, l:cnum, l:match]
 endfunction
 
