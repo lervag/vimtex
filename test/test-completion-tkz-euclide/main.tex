@@ -1,0 +1,23 @@
+\documentclass{minimal}
+\usepackage{tkz-euclide}
+
+\begin{document}
+\begin{tikzpicture}[scale=.5]
+% fixed points
+\tkzDefPoint(0,0){A}
+\tkzDefPoint(5,2){B}
+% calculus
+\tkzInterCC(A,B)(B,A)
+\tkzGetPoints{C}{D}
+% drawings
+\tkzDrawCircles(A,B B,A)
+\tkzDrawPolygon(A,B,C)
+\tkzDrawPoints(A,...,D)
+% marking
+\tkzMarkSegments[mark=s||](A,B B,C C,A)
+% labelling
+\tkzLabelSegments[swap](A,B){$c$}
+\tkzLabelPoints(A,B,D)
+\tkzLabelPoints[above](C)
+\end{tikzpicture} 
+\end{document}
