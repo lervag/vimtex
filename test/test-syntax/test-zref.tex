@@ -1,0 +1,19 @@
+\documentclass{scrartcl}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{zref-user}
+\usepackage{zref-clever}
+
+\begin{document}
+
+\section{sub3 with spaces}\zlabel{sec:sub3 with spaces}
+
+\begin{equation}
+  f(x) = 42
+  \label{eq:sub3 with spaces}
+\end{equation}
+
+This is \zcref{sec:sub3 with spaces}, and \zcref{eq:sub3 with spaces} is up top.
+The same here, but without anything clever done to it: \zref{eq:sub3 with spaces}.
+
+\end{document}
