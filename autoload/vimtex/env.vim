@@ -142,10 +142,10 @@ function! vimtex#env#change(open, close, new) abort
   endif
 
   let l:coming_from_inline = a:open.match ==# '$'
-        \ || (
+        \ || (a:open.match ==# '\(' && !(
         \      trim(getline(a:open.lnum))  ==# '\('
         \   && trim(getline(a:close.lnum))  ==# '\)'
-        \ )
+        \ ))
 
   return l:coming_from_inline
         \ ? vimtex#env#change_to_indented(a:open, a:close, l:new)
