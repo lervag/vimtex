@@ -201,16 +201,44 @@ endfunction
 
 " }}}1
 function! s:parse_packages(preamble) abort " {{{1
-  let l:usepackages = filter(copy(a:preamble),
-        \ 'v:val =~# ''\v%(usep|RequireP)ackage''')
-  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
-  call map(l:usepackages, {_, x -> split(matchstr(x, l:pat), '\s*,\s*')})
+  " Remove EOL comments and then join
+  let l:preamble_joined = join(map(copy(a:preamble),
+        \ {_, x -> split(x..' ', '%')[0]}), '')
 
+  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
+      \ . '\v\\%(usep|RequireP)ackage\s*%(\[([^[\]]*)\])?\s*\{\s*\zs%([^{}]+\S)\ze\s*\}'
+  " Regex:
+  " - Match contains package name(s)
+  " - First submatch contains package options
   let l:parsed = {}
-  for l:packages in l:usepackages
-    for l:package in l:packages
-      let l:parsed[l:package] = {}
+  for l:el in matchstrlist([l:preamble_joined], pat, #{submatches:v:true})
+    let l:packages = map(split(l:el['text'], ','), {_, x -> trim(x)})
+    let l:options = {}
+    if l:el['submatches'][0] != ''
+      for l:el in map(split(l:el['submatches'][0], ','), {_, x -> trim(x)})
+        if l:el == ''
+          " Empty option
+          continue
+        elseif l:el =~ '='
+          " Key-value option
+          let [l:key, l:value] = map(split(l:el, '='), {_, x -> trim(x)} )
+
+          if l:value ==? 'true'
+            let l:options[l:key] = v:true
+          elseif l:value ==? 'false'
+            let l:options[l:key] = v:false
+          else
+            let l:options[l:key] = l:value
+          endif
+
+        else
+          " Key-only option
+          let l:options[l:el] = v:true
+        endif
+      endfor
+    endif
+    for l:pkg in l:packages
+      let l:parsed[l:pkg] = l:options
     endfor
   endfor
 
