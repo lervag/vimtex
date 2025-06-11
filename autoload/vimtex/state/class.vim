@@ -34,7 +34,8 @@ function! vimtex#state#class#new(opts) abort " {{{1
         \ ? vimtex#parser#preamble(l:new.tex, {'root' : l:new.root})
         \ : []
 
-  let l:new.documentclass = s:parse_documentclass(l:preamble)
+  let [l:new.documentclass, l:new.documentclass_options] =
+        \ s:parse_documentclass(l:preamble)
   let l:new.packages = s:parse_packages(l:preamble)
   let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
   let l:new.glossaries = s:parse_glossaries(
@@ -72,6 +73,16 @@ function! s:vimtex.__pprint() abort dict " {{{1
 
   if exists('self.documentclass')
     call add(l:items, ['document class', self.documentclass])
+  endif
+
+  if exists('self.documentclass_options')
+    let l:string = join(map(sort(keys(self.documentclass_options)),
+          \ {_, key -> key.."="..
+          \ (self.documentclass_options[key]== v:true ? 'true' :
+          \  self.documentclass_options[key] == v:false ? 'false' :
+          \  self.documentclass_options[key])
+          \ }))
+    call add(l:items, ['document class options', l:string])
   endif
 
   if !empty(self.packages)
@@ -194,9 +205,37 @@ endfunction
 
 
 function! s:parse_documentclass(preamble) abort " {{{1
-  let l:preamble_lines = filter(copy(a:preamble), {_, x -> x !~# '^\s*%'})
-  return matchstr(join(l:preamble_lines, ''),
-        \ '\\documentclass[^{]*{\zs[^}]\+\ze}')
+  " Remove EOL comments and then join
+  let l:preamble_joined = join(map(copy(a:preamble),
+        \ {_, x -> split(x..' ', '%')[0]}), '')
+
+  let l:docclass = matchstr(l:preamble_joined, '\\documentclass[^{]*{\zs[^}]\+\ze}')
+
+  let l:docclass_options = {}
+  let l:unparsed = matchstr(l:preamble_joined, '\\documentclass[^\[]*\[\zs[^\]]\+\ze\]')
+  for l:el in map(split(l:unparsed, ','), {_, x -> trim(x)})
+    if l:el == ''
+      " Empty option
+      continue
+    elseif l:el =~ '='
+      " Key-value option
+      let [l:key, l:value] = map(split(l:el, '='), {_, x -> trim(x)} )
+
+      if l:value ==? 'true'
+        let l:docclass_options[l:key] = v:true
+      elseif l:value ==? 'false'
+        let l:docclass_options[l:key] = v:false
+      else
+        let l:docclass_options[l:key] = l:value
+      endif
+
+    else
+      " Key-only option
+      let l:docclass_options[l:el] = v:true
+    endif
+  endfor
+
+  return [l:docclass, l:docclass_options]
 endfunction
 
 " }}}1
