@@ -1,6 +1,5 @@
 set nocompatible
-set runtimepath^=~/.local/plugged/vimtex
-set runtimepath+=~/.local/plugged/vimtex/after
+set runtimepath^=../..
 filetype plugin indent on
 syntax enable
 
