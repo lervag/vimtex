@@ -34,9 +34,15 @@ function! vimtex#state#class#new(opts) abort " {{{1
         \ ? vimtex#parser#preamble(l:new.tex, {'root' : l:new.root})
         \ : []
 
-  let l:new.documentclass = s:parse_documentclass(l:preamble)
-  let l:new.packages = s:parse_packages(l:preamble)
-  let l:new.graphicspath = s:parse_graphicspath(l:preamble, l:new.root)
+  " Create single-line preamble-string without comments
+  let l:preamble_joined = join(
+        \ map(copy(l:preamble), {_, x -> substitute(x, '\\\@<!%.*', '', '')}),
+        \ '')
+
+  let [l:new.documentclass, l:new.documentclass_options] =
+        \ s:parse_documentclass(l:preamble_joined)
+  let l:new.packages = s:parse_packages(l:preamble_joined)
+  let l:new.graphicspath = s:parse_graphicspath(l:preamble_joined, l:new.root)
   let l:new.glossaries = s:parse_glossaries(
         \ l:preamble,
         \ l:new.root,
@@ -72,6 +78,17 @@ function! s:vimtex.__pprint() abort dict " {{{1
 
   if exists('self.documentclass')
     call add(l:items, ['document class', self.documentclass])
+  endif
+
+  if exists('self.documentclass_options')
+    let l:string = join(map(sort(keys(self.documentclass_options)),
+          \ {_, key -> key .. "=" .. (
+          \   self.documentclass_options[key] == v:true ? 'true'
+          \   : self.documentclass_options[key] == v:false ? 'false'
+          \   : self.documentclass_options[key]
+          \ )}
+          \))
+    call add(l:items, ['document class options', l:string])
   endif
 
   if !empty(self.packages)
@@ -193,38 +210,43 @@ endfunction
 " }}}1
 
 
-function! s:parse_documentclass(preamble) abort " {{{1
-  let l:preamble_lines = filter(copy(a:preamble), {_, x -> x !~# '^\s*%'})
-  return matchstr(join(l:preamble_lines, ''),
+function! s:parse_documentclass(preamble_joined) abort " {{{1
+  let l:documentclass = matchstr(
+        \ a:preamble_joined,
         \ '\\documentclass[^{]*{\zs[^}]\+\ze}')
+
+  let l:option_string = matchstr(
+        \ a:preamble_joined,
+        \ '\\documentclass[^\[]*\[\zs[^\]]\+\ze\]')
+  let l:options = s:parse_optionlist(l:option_string)
+
+  return [l:documentclass, l:options]
 endfunction
 
 " }}}1
-function! s:parse_packages(preamble) abort " {{{1
-  let l:usepackages = filter(copy(a:preamble),
-        \ 'v:val =~# ''\v%(usep|RequireP)ackage''')
-  let l:pat = g:vimtex#re#not_comment . g:vimtex#re#not_bslash
-      \ . '\v\\%(usep|RequireP)ackage\s*%(\[[^[\]]*\])?\s*\{\s*\zs%([^{}]+)\ze\s*\}'
-  call map(l:usepackages, {_, x -> split(matchstr(x, l:pat), '\s*,\s*')})
+function! s:parse_packages(preamble_joined) abort " {{{1
+  " Regex pattern:
+  " - Match contains package name(s)
+  " - First submatch contains package options
+  let l:pat = g:vimtex#re#not_comment .. g:vimtex#re#not_bslash
+      \ .. '\v\\%(usep|RequireP)ackage\s*%(\[([^[\]]*)\])?\s*\{\s*\zs%([^{}]+\S)\ze\s*\}'
 
-  let l:parsed = {}
-  for l:packages in l:usepackages
-    for l:package in l:packages
-      let l:parsed[l:package] = {}
+  let l:packages = {}
+  for l:match in matchstrlist([a:preamble_joined], pat, #{submatches: v:true})
+    let l:new_packages = map(split(l:match.text, ','), {_, x -> trim(x)})
+    let l:options = s:parse_optionlist(l:match.submatches[0])
+    for l:pkg in l:new_packages
+      let l:packages[l:pkg] = l:options
     endfor
   endfor
 
-  return l:parsed
+  return l:packages
 endfunction
 
 " }}}1
-function! s:parse_graphicspath(preamble, root) abort " {{{1
-  " Combine the preamble as one long string of commands
-  let l:preamble = join(map(copy(a:preamble),
-        \ {_, x -> substitute(x, '\\\@<!%.*', '', '')}))
-
+function! s:parse_graphicspath(preamble_joined, root) abort " {{{1
   " Extract the graphicspath command from this string
-  let l:graphicspath = matchstr(l:preamble,
+  let l:graphicspath = matchstr(a:preamble_joined,
           \ g:vimtex#re#not_bslash
           \ . '\\graphicspath\s*\{\s*\{\s*\zs.{-}\ze\s*\}\s*\}'
           \)
@@ -297,3 +319,33 @@ function! s:gather_sources(texfile, root) abort " {{{1
 endfunction
 
 " }}}1
+
+function! s:parse_optionlist(string) abort " {{{1
+  let l:options = {}
+  for l:element in map(split(a:string, ',', v:true), {_, x -> trim(x)})
+    if l:element == ''
+      " Empty option
+      continue
+    elseif l:element =~# '='
+      " Key-value option
+      let [l:key, l:value] = map(split(l:element, '='), {_, x -> trim(x)})
+
+      if l:value ==? 'true'
+        let l:options[l:key] = v:true
+      elseif l:value ==? 'false'
+        let l:options[l:key] = v:false
+      else
+        let l:options[l:key] = l:value
+      endif
+    else
+      " Key-only option
+      let l:options[l:element] = v:true
+    endif
+  endfor
+
+  return l:options
+endfunction
+
+" }}}1
+
+" vim: fdm=marker

@@ -1,0 +1,34 @@
+\RequirePackage[debrief]{silence}
+\documentclass{article}
+
+\usepackage[main=german,english]{babel}
+
+\usepackage[acronyms]{glossaries}
+\usepackage[record,style=long]{glossaries-extra}
+
+\usepackage[% comment
+  backend=biber,
+  style=numeric-comp,
+  maxcitenames=99,
+  % doi=false, % commented option
+  url=false,
+  giveninits=true,
+]{biblatex}
+
+\usepackage[notes, useibid]{biblatex-chicago} % with space
+
+% Issue in VimTeX 2.16 from January 2025:
+% Following multi-line syntax of \usepackage is not detected.
+\usepackage{
+  amsmath,
+  tikz
+}
+
+% Invalid syntax but parsed anyway
+\usepackage[draft]{package1, package2} % packages with a shared option
+
+\begin{document}
+
+Hello, world!
+
+\end{document}
