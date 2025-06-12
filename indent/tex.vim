@@ -53,7 +53,7 @@ function! VimtexIndent(lnum) abort " {{{1
 
   " Use previous indentation for comments
   if l:line =~# '^\s*%'
-    return indent(a:lnum)
+    return indent(l:prev_lnum)
   endif
 
   " Remove comments before subsequent checks
