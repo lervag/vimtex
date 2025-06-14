@@ -327,7 +327,7 @@ function! s:get_sel_delimited(open, close, is_inner) abort " {{{1
         \ 'pos_start' : [l1, c1],
         \ 'pos_end' : [l2, c2],
         \ 'is_inline' : l:is_inline,
-        \ 'select_mode' : l:is_inline && l:linewise
+        \ 'select_mode' : l:linewise
         \      ? 'V' : (v:operator ==# ':') ? visualmode() : 'v',
         \}
 endfunction
