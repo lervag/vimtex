@@ -1080,6 +1080,8 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
   let l:group_cmd = l:pre . 'Cmd' . l:name
   let l:group_opt = l:pre . l:name . 'Opt'
   let l:group_arg = l:pre . l:name . 'Arg'
+  let l:group_arg_space = l:pre . l:name . 'Argspace'
+  let l:group_arg_char = l:pre . l:name . 'ArgChar'
 
   " Specify rules for next groups
   if !empty(l:cfg.nextgroup)
@@ -1092,7 +1094,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
 
       let l:opt_cfg = {'opts': l:cfg.optconceal ? 'conceal' : ''}
       if l:cfg.arg
-        let l:opt_cfg.next = l:group_arg
+        let l:opt_cfg.next = l:group_arg_space
       endif
       call vimtex#syntax#core#new_opt(l:group_opt, l:opt_cfg)
 
@@ -1101,7 +1103,13 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
 
     " Add syntax rules for the argument group
     if l:cfg.arg
-      let l:nextgroups += [l:group_arg]
+      let l:nextgroups += [l:group_arg_space]
+
+      execute 'syntax match' l:group_arg_space '"\s*"'
+            \ 'contained nextgroup=' .. l:group_arg_char .. ',' .. l:group_arg
+            \ l:cfg.conceal ? 'conceal' : ''
+
+      execute 'syntax match' l:group_arg_char '"\w"' 'contained'
 
       let l:arg_cfg = {'opts': 'contained'}
       if l:cfg.conceal && empty(l:cfg.concealchar)
@@ -1128,6 +1136,7 @@ function! vimtex#syntax#core#new_cmd(cfg) abort " {{{1
             \}, l:cfg.argstyle,
             \ l:cfg.mathmode ? 'texMathArg' : '')
       if !empty(l:style)
+        execute 'highlight def link' l:group_arg_char l:style
         execute 'highlight def link' l:group_arg l:style
       endif
     endif
