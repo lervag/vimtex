@@ -328,7 +328,9 @@ function! s:parse_optionlist(string) abort " {{{1
       continue
     elseif l:element =~# '='
       " Key-value option
-      let [l:key, l:value] = map(split(l:element, '=', 1), {_, x -> trim(x)})
+      let [l:key, l:value] = map(
+            \ split(l:element, '=', v:true),
+            \ {_, x -> trim(x)})
 
       if l:value ==? 'true'
         let l:options[l:key] = v:true
