@@ -26,7 +26,8 @@ let s:packages = {
       \ 'package1': {'draft': v:true},
       \ 'biblatex-chicago': {'notes': v:true, 'useibid': v:true},
       \ 'amsmath': {},
-      \ 'package2': {'draft': v:true}
+      \ 'package2': {'draft': v:true},
+      \ 'package': {'key': ''}
       \ }
 call assert_equal(s:packages, b:vimtex.packages)
 
