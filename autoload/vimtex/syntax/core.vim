@@ -812,7 +812,7 @@ function! vimtex#syntax#core#init_options() abort " {{{1
   " Enable syntax foldlevel, but since it was introduced in Vim patch 8.2.0865
   " we must protect users with older Vim versions.
   try
-    syntax xxfoldlevel start
+    syntax foldlevel start
   catch /E410:/
   endtry
 endfunction
