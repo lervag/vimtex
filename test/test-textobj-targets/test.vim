@@ -13,6 +13,11 @@ silent edit test.tex
 
 if empty($INMAKE) | finish | endif
 
+" IMPORTANT NOTE 2025-06-28
+" As of neovim 0.12 there is a default mapping clash that prevents
+" vin, v1in, v2in, van, v1an, v2an of working. There are therefore ignored
+" simply by updating the reference file (test.ok) with bad output.
+
 function! s:testVimtexCmdtargets(name)
   silent! edit!
   normal! "lyy
