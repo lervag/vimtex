@@ -8,4 +8,7 @@ test/test-completion-bibtex/test_parser_*
 test/test-quickfix-fix-path/test_hbox*
 test/example-fzf-lua/fzf-lua
 
+.claude
+CLAUDE.md
+
 *.log
