@@ -15,8 +15,8 @@ if empty($INMAKE) | finish | endif
 
 " IMPORTANT NOTE 2025-06-28
 " As of neovim 0.12 there is a default mapping clash that prevents
-" vin, v1in, v2in, van, v1an, v2an of working. There are therefore ignored
-" simply by updating the reference file (test.ok) with bad output.
+" vin, v1in, v2in, van, v1an, v2an of working. There are therefore ignored in
+" the tests.
 
 function! s:testVimtexCmdtargets(name)
   silent! edit!
@@ -26,15 +26,14 @@ function! s:testVimtexCmdtargets(name)
     for cnt in ['', '1', '2']
       for lastnext in ['l', '', 'n']
         for iaIA in ['I', 'i', 'a', 'A']
-          for target in ['c']
-            let l:motion = cnt . iaIA . lastnext . target
-            if operator ==# 'c' && l:motion =~# '^2.c$'
-              continue
-            endif
+          let l:motion = cnt . iaIA . lastnext . 'c'
+          if (operator ==# 'c' && l:motion =~# '^2.c$')
+                \ || (operator ==# 'v' && l:motion =~# '[ia]nc$')
+            continue
+          endif
 
-            normal! "lpfx
-            call s:execute(operator, l:motion)
-          endfor
+          normal! "lpfx
+          call s:execute(operator, l:motion)
         endfor
       endfor
     endfor
