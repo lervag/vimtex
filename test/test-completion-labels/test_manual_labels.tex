@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{autonum}
+\usepackage{amsmath}
+
+\begin{document}
+
+\section{Introduction}
+\label{sec:intro}
+
+This is some text.
+
+\begin{equation}
+  \label{eq:simple}
+  x = y + z
+\end{equation}
+
+\begin{equation}
+  \label{eq:complex}
+  \int_0^\infty e^{-x} dx = 1
+\end{equation}
+
+% This equation won't show up in aux with autonum since it's not referenced
+\begin{equation}
+  \label{eq:orphan}
+  a^2 + b^2 = c^2
+\end{equation}
+
+We reference \eqref{eq:simple} here, but not the others.
+
+\end{document}

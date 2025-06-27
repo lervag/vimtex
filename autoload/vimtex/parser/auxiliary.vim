@@ -59,6 +59,44 @@ function! vimtex#parser#auxiliary#labels() abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#parser#auxiliary#labels_manual() abort " {{{1
+  "
+  " Manually parses TeX files for \label{} commands.
+  " Used as fallback when aux files are not available or incomplete
+  " (e.g., with autonum package or uncompiled documents).
+  "
+  " Returns a list of candidates like {'word': name, 'menu': '[manual]'}.
+  "
+  let l:labels = []
+  let l:label_re = '\\label\s*{\([^}]\+\)}'
+
+  " Find all \label{} commands
+  for l:line in vimtex#parser#tex(b:vimtex.tex, #{detailed: v:false})
+    if l:line =~# '^\s*%' | continue | endif
+
+    let l:clean_line = substitute(l:line, '\\\@<!%.*$', '', '')
+
+    " Find all labels in this line
+    let l:pos = 0
+    while v:true
+      let [l:match, l:start, l:end] = matchstrpos(l:clean_line, l:label_re, l:pos)
+      if l:start < 0 | break | endif
+
+      let l:label = matchstr(l:match, '\\label\s*{\zs[^}]\+\ze}')
+      if !empty(l:label)
+        call add(l:labels, l:label)
+      endif
+
+      let l:pos = l:end
+    endwhile
+  endfor
+
+  return map(
+        \ vimtex#util#uniq_unsorted(l:labels),
+        \ { _, x -> #{ word: x, menu: '[manual]' }})
+endfunction
+
+" }}}1
 
 function! s:parse_recurse(file, parsed) abort " {{{1
   if !filereadable(a:file) || index(a:parsed, a:file) >= 0

@@ -266,6 +266,11 @@ endfunction
 function! s:completer_ref.get_matches(regex) dict abort " {{{2
   let l:labels = vimtex#parser#auxiliary#labels()
 
+  let l:words = map(copy(l:labels), 'v:val.word')
+  call extend(l:labels, filter(
+        \ vimtex#parser#auxiliary#labels_manual(),
+        \ { _, x -> index(l:words, x.word) < 0 }))
+
   " Match number
   let l:matches = filter(copy(l:labels), {_, x -> x.menu =~# a:regex})
   if !empty(l:matches) | return l:matches | endif
