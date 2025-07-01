@@ -8,8 +8,8 @@ function! vimtex#compiler#init_buffer() abort " {{{1
   if !g:vimtex_compiler_enabled | return | endif
 
   " Define commands
-  command! -buffer        -nargs=* VimtexCompile               call vimtex#compiler#compile(<f-args>)
-  command! -buffer -bang  -nargs=* VimtexCompileSS             call vimtex#compiler#compile_ss(<f-args>)
+  command! -buffer -bang  -nargs=* VimtexCompile               call vimtex#compiler#compile(<q-args>, <q-bang>)
+  command! -buffer        -nargs=* VimtexCompileSS             call vimtex#compiler#compile_ss(<q-args>)
 
   command! -buffer -range VimtexCompileSelected <line1>,<line2>call vimtex#compiler#compile_selected('command')
   command! -buffer        VimtexCompileOutput                  call vimtex#compiler#output()
@@ -115,10 +115,13 @@ endfunction
 function! vimtex#compiler#compile(...) abort " {{{1
   if !b:vimtex.compiler.enabled | return | endif
 
-  if b:vimtex.compiler.is_running()
+  let l:opts = a:0 > 0 ? a:1 : ''
+  let l:bang = a:0 > 1 ? a:2 ==# '!' : v:false
+
+  if !b:vimtex.compiler.is_running()
+    call vimtex#compiler#start(l:opts)
+  elseif !l:bang
     call vimtex#compiler#stop()
-  else
-    call call('vimtex#compiler#start', a:000)
   endif
 endfunction
 
@@ -132,7 +135,8 @@ function! vimtex#compiler#compile_ss(...) abort " {{{1
     return
   endif
 
-  call b:vimtex.compiler.start_single(expandcmd(join(a:000)))
+  let l:opts = a:0 > 0 ? expandcmd(a:1) : ''
+  call b:vimtex.compiler.start_single(l:opts)
 
   if g:vimtex_compiler_silent | return | endif
   call vimtex#log#info('Compiler started in background!')
@@ -229,7 +233,8 @@ function! vimtex#compiler#start(...) abort " {{{1
     return
   endif
 
-  call b:vimtex.compiler.start(expandcmd(join(a:000)))
+  let l:opts = a:0 > 0 ? expandcmd(a:1) : ''
+  call b:vimtex.compiler.start(l:opts)
 
   if g:vimtex_compiler_silent | return | endif
 

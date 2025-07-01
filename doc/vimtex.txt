@@ -3586,10 +3586,13 @@ COMMANDS                                                      *vimtex-commands*
 
                                              *:VimtexCompile*
                                              *<plug>(vimtex-compile)*
-:VimtexCompile [opts]     If the compiler supports and is set to run in
+:VimtexCompile[!] [opts]  If the compiler supports and is set to run in
                           continuous mode, then this command works as
                           a compiler toggle. If not, this command will run
                           a single shot compilation.
+
+                          If [!] is given, the command will only start
+                          compilation, never stop it.
 
                           Arguments to the command will be passed on as options
                           when starting the compiler. This allows the user to
