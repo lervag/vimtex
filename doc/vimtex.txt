@@ -4186,7 +4186,7 @@ Examples (Vimscript) - see below for a Lua example: >vim
   augroup vimtex_event_1
     autocmd!
     autocmd User VimtexEventQuit     VimtexClean
-    autocmd User VimtexEventInitPost VimtexCompile
+    autocmd User VimtexEventInitPost VimtexCompile!
   augroup END
 
   " Close viewers when VimTeX buffers are closed
