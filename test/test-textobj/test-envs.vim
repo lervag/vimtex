@@ -58,7 +58,6 @@ call vimtex#test#keys('4j$d2ae',
       \ ],
       \ [
       \   '\begin{document}',
-      \   '  ',
       \   '\end{document}',
       \ ])
 
