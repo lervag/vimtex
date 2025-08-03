@@ -7,7 +7,7 @@
 scriptencoding utf-8
 
 function! vimtex#syntax#p#glossaries#load(cfg) abort " {{{1
-  syntax match texCmdGls "\v\c\\gls%(desc|link)?>"
+  syntax match texCmdGls "\v\c\\gls%(desc|link|pl)?>"
         \ nextgroup=texGlsArg skipwhite skipnl
   call vimtex#syntax#core#new_arg('texGlsArg', {'contains': '@NoSpell'})
 
