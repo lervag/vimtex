@@ -63,6 +63,7 @@ function! vimtex#misc#wordcount(...) abort " {{{1
     return l:lines
   else
     call filter(l:lines, 'v:val !~# ''ERROR\|^\s*$''')
+    call filter(l:lines, 'v:val !~# ''^Possible precedence problem''')
     return join(l:lines, '')
   endif
 endfunction
