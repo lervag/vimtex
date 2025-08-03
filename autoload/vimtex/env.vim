@@ -55,14 +55,22 @@ function! vimtex#env#get_surrounding(type) abort
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
   if !empty(l:open) | return [l:open, l:close] | endif
 
-  " Next check for standard math environments (only works for 1 level depth)
-  let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
-  if !empty(l:open) &&
-        \ index(s:math_envs, substitute(l:open.name, '\*$', '', '')) >= 0
-    return [l:open, l:close]
-  endif
+  " Next check for standard math environments (recursively)
+  let l:save_pos = vimtex#pos#get_cursor()
+  while v:true
+    let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
+    if empty(l:open)
+      call vimtex#pos#set_cursor(l:save_pos)
+      return [l:open, l:close]
+    endif
 
-  return [{}, {}]
+    if index(s:math_envs, substitute(l:open.name, '\*$', '', '')) >= 0
+      call vimtex#pos#set_cursor(l:save_pos)
+      return [l:open, l:close]
+    endif
+
+    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
+  endwhile
 endfunction
 
 let s:math_envs = [
