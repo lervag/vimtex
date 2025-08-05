@@ -469,7 +469,7 @@ Directory scan ~
   3. The expanded content contains `\begin{document}`.
 
   Notice that the main file itself does not need to contain the
-  `\documentclass` line and `\begin{docment}`, since these can stem from
+  `\documentclass` line and `\begin{document}`, since these can stem from
   included `.tex` files. The option |g:vimtex_include_indicators| is used by
   the parser to specify commands that include `.tex` files for the recursive
   expansion.
