@@ -4245,7 +4245,11 @@ Examples (Vimscript) - see below for a Lua example: >vim
   " Specify additional behaviour after inverse search
   augroup vimtex_event_5
     autocmd!
+    " Use a custom center and flash function
     autocmd User VimtexEventViewReverse call CenterAndFlash()
+
+    " Or perhaps just use a vimtex blink function
+    autocmd User VimtexEventViewReverse call vimtex#ui#blink()
   augroup END
 
   " Focus the terminal after inverse search
@@ -6494,6 +6498,9 @@ Note: This reference is currently a work in progress!
   Utility function for reverse search from pdf viewer. Takes two arguments:
   the line number and a filename. The function runs the event
   |VimtexEventViewReverse| at the end, which allows more user customization.
+  E.g., the user could call `vimtex#ui#blink()` to have a blinking effect
+  after doing the reverse search. See the docs for |VimtexEventViewReverse|
+  for an example.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
