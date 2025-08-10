@@ -52,7 +52,7 @@ function! s:make_cmd_view(outfile, open, sync) abort " {{{1
         \ '-e ''tell application "TeXShop"''',
         \ '-e ''try''',
         \ '-e ''set theDocs to get documents whose path is thePath''',
-        \ '-e ''if (count of theDocs) > 0 then revert theDocs''',
+        \ '-e ''if (count of theDocs) > 0 then revert(theDocs)''',
         \ '-e ''end try''',
         \ a:open ? '-e ''open theFile''' : '',
         \ g:vimtex_view_texshop_activate ? '-e ''activate''' : '',
@@ -62,7 +62,7 @@ function! s:make_cmd_view(outfile, open, sync) abort " {{{1
 
   " Define variables for the source file, line and column numbers:
   let l:sourcefile = shellescape(expand('%'), 1)
-  let l:sourcefileFull = shellescape(expand('%:p'), 1)
+  let l:sourcefileFull = expand('%:p')
   let l:linenr = line('.')
   let l:colnr = col('.')
 
