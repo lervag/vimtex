@@ -5727,7 +5727,7 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 
 After linting, the compiler or linter messages are added to the location list.
 This list may be displayed in the location-list window with |:lwindow|, and
-one may jump between the entries with |:ln| and |:lp|. To automatically open
+one may jump between the entries with |:lne| and |:lp|. To automatically open
 the location-list window after linting is finished, one may add the following
 to one's |vimrc|: >vim
 
@@ -6870,8 +6870,8 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
 
    However, it is hard to write a general parser for LaTeX. This is because
    LaTeX is a semantic language with a large amount of different commands and
-   macros from thousands of available packages, many of which make sense to
-   highlight in a different manner. That is, we need to handle a whole lot of
+   macros from thousands of available packages, many of which make sense to be
+   highlighted in a different manner. That is, we need to handle a whole lot of
    special cases and edge cases!
 
    Furthermore, Tree-sitter highlighting does not currently support
