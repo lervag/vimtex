@@ -2949,7 +2949,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: 0
 
 *g:vimtex_syntax_packages*
-  A dictionary for package specific syntax configuration. Each key represent
+  A dictionary for package specific syntax configuration. Each key represents
   a single package and the values are themselves configuration dictionaries.
   All packages share the following options:
 
@@ -4307,23 +4307,23 @@ typed in the middle, and the result on the right. The bar "|" indicates the
 cursor position before the operation. >
 
   BEFORE                       KEYS    AFTER
-  \comm|and{arg}               dic     \command{}
-  \command{a|rg}               gUac    \COMMAND{ARG}
+  \comm█and{arg}               dic     \command{}
+  \command{a█rg}               gUac    \COMMAND{ARG}
 
-  \lef|t( asd \right)          cid     \left(| \right)
+  \lef█t( asd \right)          cid     \left(█ \right)
 
   \begin{x}                    die     \begin{x}
-    hello world|                       \end{x}
+    hello world█                       \end{x}
   \end{x}
 
-  $math | here$                da$
+  $math █ here$                da$
 
   \begin{itemize}                      \begin{itemize}
-    \item hello moon|          cim       \item |
+    \item hello moon█          cim       \item █
   \end{itemize}                        \end{itemize}
 
   \begin{itemize}                      \begin{itemize}
-    \item hello moon|          dam     \end{itemize}
+    \item hello moon█          dam     \end{itemize}
   \end{itemize}
 
 Note: The "greediness" of the command text objects (`ic` and `ac`) can be
@@ -5727,7 +5727,7 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 
 After linting, the compiler or linter messages are added to the location list.
 This list may be displayed in the location-list window with |:lwindow|, and
-one may jump between the entries with |:lN| and |:lp|. To automatically open
+one may jump between the entries with |:ln| and |:lp|. To automatically open
 the location-list window after linting is finished, one may add the following
 to one's |vimrc|: >vim
 
@@ -5763,7 +5763,7 @@ allows one to use the location list. For `AsyncRun`, one may define a custom
           \ AsyncRun<bang> -auto=make -program=make
 
 The quickfix window that lists the linter errors and warnings can then be
-opened by |:cwindow| and they can be jumped to by |:cN| respectively |:cp|.
+opened by |:cwindow| and they can be jumped to by |:cn| and |:cp| respectively.
 
 Often, a syntax error in a BibTeX file is due to a missing comma after an
 entry. One may define a command to automatically add such missing commas, e.g.
@@ -6439,7 +6439,7 @@ Note: This reference is currently a work in progress!
 
 *vimtex#cite#get_key*
   Returns the citation key under the cursor. Can be useful e.g. to create
-  a function to open a citation in another progrem such as BibDesk or Zotero.
+  a function to open a citation in another program such as BibDesk or Zotero.
   For example: >vim
 
     function! OpenInBibDesk() abort
@@ -6870,7 +6870,7 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
 
    However, it is hard to write a general parser for LaTeX. This is because
    LaTeX is a semantic language with a large amount of different commands and
-   macros from thousands of available packages, many of which makes sense to
+   macros from thousands of available packages, many of which make sense to
    highlight in a different manner. That is, we need to handle a whole lot of
    special cases and edge cases!
 
@@ -6948,7 +6948,7 @@ A: Start by reading the section on |vimtex-view-texshop|. The examples below
    was opened. If the buffer is not active, in a hidden tab or if the file is
    not open at all, inverse search will fail.
 
-   As alternative, to `VimtexInverseSearch`if the .tex document was opened
+   As an alternative to `VimtexInverseSearch`, if the .tex document was opened
    with the `--remote-silent` option, i.e.: >bash
 
      /usr/local/bin/mvim --remote-silent foo.tex
@@ -6989,7 +6989,7 @@ the quickfix window does not load.
 
 Tips:
 1. Ensure that a latexmk process and a Perl process have started. If they have
-   not been started, then these two programs may not accessible given your
+   not been started, then these two programs may not be accessible given your
    operating system's PATH environment variable.
 2. Ensure that the option `-interaction=nonstopmode` is provided to latexmk.
    This is done by default by VimTeX, unless the user provides custom options
