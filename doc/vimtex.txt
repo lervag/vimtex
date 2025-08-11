@@ -4303,7 +4303,7 @@ automatically, see |g:vimtex_text_obj_variant| for more info.
 
 Some examples of how to use the text objects can be useful. The following is
 a simple table that shows the original text on the left, the keys that are
-typed in the middle, and the result on the right. The bar "|" indicates the
+typed in the middle, and the result on the right. The bar "█" indicates the
 cursor position before the operation. >
 
   BEFORE                       KEYS    AFTER
