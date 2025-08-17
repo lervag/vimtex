@@ -51,11 +51,6 @@ function! VimtexIndent(lnum) abort " {{{1
     return empty(l:line) ? indent(l:prev_lnum) : indent(a:lnum)
   endif
 
-  " Use previous indentation for comments
-  if l:line =~# '^\s*%'
-    return indent(l:prev_lnum)
-  endif
-
   " Remove comments before subsequent checks
   let l:line = s:clean_line(l:line)
 
