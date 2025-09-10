@@ -17,10 +17,10 @@ let s:matcher = {
       \ 're' : vimtex#re#tex_input . '\zs\f{-}\s*\ze\}',
       \}
 function! s:matcher.get_entry(context) abort dict " {{{1
-  let l:file = vimtex#parser#tex#input_parser(
+    let l:result = vimtex#parser#tex#input_parser(
         \ a:context.line, a:context.file, b:vimtex.root)
 
-  let l:file = simplify(fnamemodify(l:file, ':~:.'))
+  let l:file = simplify(fnamemodify(l:result.file, ':~:.'))
 
   return {
         \ 'title': 'tex incl: ' . (strlen(l:file) < 70

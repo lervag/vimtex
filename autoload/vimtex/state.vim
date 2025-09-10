@@ -529,7 +529,9 @@ function! s:file_reaches_current(file, ...) abort " {{{1
   call add(l:visited, a:file)
 
   for l:line in filter(readfile(a:file), 'v:val =~# g:vimtex#re#tex_input')
-    let l:file = vimtex#parser#tex#input_parser(l:line, a:file, '')
+    let l:file = get(
+          \ vimtex#parser#tex#input_parser(l:line, a:file, ''),
+          \ 'file', '')
     if empty(l:file) | continue | endif
 
     if !vimtex#paths#is_abs(l:file)

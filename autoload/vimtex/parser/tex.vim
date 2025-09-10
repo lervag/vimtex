@@ -37,8 +37,7 @@ function! vimtex#parser#tex#parse_files(file, opts) abort " {{{1
         \ 'default': {'ftime': -2},
         \})
 
-  return vimtex#util#uniq_unsorted(
-        \ s:parse_files(a:file, l:opts, l:cache))
+  return vimtex#util#uniq_unsorted(s:parse_files(a:file, l:opts, l:cache))
 endfunction
 
 " }}}1
@@ -116,6 +115,11 @@ endfunction
 " }}}1
 
 function! vimtex#parser#tex#input_parser(line, current_file, root) abort " {{{1
+  let l:result = #{
+        \ file: '',
+        \ new_root: a:root,
+        \}
+
   " Handle \space commands
   let l:file = substitute(a:line, '\\space\s*', ' ', 'g')
 
@@ -128,13 +132,16 @@ function! vimtex#parser#tex#input_parser(line, current_file, root) abort " {{{1
     let l:candidate = s:input_to_filename(
           \ substitute(copy(l:file), '\/\?}\s*{', '\/', 'g'), l:root)
 
-    return !empty(l:candidate)
+    let l:result.file = !empty(l:candidate[0])
           \ ? l:candidate
           \ : s:input_to_filename(
-          \     substitute(copy(l:file), '{.{-}}', '', ''), l:root)
+          \       substitute(copy(l:file), '{.{-}}', '', ''), l:root)
+    let l:result.new_root = fnamemodify(l:result.file, ':p:h')
+  else
+    let l:result.file = s:input_to_filename(l:file, a:root)
   endif
 
-  return s:input_to_filename(l:file, a:root)
+  return l:result
 endfunction
 
 function! s:input_to_filename(input, root) abort " {{{2
@@ -206,8 +213,10 @@ function! s:parse_files(file, opts, cache) abort " {{{1
   if !filereadable(a:file) | return [] | endif
 
   let l:files = [a:file]
-  for l:file in l:current.includes
-    let l:files += s:parse_files(l:file, a:opts, a:cache)
+  for l:included in l:current.includes
+    let l:opts = deepcopy(a:opts)
+    let l:opts.root = l:included.new_root
+    let l:files += s:parse_files(l:included.file, l:opts, a:cache)
   endfor
 
   return l:files
@@ -234,10 +243,10 @@ function! s:parse_current(file, opts, current) abort " {{{1
         continue
       endif
 
-      let l:file = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
-      call add(a:current.lines, l:file)
+      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
+      call add(a:current.lines, l:result.file)
 
-      if a:file ==# l:file
+      if a:file ==# l:result.file
         call vimtex#log#error([
               \ 'Recursive file inclusion!',
               \ 'File: ' . fnamemodify(a:file, ':.'),
@@ -245,7 +254,7 @@ function! s:parse_current(file, opts, current) abort " {{{1
               \ l:line,
               \])
       else
-        call add(a:current.includes, l:file)
+        call add(a:current.includes, l:result)
       endif
     endfor
   endif
@@ -261,8 +270,11 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
   let l:lines = []
   for l:line in readfile(a:file)
     if l:line =~# g:vimtex#re#tex_input
-      let l:file = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
-      call extend(l:lines, s:parse_preamble(l:file, a:opts, a:parsed_files))
+      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
+
+      let l:opts = deepcopy(a:opts)
+      let l:opts.root = l:result.new_root
+      call extend(l:lines, s:parse_preamble(l:result.file, l:opts, a:parsed_files))
     else
       call add(l:lines, l:line)
     endif
