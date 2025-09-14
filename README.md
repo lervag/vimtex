@@ -58,7 +58,7 @@ The following explains the most common and popular approaches.
 
 ### lazy.nvim
 
-In Neovim, [lazy.nvim](https://github.com/folke/lazy.nvim) is probably the most popular plugin manger.
+In Neovim, [lazy.nvim](https://github.com/folke/lazy.nvim) is probably the most popular plugin manager.
 To install VimTeX, add a plugin spec similar to this:
 
 ```lua
