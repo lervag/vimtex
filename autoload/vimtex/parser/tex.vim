@@ -16,7 +16,7 @@ function! vimtex#parser#tex#parse(file, opts) abort " {{{1
         \ 'default': {'ftime': -2},
         \})
 
-  let l:parsed = s:parse(a:file, l:opts, l:cache)
+  let l:parsed = s:parse(a:file, l:opts.root, l:cache)
 
   if !l:opts.detailed
     call map(l:parsed, 'v:val[2]')
@@ -37,7 +37,7 @@ function! vimtex#parser#tex#parse_files(file, opts) abort " {{{1
         \ 'default': {'ftime': -2},
         \})
 
-  return vimtex#util#uniq_unsorted(s:parse_files(a:file, l:opts, l:cache))
+  return vimtex#util#uniq_unsorted(s:parse_files(a:file, l:opts.root, l:cache))
 endfunction
 
 " }}}1
@@ -55,7 +55,7 @@ function! vimtex#parser#tex#parse_preamble(file, opts) abort " {{{1
   let l:time = min([localtime() - 60, getftime(a:file)])
   if l:time > l:current.time
     let l:current.time = l:time
-    let l:current.lines = s:parse_preamble(a:file, l:opts, [])
+    let l:current.lines = s:parse_preamble(a:file, l:opts.root, [])
   endif
 
   return deepcopy(l:current.lines)
@@ -179,12 +179,12 @@ endfunction
 " }}}1
 
 
-function! s:parse(file, opts, cache) abort " {{{1
+function! s:parse(file, root, cache) abort " {{{1
   let l:current = a:cache.get(a:file)
   let l:ftime = getftime(a:file)
   if l:ftime > l:current.ftime
     let l:current.ftime = l:ftime
-    call s:parse_current(a:file, a:opts, l:current)
+    call s:parse_current(a:file, a:root, l:current)
   endif
 
   let l:parsed = []
@@ -193,7 +193,7 @@ function! s:parse(file, opts, cache) abort " {{{1
     if type(l:val) == v:t_list
       call add(l:parsed, l:val)
     else
-      call extend(l:parsed, s:parse(l:val, a:opts, a:cache))
+      let l:parsed += s:parse(l:val.file, l:val.new_root, a:cache)
     endif
   endfor
 
@@ -201,12 +201,12 @@ function! s:parse(file, opts, cache) abort " {{{1
 endfunction
 
 " }}}1
-function! s:parse_files(file, opts, cache) abort " {{{1
+function! s:parse_files(file, root, cache) abort " {{{1
   let l:current = a:cache.get(a:file)
   let l:ftime = getftime(a:file)
   if l:ftime > l:current.ftime
     let l:current.ftime = l:ftime
-    call s:parse_current(a:file, a:opts, l:current)
+    call s:parse_current(a:file, a:root, l:current)
   endif
 
   " Only include existing files
@@ -214,16 +214,14 @@ function! s:parse_files(file, opts, cache) abort " {{{1
 
   let l:files = [a:file]
   for l:included in l:current.includes
-    let l:opts = deepcopy(a:opts)
-    let l:opts.root = l:included.new_root
-    let l:files += s:parse_files(l:included.file, l:opts, a:cache)
+    let l:files += s:parse_files(l:included.file, l:included.new_root, a:cache)
   endfor
 
   return l:files
 endfunction
 
 " }}}1
-function! s:parse_current(file, opts, current) abort " {{{1
+function! s:parse_current(file, root, current) abort " {{{1
   let a:current.lines = []
   let a:current.includes = []
 
@@ -243,8 +241,8 @@ function! s:parse_current(file, opts, current) abort " {{{1
         continue
       endif
 
-      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
-      call add(a:current.lines, l:result.file)
+      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:root)
+      call add(a:current.lines, l:result)
 
       if a:file ==# l:result.file
         call vimtex#log#error([
@@ -261,7 +259,7 @@ function! s:parse_current(file, opts, current) abort " {{{1
 endfunction
 
 " }}}1
-function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
+function! s:parse_preamble(file, root, parsed_files) abort " {{{1
   if !filereadable(a:file) || index(a:parsed_files, a:file) >= 0
     return []
   endif
@@ -270,11 +268,9 @@ function! s:parse_preamble(file, opts, parsed_files) abort " {{{1
   let l:lines = []
   for l:line in readfile(a:file)
     if l:line =~# g:vimtex#re#tex_input
-      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:opts.root)
-
-      let l:opts = deepcopy(a:opts)
-      let l:opts.root = l:result.new_root
-      call extend(l:lines, s:parse_preamble(l:result.file, l:opts, a:parsed_files))
+      let l:result = vimtex#parser#tex#input_parser(l:line, a:file, a:root)
+      let l:lines += s:parse_preamble(
+            \ l:result.file, l:result.new_root, a:parsed_files)
     else
       call add(l:lines, l:line)
     endif
