@@ -6,7 +6,8 @@
   "workspace": {
     "library": [
       "$VIMRUNTIME",
-      "${3rd}/luv/library"
+      "${3rd}/luv/library",
+      "$HOME/.local/plugged/snacks.nvim"
     ],
     "checkThirdParty": false
   }

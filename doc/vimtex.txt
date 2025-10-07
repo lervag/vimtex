@@ -80,6 +80,7 @@ CONTENTS                                                      *vimtex-contents*
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
     fzf.vim integration                         |vimtex-fzf|
     fzf-lua integration                         |vimtex-fzf-lua|
+    Snacks integration                          |vimtex-snacks|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-compiler-latexmk|
     Latexrun                                    |vimtex-compiler-latexrun|
@@ -5406,7 +5407,7 @@ one may override the default mapping, e.g.: >vim
   nnoremap <localleader>lt :<c-u>Unite vimtex<cr>
 
 ------------------------------------------------------------------------------
-FZF INTEGRATION                                                   *vimtex-fzf*
+FZF INTEGRATION                                                    *vimtex-fzf*
 
                                            https://github.com/junegunn/fzf.vim
                                                https://github.com/junegunn/fzf
@@ -5441,9 +5442,9 @@ example, if you've defined `g:fzf_layout`, then those options can be passed to
   :call vimtex#fzf#run('ctli', g:fzf_layout)
 
 ------------------------------------------------------------------------------
-FZF-LUA INTEGRATION                                           *vimtex-fzf-lua*
+FZF-LUA INTEGRATION                                            *vimtex-fzf-lua*
 
-                                           https://github.com/ibhagwan/fzf-lua/
+                                            https://github.com/ibhagwan/fzf-lua
 |fzf-lua| integrates the general-purpose command-line fuzzy finder |fzf| into
 neovim through Lua. It may be used to quickly navigate VimTeX's built-in ToC
 feature. To use it, define a mapping to `require("vimtex.fzf-lua").run(options)`,
@@ -5458,6 +5459,23 @@ custom options to fzf-lua via "fzf_opts".
 You can also choose to only show certain entry "layers" by passing a layer
 string. By default, all layers are displayed. To only show `content` and
 `label`s use `require("vimtex.fzf-lua").run({layers ="cl"})`.
+
+------------------------------------------------------------------------------
+SNACKS INTEGRATION                                              *vimtex-snacks*
+
+                                           https://github.com/folke/snacks.nvim
+|Snacks| is a collection of quality of life plugins for Neovim. It includes
+a picker, which can be used with the table of contents in VimTeX.
+
+To use it, define a mapping to `require("vimtex.snacks").toc(options)`, e.g. >lua
+
+  vim.keymap.set("n", "<localleader>lt", function()
+    return require("vimtex.snacks").run()
+  end)
+
+Currently three options are supported: "layers" and "preview" and "confirm".
+The first is similar to |vimtex-fzf-lua|, the latter are passed directly to
+the Snacks picker.
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
