@@ -5470,7 +5470,7 @@ a picker, which can be used with the table of contents in VimTeX.
 To use it, define a mapping to `require("vimtex.snacks").toc(options)`, e.g. >lua
 
   vim.keymap.set("n", "<localleader>lt", function()
-    return require("vimtex.snacks").run()
+    return require("vimtex.snacks").toc()
   end)
 
 Currently three options are supported: "layers" and "preview" and "confirm".
