@@ -6079,6 +6079,13 @@ may use the `MacVim` preset. However, it may be more convenient to use a
 
   nvim --headless -c "VimtexInverseSearch %line '%file'"
 
+Depending on your system configuration, it may be necessary to specify the
+path to the Vim/Neovim binary. For example, if Neovim was installed via
+homebrew, one can specify the following in the Skim settings panel. >bash
+
+  Command = /opt/homebrew/bin/nvim
+  Arguments = --headless -c "VimtexInverseSearch %line '%file'"
+
 Inverse search is activated by pressing `Shift` and `Command`, then clicking
 the text you want to search. For more info on inverse search, see
 |vimtex-synctex-inverse-search|.
