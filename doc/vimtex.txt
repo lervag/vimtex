@@ -6102,13 +6102,23 @@ Configuration: >vim
 For convenience, the above configuration is used by default on Windows if
 `SumatraPDF` is detected as executable.
 
-Inverse search must be configured under `Settings --> Options` from within
-SumatraPDF. Find the section `Set inverse search command-line` in the bottom
-and use the following viewer configuration: >bash
+To configure inverse search:
 
-  cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+1. Install SumatraPDF for all users and add to `PATH.`
+2. Open "Settings -> Advanced Options" in SumatraPDF and edit the following
+   variables: >bash
 
-  cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+     InverseSearchCmdLine = cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+     EnableTeXEnhancements = true
+<
+   For Vim instead of Neovim, use: >bash
+
+     InverseSearchCmdLine = cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+
+If you are using an old version of SumatraPDF where `Advanced Options` is not
+available: open "Settings -> Options", Find the section "Set inverse search
+command-line" in the bottom, and use the appropriate viewer configuration,
+i.e. one of the `InverseSearchCmdLine` from step 2 above.
 
 Inverse search is activated with a double click in the PDF file. See
 |vimtex-synctex-inverse-search| for more info on inverse search.
