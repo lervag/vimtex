@@ -3816,7 +3816,7 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-cmd-toggle-star-agn)*
   Toggle starred command or environment, whichever is closest to the cursor.
   This is not mapped by default. Some users may prefer the combined behaviour
-  and may want to map it, e.g. like this in their personal `ftplugin/tex.vim`:
+  and may want to map it, e.g. like this in their personal `ftplugin/tex.vim`: >vim
 
     nmap tss <plug>(vimtex-cmd-toggle-star-agn)
 <
