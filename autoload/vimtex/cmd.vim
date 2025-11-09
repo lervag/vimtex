@@ -457,6 +457,9 @@ function! s:get_frac_inline() abort " {{{1
     let l:positions += [l:pos_after]
   endif
 
+  let l:re_denom_1 = '\v^\s*[^$()} ]*'
+  let l:re_denom_2 = '\\%(right|[bB]igg?r?)?\)'
+
   for l:pos in l:positions
     let l:frac = {'type': 'inline'}
 
@@ -482,9 +485,9 @@ function! s:get_frac_inline() abort " {{{1
     " Parse denominator
     "
     let l:after = strpart(l:line, l:pos+1)
-    let l:atoms = l:after =~# '^\s*[^$()} ]*\\)'
-          \ ? matchstr(l:after, '^\s*[^$()} ]*\ze\\)')
-          \ : matchstr(l:after, '^\s*[^$()} ]*')
+    let l:atoms = l:after =~# l:re_denom_1 .. l:re_denom_2
+          \ ? matchstr(l:after, l:re_denom_1 .. '\ze' .. l:re_denom_2)
+          \ : matchstr(l:after, l:re_denom_1)
     let l:pos_after = l:pos + strlen(l:atoms)
     let l:after = strpart(l:line, l:pos_after+1)
     if l:after =~# '^('
