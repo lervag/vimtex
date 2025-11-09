@@ -136,6 +136,7 @@ function! s:compiler._create_build_dir(path) abort dict " {{{1
   call map(l:dirs, {_, x ->
         \ (vimtex#paths#is_abs(a:path) ? '' : self.file_info.root . '/')
         \ . a:path . '/' . x})
+  call map(l:dirs, {_, x -> simplify(x) })
   call filter(l:dirs, '!isdirectory(v:val)')
   if empty(l:dirs) | return | endif
 
