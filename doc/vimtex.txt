@@ -849,6 +849,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
    <localleader>ll  |<plug>(vimtex-compile)|                        `n`
    <localleader>lL  |<plug>(vimtex-compile-selected)|               `nx`
+   <localleader>lS  |<plug>(vimtex-compile-ss)|                     `n`
    <localleader>lk  |<plug>(vimtex-stop)|                           `n`
    <localleader>lK  |<plug>(vimtex-stop-all)|                       `n`
    <localleader>le  |<plug>(vimtex-errors)|                         `n`

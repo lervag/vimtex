@@ -195,6 +195,7 @@ function! s:init_default_mappings() abort " {{{1
 
   if g:vimtex_compiler_enabled
     call s:map_prefixed(0, 'n', 'l', '<plug>(vimtex-compile)')
+    call s:map_prefixed(0, 'n', 'S', '<plug>(vimtex-compile-ss)')
     call s:map_prefixed(0, 'n', 'o', '<plug>(vimtex-compile-output)')
     call s:map_prefixed(1, 'n', 'L', '<plug>(vimtex-compile-selected)')
     call s:map_prefixed(1, 'x', 'L', '<plug>(vimtex-compile-selected)')
