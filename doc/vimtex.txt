@@ -2519,6 +2519,9 @@ OPTIONS                                                        *vimtex-options*
     fancy ~
       Some extra fancy replacements, e.g. `\item` --> ○.
 
+    texTabularChar ~
+      Conceal tabular line breaks, i.e. `\\` --> `⏎`.
+
     spacing ~
       Conceal spacing commands such as `\quad` and `\hspace{1em}` in both
       normal mode and math mode.
@@ -2569,6 +2572,7 @@ OPTIONS                                                        *vimtex-options*
           \ 'ligatures': 1,
           \ 'cites': 1,
           \ 'fancy': 1,
+          \ 'texTabularChar': 1,
           \ 'spacing': 1,
           \ 'greek': 1,
           \ 'math_bounds': 1,

@@ -704,6 +704,11 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
       call s:match_conceal_fancy()
     endif
 
+    " Conceal tabular characters
+    if g:vimtex_syntax_conceal.texTabularChar
+      syntax match texTabularChar "\\\\" conceal cchar=⏎
+    endif
+
     " Conceal spacing commands
     if g:vimtex_syntax_conceal.spacing
       call s:match_conceal_spacing()
@@ -2488,7 +2493,6 @@ function! s:match_conceal_fancy() abort " {{{1
   syntax match texCmd         "\%#=1\\dots\>"  conceal cchar=…
   syntax match texCmd         "\%#=1\\slash\>" conceal cchar=/
   syntax match texCmd         "\%#=1\\ldots\>" conceal cchar=…
-  syntax match texTabularChar "\\\\"      conceal cchar=⏎
 
   syntax match texCmdItem     "\%#=1\\item\>"  conceal cchar=○
         \ nextgroup=texItemLabelConcealed
