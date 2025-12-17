@@ -73,6 +73,25 @@ function! vimtex#env#get_surrounding(type) abort
   endwhile
 endfunction
 
+function! vimtex#env#get_surrounding_or_next(type) abort
+  if a:type ==# 'normal'
+    return vimtex#delim#get_surrounding_or_next('env_tex')
+  endif
+
+  if a:type !=# 'math'
+    call vimtex#log#error('Wrong argument!')
+    return [{}, {}]
+  endif
+
+  " First check for special math env delimiters
+  let [l:open, l:close] = vimtex#delim#get_surrounding_or_next('env_math')
+  if !empty(l:open) | return [l:open, l:close] | endif
+
+  " Finally check for standard math environments
+  let [l:open, l:close] = vimtex#delim#get_surrounding_or_next('env_tex')
+  return [l:open, l:close]
+endfunction
+
 let s:math_envs = [
       \ 'align',
       \ 'alignat',

@@ -454,6 +454,15 @@ function! vimtex#delim#get_surrounding(type) abort " {{{1
 endfunction
 
 " }}}1
+function! vimtex#delim#get_surrounding_or_next(type) abort " {{{1
+  " This is split, because we need some extra conditions to ensure that
+  " delimiters are matched properly.
+  return a:type =~# '^env'
+        \ ? s:get_surrounding_or_next_env(a:type)
+        \ : s:get_surrounding_or_next_delim(a:type)
+endfunction
+
+" }}}1
 
 function! s:get_surrounding_env(type) abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
@@ -525,6 +534,34 @@ function! s:get_surrounding_delim(type) abort " {{{1
 
   call vimtex#pos#set_cursor(l:save_pos)
   return [{}, {}]
+endfunction
+
+" }}}1
+function! s:get_surrounding_or_next_env(type) abort " {{{1
+  let [l:open, l:close] = s:get_surrounding_env(a:type)
+  if !empty(l:open)
+    return [l:open, l:close]
+  endif
+
+  let l:open = vimtex#delim#get_next(a:type, 'open')
+  if empty(l:open) | return [{}, {}] | endif
+
+  let l:close = vimtex#delim#get_matching(l:open)
+  return [l:open, l:close]
+endfunction
+
+" }}}1
+function! s:get_surrounding_or_next_delim(type) abort " {{{1
+  let [l:open, l:close] = s:get_surrounding_delim(a:type)
+  if !empty(l:open)
+    return [l:open, l:close]
+  endif
+
+  let l:next = vimtex#delim#get_next(a:type, 'open')
+  if empty(l:open) | return [{}, {}] | endif
+
+  let l:close = vimtex#delim#get_matching(l:open)
+  return [l:open, l:close]
 endfunction
 
 " }}}1

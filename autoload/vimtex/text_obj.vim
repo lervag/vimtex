@@ -122,7 +122,7 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
     if a:mode
       let l:object = s:get_sel_delimited_visual(a:is_inner, a:type, l:startpos)
     else
-      let [l:open, l:close] = s:get_surrounding(a:type)
+      let [l:open, l:close] = s:get_surrounding_or_next(a:type)
       let l:object = empty(l:open)
             \ ? {} : s:get_sel_delimited(l:open, l:close, a:is_inner)
     endif
@@ -463,6 +463,15 @@ endfunction
 
 " }}}1
 
+function! s:get_surrounding_or_next(type) abort " {{{1
+  if a:type ==# 'delims'
+    return vimtex#delim#get_surrounding_or_next('delim_all')
+  else
+    return vimtex#env#get_surrounding_or_next(a:type)
+  endif
+endfunction
+
+" }}}1
 function! s:get_surrounding(type) abort " {{{1
   if a:type ==# 'delims'
     return vimtex#delim#get_surrounding('delim_all')

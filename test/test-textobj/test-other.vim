@@ -23,4 +23,12 @@ call vimtex#test#keys('f\dac',
       \ 'a + \; f',
       \ 'a +  f')
 
+call vimtex#test#keys('di$',
+      \ 'Hello world! $(x)$',
+      \ 'Hello world! $$')
+
+call vimtex#test#keys('da$',
+      \ 'Hello world! $(x)$',
+      \ 'Hello world! ')
+
 call vimtex#test#finished()
