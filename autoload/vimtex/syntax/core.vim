@@ -51,6 +51,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax cluster texClusterOpt contains=
         \texCmd,
         \texComment,
+        \texTabularChar,
+        \texSpecialChar,
         \texGroup,
         \texLength,
         \texOpt,
