@@ -741,6 +741,15 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   endif
 
   " }}}2
+  " {{{2 Commands: \begin{macrocode}
+
+  " * In documented TeX Format, the 'macrocode' environment separates
+  "   documentation from actual code, hence should get special highlighting.
+  if expand('%:e') ==# 'dtx'
+      syntax match texDtxMacrocode "\%#=2^% \{4}\\\(begin\|end\){macrocode}"
+  endif
+
+  " }}}2
 
   let b:current_syntax = 'tex'
 
@@ -770,7 +779,6 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \texMathDelimMod,
         \texMathDelim,
         \@NoSpell
-
 endfunction
 
 " }}}1
@@ -830,6 +838,7 @@ function! vimtex#syntax#core#init_highlights() abort " {{{1
   " See :help group-name for list of conventional group names
 
   " Primitive TeX highlighting groups
+  highlight def link texDtxMacrocode     Special
   highlight def link texArg              Include
   highlight def link texCmd              Statement
   highlight def link texCmdSpaceCodeChar Special
