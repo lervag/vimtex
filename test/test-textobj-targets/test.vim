@@ -13,10 +13,10 @@ silent edit test.tex
 
 if empty($INMAKE) | finish | endif
 
-" IMPORTANT NOTE 2025-06-28
-" As of neovim 0.12 there is a default mapping clash that prevents
-" vin, v1in, v2in, van, v1an, v2an of working. There are therefore ignored in
-" the tests.
+" IMPORTANT NOTE 2025-06-28; 2025-12-17
+" As of neovim 0.12 there are default mapping clashes that prevents "in" and
+" "an" from working, see `:h v_an` and `:h v_in`.
+" There are therefore ignored in the tests.
 
 function! s:testVimtexCmdtargets(name)
   silent! edit!
@@ -28,7 +28,7 @@ function! s:testVimtexCmdtargets(name)
         for iaIA in ['I', 'i', 'a', 'A']
           let l:motion = cnt . iaIA . lastnext . 'c'
           if (operator ==# 'c' && l:motion =~# '^2.c$')
-                \ || (operator ==# 'v' && l:motion =~# '[ia]nc$')
+                \ || (l:motion =~# '[ia]nc$')
             continue
           endif
 
