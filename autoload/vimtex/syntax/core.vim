@@ -263,7 +263,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texNewcmdArgBody')
   " The default regexp v2 seems to be faster here:
-  syntax match texNewcmdParm contained "#\+\d" containedin=texNewcmdArgBody
+  syntax match texNewcmdParm contained "#\+[1-9]" containedin=texNewcmdArgBody
 
   " \newenvironment
   syntax match texCmdNewenv nextgroup=texNewenvArgName skipwhite skipnl "\%#=1\\\%(re\)\?newenvironment\>"
@@ -274,7 +274,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \})
   call vimtex#syntax#core#new_arg('texNewenvArgBegin', {'next': 'texNewenvArgEnd'})
   call vimtex#syntax#core#new_arg('texNewenvArgEnd')
-  syntax match texNewenvParm contained "#\+\d" containedin=texNewenvArgBegin,texNewenvArgEnd
+  syntax match texNewenvParm contained "#\+[1-9]" containedin=texNewenvArgBegin,texNewenvArgEnd
 
   " Definitions/Commands
   " E.g. \def \foo #1#2 {foo #1 bar #2 baz}
@@ -282,7 +282,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\%#=1\\[a-zA-Z@]\+"
   syntax match texDefArgName contained nextgroup=texDefParmPre,texDefArgBody skipwhite skipnl "\%#=1\\[^a-zA-Z@]"
   syntax match texDefParmPre contained nextgroup=texDefArgBody skipwhite skipnl "#[^{]*"
-  syntax match texDefParm contained "#\+\d" containedin=texDefParmPre,texDefArgBody
+  syntax match texDefParm contained "#\+[1-9]" containedin=texDefParmPre,texDefArgBody
   call vimtex#syntax#core#new_arg('texDefArgBody')
 
   " \let
@@ -556,7 +556,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ contains=texE3Type
 
   syntax match texE3Type ":[a-zA-Z]*" contained
-  syntax match texE3Parm "#\+\d" contained containedin=@texClusterE3
+  syntax match texE3Parm "#\+[1-9]" contained containedin=@texClusterE3
 
   syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
 
