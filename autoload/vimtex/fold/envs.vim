@@ -14,9 +14,10 @@ endfunction
 let s:folder = {
       \ 'name' : 'environments',
       \ 're' : {
-      \   'start' : g:vimtex#re#not_comment . '\\begin\s*\{.{-}\}',
-      \   'end' : g:vimtex#re#not_comment . '\\end\s*\{.{-}\}',
-      \   'name' : g:vimtex#re#not_comment . '\\%(begin|end)\s*\{\zs.{-}\ze\}'
+      \   'start' : g:vimtex#re#not_comment .. '\\begin\s*\{.{-}\}',
+      \   'end' : g:vimtex#re#not_comment .. '\\end\s*\{.{-}\}',
+      \   'name' : g:vimtex#re#not_comment
+      \            .. '\\%(begin|end)\s*\{(.{-})\}(\s*\{.*\})?'
       \ },
       \ 'whitelist' : [],
       \ 'blacklist' : [],
@@ -46,7 +47,7 @@ endfunction
 
 " }}}1
 function! s:folder.level(line, lnum) abort dict " {{{1
-  let l:env = matchstr(a:line, self.re.name)
+  let l:env = matchlist(a:line, self.re.name)[1]
 
   if !empty(l:env) && self.validate(l:env)
     if a:line =~# self.re.start
@@ -63,7 +64,8 @@ endfunction
 
 " }}}1
 function! s:folder.text(line, level) abort dict " {{{1
-  let env = matchstr(a:line, self.re.name)
+  let match = matchlist(a:line, self.re.name)
+  let env = match[1]
   if !self.validate(env) | return | endif
 
   " Set caption/label based on type of environment
@@ -84,7 +86,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   " Always make room for the label
   let width_rhs = 0
   if !empty(label)
-    let label = '(' . label . ')'
+    let label = '(' .. label .. ')'
     let width_rhs += len(label)
   endif
 
@@ -96,7 +98,7 @@ function! s:folder.text(line, level) abort dict " {{{1
   if len(env) > width_lhs - width_ind - 8
     let env = strpart(env, 0, width_lhs - width_ind - 8)
   endif
-  let title = repeat(' ', width_ind) . '\begin{' . env . '}'
+  let title = repeat(' ', width_ind) .. '\begin{' .. env .. '}' .. match[2]
 
   " Add option group text
   if !empty(option)
@@ -116,7 +118,7 @@ function! s:folder.text(line, level) abort dict " {{{1
 
     if width_available >= 5
       if strchars(caption) > width_available
-        let caption = strpart(caption, 0, width_available - 1) . '…'
+        let caption = strpart(caption, 0, width_available - 1) .. '…'
       endif
       let title .= caption
     endif
