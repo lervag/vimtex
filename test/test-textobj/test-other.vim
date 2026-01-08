@@ -31,4 +31,19 @@ call vimtex#test#keys('da$',
       \ 'Hello world! $(x)$',
       \ 'Hello world! ')
 
+call vimtex#test#keys('jjda$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'Hello world!',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'Hello world!',
+      \   '\end{document}',
+      \ ],
+      \)
+
 call vimtex#test#finished()

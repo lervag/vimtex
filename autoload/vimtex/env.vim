@@ -88,8 +88,28 @@ function! vimtex#env#get_surrounding_or_next(type) abort
   if !empty(l:open) | return [l:open, l:close] | endif
 
   " Finally check for standard math environments
-  let [l:open, l:close] = vimtex#delim#get_surrounding_or_next('env_tex')
-  return [l:open, l:close]
+  let l:save_pos = vimtex#pos#get_cursor()
+  let l:pv_current = vimtex#pos#val(l:save_pos)
+  let l:pv_prev = 0
+  while v:true && l:pv_current != l:pv_prev
+    let [l:open, l:close] = vimtex#delim#get_surrounding_or_next('env_tex')
+    if empty(l:open)
+      call vimtex#pos#set_cursor(l:save_pos)
+      return [l:open, l:close]
+    endif
+
+    if index(s:math_envs, substitute(l:open.name, '\*$', '', '')) >= 0
+      call vimtex#pos#set_cursor(l:save_pos)
+      return [l:open, l:close]
+    endif
+
+    let l:pos_next = vimtex#pos#prev(l:open)
+    let l:pv_prev = l:pv_current
+    let l:pv_current = vimtex#pos#val(l:pos_next)
+    call vimtex#pos#set_cursor(l:pos_next)
+  endwhile
+
+  return [{}, {}]
 endfunction
 
 let s:math_envs = [
