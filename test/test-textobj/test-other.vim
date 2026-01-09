@@ -63,5 +63,24 @@ call vimtex#test#keys('jjfxda$',
       \ ],
       \)
 
+call vimtex#test#keys('jjda$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '\begin{equation} x \end{equation}',
+      \   '$y$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '',
+      \   '$y$',
+      \   '\end{document}',
+      \ ],
+      \)
+
 
 call vimtex#test#finished()

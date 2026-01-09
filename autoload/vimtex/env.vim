@@ -55,22 +55,12 @@ function! vimtex#env#get_surrounding(type) abort
   let [l:open, l:close] = vimtex#delim#get_surrounding('env_math')
   if !empty(l:open) | return [l:open, l:close] | endif
 
-  " Next check for standard math environments (recursively)
-  let l:save_pos = vimtex#pos#get_cursor()
-  while v:true
-    let [l:open, l:close] = vimtex#delim#get_surrounding('env_tex')
-    if empty(l:open)
-      call vimtex#pos#set_cursor(l:save_pos)
-      return [l:open, l:close]
-    endif
-
-    if index(s:math_envs, substitute(l:open.name, '\*$', '', '')) >= 0
-      call vimtex#pos#set_cursor(l:save_pos)
-      return [l:open, l:close]
-    endif
-
-    call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))
-  endwhile
+  " Next check for standard math environments
+  let [l:open, l:close] = vimtex#delim#get_surrounding(
+        \ 'env_tex',
+        \ #{ whitelist: s:math_envs }
+        \)
+  return [l:open, l:close]
 endfunction
 
 function! vimtex#env#get_surrounding_or_next(type) abort
@@ -84,47 +74,30 @@ function! vimtex#env#get_surrounding_or_next(type) abort
   endif
 
   " Now we check for math envs/regions
-  let l:pos_saved = vimtex#pos#get_cursor()
-  let l:posval_saved = vimtex#pos#val(l:pos_saved)
+  let l:posval_cursor = vimtex#pos#val(vimtex#pos#get_cursor())
 
   " Check for special math env delimiters ($..$, etc)
   let [l:open_sp, l:close_sp] = vimtex#delim#get_surrounding_or_next('env_math')
   let l:posval_sp = empty(l:open_sp)
-        \ ? 500*l:posval_saved
+        \ ? 500*l:posval_cursor
         \ : vimtex#pos#val(l:open_sp)
 
   " Early return if this match surrounds the cursor
-  if l:posval_sp <= l:posval_saved
+  if l:posval_sp <= l:posval_cursor
     return [l:open_sp, l:close_sp]
   endif
 
   " Check for standard math environments
-  let l:posval_prev = 0
-  let l:posval_env = l:posval_saved
-  while v:true
-    let [l:open_env, l:close_env] = vimtex#delim#get_surrounding_or_next('env_tex')
-    if empty(l:open_env)
-      call vimtex#pos#set_cursor(l:pos_saved)
-      return [l:open_sp, l:close_sp]
-    endif
+  let [l:open_env, l:close_env] = vimtex#delim#get_surrounding_or_next(
+        \ 'env_tex',
+        \ #{ whitelist: s:math_envs }
+        \)
+  if empty(l:open_env)
+    return [l:open_sp, l:close_sp]
+  endif
 
-    if index(s:math_envs, substitute(l:open_env.name, '\*$', '', '')) >= 0
-      call vimtex#pos#set_cursor(l:pos_saved)
-      break
-    endif
-
-    let l:pos_next = vimtex#pos#prev(l:open_env)
-    let l:posval_prev = l:posval_env
-    let l:posval_env = vimtex#pos#val(l:pos_next)
-    if l:posval_env == l:posval_prev
-      call vimtex#pos#set_cursor(l:pos_saved)
-      return [l:open_sp, l:close_sp]
-    else
-      call vimtex#pos#set_cursor(l:pos_next)
-    endif
-  endwhile
-
-  return l:posval_env <= l:posval_saved || l:posval_env < l:posval_sp
+  let l:posval_env = vimtex#pos#val(l:open_env)
+  return l:posval_env <= l:posval_cursor || l:posval_env < l:posval_sp
         \ ? [l:open_env, l:close_env]
         \ : [l:open_sp, l:close_sp]
 endfunction
