@@ -4313,7 +4313,7 @@ typed in the middle, and the result on the right. The bar "█" indicates the
 cursor position before the operation. >
 
   BEFORE                       KEYS    AFTER
-  \comm█and{arg}               dic     \command{}
+  \comm█and{arg}               dic     \{arg}
   \command{a█rg}               gUac    \COMMAND{ARG}
 
   \lef█t( asd \right)          cid     \left(█ \right)
