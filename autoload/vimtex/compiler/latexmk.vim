@@ -102,8 +102,11 @@ let s:compiler = vimtex#compiler#_template#new({
       \})
 
 function! s:compiler.__check_requirements() abort dict " {{{1
-  if !executable(self.executable)
-    call vimtex#log#warning(self.executable . ' is not executable')
+  if !self._is_executable_available()
+    let l:exe = type(self.executable) == v:t_list
+          \ ? self.executable[0]
+          \ : self.executable
+    call vimtex#log#warning(l:exe . ' is not executable')
     let self.enabled = v:false
   endif
 endfunction
@@ -135,7 +138,7 @@ endfunction
 function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
   let l:cmd = (has('win32')
         \ ? 'set max_print_line=2000 & '
-        \ : 'max_print_line=2000 ') . self.executable
+        \ : 'max_print_line=2000 ') . self._get_executable_string()
 
   let l:cmd .= ' ' . join(self.options) . a:passed_options
   let l:cmd .= ' ' . self.get_engine()
@@ -227,7 +230,7 @@ endfunction
 function! s:compiler.clean(full) abort dict " {{{1
   call self.__clean_temp_files(a:full)
 
-  let l:cmd = self.executable
+  let l:cmd = self._get_executable_string()
   let l:cmd .= a:full ? ' -C' : ' -c'
 
   if !empty(self.out_dir)
