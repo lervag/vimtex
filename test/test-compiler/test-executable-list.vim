@@ -2,12 +2,11 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
-let g:status = 0
-nnoremap q :qall!<cr>
-
 let g:vimtex_compiler_latexmk = {'executable': ['latexmk', '-outdir=build']}
 
 call vimtex#log#set_silent()
+
+let g:status = 0
 
 augroup test_executable_list
   autocmd!
@@ -28,11 +27,9 @@ while g:status < 1 && s:n < 100
 endwhile
 
 call assert_equal(1, g:status)
-
 call assert_true(filereadable('build/test-builddir.pdf'))
 
 silent VimtexClean!
-
 call assert_false(filereadable('build/test-builddir.pdf'))
 
 call vimtex#test#finished()

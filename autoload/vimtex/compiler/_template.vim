@@ -64,7 +64,6 @@ endfunction
 " }}}1
 
 function! s:compiler._get_executable_string() abort dict " {{{1
-  "
   " Convert executable (string or list) to a command string
   "
   " The executable property can be:
@@ -75,15 +74,13 @@ function! s:compiler._get_executable_string() abort dict " {{{1
     return self.executable
   elseif type(self.executable) == v:t_list
     return join(self.executable)
-  else
-    throw 'VimTeX: executable must be a string or list'
   endif
+
+  throw 'VimTeX: executable must be a string or list'
 endfunction
 
 " }}}1
-
 function! s:compiler._is_executable_available() abort dict " {{{1
-  "
   " Check if the executable is available
   "
   " For string executables, check directly.
@@ -91,13 +88,15 @@ function! s:compiler._is_executable_available() abort dict " {{{1
   "
   if type(self.executable) == v:t_string
     return executable(self.executable)
-  elseif type(self.executable) == v:t_list && !empty(self.executable)
-    return executable(self.executable[0])
   endif
-  return v:false
+
+  return type(self.executable) == v:t_list
+        \ && !empty(self.executable)
+        \ && executable(self.executable[0])
 endfunction
 
 " }}}1
+
 function! s:compiler.__init() abort dict " {{{1
 endfunction
 
