@@ -535,7 +535,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ 'contains': 'TOP,@NoSpell,TexError',
         \})
 
-  syntax match texE3Cmd "\\\w\+"
+  syntax match texE3Cmd "\\\h\+"
         \ contained containedin=@texClusterE3
         \ nextgroup=texE3Opt,texE3Arg skipwhite skipnl
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
