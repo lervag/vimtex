@@ -1110,7 +1110,10 @@ OPTIONS                                                        *vimtex-options*
           are only relevant when this option is enabled.
 
   executable ~
-    The name/path to the `latexmk` executable.
+    The name/path to the `latexmk` executable. Can be a string or a list.
+    If a list is provided, it will be interpreted as a command sequence
+    (e.g., `['docker', 'exec', 'container', 'latexmk']` for running latexmk
+    through a container).
 
   hooks ~
     A list of |Funcref|s. If running in continuous mode, each hook will be
