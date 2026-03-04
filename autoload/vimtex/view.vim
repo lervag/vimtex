@@ -97,17 +97,19 @@ function! vimtex#view#inverse_search(line, filename, column = 0) abort
     endif
   endif
 
-  " Get buffer, window, and tab numbers
-  " * If tab/window exists, switch to it/them
   let l:bufnr = bufnr(l:file)
-  try
-    let [l:winid; _] = win_findbuf(l:bufnr)
-    let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
-    execute l:tabnr . 'tabnext'
-    execute l:winnr . 'wincmd w'
-  catch
-    execute g:vimtex_view_reverse_search_edit_cmd l:file
-  endtry
+  let l:bufnr_current = bufnr()
+  if l:bufnr != l:bufnr_current
+    " Switch to the right tab + window if we can find them
+    try
+      let [l:winid; _] = win_findbuf(l:bufnr)
+      let [l:tabnr, l:winnr] = win_id2tabwin(l:winid)
+      execute l:tabnr . 'tabnext'
+      execute l:winnr . 'wincmd w'
+    catch
+      execute g:vimtex_view_reverse_search_edit_cmd l:file
+    endtry
+  endif
 
   execute 'normal!' a:line . 'G'
   if a:column > 0
