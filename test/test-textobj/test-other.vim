@@ -82,5 +82,88 @@ call vimtex#test#keys('jjda$',
       \ ],
       \)
 
+call vimtex#test#keys('Gkda$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '$d$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '',
+      \   '\end{document}',
+      \ ],
+      \)
+
+call vimtex#test#keys('Gk2da$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '$d$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '',
+      \   '\end{document}',
+      \ ],
+      \)
+
+call vimtex#test#keys('Gk3da$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '$d$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '',
+      \   '\end{document}',
+      \ ],
+      \)
+
+call vimtex#test#keys('Gk3di$',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '$d$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   '$a$',
+      \   '$b$',
+      \   '$c$',
+      \   '$$',
+      \   '\end{document}',
+      \ ],
+      \)
 
 call vimtex#test#finished()

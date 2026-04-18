@@ -106,8 +106,11 @@ function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
   let l:pos_save = vimtex#pos#get_cursor()
   let l:startpos = getpos("'>")
 
+  " We ignore counts for i$ and a$
+  let l:count1 = a:type ==# 'math' ? 1 : v:count1
+
   " Get the delimited text object positions
-  for l:count in range(v:count1)
+  for l:count in range(l:count1)
     if !empty(l:object)
       let l:pos_next = vimtex#pos#prev(
             \ a:is_inner ? l:object.open : l:object.pos_start)
