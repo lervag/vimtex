@@ -5484,15 +5484,37 @@ SNACKS INTEGRATION                                              *vimtex-snacks*
 |Snacks| is a collection of quality of life plugins for Neovim. It includes
 a picker, which can be used with the table of contents in VimTeX.
 
-To use it, define a mapping to `require("vimtex.snacks").toc(options)`, e.g. >lua
+The VimTeX table of contents is registered as a snacks picker source called
+`vimtex_toc`. This allows you to customize the picker with any
+snacks.picker.Config options. You can open the picker with: >lua
+
+  Snacks.picker "vimtex_toc"
+
+You can pass options to customize the picker. For example, to filter by
+content, todos, and labels, and use a dropdown layout: >lua
+
+  Snacks.picker("vimtex_toc", {
+    layers = "ctl",
+    layout = { preset = "dropdown" },
+  })
+
+The available options are a combination of |snacks.picker.Config| and the
+vimtex-specific `layers` option:
+
+* layers: Filter by TOC layers. Can be a substring of "ctli" corresponding to
+  content, todos, labels, and includes (similar to |vimtex-fzf-lua|).
+  Default is "ctli" (all layers).
+
+For more options, see |snacks-picker-config| in the snacks documentation.
+
+For backward compatibility, you can also use: >lua
 
   vim.keymap.set("n", "<localleader>lt", function()
     return require("vimtex.snacks").toc()
   end)
 
-Currently three options are supported: "layers" and "preview" and "confirm".
-The first is similar to |vimtex-fzf-lua|, the latter are passed directly to
-the Snacks picker.
+This accepts the same `layers` option (and more options are passed to the
+snacks picker).
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*

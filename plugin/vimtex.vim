@@ -30,3 +30,7 @@ function! s:parse_args(args) abort
 
   return [l:lnum, l:file, l:cnum]
 endfunction
+
+if has('nvim')
+  lua require('vimtex.snacks').register()
+endif
