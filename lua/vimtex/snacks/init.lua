@@ -14,7 +14,12 @@ M.source = {
   finder = function(opts)
     local layers = (opts and opts.layers) or "ctli"
 
-    local entries = vim.fn["vimtex#parser#toc"]()
+    local ok, entries = pcall(vim.fn["vimtex#parser#toc"])
+    if not ok then
+      return {}
+    end
+
+    ---@cast entries table
     entries = vim.tbl_filter(function(t)
       return string.find(layers, t.type:sub(1, 1)) ~= nil
     end, entries)
@@ -33,48 +38,21 @@ M.source = {
     end, entries)
   end,
   format = "text",
-  preview = function(ctx)
-    if ctx.item.file then
-      Snacks.picker.preview.file(ctx)
-    else
-      ctx.preview:reset()
-      ctx.preview:set_title "No preview"
-    end
-  end,
-  confirm = {
-    "yank",
-    function(picker, item)
-      picker:close()
-      vim.cmd.edit(item.file)
-      vim.api.nvim_win_set_cursor(0, item.pos)
-      vim.cmd.normal "zz"
-    end,
-  },
+  preview = "file",
+  confirm = "jump",
 }
 
 function M.register()
   local ok, picker = pcall(require, "snacks.picker")
-  if not ok then
-    return
+  if ok and picker then
+    ---@diagnostic disable-next-line: undefined-field
+    picker.sources.vimtex_toc = M.source
   end
-
-  ---@cast picker SnacksPickerStub
-  if not picker.sources then
-    return
-  end
-
-  picker.sources.vimtex_toc = M.source
 end
 
 function M.toc(options)
   local ok, picker = pcall(require, "snacks.picker")
-  ---@cast picker SnacksPickerStub
-
-  if ok and picker and picker.sources then
-    if not picker.sources.vimtex_toc then
-      M.register()
-    end
-
+  if ok and picker then
     ---@diagnostic disable-next-line: call-non-callable
     return picker("vimtex_toc", options)
   end
