@@ -4,9 +4,6 @@ local utils = require "vimtex.utils.picker"
 ---@field layers? string The layers to filter. Can be a substring of "ctli"
 ---                      corresponding to content, todos, labels, and includes.
 
----@class SnacksPickerStub
----@field sources table<string, VimtexSnacksOptions>
-
 local M = {}
 
 M.source = {
