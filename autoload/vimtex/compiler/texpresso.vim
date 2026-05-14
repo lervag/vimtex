@@ -135,9 +135,11 @@ function! s:compiler.texpresso_send(...) abort dict " {{{1
       call ch_sendraw(self.job, json_encode(a:000) .. "\n")
     endif
   catch
-    " chansend/ch_sendraw can fail transiently on startup before the process
-    " has opened its stdin. An unhandled exception here causes Neovim to close
-    " the channel, which sends EOF to texpresso and terminates it prematurely.
+    " chansend/ch_sendraw can fail transiently before TeXpresso has finished
+    " opening its stdin pipe. Propagating the exception causes Neovim to close
+    " the channel, which delivers EOF to TeXpresso and terminates it.
+    call vimtex#log#info('TeXpresso: dropped message (process still starting): '
+          \ . v:exception)
   endtry
 endfunction
 " }}}1
@@ -146,8 +148,8 @@ function! s:texpresso_process_message(json) abort " {{{1
   try
     let l:msg = json_decode(a:json)
   catch
-    " FIXME: hooks receive messages from both stdout and stderr, so
-    " sometimes parsing can fail.
+    " Hooks receive output from both stdout and stderr, so non-JSON lines
+    " (e.g. startup diagnostics) are expected and silently ignored.
     return
   endtry
 
