@@ -348,6 +348,9 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
         \ 'cwd': self.file_info.root,
         \}
   if self.continuous
+    if get(self, 'stdin_pipe', v:false)
+      let l:options.in_io = 'pipe'
+    endif
     let l:options.out_io = 'pipe'
     let l:options.err_io = 'pipe'
     let l:options.out_cb = function('s:callback_continuous_output')

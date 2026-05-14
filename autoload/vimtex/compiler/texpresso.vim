@@ -13,10 +13,8 @@ endfunction
 let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'texpresso',
       \ 'continuous': 1,
-      \ 'options' : [
-      \   '-json',
-      \   '-lines'
-      \ ],
+      \ 'stdin_pipe': 1,
+      \ 'options' : [],
       \})
 
 function! s:compiler.__check_requirements() abort dict " {{{1
@@ -35,32 +33,15 @@ endfunction
 " }}}1
 
 function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
-  return 'texpresso ' . join(self.options)
+  let l:options = ['-json', '-lines'] + self.options
+  return 'texpresso ' . join(l:options)
+        \ . (empty(a:passed_options) ? '' : ' ' . trim(a:passed_options))
         \ . ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 endfunction
 " }}}1
 
 if has('nvim')
-  let s:nvim_attach = luaeval('
-    \ function()
-    \   local stopped = false
-    \   vim.api.nvim_buf_attach(0, false, {
-    \     on_lines = function(e, buf, _tick, first, oldlast, newlast)
-    \       if stopped then
-    \         return true
-    \       end
-    \       local path = vim.api.nvim_buf_get_name(buf)
-    \       local count = oldlast - first
-    \       local lines = ""
-    \       if first < newlast then
-    \         lines = table.concat(vim.api.nvim_buf_get_lines(buf, first, newlast, false), "\n") .. "\n"
-    \       end
-    \       local msg = vim.json.encode({"change-lines", path, first, count, lines})
-    \       vim.fn.chansend(vim.b[buf].vimtex.compiler.job, {msg, ""})
-    \     end
-    \   })
-    \  return function() stopped = true end
-    \ end')
+  let s:nvim_attach = luaeval("require('vimtex.compiler.texpresso').attach")
 endif
 
 function! s:compiler_start(super, ...) abort dict " {{{1
