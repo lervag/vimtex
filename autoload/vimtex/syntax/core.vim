@@ -708,11 +708,11 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \ start="\%#=1\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)"
         \ end="\%#=1\\ExplSyntaxOff\|\%$"
         \ transparent
-        \ contains=TOP,@NoSpell,TexError
+        \ contains=@texClusterBasic,texSpecialChar
 
   call vimtex#syntax#core#new_arg('texE3Group', {
         \ 'opts': 'contained containedin=@texClusterE3',
-        \ 'contains': 'TOP,@NoSpell,TexError',
+        \ 'contains': '@texClusterBasic,texSpecialChar',
         \})
 
   syntax match texE3Cmd "\\\h\+"
@@ -721,6 +721,7 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
   call vimtex#syntax#core#new_arg('texE3Arg', {
         \ 'next': 'texE3Arg',
+        \ 'contains': '@texClusterBasic,texSpecialChar',
         \ 'opts': 'contained transparent'
         \})
 

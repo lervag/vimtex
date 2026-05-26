@@ -65,3 +65,10 @@
   }
 }
 \ExplSyntaxOff
+
+% Example from #3245
+\ExplSyntaxOn
+\NewDocumentCommand \autorefs { s O{and} m }
+  { \__rmano_autorefs:nnn {#1} {#2} {#3} }
+
+\ExplSyntaxOff
