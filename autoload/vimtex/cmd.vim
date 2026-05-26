@@ -316,20 +316,6 @@ function! vimtex#cmd#parser_separator_check(separator_string) abort " {{{1
 endfunction
 
 " }}}1
-function! s:cmd_in_star_whitelist(name) abort " {{{1
-  if empty(g:vimtex_toggle_star_cmds) | return v:true | endif
-
-  let l:name = substitute(a:name, '\v^\\|\*$', '', 'g')
-  for l:pattern in g:vimtex_toggle_star_cmds
-    if l:name =~? '\v^%(' . l:pattern . ')$'
-      return v:true
-    endif
-  endfor
-
-  return v:false
-endfunction
-
-" }}}1
 
 function! s:get_frac_toggled(origin, numerator, denominator) abort " {{{1
   let l:target = get(g:vimtex_toggle_fractions, a:origin, 'INLINE')
@@ -590,6 +576,20 @@ endfunction
 function! s:get_inline_trim(str) abort " {{{1
   let l:str = trim(a:str)
   return substitute(l:str, '^(\(.*\))$', '\1', '')
+endfunction
+
+" }}}1
+function! s:cmd_in_star_whitelist(name) abort " {{{1
+  if empty(g:vimtex_toggle_star_cmds) | return v:true | endif
+
+  let l:name = substitute(a:name, '\v^\\|\*$', '', 'g')
+  for l:pattern in g:vimtex_toggle_star_cmds
+    if l:name =~? '\v^%(' . l:pattern . ')$'
+      return v:true
+    endif
+  endfor
+
+  return v:false
 endfunction
 
 " }}}1
