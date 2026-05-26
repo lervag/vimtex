@@ -1372,8 +1372,8 @@ OPTIONS                                                        *vimtex-options*
 
 *g:vimtex_parser_cmd_separator_check*
   This option specifies the policy for deciding whether successive groups of
-  `[opt]` and `{arg}` following a `\command` should be recognized as arguments
-  to that `\command`.
+  `[opt]`, `{arg}`, `(arg)`, and `<overlay>` following a `\command` should be
+  recognized as arguments to that `\command`.
 
   In fact, parsing a LaTeX command without additional knowledge is a hard
   problem. When we read `\foo{bar}{baz}` — is `{baz}` going to be consumed as
@@ -1388,9 +1388,9 @@ OPTIONS                                                        *vimtex-options*
     \foo<overlay>[[opt]{arg}]...
     \begin{name}<overlay>[[opt]{arg}]...
 <
-  The parser greedily swallows as many groups of `[opt]` and `{arg}` as
-  possible as long as the function specified via this option returns true for
-  the text between successive such groups.
+  The parser greedily swallows as many such groups as possible as long as the
+  function specified via this option returns true for the text between
+  successive groups.
 
   The default function will allow a line break and possibly white space on the
   preceding line before a new group. E.g.: >latex
@@ -1408,8 +1408,14 @@ OPTIONS                                                        *vimtex-options*
 <
   The option should be either the name of the function (a string) or
   a |Funcref|. The function takes a single argument, which is the string
-  between successive `[opt]` and `{arg}` groups. It should return |v:true|
-  if the parser should continue and |v:false| if the parser should stop.
+  between successive groups. It should return |v:true| if the parser should
+  continue and |v:false| if the parser should stop.
+
+  The check applies to all four group types: `[opt]`, `{arg}`, `(arg)`, and
+  `<overlay>`. Note that `(arg)` and `<overlay>` groups are only matched on
+  a single line, so for these the separator string will never contain a
+  newline; the default rule therefore captures them only when they directly
+  touch the preceding group.
 
   A user may want to change this behaviour e.g. to specify that all whitespace
   should be allowed, including and up to a single newline: >vim

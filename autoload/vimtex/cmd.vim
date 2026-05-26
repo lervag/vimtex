@@ -780,11 +780,18 @@ function! s:get_cmd_part_simple(delims, start_pos) abort " {{{1
   let l:regex = '^\s*' . a:delims[0] . '[^' . a:delims[1] . ']*' . a:delims[1]
 
   let l:match = matchstr(getline(l:lnum), l:regex, l:cnum)
+  if empty(l:match) | return {} | endif
 
-  return empty(l:match)
-        \ ? {}
-        \ : {
-        \    'open' : {'lnum' : l:lnum, 'cnum' : l:cnum + 1},
+  " Ensure that the delimiter is the next non-whitespace character according to
+  " a configurable rule
+  let l:separator = matchstr(l:match, '^\s*')
+  if ! call(g:vimtex_parser_cmd_separator_check, [l:separator])
+    return {}
+  endif
+
+  let l:offset = strlen(l:separator)
+  return {
+        \    'open' : {'lnum' : l:lnum, 'cnum' : l:cnum + l:offset + 1},
         \    'close' : {'lnum' : l:lnum, 'cnum' : l:cnum + strlen(l:match)},
         \    'text' : trim(l:match)
         \   }
