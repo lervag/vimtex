@@ -3065,6 +3065,40 @@ OPTIONS                                                        *vimtex-options*
           \ 'dfrac': 'INLINE',
           \}
 
+*g:vimtex_toggle_star_cmds*
+  This is a whitelist of the commands whose star may be toggled with
+  |<plug>(vimtex-cmd-toggle-star)| (mapped to `tsc` by default) and, for
+  commands, |<plug>(vimtex-cmd-toggle-star-agn)|. The toggle is a no-op for any
+  command whose name is not matched by the whitelist. This prevents toggling
+  the star of commands and math literals that have no meaningful starred form,
+  e.g. `\sin`, `\frac`, or `\left`.
+
+  Each list entry is a |/\v| "very magic" pattern that is matched against the
+  full command name (without the leading backslash or a trailing star) and
+  case-insensitively. To extend the whitelist, copy the default and append your
+  own entries.
+
+  If the list is empty, no filtering is done and the star of any command may be
+  toggled.
+
+  Default value: >vim
+
+    let g:vimtex_toggle_star_cmds = [
+          \ 'part',
+          \ '%(sub)*section',
+          \ '%(sub)*paragraph',
+          \ '[vh]space',
+          \ '\w*cite\w*',
+          \ '\w*ref',
+          \ '%(re)?newcommand',
+          \ 'providecommand',
+          \ 'DeclareRobustCommand',
+          \ 'DeclareMathOperator',
+          \ '%(re)?newenvironment',
+          \ 'includegraphics',
+          \ 'verb',
+          \]
+<
 *g:vimtex_toc_enabled*
   Use this option to disable/enable table of contents (ToC).
 
@@ -3831,7 +3865,8 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 
 *<plug>(vimtex-cmd-toggle-star)*
 *<plug>(vimtex-env-toggle-star)*
-  Toggle starred command or environment.
+  Toggle starred command or environment. For commands, the toggle only applies
+  to commands matched by |g:vimtex_toggle_star_cmds|.
 
 *<plug>(vimtex-cmd-toggle-star-agn)*
   Toggle starred command or environment, whichever is closest to the cursor.

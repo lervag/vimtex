@@ -469,6 +469,22 @@ function! vimtex#options#init() abort " {{{1
         \ 'dfrac': 'INLINE',
         \})
 
+  call s:init_option('vimtex_toggle_star_cmds', [
+        \ 'part',
+        \ '%(sub)*section',
+        \ '%(sub)*paragraph',
+        \ '[vh]space',
+        \ '\w*cite\w*',
+        \ '\w*ref',
+        \ '%(re)?newcommand',
+        \ 'providecommand',
+        \ 'DeclareRobustCommand',
+        \ 'DeclareMathOperator',
+        \ '%(re)?newenvironment',
+        \ 'includegraphics',
+        \ 'verb',
+        \])
+
   call s:init_option('vimtex_ui_method', {
         \ 'confirm': has('nvim') ? 'nvim' : 'legacy',
         \ 'input': has('nvim') ? 'nvim' : 'legacy',

@@ -208,6 +208,7 @@ endfunction
 function! vimtex#cmd#toggle_star() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
+  if !s:cmd_in_star_whitelist(l:cmd.name) | return | endif
 
   let l:old_name = l:cmd.name
   let l:lnum = l:cmd.pos_start.lnum
@@ -312,6 +313,20 @@ endfunction
 
 function! vimtex#cmd#parser_separator_check(separator_string) abort " {{{1
   return a:separator_string =~# '\v^%(\n\s*)?$'
+endfunction
+
+" }}}1
+function! s:cmd_in_star_whitelist(name) abort " {{{1
+  if empty(g:vimtex_toggle_star_cmds) | return v:true | endif
+
+  let l:name = substitute(a:name, '\v^\\|\*$', '', 'g')
+  for l:pattern in g:vimtex_toggle_star_cmds
+    if l:name =~? '\v^%(' . l:pattern . ')$'
+      return v:true
+    endif
+  endfor
+
+  return v:false
 endfunction
 
 " }}}1
