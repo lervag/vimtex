@@ -247,10 +247,10 @@ Vim configuration ~
   |vimtex-faq-treesitter|.
 
   Some of the VimTeX scripts contain UTF-8 characters, and as such, it is
-  necessary to have the 'encoding' option set to utf8. This is not necessary
+  necessary to have the 'encoding' option set to utf-8. This is not necessary
   in neovim, only in Vim. Add the following to your vimrc file: >vim
 
-    set encoding=utf8
+    autocmd FileType tex set encoding=utf-8
 
 Compiler backend ~
 
