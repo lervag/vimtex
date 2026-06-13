@@ -31,6 +31,48 @@ call vimtex#test#keys('da$',
       \ 'Hello world! $(x)$',
       \ 'Hello world! ')
 
+call vimtex#test#keys('vi$d',
+      \ 'Hello world! $(x)$',
+      \ 'Hello world! $$')
+
+call vimtex#test#keys('va$d',
+      \ 'Hello world! $(x)$',
+      \ 'Hello world! ')
+
+call vimtex#test#keys('jjva$d',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '$y$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '',
+      \   '\end{document}',
+      \ ],
+      \)
+
+call vimtex#test#keys('jjvi$d',
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '$y$',
+      \   '\end{document}',
+      \ ],
+      \ [
+      \   '\documentclass{minimal}',
+      \   '\begin{document}',
+      \   'z',
+      \   '$$',
+      \   '\end{document}',
+      \ ],
+      \)
+
 call vimtex#test#keys('jjda$',
       \ [
       \   '\documentclass{minimal}',
