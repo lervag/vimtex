@@ -158,6 +158,21 @@ function! s:check_view_sioyek() abort " {{{1
 endfunction
 
 " }}}1
+function! s:check_view_galley() abort " {{{1
+  call vimtex#jobs#run(join([
+        \ 'osascript -e ',
+        \ '''tell application "Finder" to POSIX path of ',
+        \ '(get application file id (id of application "GalleyPDF") as alias)''',
+        \]))
+
+  if v:shell_error == 0
+    call v:lua.vim.health.ok('Galley viewer should work!')
+  else
+    call v:lua.vim.health.error('Galley is not installed!')
+  endif
+endfunction
+
+" }}}1
 function! s:check_view_skim() abort " {{{1
   call vimtex#jobs#run(join([
         \ 'osascript -e ',

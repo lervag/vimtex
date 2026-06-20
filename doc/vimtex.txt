@@ -94,6 +94,7 @@ CONTENTS                                                      *vimtex-contents*
   View                                          |vimtex-view|
     Viewer configuration                        |vimtex-view-configuration|
       Evince                                    |vimtex-view-evince|
+      Galley                                    |vimtex-view-galley|
       MuPDF                                     |vimtex-view-mupdf|
       Okular                                    |vimtex-view-okular|
       qpdfview                                  |vimtex-view-qpdfview|
@@ -3448,6 +3449,7 @@ OPTIONS                                                        *vimtex-options*
 
   Possible values:
     * `'general'`
+    * `'galley'`            |vimtex-view-galley|
     * `'mupdf'`             |vimtex-view-mupdf|
     * `'skim'`              |vimtex-view-skim|
     * `'zathura'`           |vimtex-view-zathura|
@@ -3512,6 +3514,19 @@ OPTIONS                                                        *vimtex-options*
   which some users prefer.
 
   Default value: `''`
+
+*g:vimtex_view_galley_activate*
+  Set this option to 1 to make Galley have focus and be moved to the
+  foreground after command |:VimtexView| or compiler callback. When 0, Galley
+  is opened and updated in the background.
+
+  Default value: 0
+
+*g:vimtex_view_galley_sync*
+  Set this option to 1 to make Galley perform a forward search after successful
+  compilation.
+
+  Default value: 0
 
 *g:vimtex_view_skim_activate*
   Set this option to 1 to make Skim have focus after command |:VimtexView| in
@@ -6044,6 +6059,44 @@ Note: Evince only supports synctex through DBus, which is not supported by
       information.
 
       [0]: https://github.com/peterbjorgensen/sved
+
+                                                           *vimtex-view-galley*
+Galley ~
+https://github.com/munepi/Galley
+Galley is a lightweight PDF previewer for macOS, designed for TeX/LaTeX
+authors with SyncTeX support as a core feature. It enforces a single-window
+policy (one source, one PDF, one window) and reloads the PDF automatically
+after recompilation. The VimTeX implementation supports forward search and
+uses a callback to update Galley after successful compilations.
+
+Configuration: >vim
+  let g:vimtex_view_method = 'galley'
+<
+By default Galley is opened and updated in the background. Set
+|g:vimtex_view_galley_activate| to 1 to bring it to the foreground and give it
+focus after a forward search.
+
+To configure inverse search: Select `Custom...` from the `SyncTeX` menu in the
+menu bar, then set the custom editor command from a terminal. With Vim or
+Neovim, respectively: >bash
+
+  defaults write com.github.munepi.galley customEditorCommand \
+      "/path/to/vim -v --not-a-term -T dumb -c \"VimtexInverseSearch %line '%file'\""
+
+  defaults write com.github.munepi.galley customEditorCommand \
+      "/path/to/nvim --headless -c \"VimtexInverseSearch %line '%file'\""
+<
+Replace `/path/to/vim` (or `nvim`) with the absolute path to your binary, e.g.
+`/opt/homebrew/bin/nvim` for a homebrew installation.
+
+Inverse search is then activated by `Command`-clicking in the PDF. The first
+forward search will trigger a macOS prompt asking for Automation permissions,
+which must be allowed. For more info on inverse search, see
+|vimtex-synctex-inverse-search|.
+
+Associated settings:
+* |g:vimtex_view_galley_activate|
+* |g:vimtex_view_galley_sync|
 
                                                             *vimtex-view-mupdf*
 MuPDF ~
