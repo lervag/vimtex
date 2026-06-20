@@ -5390,7 +5390,8 @@ document. The ToC entries may be activated/jumped to with <cr> or <space>.
 There are currently four different "layers" of entries:
 
 * content  This is the main part and the "real" ToC
-* todo     This shows TODOs from comments and `\todo{...}` commands
+* todo     This shows TODOs from comments, `\todo{...}` commands, and commands
+           from the `fixme` package
 * label    This shows `\label{...}` commands
 * include  This shows included files
 
