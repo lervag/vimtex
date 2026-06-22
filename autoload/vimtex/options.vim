@@ -292,6 +292,8 @@ function! vimtex#options#init() abort " {{{1
         \])
   call s:init_option('vimtex_indent_on_ampersands', 1)
 
+  call s:init_option('vimtex_main_choose_first', 0)
+
   call s:init_option('vimtex_mappings_enabled', 1)
   call s:init_option('vimtex_mappings_disable', {})
   call s:init_option('vimtex_mappings_override_existing', 0)

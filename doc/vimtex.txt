@@ -2318,6 +2318,18 @@ OPTIONS                                                        *vimtex-options*
 
   Default value: 1
 
+*g:vimtex_main_choose_first*
+  When VimTeX cannot unambiguously determine the main project file, it will by
+  default prompt the user to select the appropriate main file from a list of
+  candidates (see |vimtex-multi-file| and |g:vimtex_main_filename|). This
+  prompt blocks until the user makes a selection.
+
+  If this option is enabled, VimTeX will instead silently pick the first
+  candidate without prompting. This may be useful e.g. in automated or
+  non-interactive contexts where the blocking prompt is undesired.
+
+  Default value: 0
+
 *g:vimtex_mappings_enabled*
   Control whether or not to load the default mappings.
 
