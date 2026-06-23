@@ -151,7 +151,8 @@ detection for `.tex`. The user may prevent this overriding by specifying the
 ------------------------------------------------------------------------------
 FEATURE OVERVIEW                                              *vimtex-features*
 
-- Document compilation with `latexmk`, `latexrun`, `tectonic`, `arara` or `texpresso`
+- Document compilation with `latexmk`, `latexrun`, `tectonic`, `arara` or
+  `texpresso`
 - LaTeX log parsing for quickfix entries using
   - internal method
   - `pplatex`
@@ -256,7 +257,8 @@ Vim configuration ~
 
 Compiler backend ~
 
-  VimTeX uses `latexmk`, `latexrun`, `tectonic`, `arara` or `texpresso` to compile the LaTeX document.
+  VimTeX uses `latexmk`, `latexrun`, `tectonic`, `arara` or `texpresso` to
+  compile the LaTeX document.
 
     `latexmk`: http://users.phys.psu.edu/~collins/software/latexmk-jcc
     "a perl script for running LaTeX the correct number of times to resolve
