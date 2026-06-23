@@ -4,7 +4,7 @@ VIM   ?= vim -e -s
 INMAKE := 1
 export INMAKE
 
-UNIT_TESTS := test.vim
+UNIT_TESTS := test.vim test-protocol.vim
 INTG_TESTS := test-integration.vim
 
 .PHONY: test vim integration $(UNIT_TESTS) $(INTG_TESTS)

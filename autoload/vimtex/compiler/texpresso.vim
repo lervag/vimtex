@@ -40,10 +40,6 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
 endfunction
 " }}}1
 
-if has('nvim')
-  let s:nvim_attach = luaeval("require('vimtex.compiler.texpresso').attach")
-endif
-
 function! s:compiler_start(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
 
@@ -54,7 +50,8 @@ function! s:compiler_start(super, ...) abort dict " {{{1
   augroup END
 
   if has('nvim')
-    let self.nvim_detach = s:nvim_attach()
+    let self.nvim_detach = luaeval(
+          \ "require('vimtex.compiler.texpresso').attach()")
   else
     let self.listener_id = listener_add(function(self.texpresso_listener, [], self))
   endif
@@ -67,11 +64,15 @@ endfunction
 function! s:compiler_stop(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
   if has('nvim')
-    call self.nvim_detach()
-    unlet self.nvim_detach
+    if has_key(self, 'nvim_detach')
+      call self.nvim_detach()
+      unlet self.nvim_detach
+    endif
   else
-    call listener_remove(self.listener_id)
-    unlet self.listener_id
+    if has_key(self, 'listener_id')
+      call listener_remove(self.listener_id)
+      unlet self.listener_id
+    endif
   endif
 
   autocmd! vimtex_compiler_texpresso * <buffer>
@@ -145,6 +146,16 @@ endfunction
 " }}}1
 
 function! s:texpresso_process_message(json) abort " {{{1
+  for l:json in split(a:json, "\n")
+    if !empty(l:json)
+      call s:texpresso_process_message_line(l:json)
+    endif
+  endfor
+endfunction
+
+" }}}1
+
+function! s:texpresso_process_message_line(json) abort " {{{1
   try
     let l:msg = json_decode(a:json)
   catch
@@ -166,14 +177,17 @@ function! s:texpresso_process_message(json) abort " {{{1
   elseif l:msg[0] ==# 'truncate-lines'
     let l:name = l:msg[1]
     let l:count = l:msg[2]
-    if name ==# 'out'
+    if l:name ==# 'out'
       call setqflist(slice(getqflist(), 0, l:count), 'r')
     endif
   elseif l:msg[0] ==# 'append-lines'
     let l:name = l:msg[1]
     let l:lines = l:msg[2:]
-    if name ==# 'out'
-      call setqflist([], 'a', { 'lines': l:lines, 'efm': '%t%*[^:]: %f:%l: %m' })
+    if l:name ==# 'out'
+      call setqflist([], 'a', {
+            \ 'lines': l:lines,
+            \ 'efm': '%t%*[^:]: %f:%l: %m',
+            \})
     endif
   elseif l:msg[0] ==# 'flush'
   else
