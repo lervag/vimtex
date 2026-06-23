@@ -522,45 +522,6 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \})
 
   " }}}2
-  " {{{2 Zone: Expl3
-
-  syntax region texE3Zone matchgroup=texCmdE3
-        \ start="\%#=1\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)"
-        \ end="\%#=1\\ExplSyntaxOff\|\%$"
-        \ transparent
-        \ contains=TOP,@NoSpell,TexError
-
-  call vimtex#syntax#core#new_arg('texE3Group', {
-        \ 'opts': 'contained containedin=@texClusterE3',
-        \ 'contains': 'TOP,@NoSpell,TexError',
-        \})
-
-  syntax match texE3Cmd "\\\h\+"
-        \ contained containedin=@texClusterE3
-        \ nextgroup=texE3Opt,texE3Arg skipwhite skipnl
-  call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
-  call vimtex#syntax#core#new_arg('texE3Arg', {
-        \ 'next': 'texE3Arg',
-        \ 'opts': 'contained transparent'
-        \})
-
-  syntax match texE3CmdNestedZoneEnd '\\\ExplSyntaxOff'
-        \ contained containedin=texE3Arg,texE3Group
-
-  syntax match texE3Variable "\\[gl]_\%(\h\|@@_\@=\)*_\a\+"
-        \ contained containedin=@texClusterE3
-  syntax match texE3Constant "\\c_\%(\h\|@@_\@=\)*_\a\+"
-        \ contained containedin=@texClusterE3
-  syntax match texE3Function "\\\%(\h\|@@_\)\+:\a*"
-        \ contained containedin=@texClusterE3
-        \ contains=texE3Type
-
-  syntax match texE3Type ":[a-zA-Z]*" contained
-  syntax match texE3Parm "#\+[1-9]" contained containedin=@texClusterE3
-
-  syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
-
-  " }}}2
   " {{{2 Zone: Math
 
   " Define math region group
@@ -739,6 +700,46 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
       call s:match_conceal_sections()
     endif
   endif
+
+  " }}}2
+  " {{{2 Expl3 mode
+
+  syntax region texE3Zone matchgroup=texCmdE3
+        \ start="\%#=1\\\%(ExplSyntaxOn\|ProvidesExpl\%(Package\|Class\|File\)\)"
+        \ end="\%#=1\\ExplSyntaxOff\|\%$"
+        \ transparent
+        \ contains=@texClusterBasic,texSpecialChar
+
+  call vimtex#syntax#core#new_arg('texE3Group', {
+        \ 'opts': 'contained containedin=@texClusterE3',
+        \ 'contains': '@texClusterBasic,texSpecialChar',
+        \})
+
+  syntax match texE3Cmd "\\\h\+"
+        \ contained containedin=@texClusterE3
+        \ nextgroup=texE3Opt,texE3Arg skipwhite skipnl
+  call vimtex#syntax#core#new_opt('texE3Opt', {'next': 'texE3Arg'})
+  call vimtex#syntax#core#new_arg('texE3Arg', {
+        \ 'next': 'texE3Arg',
+        \ 'contains': '@texClusterBasic,texSpecialChar',
+        \ 'opts': 'contained transparent'
+        \})
+
+  syntax match texE3CmdNestedZoneEnd '\\\ExplSyntaxOff'
+        \ contained containedin=texE3Arg,texE3Group
+
+  syntax match texE3Variable "\\[gl]_\%(\h\|@@_\@=\)*_\a\+"
+        \ contained containedin=@texClusterE3
+  syntax match texE3Constant "\\c_\%(\h\|@@_\@=\)*_\a\+"
+        \ contained containedin=@texClusterE3
+  syntax match texE3Function "\\\%(\h\|@@_\)\+:\a*"
+        \ contained containedin=@texClusterE3
+        \ contains=texE3Type
+
+  syntax match texE3Type ":[a-zA-Z]*" contained
+  syntax match texE3Parm "#\+[1-9]" contained containedin=@texClusterE3
+
+  syntax cluster texClusterE3 contains=texE3Zone,texE3Arg,texE3Group,texE3Opt
 
   " }}}2
   " {{{2 Commands: \begin{macrocode}

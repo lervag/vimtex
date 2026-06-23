@@ -480,6 +480,8 @@ function! s:get_main_choose(list) abort " {{{1
     return l:existing[l:alternate_id]
   elseif len(l:existing) < 1 && len(l:new) == 1
     return l:new[0]
+  elseif g:vimtex_main_choose_first
+    return l:list[0]
   else
     let l:choices = {}
     for l:tex in l:list

@@ -10,24 +10,39 @@ endfunction
 
 " }}}1
 
-let s:matcher = {
-      \ 'prefilter_cmds' : ['begin', 'fx%(warning|error|fatal|note)'],
-      \ 'priority' : 2,
-      \ 're_cmd' : '\v\\fx%(warning|error|fatal|note)\*?%(\[[^]]*\])?\{\zs.*',
-      \ 're_env' : '\v\\begin\s*\{anfx%(warning|error|fatal|note)\*?\}',
-      \}
+let s:matcher = { 'priority' : 2 }
+
 function! s:matcher.init() abort dict " {{{1
+  " Build the command/environment patterns and the prefilter from the
+  " registered fixme authors. The prefilter must include the author command
+  " prefixes, because the ToC parser gates each line on the (precompiled)
+  " prefilter before applying the matcher.
+  "
+  " See also vimtex#parser#fixme#authors().
+  let l:authors = vimtex#parser#fixme#authors()
+
+  let self.re_cmd = '\v\\%(' . join(l:authors.cmd, '|')
+        \ . ')%(warning|error|fatal|note)'
+        \ . '\*?%(\[[^]]*\])?\{\zs.*'
+  let self.re_env = '\v\\begin\s*\{%('
+        \ . join(l:authors.env, '|')
+        \ . ')%(warning|error|fatal|note)\*?\}'
   let self.re = self.re_cmd . '|' . self.re_env
+
+  let self.prefilter_cmds = ['begin']
+  for l:prefix in l:authors.cmd
+    let self.prefilter_cmds += [l:prefix . '%(warning|error|fatal|note)']
+  endfor
 endfunction
 
 " }}}1
 function! s:matcher.get_entry(context) abort dict " {{{1
   if a:context.line =~# self.re_cmd
     let title = matchstr(a:context.line, self.re_cmd)
-    let label = matchstr(a:context.line, '\\\zsfx\w*')
+    let label = matchstr(a:context.line, '\v\\\zs\a+%(note|warning|error|fatal)')
   else
     let title = matchstr(a:context.line, self.re_env . '\s*\{\zs.*')
-    let label = matchstr(a:context.line, 'anfx\w*')
+    let label = matchstr(a:context.line, '\v\a+%(note|warning|error|fatal)')
   endif
 
   let [l:end, l:count] = vimtex#parser#tex#find_closing(0, title, 1, '{')

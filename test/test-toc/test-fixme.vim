@@ -13,6 +13,7 @@ if empty($INMAKE) | finish | endif
 let s:toc = vimtex#toc#get_entries()
 let s:envs = filter(deepcopy(s:toc), {_, x -> x.title =~# '^anfx'})
 let s:cmds = filter(deepcopy(s:toc), {_, x -> x.title =~# '^fx'})
+let s:author = filter(deepcopy(s:toc), {_, x -> x.title =~# '^a\=jd'})
 
 " let s:i = 0
 " for s:x in s:cmds
@@ -22,5 +23,6 @@ let s:cmds = filter(deepcopy(s:toc), {_, x -> x.title =~# '^fx'})
 
 call assert_equal(8, len(s:envs))
 call assert_equal(8, len(s:cmds))
+call assert_equal(5, len(s:author))
 
 call vimtex#test#finished()

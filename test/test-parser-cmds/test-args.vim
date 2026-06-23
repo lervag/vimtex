@@ -17,11 +17,16 @@ call assert_equal('helloworld', s:cmd.args[0].text)
 call assert_match('BoldItalicFont', s:cmd.opts[0].text)
 
 let s:cmd = vimtex#cmd#get_at(17, 1)
-call assert_equal('\begin{textblock*}{3in}[0,0] (3in,1in)', s:cmd.text)
+call assert_equal('\begin{textblock*}{3in}[0,0](3in,1in)', s:cmd.text)
 call assert_equal(1, len(s:cmd.args_parens))
 call assert_equal('(3in,1in)', s:cmd.args_parens[0].text)
 
 let s:cmd = vimtex#cmd#get_at(21, 1)
 call assert_equal('\test', s:cmd.text)
+
+" A paren group that does not touch the command must not be captured
+let s:cmd = vimtex#cmd#get_at(23, 1)
+call assert_equal('\varepsilon', s:cmd.text)
+call assert_equal(0, len(s:cmd.args_parens))
 
 call vimtex#test#finished()

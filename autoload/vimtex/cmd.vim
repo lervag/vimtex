@@ -208,6 +208,7 @@ endfunction
 function! vimtex#cmd#toggle_star() abort " {{{1
   let l:cmd = vimtex#cmd#get_current()
   if empty(l:cmd) | return | endif
+  if !s:cmd_in_star_whitelist(l:cmd.name) | return | endif
 
   let l:old_name = l:cmd.name
   let l:lnum = l:cmd.pos_start.lnum
@@ -578,6 +579,20 @@ function! s:get_inline_trim(str) abort " {{{1
 endfunction
 
 " }}}1
+function! s:cmd_in_star_whitelist(name) abort " {{{1
+  if empty(g:vimtex_toggle_star_cmds) | return v:true | endif
+
+  let l:name = substitute(a:name, '\v^\\|\*$', '', 'g')
+  for l:pattern in g:vimtex_toggle_star_cmds
+    if l:name =~? '\v^%(' . l:pattern . ')$'
+      return v:true
+    endif
+  endfor
+
+  return v:false
+endfunction
+
+" }}}1
 
 function! vimtex#cmd#get_next() abort " {{{1
   return s:get_cmd('next')
@@ -780,11 +795,18 @@ function! s:get_cmd_part_simple(delims, start_pos) abort " {{{1
   let l:regex = '^\s*' . a:delims[0] . '[^' . a:delims[1] . ']*' . a:delims[1]
 
   let l:match = matchstr(getline(l:lnum), l:regex, l:cnum)
+  if empty(l:match) | return {} | endif
 
-  return empty(l:match)
-        \ ? {}
-        \ : {
-        \    'open' : {'lnum' : l:lnum, 'cnum' : l:cnum + 1},
+  " Ensure that the delimiter is the next non-whitespace character according to
+  " a configurable rule
+  let l:separator = matchstr(l:match, '^\s*')
+  if ! call(g:vimtex_parser_cmd_separator_check, [l:separator])
+    return {}
+  endif
+
+  let l:offset = strlen(l:separator)
+  return {
+        \    'open' : {'lnum' : l:lnum, 'cnum' : l:cnum + l:offset + 1},
         \    'close' : {'lnum' : l:lnum, 'cnum' : l:cnum + strlen(l:match)},
         \    'text' : trim(l:match)
         \   }

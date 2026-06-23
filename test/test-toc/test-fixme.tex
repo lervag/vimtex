@@ -1,6 +1,7 @@
 \documentclass[draft]{article}
 
 \usepackage{fixme}
+\FXRegisterAuthor{jd}{ajd}{JD}
 
 \begin{document}
 
@@ -135,5 +136,18 @@ pellentesque. Curabitur ultrices risus quis placerat pharetra. Quisque vel nisl
 non nunc iaculis aliquam. Sed malesuada, ante ac vehicula sollicitudin, magna
 felis pellentesque nunc, sit amet sollicitudin elit magna ac tellus. Vivamus
 congue lobortis ultrices.
+
+Notes from a registered author (\FXRegisterAuthor) should also be detected.
+\jdnote{Sed ut perspiciatis unde omnis iste natus error.}
+Donec sit amet risus augue. \jderror{Nemo enim ipsam voluptatem quia voluptas.}
+\jdwarning*{Neque porro quisquam est}{Qui dolorem ipsum quia dolor sit amet.}
+
+\begin{ajdwarning}{Ut enim ad minima veniam}
+  Quis nostrum exercitationem ullam corporis suscipit laboriosam.
+\end{ajdwarning}
+
+\begin{ajdnote*}{Quis autem vel eum}{Iure reprehenderit qui in ea voluptate.}
+  Velit esse quam nihil molestiae consequatur, vel illum qui dolorem.
+\end{ajdnote*}
 
 \end{document}
