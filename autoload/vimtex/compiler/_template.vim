@@ -348,6 +348,9 @@ function! s:compiler_jobs.exec(cmd) abort dict " {{{1
         \ 'cwd': self.file_info.root,
         \}
   if self.continuous
+    if get(self, 'stdin_pipe', v:false)
+      let l:options.in_io = 'pipe'
+    endif
     let l:options.out_io = 'pipe'
     let l:options.err_io = 'pipe'
     let l:options.out_cb = function('s:callback_continuous_output')
@@ -447,7 +450,9 @@ endfunction
 let s:compiler_nvim = {}
 function! s:compiler_nvim.exec(cmd) abort dict " {{{1
   let l:shell = {
-        \ 'stdin': 'null',
+        \ 'stdin': self.continuous && get(self, 'stdin_pipe', v:false)
+        \   ? 'pipe'
+        \   : 'null',
         \ 'on_stdout': function('s:callback_nvim_output'),
         \ 'on_stderr': function('s:callback_nvim_output'),
         \ 'cwd': self.file_info.root,
