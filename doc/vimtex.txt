@@ -5623,10 +5623,11 @@ COMPILER                                                      *vimtex-compiler*
 VimTeX provides an interface to the following LaTeX compilers/compiler
 backends:
 
-* |vimtex-compiler-latexmk|   http://users.phys.psu.edu/~collins/software/latexmk-jcc
-* |vimtex-compiler-latexrun|  https://github.com/aclements/latexrun
-* |vimtex-compiler-tectonic|  https://tectonic-typesetting.github.io/
-* |vimtex-compiler-arara|     https://github.com/cereda/arara
+* |vimtex-compiler-latexmk|    http://users.phys.psu.edu/~collins/software/latexmk-jcc
+* |vimtex-compiler-latexrun|   https://github.com/aclements/latexrun
+* |vimtex-compiler-tectonic|   https://tectonic-typesetting.github.io/
+* |vimtex-compiler-arara|      https://github.com/cereda/arara
+* |vimtex-compiler-texpresso|  https://aur.archlinux.org/packages/texpresso-git
 * |vimtex-compiler-generic|
 
 The interface is implemented in a general way, which makes it relatively easy

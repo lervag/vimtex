@@ -23,7 +23,7 @@ function M.attach()
           "\n"
         ) .. "\n"
       end
-      local msg = vim.json.encode({ "change-lines", path, first, count, lines })
+      local msg = vim.json.encode { "change-lines", path, first, count, lines }
       vim.api.nvim_chan_send(compiler.job, msg .. "\n")
     end,
   })

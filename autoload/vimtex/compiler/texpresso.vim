@@ -63,16 +63,13 @@ endfunction
 
 function! s:compiler_stop(super, ...) abort dict " {{{1
   call call(a:super, a:000, self)
-  if has('nvim')
-    if has_key(self, 'nvim_detach')
-      call self.nvim_detach()
-      unlet self.nvim_detach
-    endif
-  else
-    if has_key(self, 'listener_id')
-      call listener_remove(self.listener_id)
-      unlet self.listener_id
-    endif
+
+  if has('nvim') && has_key(self, 'nvim_detach')
+    call self.nvim_detach()
+    unlet self.nvim_detach
+  elseif has_key(self, 'listener_id')
+    call listener_remove(self.listener_id)
+    unlet self.listener_id
   endif
 
   autocmd! vimtex_compiler_texpresso * <buffer>
@@ -90,7 +87,7 @@ function! s:compiler.texpresso_theme() abort dict " {{{1
   let l:normal_id = synIDtrans(hlID('Normal'))
   let l:fg = synIDattr(l:normal_id, 'fg#')
   let l:bg = synIDattr(l:normal_id, 'bg#')
-  
+
   if l:fg ==# '' || l:bg ==# ''
     return
   endif
@@ -139,8 +136,10 @@ function! s:compiler.texpresso_send(...) abort dict " {{{1
     " chansend/ch_sendraw can fail transiently before TeXpresso has finished
     " opening its stdin pipe. Propagating the exception causes Neovim to close
     " the channel, which delivers EOF to TeXpresso and terminates it.
-    call vimtex#log#info('TeXpresso: dropped message (process still starting): '
-          \ . v:exception)
+    call vimtex#log#info(
+          \ 'TeXpresso: dropped message (process still starting): '
+          \ . v:exception
+          \)
   endtry
 endfunction
 " }}}1
@@ -168,8 +167,6 @@ function! s:texpresso_process_message_line(json) abort " {{{1
     return
   endif
 
-  " echom l:msg
-
   if l:msg[0] ==# 'synctex'
     let l:path = l:msg[1]
     let l:lnum = l:msg[2]
@@ -191,7 +188,7 @@ function! s:texpresso_process_message_line(json) abort " {{{1
     endif
   elseif l:msg[0] ==# 'flush'
   else
-    " TODO: handle other types of messages
+    " Here we can handle other types of messages
   endif
 endfunction
 
