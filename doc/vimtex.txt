@@ -1935,10 +1935,10 @@ OPTIONS                                                        *vimtex-options*
                         The fold function also recognizes "fake" sections.
                         That is, it parses comments similar to: >
 
-                          % Fakepart title
+                          % fakepart title
                           % Fakechapter title
                           % Fakesection title
-                          % Fakesubsection title
+                          % fakesubsection title
 <
                         The fake sections are folded at the same level as the
                         corresponding "real" sections. The fold title is the

@@ -199,7 +199,7 @@ let s:re_sec = '\v^\s*\\%(' .. join([
       \   'add%(sec|chap|part)',
       \ ], '|') .. ')>'
       \ .. '|^\s*\\%(begin|end)\{document\}'
-      \ .. '|^\s*\% Fake%(part|chapter|%(sub)*section)'
+      \ .. '|^\s*\% [fF]ake%(part|chapter|%(sub)*section)'
 
 " }}}1
 function! vimtex#motion#environment(begin, backwards, visual) abort " {{{1

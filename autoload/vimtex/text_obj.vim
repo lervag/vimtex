@@ -501,7 +501,7 @@ let s:section_search = '\v%(%(\\@<!%(\\\\)*)@<=\%.*)@<!\s*\\\zs('
       \   '%(begin|end)\{\zsdocument\ze\}'
       \  ], '|')
       \ .. ')'
-      \ .. '|^\s*\% Fake\zs(part|chapter|%(sub)*section)'
+      \ .. '|^\s*\% [fF]ake\zs(part|chapter|%(sub)*section)'
 
 " Dictionary to give values to sections in order to compare them
 let s:section_to_val = {
