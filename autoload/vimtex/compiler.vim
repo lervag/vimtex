@@ -233,6 +233,18 @@ function! vimtex#compiler#start(...) abort " {{{1
     return
   endif
 
+  let l:clashes = vimtex#compiler#get_output_clashes(
+        \ b:vimtex.compiler,
+        \ vimtex#state#list_all()
+        \)
+  if !empty(l:clashes)
+    call vimtex#log#warning(
+          \ 'Compiler output clash detected for `' . b:vimtex.base . "'!",
+          \ 'The following running compiler(s) write the same output:',
+          \ map(l:clashes, {_, x -> '- ' . x.tex}))
+    return
+  endif
+
   let l:opts = a:0 > 0 ? expandcmd(a:1) : ''
   call b:vimtex.compiler.start(l:opts)
 
@@ -248,6 +260,19 @@ function! vimtex#compiler#start(...) abort " {{{1
   else
     call vimtex#log#info('Compiler started in background!')
   endif
+endfunction
+
+" }}}1
+function! vimtex#compiler#get_output_clashes(compiler, states) abort " {{{1
+  " Return states whose running compiler writes to the same auxiliary
+  " output as a:compiler. These are potentially destructive clashes.
+  let l:signature = a:compiler.get_output_signature('aux')
+  if empty(l:signature) | return [] | endif
+
+  return filter(copy(a:states), {_, x ->
+        \    x.compiler isnot a:compiler
+        \ && has_key(x.compiler, 'is_running') && x.compiler.is_running()
+        \ && x.compiler.get_output_signature('aux') ==# l:signature})
 endfunction
 
 " }}}1
