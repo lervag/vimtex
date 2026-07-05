@@ -1026,11 +1026,6 @@ OPTIONS                                                        *vimtex-options*
   Warning: Each resolved path will be deleted with |delete()| with the `"rf"`
            flag!
 
-  Note: For `latexmk`, a similar feature is available with `$clean_ext`; see
-        the documentation https://texdoc.org/serve/latexmk/0.
-
-  Default value: `[]`
-
 *g:vimtex_compiler_latexmk*
   This dictionary allows customization of the |vimtex-compiler-latexmk|
   compiler. The values set by the user will take precedence over the default
@@ -1043,6 +1038,7 @@ OPTIONS                                                        *vimtex-options*
         \ 'out_dir' : '',
         \ 'callback' : 1,
         \ 'continuous' : 1,
+        \ 'clean_ext' : '',
         \ 'executable' : 'latexmk',
         \ 'hooks' : [],
         \ 'options' : [
@@ -1107,6 +1103,19 @@ OPTIONS                                                        *vimtex-options*
             will have priority.
     Note 3: If |$VIMTEX_OUTPUT_DIRECTORY| is defined, it will have the highest
             priority.
+
+  clean_ext ~
+    This option specifies additional file extensions to be removed by
+    `:VimtexClean` and `:VimtexClean!`. It corresponds to `latexmk`'s
+    `$clean_ext` option.
+
+    It consists of a single string of space-separated extensions with no
+    preceding dot, for example: `"ex1 ex2 ex3"`
+
+    By default, `latexmk` will remove `aux`, `bcf`, `fls`, `idx`, `ind`, `lof`, `lot`,
+       `out`, `toc`, `blg`, `ilg`, `log`, and `xdv` files.
+
+    see the documentation: https://texdoc.org/serve/latexmk/0
 
   callback ~
     If enabled, this option tells `latexmk` to run |vimtex#compiler#callback|
