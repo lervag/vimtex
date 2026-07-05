@@ -394,7 +394,9 @@ function! vimtex#env#toggle_math() abort
 
   let l:current = get(l:open, 'name', l:open.match)
   let l:target = get(g:vimtex_env_toggle_math_map, l:current, '$')
-        \  .. (get(l:open, 'starred', 0) ? '*' : '')
+  if get(l:open, 'starred', 0) && l:target =~# '^\w\+$'
+    let l:target ..= '*'
+  endif
 
   call vimtex#env#change(l:open, l:close, l:target)
 endfunction
