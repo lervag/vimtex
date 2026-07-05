@@ -186,27 +186,25 @@ endfunction
 
 " }}}1
 
+function! s:compiler._output_roots() abort dict " {{{1
+  return [
+        \ $VIMTEX_OUTPUT_DIRECTORY,
+        \ self.aux_dir,
+        \ self.out_dir,
+        \ self.file_info.root,
+        \]
+endfunction
+
+" }}}1
 function! s:compiler.get_file(ext) abort dict " {{{1
   if g:vimtex_view_use_temp_files
         \ && index(['pdf', 'synctex.gz'], a:ext) >= 0
     return self.__get_temp_file(a:ext)
   endif
 
-  for l:root in [
-        \ $VIMTEX_OUTPUT_DIRECTORY,
-        \ self.aux_dir,
-        \ self.out_dir,
-        \ self.file_info.root
-        \]
-    if empty(l:root) | continue | endif
-
-    let l:cand = printf('%s/%s.%s', l:root, self.file_info.jobname, a:ext)
-    if !vimtex#paths#is_abs(l:root)
-      let l:cand = self.file_info.root . '/' . l:cand
-    endif
-
+  for l:cand in self._get_file_candidates(a:ext)
     if filereadable(l:cand)
-      return fnamemodify(l:cand, ':p')
+      return l:cand
     endif
   endfor
 

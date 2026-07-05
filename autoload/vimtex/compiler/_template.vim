@@ -216,12 +216,23 @@ endfunction
 
 " }}}1
 
-function! s:compiler.get_file(ext) abort dict " {{{1
-  for l:root in [
+function! s:compiler._output_roots() abort dict " {{{1
+  " The list of candidate roots for output/auxiliary files, in the order of
+  " precedence used to locate a generated file. Backends that support a
+  " separate auxiliary directory override this.
+  return [
         \ $VIMTEX_OUTPUT_DIRECTORY,
         \ self.out_dir,
-        \ self.file_info.root
+        \ self.file_info.root,
         \]
+endfunction
+
+" }}}1
+function! s:compiler._get_file_candidates(ext) abort dict " {{{1
+  " The absolute candidate paths for the given extension, in order of
+  " precedence, regardless of whether they currently exist.
+  let l:candidates = []
+  for l:root in self._output_roots()
     if empty(l:root) | continue | endif
 
     let l:cand = printf('%s/%s.%s', l:root, self.file_info.jobname, a:ext)
@@ -229,12 +240,30 @@ function! s:compiler.get_file(ext) abort dict " {{{1
       let l:cand = self.file_info.root . '/' . l:cand
     endif
 
+    call add(l:candidates, fnamemodify(l:cand, ':p'))
+  endfor
+
+  return l:candidates
+endfunction
+
+" }}}1
+function! s:compiler.get_file(ext) abort dict " {{{1
+  for l:cand in self._get_file_candidates(a:ext)
     if filereadable(l:cand)
-      return fnamemodify(l:cand, ':p')
+      return l:cand
     endif
   endfor
 
   return ''
+endfunction
+
+" }}}1
+function! s:compiler.get_output_signature(ext) abort dict " {{{1
+  " The path the compiler is expected to write for the given extension,
+  " regardless of whether it currently exists. This is the highest-precedence
+  " candidate root combined with the jobname, and can be used to detect output
+  " clashes between compilers before they start.
+  return get(self._get_file_candidates(a:ext), 0, '')
 endfunction
 
 " }}}1
