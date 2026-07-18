@@ -227,41 +227,33 @@ endfunction
 " }}}1
 
 function! s:compiler.clean(full) abort dict " {{{1
-    call self.__clean_temp_files(a:full)
+  call self.__clean_temp_files(a:full)
 
-    let l:cmd = self._get_executable_string()
-    let l:full = a:full ? ' -C' : ' -c'
+  let l:cmd = self._get_executable_string()
 
-    let l:val_found = vimtex#compiler#latexmk#get_rc_opt(
-          \self.file_info.root, 'clean_ext', 0, -1)[1]
-    if !empty('clean_ext') && l:val_found ==-1
-      let l:quote = vimtex#util#get_os() ==# 'Windows' ? '"' : ''''
-      let l:cmd .= join([' -e ',
-            \l:quote,
-            \'$clean_ext = q/',
-            \self.clean_ext,
-            \'/;',
-            \l:quote,
-            \l:full], '')
-    else
-      let l:cmd .= l:full
-    endif
+  if !empty(self.clean_ext)
+        \ && vimtex#compiler#latexmk#get_rc_opt(
+        \      self.file_info.root, 'clean_ext', 0, -1)[1] == -1
+    let l:cmd .= ' -e '
+          \ . vimtex#util#shellescape('$clean_ext = q/' . self.clean_ext . '/;')
+  endif
 
-    if !empty(self.out_dir)
-      let l:cmd .= ' -outdir=' . fnameescape(self.out_dir)
-    endif
+  let l:cmd .= a:full ? ' -C' : ' -c'
 
-    if !empty(self.aux_dir)
-      let l:cmd .= ' -emulate-aux-dir'
-      let l:cmd .= ' -auxdir=' . fnameescape(self.aux_dir)
-    endif
+  if !empty(self.out_dir)
+    let l:cmd .= ' -outdir=' . fnameescape(self.out_dir)
+  endif
+  if !empty(self.aux_dir)
+    let l:cmd .= ' -emulate-aux-dir'
+    let l:cmd .= ' -auxdir=' . fnameescape(self.aux_dir)
+  endif
 
-    let l:cmd .= ' ' . vimtex#util#shellescape(self.file_info.target_basename)
+  let l:cmd .= ' ' . vimtex#util#shellescape(self.file_info.target_basename)
 
-    call vimtex#jobs#run(l:cmd, {'cwd': self.file_info.root})
-  endfunction
+  call vimtex#jobs#run(l:cmd, {'cwd': self.file_info.root})
+endfunction
 
-" }}}
+" }}}1
 function! s:compiler.get_engine() abort dict " {{{1
   " Parse tex_program from TeX directive
   let l:tex_program_directive = b:vimtex.get_tex_program()
