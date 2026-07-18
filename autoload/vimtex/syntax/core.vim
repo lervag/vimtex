@@ -168,8 +168,8 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
   syntax match texCmdAccent "\%#=1\\[bcdvuH]\ze[^a-zA-Z@]"
   syntax match texCmdAccent /\%#=1\\[=^.~"`']/
   syntax match texCmdAccent /\%#=1\\['=t'.c^ud"vb~Hr]{\a}/
-  syntax match texCmdLigature "\%#=1\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)$"
-  syntax match texCmdLigature "\%#=1\v\\%([ijolL]|ae|oe|ss|AA|AE|OE)\ze[^a-zA-Z@]"
+  syntax match texCmdLigature "\%#=1\v\\%([ijolL]|ae|dj|oe|ss|AA|AE|DJ|OE)$"
+  syntax match texCmdLigature "\%#=1\v\\%([ijolL]|ae|dj|oe|ss|AA|AE|DJ|OE)\ze[^a-zA-Z@]"
 
   " Spacecodes (TeX'isms)
   " * See e.g. https://en.wikibooks.org/wiki/TeX/catcode
@@ -2472,19 +2472,21 @@ let s:map_accents = [
 
 " }}}1
 function! s:match_conceal_ligatures() abort " {{{1
-  syntax match texCmdLigature "\%#=1\\lq\>" conceal cchar=‘
-  syntax match texCmdLigature "\%#=1\\rq\>" conceal cchar=′
-  syntax match texCmdLigature "\%#=1\\i\>"  conceal cchar=ı
-  syntax match texCmdLigature "\%#=1\\j\>"  conceal cchar=ȷ
-  syntax match texCmdLigature "\%#=1\\AE\>" conceal cchar=Æ
-  syntax match texCmdLigature "\%#=1\\ae\>" conceal cchar=æ
-  syntax match texCmdLigature "\%#=1\\oe\>" conceal cchar=œ
-  syntax match texCmdLigature "\%#=1\\OE\>" conceal cchar=Œ
-  syntax match texCmdLigature "\%#=1\\o\>"  conceal cchar=ø
-  syntax match texCmdLigature "\%#=1\\O\>"  conceal cchar=Ø
-  syntax match texCmdLigature "\%#=1\\aa\>" conceal cchar=å
-  syntax match texCmdLigature "\%#=1\\AA\>" conceal cchar=Å
-  syntax match texCmdLigature "\%#=1\\ss\>" conceal cchar=ß
+  syntax match texCmdLigature "\%#=1\\lq\>\s*" conceal cchar=‘
+  syntax match texCmdLigature "\%#=1\\rq\>\s*" conceal cchar=′
+  syntax match texCmdLigature "\%#=1\\i\>\s*"  conceal cchar=ı
+  syntax match texCmdLigature "\%#=1\\j\>\s*"  conceal cchar=ȷ
+  syntax match texCmdLigature "\%#=1\\AE\>\s*" conceal cchar=Æ
+  syntax match texCmdLigature "\%#=1\\ae\>\s*" conceal cchar=æ
+  syntax match texCmdLigature "\%#=1\\oe\>\s*" conceal cchar=œ
+  syntax match texCmdLigature "\%#=1\\OE\>\s*" conceal cchar=Œ
+  syntax match texCmdLigature "\%#=1\\o\>\s*"  conceal cchar=ø
+  syntax match texCmdLigature "\%#=1\\O\>\s*"  conceal cchar=Ø
+  syntax match texCmdLigature "\%#=1\\aa\>\s*" conceal cchar=å
+  syntax match texCmdLigature "\%#=1\\AA\>\s*" conceal cchar=Å
+  syntax match texCmdLigature "\%#=1\\ss\>\s*" conceal cchar=ß
+  syntax match texCmdLigature "\%#=1\\dj\>\s*" conceal cchar=đ
+  syntax match texCmdLigature "\%#=1\\DJ\>\s*" conceal cchar=Đ
   syntax match texLigature    "--"     conceal cchar=–
   syntax match texLigature    "---"    conceal cchar=—
   syntax match texLigature    "`"      conceal cchar=‘
