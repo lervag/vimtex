@@ -55,6 +55,7 @@ CONTENTS                                                      *vimtex-contents*
     Complete packages                           |vimtex-complete-packages|
     Complete documentclasses                    |vimtex-complete-classes|
     Complete bibliographystyles                 |vimtex-complete-bibstyle|
+    Complete beamer themes                      |vimtex-complete-beamer|
     Autocomplete                                |vimtex-complete-auto|
       coc.nvim                                  |vimtex-complete-coc.nvim|
       deoplete                                  |vimtex-complete-deoplete|
@@ -4608,6 +4609,29 @@ The default value can be found with: >
 Note: If you want to change the default value of `TEXMFHOME` in your shell
       startup file and use `gvim` started from the desktop environment, please
       read |vimtex-faq-texmfhome|.
+
+------------------------------------------------------------------------------
+COMPLETE BEAMER THEMES                                 *vimtex-complete-beamer*
+
+Theme completion is available for the following `beamer` commands:
+
+  `\usetheme{`
+    Complete presentation themes (`beamertheme*`).
+
+  `\usecolortheme{`
+    Complete color themes (`beamercolortheme*`).
+
+  `\useinnertheme{`
+    Complete inner themes (`beamerinnertheme*`).
+
+  `\useoutertheme{`
+    Complete outer themes (`beameroutertheme*`).
+
+  `\usefonttheme{`
+    Complete font themes (`beamerfonttheme*`).
+
+The candidates are gathered from the same `ls-R` and `TEXMFHOME` sources as the
+package completion, see |vimtex-complete-packages| for more details.
 
 ------------------------------------------------------------------------------
 AUTOCOMPLETE                                             *vimtex-complete-auto*

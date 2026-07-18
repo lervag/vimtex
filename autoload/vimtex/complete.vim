@@ -660,6 +660,35 @@ function! s:completer_bst.gather_candidates() dict abort " {{{2
 endfunction
 
 " }}}1
+" {{{1 Beamer themes (\use(color|inner|outer|font)?theme)
+"
+let s:completer_theme = {
+      \ 'patterns' : [
+      \   '\v\\use%(color|inner|outer|font)?theme%(\s*\[[^]]*\])?\s*\{[^}]*$',
+      \ ],
+      \ 're_context' : '\\use\a*theme',
+      \ 'candidates' : {},
+      \}
+
+function! s:completer_theme.complete(regex) dict abort " {{{2
+  let l:type =
+        \ self.context =~# 'color' ? 'beamercolortheme' :
+        \ self.context =~# 'inner' ? 'beamerinnertheme' :
+        \ self.context =~# 'outer' ? 'beameroutertheme' :
+        \ self.context =~# 'font'  ? 'beamerfonttheme'  :
+        \                            'beamertheme'
+
+  if !has_key(self.candidates, l:type)
+    let l:n = strlen(l:type)
+    let self.candidates[l:type] = s:get_texmf_candidates('sty')
+          \ ->filter({_, x -> stridx(x, l:type) == 0 && x[l:n] =~# '\a'})
+          \ ->map({_, x -> {'word': strpart(x, l:n), 'kind': '[' . l:type[6:] . ']'}})
+  endif
+
+  return s:filter(copy(self.candidates[l:type]), a:regex)
+endfunction
+
+" }}}1
 
 "
 " Functions to parse candidates from packages
