@@ -689,6 +689,8 @@ function! s:completer_theme.complete(regex) dict abort " {{{2
 endfunction
 
 " }}}1
+
+"
 " Functions to parse candidates from packages
 "
 function! s:get_packages() abort " {{{1
