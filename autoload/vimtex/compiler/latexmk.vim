@@ -91,6 +91,7 @@ let s:compiler = vimtex#compiler#_template#new({
       \ 'name' : 'latexmk',
       \ 'aux_dir': '',
       \ 'callback' : 1,
+      \ 'clean_ext': '',
       \ 'continuous': 1,
       \ 'executable' : 'latexmk',
       \ 'options' : [
@@ -229,6 +230,14 @@ function! s:compiler.clean(full) abort dict " {{{1
   call self.__clean_temp_files(a:full)
 
   let l:cmd = self._get_executable_string()
+
+  if !empty(self.clean_ext)
+        \ && vimtex#compiler#latexmk#get_rc_opt(
+        \      self.file_info.root, 'clean_ext', 0, -1)[1] == -1
+    let l:cmd .= ' -e '
+          \ . vimtex#util#shellescape('$clean_ext = q/' . self.clean_ext . '/;')
+  endif
+
   let l:cmd .= a:full ? ' -C' : ' -c'
 
   if !empty(self.out_dir)
