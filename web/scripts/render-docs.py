@@ -344,6 +344,47 @@ def suppress_bad_justify(body: str) -> str:
     )
 
 
+def tablify_mappings(body: str) -> str:
+    """Turn the fixed-width "LHS / RHS / MODE" default-mappings listing into a
+    real HTML <table>. The listing is a `.help-column_heading` header (optionally
+    fenced by `---` rules) followed by rows of `LHS  <plug>(map)  MODE`."""
+    heading = re.compile(
+        r'(?:<div class="help-column_heading">-+</div>)?'
+        r'<div class="help-column_heading">LHS\s+RHS\s+MODE</div>'
+        r'(?:<div class="help-column_heading">-+</div>)?'
+    )
+    m = heading.search(body)
+    if not m:
+        return body
+
+    row = re.compile(
+        r"[^\S\n]*(.*?)\s*"  # LHS (before the plug map; may be empty)
+        r"(<a\b[^>]*>&lt;plug&gt;\([^)]*\)</a>|&lt;plug&gt;\([^)]*\))"  # RHS plug map
+        r"\s*(<code>[^<]*</code>)?[^\S\n]*(?:\n|$)"  # optional MODE
+    )
+    rows, pos = [], m.end()
+    while (rm := row.match(body, pos)) is not None:
+        rows.append((rm.group(1).strip(), rm.group(2), rm.group(3) or ""))
+        pos = rm.end()
+    if not rows:
+        return body
+
+    # Consume the closing "---" rule that follows the rows.
+    tail = re.match(r'\s*<div class="help-column_heading">-+</div>', body[pos:])
+    if tail:
+        pos += tail.end()
+
+    trs = "".join(
+        f"<tr><td>{lhs}</td><td>{rhs}</td><td>{mode}</td></tr>"
+        for lhs, rhs, mode in rows
+    )
+    table = (
+        '<table class="maps"><thead><tr><th>LHS</th><th>RHS</th><th>MODE</th>'
+        f"</tr></thead><tbody>{trs}</tbody></table>"
+    )
+    return body[: m.start()] + table + body[pos:]
+
+
 def pygments_css() -> str:
     sel = ".highlight"
 
@@ -411,6 +452,7 @@ def main() -> None:
     body, n = linkify_and_highlight(body, load_tagmap())
     body = reflow_prose(body)
     body = suppress_bad_justify(body)
+    body = tablify_mappings(body)
 
     outdir.mkdir(parents=True, exist_ok=True)
     for asset in ("shared.css", "docs.css", "arrow-left.svg"):

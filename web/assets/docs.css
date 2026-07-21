@@ -43,6 +43,53 @@
   text-align: left;
 }
 
+/* Default-mappings table (built from the fixed-width listing by render-docs.py).
+ * Reset the wrapping paragraph's pre-wrap/justify inheritance. */
+table.maps {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.25rem 0 0;
+  line-height: 1.4;
+}
+/* Breathing room below the header rule, before the first mapping. */
+table.maps tbody tr:first-child > td {
+  padding-top: 0.4rem;
+}
+/* The table's wrapping paragraph would otherwise leave the full section gap
+ * (the next heading's top margin) above that heading's rule; pull it up so the
+ * rule sits just below the last row. */
+.old-help-para:has(> table.maps) {
+  margin-bottom: -1.5rem;
+}
+table.maps th,
+table.maps td {
+  text-align: left;
+  padding: 0.12rem 2.5rem 0.12rem 0;
+  vertical-align: top;
+  white-space: nowrap;
+  overflow-wrap: normal; /* override .old-help-para's break-anywhere */
+}
+/* Let the RHS column wrap and absorb the slack, so LHS stays tight and MODE
+ * sits at the right edge. */
+table.maps td:nth-child(2),
+table.maps th:nth-child(2) {
+  width: 100%;
+  white-space: normal;
+}
+table.maps thead th {
+  color: var(--heading);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3rem;
+}
+table.maps tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+table.maps td:last-child,
+table.maps th:last-child {
+  padding-right: 0;
+}
+
 pre {
   white-space: pre-wrap;
   background: var(--code-bg);
