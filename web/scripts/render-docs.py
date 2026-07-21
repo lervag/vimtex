@@ -313,22 +313,27 @@ def pygments_css() -> str:
         raw = HtmlFormatter(style=style).get_style_defs(sel)
         # keep only scoped ".highlight .token" rules; drop the base background
         # rule and any unscoped rules Pygments emits (pre{}, linenos).
-        return "\n".join(
+        rules = "\n".join(
             ln
             for ln in raw.splitlines()
             if ln.startswith(sel) and not re.match(re.escape(sel) + r"\s*\{", ln)
         )
+        # Apply the same token colours to Hugo's Chroma output (.chroma) on the
+        # landing page, so both pages share one highlighting style. Chroma is a
+        # Pygments port and uses the same token class names.
+        return rules + "\n" + rules.replace(sel, ".chroma")
 
-    light = defs("default")
+    light_style = "solarized-light"
+    light = defs(light_style)
     dark, dark_style = "", ""
-    for cand in ("github-dark", "native", "monokai"):
+    for cand in ("solarized-dark", "github-dark", "monokai"):
         try:
             dark, dark_style = defs(cand), cand
             break
         except ClassNotFound:
             continue
     return (
-        f"/* Pygments token colours (light=default, dark={dark_style}). */\n"
+        f"/* Pygments token colours (light={light_style}, dark={dark_style}). */\n"
         f"{light}\n\n@media (prefers-color-scheme: dark) {{\n{dark}\n}}\n"
     )
 

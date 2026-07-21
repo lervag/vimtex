@@ -5,8 +5,6 @@
 baseURL = "https://lervag.github.io/vimtex/"
 languageCode = "en-GB"
 title = "VimTeX"
-highlighter = "pygments"
-
 # Only the home page is needed; drop taxonomy/term/RSS noise (keep sitemap).
 disableKinds = ["taxonomy", "term", "rss"]
 
@@ -15,3 +13,8 @@ relativeURLs = true
 [markup.goldmark.renderer]
   # README.md contains raw HTML (doctoc comments, anchors) — let it through.
   unsafe = true
+
+[markup.highlight]
+  # Emit CSS classes (.chroma) instead of inline styles, so README code blocks
+  # use the same Pygments stylesheet (pygments.css) as the /docs page.
+  noClasses = false

@@ -47,6 +47,10 @@ cp "$WEB_DIR/assets/shared.css" "$WEB_DIR/assets/home.css" \
 #    Pygments via the script's inline dependency metadata).
 uv run "$SCRIPT_DIR/render-docs.py" "$PUBLIC/docs"
 
+# Reuse the docs' Pygments stylesheet for the landing page's README code blocks
+# (it also targets Hugo's .chroma wrapper), so both pages highlight identically.
+cp "$PUBLIC/docs/pygments.css" "$PUBLIC/pygments.css"
+
 # GitHub Pages served via Actions does not run Jekyll, but be explicit.
 touch "$PUBLIC/.nojekyll"
 
