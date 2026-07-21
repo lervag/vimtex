@@ -313,9 +313,11 @@ def reflow_prose(body: str) -> str:
         for line in lines:
             if out:
                 prev = out[-1]
+                stripped = re.sub(r"<[^>]+>", "", prev)
                 hard = (
-                    re.search(r"   ", re.sub(r"<[^>]+>", "", prev))
+                    re.search(r"   ", stripped)
                     or _visible_len(prev) < 55
+                    or re.match(r"\s*\[\d+\]:", stripped)  # "[N]:" reference line
                     or prev.rstrip().endswith(("</div>", "<br>", "</pre>", "</h2>", "</h3>"))
                 )
                 if not hard:
@@ -324,6 +326,22 @@ def reflow_prose(body: str) -> str:
             out.append(strip_indent(line))
         parts[idx] = "\n".join(out)
     return "".join(parts)
+
+
+def suppress_bad_justify(body: str) -> str:
+    """Left-align paragraphs that contain a long unbreakable token (e.g. a URL):
+    when such a line wraps, justify stretches its few spaces into large gaps.
+    Only matches leaf paragraphs (no nested <div>, e.g. list containers)."""
+
+    def repl(m: re.Match) -> str:
+        text = html.unescape(re.sub(r"<[^>]+>", "", m.group(1)))
+        if any(len(w) >= 35 for w in text.split()):
+            return '<div class="old-help-para no-justify">' + m.group(1) + "</div>"
+        return m.group(0)
+
+    return re.sub(
+        r'<div class="old-help-para">((?:(?!</?div)[\s\S])*?)</div>', repl, body
+    )
 
 
 def pygments_css() -> str:
@@ -392,6 +410,7 @@ def main() -> None:
     body = tidy_code_blocks(body)
     body, n = linkify_and_highlight(body, load_tagmap())
     body = reflow_prose(body)
+    body = suppress_bad_justify(body)
 
     outdir.mkdir(parents=True, exist_ok=True)
     for asset in ("shared.css", "docs.css", "arrow-left.svg"):

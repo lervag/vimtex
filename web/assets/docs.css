@@ -37,6 +37,11 @@
   margin: 0 0 0.4rem;
   overflow-wrap: anywhere;
 }
+/* Paragraphs with a long unbreakable token (URLs) — set by render-docs.py —
+ * would show large justify gaps where that token wraps; keep them left-aligned. */
+.old-help-para.no-justify {
+  text-align: left;
+}
 
 pre {
   white-space: pre-wrap;
