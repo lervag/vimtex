@@ -1,0 +1,61 @@
+name: Docs site
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'doc/vimtex.txt'
+      - 'README.md'
+      - 'web/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.0
+
+      - uses: jdx/mise-action@v4
+        with:
+          # neovim: gen_help_html.lua (bundled vimdoc parser)
+          # hugo: landing page
+          # uv: runs render-docs.py (Pygments) for the documentation page
+          tool_versions: |
+            neovim 0.12.4
+            hugo 0.153.3
+            uv latest
+          cache: true
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build
+        env:
+          HUGO_BASEURL: ${{ steps.pages.outputs.base_url }}
+        run: web/scripts/build.sh "$PWD/web/public"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/public
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

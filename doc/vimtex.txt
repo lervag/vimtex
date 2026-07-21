@@ -7627,7 +7627,4 @@ VimTeX was first released on github on this date. The initial version was
 named vim-latex, which conflicted with Vim LaTeX-Suite which is also known as
 vim-latex.
 
-==============================================================================
-------------------------------------------------------------------------------
-
  vim:tw=78:ts=8:ft=help:norl:fdm=marker:

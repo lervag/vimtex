@@ -1,0 +1,17 @@
+# Minimal Hugo config for the VimTeX docs site landing page.
+# baseURL is intentionally generic; CI overrides it with `hugo --baseURL ...`.
+# Internal links in the template are relative, so the site works both at
+# https://lervag.github.io/vimtex/ and at a custom domain root (e.g. vimtex.org).
+baseURL = "https://lervag.github.io/vimtex/"
+languageCode = "en-GB"
+title = "VimTeX"
+highlighter = "pygments"
+
+# Only the home page is needed; drop taxonomy/term/RSS noise (keep sitemap).
+disableKinds = ["taxonomy", "term", "rss"]
+
+relativeURLs = true
+
+[markup.goldmark.renderer]
+  # README.md contains raw HTML (doctoc comments, anchors) — let it through.
+  unsafe = true

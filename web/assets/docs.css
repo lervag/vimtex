@@ -1,0 +1,125 @@
+/* docs.css — the standalone documentation page produced by render-docs.py from
+ * neovim's gen_help_html.lua output. Loaded after shared.css. Targets the
+ * classes that generator emits:
+ *   .old-help-para .help-heading .help-heading-tags .help-column_heading
+ *   .help-tag .help-tag-right .help-li .help-li-num */
+
+/* Back link: a left-arrow icon painted with the link's colour (same CSS-mask
+ * technique as the landing's icon links). */
+.topbar a.back::before {
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  background: currentColor;
+  -webkit-mask: url("arrow-left.svg") center / contain no-repeat;
+  mask: url("arrow-left.svg") center / contain no-repeat;
+}
+
+.help-body {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 6rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Paragraphs keep the help file's whitespace/alignment (pre-wrap). render-docs.py
+ * has already joined soft-wrapped prose lines so prose reflows to the container
+ * width; aligned content (tables, contents list) keeps its explicit breaks.
+ * `justify` only affects the reflowed prose: lines ending at a preserved newline
+ * (table rows) are treated as final lines and are left unjustified. */
+.old-help-para {
+  white-space: pre-wrap;
+  text-align: justify;
+  text-wrap: pretty;
+  margin: 0 0 0.4rem;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  white-space: pre-wrap;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  overflow-x: auto;
+}
+
+/* Inline code chips. Reset inside <pre>, which supplies its own background. */
+code {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+pre code {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Section headings (h2/h3 emitted with these classes). */
+.help-heading,
+h2.help-heading,
+h3.help-heading {
+  /* Heading title left, its tag(s) right, on one line (wrapping on narrow
+   * screens). Flex also contains the tags, which were a right float. */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 1rem;
+  /* Collapse the help file's alignment padding (inherited pre-wrap) so the
+   * tag sits beside the title instead of being pushed onto its own line. */
+  white-space: normal;
+  color: var(--heading);
+  font-weight: 700;
+  margin: 2rem 0 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 3.5rem;
+  overflow-wrap: anywhere;
+}
+.help-heading-tags { font-size: 0.8em; font-weight: 400; }
+
+.help-column_heading {
+  color: var(--heading);
+  font-weight: 700;
+  padding-top: 0.5rem;
+}
+
+/* Help tags: |links| and their anchor targets. */
+.help-tag,
+.help-tag-right {
+  color: var(--tag);
+  scroll-margin-top: 3.5rem;
+}
+.help-tag a,
+.help-tag-right a { color: var(--tag); }
+.help-tag-right { float: right; }
+
+/* Cross-references to core Vim/Neovim help, linked to neovim.io. */
+.ext-tag { white-space: nowrap; }
+
+/* Highlight a tag when jumped to via its anchor. */
+:target {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 3px;
+}
+
+/* List items. gen_help_html strips the source "-"/number and wraps each item in
+ * a <div class="help-li"> (nesting via an inline margin-left), leaving the help
+ * file's hard line breaks inside. Restore markers and collapse those newlines
+ * (white-space:normal) so items wrap naturally instead of leaving big gaps. */
+.help-li,
+.help-li-num {
+  display: list-item;
+  white-space: normal;
+  margin-left: 1.6rem; /* overridden inline for nested items */
+  padding-left: 0.3rem;
+}
+.help-li { list-style: disc outside; }
+.help-li-num { list-style: decimal outside; }

@@ -1,0 +1,115 @@
+/* home.css — landing page (web/layouts/index.html). Loaded after shared.css. */
+
+.wrap {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 5rem;
+}
+
+header.hero {
+  text-align: center;
+  padding: 2.5rem 0 1rem;
+}
+header.hero h1 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+header.hero p {
+  color: var(--muted);
+  font-size: 1.15rem;
+  margin: 0.5rem 0 0;
+}
+
+/* The top menu bar itself lives in shared.css (.topbar); the links are the
+ * shared .topbar a style plus an icon. */
+.btn {
+  transition: color 0.15s ease;
+}
+/* Icons are separate SVG files painted with the link's text colour via a CSS
+   mask, so they follow the muted/accent colour in both light and dark. */
+.btn::before {
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  background: currentColor;
+}
+.btn--primary::before {
+  -webkit-mask: url("book.svg") center / contain no-repeat;
+  mask: url("book.svg") center / contain no-repeat;
+}
+.btn--secondary::before {
+  -webkit-mask: url("github.svg") center / contain no-repeat;
+  mask: url("github.svg") center / contain no-repeat;
+}
+
+.readme img {
+  max-width: 100%;
+}
+.readme pre {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  overflow-x: auto;
+}
+.readme code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* GitHub-style Markdown alerts (> [!TIP] etc.), emitted by the blockquote
+   render hook in layouts/_markup/render-blockquote.html. Each type sets its own
+   accent via --alert; the border and title inherit it. */
+.alert {
+  margin: 1rem 0;
+  padding: 0.4rem 1rem;
+  border-left: 3px solid var(--alert, var(--muted));
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--alert, var(--muted)) 8%, var(--bg));
+}
+.alert > :last-child {
+  margin-bottom: 0;
+}
+.alert-title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: var(--alert, var(--muted));
+}
+.alert-note {
+  --alert: #2d6df6;
+}
+.alert-tip {
+  --alert: #1a7f37;
+}
+.alert-important {
+  --alert: #8250df;
+}
+.alert-warning {
+  --alert: #9a6700;
+}
+.alert-caution {
+  --alert: #cf222e;
+}
+@media (prefers-color-scheme: dark) {
+  .alert-note {
+    --alert: #6ea8ff;
+  }
+  .alert-tip {
+    --alert: #4fd6a0;
+  }
+  .alert-important {
+    --alert: #c297ff;
+  }
+  .alert-warning {
+    --alert: #e3b341;
+  }
+  .alert-caution {
+    --alert: #ff7b72;
+  }
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 3rem;
+}

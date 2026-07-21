@@ -1,0 +1,9 @@
+# Build output
+/public/
+
+# Generated at build time from the repo-root README.md (see scripts/build.sh)
+/content/_index.md
+
+# Hugo caches
+/.hugo_build.lock
+/resources/_gen/

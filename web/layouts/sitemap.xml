@@ -1,0 +1,13 @@
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {{- range .Pages }}
+  <url>
+    <loc>{{ .Permalink }}</loc>{{ if not .Lastmod.IsZero }}
+    <lastmod>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}</lastmod>{{ end }}
+  </url>
+  {{- end }}
+  {{/* The /docs page is rendered outside Hugo (render-docs.py), so add it here. */}}
+  <url>
+    <loc>{{ "docs/" | absURL }}</loc>
+  </url>
+</urlset>

@@ -1,0 +1,89 @@
+/* shared.css — colour palette and base styles shared by the landing page
+ * (home.css) and the rendered documentation (docs.css). Light/dark aware via
+ * prefers-color-scheme. */
+
+:root {
+  --bg: #fdfdfc;
+  --fg: #24292f;
+  --muted: #6e7781;
+  --accent: #2d6df6;
+  --card: #f5f4f1;
+  --border: #e3e1dc;
+  --tag: #0a7d4f;
+  --heading: #1a1a1a;
+  --code-bg: #f2f1ee;
+
+  /* Content column shared by the landing page and the docs. */
+  --content-width: 52rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181d;
+    --fg: #d6dae0;
+    --muted: #8b949e;
+    --accent: #6ea8ff;
+    --card: #21262d;
+    --border: #2b3038;
+    --tag: #4fd6a0;
+    --heading: #f0f2f5;
+    --code-bg: #21262d;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Top bar shared by the landing page and the docs: a full-width bottom border
+ * with its links constrained to the content column. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0.7rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.95rem;
+}
+.topbar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.topbar a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+.topbar-note {
+  color: var(--muted);
+  font-size: 0.75rem;
+}

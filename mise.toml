@@ -1,0 +1,10 @@
+[tools]
+hugo = "latest"
+uv = "latest"
+
+[tasks.web-build]
+run = "web/scripts/build.sh"
+
+[tasks.web-host]
+depends = ["web-build"]
+run = "python -m http.server -d web/public 8000"

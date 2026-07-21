@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode | default " en" }}">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Site.Title }} — LaTeX for Vim &amp; Neovim</title>
+  <meta name="description"
+    content="VimTeX is a modern Vim and Neovim filetype and syntax plugin for LaTeX. Browse the searchable documentation online.">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="btn btn--primary" href="docs/">Read the documentation</a>
+      <a class="btn btn--secondary" href="https://github.com/lervag/vimtex">GitHub repo</a>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="readme">
+      {{ .Content }}
+    </div>
+  </div>
+</body>
+
+</html>
