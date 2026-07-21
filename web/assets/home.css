@@ -45,6 +45,11 @@ header.hero p {
 .readme img {
   max-width: 100%;
 }
+.readme video {
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
 .readme pre {
   background: var(--card);
   border: 1px solid var(--border);

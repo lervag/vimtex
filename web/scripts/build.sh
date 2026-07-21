@@ -25,11 +25,18 @@ echo "==> build: output → $PUBLIC"
 # 1. Landing content: reuse README.md, rewriting repo-relative links/images to
 #    absolute GitHub URLs so they resolve off-site. Anchors (#...) and absolute
 #    URLs are left untouched. Generated file is git-ignored.
+#      - relative links/images  → github.com/…/blob/master/…
+#      - image blob URLs        → raw.githubusercontent.com/… (blob serves HTML,
+#                                 not image bytes, so <img> would be broken)
+#      - bare video URLs        → <video> (GitHub auto-embeds these; Hugo doesn't)
 mkdir -p "$WEB_DIR/content"
 {
   printf -- '---\ntitle: "VimTeX"\n---\n\n'
-  perl -pe 's{\]\((?!https?://|#|mailto:)([^)]+)\)}{](https://github.com/lervag/vimtex/blob/master/$1)}g' \
-    "$REPO_ROOT/README.md"
+  perl -pe '
+    s{\]\((?!https?://|#|mailto:)([^)]+)\)}{](https://github.com/lervag/vimtex/blob/master/$1)}g;
+    s{(!\[[^\]]*\]\()https://github\.com/([^/]+)/([^/]+)/blob/([^)]+)\)}{$1https://raw.githubusercontent.com/$2/$3/$4)}g;
+    s{^(https?://\S+\.(?:mp4|webm|mov|m4v))\s*$}{<video controls preload="metadata" src="$1"></video>}g;
+  ' "$REPO_ROOT/README.md"
 } > "$WEB_DIR/content/_index.md"
 
 # 2. Hugo builds the landing page first (it owns/cleans the destination).
