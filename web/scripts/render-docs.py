@@ -36,8 +36,11 @@ from urllib.parse import quote
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
+from pygments.lexer import inherit
 from pygments.lexers import get_lexer_by_name
 from pygments.lexers.special import TextLexer
+from pygments.lexers.textedit import VimLexer
+from pygments.token import Keyword
 from pygments.util import ClassNotFound
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -227,6 +230,21 @@ def link_core_tags(text: str, tagmap: dict[str, str]) -> str:
 _FMT = HtmlFormatter(nowrap=True)
 
 
+class _VimLexerPlus(VimLexer):
+    """Pygments' VimLexer omits several common Ex commands (augroup, autocmd,
+    echo, execute, normal, command, source, runtime, the :map family, ...); add
+    them (with frequent abbreviations) so they highlight as keywords."""
+
+    _extra = (
+        r"aug(?:roup)?|au(?:tocmd)?|echo(?:msg|hl|err)?|exe(?:cute)?|"
+        r"norm(?:al)?|command|source|runtime|[nvxsoict]?(?:nore)?map"
+    )
+    tokens = {"root": [(r"\b(?:%s)\b" % _extra, Keyword), inherit]}
+
+
+_VIM_LEXER = _VimLexerPlus()
+
+
 def highlight_block(block: str) -> str:
     m = re.match(
         r'<pre><code class="language-([^"]*)"[^>]*>(.*)</code></pre>\Z', block, re.S
@@ -237,6 +255,8 @@ def highlight_block(block: str) -> str:
         lexer = get_lexer_by_name(m.group(1).strip())
     except ClassNotFound:
         lexer = TextLexer()
+    if isinstance(lexer, VimLexer):
+        lexer = _VIM_LEXER
     inner = highlight(html.unescape(m.group(2)), lexer, _FMT).rstrip("\n")
     return f'<pre class="highlight"><code>{inner}</code></pre>'
 
