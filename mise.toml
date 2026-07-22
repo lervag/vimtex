@@ -1,6 +1,7 @@
 [tools]
 hugo = "latest"
 uv = "latest"
+"github:orhun/git-cliff" = "2.12.0"
 
 [tasks.web-build]
 run = "web/scripts/build.sh"
