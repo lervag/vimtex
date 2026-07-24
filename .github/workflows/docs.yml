@@ -40,14 +40,14 @@ jobs:
           cache: true
 
       - id: pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v6.0.0
 
       - name: Build
         env:
           HUGO_BASEURL: ${{ steps.pages.outputs.base_url }}
         run: web/scripts/build.sh "$PWD/web/public"
 
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: web/public
 
@@ -60,4 +60,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v5.0.0
