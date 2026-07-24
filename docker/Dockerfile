@@ -12,7 +12,7 @@
 #   docker build -t vimtex-test .
 #   docker run -v /path/to/vimtex:/vimtex -ti vimtex-test
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 

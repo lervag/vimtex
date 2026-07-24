@@ -1,6 +1,6 @@
 [tools]
-hugo = "latest"
-uv = "latest"
+hugo = "0.153.3"
+uv = "0.11.28"
 "github:orhun/git-cliff" = "2.12.0"
 
 [tasks.web-build]

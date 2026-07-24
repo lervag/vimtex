@@ -24,9 +24,11 @@ jobs:
     name: Build site
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.0
 
-      - uses: jdx/mise-action@v4
+      - name: Set up mise
+        uses: jdx/mise-action@v4.2.1
         with:
           # neovim: gen_help_html.lua (bundled vimdoc parser)
           # hugo: landing page
@@ -38,14 +40,14 @@ jobs:
           cache: true
 
       - id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build
         env:
           HUGO_BASEURL: ${{ steps.pages.outputs.base_url }}
         run: web/scripts/build.sh "$PWD/web/public"
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: web/public
 
@@ -58,4 +60,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

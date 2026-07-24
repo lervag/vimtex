@@ -6,12 +6,14 @@ on:
       - 'doc/*'
       - 'docker/*'
       - 'media/*'
+      - 'web/*'
       - '*.md'
   push:
     paths-ignore:
       - 'doc/*'
       - 'docker/*'
       - 'media/*'
+      - 'web/*'
       - '*.md'
 
 env:
@@ -23,35 +25,39 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
-    - name: Install packages
-      run: |
-        sudo apt update
-        sudo apt install \
-          moreutils \
-          texlive texlive-latex-extra texlive-extra-utils \
-          texlive-bibtex-extra libtext-bibtex-perl \
-          texlive-publishers \
-          latexmk \
-          libmodule-build-perl \
-          libconfig-autoconf-perl \
-          libextutils-libbuilder-perl
-    - uses: jdx/mise-action@v2
-      with:
-        tool_versions: |
-          neovim 0.10
-          vim 9.1
-    - uses: actions/checkout@master
-      with:
-        fetch-depth: 1
-    - name: Test with neovim
-      working-directory: ./test
-      run: |
-        mise use neovim
-        make -j1
-    - name: Test with vim
-      env:
-        MYVIM: vim -T dumb --not-a-term -n
-      working-directory: ./test
-      run: |
-        mise use vim
-        make -j1
+      - name: Install packages
+        run: |
+          sudo apt update
+          sudo apt install \
+            moreutils \
+            texlive texlive-latex-extra texlive-extra-utils \
+            texlive-bibtex-extra libtext-bibtex-perl \
+            texlive-publishers \
+            latexmk \
+            libmodule-build-perl \
+            libconfig-autoconf-perl \
+            libextutils-libbuilder-perl
+
+      - name: Set up mise
+        uses: jdx/mise-action@v4.2.1
+        with:
+          tool_versions: |
+            neovim 0.12.4
+            vim 9.2
+
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.0
+        with:
+          fetch-depth: 1
+
+      - name: Test with neovim
+        working-directory: ./test
+        run: |
+          make -j1
+
+      - name: Test with vim
+        env:
+          MYVIM: vim -T dumb --not-a-term -n
+        working-directory: ./test
+        run: |
+          make -j1
