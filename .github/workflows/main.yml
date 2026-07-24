@@ -53,6 +53,7 @@ jobs:
       - name: Test with neovim
         working-directory: ./test
         run: |
+          mise use neovim
           make -j1
 
       - name: Test with vim
@@ -60,4 +61,5 @@ jobs:
           MYVIM: vim -T dumb --not-a-term -n
         working-directory: ./test
         run: |
+          mise use vim
           make -j1
