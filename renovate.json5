@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended", ":disableDependencyDashboard"],
+
+  schedule: ["before 9pm on friday"],
+  rangeStrategy: "pin",
+  minimumReleaseAge: "14 days",
+
+  labels: ["dependencies"],
+  assignees: ["lervag"],
+  reviewers: ["lervag"],
+
+  packageRules: [
+    // Group patch and minor updates to reduce PR noise
+    {
+      matchUpdateTypes: ["patch", "minor"],
+      groupName: "minor and patch updates",
+    },
+  ],
+}
