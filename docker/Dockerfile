@@ -9,28 +9,39 @@
 # To use, do something like this:
 #
 #   cd VIMTEX/docker
-#   docker build -t vimtex-test .
+#   docker buildx build -t vimtex-test .
 #   docker run -v /path/to/vimtex:/vimtex -ti vimtex-test
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update
-RUN apt install -y software-properties-common
-RUN add-apt-repository -y ppa:neovim-ppa/stable && apt update
-RUN apt -y install \
-  vim neovim moreutils gcc make wget tree \
-  texlive texlive-latex-extra texlive-extra-utils \
-  texlive-bibtex-extra libtext-bibtex-perl \
-  texlive-publishers \
-  latexmk \
-  libmodule-build-perl \
-  libconfig-autoconf-perl \
-  libextutils-libbuilder-perl
+# Editor versions, kept in sync with .github/workflows/main.yml
+ARG NEOVIM_VERSION=0.12.4
+ARG VIM_VERSION=9.2
+
+# Install test dependencies. moreutils/texlive/latexmk/perl packages mirror the
+# ones installed in CI; the rest are needed to fetch and build the editors via
+# mise (vim is compiled from source, hence gcc/make/libncurses-dev).
+RUN apt-get update && apt-get install -y \
+      moreutils gcc make wget tree \
+      ca-certificates curl git xz-utils unzip libncurses-dev \
+      texlive texlive-latex-extra texlive-extra-utils \
+      texlive-bibtex-extra libtext-bibtex-perl \
+      texlive-publishers \
+      latexmk \
+      libmodule-build-perl \
+      libconfig-autoconf-perl \
+      libextutils-libbuilder-perl \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install neovim and vim through mise, matching the versions used in CI.
+RUN curl -fsSL https://mise.run | sh
+ENV PATH="/root/.local/bin:/root/.local/share/mise/shims:${PATH}"
+RUN mise use -g neovim@${NEOVIM_VERSION} vim@${VIM_VERSION}
 
 ENV SHELL=bash
 
 WORKDIR /vimtex
 
-CMD bash
+CMD ["bash"]
