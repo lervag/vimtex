@@ -25,7 +25,8 @@ function! s:viewer._start(outfile) dict abort " {{{1
   let self.cmd_start
         \ = vimtex#view#zathura#cmdline(a:outfile, self.has_synctex, 2)
 
-  call vimtex#jobs#run(self.cmd_start)
+  " NB: Use vimtex#jobs#start to ensure it runs in the background
+  call vimtex#jobs#start(self.cmd_start, {'detached': v:true})
 endfunction
 
 " }}}1

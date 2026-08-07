@@ -55,7 +55,6 @@ function! vimtex#view#zathura#cmdline(outfile, synctex, start) abort " {{{1
 
   return l:cmd . ' '
         \ . vimtex#util#shellescape(vimtex#paths#relative(a:outfile, getcwd()))
-        \ . '&'
 endfunction
 
 let s:inverse_search_cmd = get(g:, 'vimtex_callback_progpath',
