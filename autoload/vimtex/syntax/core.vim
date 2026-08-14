@@ -110,6 +110,12 @@ function! vimtex#syntax#core#init_rules() abort " {{{1
         \_texMathBackslash,
         \@NoSpell
 
+  " Alias for the cluster name used by the original tex.vim syntax script.
+  " Several syntax scripts embed TeX math with `syntax include` and then refer
+  " to this cluster by name, e.g. syntax/mediawiki.vim and syntax/rnoweb.vim in
+  " the Vim runtime.
+  syntax cluster texMathZoneGroup contains=@texClusterMath
+
   " }}}2
 
   " {{{2 TeX symbols and special characters

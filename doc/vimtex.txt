@@ -5088,6 +5088,9 @@ syntax highlighting (and more). Thus, it is pertinent to mention that a couple
 of the text objects rely on the syntax highlighting rules to work. See also
 |vimtex-text-objects| and |vimtex-faq-treesitter|.
 
+The syntax plugin may also be embedded in other filetypes, e.g. to highlight
+math zones in Markdown or MediaWiki files. See |vimtex-faq-syntax-embedding|.
+
 LaTeX is a macro expansion language and it is impossible to write a fully
 correct syntax parser without running the `tex` compiler itself. VimTeX aims
 to be pragmatic and provide a best-effort syntax highlighting - a decent trade
@@ -6820,6 +6823,7 @@ Contents:
 * |vimtex-faq-zathura-windows-wsl|
 * |vimtex-faq-texshopviewer|
 * |vimtex-faq-treesitter|
+* |vimtex-faq-syntax-embedding|
 
 ------------------------------------------------------------------------------
                                                            *vimtex-faq-windows*
@@ -7246,6 +7250,46 @@ A: Yes. Enable the Tree-sitter highlighter as required by the relevant plugin,
 
    [0]: https://tree-sitter.github.io/tree-sitter/
    [1]: https://github.com/nvim-treesitter/nvim-treesitter
+
+------------------------------------------------------------------------------
+                                                  *vimtex-faq-syntax-embedding*
+Q: How do I embed VimTeX math highlighting in another filetype?
+A: Use `syntax include` to load the VimTeX syntax script, then let the relevant
+   syntax region contain the cluster `@texClusterMath`. This cluster defines
+   the syntax patterns that are allowed to appear in math mode.
+
+   As an example, the following will add math highlighting inside `$...$` and
+   `$$...$$` in Markdown files. Put it in `after/syntax/markdown.vim`: >vim
+
+     if exists('b:_loaded_markdown_vimtex') | finish | endif
+     let b:_loaded_markdown_vimtex = 1
+
+     unlet b:current_syntax
+     syntax include @tex syntax/tex.vim
+     let b:current_syntax = 'markdown'
+
+     syntax region mkdMath keepend contains=@tex
+           \ start="\\\@<!\$" end="\$" skip="\\\$"
+     syntax region mkdMath keepend contains=@tex
+           \ start="\\\@<!\$\$" end="\$\$" skip="\\\$"
+<
+   Notice, this example uses the `@tex` cluster created by `syntax include`,
+   which gives the full TeX syntax (both text mode and math mode). Use
+   `@texClusterMath` instead when the region is known to be math only. For
+   instance, to fix the `<math>` regions of the `mediawiki` syntax script, put
+   this in `after/syntax/mediawiki.vim`: >vim
+
+     if !get(g:, 'vimtex_syntax_enabled', 1) | finish | endif
+
+     syntax clear wikiTeX
+     syntax region wikiTeX matchgroup=htmlTag
+           \ start="<math\>[^>]*>" end="</math>"
+           \ contains=@texClusterMath,wikiNowiki,wikiNowikiEndTag
+<
+   Note: Syntax scripts that were written for the original `tex.vim` syntax
+         script may refer to the cluster `@texMathZoneGroup`. VimTeX provides
+         this name as an alias of `@texClusterMath` so that such scripts keep
+         working.
 
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-texshopviewer*
