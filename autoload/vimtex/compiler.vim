@@ -270,9 +270,11 @@ function! vimtex#compiler#get_output_clashes(compiler, states) abort " {{{1
   if empty(l:signature) | return [] | endif
 
   return filter(copy(a:states), {_, x ->
-        \    x.compiler isnot a:compiler
+        \ has_key(x, 'compiler')
+        \ && x.compiler isnot a:compiler
         \ && has_key(x.compiler, 'is_running') && x.compiler.is_running()
-        \ && x.compiler.get_output_signature('aux') ==# l:signature})
+        \ && x.compiler.get_output_signature('aux') ==# l:signature
+        \})
 endfunction
 
 " }}}1
