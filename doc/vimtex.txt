@@ -7179,54 +7179,73 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
    and |<plug>(vimtex-i$)|) as these text objects check the syntax groups to
    determine a math region.
 
-   Thus, for people who use Tree-sitter, it is strongly advised to disable
-   Tree-sitter highlighting for LaTeX buffers. This can be done with the
-   `ignore_install` option for the setup part of `nvim-treesitter`, e.g.: >lua
+   Thus, for people who use Tree-sitter, it is strongly advised to not enable
+   Tree-sitter highlighting for LaTeX buffers.
 
-     require 'nvim-treesitter.configs'.setup {
-       ignore_install = { "latex" },
-       -- more stuff here
-     }
-<
-   Or, alternatively, to only disable the highlighting: >lua
+   Notice that this does not mean one has to avoid Tree-sitter altogether! The
+   `latex` parser may still be installed and used by plugins that query the
+   syntax tree, such as Tree-sitter based text objects. Such plugins do not
+   require the Tree-sitter highlighter to be active - it is enough that the
+   parser is available.
 
-     require 'nvim-treesitter.configs'.setup {
-       highlight = {
-         enable = true,
-         disable = { "latex" },
-       },
-       -- more stuff here
-     }
+   In Neovim, Tree-sitter highlighting is enabled per buffer with
+   |vim.treesitter.start()|. So it is enough to not call it for LaTeX buffers,
+   e.g. like this: >lua
+
+     vim.api.nvim_create_autocmd("FileType", {
+       callback = function(args)
+         if args.match == "tex" then return end
+         pcall(vim.treesitter.start, args.buf)
+       end,
+     })
 <
    Of course, some people may still want to use Tree-sitter for highlighting
-   regardless of the arguments raised above. In this case, it is advised to
-   use these options for VimTeX to avoid the startup warning: >vim
+   regardless of the arguments raised above. There are two ways to do this.
+
+   First, one may run both Tree-sitter and VimTeX highlighting at the same
+   time. |vim.treesitter.start()| turns off the regex based syntax
+   highlighting, but one may turn it back on afterwards: >lua
+
+     vim.api.nvim_create_autocmd("FileType", {
+       pattern = "tex",
+       callback = function(args)
+         vim.treesitter.start(args.buf, "latex")
+         vim.bo[args.buf].syntax = "ON"
+       end,
+     })
+<
+   With this, all of the VimTeX features work as normal, including conceals
+   and the syntax dependent text objects. Be warned, though, that this runs
+   two highlighters in parallel. This negates any performance benefit, and it
+   can possibly lead to weird results since both types of highlighting are
+   applied, one over the other.
+
+   Second, one may use Tree-sitter highlighting alone. In this case, it is
+   advised to use these options for VimTeX to avoid the startup warning: >vim
 
      let g:vimtex_syntax_enabled = 0
      let g:vimtex_syntax_conceal_disable = 1
 <
-Q: Can I use VimTeX with Markdown plugins that need Tree-sitter enabled?
-A: Yes, it is possible by using the "additional_vim_regex_highlighting" option
-   in the `nvim-treesitter` setup (|nvim-treesitter-highlight-mod|), e.g.: >lua
+   Notice that the VimTeX features that depend on the syntax highlighting will
+   then not work, see |vimtex-syntax| and |vimtex-text-objects|.
 
-     require 'nvim-treesitter.configs'.setup {
-       ensure_installed = { "markdown" },
-       highlight = {
-               enable = true,
-               disable = { "latex" },
-               additional_vim_regex_highlighting = { "latex", "markdown" },
-       },
-       --other treesitter settings
-     }
+Q: Can I use VimTeX with Markdown plugins that need Tree-sitter enabled?
+A: Yes. Enable the Tree-sitter highlighter as required by the relevant plugin,
+   then turn the regex based syntax highlighting back on, e.g.: >lua
+
+     vim.api.nvim_create_autocmd("FileType", {
+       pattern = "markdown",
+       callback = function(args)
+         vim.treesitter.start(args.buf)
+         vim.bo[args.buf].syntax = "ON"
+       end,
+     })
 <
-   Be warned, though, that this will run both Tree-sitter and regex
-   highlighting in parallel. This negates any performance benefit, and it can
-   possibly lead to weird results since both types of highlighting are
-   applied, one over the other.
+   The same warning as above applies: this runs both Tree-sitter and regex
+   highlighting in parallel.
 
    [0]: https://tree-sitter.github.io/tree-sitter/
    [1]: https://github.com/nvim-treesitter/nvim-treesitter
-   [2]: https://github.com/nvim-treesitter/nvim-treesitter#available-modules
 
 ------------------------------------------------------------------------------
                                                      *vimtex-faq-texshopviewer*

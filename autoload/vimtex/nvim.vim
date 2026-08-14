@@ -9,7 +9,10 @@ function! vimtex#nvim#check_treesitter(bufnr, ...) abort " {{{1
         \ 'require("vim.treesitter.highlighter").active[_A] ~= nil',
         \ a:bufnr
         \)
-    call vimtex#log#error('Syntax highlighting is controlled by Treesitter!')
+    call vimtex#log#error(
+          \ 'Syntax highlighting is controlled by Treesitter!',
+          \ 'For more info, see :help vimtex-faq-treesitter'
+          \)
   endif
 endfunction
 
