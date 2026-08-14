@@ -101,6 +101,11 @@ endfunction
 
 " }}}1
 function! vimtex#text_obj#delimited(is_inner, mode, type) abort " {{{1
+  if a:type ==# 'math' && !g:vimtex_syntax_enabled
+    call vimtex#log#warning("g:vimtex_syntax_enabled is required for i$ and a$")
+    return
+  endif
+
   let l:object = {}
   let l:prev_object = {}
   let l:pos_save = vimtex#pos#get_cursor()
