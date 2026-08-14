@@ -56,10 +56,28 @@ The following explains the most common and popular approaches.
 > In fact, doing it will _break_ the inverse-search mechanism, which relies on
 > a _global_ command (`:VimtexInverseSearch`).
 
+### vim.pack in Neovim
+
+Neovim has a built-in plugin manager called [vim.pack](https://neovim.io/doc/user/pack/#_plugin-manager).
+To use it, simply create a file like `~/.config/nvim/plugin/vimtex.lua` with:
+
+```lua
+-- Note that v2.15 is NOT the most recent version!
+vim.pack.add { { src = "https://github.com/lervag/vimtex", version = "v2.15" } }
+
+-- To use the most recent version from git, you can do simply:
+vim.pack.add { "https://github.com/lervag/vimtex" }
+
+-- VimTeX configuration goes here, e.g.
+vim.g.vimtex_view_method = "zathura"
+```
+
+VimTeX is mostly implemented with Vimscript and is configured with the classical vimscript variable convention like `g:vimtex_OPTION_NAME`.
+Nowadays, Neovim is often configured with Lua, thus some users may be interested in reading `:help lua-vimscript`.
+
 ### lazy.nvim
 
-In Neovim, [lazy.nvim](https://github.com/folke/lazy.nvim) is probably the most popular plugin manager.
-To install VimTeX, add a plugin spec similar to this:
+To install VimTeX with [lazy.nvim](https://github.com/folke/lazy.nvim), add a plugin spec similar to this:
 
 ```lua
 {
@@ -72,11 +90,6 @@ To install VimTeX, add a plugin spec similar to this:
   end
 }
 ```
-
-VimTeX is mostly implemented with Vimscript and is configured with the
-classical vimscript variable convention like `g:vimtex_OPTION_NAME`. Nowadays,
-Neovim is often configured with Lua, thus some users may be interested in
-reading `:help lua-vimscript`.
 
 ### vim-plug
 
