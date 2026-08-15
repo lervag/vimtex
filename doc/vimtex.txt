@@ -97,6 +97,7 @@ CONTENTS                                                      *vimtex-contents*
     Viewer configuration                        |vimtex-view-configuration|
       Evince                                    |vimtex-view-evince|
       Galley                                    |vimtex-view-galley|
+      Lektra                                    |vimtex-view-lektra|
       MuPDF                                     |vimtex-view-mupdf|
       Okular                                    |vimtex-view-okular|
       qpdfview                                  |vimtex-view-qpdfview|
@@ -3483,8 +3484,9 @@ OPTIONS                                                        *vimtex-options*
   search to the current cursor position.
 
   Note: This option is only relevant when |g:vimtex_view_method| is set to
-        either `mupdf`, `zathura`. See also the specific viewer sections for
-        more info: |vimtex-view-mupdf|, |vimtex-view-zathura|.
+        either `lektra`, `mupdf`, `zathura`. See also the specific viewer
+        sections for more info: |vimtex-view-lektra|, |vimtex-view-mupdf|,
+        |vimtex-view-zathura|.
 
   Default value: 1
 
@@ -3508,7 +3510,9 @@ OPTIONS                                                        *vimtex-options*
   Possible values:
     * `'general'`
     * `'galley'`            |vimtex-view-galley|
+    * `'lektra'`            |vimtex-view-lektra|
     * `'mupdf'`             |vimtex-view-mupdf|
+    * `'sioyek'`            |vimtex-view-sioyek|
     * `'skim'`              |vimtex-view-skim|
     * `'zathura'`           |vimtex-view-zathura|
     * `'zathura_simple'`    |vimtex-view-zathura-simple|
@@ -3556,6 +3560,31 @@ OPTIONS                                                        *vimtex-options*
   opened.
 
   Default value: `''`
+
+*g:vimtex_view_lektra_exe*
+  The name or path of the Lektra executable (|vimtex-view-lektra|). The default
+  should usually work, but in some cases it can be useful or necessary to
+  specify the executable directly, e.g. if one uses an AppImage release.
+  Unless the executable location is available in `PATH` one must use an
+  absolute path here.
+
+  Default value: `'lektra'`
+
+*g:vimtex_view_lektra_options*
+  Set additional command-line options for Lektra (|vimtex-view-lektra|). The
+  options are only applied when VimTeX starts a new Lektra instance. E.g.: >vim
+
+    let g:vimtex_view_lektra_options = '--layout single'
+<
+  Default value: `''`
+
+*g:vimtex_view_lektra_use_synctex*
+  Set this option to 0 to disable the synctex features of Lektra
+  (|vimtex-view-lektra|), i.e. forward search. VimTeX automatically disables
+  the synctex features if Lektra was compiled without synctex support, so this
+  option is only necessary if one wants to disable them explicitly.
+
+  Default value: 1
 
 *g:vimtex_view_sioyek_exe*
   The name or path of the Sioyek executable. The default should usually work,
@@ -6231,6 +6260,47 @@ info on inverse search, see |vimtex-synctex-inverse-search|.
 Associated settings:
 * |g:vimtex_view_galley_activate|
 * |g:vimtex_view_galley_sync|
+
+                                                           *vimtex-view-lektra*
+Lektra ~
+https://dheerajshenoy.github.io/lektra/
+Lektra is a high-performance, keyboard-driven document and image viewer built
+with Qt and MuPDF. It supports both forward and inverse search, and it works
+on both Xorg and Wayland.
+
+Configuration: >vim
+  let g:vimtex_view_method = 'lektra'
+
+Note: Lektra must be compiled with synctex support for forward and inverse
+      search to work. VimTeX detects this automatically and warns if the
+      support is missing.
+
+VimTeX starts Lektra with the `--single-instance` and `--socket` options, where
+the socket name is derived from the path of the PDF file. This allows VimTeX to
+reuse a running Lektra instance for the relevant PDF file, both for forward
+searches and for repeated |:VimtexView| commands.
+
+Inverse search can not be configured from the command line, and must therefore
+be specified in the Lektra configuration file, typically
+`$XDG_CONFIG_HOME/lektra/config.toml`. Use the `editor_command` that matches
+your desired version of Vim: >toml
+
+  [synctex]
+  enabled = true
+  editor_command = "nvim --headless -c \"VimtexInverseSearch %l '%f'\""
+  # editor_command = "vim -v --not-a-term -T dumb -c \"VimtexInverseSearch %l '%f'\""
+<
+Inverse search is by default activated with `Shift`-click in the PDF; this can
+be changed with the `synctex_jump` keybinding in the Lektra configuration file.
+For more info, see |vimtex-synctex-inverse-search|.
+
+Note: The interpolation variables for Lektra configuration of inverse search
+      are `%l` and `%f`. Lektra does not provide the column number.
+
+Associated settings:
+* |g:vimtex_view_lektra_exe|
+* |g:vimtex_view_lektra_options|
+* |g:vimtex_view_lektra_use_synctex|
 
                                                             *vimtex-view-mupdf*
 MuPDF ~

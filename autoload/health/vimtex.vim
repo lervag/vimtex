@@ -144,6 +144,26 @@ function! s:check_view_mupdf() abort " {{{1
 endfunction
 
 " }}}1
+function! s:check_view_lektra() abort " {{{1
+  let l:ok = 1
+
+  if !executable(g:vimtex_view_lektra_exe)
+    call v:lua.vim.health.error('Lektra is not executable!')
+    let l:ok = 0
+  else
+    let l:help = vimtex#jobs#capture(g:vimtex_view_lektra_exe . ' --help')
+    if empty(filter(l:help, 'v:val =~# ''--synctex-forward'''))
+      call v:lua.vim.health.warn('Lektra is compiled without synctex support!')
+      let l:ok = 0
+    endif
+  endif
+
+  if l:ok
+    call v:lua.vim.health.ok('Lektra should work properly!')
+  endif
+endfunction
+
+" }}}1
 function! s:check_view_sioyek() abort " {{{1
   let l:ok = 1
 
