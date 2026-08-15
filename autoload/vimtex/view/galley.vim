@@ -59,11 +59,15 @@ function! s:view(outfile, open, sync) abort " {{{1
   if a:sync
     " Note: We pass the 1-indexed column from Vim. This is always positive,
     "       which avoids Galley's "column 0" workaround (shifting to line + 1).
+    " Note: The `background=1` parameter is the counterpart of `open -g`; it
+    "       tells Galley to show the window without stealing focus. It is
+    "       ignored by Galley versions older than v0.4.
     let l:url = printf(
-          \ 'galleypdf://forward?line=%d&column=%d&pdfpath=%s&srcpath=%s',
+          \ 'galleypdf://forward?line=%d&column=%d&pdfpath=%s&srcpath=%s%s',
           \ line('.'), col('.'),
           \ vimtex#util#url_encode(a:outfile),
-          \ vimtex#util#url_encode(expand('%:p')))
+          \ vimtex#util#url_encode(expand('%:p')),
+          \ g:vimtex_view_galley_activate ? '' : '&background=1')
     call vimtex#jobs#run(printf('open %s"%s"', l:background, l:url))
   endif
 endfunction

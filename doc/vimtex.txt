@@ -6199,6 +6199,10 @@ policy (one source, one PDF, one window) and reloads the PDF automatically
 after recompilation. The VimTeX implementation supports forward search and
 uses a callback to update Galley after successful compilations.
 
+Galley may be installed with homebrew: >bash
+
+  brew install --cask munepi/galley/galley
+<
 Configuration: >vim
   let g:vimtex_view_method = 'galley'
 <
@@ -6206,23 +6210,23 @@ By default Galley is opened and updated in the background. Set
 |g:vimtex_view_galley_activate| to 1 to bring it to the foreground and give it
 focus after a forward search.
 
-To configure inverse search: Select `Custom...` from the `SyncTeX` menu in the
-menu bar, then set the custom editor command from a terminal. With Vim or
-Neovim, respectively: >bash
+To configure inverse search: Select `Vim/Neovim` `(VimTeX)` from the `SyncTeX`
+menu in the menu bar. Galley then runs |:VimtexInverseSearch| in a headless
+instance, which forwards the jump to your running Vim or Neovim. If you have
+both installed, you can pin the desired one from a terminal: >bash
 
-  defaults write com.github.munepi.galley customEditorCommand \
-      "/path/to/vim -v --not-a-term -T dumb -c \"VimtexInverseSearch %line '%file'\""
-
-  defaults write com.github.munepi.galley customEditorCommand \
-      "/path/to/nvim --headless -c \"VimtexInverseSearch %line '%file'\""
+  defaults write com.github.munepi.galley vimtexFlavor "nvim" # or "vim"
 <
-Replace `/path/to/vim` (or `nvim`) with the absolute path to your binary, e.g.
-`/opt/homebrew/bin/nvim` for a homebrew installation.
+The default is `auto`, which prefers Neovim and falls back to Vim. Galley
+searches for the binary in `/opt/homebrew/bin`, `/usr/local/bin` and
+`/usr/bin`, in that order. If your binary is somewhere else, specify the
+absolute path: >bash
 
-Inverse search is then activated by `Command`-clicking in the PDF. The first
-forward search will trigger a macOS prompt asking for Automation permissions,
-which must be allowed. For more info on inverse search, see
-|vimtex-synctex-inverse-search|.
+  defaults write com.github.munepi.galley vimPath "/path/to/vim"
+  defaults write com.github.munepi.galley nvimPath "/path/to/nvim"
+<
+Inverse search is then activated by `Command`-clicking in the PDF. For more
+info on inverse search, see |vimtex-synctex-inverse-search|.
 
 Associated settings:
 * |g:vimtex_view_galley_activate|
