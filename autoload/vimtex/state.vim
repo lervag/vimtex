@@ -43,6 +43,11 @@ endfunction
 
 " }}}1
 function! vimtex#state#init_local() abort " {{{1
+  " Note: s:subfile_preserve_root is set by s:get_main_from_subfile() when the
+  "       path given in \documentclass[...]{subfiles} could only be resolved
+  "       relative to the project root. Such a subfile must be compiled from
+  "       that root rather than from its own directory, else the path will not
+  "       resolve for the compiler either. See also #630.
   let l:preserve_root = get(s:, 'subfile_preserve_root')
   unlet! s:subfile_preserve_root
 
@@ -267,6 +272,12 @@ function! s:get_main() abort " {{{1
     endif
   endif
 
+  " Check if the current file is a known source of an already open project
+  let l:candidate = s:get_main_from_open_projects()
+  if !empty(l:candidate)
+    return [l:candidate, 'source of open project', []]
+  endif
+
   " Fallbacks:
   " 1.  fallback candidate from get_main_latexmain
   " 2. a. tex: current file
@@ -338,6 +349,9 @@ function! s:get_main_from_subfile() abort " {{{1
         " difficult, since the main file is the one we are looking for. We
         " therefore assume that the main file lives somewhere upwards in the
         " directory tree.
+        "
+        " Note: The path is relative to the project root; see the note on
+        "       s:subfile_preserve_root in vimtex#state#init_local().
         let l:candidate = fnamemodify(findfile(l:filename, '.;'), ':p')
         if filereadable(l:candidate)
               \ && s:file_reaches_current(l:candidate)
@@ -347,16 +361,14 @@ function! s:get_main_from_subfile() abort " {{{1
 
         " Check the alternate buffer. This seems sensible e.g. in cases where one
         " enters an "outer" subfile through a 'gf' motion from the main file.
+        "
+        " Note: As above, the specified path did not resolve relative to the
+        "       current file, so we assume it is relative to the project root.
         let l:vimtex = getbufvar('#', 'vimtex', {})
-        let l:sources = empty(get(l:vimtex, 'tex', ''))
-              \ ? []
-              \ : l:vimtex.get_sources()
-        for l:file in l:sources
-          if expand('%:p') ==# simplify(l:vimtex.root . '/' . l:file)
-            let s:subfile_preserve_root = 1
-            return l:vimtex.tex
-          endif
-        endfor
+        if s:state_includes_file(l:vimtex, expand('%:p'))
+          let s:subfile_preserve_root = 1
+          return l:vimtex.tex
+        endif
       endif
     endif
   endfor
@@ -460,6 +472,30 @@ function! s:get_main_recurse_from_bib() abort " {{{1
   endfor
 
   return l:results
+endfunction
+
+" }}}1
+function! s:get_main_from_open_projects() abort " {{{1
+  " Check if the current file is listed as a source of an already open project.
+  " This is the only way to detect a main file that lives in a subdirectory
+  " relative to the current file, since the directory scan only goes upwards.
+  "
+  " Note: This relies on the session state, i.e. on which projects happen to be
+  "       open. It is therefore only applied as a last resort, that is, after
+  "       the directory scan and before the fallbacks.
+  let l:current = expand('%:p')
+
+  let l:candidates = []
+  for l:state in values(s:vimtex_states)
+    let l:candidate = get(l:state, 'tex', '')
+    if l:candidate ==# l:current || empty(l:candidate) | continue | endif
+
+    if s:state_includes_file(l:state, l:current)
+      call add(l:candidates, l:candidate)
+    endif
+  endfor
+
+  return s:get_main_choose(l:candidates)
 endfunction
 
 " }}}1
@@ -568,6 +604,18 @@ function! s:globpath_upwards(expr, path) abort " {{{1
   return filter(
         \ split(globpath(fnameescape(l:dirs), a:expr), '\n'),
         \ 'filereadable(v:val)')
+endfunction
+
+" }}}1
+function! s:state_includes_file(state, file) abort " {{{1
+  " Note: This assumes that a:file is an absolute path
+  for l:source in a:state.get_sources()
+    if a:file ==# simplify(a:state.root . '/' . l:source)
+      return v:true
+    endif
+  endfor
+
+  return v:false
 endfunction
 
 " }}}1

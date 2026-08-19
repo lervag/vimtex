@@ -63,6 +63,26 @@ call vimtex#test#main(
 " state to inherit from.
 bwipeout!
 
+" Test open projects 1: A plain included file whose main file lives in
+" a subdirectory. With no open project to consult we fall back to the file
+" itself.
+call vimtex#test#main(
+      \ 'test-open-projects/macros.tex',
+      \ 'test-open-projects/macros.tex')
+
+" Test open projects 2: Same as above, but now the main file is open. Note
+" that it is deliberately not the alternate buffer here, since any open
+" project should be considered.
+execute 'silent edit' fnameescape('test-open-projects/sub/main.tex')
+execute 'silent edit' fnameescape('simple.tex')
+call vimtex#test#main(
+      \ 'test-open-projects/macros.tex',
+      \ 'test-open-projects/sub/main.tex')
+
+" Drop the open projects again; the tests below assume there is no live state
+" to inherit from.
+silent %bwipeout!
+
 " Test mainfile specified in .latexmrc
 call vimtex#test#main('test-latexmk/preamble.tex', 'test-latexmk/main.tex')
 

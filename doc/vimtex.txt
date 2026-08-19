@@ -362,6 +362,7 @@ then described in more detail:
 4. File `.latexmain` specifier
 5. Local `latexmkrc` file specifier (from `@default_files` option)
 6. Directory scan
+7. Source of an open project
 
                                                                  *b:vimtex_main*
 Buffer variable ~
@@ -497,7 +498,37 @@ Directory scan ~
   Note: Recursive directory descents are not performed to find the main file.
         That is, if the current file is `./B/chapter.tex` then `./A/main.tex`
         will not be found as the main file, because the descent to
-        subdirectory `./A/` is not performed.
+        subdirectory `./A/` is not performed. Such a main file may still be
+        detected by the last method, see |vimtex-main-open-project|.
+
+                                                     *vimtex-main-open-project*
+Source of an open project ~
+  As a last resort, before falling back to regarding the current file as its
+  own main file, VimTeX checks whether the current file is listed as a source
+  of an already open project. If it is, that project's main file is used.
+
+  This is the only method that can detect a main file which lives in
+  a subdirectory relative to the current file, since the directory scan only
+  searches upwards. A typical example is a shared macro file that is included
+  from a project further down the directory tree: >
+
+    macros.tex
+    project/
+      main.tex          \input{../macros}
+<
+  Here, opening `macros.tex` on its own gives no indication of which project
+  it belongs to. But if `project/main.tex` is already open, VimTeX will
+  connect `macros.tex` to that project.
+
+  Note: Unlike the other methods, this one depends on which projects happen to
+        be open. Opening `macros.tex` before `project/main.tex` will therefore
+        give a different result than opening it after. If the file is a source
+        of several open projects, the main file is selected as described in
+        |g:vimtex_main_choose_first|.
+
+  Note: A file that is included by a project through an explicit declaration,
+        e.g. |vimtex-tex-root|, is not affected by this method, since such
+        declarations are applied first.
 
 ------------------------------------------------------------------------------
 SUPPORT FOR TEX DIRECTIVES                              *vimtex-tex-directives*
