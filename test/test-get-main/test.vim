@@ -45,6 +45,24 @@ let g:vimtex_subfile_start_local = 1
 call vimtex#test#main('test-subfiles/sub/sub3.tex', 'test-subfiles/sub/sub3.tex')
 let g:vimtex_subfile_start_local = 0
 
+" Test subfiles 5: The main file lives in a subdirectory, so it is not
+" reachable by the upwards recursive search. Without an alternate buffer we
+" can only fall back to the subfile itself.
+call vimtex#test#main(
+      \ 'test-subfiles-alternate/outer.tex',
+      \ 'test-subfiles-alternate/outer.tex')
+
+" Test subfiles 6: Same as above, but now the main file is open in the
+" alternate buffer and it lists the subfile among its sources.
+execute 'silent edit' fnameescape('test-subfiles-alternate/sub/main.tex')
+call vimtex#test#main(
+      \ 'test-subfiles-alternate/outer.tex',
+      \ 'test-subfiles-alternate/sub/main.tex')
+
+" Drop the alternate buffer again; the tests below assume there is no live
+" state to inherit from.
+bwipeout!
+
 " Test mainfile specified in .latexmrc
 call vimtex#test#main('test-latexmk/preamble.tex', 'test-latexmk/main.tex')
 

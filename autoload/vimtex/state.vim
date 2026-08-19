@@ -348,7 +348,10 @@ function! s:get_main_from_subfile() abort " {{{1
         " Check the alternate buffer. This seems sensible e.g. in cases where one
         " enters an "outer" subfile through a 'gf' motion from the main file.
         let l:vimtex = getbufvar('#', 'vimtex', {})
-        for l:file in get(l:vimtex, 'sources', [])
+        let l:sources = empty(get(l:vimtex, 'tex', ''))
+              \ ? []
+              \ : l:vimtex.get_sources()
+        for l:file in l:sources
           if expand('%:p') ==# simplify(l:vimtex.root . '/' . l:file)
             let s:subfile_preserve_root = 1
             return l:vimtex.tex
