@@ -365,7 +365,8 @@ function! s:get_main_from_subfile() abort " {{{1
         " Note: As above, the specified path did not resolve relative to the
         "       current file, so we assume it is relative to the project root.
         let l:vimtex = getbufvar('#', 'vimtex', {})
-        if s:state_includes_file(l:vimtex, expand('%:p'))
+        if !empty(get(l:vimtex, 'tex', ''))
+              \ && s:state_includes_file(l:vimtex, expand('%:p'))
           let s:subfile_preserve_root = 1
           return l:vimtex.tex
         endif
@@ -608,7 +609,8 @@ endfunction
 
 " }}}1
 function! s:state_includes_file(state, file) abort " {{{1
-  " Note: This assumes that a:file is an absolute path
+  " Note: This assumes that a:state is a proper state with a non-empty "tex"
+  "       key and that a:file is an absolute path
   for l:source in a:state.get_sources()
     if a:file ==# simplify(a:state.root . '/' . l:source)
       return v:true
