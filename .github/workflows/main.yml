@@ -39,7 +39,7 @@ jobs:
             libextutils-libbuilder-perl
 
       - name: Set up mise
-        uses: jdx/mise-action@v4.2.3
+        uses: jdx/mise-action@v4.2.4
         with:
           tool_versions: |
             neovim 0.12.4
