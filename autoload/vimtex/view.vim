@@ -152,6 +152,7 @@ function! s:inverse_search_cmd_nvim(line, filename, column) abort
     try
       let l:socket = sockconnect('pipe', l:server, {'rpc': 1})
     catch
+      continue
     endtry
 
     call rpcnotify(l:socket,
