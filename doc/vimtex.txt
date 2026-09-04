@@ -6866,6 +6866,11 @@ Note: This reference is currently a work in progress!
   the |VimtexEventCompiling|, |VimtexEventCompileFailed| and
   |VimtexEventCompileSuccess| events.
 
+  Note: The callback applies to the project of the current buffer. If the
+        callback belongs to some other project, e.g. because a continuous
+        compiler finished while one is editing an unrelated document, then
+        only the compiler status is updated and nothing is reported.
+
 *vimtex#env#get_inner*
 *vimtex#env#get_outer*
 *vimtex#env#get_all*
