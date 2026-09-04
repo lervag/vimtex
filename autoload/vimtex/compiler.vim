@@ -49,25 +49,39 @@ endfunction
 
 " }}}1
 
-function! vimtex#compiler#callback(status) abort " {{{1
-  " Status:
+function! vimtex#compiler#callback(status, ...) abort " {{{1
+  " Status is one of:
   " 1: Compilation cycle has started
   " 2: Compilation complete - Success
   " 3: Compilation complete - Failed
-  if !exists('b:vimtex.compiler') | return | endif
+
+  " The optional second argument is the compiler that issued the callback. It
+  " defaults to the compiler of the current buffer, which is the relevant one
+  " for external callers (see :help vimtex#compiler#callback).
+  let l:current = get(get(b:, 'vimtex', {}), 'compiler', {})
+  let l:compiler = a:0 > 0 ? a:1 : l:current
+  if empty(l:compiler) | return | endif
+
+  let l:compiler.status = a:status
+
+  " The remaining actions report to the user through the current buffer, so
+  " they only make sense when the callback belongs to the current project.
+  " A continuous compiler keeps issuing callbacks also while we edit a file
+  " that belongs to some other project, and in that case there is nothing to
+  " report here.
+  if l:compiler isnot l:current | return | endif
+
   silent! call s:output.pause()
 
-  let l:__silent = b:vimtex.compiler.silence_next_callback
+  let l:__silent = l:compiler.silence_next_callback
   if l:__silent
-    let b:vimtex.compiler.silence_next_callback = v:false
+    let l:compiler.silence_next_callback = v:false
     if g:vimtex_compiler_silent
       let l:__silent = v:false
     else
       call vimtex#log#set_silent()
     endif
   endif
-
-  let b:vimtex.compiler.status = a:status
 
   if a:status == 1
     if exists('#User#VimtexEventCompiling')
