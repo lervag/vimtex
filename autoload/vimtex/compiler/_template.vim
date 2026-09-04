@@ -17,7 +17,7 @@ let s:compiler = {
       \ 'out_dir': '',
       \ 'continuous': 0,
       \ 'hooks': [],
-      \ 'output': tempname(),
+      \ 'output': '',
       \ 'silence_next_callback': 0,
       \ 'file_info': {},
       \ 'status': -1,
@@ -27,6 +27,10 @@ function! s:compiler.new(options) abort dict " {{{1
   let l:compiler = extend(deepcopy(self), a:options)
   let l:backend = has('nvim') ? 'nvim' : 'jobs'
   call extend(l:compiler, deepcopy(s:compiler_{l:backend}))
+
+  if empty(l:compiler.output)
+    let l:compiler.output = tempname()
+  endif
 
   call l:compiler.__check_requirements()
 
