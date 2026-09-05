@@ -157,9 +157,14 @@ function! s:compiler.__build_cmd(passed_options) abort dict " {{{1
     let l:cmd .= ' -pvc -pvctimeout- -view=none'
 
     if self.callback
+      " Note: `warning_cmd` is deliberately mapped to the success callback.
+      "       latexmk only runs `success_cmd` when there were no warnings at
+      "       all, so without this a compilation that ends with e.g. undefined
+      "       references would never issue a callback.
       for [l:opt, l:val] in [
             \ ['compiling_cmd', 'vimtex_compiler_callback_compiling'],
             \ ['success_cmd', 'vimtex_compiler_callback_success'],
+            \ ['warning_cmd', 'vimtex_compiler_callback_success'],
             \ ['failure_cmd', 'vimtex_compiler_callback_failure'],
             \]
         let l:cmd .= s:wrap_option_appendcmd(l:opt, 'echo ' . l:val)
