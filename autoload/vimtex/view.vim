@@ -63,19 +63,18 @@ endfunction
 
 
 function! vimtex#view#inverse_search(line, filename, column = 0) abort
-  " Only activate in VimTeX buffers
-  if !exists('b:vimtex') | return -1 | endif
+  " Only activate if there are any VimTeX projects in this instance
+  let l:states = vimtex#state#list_all()
+  if empty(l:states) | return -1 | endif
 
-  " Only activate in relevant VimTeX projects
+  " Only activate for a project that owns the file. Note that the project need
+  " not be the one of the current buffer.
   let l:file = resolve(a:filename)
-  let l:sources = b:vimtex.get_sources(#{ refresh: v:true })
-  if vimtex#paths#is_abs(l:file)
-    call map(l:sources, {_, x -> vimtex#paths#join(b:vimtex.root, x)})
-  endif
-  if index(l:sources, l:file) < 0 | return -2 | endif
+  let l:state = s:get_state_for_file(l:states, l:file)
+  if empty(l:state) | return -2 | endif
 
 
-  if mode() ==# 'i' | stopinsert | endif
+  if mode() =~# '^[it]' | stopinsert | endif
 
   " Open file if necessary
   if !bufloaded(l:file)
@@ -115,8 +114,8 @@ function! vimtex#view#inverse_search(line, filename, column = 0) abort
   if a:column > 0
     execute 'normal!' a:column . '|'
   endif
-  if b:vimtex.viewer.xdo_check()
-    call b:vimtex.viewer.xdo_focus_vim()
+  if has_key(l:state, 'viewer') && l:state.viewer.xdo_check()
+    call l:state.viewer.xdo_focus_vim()
   endif
   redraw
 
@@ -142,6 +141,25 @@ function! vimtex#view#inverse_search_cmd(line, filename, column) abort
   endif
 
   quitall!
+endfunction
+
+
+function! s:get_state_for_file(states, file) abort
+  " The project of the current buffer is checked first, since it is the most
+  " common owner.
+  let l:states = exists('b:vimtex')
+        \ ? [b:vimtex] + filter(copy(a:states), 'v:val isnot b:vimtex')
+        \ : a:states
+
+  for l:state in l:states
+    let l:sources = l:state.get_sources(#{ refresh: v:true })
+    if vimtex#paths#is_abs(a:file)
+      call map(l:sources, {_, x -> vimtex#paths#join(l:state.root, x)})
+    endif
+    if index(l:sources, a:file) >= 0 | return l:state | endif
+  endfor
+
+  return {}
 endfunction
 
 

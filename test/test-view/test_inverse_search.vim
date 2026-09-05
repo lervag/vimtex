@@ -41,4 +41,26 @@ call vimtex#view#inverse_search(3, 'included.tex')
 call assert_equal('included.tex', expand('%:t'))
 call assert_equal(3, line('.'))
 
+" The owning project must react also when the focused buffer is not a VimTeX
+" buffer, e.g. a terminal or a file tree.
+silent %bwipeout!
+silent edit main.tex
+enew
+call assert_false(exists('b:vimtex'))
+call vimtex#view#inverse_search(3, 'included.tex')
+call assert_equal('included.tex', expand('%:t'))
+call assert_equal(3, line('.'))
+
+" This should also work across windows and tabs
+silent %bwipeout!
+silent edit main.tex
+silent tabedit included.tex
+tabprevious
+enew
+call assert_false(exists('b:vimtex'))
+call vimtex#view#inverse_search(4, 'included.tex')
+call assert_equal('included.tex', expand('%:t'))
+call assert_equal(4, line('.'))
+call assert_equal(2, tabpagenr())
+
 call vimtex#test#finished()
