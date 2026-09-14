@@ -57,4 +57,28 @@ call vimtex#test#keys('$bdid',
       \ '\caption{}'
       \)
 
+" A TeX group outside a math zone may contain unmatched environments
+call vimtex#test#keys('24|did',
+      \ '\newenvironment{myenv}{\begin{center}}{\end{center}}',
+      \ '\newenvironment{myenv}{}{\end{center}}'
+      \)
+
+call vimtex#test#keys('40|did',
+      \ '\newenvironment{myenv}{\begin{center}}{\end{center}}',
+      \ '\newenvironment{myenv}{\begin{center}}{}'
+      \)
+
+call vimtex#test#keys('jdid', [
+      \ '\newenvironment{myenv}{%',
+      \ '  \begin{center}%',
+      \ '}{%',
+      \ '  \end{center}%',
+      \ '}',
+      \], [
+      \ '\newenvironment{myenv}{%',
+      \ '}{%',
+      \ '  \end{center}%',
+      \ '}',
+      \])
+
 call vimtex#test#finished()
