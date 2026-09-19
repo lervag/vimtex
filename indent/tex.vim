@@ -149,7 +149,11 @@ function! s:indent_amps.parse_context(lnum, line) abort dict " {{{1
   let l:lnum = prevnonblank(a:lnum - 1)
 
   while l:lnum >= 1
-    let l:line = getline(l:lnum)
+    let l:line = s:clean_line(getline(l:lnum))
+    if empty(l:line)
+      let l:lnum = prevnonblank(l:lnum - 1)
+      continue
+    endif
 
     if l:line =~# s:re_depth_end
       let l:depth += 1
