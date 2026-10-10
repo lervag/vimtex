@@ -2684,6 +2684,10 @@ function! s:gather_newtheorems() abort " {{{1
   call filter(l:lines, {_, x -> x =~# '^\s*\\newtheorem\>'})
   call map(l:lines, {_, x -> matchstr(x, '^\s*\\newtheorem\>\*\?{\zs[^}]*')})
 
+  " Environment names may contain regex special characters, e.g. a quote (which
+  " is also the pattern delimiter used in vimtex#syntax#core#init_post())
+  call map(l:lines, {_, x -> escape(x, '\"~.*[]^$')})
+
   return l:lines
 endfunction
 

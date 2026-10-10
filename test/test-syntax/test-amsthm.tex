@@ -5,6 +5,8 @@
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prp}[thm]{Proposition}
 \newtheorem{lemma}{Lemma}
+\newtheorem{"quoted"}{Quoted}
+\newtheorem{thm.a}{Theorem A}
 
 \begin{document}
 
@@ -23,5 +25,17 @@
 \begin{proof}[Proof of theorem abc]
     Proof goes here.
 \end{proof}
+
+\begin{"quoted"}
+  Quoted theorem name.
+\end{"quoted"}
+
+\begin{thm.a}
+  Dotted theorem name.
+\end{thm.a}
+
+\begin{thmXa}
+  Not a theorem.
+\end{thmXa}
 
 \end{document}
