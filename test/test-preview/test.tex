@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{amsmath}
+\newcommand{\avg}[1]{\langle #1 \rangle}
+
+\begin{document}
+
+Inline $a + \avg{b}$ and \(c^2\) math.
+
+\[
+  x = \frac{1}{2}
+\]
+
+\begin{align*}
+  a &= b \label{eq:a} \\
+  c &= d \nonumber
+\end{align*}
+
+\begin{alignat}{2}
+  a &= b & c &= d
+\end{alignat}
+
+\begin{equation}
+  \tag{*} e = mc^2
+\end{equation}
+
+Empty $ $ math.
+
+\end{document}

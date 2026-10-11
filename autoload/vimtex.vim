@@ -147,7 +147,7 @@ function! s:init_buffer_bib() abort " {{{1
   " Specify list of modules to disable
   return [
         \ 'fold', 'matchparen', 'format', 'doc', 'imaps', 'delim',
-        \ 'env', 'motion', 'complete',
+        \ 'env', 'motion', 'complete', 'preview',
         \]
 endfunction
 
@@ -163,6 +163,10 @@ function! s:init_default_mappings() abort " {{{1
   call s:map_prefixed(1, 'n', 's', '<plug>(vimtex-toggle-main)')
   call s:map_prefixed(0, 'n', 'q', '<plug>(vimtex-log)')
   call s:map_prefixed(1, 'n', 'a', '<plug>(vimtex-context-menu)')
+
+  if g:vimtex_preview_enabled
+    call s:map_prefixed(1, 'n', 'p', '<plug>(vimtex-preview-toggle)')
+  endif
 
   call s:map(0, 'n', 'ds$', '<plug>(vimtex-env-delete-math)')
   call s:map(0, 'n', 'cs$', '<plug>(vimtex-env-change-math)')

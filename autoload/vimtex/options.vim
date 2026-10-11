@@ -324,6 +324,18 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_parser_cmd_separator_check',
         \ 'vimtex#cmd#parser_separator_check')
 
+  call s:init_option('vimtex_preview_enabled', has('nvim-0.13'))
+  call s:init_option('vimtex_preview_cell_height', 24)
+  call s:init_option('vimtex_preview_color', '')
+  call s:init_option('vimtex_preview_delay', 150)
+
+  if g:vimtex_preview_enabled && !has('nvim-0.13')
+    let g:vimtex_preview_enabled = 0
+    call vimtex#log#warning(
+          \ 'g:vimtex_preview_enabled requires Neovim 0.13 or later!',
+          \ 'The option has been reset to 0.')
+  endif
+
   call s:init_option('vimtex_quickfix_enabled', 1)
   call s:init_option('vimtex_quickfix_method', 'latexlog')
   call s:init_option('vimtex_quickfix_autojump', 0)
@@ -653,6 +665,8 @@ function! s:init_highlights() abort " {{{1
         \ ['VimtexError', 'Error'],
         \ ['VimtexFatal', 'ErrorMsg'],
         \ ['VimtexBlink', 'PMenu'],
+        \ ['VimtexPreviewBorder', 'NonText'],
+        \ ['VimtexPreviewError', 'WarningMsg'],
         \ ['VimtexTocHelp', 'helpVim'],
         \ ['VimtexTocHelpKey', 'ModeMsg'],
         \ ['VimtexTocHelpLayerOn', 'Statement'],
