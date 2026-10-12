@@ -184,6 +184,18 @@ local function place()
     return hide_image()
   end
 
+  -- The image would be drawn on top of the completion menu
+  local pum = vim.fn.pum_getpos()
+  if
+    not vim.tbl_isempty(pum)
+    and pum.row < row + shown.rows - 1
+    and pum.row + pum.height >= row
+    and pum.col < col + shown.size.width - 1
+    and pum.col + pum.width + (pum.scrollbar and 1 or 0) >= col
+  then
+    return hide_image()
+  end
+
   local opts = { row = row, col = col }
   if state.img then
     pcall(vim.ui.img.set, state.img, opts)
@@ -339,7 +351,9 @@ end
 local function update()
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
-  local mode = vim.api.nvim_get_mode().mode
+  -- Only the first character matters, e.g. the mode is "ic" while the
+  -- completion menu is visible
+  local mode = vim.api.nvim_get_mode().mode:sub(1, 1)
   local engine = active[buf]
   if not engine or (mode ~= "n" and mode ~= "i") then
     return M.clear()
@@ -458,6 +472,12 @@ function M.enable(engine)
     { "CursorMoved", "CursorMovedI", "ModeChanged" },
     { group = group, buffer = buf, callback = update_debounced }
   )
+  vim.api.nvim_create_autocmd("CompleteChanged", {
+    group = group,
+    buffer = buf,
+    -- The completion menu is not yet shown when this event is triggered
+    callback = vim.schedule_wrap(place),
+  })
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
     group = group,
     buffer = buf,

@@ -167,7 +167,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `qpdfview`
   - `SumatraPDF`
   - Other viewers are supported through a general interface
-- Live preview of math under the cursor (Neovim only)
+- Live preview of math and `tikz-cd` diagrams under the cursor (Neovim only)
 - Completion of
   - citations
   - labels
@@ -6755,7 +6755,8 @@ LIVE PREVIEW                                                   *vimtex-preview*
 VimTeX can show a rendered image of the LaTeX code under the cursor directly
 below the source in the buffer. The preview follows the cursor and is updated
 as you type. The rest of the buffer stays as plain text. This is inspired by
-org-latex-preview in Emacs. Currently, only math is previewed.
+org-latex-preview in Emacs. Currently, math and `tikz-cd` diagrams are
+previewed.
 
 Requirements:
 - Neovim 0.13 or later, since the feature uses the experimental |vim.ui.img|
@@ -6785,6 +6786,10 @@ of the current project (as for |:VimtexCompileSelected|), which means that
 custom macros and packages loaded in the preamble work as expected. Macros
 that are defined after `\begin{document}` are not available.
 
+A `tikzcd` environment from the `tikz-cd` package is also previewed when it is
+not inside math. It is then typeset in display math, as one usually does. The
+package must be loaded in the preamble.
+
 The document is compiled with `pdflatex`, `lualatex` or `xelatex`, chosen to
 match the project. For |vimtex-compiler-latexmk| and
 |vimtex-compiler-latexrun|, VimTeX uses the engine of the compiler, which
@@ -6810,7 +6815,8 @@ given by |g:vimtex_preview_cell_height|. Images that are wider than the window
 are scaled down.
 
 Note: The image is hidden if there is not enough space below the math in the
-      current window.
+      current window, or if it would cover the insert mode completion menu.
+      Other floating windows may be covered by the image.
 
 The following highlight groups are used:
 

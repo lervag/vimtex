@@ -57,11 +57,7 @@ function! vimtex#preview#get_fragment() abort " {{{1
   "   lnum_end    Last line of the fragment (including delimiters)
   "   math        The math content as a string that can be typeset directly,
   "               usually as inline math (see s:normalize())
-  if g:vimtex_syntax_enabled && !vimtex#syntax#in('texMathZone')
-    return {}
-  endif
-
-  let [l:open, l:close] = vimtex#env#get_surrounding('math')
+  let [l:open, l:close] = s:get_surrounding()
   if empty(l:open) | return {} | endif
 
   let l:lines = getline(l:open.lnum, l:close.lnum)
@@ -107,9 +103,11 @@ function! vimtex#preview#get_document(math, color) abort " {{{1
         \]
 
   " Typeset the math in a box. Inline math uses a horizontal box, anything
-  " else (e.g. unknown environments) a paragraph of normal width.
+  " else (e.g. unknown environments) a paragraph of normal width. Note that
+  " the math must not be read as a macro argument, since that breaks e.g. the
+  " & in tikz-cd diagrams.
   let l:box = a:math =~# '^\$'
-        \ ? '\sbox\vimtexpreviewbox{'
+        \ ? '\setbox\vimtexpreviewbox\hbox{'
         \ : '\setbox\vimtexpreviewbox\vbox{\noindent'
   let l:lines += [
         \ '\begin{preview}',
@@ -176,12 +174,25 @@ function! s:normalize(body, open, close) abort " {{{1
     let l:body = '\begin{gathered}' . l:body . '\end{gathered}'
   elseif l:name ==# 'eqnarray'
     let l:body = '\begin{array}{rcl}' . l:body . '\end{array}'
+  elseif l:name ==# 'tikzcd'
+    let l:body = a:open.match . l:body . a:close.match
   else
     " Unknown environments are typeset as they are, with full line width
     return a:open.match . a:body . a:close.match
   endif
 
   return '$\displaystyle\strut ' . l:body . '$'
+endfunction
+
+" }}}1
+function! s:get_surrounding() abort " {{{1
+  " Get the surrounding math, or else a surrounding tikz-cd diagram
+  if !g:vimtex_syntax_enabled || vimtex#syntax#in('texMathZone')
+    let [l:open, l:close] = vimtex#env#get_surrounding('math')
+    if !empty(l:open) | return [l:open, l:close] | endif
+  endif
+
+  return vimtex#delim#get_surrounding('env_tex', #{ whitelist: ['tikzcd'] })
 endfunction
 
 " }}}1

@@ -62,7 +62,7 @@ let s:i = index(s:lines, '\begin{document}')
 call assert_true(index(s:lines, '\usepackage[active,tightpage]{preview}') < s:i)
 call assert_equal([
       \ '\begin{preview}',
-      \ '\sbox\vimtexpreviewbox{\color[HTML]{FFFFFF}%',
+      \ '\setbox\vimtexpreviewbox\hbox{\color[HTML]{FFFFFF}%',
       \ '$x$',
       \ '}%',
       \], s:lines[s:i + 1 : s:i + 4])
