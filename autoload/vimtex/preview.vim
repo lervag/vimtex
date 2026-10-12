@@ -50,13 +50,16 @@ endfunction
 " }}}1
 
 function! vimtex#preview#get_fragment() abort " {{{1
-  " Get the math fragment under the cursor. Returns an empty dict if there is
-  " no (nonempty) math fragment, else a dict with the keys:
+  " Get the fragment under the cursor, i.e. math or a tikz-cd diagram. Returns
+  " an empty dict if there is no (nonempty) fragment, else a dict with the
+  " keys:
   "
   "   lnum_start  First line of the fragment (including delimiters)
   "   lnum_end    Last line of the fragment (including delimiters)
-  "   math        The math content as a string that can be typeset directly,
-  "               usually as inline math (see s:normalize())
+  "   code        The LaTeX code as a string that can be typeset directly in
+  "               a box (see s:normalize())
+  "   box         The type of box to typeset the code in: 'hbox' for code
+  "               with a natural width, 'vbox' for a paragraph of normal width
   let [l:open, l:close] = s:get_surrounding()
   if empty(l:open) | return {} | endif
 
@@ -66,20 +69,19 @@ function! vimtex#preview#get_fragment() abort " {{{1
   call filter(l:lines, { _, x -> x =~# '\S' })
   let l:body = s:trim(join(l:lines, "\n"))
 
-  let l:math = s:normalize(l:body, l:open, l:close)
-  if empty(l:math) | return {} | endif
+  let l:fragment = s:normalize(l:body, l:open, l:close)
+  if empty(l:fragment) | return {} | endif
 
-  return {
+  return extend({
         \ 'lnum_start': l:open.lnum,
         \ 'lnum_end': l:close.lnum,
-        \ 'math': l:math,
-        \}
+        \}, l:fragment)
 endfunction
 
 " }}}1
-function! vimtex#preview#get_document(math, color) abort " {{{1
-  " Create a document that typesets the math string with the preamble of the
-  " current project.
+function! vimtex#preview#get_document(fragment, color) abort " {{{1
+  " Create a document that typesets the fragment (see
+  " vimtex#preview#get_fragment()) with the preamble of the current project.
 
   let l:preamble = vimtex#parser#preamble(b:vimtex.tex)
   if empty(l:preamble)
@@ -102,18 +104,20 @@ function! vimtex#preview#get_document(math, color) abort " {{{1
         \ l:preamble[-1],
         \]
 
-  " Typeset the math in a box. Inline math uses a horizontal box, anything
-  " else (e.g. unknown environments) a paragraph of normal width. Note that
-  " the math must not be read as a macro argument, since that breaks e.g. the
-  " & in tikz-cd diagrams.
-  let l:box = a:math =~# '^\$'
+  " The preview is compiled without shell escape, so TikZ externalization
+  " would fail
+  let l:lines += ['\csname tikzexternaldisable\endcsname']
+
+  " Typeset the code in a box. Note that the code must not be read as a macro
+  " argument, since that breaks e.g. the & in tikz-cd diagrams.
+  let l:box = a:fragment.box ==# 'hbox'
         \ ? '\setbox\vimtexpreviewbox\hbox{'
         \ : '\setbox\vimtexpreviewbox\vbox{\noindent'
   let l:lines += [
         \ '\begin{preview}',
         \ l:box . '\color[HTML]{' . a:color . '}%',
         \]
-        \ + split(a:math, "\n")
+        \ + split(a:fragment.code, "\n")
         \ + ['}%']
 
   " Pad the box to a whole number of terminal cells, i.e. multiples of
@@ -148,13 +152,16 @@ endfunction
 " }}}1
 
 function! s:normalize(body, open, close) abort " {{{1
-  if a:body !~# '\S' | return '' | endif
+  " Returns a dict with the 'code' and 'box' keys of a fragment (see
+  " vimtex#preview#get_fragment()), or an empty dict if there is nothing to
+  " typeset.
+  if a:body !~# '\S' | return {} | endif
 
   " Inline math is typeset as is. The \strut ensures that a single line of
   " math has the height of a line of text, see the size computation in
   " lua/vimtex/preview.lua.
   if a:open.match ==# '$' || a:open.match ==# '\('
-    return '$\strut ' . a:body . '$'
+    return {'code': '$\strut ' . a:body . '$', 'box': 'hbox'}
   endif
 
   " Labels and tags are not allowed (or not wanted) in inline math
@@ -178,10 +185,10 @@ function! s:normalize(body, open, close) abort " {{{1
     let l:body = a:open.match . l:body . a:close.match
   else
     " Unknown environments are typeset as they are, with full line width
-    return a:open.match . a:body . a:close.match
+    return {'code': a:open.match . a:body . a:close.match, 'box': 'vbox'}
   endif
 
-  return '$\displaystyle\strut ' . l:body . '$'
+  return {'code': '$\displaystyle\strut ' . l:body . '$', 'box': 'hbox'}
 endfunction
 
 " }}}1

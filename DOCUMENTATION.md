@@ -295,10 +295,11 @@ This submodule implements the live preview for Neovim (`:help
 vimtex-preview`). It is split in two parts:
 
 * `autoload/vimtex/preview.vim` defines the commands and mappings, finds the
-  math under the cursor (with `vimtex#env#get_surrounding('math')`), and builds
-  a small LaTeX document from the project preamble and the `preview` package.
+  fragment under the cursor (math with `vimtex#env#get_surrounding('math')`,
+  or a `tikzcd` environment), and builds a small LaTeX document from the
+  project preamble and the `preview` package.
 * `lua/vimtex/preview.lua` compiles the document to a cached PNG file and
-  shows it below the math with the experimental `vim.ui.img` API. All Neovim
+  shows it below the fragment with the experimental `vim.ui.img` API. All Neovim
   specific code, including every call to `vim.ui.img`, lives here.
 
 ### qf.vim

@@ -381,8 +381,7 @@ local function update()
   state.lnum_end = fragment.lnum_end
   state.line_count = vim.api.nvim_buf_line_count(buf)
 
-  local lines =
-    vim.fn["vimtex#preview#get_document"](fragment.math, get_color())
+  local lines = vim.fn["vimtex#preview#get_document"](fragment, get_color())
   local dpi = get_dpi()
   local key = vim.fn.sha256(
     table.concat({ engine, dpi, table.concat(lines, "\n") }, "\n")
