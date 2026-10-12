@@ -290,6 +290,18 @@ for more information).
 
 ![toc example](https://github.com/lervag/vimtex-media/blob/main/img/toc.png)
 
+### preview.vim
+This submodule implements the live preview for Neovim (`:help
+vimtex-preview`). It is split in two parts:
+
+* `autoload/vimtex/preview.vim` defines the commands and mappings, finds the
+  fragment under the cursor (math with `vimtex#env#get_surrounding('math')`,
+  or a `tikzcd` environment), and builds a small LaTeX document from the
+  project preamble and the `preview` package.
+* `lua/vimtex/preview.lua` compiles the document to a cached PNG file and
+  shows it below the fragment with the experimental `vim.ui.img` API. All Neovim
+  specific code, including every call to `vim.ui.img`, lives here.
+
 ### qf.vim
 This submodule defines functions and buffer mappings to parse log files and
 similar and put errors and warnings into the quickfix window (see `:help

@@ -110,6 +110,7 @@ CONTENTS                                                      *vimtex-contents*
     Synctex                                     |vimtex-synctex|
       Forward search                            |vimtex-synctex-forward-search|
       Inverse search                            |vimtex-synctex-inverse-search|
+  Live preview                                  |vimtex-preview|
   LaTeX Documentation                           |vimtex-latexdoc|
   Context menu                                  |vimtex-context-menu|
     Citation context                            |vimtex-context-citation|
@@ -166,6 +167,7 @@ FEATURE OVERVIEW                                              *vimtex-features*
   - `qpdfview`
   - `SumatraPDF`
   - Other viewers are supported through a general interface
+- Live preview of math and `tikz-cd` diagrams under the cursor (Neovim only)
 - Completion of
   - citations
   - labels
@@ -909,6 +911,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lX  |<plug>(vimtex-reload-state)|                   `n`
    <localleader>ls  |<plug>(vimtex-toggle-main)|                    `n`
    <localleader>la  |<plug>(vimtex-context-menu)|                   `n`
+   <localleader>lp  |<plug>(vimtex-preview-toggle)|                 `n`
    dse              |<plug>(vimtex-env-delete)|                     `n`
    dsc              |<plug>(vimtex-cmd-delete)|                     `n`
    ds$              |<plug>(vimtex-env-delete-math)|                `n`
@@ -2487,6 +2490,49 @@ OPTIONS                                                        *vimtex-options*
 
   Default: 1
 
+*g:vimtex_preview_enabled*
+  Use this option to disable the live preview feature, see |vimtex-preview|.
+  The feature requires Neovim 0.13 or later. If the option is set to 1 for
+  Vim or an older version of Neovim, then VimTeX shows a warning and resets
+  the option to 0.
+
+  Default value:
+
+    Vim:          0
+    Neovim 0.13+: 1
+    Older Neovim: 0
+
+*g:vimtex_preview_cell_height*
+  The height of a terminal cell in pixels. The preview images are rendered
+  with this resolution, such that the terminal can show them without scaling.
+  If the value is wrong, the images are scaled by the terminal, which may make
+  thin lines disappear in some terminals (e.g. WezTerm).
+
+  Many terminals report the cell size in pixels if one runs the following in
+  a shell: >bash
+
+    printf '\e[16t'
+<
+  The answer ends with `H;Wt`, e.g. `22;11t`, where `H` is the cell height
+  and `W` is the cell width. Depending on the shell, the answer may be shown
+  only partially. On displays with scaling (e.g. HiDPI), use the size in
+  device pixels.
+
+  Default value: 24
+
+*g:vimtex_preview_color*
+  The foreground color of the rendered math, as a hex string such as
+  `'#ebdbb2'`. When empty, the foreground color of the |hl-Normal| group is
+  used, or black/white depending on 'background' if it is not defined.
+
+  Default value: `''`
+
+*g:vimtex_preview_delay*
+  Delay in milliseconds after the cursor has moved or the text has changed
+  before the preview is updated.
+
+  Default value: 150
+
 *g:vimtex_quickfix_enabled*
   Use this option to disable/enable the quickfix integration.
 
@@ -3876,6 +3922,14 @@ COMMANDS                                                      *vimtex-commands*
 :VimtexView               View `pdf` for current project, perform forward
                           search if available.
 
+                                             *:VimtexPreviewToggle*
+                                             *<plug>(vimtex-preview-toggle)*
+:VimtexPreviewToggle      Toggle the live preview for the current buffer, see
+                          |vimtex-preview|.
+
+                                             *:VimtexPreviewClearCache*
+:VimtexPreviewClearCache  Remove all cached preview images.
+
                                              *:VimtexReload*
                                              *<plug>(vimtex-reload)*
 :VimtexReload             Reload VimTeX scripts. This is primarily useful
@@ -5102,7 +5156,7 @@ Note: The |fold-expr| method of folding is well known to be slow, e.g. for
 In order to get slightly cleaner fold text, I recommend setting the global
 'fillchars' option to a single space for folds: >vim
 
-  set fillchars=fold:\ 
+  set fillchars=fold:\
 
 Note: Remember to include the whitespace after backslash!
 
@@ -6694,6 +6748,88 @@ Note: Many plugin managers provide mechanisms to lazy load plugins. There is
 
 Note: You may need to add the installation prefix for Vim/Neovim, for example
       `/opt/homebrew/bin`, in your PDF viewer if inverse search does not work.
+
+==============================================================================
+LIVE PREVIEW                                                   *vimtex-preview*
+
+VimTeX can show a rendered image of the LaTeX code under the cursor directly
+below the source in the buffer. The preview follows the cursor and is updated
+as you type. The rest of the buffer stays as plain text. This is inspired by
+org-latex-preview in Emacs. Currently, math and `tikz-cd` diagrams are
+previewed.
+
+Requirements:
+- Neovim 0.13 or later, since the feature uses the experimental |vim.ui.img|
+  API.
+- A terminal that supports the kitty graphics protocol, e.g. kitty, Ghostty,
+  or WezTerm.
+- The TeX engine (see below), the `preview` LaTeX package and `pdftocairo`
+  from Poppler.
+
+Note: The preview does not work inside tmux, since |vim.ui.img| does not
+      support tmux.
+
+The preview is toggled per buffer with |:VimtexPreviewToggle|, which is mapped
+to `<localleader>lp` by default. To enable it automatically, one may use the
+|VimtexEventInitPost| event and `vimtex#preview#enable()`, which does
+nothing if the preview is not available or already enabled: >vim
+
+  augroup vimtex_config
+    autocmd!
+    autocmd User VimtexEventInitPost call vimtex#preview#enable()
+  augroup END
+<
+When the cursor is inside math, i.e. `$...$`, `\(...\)`, `\[...\]`, `$$...$$`
+or a math environment such as `equation` or `align`, the math is compiled into
+a small document and rendered as a PNG image. The document uses the preamble
+of the current project (as for |:VimtexCompileSelected|), which means that
+custom macros and packages loaded in the preamble work as expected. Macros
+that are defined after `\begin{document}` are not available.
+
+A `tikzcd` environment from the `tikz-cd` package is also previewed when it is
+not inside math. It is then typeset in display math, as one usually does. The
+package must be loaded in the preamble.
+
+The document is compiled with `pdflatex`, `lualatex` or `xelatex`, chosen to
+match the project. For |vimtex-compiler-latexmk| and
+|vimtex-compiler-latexrun|, VimTeX uses the engine of the compiler, which
+respects e.g. the TeX program directive (|vimtex-tex-program|) and `$pdf_mode`
+in `latexmkrc`. For other compilers, only the TeX program directive is used.
+The engine is determined when the preview is enabled.
+
+Displayed math is typeset in display style, and alignment environments are
+converted to their inner variant, e.g. `align` becomes `aligned`. Labels and
+tags are removed. Other math environments are typeset as they are.
+
+The images are cached in the `preview` directory under |g:vimtex_cache_root|.
+Use |:VimtexPreviewClearCache| to clear the cache.
+
+If compilation fails, a message with the path to the log file is shown below
+the math. While typing, the previous image is kept until the math compiles
+again.
+
+The image is shown with roughly the same size as the source text: one line of
+10 pt text in the document corresponds to one line in the terminal. VimTeX
+assumes that cells are twice as high as they are wide, and the cell height is
+given by |g:vimtex_preview_cell_height|. Images that are wider than the window
+are scaled down.
+
+Note: The image is hidden if there is not enough space below the math in the
+      current window, or if it would cover the insert mode completion menu.
+      Other floating windows may be covered by the image.
+
+The following highlight groups are used:
+
+  GROUP                DEFAULT      DESCRIPTION
+  ----------------------------------------------------------------------------
+  VimtexPreviewBorder  NonText      Lines above and below the image
+  VimtexPreviewError   WarningMsg   Message shown when compilation fails
+
+Related options:
+- |g:vimtex_preview_enabled|
+- |g:vimtex_preview_cell_height|
+- |g:vimtex_preview_color|
+- |g:vimtex_preview_delay|
 
 ==============================================================================
 LATEX DOCUMENTATION                                           *vimtex-latexdoc*

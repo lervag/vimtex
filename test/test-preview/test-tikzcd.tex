@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{tikz-cd}
+\usetikzlibrary{external}
+\tikzexternalize
+
+\begin{document}
+
+\[
+  \begin{tikzcd}
+    A \arrow[r, "f"] & B
+  \end{tikzcd}
+\]
+
+\begin{tikzcd}[column sep=large]
+  A \arrow[r] & B
+\end{tikzcd}
+
+\end{document}
