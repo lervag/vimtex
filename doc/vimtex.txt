@@ -6313,7 +6313,16 @@ policy (one source, one PDF, one window) and reloads the PDF automatically
 after recompilation. The VimTeX implementation supports forward search and
 uses a callback to update Galley after successful compilations.
 
-Galley may be installed with homebrew: >bash
+To install Galley:
+
+1. Open https://github.com/munepi/Galley/releases and download the
+   `GalleyPDF_<version>.dmg` file from the latest release.
+2. Double-click the downloaded file to open it.
+3. Drag `GalleyPDF.app` onto the `Applications` shortcut in the window that
+   appears.
+
+Galley then updates itself automatically. Alternatively, it may be installed
+with Homebrew: >bash
 
   brew install --cask munepi/galley/galley
 <
