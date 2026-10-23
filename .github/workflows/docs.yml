@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up mise
-        uses: jdx/mise-action@v5.0.1
+        uses: jdx/mise-action@v5.1.1
         with:
           # neovim: gen_help_html.lua (bundled vimdoc parser)
           # hugo: landing page
