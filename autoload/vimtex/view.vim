@@ -183,9 +183,15 @@ endfunction
 
 function! s:inverse_search_cmd_vim(line, filename, column) abort
   for l:server in split(serverlist(), "\n")
-    call remote_expr(l:server,
-          \ printf("vimtex#view#inverse_search(%d, '%s', %d)",
-          \        a:line, a:filename, a:column))
+    " Catch errors per server so that one failure does not stop the loop. E.g.,
+    " sending to our own server fails with E241 if the vimrc calls
+    " remote_startserver().
+    try
+      call remote_expr(l:server,
+            \ printf("vimtex#view#inverse_search(%d, '%s', %d)",
+            \        a:line, a:filename, a:column))
+    catch
+    endtry
   endfor
 endfunction
 
