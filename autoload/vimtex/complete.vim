@@ -235,7 +235,7 @@ endfunction
 
 let s:completer_ref = {
       \ 'patterns' : [
-      \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
+      \   '\v\\v?%(auto|eq|[cC]?%(page)?|labelc|zc%(page)?)?ref%(\s*\{[^}]*|range\s*\{[^,{}]*%(\}\{)?)$',
       \   '\\hyperref\s*\[[^]]*$',
       \   '\\subref\*\?{[^}]*$',
       \   '\\nameref{[^}]*$',
