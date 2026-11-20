@@ -75,4 +75,39 @@ call vimtex#test#keys('tsd', [
       \ '\end{equation}',
       \])
 
+" Cf. #3024, an opening delimiter must not match the bracket of \] or \)
+call vimtex#test#keys('6j$tsd', [
+      \ 'An interval like',
+      \ '\begin{equation}',
+      \ '  I = (0, 1]',
+      \ '\end{equation}',
+      \ 'is called half-open, just like the interval',
+      \ '\[',
+      \ '  J = [0, 1)',
+      \ '\]',
+      \], [
+      \ 'An interval like',
+      \ '\begin{equation}',
+      \ '  I = (0, 1]',
+      \ '\end{equation}',
+      \ 'is called half-open, just like the interval',
+      \ '\[',
+      \ '  J = [0, 1)',
+      \ '\]',
+      \])
+call vimtex#test#keys('f]tsd',
+      \ '\( J = (0, 1] \)',
+      \ '\( J = (0, 1] \)')
+call vimtex#test#keys('f)tsd',
+      \ '\[ J = [0, 1) \]',
+      \ '\[ J = [0, 1) \]')
+
+" Escaped brackets must not prevent proper matching
+call vimtex#test#keys('f1tsd',
+      \ '\[ J = [0, 1] \]',
+      \ '\[ J = \left[0, 1\right] \]')
+call vimtex#test#keys('f1tsd',
+      \ '\( J = (0, 1) \)',
+      \ '\( J = \left(0, 1\right) \)')
+
 call vimtex#test#finished()

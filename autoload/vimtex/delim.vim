@@ -1157,19 +1157,43 @@ endfunction
 " }}}1
 function! s:parser_delim.get_matching() dict abort " {{{1
   try
-    let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
+    let [lnum, cnum] = searchpairpos(
+          \ self.re.open,
+          \ '',
+          \ self.re.close,
           \ self.gms_flags,
-          \ 'synIDattr(synID(line("."), col("."), 0), "name") =~? "comment"',
-          \ 0, s:get_timeout())
+          \ self.skip,
+          \ 0,
+          \ s:get_timeout()
+          \)
   catch /E118/
-    let [lnum, cnum] = searchpairpos(self.re.open, '', self.re.close,
+    let [lnum, cnum] = searchpairpos(
+          \ self.re.open,
+          \ '',
+          \ self.re.close,
           \ self.gms_flags,
-          \ 'synIDattr(synID(line("."), col("."), 0), "name") =~? "comment"',
-          \ self.gms_stopline)
+          \ self.skip,
+          \ self.gms_stopline
+          \)
   endtry
 
   let match = matchstr(getline(lnum), '^' . self.re.corr, cnum-1)
   return [match, lnum, cnum]
+endfunction
+
+" }}}1
+function! s:parser_delim.skip() dict abort " {{{1
+  let l:cnum = col('.')
+  if synIDattr(synID(line('.'), l:cnum, 0), 'name') =~? 'comment'
+    return v:true
+  endif
+
+  " Skip brackets that are part of the math environment delimiters \(, \),
+  " \[ and \], i.e. brackets preceded by an odd number of backslashes. Note
+  " that the bracket in e.g. `\\[2pt]` is not escaped.
+  let l:line = getline('.')
+  return l:line[l:cnum - 1] =~# '[][()]'
+        \ && strpart(l:line, 0, l:cnum - 1) =~# g:vimtex#re#not_bslash . '\\$'
 endfunction
 
 " }}}1
